@@ -1,0 +1,35 @@
+﻿molsysviewer.selections.SelectionsManager
+=========================================
+
+.. currentmodule:: molsysviewer.selections
+
+.. autoclass:: SelectionsManager
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SelectionsManager.__init__
+      ~SelectionsManager.activate
+      ~SelectionsManager.add
+      ~SelectionsManager.add_from_active_selection
+      ~SelectionsManager.add_selection
+      ~SelectionsManager.clear
+      ~SelectionsManager.contains
+      ~SelectionsManager.count
+      ~SelectionsManager.delete
+      ~SelectionsManager.get
+      ~SelectionsManager.info
+      ~SelectionsManager.records
+      ~SelectionsManager.set_tag
+      ~SelectionsManager.tags
+   
+   
+
+   
+   
+   

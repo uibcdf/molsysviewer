@@ -1,0 +1,930 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../../../_static/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
+    <link href="../../../_static/favicon-124x124.png" sizes="124x124" rel="icon" type="image/png">
+    <link href="../../../_static/favicon-128x128.png" sizes="128x128" rel="icon" type="image/png">
+    <link href="../../../_static/favicon-192x192.png" sizes="192x192" rel="icon" type="image/png">
+    <link href="../../../_static/icon.svg" rel="icon" type="image/svg+xml">
+  
+    <title>molsysviewer.MolSysView – MolSysViewer 0.24.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=6b6fcda3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=6b6fcda3" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
+
+    <script src="../../../_static/documentation_options.js?v=a9084e48"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/public/autosummary/molsysviewer.MolSysView';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="molsysviewer.new_view" href="molsysviewer.new_view.html" />
+    <link rel="prev" title="Public API" href="../api_public.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.24.0" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.24.0 documentation - Home"/>
+    <img src="../../../_static/logo_dark.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.24.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../api_public.html">Public API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">molsysviewer.MolSysView</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.new_view.html">molsysviewer.new_view</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.demo.html">molsysviewer.demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.load.html">molsysviewer.MolSysView.load</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.apply_system_edit.html">molsysviewer.MolSysView.apply_system_edit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.reset_viewer.html">molsysviewer.MolSysView.reset_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.zoom.html">molsysviewer.MolSysView.zoom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.focus_selection.html">molsysviewer.MolSysView.focus_selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.focus_region.html">molsysviewer.MolSysView.focus_region</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.reset_camera.html">molsysviewer.MolSysView.reset_camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.get_camera_snapshot.html">molsysviewer.MolSysView.get_camera_snapshot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.set_camera_snapshot.html">molsysviewer.MolSysView.set_camera_snapshot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.clear_decorations.html">molsysviewer.MolSysView.clear_decorations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.play.html">molsysviewer.MolSysView.play</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.pause.html">molsysviewer.MolSysView.pause</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.set_play_speed.html">molsysviewer.MolSysView.set_play_speed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.current_structure_index.html">molsysviewer.MolSysView.current_structure_index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.get_coordinates.html">molsysviewer.MolSysView.get_coordinates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.set_coordinates.html">molsysviewer.MolSysView.set_coordinates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.info.html">molsysviewer.MolSysView.info</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.export_state.html">molsysviewer.MolSysView.export_state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.import_state.html">molsysviewer.MolSysView.import_state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.on_hover.html">molsysviewer.MolSysView.on_hover</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.off_hover.html">molsysviewer.MolSysView.off_hover</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.on_click.html">molsysviewer.MolSysView.on_click</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.off_click.html">molsysviewer.MolSysView.off_click</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.on_context.html">molsysviewer.MolSysView.on_context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.MolSysView.off_context.html">molsysviewer.MolSysView.off_context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.config.html">molsysviewer.config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.config.show_controls.html">molsysviewer.config.show_controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.config.autohide_controls.html">molsysviewer.config.autohide_controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.config.controls_position.html">molsysviewer.config.controls_position</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.config.controls_position_fullscreen.html">molsysviewer.config.controls_position_fullscreen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.config.load_user_presets.html">molsysviewer.config.load_user_presets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.whole.Whole.html">molsysviewer.whole.Whole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.regions.RegionsManager.html">molsysviewer.regions.RegionsManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.regions.Region.html">molsysviewer.regions.Region</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.layers.Layer.html">molsysviewer.layers.Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.styles.StylesManager.html">molsysviewer.styles.StylesManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.styles.Style.html">molsysviewer.styles.Style</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.selections.SelectionsManager.html">molsysviewer.selections.SelectionsManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.selections.Selection.html">molsysviewer.selections.Selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.annotations.AnnotationsManager.html">molsysviewer.annotations.AnnotationsManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.measurements.MeasurementsManager.html">molsysviewer.measurements.MeasurementsManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.interactions.InteractionsManager.html">molsysviewer.interactions.InteractionsManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.interactions.InteractionSet.html">molsysviewer.interactions.InteractionSet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.loaders.html">molsysviewer.loaders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.loaders.load_from_molsysmt.html">molsysviewer.loaders.load_from_molsysmt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.shapes.html">molsysviewer.shapes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.shapes.ShapesManager.html">molsysviewer.shapes.ShapesManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.viewer.movie.MovieManager.html">molsysviewer.viewer.movie.MovieManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.exports.ExportManager.html">molsysviewer.exports.ExportManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.shapes.SphereShapes.html">molsysviewer.shapes.SphereShapes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.shapes.PocketSurfaces.html">molsysviewer.shapes.PocketSurfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.shapes.PocketBlobs.html">molsysviewer.shapes.PocketBlobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.shapes.ChannelTubes.html">molsysviewer.shapes.ChannelTubes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.shapes.AnisotropyEllipsoids.html">molsysviewer.shapes.AnisotropyEllipsoids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.shapes.PharmacophoreShapes.html">molsysviewer.shapes.PharmacophoreShapes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.shapes.LinkShapes.html">molsysviewer.shapes.LinkShapes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.shapes.DisplacementVectors.html">molsysviewer.shapes.DisplacementVectors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.shapes.TriangleFaces.html">molsysviewer.shapes.TriangleFaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.shapes.Tetrahedra.html">molsysviewer.shapes.Tetrahedra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.thirds.jupyter.load_html_in_notebook.html">molsysviewer.thirds.jupyter.load_html_in_notebook</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../internal/api_internal.html">Internal API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../internal/autosummary/molsysviewer.loaders.load_molsysmt.html">molsysviewer.loaders.load_molsysmt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../internal/autosummary/molsysviewer.loaders.load_molsysmt.ensure_view.html">molsysviewer.loaders.load_molsysmt.ensure_view</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">API Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../api_public.html" class="nav-link">Public API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">molsysviewer.MolSysView</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="molsysviewer-molsysview">
+<h1>molsysviewer.MolSysView<a class="headerlink" href="#molsysviewer-molsysview" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.MolSysView">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">molsysviewer.</span></span><span class="sig-name descname"><span class="pre">MolSysView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug_js</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">viewer_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controls_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">panel_mode_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'480px'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transport</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#molsysviewer.MolSysView" title="Link to this definition">#</a></dt>
+<dd><p>Mol* viewer widget with a Python-facing API.</p>
+<p>Provides structure loading, visibility control, shape management, and
+utilities to export static HTML views for documentation or sharing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>debug_js</strong> (<em>bool</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>viewer_mode</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>controls_mode</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>panel_mode_style</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>height</strong> (<em>str</em>)</p></li>
+<li><p><strong>transport</strong> (<em>Any</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.MolSysView.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug_js</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">viewer_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controls_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">panel_mode_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'480px'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transport</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#molsysviewer.MolSysView.__init__" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>debug_js</strong> (<em>bool</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>viewer_mode</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>controls_mode</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>panel_mode_style</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>height</strong> (<em>str</em>)</p></li>
+<li><p><strong>transport</strong> (<em>Any</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#molsysviewer.MolSysView.__init__" title="molsysviewer.MolSysView.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(*[, debug_js, viewer_mode, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../molsysviewer.html#molsysviewer.MolSysView.apply_system_edit" title="molsysviewer.MolSysView.apply_system_edit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_system_edit</span></code></a>(new_molsys, *[, ...])</p></td>
+<td><p>Replace the loaded molecular system and reconcile viewer state.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../molsysviewer.html#molsysviewer.MolSysView.attributed_to" title="molsysviewer.MolSysView.attributed_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attributed_to</span></code></a>(owner, *[, skip_digestion])</p></td>
+<td><p>Attribute scene objects created in this context to <em>owner</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_popup_scene_snapshot</span></code>(mode[, endpoint, ...])</p></td>
+<td><p>Build the canonical popup scene snapshot for <code class="docutils literal notranslate"><span class="pre">mode</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="molsysviewer.MolSysView.clear_decorations.html#molsysviewer.MolSysView.clear_decorations" title="molsysviewer.MolSysView.clear_decorations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear_decorations</span></code></a>(*[, shapes, styles, ...])</p></td>
+<td><p>Clear decorative elements (shapes/styles/labels) without touching the loaded structure or camera.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../molsysviewer.html#molsysviewer.MolSysView.close" title="molsysviewer.MolSysView.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>(*[, skip_digestion])</p></td>
+<td><p>Release the frontend transport and widgets owned by this view.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_regions_by</span></code>(element[, selection, ...])</p></td>
+<td><p>Return how many regions <code class="xref py py-meth docutils literal notranslate"><span class="pre">make_regions_by()</span></code> would create, without creating them.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="molsysviewer.MolSysView.export_state.html#molsysviewer.MolSysView.export_state" title="molsysviewer.MolSysView.export_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">export_state</span></code></a>(*[, skip_digestion])</p></td>
+<td><p>Serialize the current viewer overlay state to a JSON-compatible dict.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract</span></code>([selection, structure_indices, ...])</p></td>
+<td><p>Return a new view built from a structural subset of this view.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="molsysviewer.MolSysView.focus_region.html#molsysviewer.MolSysView.focus_region" title="molsysviewer.MolSysView.focus_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">focus_region</span></code></a>(region, *[, duration, ...])</p></td>
+<td><p>Focus the camera on a region.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="molsysviewer.MolSysView.focus_selection.html#molsysviewer.MolSysView.focus_selection" title="molsysviewer.MolSysView.focus_selection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">focus_selection</span></code></a>([selection, ...])</p></td>
+<td><p>Focus the camera on a selection.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">focus_with_fade</span></code>([selection, fade, ...])</p></td>
+<td><p>Soft spotlight: fade everything <em>outside</em> <cite>selection</cite> to <cite>fade</cite> transparency while keeping the selection fully opaque.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="molsysviewer.MolSysView.get_camera_snapshot.html#molsysviewer.MolSysView.get_camera_snapshot" title="molsysviewer.MolSysView.get_camera_snapshot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_camera_snapshot</span></code></a>(*[, pretty, skip_digestion])</p></td>
+<td><p>Return the last camera snapshot.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="molsysviewer.MolSysView.get_coordinates.html#molsysviewer.MolSysView.get_coordinates" title="molsysviewer.MolSysView.get_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_coordinates</span></code></a>([selection, ...])</p></td>
+<td><p>Return atom coordinates from the loaded molecular system.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_last_active_selection_event</span></code>(*[, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_last_click_event</span></code>(*[, skip_digestion])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_last_context_action_event</span></code>(*[, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_last_context_event</span></code>(*[, skip_digestion])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_last_hover_event</span></code>(*[, skip_digestion])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_last_measurement_created_event</span></code>(*[, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_last_tool_state_event</span></code>(*[, skip_digestion])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_panel_mode_state</span></code>(*[, pretty, skip_digestion])</p></td>
+<td><p>Return the last known frontend panel/workspace runtime state.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hide_box</span></code>([skip_digestion])</p></td>
+<td><p>Remove the box edge display from the canvas.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="molsysviewer.MolSysView.import_state.html#molsysviewer.MolSysView.import_state" title="molsysviewer.MolSysView.import_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">import_state</span></code></a>(state, *[, clear_first, ...])</p></td>
+<td><p>Restore viewer overlay state from a dict produced by <a class="reference internal" href="molsysviewer.MolSysView.export_state.html#molsysviewer.MolSysView.export_state" title="molsysviewer.MolSysView.export_state"><code class="xref py py-meth docutils literal notranslate"><span class="pre">export_state()</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="molsysviewer.MolSysView.info.html#molsysviewer.MolSysView.info" title="molsysviewer.MolSysView.info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">info</span></code></a>([output_type, skip_digestion])</p></td>
+<td><p>Summarise <strong>the view</strong>: what is in the scene and how it is drawn.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="molsysviewer.MolSysView.load.html#molsysviewer.MolSysView.load" title="molsysviewer.MolSysView.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(molecular_system[, selection, ...])</p></td>
+<td><p>Load one system, or explicitly combine independent sources.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_project_config</span></code>(path, *[, ...])</p></td>
+<td><p>Load a <code class="docutils literal notranslate"><span class="pre">_molsysviewer.py</span></code> project config file into this viewer.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_state</span></code>(path, *[, clear_first, ...])</p></td>
+<td><p>Load overlay state from JSON onto an already loaded structure.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_regions_by</span></code>(element[, selection, ...])</p></td>
+<td><p>Create one region per selected hierarchy element and return them by tag.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">new_region_from_active_selection</span></code>(*[, tag, ...])</p></td>
+<td><p>Create a region from the last active selection event.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="molsysviewer.MolSysView.off_click.html#molsysviewer.MolSysView.off_click" title="molsysviewer.MolSysView.off_click"><code class="xref py py-obj docutils literal notranslate"><span class="pre">off_click</span></code></a>(callback, *[, skip_digestion])</p></td>
+<td><p>Remove a previously registered click callback.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="molsysviewer.MolSysView.off_context.html#molsysviewer.MolSysView.off_context" title="molsysviewer.MolSysView.off_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">off_context</span></code></a>(callback, *[, skip_digestion])</p></td>
+<td><p>Remove a previously registered context-menu callback.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">off_frame_change</span></code>(callback, *[, skip_digestion])</p></td>
+<td><p>Remove a previously registered frame-change callback.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="molsysviewer.MolSysView.off_hover.html#molsysviewer.MolSysView.off_hover" title="molsysviewer.MolSysView.off_hover"><code class="xref py py-obj docutils literal notranslate"><span class="pre">off_hover</span></code></a>(callback, *[, skip_digestion])</p></td>
+<td><p>Remove a previously registered hover callback.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="molsysviewer.MolSysView.on_click.html#molsysviewer.MolSysView.on_click" title="molsysviewer.MolSysView.on_click"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_click</span></code></a>(callback, *[, skip_digestion])</p></td>
+<td><p>Register a callback invoked on every <code class="docutils literal notranslate"><span class="pre">interaction_click</span></code> event.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="molsysviewer.MolSysView.on_context.html#molsysviewer.MolSysView.on_context" title="molsysviewer.MolSysView.on_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_context</span></code></a>(callback, *[, skip_digestion])</p></td>
+<td><p>Register a callback invoked on every <code class="docutils literal notranslate"><span class="pre">interaction_context_menu</span></code> event.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_frame_change</span></code>(callback, *[, skip_digestion])</p></td>
+<td><p>Register a callback invoked whenever the trajectory frame changes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="molsysviewer.MolSysView.on_hover.html#molsysviewer.MolSysView.on_hover" title="molsysviewer.MolSysView.on_hover"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_hover</span></code></a>(callback, *[, skip_digestion])</p></td>
+<td><p>Register a callback invoked on every <code class="docutils literal notranslate"><span class="pre">interaction_hover</span></code> event.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">partial_coordinates_update</span></code>(coordinates[, ...])</p></td>
+<td><p>Edit selected structures and reconcile their model and derived state.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="molsysviewer.MolSysView.pause.html#molsysviewer.MolSysView.pause" title="molsysviewer.MolSysView.pause"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pause</span></code></a>([skip_digestion])</p></td>
+<td><p>Pause playback.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="molsysviewer.MolSysView.play.html#molsysviewer.MolSysView.play" title="molsysviewer.MolSysView.play"><code class="xref py py-obj docutils literal notranslate"><span class="pre">play</span></code></a>([fps, mode, direction, step, ...])</p></td>
+<td><p>Start playback through structures.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../molsysviewer.html#molsysviewer.MolSysView.reset_all_colors" title="molsysviewer.MolSysView.reset_all_colors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_all_colors</span></code></a>([skip_digestion])</p></td>
+<td><p>Clear every per-atom colour override on the canvas.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="molsysviewer.MolSysView.reset_camera.html#molsysviewer.MolSysView.reset_camera" title="molsysviewer.MolSysView.reset_camera"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_camera</span></code></a>([skip_digestion])</p></td>
+<td><p>Reset the camera.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="molsysviewer.MolSysView.reset_viewer.html#molsysviewer.MolSysView.reset_viewer" title="molsysviewer.MolSysView.reset_viewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_viewer</span></code></a>([skip_digestion])</p></td>
+<td><p>Fully clear the viewer and reset internal state (requires a new <cite>load(...)</cite>).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_session</span></code>(path[, skip_digestion])</p></td>
+<td><p>Write the scene <strong>and the system it was built on</strong> to one portable file.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_state</span></code>(path, *[, skip_digestion])</p></td>
+<td><p>Write the current overlay state to a UTF-8 JSON file atomically.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_box</span></code>([box, molecular_system, ...])</p></td>
+<td><p>Assign the whole-system cell without moving coordinates.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="molsysviewer.MolSysView.set_camera_snapshot.html#molsysviewer.MolSysView.set_camera_snapshot" title="molsysviewer.MolSysView.set_camera_snapshot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_camera_snapshot</span></code></a>(snapshot, *[, ...])</p></td>
+<td><p>Apply a camera snapshot.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../molsysviewer.html#molsysviewer.MolSysView.set_canvas_visibility" title="molsysviewer.MolSysView.set_canvas_visibility"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_canvas_visibility</span></code></a>(visible, *[, ...])</p></td>
+<td><p>Set the visibility of the WebGL canvas.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_controls_visible</span></code>(visible, *[, autohide, ...])</p></td>
+<td><p>Show or hide the on-canvas controls.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="molsysviewer.MolSysView.set_coordinates.html#molsysviewer.MolSysView.set_coordinates" title="molsysviewer.MolSysView.set_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_coordinates</span></code></a>(coordinates[, selection, ...])</p></td>
+<td><p>Replace atom coordinates in the loaded molecular system and update the canvas.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../molsysviewer.html#molsysviewer.MolSysView.set_dimensions" title="molsysviewer.MolSysView.set_dimensions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_dimensions</span></code></a>([width, height, skip_digestion])</p></td>
+<td><p>Set the dimensions of the viewer widget.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_figure_spec</span></code>(figure_spec, *[, skip_digestion])</p></td>
+<td><p>Anchor a figure recipe to the viewer workbench Scene section.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_panel_mode</span></code>([panel, expanded, skip_digestion])</p></td>
+<td><p>Open/close the shared panel-mode surface.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="molsysviewer.MolSysView.set_play_speed.html#molsysviewer.MolSysView.set_play_speed" title="molsysviewer.MolSysView.set_play_speed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_play_speed</span></code></a>(fps[, skip_digestion])</p></td>
+<td><p>Update the playback frame rate.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_structure</span></code>(index[, skip_digestion])</p></td>
+<td><p>Jump to a specific structure (frame) index.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_workspace</span></code>([workspace, skip_digestion])</p></td>
+<td><p>Select the active workspace in the shared panel-mode runtime.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_workspace_panel</span></code>(panel, *[, workspace, ...])</p></td>
+<td><p>Select the active panel inside the current or given workspace.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">show</span></code>(*[, force, skip_digestion, ...])</p></td>
+<td><p>Display the widget, the way <cite>pyplot.show()</cite> displays a figure.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_best_fit_plane</span></code>([selection, ...])</p></td>
+<td><p>Overlay Mol* best-fit plane on a selection.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_box</span></code>([color, width, alpha, ...])</p></td>
+<td><p>Render the unit-cell or simulation-box edges in the canvas.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_orientation_axes</span></code>([selection, ...])</p></td>
+<td><p>Overlay Mol* orientation-ellipsoid axes on a selection.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../molsysviewer.html#molsysviewer.MolSysView.wait_for_transaction" title="molsysviewer.MolSysView.wait_for_transaction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_transaction</span></code></a>(transaction_id[, ...])</p></td>
+<td><p>Wait until the frontend acknowledges that the transaction has been rendered.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">workspace_catalog</span></code>(*[, skip_digestion])</p></td>
+<td><p>Return the current effective workspace catalog visible to the view.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">workspace_panels</span></code>([workspace, skip_digestion])</p></td>
+<td><p>Return the visible local panel stack for a workspace.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">workspace_runtime</span></code>(*[, pretty, skip_digestion])</p></td>
+<td><p>Return a notebook-friendly snapshot of the shared workspace runtime.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">workspace_sections</span></code>([workspace, skip_digestion])</p></td>
+<td><p>Return the visible workbench sections for a workspace.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="molsysviewer.MolSysView.zoom.html#molsysviewer.MolSysView.zoom" title="molsysviewer.MolSysView.zoom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zoom</span></code></a>([selection, structure_indices, syntax, ...])</p></td>
+<td><p>Focus the camera on a selection.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Attributes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">current_structure_id</span></code></p></td>
+<td><p>ID of the structure currently displayed (requires a loaded molecular system).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../molsysviewer.html#molsysviewer.MolSysView.current_structure_index" title="molsysviewer.MolSysView.current_structure_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">current_structure_index</span></code></a></p></td>
+<td><p>Index of the structure currently displayed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hover_telemetry_enabled</span></code></p></td>
+<td><p>Whether browser hover events currently cross into Python.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../molsysviewer.html#molsysviewer.MolSysView.js_logs" title="molsysviewer.MolSysView.js_logs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">js_logs</span></code></a></p></td>
+<td><p>Logs received from the frontend when <cite>debug_js</cite> is enabled.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../molsysviewer.html#molsysviewer.MolSysView.layers" title="molsysviewer.MolSysView.layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">layers</span></code></a></p></td>
+<td><p>Public registry of layers (non-structural visuals).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../molsysviewer.html#molsysviewer.MolSysView.load_blocks" title="molsysviewer.MolSysView.load_blocks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_blocks</span></code></a></p></td>
+<td><p>Detached provenance records for independent loaded molecular sources.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../molsysviewer.html#molsysviewer.MolSysView.molsys" title="molsysviewer.MolSysView.molsys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">molsys</span></code></a></p></td>
+<td><p>Read-only handle to the loaded MolSysMT molecular system.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">presets</span></code></p></td>
+<td><p>Sorted list of allowed preset identifiers (built-in and user-defined).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../molsysviewer.html#molsysviewer.MolSysView.regions" title="molsysviewer.MolSysView.regions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">regions</span></code></a></p></td>
+<td><p>Public registry of regions (structural selections).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">representations</span></code></p></td>
+<td><p>Sorted list of allowed representation type identifiers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../molsysviewer.html#molsysviewer.MolSysView.scene_style_name" title="molsysviewer.MolSysView.scene_style_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scene_style_name</span></code></a></p></td>
+<td><p>Name of the active scene style, if any.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../molsysviewer.html#molsysviewer.MolSysView.selections_registry" title="molsysviewer.MolSysView.selections_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">selections_registry</span></code></a></p></td>
+<td><p>Public registry of persistent named selection wrappers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../molsysviewer.html#molsysviewer.MolSysView.visible_structure_indices" title="molsysviewer.MolSysView.visible_structure_indices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visible_structure_indices</span></code></a></p></td>
+<td><p>Return the indices of currently visible structures.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../api_public.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Public API</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="molsysviewer.new_view.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">molsysviewer.new_view</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.MolSysView"><code class="docutils literal notranslate"><span class="pre">MolSysView</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.MolSysView.__init__"><code class="docutils literal notranslate"><span class="pre">MolSysView.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="../../../content/about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

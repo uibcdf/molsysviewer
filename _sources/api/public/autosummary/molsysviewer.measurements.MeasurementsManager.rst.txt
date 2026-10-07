@@ -1,0 +1,42 @@
+﻿molsysviewer.measurements.MeasurementsManager
+=============================================
+
+.. currentmodule:: molsysviewer.measurements
+
+.. autoclass:: MeasurementsManager
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MeasurementsManager.__init__
+      ~MeasurementsManager.add
+      ~MeasurementsManager.add_angle
+      ~MeasurementsManager.add_dihedral
+      ~MeasurementsManager.add_distance
+      ~MeasurementsManager.clear
+      ~MeasurementsManager.contains
+      ~MeasurementsManager.count
+      ~MeasurementsManager.delete
+      ~MeasurementsManager.get
+      ~MeasurementsManager.hide
+      ~MeasurementsManager.info
+      ~MeasurementsManager.records
+      ~MeasurementsManager.series
+      ~MeasurementsManager.set_endpoint_policy
+      ~MeasurementsManager.set_layer_tag
+      ~MeasurementsManager.set_representative_atom
+      ~MeasurementsManager.set_tag
+      ~MeasurementsManager.settings
+      ~MeasurementsManager.show
+      ~MeasurementsManager.tags
+   
+   
+
+   
+   
+   

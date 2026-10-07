@@ -1,0 +1,42 @@
+﻿molsysviewer.viewer.movie.MovieManager
+======================================
+
+.. currentmodule:: molsysviewer.viewer.movie
+
+.. autoclass:: MovieManager
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MovieManager.__init__
+      ~MovieManager.add_camera_orbit
+      ~MovieManager.add_keyframe
+      ~MovieManager.add_structure_sweep
+      ~MovieManager.add_visibility_transition
+      ~MovieManager.clear
+      ~MovieManager.export
+      ~MovieManager.from_dict
+      ~MovieManager.info
+      ~MovieManager.load
+      ~MovieManager.play
+      ~MovieManager.save
+      ~MovieManager.stop
+      ~MovieManager.to_dict
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~MovieManager.duration_ms
+      ~MovieManager.keyframes
+   
+   

@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.reset\_camera
+=====================================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.reset_camera

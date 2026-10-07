@@ -1,0 +1,21 @@
+molsysviewer.thirds.jupyter package
+===================================
+
+Submodules
+----------
+
+molsysviewer.thirds.jupyter.load\_html\_in\_notebook module
+-----------------------------------------------------------
+
+.. automodule:: molsysviewer.thirds.jupyter.load_html_in_notebook
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: molsysviewer.thirds.jupyter
+   :members:
+   :show-inheritance:
+   :undoc-members:

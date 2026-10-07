@@ -1,0 +1,62 @@
+﻿molsysviewer.styles.StylesManager
+=================================
+
+.. currentmodule:: molsysviewer.styles
+
+.. autoclass:: StylesManager
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~StylesManager.__init__
+      ~StylesManager.add
+      ~StylesManager.apply
+      ~StylesManager.builtin_focus_records
+      ~StylesManager.builtin_focus_tags
+      ~StylesManager.builtin_records
+      ~StylesManager.builtin_tags
+      ~StylesManager.clear
+      ~StylesManager.clear_focus
+      ~StylesManager.contains
+      ~StylesManager.count
+      ~StylesManager.current
+      ~StylesManager.focus
+      ~StylesManager.focus_tags
+      ~StylesManager.get
+      ~StylesManager.get_builtin
+      ~StylesManager.get_builtin_focus
+      ~StylesManager.info
+      ~StylesManager.load_project_config
+      ~StylesManager.molstar_color_theme_records
+      ~StylesManager.molstar_color_themes
+      ~StylesManager.molstar_size_theme_records
+      ~StylesManager.molstar_size_themes
+      ~StylesManager.records
+      ~StylesManager.representation_param_schema
+      ~StylesManager.representation_param_schema_records
+      ~StylesManager.representation_preset_records
+      ~StylesManager.representation_presets
+      ~StylesManager.representation_type_records
+      ~StylesManager.representation_types
+      ~StylesManager.structural_color_scheme_records
+      ~StylesManager.structural_color_schemes
+      ~StylesManager.structural_size_scheme_records
+      ~StylesManager.structural_size_schemes
+      ~StylesManager.tags
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~StylesManager.active_name
+   
+   

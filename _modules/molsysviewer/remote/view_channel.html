@@ -1,0 +1,785 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+    <title>molsysviewer.remote.view_channel – MolSysViewer 0.24.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=6b6fcda3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=6b6fcda3" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
+
+    <script src="../../../_static/documentation_options.js?v=a9084e48"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/molsysviewer/remote/view_channel';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.24.0" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.24.0 documentation - Home"/>
+    <img src="../../../_static/logo_dark.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.24.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">molsysviewer.remote.view_channel</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for molsysviewer.remote.view_channel</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Widget-like connector for a future remote session service.</span>
+
+<span class="sd">The channel is transport-agnostic: callers inject one control sender and one</span>
+<span class="sd">binary/data-plane sender. It opens no socket. This keeps ``MolSysView`` reusable</span>
+<span class="sd">while the HTTP/WebSocket service remains a later RRS slice.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Mapping</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">smonitor</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._private.argdigest</span><span class="w"> </span><span class="kn">import</span> <span class="n">digest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..runtime_contract</span><span class="w"> </span><span class="kn">import</span> <span class="n">DATA_PLANE_ACTIONS</span><span class="p">,</span> <span class="n">RAW_ACTIONS</span><span class="p">,</span> <span class="n">action_of</span><span class="p">,</span> <span class="n">is_envelope</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.session_router</span><span class="w"> </span><span class="kn">import</span> <span class="n">SessionRouteResult</span><span class="p">,</span> <span class="n">SessionRuntimeRouter</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_Layout</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_height</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="RemoteViewChannel">
+<a class="viewcode-back" href="../../../molsysviewer.remote.html#molsysviewer.remote.view_channel.RemoteViewChannel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RemoteViewChannel</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The widget-like surface consumed by :class:`MolSysView`.</span>
+
+<span class="sd">    ``send_control`` receives a validated RuntimeEnvelope. ``send_data``</span>
+<span class="sd">    receives raw bootstrap/data-plane messages and their optional binary</span>
+<span class="sd">    buffers. The split makes silently dropping structural buffers impossible.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">send_control</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="kc">None</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">render_on</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">send_data</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">send_control</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"send_control must be callable"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">send_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">send_data</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"send_data must be callable"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">render_on</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"client"</span><span class="p">,</span> <span class="s2">"server"</span><span class="p">}:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"render_on must be 'client' or 'server'"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_control</span> <span class="o">=</span> <span class="n">send_control</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_data</span> <span class="o">=</span> <span class="n">send_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">supports_array_native_buffers</span> <span class="o">=</span> <span class="n">send_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">render_on</span> <span class="o">=</span> <span class="n">render_on</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_router</span><span class="p">:</span> <span class="n">SessionRuntimeRouter</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_msg_callbacks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_runtime_request_callbacks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_forwarded_initial</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">download_publisher</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upload_consumer</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">_Layout</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_controls</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enable_popout</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">autohide_controls</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug_js</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls_position</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"top"</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls_position_fullscreen</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"top"</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls_mode</span> <span class="o">=</span> <span class="s2">"classic"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">panel_mode_style</span> <span class="o">=</span> <span class="s2">"drawer"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">viewer_mode</span> <span class="o">=</span> <span class="s2">"integrated"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addon_states</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="o">=</span> <span class="s2">"molsysviewer-remote"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span> <span class="o">=</span> <span class="s2">"MolSysViewerModel"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_module</span> <span class="o">=</span> <span class="s2">"molsysviewer"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_module_version</span> <span class="o">=</span> <span class="s2">""</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">router</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SessionRuntimeRouter</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_router</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"remote channel has not been bound to a MolSysView"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_router</span>
+
+<div class="viewcode-block" id="RemoteViewChannel.bind_runtime_identity">
+<a class="viewcode-back" href="../../../molsysviewer.remote.html#molsysviewer.remote.view_channel.RemoteViewChannel.bind_runtime_identity">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bind_runtime_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">viewer_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">session_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_router</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_router</span><span class="o">.</span><span class="n">viewer_id</span> <span class="o">==</span> <span class="n">viewer_id</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_router</span><span class="o">.</span><span class="n">session_id</span> <span class="o">==</span> <span class="n">session_id</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"remote channel runtime identity is immutable"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_router</span> <span class="o">=</span> <span class="n">SessionRuntimeRouter</span><span class="p">(</span>
+            <span class="n">viewer_id</span><span class="p">,</span>
+            <span class="n">session_id</span><span class="p">,</span>
+            <span class="n">render_on</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">render_on</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RemoteViewChannel.send">
+<a class="viewcode-back" href="../../../molsysviewer.remote.html#molsysviewer.remote.view_channel.RemoteViewChannel.send">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">buffers</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"remote channel is closed"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_envelope</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">buffers</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"runtime envelopes may not carry data-plane buffers"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_send_control</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">action_of</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">uses_data_plane</span> <span class="o">=</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">RAW_ACTIONS</span> <span class="ow">or</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">DATA_PLANE_ACTIONS</span> <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="n">buffers</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">uses_data_plane</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"RemoteViewChannel has no data-plane sender; refusing to drop buffers or raw action </span><span class="si">{</span><span class="n">action</span><span class="si">!r}</span><span class="s2">"</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_send_data</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">buffers</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_control</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">wrap_outbound</span><span class="p">(</span><span class="n">message</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="RemoteViewChannel.receive_control">
+<a class="viewcode-back" href="../../../molsysviewer.remote.html#molsysviewer.remote.view_channel.RemoteViewChannel.receive_control">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">receive_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SessionRouteResult</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SessionRouteResult</span><span class="p">(</span>
+                <span class="s2">"rejected"</span><span class="p">,</span>
+                <span class="n">reason</span><span class="o">=</span><span class="s2">"channel-closed"</span><span class="p">,</span>
+                <span class="n">detail</span><span class="o">=</span><span class="s2">"Remote channel is closed"</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">route_inbound</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">"accepted"</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">envelope</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">result</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s2">"request_popup_scene_snapshot"</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_runtime_request_callbacks</span><span class="p">):</span>
+                    <span class="n">callback</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">envelope</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">message</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">envelope</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="ow">and</span> <span class="n">result</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s2">"interaction_context_menu"</span>
+                    <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span>
+                <span class="p">):</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="o">**</span><span class="n">message</span><span class="p">,</span>
+                        <span class="s2">"_source_endpoint_id"</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">endpoint_id</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_msg_callbacks</span><span class="p">):</span>
+                    <span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">elif</span> <span class="n">result</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">"duplicate"</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">envelope</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover - router invariant</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"duplicate route result has no envelope"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_send_control</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">duplicate_ack</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">envelope</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="RemoteViewChannel.receive_data">
+<a class="viewcode-back" href="../../../molsysviewer.remote.html#molsysviewer.remote.view_channel.RemoteViewChannel.receive_data">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">receive_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">packet</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">source_endpoint_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SessionRouteResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Accept one authenticated raw/data-plane message from a live endpoint."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SessionRouteResult</span><span class="p">(</span><span class="s2">"rejected"</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">"channel-closed"</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">"Remote channel is closed"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">packet</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">SessionRouteResult</span><span class="p">(</span><span class="s2">"rejected"</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">"malformed-data"</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">"Data-plane message is not a mapping"</span><span class="p">)</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">endpoint</span><span class="p">(</span><span class="n">source_endpoint_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">source</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s2">"python"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SessionRouteResult</span><span class="p">(</span>
+                <span class="s2">"rejected"</span><span class="p">,</span>
+                <span class="n">reason</span><span class="o">=</span><span class="s2">"unknown-source"</span><span class="p">,</span>
+                <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Unexpected source endpoint </span><span class="si">{</span><span class="n">source_endpoint_id</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">action_of</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">RAW_ACTIONS</span> <span class="ow">and</span> <span class="n">action</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">DATA_PLANE_ACTIONS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SessionRouteResult</span><span class="p">(</span>
+                <span class="s2">"rejected"</span><span class="p">,</span>
+                <span class="n">reason</span><span class="o">=</span><span class="s2">"unknown-data-action"</span><span class="p">,</span>
+                <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Action </span><span class="si">{</span><span class="n">action</span><span class="si">!r}</span><span class="s2"> does not belong to the raw/data plane"</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">viewer_id</span> <span class="o">=</span> <span class="n">packet</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"viewer_id"</span><span class="p">)</span>
+        <span class="n">session_id</span> <span class="o">=</span> <span class="n">packet</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"session_id"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">viewer_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">viewer_id</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">viewer_id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SessionRouteResult</span><span class="p">(</span>
+                <span class="s2">"rejected"</span><span class="p">,</span>
+                <span class="n">reason</span><span class="o">=</span><span class="s2">"viewer-mismatch"</span><span class="p">,</span>
+                <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Message belongs to viewer </span><span class="si">{</span><span class="n">viewer_id</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">session_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">session_id</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">session_id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SessionRouteResult</span><span class="p">(</span>
+                <span class="s2">"rejected"</span><span class="p">,</span>
+                <span class="n">reason</span><span class="o">=</span><span class="s2">"session-mismatch"</span><span class="p">,</span>
+                <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Message belongs to session </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_msg_callbacks</span><span class="p">):</span>
+            <span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">return</span> <span class="n">SessionRouteResult</span><span class="p">(</span>
+            <span class="s2">"accepted"</span><span class="p">,</span>
+            <span class="n">message</span><span class="o">=</span><span class="n">packet</span><span class="p">,</span>
+            <span class="n">recipient_endpoint_ids</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">python_endpoint</span><span class="p">,),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RemoteViewChannel.on_msg">
+<a class="viewcode-back" href="../../../molsysviewer.remote.html#molsysviewer.remote.view_channel.RemoteViewChannel.on_msg">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">remove</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"message callback must be callable"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">remove</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_msg_callbacks</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_msg_callbacks</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">callback</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_msg_callbacks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_msg_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RemoteViewChannel.on_runtime_request">
+<a class="viewcode-back" href="../../../molsysviewer.remote.html#molsysviewer.remote.view_channel.RemoteViewChannel.on_runtime_request">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_runtime_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Register a correlation-preserving transport-request consumer."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"runtime request callback must be callable"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_runtime_request_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RemoteViewChannel.publish_download">
+<a class="viewcode-back" href="../../../molsysviewer.remote.html#molsysviewer.remote.view_channel.RemoteViewChannel.publish_download">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">publish_download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">media_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">publisher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_publisher</span>
+        <span class="k">if</span> <span class="n">publisher</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"remote channel has no download publisher"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">publisher</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">media_type</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RemoteViewChannel.consume_upload">
+<a class="viewcode-back" href="../../../molsysviewer.remote.html#molsysviewer.remote.view_channel.RemoteViewChannel.consume_upload">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">consume_upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="n">consumer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upload_consumer</span>
+        <span class="k">if</span> <span class="n">consumer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"remote channel has no upload consumer"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">consumer</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initial_messages</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_messages</span>
+
+    <span class="nd">@initial_messages</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initial_messages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">value</span> <span class="ow">or</span> <span class="p">[])</span>
+        <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_forwarded_initial</span><span class="p">)</span> <span class="p">:]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_forwarded_initial</span> <span class="o">=</span> <span class="n">messages</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_messages</span> <span class="o">=</span> <span class="n">messages</span>
+
+<div class="viewcode-block" id="RemoteViewChannel.get_state">
+<a class="viewcode-back" href="../../../molsysviewer.remote.html#molsysviewer.remote.view_channel.RemoteViewChannel.get_state">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">drop_defaults</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span></div>
+
+
+<div class="viewcode-block" id="RemoteViewChannel.close">
+<a class="viewcode-back" href="../../../molsysviewer.remote.html#molsysviewer.remote.view_channel.RemoteViewChannel.close">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_msg_callbacks</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_runtime_request_callbacks</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upload_consumer</span> <span class="o">=</span> <span class="kc">None</span></div>
+</div>
+
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"RemoteViewChannel"</span><span class="p">]</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="../../../content/about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

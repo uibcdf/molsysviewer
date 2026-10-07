@@ -1,0 +1,45 @@
+molsysviewer.tools.basic package
+================================
+
+Submodules
+----------
+
+molsysviewer.tools.basic.concatenate\_structures module
+-------------------------------------------------------
+
+.. automodule:: molsysviewer.tools.basic.concatenate_structures
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.tools.basic.copy module
+------------------------------------
+
+.. automodule:: molsysviewer.tools.basic.copy
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.tools.basic.extract module
+---------------------------------------
+
+.. automodule:: molsysviewer.tools.basic.extract
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.tools.basic.merge module
+-------------------------------------
+
+.. automodule:: molsysviewer.tools.basic.merge
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: molsysviewer.tools.basic
+   :members:
+   :show-inheritance:
+   :undoc-members:

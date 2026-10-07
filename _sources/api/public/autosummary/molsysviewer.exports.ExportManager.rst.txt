@@ -1,0 +1,27 @@
+﻿molsysviewer.exports.ExportManager
+==================================
+
+.. currentmodule:: molsysviewer.exports
+
+.. autoclass:: ExportManager
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ExportManager.__init__
+      ~ExportManager.figure
+      ~ExportManager.figure_publication_set
+      ~ExportManager.figure_variants
+      ~ExportManager.html
+      ~ExportManager.image
+   
+   
+
+   
+   
+   

@@ -1,0 +1,49 @@
+﻿molsysviewer.regions.RegionsManager
+===================================
+
+.. currentmodule:: molsysviewer.regions
+
+.. autoclass:: RegionsManager
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~RegionsManager.__init__
+      ~RegionsManager.add
+      ~RegionsManager.clear
+      ~RegionsManager.contains
+      ~RegionsManager.copy
+      ~RegionsManager.count
+      ~RegionsManager.delete
+      ~RegionsManager.delete_all
+      ~RegionsManager.dependencies
+      ~RegionsManager.dependents
+      ~RegionsManager.fromkeys
+      ~RegionsManager.get
+      ~RegionsManager.hide_all
+      ~RegionsManager.info
+      ~RegionsManager.items
+      ~RegionsManager.keys
+      ~RegionsManager.overlaps
+      ~RegionsManager.pop
+      ~RegionsManager.popitem
+      ~RegionsManager.raise_to_front
+      ~RegionsManager.records
+      ~RegionsManager.send_to_back
+      ~RegionsManager.set_tag
+      ~RegionsManager.setdefault
+      ~RegionsManager.show_all
+      ~RegionsManager.tags
+      ~RegionsManager.update
+      ~RegionsManager.values
+   
+   
+
+   
+   
+   

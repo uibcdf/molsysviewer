@@ -1,0 +1,71 @@
+﻿molsysviewer.regions.Region
+===========================
+
+.. currentmodule:: molsysviewer.regions
+
+.. autoclass:: Region
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Region.__init__
+      ~Region.convert
+      ~Region.delete
+      ~Region.difference
+      ~Region.disable
+      ~Region.duplicate
+      ~Region.enable
+      ~Region.focus
+      ~Region.get
+      ~Region.get_center
+      ~Region.hide
+      ~Region.info
+      ~Region.intersection
+      ~Region.new_complementary_region
+      ~Region.overlaps
+      ~Region.raise_to_front
+      ~Region.remove_from_layer
+      ~Region.rename
+      ~Region.reset_colors
+      ~Region.reset_representation
+      ~Region.select
+      ~Region.send_to_back
+      ~Region.set_color
+      ~Region.set_color_by_attribute
+      ~Region.set_color_by_values
+      ~Region.set_color_scheme
+      ~Region.set_layer
+      ~Region.set_representation
+      ~Region.show
+      ~Region.show_only
+      ~Region.union
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Region.atom_indices
+      ~Region.dependencies
+      ~Region.dependents
+      ~Region.enabled
+      ~Region.frame_dependent
+      ~Region.layer
+      ~Region.mode
+      ~Region.owner
+      ~Region.preset
+      ~Region.provenance
+      ~Region.repr_params
+      ~Region.representation
+      ~Region.tag
+      ~Region.visible
+   
+   

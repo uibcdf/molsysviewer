@@ -1,0 +1,999 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "b1b7eb9f",
+   "metadata": {},
+   "source": [
+    "(User_MolecularSystem_LoadingAndInspect)=\n",
+    "# Loading and inspection\n",
+    "\n",
+    "This page is a gentle starting point. We will load a small demo system, display it in Jupyter, and get comfortable with where the *molecular system* lives on the Python side.\n",
+    "\n",
+    "If you are new to MolSysViewer, here is the mental model we will use throughout the User Guide:\n",
+    "\n",
+    "- You interact with a single Python object called `view` (a {class}`molsysviewer.viewer.MolSysView`).\n",
+    "- `view` talks to the browser, where Mol\\* renders the 3D scene.\n",
+    "- The data you are visualizing is a MolSysMT molecular system, available as `view.molsys`.\n",
+    "\n",
+    "If you only remember one thing from this page, make it this: **`view` is your handle to both the viewer and the data behind it.**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d1386a63",
+   "metadata": {},
+   "source": [
+    "## A gentle “hello, structure”\n",
+    "\n",
+    "To keep things reproducible, we will use a built-in demo system. Demos are exposed as a dictionary-like catalog:\n",
+    "\n",
+    "- `msv.demo[\"pentalanine\"]` returns a **fresh** view every time you access it (no shared state).\n",
+    "- This is great for tutorials: you never inherit state from earlier cells.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "af838bc3",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:27:01.614334Z",
+     "iopub.status.busy": "2026-08-06T10:27:01.613881Z",
+     "iopub.status.idle": "2026-08-06T10:27:04.352142Z",
+     "shell.execute_reply": "2026-08-06T10:27:04.351249Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['dialanine', '1TCD', '181L', 'pentalanine', 'chicken_villin_HP35']"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import molsysviewer as msv\n",
+    "\n",
+    "list(msv.demo)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "f5deb331",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:27:04.356440Z",
+     "iopub.status.busy": "2026-08-06T10:27:04.355945Z",
+     "iopub.status.idle": "2026-08-06T10:27:08.894983Z",
+     "shell.execute_reply": "2026-08-06T10:27:08.893818Z"
+    },
+    "tags": [
+     "remove-output"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<molsysviewer.widget.MolSysViewerWidget object at 0x721485d081a0>"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view = msv.demo[\"pentalanine\"]\n",
+    "view.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "5c50405e",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:27:08.897848Z",
+     "iopub.status.busy": "2026-08-06T10:27:08.897324Z",
+     "iopub.status.idle": "2026-08-06T10:27:08.904278Z",
+     "shell.execute_reply": "2026-08-06T10:27:08.903055Z"
+    },
+    "tags": [
+     "remove-input"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "\n",
+       "        <iframe\n",
+       "            width=\"100%\"\n",
+       "            height=\"480px\"\n",
+       "            src=\"../../../_static/views/demo_pentalanine.html\"\n",
+       "            frameborder=\"0\"\n",
+       "            allowfullscreen\n",
+       "            \n",
+       "        ></iframe>\n",
+       "        "
+      ],
+      "text/plain": [
+       "<IPython.lib.display.IFrame at 0x721514106ba0>"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from molsysviewer.thirds.jupyter import load_html_in_notebook\n",
+    "\n",
+    "load_html_in_notebook(\"../../../_static/views/demo_pentalanine.html\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3b125fd6",
+   "metadata": {},
+   "source": [
+    "## What did we just load?\n",
+    "\n",
+    "MolSysViewer stores the underlying molecular system in `view.molsys`.\n",
+    "\n",
+    "That object is a native MolSysMT container (`molsysmt.MolSys`). MolSysViewer uses MolSysMT to represent and query the system, while Mol\\* focuses on rendering the scene in the browser.\n",
+    "\n",
+    "You do not need to be a MolSysMT expert to use MolSysViewer. We will introduce the MolSysMT concepts you need as we go. If you want a deeper dive, see [the MolSysMT documentation](https://www.uibcdf.org/molsysmt).\n",
+    "\n",
+    "Two gentle guidelines help avoid confusion:\n",
+    "\n",
+    "- If you want to **visualize** something, use MolSysViewer methods.\n",
+    "- If you want to **query** the data (atoms, residues, chains, coordinates…), use MolSysMT helpers through `view.molsys`, `view.whole.select(...)`, `view.whole.info(...)`, and `view.whole.get(...)`.\n",
+    "\n",
+    "`view.molsys` is a read-only property (you cannot reassign it), but the object itself may be mutable. If you mutate it directly, you can desynchronize what you see from what you think you loaded. When in doubt: modify your data upstream and call `load(...)` again."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "84f23a35",
+   "metadata": {},
+   "source": [
+    "## Form-agnostic loading\n",
+    "\n",
+    "MolSysViewer delegates loading to MolSysMT. That is why you can often load “different kinds of things” (a file path, a PDB ID, a trajectory object…), and still get a consistent workflow afterwards.\n",
+    "\n",
+    "Internally, MolSysViewer converts what you load into a single, stable representation: `molsysmt.MolSys`. That converted object is what you access as `view.molsys`.\n",
+    "\n",
+    "You do not need to call MolSysMT conversion functions manually most of the time. But it helps to know that conversion is happening, because it explains why MolSysViewer stays predictable even when inputs come from different sources.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "501c1388",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:27:08.908003Z",
+     "iopub.status.busy": "2026-08-06T10:27:08.907762Z",
+     "iopub.status.idle": "2026-08-06T10:27:08.913127Z",
+     "shell.execute_reply": "2026-08-06T10:27:08.912063Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "molsysmt.native.molsys.MolSys"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "type(view.molsys)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fae34f15",
+   "metadata": {},
+   "source": [
+    "## A quick inspection checklist\n",
+    "\n",
+    "When you load a new system, it helps to ask three simple questions:\n",
+    "\n",
+    "1. **What is the system, globally?**\n",
+    "2. **Which entity types are present?**\n",
+    "3. **How is it organized into chains?**\n",
+    "\n",
+    "MolSysViewer offers two small inspection helpers:\n",
+    "\n",
+    "- `view.whole.info(...)` shows a readable summary table in Jupyter.\n",
+    "- `view.whole.get(...)` returns values you can use in Python (arrays, lists, labels…).\n",
+    "\n",
+    "Both delegate to MolSysMT and can work at different hierarchical *element* levels (for example: `\"atom\"`, `\"group\"`, `\"chain\"`, `\"entity\"`).\n",
+    "\n",
+    "Let’s answer the first three questions with `view.whole.info(...)`:\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "2d8a69bb",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:27:08.916772Z",
+     "iopub.status.busy": "2026-08-06T10:27:08.916546Z",
+     "iopub.status.idle": "2026-08-06T10:27:09.004405Z",
+     "shell.execute_reply": "2026-08-06T10:27:09.002926Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<h3>Molecular System</h3>\n",
+       "<style type=\"text/css\">\n",
+       "</style>\n",
+       "<table id=\"T_bdc65\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr>\n",
+       "      <th id=\"T_bdc65_level0_col0\" class=\"col_heading level0 col0\" >form</th>\n",
+       "      <th id=\"T_bdc65_level0_col1\" class=\"col_heading level0 col1\" >n_atoms</th>\n",
+       "      <th id=\"T_bdc65_level0_col2\" class=\"col_heading level0 col2\" >n_groups</th>\n",
+       "      <th id=\"T_bdc65_level0_col3\" class=\"col_heading level0 col3\" >n_components</th>\n",
+       "      <th id=\"T_bdc65_level0_col4\" class=\"col_heading level0 col4\" >n_chains</th>\n",
+       "      <th id=\"T_bdc65_level0_col5\" class=\"col_heading level0 col5\" >n_molecules</th>\n",
+       "      <th id=\"T_bdc65_level0_col6\" class=\"col_heading level0 col6\" >n_entities</th>\n",
+       "      <th id=\"T_bdc65_level0_col7\" class=\"col_heading level0 col7\" >n_peptides</th>\n",
+       "      <th id=\"T_bdc65_level0_col8\" class=\"col_heading level0 col8\" >n_structures</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td id=\"T_bdc65_row0_col0\" class=\"data row0 col0\" >molsysmt.MolSys</td>\n",
+       "      <td id=\"T_bdc65_row0_col1\" class=\"data row0 col1\" >62</td>\n",
+       "      <td id=\"T_bdc65_row0_col2\" class=\"data row0 col2\" >7</td>\n",
+       "      <td id=\"T_bdc65_row0_col3\" class=\"data row0 col3\" >1</td>\n",
+       "      <td id=\"T_bdc65_row0_col4\" class=\"data row0 col4\" >1</td>\n",
+       "      <td id=\"T_bdc65_row0_col5\" class=\"data row0 col5\" >1</td>\n",
+       "      <td id=\"T_bdc65_row0_col6\" class=\"data row0 col6\" >1</td>\n",
+       "      <td id=\"T_bdc65_row0_col7\" class=\"data row0 col7\" >1</td>\n",
+       "      <td id=\"T_bdc65_row0_col8\" class=\"data row0 col8\" >5000</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "\n",
+       "<h3>Viewer State</h3>\n",
+       "<style type=\"text/css\">\n",
+       "</style>\n",
+       "<table id=\"T_299c9\">\n",
+       "  <thead>\n",
+       "    <tr>\n",
+       "      <th id=\"T_299c9_level0_col0\" class=\"col_heading level0 col0\" >section</th>\n",
+       "      <th id=\"T_299c9_level0_col1\" class=\"col_heading level0 col1\" >tag</th>\n",
+       "      <th id=\"T_299c9_level0_col2\" class=\"col_heading level0 col2\" >kind</th>\n",
+       "      <th id=\"T_299c9_level0_col3\" class=\"col_heading level0 col3\" >visible</th>\n",
+       "      <th id=\"T_299c9_level0_col4\" class=\"col_heading level0 col4\" >active</th>\n",
+       "      <th id=\"T_299c9_level0_col5\" class=\"col_heading level0 col5\" >layer tag</th>\n",
+       "      <th id=\"T_299c9_level0_col6\" class=\"col_heading level0 col6\" >representation</th>\n",
+       "      <th id=\"T_299c9_level0_col7\" class=\"col_heading level0 col7\" >preset</th>\n",
+       "      <th id=\"T_299c9_level0_col8\" class=\"col_heading level0 col8\" >n atoms</th>\n",
+       "      <th id=\"T_299c9_level0_col9\" class=\"col_heading level0 col9\" >n members</th>\n",
+       "      <th id=\"T_299c9_level0_col10\" class=\"col_heading level0 col10\" >n picks</th>\n",
+       "      <th id=\"T_299c9_level0_col11\" class=\"col_heading level0 col11\" >details</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td id=\"T_299c9_row0_col0\" class=\"data row0 col0\" >whole</td>\n",
+       "      <td id=\"T_299c9_row0_col1\" class=\"data row0 col1\" >whole</td>\n",
+       "      <td id=\"T_299c9_row0_col2\" class=\"data row0 col2\" >whole</td>\n",
+       "      <td id=\"T_299c9_row0_col3\" class=\"data row0 col3\" >True</td>\n",
+       "      <td id=\"T_299c9_row0_col4\" class=\"data row0 col4\" >True</td>\n",
+       "      <td id=\"T_299c9_row0_col5\" class=\"data row0 col5\" >None</td>\n",
+       "      <td id=\"T_299c9_row0_col6\" class=\"data row0 col6\" >None</td>\n",
+       "      <td id=\"T_299c9_row0_col7\" class=\"data row0 col7\" >None</td>\n",
+       "      <td id=\"T_299c9_row0_col8\" class=\"data row0 col8\" >nan</td>\n",
+       "      <td id=\"T_299c9_row0_col9\" class=\"data row0 col9\" >nan</td>\n",
+       "      <td id=\"T_299c9_row0_col10\" class=\"data row0 col10\" >None</td>\n",
+       "      <td id=\"T_299c9_row0_col11\" class=\"data row0 col11\" ></td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td id=\"T_299c9_row1_col0\" class=\"data row1 col0\" >loads</td>\n",
+       "      <td id=\"T_299c9_row1_col1\" class=\"data row1 col1\" >load0</td>\n",
+       "      <td id=\"T_299c9_row1_col2\" class=\"data row1 col2\" >load</td>\n",
+       "      <td id=\"T_299c9_row1_col3\" class=\"data row1 col3\" >None</td>\n",
+       "      <td id=\"T_299c9_row1_col4\" class=\"data row1 col4\" >True</td>\n",
+       "      <td id=\"T_299c9_row1_col5\" class=\"data row1 col5\" >None</td>\n",
+       "      <td id=\"T_299c9_row1_col6\" class=\"data row1 col6\" >None</td>\n",
+       "      <td id=\"T_299c9_row1_col7\" class=\"data row1 col7\" >None</td>\n",
+       "      <td id=\"T_299c9_row1_col8\" class=\"data row1 col8\" >62.000000</td>\n",
+       "      <td id=\"T_299c9_row1_col9\" class=\"data row1 col9\" >nan</td>\n",
+       "      <td id=\"T_299c9_row1_col10\" class=\"data row1 col10\" >None</td>\n",
+       "      <td id=\"T_299c9_row1_col11\" class=\"data row1 col11\" >atoms 0–62</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td id=\"T_299c9_row2_col0\" class=\"data row2 col0\" >styles</td>\n",
+       "      <td id=\"T_299c9_row2_col1\" class=\"data row2 col1\" >current</td>\n",
+       "      <td id=\"T_299c9_row2_col2\" class=\"data row2 col2\" >style</td>\n",
+       "      <td id=\"T_299c9_row2_col3\" class=\"data row2 col3\" >None</td>\n",
+       "      <td id=\"T_299c9_row2_col4\" class=\"data row2 col4\" >False</td>\n",
+       "      <td id=\"T_299c9_row2_col5\" class=\"data row2 col5\" >None</td>\n",
+       "      <td id=\"T_299c9_row2_col6\" class=\"data row2 col6\" >None</td>\n",
+       "      <td id=\"T_299c9_row2_col7\" class=\"data row2 col7\" >None</td>\n",
+       "      <td id=\"T_299c9_row2_col8\" class=\"data row2 col8\" >nan</td>\n",
+       "      <td id=\"T_299c9_row2_col9\" class=\"data row2 col9\" >0.000000</td>\n",
+       "      <td id=\"T_299c9_row2_col10\" class=\"data row2 col10\" >None</td>\n",
+       "      <td id=\"T_299c9_row2_col11\" class=\"data row2 col11\" >builtins=11</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td id=\"T_299c9_row3_col0\" class=\"data row3 col0\" >active_selection</td>\n",
+       "      <td id=\"T_299c9_row3_col1\" class=\"data row3 col1\" >active_selection</td>\n",
+       "      <td id=\"T_299c9_row3_col2\" class=\"data row3 col2\" >empty</td>\n",
+       "      <td id=\"T_299c9_row3_col3\" class=\"data row3 col3\" >None</td>\n",
+       "      <td id=\"T_299c9_row3_col4\" class=\"data row3 col4\" >False</td>\n",
+       "      <td id=\"T_299c9_row3_col5\" class=\"data row3 col5\" >None</td>\n",
+       "      <td id=\"T_299c9_row3_col6\" class=\"data row3 col6\" >None</td>\n",
+       "      <td id=\"T_299c9_row3_col7\" class=\"data row3 col7\" >None</td>\n",
+       "      <td id=\"T_299c9_row3_col8\" class=\"data row3 col8\" >0.000000</td>\n",
+       "      <td id=\"T_299c9_row3_col9\" class=\"data row3 col9\" >nan</td>\n",
+       "      <td id=\"T_299c9_row3_col10\" class=\"data row3 col10\" >None</td>\n",
+       "      <td id=\"T_299c9_row3_col11\" class=\"data row3 col11\" >empty / none</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n"
+      ],
+      "text/plain": [
+       "ViewerInfo(molsys_section=<pandas.io.formats.style.Styler object at 0x721485d616a0>, view_section=<pandas.io.formats.style.Styler object at 0x721485d2e0d0>)"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.whole.info(element=\"system\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "4dd5b1aa",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:27:09.008029Z",
+     "iopub.status.busy": "2026-08-06T10:27:09.007734Z",
+     "iopub.status.idle": "2026-08-06T10:27:09.031877Z",
+     "shell.execute_reply": "2026-08-06T10:27:09.030353Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<h3>Molecular System</h3>\n",
+       "<style type=\"text/css\">\n",
+       "</style>\n",
+       "<table id=\"T_5a7a3\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr>\n",
+       "      <th id=\"T_5a7a3_level0_col0\" class=\"col_heading level0 col0\" >index</th>\n",
+       "      <th id=\"T_5a7a3_level0_col1\" class=\"col_heading level0 col1\" >name</th>\n",
+       "      <th id=\"T_5a7a3_level0_col2\" class=\"col_heading level0 col2\" >type</th>\n",
+       "      <th id=\"T_5a7a3_level0_col3\" class=\"col_heading level0 col3\" >n atoms</th>\n",
+       "      <th id=\"T_5a7a3_level0_col4\" class=\"col_heading level0 col4\" >n groups</th>\n",
+       "      <th id=\"T_5a7a3_level0_col5\" class=\"col_heading level0 col5\" >n components</th>\n",
+       "      <th id=\"T_5a7a3_level0_col6\" class=\"col_heading level0 col6\" >n chains</th>\n",
+       "      <th id=\"T_5a7a3_level0_col7\" class=\"col_heading level0 col7\" >n molecules</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td id=\"T_5a7a3_row0_col0\" class=\"data row0 col0\" >0</td>\n",
+       "      <td id=\"T_5a7a3_row0_col1\" class=\"data row0 col1\" >peptide 0</td>\n",
+       "      <td id=\"T_5a7a3_row0_col2\" class=\"data row0 col2\" >peptide</td>\n",
+       "      <td id=\"T_5a7a3_row0_col3\" class=\"data row0 col3\" >62</td>\n",
+       "      <td id=\"T_5a7a3_row0_col4\" class=\"data row0 col4\" >7</td>\n",
+       "      <td id=\"T_5a7a3_row0_col5\" class=\"data row0 col5\" >1</td>\n",
+       "      <td id=\"T_5a7a3_row0_col6\" class=\"data row0 col6\" >1</td>\n",
+       "      <td id=\"T_5a7a3_row0_col7\" class=\"data row0 col7\" >1</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "\n",
+       "<h3>Viewer State</h3>\n",
+       "<style type=\"text/css\">\n",
+       "</style>\n",
+       "<table id=\"T_457f0\">\n",
+       "  <thead>\n",
+       "    <tr>\n",
+       "      <th id=\"T_457f0_level0_col0\" class=\"col_heading level0 col0\" >section</th>\n",
+       "      <th id=\"T_457f0_level0_col1\" class=\"col_heading level0 col1\" >tag</th>\n",
+       "      <th id=\"T_457f0_level0_col2\" class=\"col_heading level0 col2\" >kind</th>\n",
+       "      <th id=\"T_457f0_level0_col3\" class=\"col_heading level0 col3\" >visible</th>\n",
+       "      <th id=\"T_457f0_level0_col4\" class=\"col_heading level0 col4\" >active</th>\n",
+       "      <th id=\"T_457f0_level0_col5\" class=\"col_heading level0 col5\" >layer tag</th>\n",
+       "      <th id=\"T_457f0_level0_col6\" class=\"col_heading level0 col6\" >representation</th>\n",
+       "      <th id=\"T_457f0_level0_col7\" class=\"col_heading level0 col7\" >preset</th>\n",
+       "      <th id=\"T_457f0_level0_col8\" class=\"col_heading level0 col8\" >n atoms</th>\n",
+       "      <th id=\"T_457f0_level0_col9\" class=\"col_heading level0 col9\" >n members</th>\n",
+       "      <th id=\"T_457f0_level0_col10\" class=\"col_heading level0 col10\" >n picks</th>\n",
+       "      <th id=\"T_457f0_level0_col11\" class=\"col_heading level0 col11\" >details</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td id=\"T_457f0_row0_col0\" class=\"data row0 col0\" >whole</td>\n",
+       "      <td id=\"T_457f0_row0_col1\" class=\"data row0 col1\" >whole</td>\n",
+       "      <td id=\"T_457f0_row0_col2\" class=\"data row0 col2\" >whole</td>\n",
+       "      <td id=\"T_457f0_row0_col3\" class=\"data row0 col3\" >True</td>\n",
+       "      <td id=\"T_457f0_row0_col4\" class=\"data row0 col4\" >True</td>\n",
+       "      <td id=\"T_457f0_row0_col5\" class=\"data row0 col5\" >None</td>\n",
+       "      <td id=\"T_457f0_row0_col6\" class=\"data row0 col6\" >None</td>\n",
+       "      <td id=\"T_457f0_row0_col7\" class=\"data row0 col7\" >None</td>\n",
+       "      <td id=\"T_457f0_row0_col8\" class=\"data row0 col8\" >nan</td>\n",
+       "      <td id=\"T_457f0_row0_col9\" class=\"data row0 col9\" >nan</td>\n",
+       "      <td id=\"T_457f0_row0_col10\" class=\"data row0 col10\" >None</td>\n",
+       "      <td id=\"T_457f0_row0_col11\" class=\"data row0 col11\" ></td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td id=\"T_457f0_row1_col0\" class=\"data row1 col0\" >loads</td>\n",
+       "      <td id=\"T_457f0_row1_col1\" class=\"data row1 col1\" >load0</td>\n",
+       "      <td id=\"T_457f0_row1_col2\" class=\"data row1 col2\" >load</td>\n",
+       "      <td id=\"T_457f0_row1_col3\" class=\"data row1 col3\" >None</td>\n",
+       "      <td id=\"T_457f0_row1_col4\" class=\"data row1 col4\" >True</td>\n",
+       "      <td id=\"T_457f0_row1_col5\" class=\"data row1 col5\" >None</td>\n",
+       "      <td id=\"T_457f0_row1_col6\" class=\"data row1 col6\" >None</td>\n",
+       "      <td id=\"T_457f0_row1_col7\" class=\"data row1 col7\" >None</td>\n",
+       "      <td id=\"T_457f0_row1_col8\" class=\"data row1 col8\" >62.000000</td>\n",
+       "      <td id=\"T_457f0_row1_col9\" class=\"data row1 col9\" >nan</td>\n",
+       "      <td id=\"T_457f0_row1_col10\" class=\"data row1 col10\" >None</td>\n",
+       "      <td id=\"T_457f0_row1_col11\" class=\"data row1 col11\" >atoms 0–62</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td id=\"T_457f0_row2_col0\" class=\"data row2 col0\" >styles</td>\n",
+       "      <td id=\"T_457f0_row2_col1\" class=\"data row2 col1\" >current</td>\n",
+       "      <td id=\"T_457f0_row2_col2\" class=\"data row2 col2\" >style</td>\n",
+       "      <td id=\"T_457f0_row2_col3\" class=\"data row2 col3\" >None</td>\n",
+       "      <td id=\"T_457f0_row2_col4\" class=\"data row2 col4\" >False</td>\n",
+       "      <td id=\"T_457f0_row2_col5\" class=\"data row2 col5\" >None</td>\n",
+       "      <td id=\"T_457f0_row2_col6\" class=\"data row2 col6\" >None</td>\n",
+       "      <td id=\"T_457f0_row2_col7\" class=\"data row2 col7\" >None</td>\n",
+       "      <td id=\"T_457f0_row2_col8\" class=\"data row2 col8\" >nan</td>\n",
+       "      <td id=\"T_457f0_row2_col9\" class=\"data row2 col9\" >0.000000</td>\n",
+       "      <td id=\"T_457f0_row2_col10\" class=\"data row2 col10\" >None</td>\n",
+       "      <td id=\"T_457f0_row2_col11\" class=\"data row2 col11\" >builtins=11</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td id=\"T_457f0_row3_col0\" class=\"data row3 col0\" >active_selection</td>\n",
+       "      <td id=\"T_457f0_row3_col1\" class=\"data row3 col1\" >active_selection</td>\n",
+       "      <td id=\"T_457f0_row3_col2\" class=\"data row3 col2\" >empty</td>\n",
+       "      <td id=\"T_457f0_row3_col3\" class=\"data row3 col3\" >None</td>\n",
+       "      <td id=\"T_457f0_row3_col4\" class=\"data row3 col4\" >False</td>\n",
+       "      <td id=\"T_457f0_row3_col5\" class=\"data row3 col5\" >None</td>\n",
+       "      <td id=\"T_457f0_row3_col6\" class=\"data row3 col6\" >None</td>\n",
+       "      <td id=\"T_457f0_row3_col7\" class=\"data row3 col7\" >None</td>\n",
+       "      <td id=\"T_457f0_row3_col8\" class=\"data row3 col8\" >0.000000</td>\n",
+       "      <td id=\"T_457f0_row3_col9\" class=\"data row3 col9\" >nan</td>\n",
+       "      <td id=\"T_457f0_row3_col10\" class=\"data row3 col10\" >None</td>\n",
+       "      <td id=\"T_457f0_row3_col11\" class=\"data row3 col11\" >empty / none</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n"
+      ],
+      "text/plain": [
+       "ViewerInfo(molsys_section=<pandas.io.formats.style.Styler object at 0x72148768ec40>, view_section=<pandas.io.formats.style.Styler object at 0x72148768eb10>)"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.whole.info(element=\"entity\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d48824a1",
+   "metadata": {},
+   "source": [
+    "And here is a small `get` example: we retrieve the group names for the first chain (`chain_index==0`)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "a8054303",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:27:09.035739Z",
+     "iopub.status.busy": "2026-08-06T10:27:09.035477Z",
+     "iopub.status.idle": "2026-08-06T10:27:09.050432Z",
+     "shell.execute_reply": "2026-08-06T10:27:09.048895Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[]"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.whole.get(element=\"chain\", selection=\"chain_index==0\", group_name=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "744aaffb-e4c8-42c6-8f64-72120a7897fd",
+   "metadata": {},
+   "source": [
+    "For more examples of `info`, `get`, and how they interact with selections, see {doc}`info` and {doc}`get`."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7064e5ee",
+   "metadata": {},
+   "source": [
+    "## Loading your own molecular system\n",
+    "\n",
+    "When you move from demos to your own work, you will typically load a molecular system from a local file or from an object you already have in memory (for example, an `mdtraj.Trajectory`, an OpenMM topology + coordinates, or a MolSysMT object).\n",
+    "\n",
+    "There are two common patterns:\n",
+    "\n",
+    "1. Create a new view from a molecular-system-like input with {func}`molsysviewer.new_view`.\n",
+    "2. Create a view first, then call `view.load(...)`.\n",
+    "\n",
+    "Both are valid; pick the one that matches your style.\n",
+    "\n",
+    "Why this matters: `new_view` can either subset the system or keep it intact. Use `load_mode=\"selection\"` (default) to load only the selection. Use `load_mode=\"all\"` to load everything and create a region tagged `selection`.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "5f2c7f80-49c3-4cf0-88b4-47fea6492cbd",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:27:09.054643Z",
+     "iopub.status.busy": "2026-08-06T10:27:09.054352Z",
+     "iopub.status.idle": "2026-08-06T10:27:09.870689Z",
+     "shell.execute_reply": "2026-08-06T10:27:09.869304Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<h3>Molecular System</h3>\n",
+       "<style type=\"text/css\">\n",
+       "</style>\n",
+       "<table id=\"T_b88e4\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr>\n",
+       "      <th id=\"T_b88e4_level0_col0\" class=\"col_heading level0 col0\" >form</th>\n",
+       "      <th id=\"T_b88e4_level0_col1\" class=\"col_heading level0 col1\" >n_atoms</th>\n",
+       "      <th id=\"T_b88e4_level0_col2\" class=\"col_heading level0 col2\" >n_groups</th>\n",
+       "      <th id=\"T_b88e4_level0_col3\" class=\"col_heading level0 col3\" >n_components</th>\n",
+       "      <th id=\"T_b88e4_level0_col4\" class=\"col_heading level0 col4\" >n_chains</th>\n",
+       "      <th id=\"T_b88e4_level0_col5\" class=\"col_heading level0 col5\" >n_molecules</th>\n",
+       "      <th id=\"T_b88e4_level0_col6\" class=\"col_heading level0 col6\" >n_entities</th>\n",
+       "      <th id=\"T_b88e4_level0_col7\" class=\"col_heading level0 col7\" >n_waters</th>\n",
+       "      <th id=\"T_b88e4_level0_col8\" class=\"col_heading level0 col8\" >n_ions</th>\n",
+       "      <th id=\"T_b88e4_level0_col9\" class=\"col_heading level0 col9\" >n_small_molecules</th>\n",
+       "      <th id=\"T_b88e4_level0_col10\" class=\"col_heading level0 col10\" >n_proteins</th>\n",
+       "      <th id=\"T_b88e4_level0_col11\" class=\"col_heading level0 col11\" >n_structures</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td id=\"T_b88e4_row0_col0\" class=\"data row0 col0\" >molsysmt.MolSys</td>\n",
+       "      <td id=\"T_b88e4_row0_col1\" class=\"data row0 col1\" >1441</td>\n",
+       "      <td id=\"T_b88e4_row0_col2\" class=\"data row0 col2\" >302</td>\n",
+       "      <td id=\"T_b88e4_row0_col3\" class=\"data row0 col3\" >141</td>\n",
+       "      <td id=\"T_b88e4_row0_col4\" class=\"data row0 col4\" >6</td>\n",
+       "      <td id=\"T_b88e4_row0_col5\" class=\"data row0 col5\" >141</td>\n",
+       "      <td id=\"T_b88e4_row0_col6\" class=\"data row0 col6\" >5</td>\n",
+       "      <td id=\"T_b88e4_row0_col7\" class=\"data row0 col7\" >136</td>\n",
+       "      <td id=\"T_b88e4_row0_col8\" class=\"data row0 col8\" >2</td>\n",
+       "      <td id=\"T_b88e4_row0_col9\" class=\"data row0 col9\" >2</td>\n",
+       "      <td id=\"T_b88e4_row0_col10\" class=\"data row0 col10\" >1</td>\n",
+       "      <td id=\"T_b88e4_row0_col11\" class=\"data row0 col11\" >1</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "\n",
+       "<h3>Viewer State</h3>\n",
+       "<style type=\"text/css\">\n",
+       "</style>\n",
+       "<table id=\"T_98d30\">\n",
+       "  <thead>\n",
+       "    <tr>\n",
+       "      <th id=\"T_98d30_level0_col0\" class=\"col_heading level0 col0\" >section</th>\n",
+       "      <th id=\"T_98d30_level0_col1\" class=\"col_heading level0 col1\" >tag</th>\n",
+       "      <th id=\"T_98d30_level0_col2\" class=\"col_heading level0 col2\" >kind</th>\n",
+       "      <th id=\"T_98d30_level0_col3\" class=\"col_heading level0 col3\" >visible</th>\n",
+       "      <th id=\"T_98d30_level0_col4\" class=\"col_heading level0 col4\" >active</th>\n",
+       "      <th id=\"T_98d30_level0_col5\" class=\"col_heading level0 col5\" >layer tag</th>\n",
+       "      <th id=\"T_98d30_level0_col6\" class=\"col_heading level0 col6\" >representation</th>\n",
+       "      <th id=\"T_98d30_level0_col7\" class=\"col_heading level0 col7\" >preset</th>\n",
+       "      <th id=\"T_98d30_level0_col8\" class=\"col_heading level0 col8\" >n atoms</th>\n",
+       "      <th id=\"T_98d30_level0_col9\" class=\"col_heading level0 col9\" >n members</th>\n",
+       "      <th id=\"T_98d30_level0_col10\" class=\"col_heading level0 col10\" >n picks</th>\n",
+       "      <th id=\"T_98d30_level0_col11\" class=\"col_heading level0 col11\" >details</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td id=\"T_98d30_row0_col0\" class=\"data row0 col0\" >whole</td>\n",
+       "      <td id=\"T_98d30_row0_col1\" class=\"data row0 col1\" >whole</td>\n",
+       "      <td id=\"T_98d30_row0_col2\" class=\"data row0 col2\" >whole</td>\n",
+       "      <td id=\"T_98d30_row0_col3\" class=\"data row0 col3\" >True</td>\n",
+       "      <td id=\"T_98d30_row0_col4\" class=\"data row0 col4\" >True</td>\n",
+       "      <td id=\"T_98d30_row0_col5\" class=\"data row0 col5\" >None</td>\n",
+       "      <td id=\"T_98d30_row0_col6\" class=\"data row0 col6\" >None</td>\n",
+       "      <td id=\"T_98d30_row0_col7\" class=\"data row0 col7\" >None</td>\n",
+       "      <td id=\"T_98d30_row0_col8\" class=\"data row0 col8\" >nan</td>\n",
+       "      <td id=\"T_98d30_row0_col9\" class=\"data row0 col9\" >nan</td>\n",
+       "      <td id=\"T_98d30_row0_col10\" class=\"data row0 col10\" >None</td>\n",
+       "      <td id=\"T_98d30_row0_col11\" class=\"data row0 col11\" ></td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td id=\"T_98d30_row1_col0\" class=\"data row1 col0\" >loads</td>\n",
+       "      <td id=\"T_98d30_row1_col1\" class=\"data row1 col1\" >load0</td>\n",
+       "      <td id=\"T_98d30_row1_col2\" class=\"data row1 col2\" >load</td>\n",
+       "      <td id=\"T_98d30_row1_col3\" class=\"data row1 col3\" >None</td>\n",
+       "      <td id=\"T_98d30_row1_col4\" class=\"data row1 col4\" >True</td>\n",
+       "      <td id=\"T_98d30_row1_col5\" class=\"data row1 col5\" >None</td>\n",
+       "      <td id=\"T_98d30_row1_col6\" class=\"data row1 col6\" >None</td>\n",
+       "      <td id=\"T_98d30_row1_col7\" class=\"data row1 col7\" >None</td>\n",
+       "      <td id=\"T_98d30_row1_col8\" class=\"data row1 col8\" >1441.000000</td>\n",
+       "      <td id=\"T_98d30_row1_col9\" class=\"data row1 col9\" >nan</td>\n",
+       "      <td id=\"T_98d30_row1_col10\" class=\"data row1 col10\" >None</td>\n",
+       "      <td id=\"T_98d30_row1_col11\" class=\"data row1 col11\" >atoms 0–1441</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td id=\"T_98d30_row2_col0\" class=\"data row2 col0\" >styles</td>\n",
+       "      <td id=\"T_98d30_row2_col1\" class=\"data row2 col1\" >current</td>\n",
+       "      <td id=\"T_98d30_row2_col2\" class=\"data row2 col2\" >style</td>\n",
+       "      <td id=\"T_98d30_row2_col3\" class=\"data row2 col3\" >None</td>\n",
+       "      <td id=\"T_98d30_row2_col4\" class=\"data row2 col4\" >False</td>\n",
+       "      <td id=\"T_98d30_row2_col5\" class=\"data row2 col5\" >None</td>\n",
+       "      <td id=\"T_98d30_row2_col6\" class=\"data row2 col6\" >None</td>\n",
+       "      <td id=\"T_98d30_row2_col7\" class=\"data row2 col7\" >None</td>\n",
+       "      <td id=\"T_98d30_row2_col8\" class=\"data row2 col8\" >nan</td>\n",
+       "      <td id=\"T_98d30_row2_col9\" class=\"data row2 col9\" >0.000000</td>\n",
+       "      <td id=\"T_98d30_row2_col10\" class=\"data row2 col10\" >None</td>\n",
+       "      <td id=\"T_98d30_row2_col11\" class=\"data row2 col11\" >builtins=11</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td id=\"T_98d30_row3_col0\" class=\"data row3 col0\" >active_selection</td>\n",
+       "      <td id=\"T_98d30_row3_col1\" class=\"data row3 col1\" >active_selection</td>\n",
+       "      <td id=\"T_98d30_row3_col2\" class=\"data row3 col2\" >empty</td>\n",
+       "      <td id=\"T_98d30_row3_col3\" class=\"data row3 col3\" >None</td>\n",
+       "      <td id=\"T_98d30_row3_col4\" class=\"data row3 col4\" >False</td>\n",
+       "      <td id=\"T_98d30_row3_col5\" class=\"data row3 col5\" >None</td>\n",
+       "      <td id=\"T_98d30_row3_col6\" class=\"data row3 col6\" >None</td>\n",
+       "      <td id=\"T_98d30_row3_col7\" class=\"data row3 col7\" >None</td>\n",
+       "      <td id=\"T_98d30_row3_col8\" class=\"data row3 col8\" >0.000000</td>\n",
+       "      <td id=\"T_98d30_row3_col9\" class=\"data row3 col9\" >nan</td>\n",
+       "      <td id=\"T_98d30_row3_col10\" class=\"data row3 col10\" >None</td>\n",
+       "      <td id=\"T_98d30_row3_col11\" class=\"data row3 col11\" >empty / none</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n"
+      ],
+      "text/plain": [
+       "ViewerInfo(molsys_section=<pandas.io.formats.style.Styler object at 0x721485287ce0>, view_section=<pandas.io.formats.style.Styler object at 0x7214851b0050>)"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view = msv.MolSysView()\n",
+    "view.load('181L')\n",
+    "view.whole.info()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "6d0df62d-23e3-4652-835f-52bb08a74d3f",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:27:09.873134Z",
+     "iopub.status.busy": "2026-08-06T10:27:09.872882Z",
+     "iopub.status.idle": "2026-08-06T10:27:10.563268Z",
+     "shell.execute_reply": "2026-08-06T10:27:10.562024Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<h3>Molecular System</h3>\n",
+       "<style type=\"text/css\">\n",
+       "</style>\n",
+       "<table id=\"T_b6583\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr>\n",
+       "      <th id=\"T_b6583_level0_col0\" class=\"col_heading level0 col0\" >form</th>\n",
+       "      <th id=\"T_b6583_level0_col1\" class=\"col_heading level0 col1\" >n_atoms</th>\n",
+       "      <th id=\"T_b6583_level0_col2\" class=\"col_heading level0 col2\" >n_groups</th>\n",
+       "      <th id=\"T_b6583_level0_col3\" class=\"col_heading level0 col3\" >n_components</th>\n",
+       "      <th id=\"T_b6583_level0_col4\" class=\"col_heading level0 col4\" >n_chains</th>\n",
+       "      <th id=\"T_b6583_level0_col5\" class=\"col_heading level0 col5\" >n_molecules</th>\n",
+       "      <th id=\"T_b6583_level0_col6\" class=\"col_heading level0 col6\" >n_entities</th>\n",
+       "      <th id=\"T_b6583_level0_col7\" class=\"col_heading level0 col7\" >n_waters</th>\n",
+       "      <th id=\"T_b6583_level0_col8\" class=\"col_heading level0 col8\" >n_ions</th>\n",
+       "      <th id=\"T_b6583_level0_col9\" class=\"col_heading level0 col9\" >n_small_molecules</th>\n",
+       "      <th id=\"T_b6583_level0_col10\" class=\"col_heading level0 col10\" >n_proteins</th>\n",
+       "      <th id=\"T_b6583_level0_col11\" class=\"col_heading level0 col11\" >n_structures</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td id=\"T_b6583_row0_col0\" class=\"data row0 col0\" >molsysmt.MolSys</td>\n",
+       "      <td id=\"T_b6583_row0_col1\" class=\"data row0 col1\" >1441</td>\n",
+       "      <td id=\"T_b6583_row0_col2\" class=\"data row0 col2\" >302</td>\n",
+       "      <td id=\"T_b6583_row0_col3\" class=\"data row0 col3\" >141</td>\n",
+       "      <td id=\"T_b6583_row0_col4\" class=\"data row0 col4\" >6</td>\n",
+       "      <td id=\"T_b6583_row0_col5\" class=\"data row0 col5\" >141</td>\n",
+       "      <td id=\"T_b6583_row0_col6\" class=\"data row0 col6\" >5</td>\n",
+       "      <td id=\"T_b6583_row0_col7\" class=\"data row0 col7\" >136</td>\n",
+       "      <td id=\"T_b6583_row0_col8\" class=\"data row0 col8\" >2</td>\n",
+       "      <td id=\"T_b6583_row0_col9\" class=\"data row0 col9\" >2</td>\n",
+       "      <td id=\"T_b6583_row0_col10\" class=\"data row0 col10\" >1</td>\n",
+       "      <td id=\"T_b6583_row0_col11\" class=\"data row0 col11\" >1</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "\n",
+       "<h3>Viewer State</h3>\n",
+       "<style type=\"text/css\">\n",
+       "</style>\n",
+       "<table id=\"T_96429\">\n",
+       "  <thead>\n",
+       "    <tr>\n",
+       "      <th id=\"T_96429_level0_col0\" class=\"col_heading level0 col0\" >section</th>\n",
+       "      <th id=\"T_96429_level0_col1\" class=\"col_heading level0 col1\" >tag</th>\n",
+       "      <th id=\"T_96429_level0_col2\" class=\"col_heading level0 col2\" >kind</th>\n",
+       "      <th id=\"T_96429_level0_col3\" class=\"col_heading level0 col3\" >visible</th>\n",
+       "      <th id=\"T_96429_level0_col4\" class=\"col_heading level0 col4\" >active</th>\n",
+       "      <th id=\"T_96429_level0_col5\" class=\"col_heading level0 col5\" >layer tag</th>\n",
+       "      <th id=\"T_96429_level0_col6\" class=\"col_heading level0 col6\" >representation</th>\n",
+       "      <th id=\"T_96429_level0_col7\" class=\"col_heading level0 col7\" >preset</th>\n",
+       "      <th id=\"T_96429_level0_col8\" class=\"col_heading level0 col8\" >n atoms</th>\n",
+       "      <th id=\"T_96429_level0_col9\" class=\"col_heading level0 col9\" >n members</th>\n",
+       "      <th id=\"T_96429_level0_col10\" class=\"col_heading level0 col10\" >n picks</th>\n",
+       "      <th id=\"T_96429_level0_col11\" class=\"col_heading level0 col11\" >details</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td id=\"T_96429_row0_col0\" class=\"data row0 col0\" >whole</td>\n",
+       "      <td id=\"T_96429_row0_col1\" class=\"data row0 col1\" >whole</td>\n",
+       "      <td id=\"T_96429_row0_col2\" class=\"data row0 col2\" >whole</td>\n",
+       "      <td id=\"T_96429_row0_col3\" class=\"data row0 col3\" >True</td>\n",
+       "      <td id=\"T_96429_row0_col4\" class=\"data row0 col4\" >True</td>\n",
+       "      <td id=\"T_96429_row0_col5\" class=\"data row0 col5\" >None</td>\n",
+       "      <td id=\"T_96429_row0_col6\" class=\"data row0 col6\" >None</td>\n",
+       "      <td id=\"T_96429_row0_col7\" class=\"data row0 col7\" >None</td>\n",
+       "      <td id=\"T_96429_row0_col8\" class=\"data row0 col8\" >nan</td>\n",
+       "      <td id=\"T_96429_row0_col9\" class=\"data row0 col9\" >nan</td>\n",
+       "      <td id=\"T_96429_row0_col10\" class=\"data row0 col10\" >None</td>\n",
+       "      <td id=\"T_96429_row0_col11\" class=\"data row0 col11\" ></td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td id=\"T_96429_row1_col0\" class=\"data row1 col0\" >loads</td>\n",
+       "      <td id=\"T_96429_row1_col1\" class=\"data row1 col1\" >load0</td>\n",
+       "      <td id=\"T_96429_row1_col2\" class=\"data row1 col2\" >load</td>\n",
+       "      <td id=\"T_96429_row1_col3\" class=\"data row1 col3\" >None</td>\n",
+       "      <td id=\"T_96429_row1_col4\" class=\"data row1 col4\" >True</td>\n",
+       "      <td id=\"T_96429_row1_col5\" class=\"data row1 col5\" >None</td>\n",
+       "      <td id=\"T_96429_row1_col6\" class=\"data row1 col6\" >None</td>\n",
+       "      <td id=\"T_96429_row1_col7\" class=\"data row1 col7\" >None</td>\n",
+       "      <td id=\"T_96429_row1_col8\" class=\"data row1 col8\" >1441.000000</td>\n",
+       "      <td id=\"T_96429_row1_col9\" class=\"data row1 col9\" >nan</td>\n",
+       "      <td id=\"T_96429_row1_col10\" class=\"data row1 col10\" >None</td>\n",
+       "      <td id=\"T_96429_row1_col11\" class=\"data row1 col11\" >atoms 0–1441</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td id=\"T_96429_row2_col0\" class=\"data row2 col0\" >styles</td>\n",
+       "      <td id=\"T_96429_row2_col1\" class=\"data row2 col1\" >current</td>\n",
+       "      <td id=\"T_96429_row2_col2\" class=\"data row2 col2\" >style</td>\n",
+       "      <td id=\"T_96429_row2_col3\" class=\"data row2 col3\" >None</td>\n",
+       "      <td id=\"T_96429_row2_col4\" class=\"data row2 col4\" >False</td>\n",
+       "      <td id=\"T_96429_row2_col5\" class=\"data row2 col5\" >None</td>\n",
+       "      <td id=\"T_96429_row2_col6\" class=\"data row2 col6\" >None</td>\n",
+       "      <td id=\"T_96429_row2_col7\" class=\"data row2 col7\" >None</td>\n",
+       "      <td id=\"T_96429_row2_col8\" class=\"data row2 col8\" >nan</td>\n",
+       "      <td id=\"T_96429_row2_col9\" class=\"data row2 col9\" >0.000000</td>\n",
+       "      <td id=\"T_96429_row2_col10\" class=\"data row2 col10\" >None</td>\n",
+       "      <td id=\"T_96429_row2_col11\" class=\"data row2 col11\" >builtins=11</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td id=\"T_96429_row3_col0\" class=\"data row3 col0\" >active_selection</td>\n",
+       "      <td id=\"T_96429_row3_col1\" class=\"data row3 col1\" >active_selection</td>\n",
+       "      <td id=\"T_96429_row3_col2\" class=\"data row3 col2\" >empty</td>\n",
+       "      <td id=\"T_96429_row3_col3\" class=\"data row3 col3\" >None</td>\n",
+       "      <td id=\"T_96429_row3_col4\" class=\"data row3 col4\" >False</td>\n",
+       "      <td id=\"T_96429_row3_col5\" class=\"data row3 col5\" >None</td>\n",
+       "      <td id=\"T_96429_row3_col6\" class=\"data row3 col6\" >None</td>\n",
+       "      <td id=\"T_96429_row3_col7\" class=\"data row3 col7\" >None</td>\n",
+       "      <td id=\"T_96429_row3_col8\" class=\"data row3 col8\" >0.000000</td>\n",
+       "      <td id=\"T_96429_row3_col9\" class=\"data row3 col9\" >nan</td>\n",
+       "      <td id=\"T_96429_row3_col10\" class=\"data row3 col10\" >None</td>\n",
+       "      <td id=\"T_96429_row3_col11\" class=\"data row3 col11\" >empty / none</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n"
+      ],
+      "text/plain": [
+       "ViewerInfo(molsys_section=<pandas.io.formats.style.Styler object at 0x7214851b1ba0>, view_section=<pandas.io.formats.style.Styler object at 0x7214851b1a70>)"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view = msv.new_view('181L')\n",
+    "view.whole.info()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ccb8db69-5846-4f46-a014-4ce835279c76",
+   "metadata": {},
+   "source": [
+    "And if your main goal is simply to display the structure, just call `view.show()`:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "04e56046-f9c2-4216-80ff-3bb558ccede8",
+   "metadata": {
+    "editable": true,
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:27:10.566959Z",
+     "iopub.status.busy": "2026-08-06T10:27:10.566699Z",
+     "iopub.status.idle": "2026-08-06T10:27:10.572460Z",
+     "shell.execute_reply": "2026-08-06T10:27:10.571075Z"
+    },
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": [
+     "remove-output"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<molsysviewer.widget.MolSysViewerWidget object at 0x721485194a50>"
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "6f091827-2dd9-4d44-82de-50f00d949b32",
+   "metadata": {
+    "editable": true,
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:27:10.576037Z",
+     "iopub.status.busy": "2026-08-06T10:27:10.575674Z",
+     "iopub.status.idle": "2026-08-06T10:27:10.581610Z",
+     "shell.execute_reply": "2026-08-06T10:27:10.580420Z"
+    },
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": [
+     "remove-input"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "\n",
+       "        <iframe\n",
+       "            width=\"100%\"\n",
+       "            height=\"480px\"\n",
+       "            src=\"../../../_static/views/demo_181L.html\"\n",
+       "            frameborder=\"0\"\n",
+       "            allowfullscreen\n",
+       "            \n",
+       "        ></iframe>\n",
+       "        "
+      ],
+      "text/plain": [
+       "<IPython.lib.display.IFrame at 0x7214851596d0>"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from molsysviewer.thirds.jupyter import load_html_in_notebook\n",
+    "load_html_in_notebook(\"../../../_static/views/demo_181L.html\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "325a7ff7",
+   "metadata": {},
+   "source": [
+    "## Where to go next\n",
+    "\n",
+    "Now that you can load and display a system, the next pages will help you build the mental model:\n",
+    "\n",
+    "- {doc}`topology`: what the *topology* is (atoms → residues → chains…).\n",
+    "- {doc}`structures`: what a *structure* is (coordinates, box, time; trajectories vs ensembles).\n",
+    "- {doc}`selection`: how you pick subsets of atoms.\n",
+    "- {doc}`info`: how to get a quick overview of a system.\n",
+    "- {doc}`get`: how to extract attribute values into Python.\n",
+    "\n",
+    "If you want more datasets to play with, see {doc}`../demo_systems/index`.\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.13.14"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

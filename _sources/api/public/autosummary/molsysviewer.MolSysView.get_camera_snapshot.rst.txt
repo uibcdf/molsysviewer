@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.get\_camera\_snapshot
+=============================================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.get_camera_snapshot

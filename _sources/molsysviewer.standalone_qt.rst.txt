@@ -1,0 +1,53 @@
+molsysviewer.standalone\_qt package
+===================================
+
+Submodules
+----------
+
+molsysviewer.standalone\_qt.application module
+----------------------------------------------
+
+.. automodule:: molsysviewer.standalone_qt.application
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.standalone\_qt.main module
+---------------------------------------
+
+.. automodule:: molsysviewer.standalone_qt.main
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.standalone\_qt.menus module
+----------------------------------------
+
+.. automodule:: molsysviewer.standalone_qt.menus
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.standalone\_qt.utils module
+----------------------------------------
+
+.. automodule:: molsysviewer.standalone_qt.utils
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.standalone\_qt.view\_channel module
+------------------------------------------------
+
+.. automodule:: molsysviewer.standalone_qt.view_channel
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: molsysviewer.standalone_qt
+   :members:
+   :show-inheritance:
+   :undoc-members:

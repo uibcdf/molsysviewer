@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.off\_context
+====================================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.off_context

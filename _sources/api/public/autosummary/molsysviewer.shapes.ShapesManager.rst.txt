@@ -1,0 +1,56 @@
+﻿molsysviewer.shapes.ShapesManager
+=================================
+
+.. currentmodule:: molsysviewer.shapes
+
+.. autoclass:: ShapesManager
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ShapesManager.__init__
+      ~ShapesManager.add
+      ~ShapesManager.add_anisotropy_ellipsoids
+      ~ShapesManager.add_channel_tube
+      ~ShapesManager.add_displacement_vectors
+      ~ShapesManager.add_interaction_sites
+      ~ShapesManager.add_links
+      ~ShapesManager.add_pharmacophore_features
+      ~ShapesManager.add_pocket_blob
+      ~ShapesManager.add_pocket_surface
+      ~ShapesManager.add_rings
+      ~ShapesManager.add_scalar_isosurface
+      ~ShapesManager.add_set_alpha_spheres
+      ~ShapesManager.add_sphere
+      ~ShapesManager.add_tetrahedra
+      ~ShapesManager.add_topomt_feature
+      ~ShapesManager.add_triangle_faces
+      ~ShapesManager.clear
+      ~ShapesManager.contains
+      ~ShapesManager.count
+      ~ShapesManager.delete
+      ~ShapesManager.get
+      ~ShapesManager.hide
+      ~ShapesManager.hide_all
+      ~ShapesManager.info
+      ~ShapesManager.items
+      ~ShapesManager.keys
+      ~ShapesManager.records
+      ~ShapesManager.render_status
+      ~ShapesManager.set_layer_tag
+      ~ShapesManager.set_tag
+      ~ShapesManager.show
+      ~ShapesManager.show_all
+      ~ShapesManager.tags
+      ~ShapesManager.values
+   
+   
+
+   
+   
+   

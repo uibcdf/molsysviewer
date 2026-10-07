@@ -1,0 +1,1427 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+    <title>molsysviewer.colors – MolSysViewer 0.24.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6b6fcda3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6b6fcda3" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
+
+    <script src="../../_static/documentation_options.js?v=a9084e48"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/molsysviewer/colors';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.24.0" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.24.0 documentation - Home"/>
+    <img src="../../_static/logo_dark.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.24.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">molsysviewer.colors</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for molsysviewer.colors</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Sequence</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">smonitor</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._private.argdigest</span><span class="w"> </span><span class="kn">import</span> <span class="n">digest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._private.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArgumentError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._pyunitwizard</span><span class="w"> </span><span class="kn">import</span> <span class="n">puw</span>
+
+<span class="n">MOLSTAR_COLOR_NAMES</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"aliceblue"</span><span class="p">:</span> <span class="mh">0xF0F8FF</span><span class="p">,</span>
+    <span class="s2">"antiquewhite"</span><span class="p">:</span> <span class="mh">0xFAEBD7</span><span class="p">,</span>
+    <span class="s2">"aqua"</span><span class="p">:</span> <span class="mh">0x00FFFF</span><span class="p">,</span>
+    <span class="s2">"aquamarine"</span><span class="p">:</span> <span class="mh">0x7FFFD4</span><span class="p">,</span>
+    <span class="s2">"azure"</span><span class="p">:</span> <span class="mh">0xF0FFFF</span><span class="p">,</span>
+    <span class="s2">"beige"</span><span class="p">:</span> <span class="mh">0xF5F5DC</span><span class="p">,</span>
+    <span class="s2">"bisque"</span><span class="p">:</span> <span class="mh">0xFFE4C4</span><span class="p">,</span>
+    <span class="s2">"black"</span><span class="p">:</span> <span class="mh">0x000000</span><span class="p">,</span>
+    <span class="s2">"blanchedalmond"</span><span class="p">:</span> <span class="mh">0xFFEBCD</span><span class="p">,</span>
+    <span class="s2">"blue"</span><span class="p">:</span> <span class="mh">0x0000FF</span><span class="p">,</span>
+    <span class="s2">"blueviolet"</span><span class="p">:</span> <span class="mh">0x8A2BE2</span><span class="p">,</span>
+    <span class="s2">"brown"</span><span class="p">:</span> <span class="mh">0xA52A2A</span><span class="p">,</span>
+    <span class="s2">"burlywood"</span><span class="p">:</span> <span class="mh">0xDEB887</span><span class="p">,</span>
+    <span class="s2">"cadetblue"</span><span class="p">:</span> <span class="mh">0x5F9EA0</span><span class="p">,</span>
+    <span class="s2">"chartreuse"</span><span class="p">:</span> <span class="mh">0x7FFF00</span><span class="p">,</span>
+    <span class="s2">"chocolate"</span><span class="p">:</span> <span class="mh">0xD2691E</span><span class="p">,</span>
+    <span class="s2">"coral"</span><span class="p">:</span> <span class="mh">0xFF7F50</span><span class="p">,</span>
+    <span class="s2">"cornflower"</span><span class="p">:</span> <span class="mh">0x6495ED</span><span class="p">,</span>
+    <span class="s2">"cornflowerblue"</span><span class="p">:</span> <span class="mh">0x6495ED</span><span class="p">,</span>
+    <span class="s2">"cornsilk"</span><span class="p">:</span> <span class="mh">0xFFF8DC</span><span class="p">,</span>
+    <span class="s2">"crimson"</span><span class="p">:</span> <span class="mh">0xDC143C</span><span class="p">,</span>
+    <span class="s2">"cyan"</span><span class="p">:</span> <span class="mh">0x00FFFF</span><span class="p">,</span>
+    <span class="s2">"darkblue"</span><span class="p">:</span> <span class="mh">0x00008B</span><span class="p">,</span>
+    <span class="s2">"darkcyan"</span><span class="p">:</span> <span class="mh">0x008B8B</span><span class="p">,</span>
+    <span class="s2">"darkgoldenrod"</span><span class="p">:</span> <span class="mh">0xB8860B</span><span class="p">,</span>
+    <span class="s2">"darkgray"</span><span class="p">:</span> <span class="mh">0xA9A9A9</span><span class="p">,</span>
+    <span class="s2">"darkgreen"</span><span class="p">:</span> <span class="mh">0x006400</span><span class="p">,</span>
+    <span class="s2">"darkgrey"</span><span class="p">:</span> <span class="mh">0xA9A9A9</span><span class="p">,</span>
+    <span class="s2">"darkkhaki"</span><span class="p">:</span> <span class="mh">0xBDB76B</span><span class="p">,</span>
+    <span class="s2">"darkmagenta"</span><span class="p">:</span> <span class="mh">0x8B008B</span><span class="p">,</span>
+    <span class="s2">"darkolivegreen"</span><span class="p">:</span> <span class="mh">0x556B2F</span><span class="p">,</span>
+    <span class="s2">"darkorange"</span><span class="p">:</span> <span class="mh">0xFF8C00</span><span class="p">,</span>
+    <span class="s2">"darkorchid"</span><span class="p">:</span> <span class="mh">0x9932CC</span><span class="p">,</span>
+    <span class="s2">"darkred"</span><span class="p">:</span> <span class="mh">0x8B0000</span><span class="p">,</span>
+    <span class="s2">"darksalmon"</span><span class="p">:</span> <span class="mh">0xE9967A</span><span class="p">,</span>
+    <span class="s2">"darkseagreen"</span><span class="p">:</span> <span class="mh">0x8FBC8F</span><span class="p">,</span>
+    <span class="s2">"darkslateblue"</span><span class="p">:</span> <span class="mh">0x483D8B</span><span class="p">,</span>
+    <span class="s2">"darkslategray"</span><span class="p">:</span> <span class="mh">0x2F4F4F</span><span class="p">,</span>
+    <span class="s2">"darkslategrey"</span><span class="p">:</span> <span class="mh">0x2F4F4F</span><span class="p">,</span>
+    <span class="s2">"darkturquoise"</span><span class="p">:</span> <span class="mh">0x00CED1</span><span class="p">,</span>
+    <span class="s2">"darkviolet"</span><span class="p">:</span> <span class="mh">0x9400D3</span><span class="p">,</span>
+    <span class="s2">"deeppink"</span><span class="p">:</span> <span class="mh">0xFF1493</span><span class="p">,</span>
+    <span class="s2">"deepskyblue"</span><span class="p">:</span> <span class="mh">0x00BFFF</span><span class="p">,</span>
+    <span class="s2">"dimgray"</span><span class="p">:</span> <span class="mh">0x696969</span><span class="p">,</span>
+    <span class="s2">"dimgrey"</span><span class="p">:</span> <span class="mh">0x696969</span><span class="p">,</span>
+    <span class="s2">"dodgerblue"</span><span class="p">:</span> <span class="mh">0x1E90FF</span><span class="p">,</span>
+    <span class="s2">"firebrick"</span><span class="p">:</span> <span class="mh">0xB22222</span><span class="p">,</span>
+    <span class="s2">"floralwhite"</span><span class="p">:</span> <span class="mh">0xFFFAF0</span><span class="p">,</span>
+    <span class="s2">"forestgreen"</span><span class="p">:</span> <span class="mh">0x228B22</span><span class="p">,</span>
+    <span class="s2">"fuchsia"</span><span class="p">:</span> <span class="mh">0xFF00FF</span><span class="p">,</span>
+    <span class="s2">"gainsboro"</span><span class="p">:</span> <span class="mh">0xDCDCDC</span><span class="p">,</span>
+    <span class="s2">"ghostwhite"</span><span class="p">:</span> <span class="mh">0xF8F8FF</span><span class="p">,</span>
+    <span class="s2">"gold"</span><span class="p">:</span> <span class="mh">0xFFD700</span><span class="p">,</span>
+    <span class="s2">"goldenrod"</span><span class="p">:</span> <span class="mh">0xDAA520</span><span class="p">,</span>
+    <span class="s2">"gray"</span><span class="p">:</span> <span class="mh">0x808080</span><span class="p">,</span>
+    <span class="s2">"green"</span><span class="p">:</span> <span class="mh">0x008000</span><span class="p">,</span>
+    <span class="s2">"greenyellow"</span><span class="p">:</span> <span class="mh">0xADFF2F</span><span class="p">,</span>
+    <span class="s2">"grey"</span><span class="p">:</span> <span class="mh">0x808080</span><span class="p">,</span>
+    <span class="s2">"honeydew"</span><span class="p">:</span> <span class="mh">0xF0FFF0</span><span class="p">,</span>
+    <span class="s2">"hotpink"</span><span class="p">:</span> <span class="mh">0xFF69B4</span><span class="p">,</span>
+    <span class="s2">"indianred"</span><span class="p">:</span> <span class="mh">0xCD5C5C</span><span class="p">,</span>
+    <span class="s2">"indigo"</span><span class="p">:</span> <span class="mh">0x4B0082</span><span class="p">,</span>
+    <span class="s2">"ivory"</span><span class="p">:</span> <span class="mh">0xFFFFF0</span><span class="p">,</span>
+    <span class="s2">"khaki"</span><span class="p">:</span> <span class="mh">0xF0E68C</span><span class="p">,</span>
+    <span class="s2">"laserlemon"</span><span class="p">:</span> <span class="mh">0xFFFF54</span><span class="p">,</span>
+    <span class="s2">"lavender"</span><span class="p">:</span> <span class="mh">0xE6E6FA</span><span class="p">,</span>
+    <span class="s2">"lavenderblush"</span><span class="p">:</span> <span class="mh">0xFFF0F5</span><span class="p">,</span>
+    <span class="s2">"lawngreen"</span><span class="p">:</span> <span class="mh">0x7CFC00</span><span class="p">,</span>
+    <span class="s2">"lemonchiffon"</span><span class="p">:</span> <span class="mh">0xFFFACD</span><span class="p">,</span>
+    <span class="s2">"lightblue"</span><span class="p">:</span> <span class="mh">0xADD8E6</span><span class="p">,</span>
+    <span class="s2">"lightcoral"</span><span class="p">:</span> <span class="mh">0xF08080</span><span class="p">,</span>
+    <span class="s2">"lightcyan"</span><span class="p">:</span> <span class="mh">0xE0FFFF</span><span class="p">,</span>
+    <span class="s2">"lightgoldenrod"</span><span class="p">:</span> <span class="mh">0xFAFAD2</span><span class="p">,</span>
+    <span class="s2">"lightgoldenrodyellow"</span><span class="p">:</span> <span class="mh">0xFAFAD2</span><span class="p">,</span>
+    <span class="s2">"lightgray"</span><span class="p">:</span> <span class="mh">0xD3D3D3</span><span class="p">,</span>
+    <span class="s2">"lightgreen"</span><span class="p">:</span> <span class="mh">0x90EE90</span><span class="p">,</span>
+    <span class="s2">"lightgrey"</span><span class="p">:</span> <span class="mh">0xD3D3D3</span><span class="p">,</span>
+    <span class="s2">"lightpink"</span><span class="p">:</span> <span class="mh">0xFFB6C1</span><span class="p">,</span>
+    <span class="s2">"lightsalmon"</span><span class="p">:</span> <span class="mh">0xFFA07A</span><span class="p">,</span>
+    <span class="s2">"lightseagreen"</span><span class="p">:</span> <span class="mh">0x20B2AA</span><span class="p">,</span>
+    <span class="s2">"lightskyblue"</span><span class="p">:</span> <span class="mh">0x87CEFA</span><span class="p">,</span>
+    <span class="s2">"lightslategray"</span><span class="p">:</span> <span class="mh">0x778899</span><span class="p">,</span>
+    <span class="s2">"lightslategrey"</span><span class="p">:</span> <span class="mh">0x778899</span><span class="p">,</span>
+    <span class="s2">"lightsteelblue"</span><span class="p">:</span> <span class="mh">0xB0C4DE</span><span class="p">,</span>
+    <span class="s2">"lightyellow"</span><span class="p">:</span> <span class="mh">0xFFFFE0</span><span class="p">,</span>
+    <span class="s2">"lime"</span><span class="p">:</span> <span class="mh">0x00FF00</span><span class="p">,</span>
+    <span class="s2">"limegreen"</span><span class="p">:</span> <span class="mh">0x32CD32</span><span class="p">,</span>
+    <span class="s2">"linen"</span><span class="p">:</span> <span class="mh">0xFAF0E6</span><span class="p">,</span>
+    <span class="s2">"magenta"</span><span class="p">:</span> <span class="mh">0xFF00FF</span><span class="p">,</span>
+    <span class="s2">"maroon"</span><span class="p">:</span> <span class="mh">0x800000</span><span class="p">,</span>
+    <span class="s2">"maroon2"</span><span class="p">:</span> <span class="mh">0x7F0000</span><span class="p">,</span>
+    <span class="s2">"maroon3"</span><span class="p">:</span> <span class="mh">0xB03060</span><span class="p">,</span>
+    <span class="s2">"mediumaquamarine"</span><span class="p">:</span> <span class="mh">0x66CDAA</span><span class="p">,</span>
+    <span class="s2">"mediumblue"</span><span class="p">:</span> <span class="mh">0x0000CD</span><span class="p">,</span>
+    <span class="s2">"mediumorchid"</span><span class="p">:</span> <span class="mh">0xBA55D3</span><span class="p">,</span>
+    <span class="s2">"mediumpurple"</span><span class="p">:</span> <span class="mh">0x9370DB</span><span class="p">,</span>
+    <span class="s2">"mediumseagreen"</span><span class="p">:</span> <span class="mh">0x3CB371</span><span class="p">,</span>
+    <span class="s2">"mediumslateblue"</span><span class="p">:</span> <span class="mh">0x7B68EE</span><span class="p">,</span>
+    <span class="s2">"mediumspringgreen"</span><span class="p">:</span> <span class="mh">0x00FA9A</span><span class="p">,</span>
+    <span class="s2">"mediumturquoise"</span><span class="p">:</span> <span class="mh">0x48D1CC</span><span class="p">,</span>
+    <span class="s2">"mediumvioletred"</span><span class="p">:</span> <span class="mh">0xC71585</span><span class="p">,</span>
+    <span class="s2">"midnightblue"</span><span class="p">:</span> <span class="mh">0x191970</span><span class="p">,</span>
+    <span class="s2">"mintcream"</span><span class="p">:</span> <span class="mh">0xF5FFFA</span><span class="p">,</span>
+    <span class="s2">"mistyrose"</span><span class="p">:</span> <span class="mh">0xFFE4E1</span><span class="p">,</span>
+    <span class="s2">"moccasin"</span><span class="p">:</span> <span class="mh">0xFFE4B5</span><span class="p">,</span>
+    <span class="s2">"navajowhite"</span><span class="p">:</span> <span class="mh">0xFFDEAD</span><span class="p">,</span>
+    <span class="s2">"navy"</span><span class="p">:</span> <span class="mh">0x000080</span><span class="p">,</span>
+    <span class="s2">"oldlace"</span><span class="p">:</span> <span class="mh">0xFDF5E6</span><span class="p">,</span>
+    <span class="s2">"olive"</span><span class="p">:</span> <span class="mh">0x808000</span><span class="p">,</span>
+    <span class="s2">"olivedrab"</span><span class="p">:</span> <span class="mh">0x6B8E23</span><span class="p">,</span>
+    <span class="s2">"orange"</span><span class="p">:</span> <span class="mh">0xFFA500</span><span class="p">,</span>
+    <span class="s2">"orangered"</span><span class="p">:</span> <span class="mh">0xFF4500</span><span class="p">,</span>
+    <span class="s2">"orchid"</span><span class="p">:</span> <span class="mh">0xDA70D6</span><span class="p">,</span>
+    <span class="s2">"palegoldenrod"</span><span class="p">:</span> <span class="mh">0xEEE8AA</span><span class="p">,</span>
+    <span class="s2">"palegreen"</span><span class="p">:</span> <span class="mh">0x98FB98</span><span class="p">,</span>
+    <span class="s2">"paleturquoise"</span><span class="p">:</span> <span class="mh">0xAFEEEE</span><span class="p">,</span>
+    <span class="s2">"palevioletred"</span><span class="p">:</span> <span class="mh">0xDB7093</span><span class="p">,</span>
+    <span class="s2">"papayawhip"</span><span class="p">:</span> <span class="mh">0xFFEFD5</span><span class="p">,</span>
+    <span class="s2">"peachpuff"</span><span class="p">:</span> <span class="mh">0xFFDAB9</span><span class="p">,</span>
+    <span class="s2">"peru"</span><span class="p">:</span> <span class="mh">0xCD853F</span><span class="p">,</span>
+    <span class="s2">"pink"</span><span class="p">:</span> <span class="mh">0xFFC0CB</span><span class="p">,</span>
+    <span class="s2">"plum"</span><span class="p">:</span> <span class="mh">0xDDA0DD</span><span class="p">,</span>
+    <span class="s2">"powderblue"</span><span class="p">:</span> <span class="mh">0xB0E0E6</span><span class="p">,</span>
+    <span class="s2">"purple"</span><span class="p">:</span> <span class="mh">0x800080</span><span class="p">,</span>
+    <span class="s2">"purple2"</span><span class="p">:</span> <span class="mh">0x7F007F</span><span class="p">,</span>
+    <span class="s2">"purple3"</span><span class="p">:</span> <span class="mh">0xA020F0</span><span class="p">,</span>
+    <span class="s2">"rebeccapurple"</span><span class="p">:</span> <span class="mh">0x663399</span><span class="p">,</span>
+    <span class="s2">"red"</span><span class="p">:</span> <span class="mh">0xFF0000</span><span class="p">,</span>
+    <span class="s2">"rosybrown"</span><span class="p">:</span> <span class="mh">0xBC8F8F</span><span class="p">,</span>
+    <span class="s2">"royalblue"</span><span class="p">:</span> <span class="mh">0x4169E1</span><span class="p">,</span>
+    <span class="s2">"saddlebrown"</span><span class="p">:</span> <span class="mh">0x8B4513</span><span class="p">,</span>
+    <span class="s2">"salmon"</span><span class="p">:</span> <span class="mh">0xFA8072</span><span class="p">,</span>
+    <span class="s2">"sandybrown"</span><span class="p">:</span> <span class="mh">0xF4A460</span><span class="p">,</span>
+    <span class="s2">"seagreen"</span><span class="p">:</span> <span class="mh">0x2E8B57</span><span class="p">,</span>
+    <span class="s2">"seashell"</span><span class="p">:</span> <span class="mh">0xFFF5EE</span><span class="p">,</span>
+    <span class="s2">"sienna"</span><span class="p">:</span> <span class="mh">0xA0522D</span><span class="p">,</span>
+    <span class="s2">"silver"</span><span class="p">:</span> <span class="mh">0xC0C0C0</span><span class="p">,</span>
+    <span class="s2">"skyblue"</span><span class="p">:</span> <span class="mh">0x87CEEB</span><span class="p">,</span>
+    <span class="s2">"slateblue"</span><span class="p">:</span> <span class="mh">0x6A5ACD</span><span class="p">,</span>
+    <span class="s2">"slategray"</span><span class="p">:</span> <span class="mh">0x708090</span><span class="p">,</span>
+    <span class="s2">"slategrey"</span><span class="p">:</span> <span class="mh">0x708090</span><span class="p">,</span>
+    <span class="s2">"snow"</span><span class="p">:</span> <span class="mh">0xFFFAFA</span><span class="p">,</span>
+    <span class="s2">"springgreen"</span><span class="p">:</span> <span class="mh">0x00FF7F</span><span class="p">,</span>
+    <span class="s2">"steelblue"</span><span class="p">:</span> <span class="mh">0x4682B4</span><span class="p">,</span>
+    <span class="s2">"tan"</span><span class="p">:</span> <span class="mh">0xD2B48C</span><span class="p">,</span>
+    <span class="s2">"teal"</span><span class="p">:</span> <span class="mh">0x008080</span><span class="p">,</span>
+    <span class="s2">"thistle"</span><span class="p">:</span> <span class="mh">0xD8BFD8</span><span class="p">,</span>
+    <span class="s2">"tomato"</span><span class="p">:</span> <span class="mh">0xFF6347</span><span class="p">,</span>
+    <span class="s2">"turquoise"</span><span class="p">:</span> <span class="mh">0x40E0D0</span><span class="p">,</span>
+    <span class="s2">"violet"</span><span class="p">:</span> <span class="mh">0xEE82EE</span><span class="p">,</span>
+    <span class="s2">"wheat"</span><span class="p">:</span> <span class="mh">0xF5DEB3</span><span class="p">,</span>
+    <span class="s2">"white"</span><span class="p">:</span> <span class="mh">0xFFFFFF</span><span class="p">,</span>
+    <span class="s2">"whitesmoke"</span><span class="p">:</span> <span class="mh">0xF5F5F5</span><span class="p">,</span>
+    <span class="s2">"yellow"</span><span class="p">:</span> <span class="mh">0xFFFF00</span><span class="p">,</span>
+    <span class="s2">"yellowgreen"</span><span class="p">:</span> <span class="mh">0x9ACD32</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_name_token</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">ch</span><span class="o">.</span><span class="n">isalnum</span><span class="p">())</span>
+
+
+<span class="n">_MOLSTAR_COLOR_NAME_LOOKUP</span> <span class="o">=</span> <span class="p">{</span><span class="n">_normalize_name_token</span><span class="p">(</span><span class="n">name</span><span class="p">):</span> <span class="n">value</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">MOLSTAR_COLOR_NAMES</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+
+<div class="viewcode-block" id="ContinuousPalette">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.ContinuousPalette">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ContinuousPalette</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">colors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"custom"</span></div>
+
+
+
+<div class="viewcode-block" id="CategoricalColorScheme">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.CategoricalColorScheme">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CategoricalColorScheme</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">mapping</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="n">fallback</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"custom"</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_clamp_channel</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">value</span><span class="p">))))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_rgb_to_int</span><span class="p">(</span><span class="n">rgb</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rgb</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"RGB colors must have 3 or 4 channels."</span><span class="p">)</span>
+    <span class="n">channels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">rgb</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">):</span>
+        <span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">blue</span> <span class="o">=</span> <span class="p">(</span><span class="n">_clamp_channel</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">item</span><span class="p">))</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">blue</span> <span class="o">=</span> <span class="p">(</span><span class="n">_clamp_channel</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">*</span> <span class="mf">255.0</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">red</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">green</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">|</span> <span class="n">blue</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_hex_color</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"#"</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ch</span> <span class="o">*</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">token</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">6</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_try_matplotlib_rgba</span><span class="p">(</span><span class="n">color</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mcolors</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgba</span><span class="p">(</span><span class="n">color</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_color</span><span class="p">(</span><span class="n">color</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">color</span> <span class="o">&lt;=</span> <span class="mh">0xFFFFFF</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">color</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Color integer </span><span class="si">{</span><span class="n">color</span><span class="si">!r}</span><span class="s2"> is out of RGB range."</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">hex_value</span> <span class="o">=</span> <span class="n">_parse_hex_color</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">hex_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">hex_value</span>
+        <span class="n">normalized_name</span> <span class="o">=</span> <span class="n">_normalize_name_token</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">normalized_name</span> <span class="ow">in</span> <span class="n">_MOLSTAR_COLOR_NAME_LOOKUP</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_MOLSTAR_COLOR_NAME_LOOKUP</span><span class="p">[</span><span class="n">normalized_name</span><span class="p">]</span>
+        <span class="n">rgba</span> <span class="o">=</span> <span class="n">_try_matplotlib_rgba</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rgba</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_rgb_to_int</span><span class="p">(</span><span class="n">rgba</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown color name </span><span class="si">{</span><span class="n">color</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_rgb_to_int</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported RGB color </span><span class="si">{</span><span class="n">color</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+
+    <span class="n">rgba</span> <span class="o">=</span> <span class="n">_try_matplotlib_rgba</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rgba</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_rgb_to_int</span><span class="p">(</span><span class="n">rgba</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported color value </span><span class="si">{</span><span class="n">color</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_colors</span><span class="p">(</span><span class="n">colors</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">_normalize_color</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">colors</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="normalize_color">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.normalize_color">[docs]</a>
+<span class="nd">@signal</span><span class="p">()</span>
+<span class="nd">@digest</span><span class="p">()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">normalize_color</span><span class="p">(</span><span class="n">color</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">_normalize_color</span><span class="p">(</span><span class="n">color</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="normalize_colors">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.normalize_colors">[docs]</a>
+<span class="nd">@signal</span><span class="p">()</span>
+<span class="nd">@digest</span><span class="p">()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">normalize_colors</span><span class="p">(</span><span class="n">colors</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="n">_normalize_colors</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ColorRegistry">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.ColorRegistry">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ColorRegistry</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_named_colors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">MOLSTAR_COLOR_NAMES</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_palettes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ContinuousPalette</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_schemes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CategoricalColorScheme</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_generated_scheme_palettes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cvd_safe</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ColorRegistry.color_names">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.ColorRegistry.color_names">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">color_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_named_colors</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="ColorRegistry.normalize_color">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.ColorRegistry.normalize_color">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">normalize_color</span><span class="p">(</span><span class="n">color</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ColorRegistry.normalize_colors">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.ColorRegistry.normalize_colors">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">normalize_colors</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ColorRegistry.palette_names">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.ColorRegistry.palette_names">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">palette_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_palettes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="ColorRegistry.scheme_names">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.ColorRegistry.scheme_names">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scheme_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_schemes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_generated_scheme_palettes</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span></div>
+
+
+<div class="viewcode-block" id="ColorRegistry.mark_cvd_safe">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.ColorRegistry.mark_cvd_safe">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mark_cvd_safe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">names</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Tag one or more palette/scheme names as colour-vision-deficiency safe."""</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cvd_safe</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ColorRegistry.is_cvd_safe">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.ColorRegistry.is_cvd_safe">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_cvd_safe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Whether ``name`` is a registered colour-blind-safe palette or scheme."""</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cvd_safe</span></div>
+
+
+<div class="viewcode-block" id="ColorRegistry.cvd_safe_names">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.ColorRegistry.cvd_safe_names">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cvd_safe_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""All palette/scheme names tagged as colour-blind safe (Okabe-Ito, Tol, perceptually-uniform continuous)."""</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cvd_safe</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ColorRegistry.get_palette">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.ColorRegistry.get_palette">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_palette</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ContinuousPalette</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_palettes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="ColorRegistry.get_scheme">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.ColorRegistry.get_scheme">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_scheme</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">categories</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CategoricalColorScheme</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schemes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schemes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generated_scheme_palettes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">categories</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Color scheme </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> requires explicit categories."</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_scheme</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="n">categories</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ColorRegistry.resolve_palette">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.ColorRegistry.resolve_palette">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_palette</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">palette</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">256</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ContinuousPalette</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">palette</span><span class="p">,</span> <span class="n">ContinuousPalette</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">palette</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">palette</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">palette</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_palettes</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_palettes</span><span class="p">[</span><span class="n">palette</span><span class="p">]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_palette_from_name_or_matplotlib</span><span class="p">(</span><span class="n">palette</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="n">samples</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_palette_from_matplotlib_or_sequence</span><span class="p">(</span><span class="n">palette</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="n">samples</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ColorRegistry.register_palette">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.ColorRegistry.register_palette">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_palette</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">palette</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">256</span><span class="p">,</span>
+        <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ContinuousPalette</span><span class="p">:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Palette name must be a non-empty string."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_palettes</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Palette </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2"> already exists."</span><span class="p">)</span>
+        <span class="n">resolved</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_palette</span><span class="p">(</span><span class="n">palette</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="n">samples</span><span class="p">)</span>
+        <span class="n">stored</span> <span class="o">=</span> <span class="n">ContinuousPalette</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">resolved</span><span class="o">.</span><span class="n">colors</span><span class="p">),</span> <span class="n">source</span><span class="o">=</span><span class="n">resolved</span><span class="o">.</span><span class="n">source</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_palettes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">stored</span>
+        <span class="k">return</span> <span class="n">stored</span></div>
+
+
+<div class="viewcode-block" id="ColorRegistry.resolve_scheme">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.ColorRegistry.resolve_scheme">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_scheme</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">scheme</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">categories</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fallback</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CategoricalColorScheme</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">CategoricalColorScheme</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">scheme</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">scheme</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schemes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schemes</span><span class="p">[</span><span class="n">scheme</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">scheme</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generated_scheme_palettes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">categories</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Color scheme </span><span class="si">{</span><span class="n">scheme</span><span class="si">!r}</span><span class="s2"> requires explicit categories."</span><span class="p">)</span>
+            <span class="n">palette_source</span><span class="p">,</span> <span class="n">generated_fallback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generated_scheme_palettes</span><span class="p">[</span><span class="n">scheme</span><span class="p">]</span>
+            <span class="n">palette</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_palette</span><span class="p">(</span><span class="n">palette_source</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">categories</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">fallback_color</span> <span class="o">=</span> <span class="n">normalize_color</span><span class="p">(</span><span class="n">fallback</span><span class="p">)</span> <span class="k">if</span> <span class="n">fallback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">generated_fallback</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">category</span><span class="p">):</span> <span class="n">palette</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">idx</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">palette</span><span class="o">.</span><span class="n">colors</span><span class="p">)]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">category</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">CategoricalColorScheme</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">scheme</span><span class="p">,</span>
+                <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">,</span>
+                <span class="n">fallback</span><span class="o">=</span><span class="n">fallback_color</span><span class="p">,</span>
+                <span class="n">source</span><span class="o">=</span><span class="n">palette</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">):</span> <span class="n">normalize_color</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">scheme</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="n">fallback_color</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">fallback</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">normalize_color</span><span class="p">(</span><span class="n">fallback</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">CategoricalColorScheme</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback_color</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">categories</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">palette</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_palette</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">categories</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">category</span><span class="p">):</span> <span class="n">palette</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">idx</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">palette</span><span class="o">.</span><span class="n">colors</span><span class="p">)]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">category</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="n">fallback_color</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">fallback</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">normalize_color</span><span class="p">(</span><span class="n">fallback</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">CategoricalColorScheme</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback_color</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">palette</span><span class="o">.</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Categorical schemes require either a mapping or explicit categories."</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ColorRegistry.register_scheme">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.ColorRegistry.register_scheme">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_scheme</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">scheme</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">categories</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fallback</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CategoricalColorScheme</span><span class="p">:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Color scheme name must be a non-empty string."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schemes</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Color scheme </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2"> already exists."</span><span class="p">)</span>
+        <span class="n">resolved</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_scheme</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="n">categories</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span>
+        <span class="n">stored</span> <span class="o">=</span> <span class="n">CategoricalColorScheme</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">mapping</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">resolved</span><span class="o">.</span><span class="n">mapping</span><span class="p">),</span>
+            <span class="n">fallback</span><span class="o">=</span><span class="n">resolved</span><span class="o">.</span><span class="n">fallback</span><span class="p">,</span>
+            <span class="n">source</span><span class="o">=</span><span class="n">resolved</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_schemes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">stored</span>
+        <span class="k">return</span> <span class="n">stored</span></div>
+
+
+<div class="viewcode-block" id="ColorRegistry.register_generated_scheme">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.ColorRegistry.register_generated_scheme">[docs]</a>
+    <span class="nd">@signal</span><span class="p">()</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_generated_scheme</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">palette</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">fallback</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Color scheme name must be a non-empty string."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schemes</span> <span class="ow">or</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generated_scheme_palettes</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Color scheme </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2"> already exists."</span><span class="p">)</span>
+        <span class="n">fallback_color</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">fallback</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">normalize_color</span><span class="p">(</span><span class="n">fallback</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_generated_scheme_palettes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">palette</span><span class="p">,</span> <span class="n">fallback_color</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">key</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_palette_from_name_or_matplotlib</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">palette</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ContinuousPalette</span><span class="p">:</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="n">palette</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">mpl_name</span> <span class="o">=</span> <span class="n">token</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span> <span class="k">if</span> <span class="n">token</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"mpl:"</span><span class="p">)</span> <span class="k">else</span> <span class="n">token</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown palette </span><span class="si">{</span><span class="n">palette</span><span class="si">!r}</span><span class="s2"> and matplotlib is not available."</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colormaps</span><span class="p">[</span><span class="n">mpl_name</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown palette </span><span class="si">{</span><span class="n">palette</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_palette_from_matplotlib_or_sequence</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="n">samples</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">token</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s2">"matplotlib"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_palette_from_matplotlib_or_sequence</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">palette</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"custom"</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ContinuousPalette</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">palette</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="n">colors</span> <span class="o">=</span> <span class="n">normalize_colors</span><span class="p">(</span><span class="n">palette</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Palettes must contain at least one color."</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ContinuousPalette</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mcolors</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">mcolors</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">mcolors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">palette</span><span class="p">,</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">Colormap</span><span class="p">):</span>
+            <span class="n">steps</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">samples</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">_rgb_to_int</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span> <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">palette</span><span class="p">(</span><span class="n">idx</span> <span class="o">/</span> <span class="p">(</span><span class="n">steps</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))[:</span><span class="mi">3</span><span class="p">]))</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">return</span> <span class="n">ContinuousPalette</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">palette</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">colors</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s2">"matplotlib"</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported palette value </span><span class="si">{</span><span class="n">palette</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span></div>
+
+
+
+<span class="n">colors</span> <span class="o">=</span> <span class="n">ColorRegistry</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_register_builtin_palettes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"turbo"</span><span class="p">,</span> <span class="s2">"viridis"</span><span class="p">,</span> <span class="s2">"plasma"</span><span class="p">,</span> <span class="s2">"magma"</span><span class="p">,</span> <span class="s2">"inferno"</span><span class="p">,</span> <span class="s2">"rainbow"</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">colors</span><span class="o">.</span><span class="n">register_palette</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"mpl:</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># Keep import-time behavior soft when matplotlib is not available.</span>
+            <span class="k">continue</span>
+
+
+<span class="n">_register_builtin_palettes</span><span class="p">()</span>
+
+<span class="n">colors</span><span class="o">.</span><span class="n">register_palette</span><span class="p">(</span>
+    <span class="s2">"categorical_default"</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">"blue"</span><span class="p">,</span> <span class="s2">"orange"</span><span class="p">,</span> <span class="s2">"green"</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">,</span> <span class="s2">"purple"</span><span class="p">,</span> <span class="s2">"gray"</span><span class="p">,</span> <span class="s2">"pink"</span><span class="p">,</span> <span class="s2">"brown"</span><span class="p">],</span>
+    <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">colors</span><span class="o">.</span><span class="n">register_scheme</span><span class="p">(</span>
+    <span class="s2">"pharmacophore_default"</span><span class="p">,</span>
+    <span class="p">{</span>
+        <span class="s2">"donor"</span><span class="p">:</span> <span class="mh">0x3B82F6</span><span class="p">,</span>
+        <span class="s2">"acceptor"</span><span class="p">:</span> <span class="mh">0xEF4444</span><span class="p">,</span>
+        <span class="s2">"hydrophobe"</span><span class="p">:</span> <span class="mh">0xF59E0B</span><span class="p">,</span>
+        <span class="s2">"aromatic"</span><span class="p">:</span> <span class="mh">0x8B5CF6</span><span class="p">,</span>
+        <span class="s2">"positive"</span><span class="p">:</span> <span class="mh">0x2563EB</span><span class="p">,</span>
+        <span class="s2">"negative"</span><span class="p">:</span> <span class="mh">0xF43F5E</span><span class="p">,</span>
+        <span class="s2">"metal"</span><span class="p">:</span> <span class="mh">0x10B981</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">colors</span><span class="o">.</span><span class="n">register_scheme</span><span class="p">(</span>
+    <span class="s2">"element_cpk"</span><span class="p">,</span>
+    <span class="p">{</span>
+        <span class="s2">"H"</span><span class="p">:</span> <span class="s2">"white"</span><span class="p">,</span>
+        <span class="s2">"C"</span><span class="p">:</span> <span class="s2">"grey"</span><span class="p">,</span>
+        <span class="s2">"N"</span><span class="p">:</span> <span class="s2">"blue"</span><span class="p">,</span>
+        <span class="s2">"O"</span><span class="p">:</span> <span class="s2">"red"</span><span class="p">,</span>
+        <span class="s2">"S"</span><span class="p">:</span> <span class="s2">"yellow"</span><span class="p">,</span>
+        <span class="s2">"P"</span><span class="p">:</span> <span class="s2">"orange"</span><span class="p">,</span>
+        <span class="s2">"F"</span><span class="p">:</span> <span class="s2">"green"</span><span class="p">,</span>
+        <span class="s2">"CL"</span><span class="p">:</span> <span class="s2">"green"</span><span class="p">,</span>
+        <span class="s2">"BR"</span><span class="p">:</span> <span class="s2">"darkred"</span><span class="p">,</span>
+        <span class="s2">"I"</span><span class="p">:</span> <span class="s2">"purple"</span><span class="p">,</span>
+        <span class="s2">"FE"</span><span class="p">:</span> <span class="s2">"darkorange"</span><span class="p">,</span>
+        <span class="s2">"ZN"</span><span class="p">:</span> <span class="s2">"slategray"</span><span class="p">,</span>
+        <span class="s2">"MG"</span><span class="p">:</span> <span class="s2">"forestgreen"</span><span class="p">,</span>
+        <span class="s2">"CA"</span><span class="p">:</span> <span class="s2">"darkgreen"</span><span class="p">,</span>
+        <span class="s2">"NA"</span><span class="p">:</span> <span class="s2">"blue"</span><span class="p">,</span>
+        <span class="s2">"K"</span><span class="p">:</span> <span class="s2">"violet"</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">fallback</span><span class="o">=</span><span class="s2">"lightgrey"</span><span class="p">,</span>
+    <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">colors</span><span class="o">.</span><span class="n">register_scheme</span><span class="p">(</span>
+    <span class="s2">"secondary_structure_default"</span><span class="p">,</span>
+    <span class="p">{</span>
+        <span class="s2">"H"</span><span class="p">:</span> <span class="s2">"red"</span><span class="p">,</span>
+        <span class="s2">"G"</span><span class="p">:</span> <span class="s2">"deeppink"</span><span class="p">,</span>
+        <span class="s2">"I"</span><span class="p">:</span> <span class="s2">"mediumvioletred"</span><span class="p">,</span>
+        <span class="s2">"E"</span><span class="p">:</span> <span class="s2">"dodgerblue"</span><span class="p">,</span>
+        <span class="s2">"B"</span><span class="p">:</span> <span class="s2">"cornflowerblue"</span><span class="p">,</span>
+        <span class="s2">"T"</span><span class="p">:</span> <span class="s2">"turquoise"</span><span class="p">,</span>
+        <span class="s2">"S"</span><span class="p">:</span> <span class="s2">"lightgreen"</span><span class="p">,</span>
+        <span class="s2">"L"</span><span class="p">:</span> <span class="s2">"lightgrey"</span><span class="p">,</span>
+        <span class="s2">"C"</span><span class="p">:</span> <span class="s2">"lightgrey"</span><span class="p">,</span>
+        <span class="s2">"helix"</span><span class="p">:</span> <span class="s2">"red"</span><span class="p">,</span>
+        <span class="s2">"sheet"</span><span class="p">:</span> <span class="s2">"dodgerblue"</span><span class="p">,</span>
+        <span class="s2">"turn"</span><span class="p">:</span> <span class="s2">"turquoise"</span><span class="p">,</span>
+        <span class="s2">"coil"</span><span class="p">:</span> <span class="s2">"lightgrey"</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">fallback</span><span class="o">=</span><span class="s2">"lightgrey"</span><span class="p">,</span>
+    <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">colors</span><span class="o">.</span><span class="n">register_generated_scheme</span><span class="p">(</span>
+    <span class="s2">"chain_default"</span><span class="p">,</span>
+    <span class="s2">"categorical_default"</span><span class="p">,</span>
+    <span class="n">fallback</span><span class="o">=</span><span class="s2">"lightgrey"</span><span class="p">,</span>
+    <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">colors</span><span class="o">.</span><span class="n">register_generated_scheme</span><span class="p">(</span>
+    <span class="s2">"pocket_default"</span><span class="p">,</span>
+    <span class="s2">"categorical_default"</span><span class="p">,</span>
+    <span class="n">fallback</span><span class="o">=</span><span class="s2">"lightgrey"</span><span class="p">,</span>
+    <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># --- Colour-vision-deficiency (CVD) safe catalog -----------------------------</span>
+<span class="c1">#</span>
+<span class="c1"># Curated categorical palettes that stay distinguishable under the common forms</span>
+<span class="c1"># of colour blindness (deuteranopia, protanopia, tritanopia). Sources: Okabe &amp;</span>
+<span class="c1"># Ito (2008) and Paul Tol's qualitative schemes. Each is registered twice — as a</span>
+<span class="c1"># continuous palette (for sampling) and as a generated scheme (for mapping</span>
+<span class="c1"># arbitrary categories in order, e.g. legends / multi-component views) — and</span>
+<span class="c1"># tagged so addons can discover them via ``colors.cvd_safe_names()``.</span>
+<span class="n">_CVD_SAFE_QUALITATIVE</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># Okabe-Ito 8-colour qualitative palette (skips black for category use).</span>
+    <span class="s2">"okabe_ito"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">"#E69F00"</span><span class="p">,</span>
+        <span class="s2">"#56B4E9"</span><span class="p">,</span>
+        <span class="s2">"#009E73"</span><span class="p">,</span>
+        <span class="s2">"#F0E442"</span><span class="p">,</span>
+        <span class="s2">"#0072B2"</span><span class="p">,</span>
+        <span class="s2">"#D55E00"</span><span class="p">,</span>
+        <span class="s2">"#CC79A7"</span><span class="p">,</span>
+        <span class="s2">"#000000"</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="c1"># Paul Tol qualitative schemes.</span>
+    <span class="s2">"tol_bright"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"#4477AA"</span><span class="p">,</span> <span class="s2">"#EE6677"</span><span class="p">,</span> <span class="s2">"#228833"</span><span class="p">,</span> <span class="s2">"#CCBB44"</span><span class="p">,</span> <span class="s2">"#66CCEE"</span><span class="p">,</span> <span class="s2">"#AA3377"</span><span class="p">,</span> <span class="s2">"#BBBBBB"</span><span class="p">],</span>
+    <span class="s2">"tol_muted"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">"#CC6677"</span><span class="p">,</span>
+        <span class="s2">"#332288"</span><span class="p">,</span>
+        <span class="s2">"#DDCC77"</span><span class="p">,</span>
+        <span class="s2">"#117733"</span><span class="p">,</span>
+        <span class="s2">"#88CCEE"</span><span class="p">,</span>
+        <span class="s2">"#882255"</span><span class="p">,</span>
+        <span class="s2">"#44AA99"</span><span class="p">,</span>
+        <span class="s2">"#999933"</span><span class="p">,</span>
+        <span class="s2">"#AA4499"</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="s2">"tol_vibrant"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"#EE7733"</span><span class="p">,</span> <span class="s2">"#0077BB"</span><span class="p">,</span> <span class="s2">"#33BBEE"</span><span class="p">,</span> <span class="s2">"#EE3377"</span><span class="p">,</span> <span class="s2">"#CC3311"</span><span class="p">,</span> <span class="s2">"#009988"</span><span class="p">,</span> <span class="s2">"#BBBBBB"</span><span class="p">],</span>
+    <span class="s2">"tol_high_contrast"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"#004488"</span><span class="p">,</span> <span class="s2">"#DDAA33"</span><span class="p">,</span> <span class="s2">"#BB5566"</span><span class="p">],</span>
+<span class="p">}</span>
+
+<span class="k">for</span> <span class="n">_cvd_name</span><span class="p">,</span> <span class="n">_cvd_colors</span> <span class="ow">in</span> <span class="n">_CVD_SAFE_QUALITATIVE</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">colors</span><span class="o">.</span><span class="n">register_palette</span><span class="p">(</span><span class="n">_cvd_name</span><span class="p">,</span> <span class="n">_cvd_colors</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">colors</span><span class="o">.</span><span class="n">register_generated_scheme</span><span class="p">(</span><span class="n">_cvd_name</span><span class="p">,</span> <span class="n">_cvd_name</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s2">"#BBBBBB"</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">colors</span><span class="o">.</span><span class="n">mark_cvd_safe</span><span class="p">(</span><span class="n">_cvd_name</span><span class="p">)</span>
+
+<span class="c1"># Perceptually-uniform continuous colormaps are CVD-safe by construction; make</span>
+<span class="c1"># sure the strongest ones are registered and tagged (turbo/rainbow are not).</span>
+<span class="k">for</span> <span class="n">_cvd_cmap</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"viridis"</span><span class="p">,</span> <span class="s2">"cividis"</span><span class="p">,</span> <span class="s2">"magma"</span><span class="p">,</span> <span class="s2">"inferno"</span><span class="p">,</span> <span class="s2">"plasma"</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">colors</span><span class="o">.</span><span class="n">register_palette</span><span class="p">(</span><span class="n">_cvd_cmap</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"mpl:</span><span class="si">{</span><span class="n">_cvd_cmap</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="n">colors</span><span class="o">.</span><span class="n">mark_cvd_safe</span><span class="p">(</span><span class="n">_cvd_cmap</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="expand_values_to_atoms">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.expand_values_to_atoms">[docs]</a>
+<span class="nd">@signal</span><span class="p">()</span>
+<span class="nd">@digest</span><span class="p">()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">expand_values_to_atoms</span><span class="p">(</span>
+    <span class="n">molsys</span><span class="p">:</span> <span class="s2">"Any"</span><span class="p">,</span>
+    <span class="n">values</span><span class="p">:</span> <span class="s2">"Any"</span><span class="p">,</span>
+    <span class="n">element</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"atom"</span><span class="p">,</span>
+    <span class="n">palette</span><span class="p">:</span> <span class="s2">"Any"</span> <span class="o">=</span> <span class="s2">"viridis"</span><span class="p">,</span>
+    <span class="n">value_range</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">scope_atom_indices</span><span class="p">:</span> <span class="s2">"list[int] | None"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"tuple[list[int], list[int]]"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Map element-level scalar values to a flat (atom_indices, colors) pair.</span>
+
+<span class="sd">    For each element in *molsys* (optionally scoped to *scope_atom_indices*),</span>
+<span class="sd">    the corresponding scalar is converted to a color and broadcast to every</span>
+<span class="sd">    atom that belongs to that element.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    molsys</span>
+<span class="sd">        A MolSysMT molecular system.</span>
+<span class="sd">    values</span>
+<span class="sd">        Iterable of scalars, one per element at the requested *element* level</span>
+<span class="sd">        that exists in *molsys* (or in the scope if *scope_atom_indices* is</span>
+<span class="sd">        given).</span>
+<span class="sd">    element</span>
+<span class="sd">        Structural hierarchy level: ``"atom"``, ``"group"``, ``"component"``,</span>
+<span class="sd">        ``"molecule"``, ``"chain"``, ``"entity"``.  Defaults to ``"atom"``.</span>
+<span class="sd">    palette</span>
+<span class="sd">        Palette name, matplotlib colormap, or list of colors.</span>
+<span class="sd">    value_range</span>
+<span class="sd">        Normalization range ``[vmin, vmax]``. Physical values require compatible</span>
+<span class="sd">        explicit units on this range. Auto-computed when ``None``.</span>
+<span class="sd">    scope_atom_indices</span>
+<span class="sd">        If given, only atoms in this list are considered and only elements that</span>
+<span class="sd">        have at least one atom here are included.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    atom_indices : list[int]</span>
+<span class="sd">        Flat list of model-level atom indices.</span>
+<span class="sd">    colors : list[int]</span>
+<span class="sd">        Parallel list of 0xRRGGBB color integers.</span>
+<span class="sd">    """</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">molsysmt</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">msm</span>  <span class="c1"># lazy import</span>
+
+    <span class="n">color_list</span> <span class="o">=</span> <span class="n">scalar_to_color_list</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">palette</span><span class="p">,</span> <span class="n">value_range</span><span class="o">=</span><span class="n">value_range</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s2">"atom"</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">scope_atom_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">color_list</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scope_atom_indices</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"values length (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">color_list</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match atom count in scope (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">scope_atom_indices</span><span class="p">)</span><span class="si">}</span><span class="s2">)."</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">scope_atom_indices</span><span class="p">),</span> <span class="n">color_list</span>
+
+        <span class="n">n_atoms</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">msm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">molsys</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="s2">"system"</span><span class="p">,</span> <span class="n">n_atoms</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">color_list</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n_atoms</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"values length (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">color_list</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match atom count (</span><span class="si">{</span><span class="n">n_atoms</span><span class="si">}</span><span class="s2">)."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">)),</span> <span class="n">color_list</span>
+
+    <span class="c1"># Non-atom level: map element index → atom indices via msm.get</span>
+    <span class="n">_ELEM_TO_ATOM_ATTR</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"group"</span><span class="p">:</span> <span class="s2">"group_index"</span><span class="p">,</span>
+        <span class="s2">"component"</span><span class="p">:</span> <span class="s2">"component_index"</span><span class="p">,</span>
+        <span class="s2">"molecule"</span><span class="p">:</span> <span class="s2">"molecule_index"</span><span class="p">,</span>
+        <span class="s2">"chain"</span><span class="p">:</span> <span class="s2">"chain_index"</span><span class="p">,</span>
+        <span class="s2">"entity"</span><span class="p">:</span> <span class="s2">"entity_index"</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">element</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_ELEM_TO_ATOM_ATTR</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Unsupported element level </span><span class="si">{</span><span class="n">element</span><span class="si">!r}</span><span class="s2">. "</span>
+            <span class="sa">f</span><span class="s2">"Accepted: 'atom', 'group', 'component', 'molecule', 'chain', 'entity'."</span>
+        <span class="p">)</span>
+
+    <span class="n">attr</span> <span class="o">=</span> <span class="n">_ELEM_TO_ATOM_ATTR</span><span class="p">[</span><span class="n">element</span><span class="p">]</span>
+
+    <span class="c1"># Get the element-level index for every atom (shape: (n_atoms,))</span>
+    <span class="n">per_atom_elem_index</span> <span class="o">=</span> <span class="n">msm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">molsys</span><span class="p">,</span>
+        <span class="n">element</span><span class="o">=</span><span class="s2">"atom"</span><span class="p">,</span>
+        <span class="n">selection</span><span class="o">=</span><span class="s2">"all"</span> <span class="k">if</span> <span class="n">scope_atom_indices</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">scope_atom_indices</span><span class="p">),</span>
+        <span class="n">output_type</span><span class="o">=</span><span class="s2">"values"</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="p">{</span><span class="n">attr</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Build sorted unique element indices</span>
+    <span class="n">unique_elem_indices</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">per_atom_elem_index</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">color_list</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_elem_indices</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"values length (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">color_list</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2"> count (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">unique_elem_indices</span><span class="p">)</span><span class="si">}</span><span class="s2">) "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">'in scope '</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">scope_atom_indices</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2">in the system."</span>
+        <span class="p">)</span>
+
+    <span class="n">elem_to_color</span> <span class="o">=</span> <span class="p">{</span><span class="n">eidx</span><span class="p">:</span> <span class="n">color_list</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">eidx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">unique_elem_indices</span><span class="p">)}</span>
+
+    <span class="c1"># Determine the atom indices to color</span>
+    <span class="k">if</span> <span class="n">scope_atom_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">atom_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">scope_atom_indices</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">n_atoms</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">msm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">molsys</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="s2">"system"</span><span class="p">,</span> <span class="n">n_atoms</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">atom_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">))</span>
+
+    <span class="n">out_atom_indices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">out_colors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">default_color</span> <span class="o">=</span> <span class="mh">0xAAAAAA</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">atom_idx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">atom_list</span><span class="p">):</span>
+        <span class="n">eidx_val</span> <span class="o">=</span> <span class="n">per_atom_elem_index</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">eidx_val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="n">elem_to_color</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">eidx_val</span><span class="p">),</span> <span class="n">default_color</span><span class="p">)</span>
+        <span class="n">out_atom_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom_idx</span><span class="p">)</span>
+        <span class="n">out_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">out_atom_indices</span><span class="p">,</span> <span class="n">out_colors</span></div>
+
+
+
+<div class="viewcode-block" id="scalar_to_color_list">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.colors.scalar_to_color_list">[docs]</a>
+<span class="nd">@signal</span><span class="p">()</span>
+<span class="nd">@digest</span><span class="p">()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">scalar_to_color_list</span><span class="p">(</span>
+    <span class="n">values</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">palette</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="s2">"viridis"</span><span class="p">,</span>
+    <span class="n">value_range</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Map an iterable of scalar values to a list of 0xRRGGBB color integers.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    values</span>
+<span class="sd">        Iterable of unit-free numbers or a one-dimensional quantity array.</span>
+<span class="sd">        One color is returned per value. Quantities retain their units until</span>
+<span class="sd">        normalization against the range.</span>
+<span class="sd">    palette</span>
+<span class="sd">        Palette name (str), ``ContinuousPalette``, matplotlib ``Colormap``, or a</span>
+<span class="sd">        list of colors.  Defaults to ``"viridis"``.</span>
+<span class="sd">    value_range</span>
+<span class="sd">        ``(vmin, vmax)`` normalization range. For physical values, supply a</span>
+<span class="sd">        quantity vector or two compatible scalar quantities. Bare bounds are</span>
+<span class="sd">        accepted only for unit-free data. Auto-calculated when ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list[int]</span>
+<span class="sd">        One 0xRRGGBB integer per input value.</span>
+<span class="sd">    """</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>  <span class="c1"># lazy import — only needed when called</span>
+
+    <span class="n">dimensioned</span> <span class="o">=</span> <span class="n">puw</span><span class="o">.</span><span class="n">is_quantity</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">puw</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">dimensionality</span><span class="o">=</span><span class="p">{})</span>
+    <span class="n">target_unit</span> <span class="o">=</span> <span class="n">puw</span><span class="o">.</span><span class="n">get_unit</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="k">if</span> <span class="n">dimensioned</span> <span class="k">else</span> <span class="s2">"dimensionless"</span>
+    <span class="n">raw_values</span> <span class="o">=</span> <span class="n">puw</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">to_unit</span><span class="o">=</span><span class="n">target_unit</span><span class="p">)</span> <span class="k">if</span> <span class="n">puw</span><span class="o">.</span><span class="n">is_quantity</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="k">else</span> <span class="n">values</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">raw_values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"values must be a 1-D sequence of scalars."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">ArgumentError</span><span class="p">(</span><span class="s2">"values"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">" Scalar colors require nonempty finite data."</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">value_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">puw</span><span class="o">.</span><span class="n">is_quantity</span><span class="p">(</span><span class="n">value_range</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">bounds</span> <span class="o">=</span> <span class="n">puw</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">value_range</span><span class="p">,</span> <span class="n">to_unit</span><span class="o">=</span><span class="n">target_unit</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ArgumentError</span><span class="p">(</span>
+                    <span class="s2">"value_range"</span><span class="p">,</span>
+                    <span class="n">value</span><span class="o">=</span><span class="n">value_range</span><span class="p">,</span>
+                    <span class="n">message</span><span class="o">=</span><span class="s2">" Range units must be compatible with the scalar values."</span><span class="p">,</span>
+                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+        <span class="k">elif</span> <span class="n">dimensioned</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ArgumentError</span><span class="p">(</span>
+                <span class="s2">"value_range"</span><span class="p">,</span>
+                <span class="n">value</span><span class="o">=</span><span class="n">value_range</span><span class="p">,</span>
+                <span class="n">message</span><span class="o">=</span><span class="s2">" Physical scalar values require a range with explicit compatible units."</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bounds</span> <span class="o">=</span> <span class="n">value_range</span>
+        <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">min</span><span class="p">()),</span> <span class="nb">float</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+
+    <span class="n">span</span> <span class="o">=</span> <span class="n">vmax</span> <span class="o">-</span> <span class="n">vmin</span>
+    <span class="n">normed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="k">if</span> <span class="n">span</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">((</span><span class="n">arr</span> <span class="o">-</span> <span class="n">vmin</span><span class="p">)</span> <span class="o">/</span> <span class="n">span</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+    <span class="n">palette_obj</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">resolve_palette</span><span class="p">(</span><span class="n">palette</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>
+    <span class="n">palette_ints</span> <span class="o">=</span> <span class="n">palette_obj</span><span class="o">.</span><span class="n">colors</span>  <span class="c1"># list[int], 0xRRGGBB</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">palette_ints</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">palette_ints</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span><span class="p">))]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">normed</span><span class="p">]</span></div>
+
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"MOLSTAR_COLOR_NAMES"</span><span class="p">,</span>
+    <span class="s2">"ContinuousPalette"</span><span class="p">,</span>
+    <span class="s2">"CategoricalColorScheme"</span><span class="p">,</span>
+    <span class="s2">"ColorRegistry"</span><span class="p">,</span>
+    <span class="s2">"colors"</span><span class="p">,</span>
+    <span class="s2">"normalize_color"</span><span class="p">,</span>
+    <span class="s2">"normalize_colors"</span><span class="p">,</span>
+    <span class="s2">"scalar_to_color_list"</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="../../content/about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

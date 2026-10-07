@@ -1,0 +1,48 @@
+﻿molsysviewer.whole.Whole
+========================
+
+.. currentmodule:: molsysviewer.whole
+
+.. autoclass:: Whole
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Whole.__init__
+      ~Whole.convert
+      ~Whole.focus
+      ~Whole.get
+      ~Whole.get_center
+      ~Whole.hide
+      ~Whole.info
+      ~Whole.reset_colors
+      ~Whole.reset_representation
+      ~Whole.select
+      ~Whole.set_color
+      ~Whole.set_color_by_attribute
+      ~Whole.set_color_by_values
+      ~Whole.set_color_scheme
+      ~Whole.set_representation
+      ~Whole.show
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Whole.color_scheme
+      ~Whole.params
+      ~Whole.preset
+      ~Whole.representation
+      ~Whole.scene_style_name
+      ~Whole.visible
+   
+   

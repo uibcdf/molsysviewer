@@ -1,0 +1,29 @@
+molsysviewer.addon\_templates package
+=====================================
+
+Submodules
+----------
+
+molsysviewer.addon\_templates.dummy\_addon module
+-------------------------------------------------
+
+.. automodule:: molsysviewer.addon_templates.dummy_addon
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.addon\_templates.minimal\_elastnetmt module
+--------------------------------------------------------
+
+.. automodule:: molsysviewer.addon_templates.minimal_elastnetmt
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: molsysviewer.addon_templates
+   :members:
+   :show-inheritance:
+   :undoc-members:

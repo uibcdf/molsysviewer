@@ -1,0 +1,107 @@
+﻿molsysviewer.MolSysView
+=======================
+
+.. currentmodule:: molsysviewer
+
+.. autoclass:: MolSysView
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MolSysView.__init__
+      ~MolSysView.apply_system_edit
+      ~MolSysView.attributed_to
+      ~MolSysView.build_popup_scene_snapshot
+      ~MolSysView.clear_decorations
+      ~MolSysView.close
+      ~MolSysView.count_regions_by
+      ~MolSysView.export_state
+      ~MolSysView.extract
+      ~MolSysView.focus_region
+      ~MolSysView.focus_selection
+      ~MolSysView.focus_with_fade
+      ~MolSysView.get_camera_snapshot
+      ~MolSysView.get_coordinates
+      ~MolSysView.get_last_active_selection_event
+      ~MolSysView.get_last_click_event
+      ~MolSysView.get_last_context_action_event
+      ~MolSysView.get_last_context_event
+      ~MolSysView.get_last_hover_event
+      ~MolSysView.get_last_measurement_created_event
+      ~MolSysView.get_last_tool_state_event
+      ~MolSysView.get_panel_mode_state
+      ~MolSysView.hide_box
+      ~MolSysView.import_state
+      ~MolSysView.info
+      ~MolSysView.load
+      ~MolSysView.load_project_config
+      ~MolSysView.load_state
+      ~MolSysView.make_regions_by
+      ~MolSysView.new_region_from_active_selection
+      ~MolSysView.off_click
+      ~MolSysView.off_context
+      ~MolSysView.off_frame_change
+      ~MolSysView.off_hover
+      ~MolSysView.on_click
+      ~MolSysView.on_context
+      ~MolSysView.on_frame_change
+      ~MolSysView.on_hover
+      ~MolSysView.partial_coordinates_update
+      ~MolSysView.pause
+      ~MolSysView.play
+      ~MolSysView.reset_all_colors
+      ~MolSysView.reset_camera
+      ~MolSysView.reset_viewer
+      ~MolSysView.save_session
+      ~MolSysView.save_state
+      ~MolSysView.set_box
+      ~MolSysView.set_camera_snapshot
+      ~MolSysView.set_canvas_visibility
+      ~MolSysView.set_controls_visible
+      ~MolSysView.set_coordinates
+      ~MolSysView.set_dimensions
+      ~MolSysView.set_figure_spec
+      ~MolSysView.set_panel_mode
+      ~MolSysView.set_play_speed
+      ~MolSysView.set_structure
+      ~MolSysView.set_workspace
+      ~MolSysView.set_workspace_panel
+      ~MolSysView.show
+      ~MolSysView.show_best_fit_plane
+      ~MolSysView.show_box
+      ~MolSysView.show_orientation_axes
+      ~MolSysView.wait_for_transaction
+      ~MolSysView.workspace_catalog
+      ~MolSysView.workspace_panels
+      ~MolSysView.workspace_runtime
+      ~MolSysView.workspace_sections
+      ~MolSysView.zoom
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~MolSysView.current_structure_id
+      ~MolSysView.current_structure_index
+      ~MolSysView.hover_telemetry_enabled
+      ~MolSysView.js_logs
+      ~MolSysView.layers
+      ~MolSysView.load_blocks
+      ~MolSysView.molsys
+      ~MolSysView.presets
+      ~MolSysView.regions
+      ~MolSysView.representations
+      ~MolSysView.scene_style_name
+      ~MolSysView.selections_registry
+      ~MolSysView.visible_structure_indices
+   
+   

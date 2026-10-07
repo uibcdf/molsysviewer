@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.zoom
+============================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.zoom

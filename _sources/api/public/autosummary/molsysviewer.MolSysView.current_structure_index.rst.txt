@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.current\_structure\_index
+=================================================
+
+.. currentmodule:: molsysviewer
+
+.. autoproperty:: MolSysView.current_structure_index

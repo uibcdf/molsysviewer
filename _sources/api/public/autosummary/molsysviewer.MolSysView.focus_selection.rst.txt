@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.focus\_selection
+========================================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.focus_selection

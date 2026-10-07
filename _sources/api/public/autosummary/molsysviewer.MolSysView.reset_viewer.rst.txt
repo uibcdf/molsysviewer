@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.reset\_viewer
+=====================================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.reset_viewer

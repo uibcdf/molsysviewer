@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.get\_coordinates
+========================================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.get_coordinates

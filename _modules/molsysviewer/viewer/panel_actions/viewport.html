@@ -1,0 +1,727 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+    <title>molsysviewer.viewer.panel_actions.viewport – MolSysViewer 0.24.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=6b6fcda3" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=6b6fcda3" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
+
+    <script src="../../../../_static/documentation_options.js?v=a9084e48"></script>
+    <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/molsysviewer/viewer/panel_actions/viewport';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.24.0" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.24.0 documentation - Home"/>
+    <img src="../../../../_static/logo_dark.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.24.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">Module code</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../viewer.html" class="nav-link">molsysviewer.viewer</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../panel_actions.html" class="nav-link">molsysviewer.viewer.panel_actions</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">molsysviewer.viewer.panel_actions.viewport</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for molsysviewer.viewer.panel_actions.viewport</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Mapping</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._pyunitwizard</span><span class="w"> </span><span class="kn">import</span> <span class="n">puw</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...figures</span><span class="w"> </span><span class="kn">import</span> <span class="n">FigureSpec</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_section</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tag"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2"> requires a non-empty section tag."</span><span class="p">)</span>
+    <span class="n">section</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">_scene_objects</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="s2">"section"</span><span class="p">,</span> <span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()))</span>
+    <span class="k">if</span> <span class="n">section</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No section found with tag </span><span class="si">{</span><span class="n">tag</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">section</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_vector</span><span class="p">(</span><span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> must be a 3-element vector."</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_point_quantity</span><span class="p">(</span><span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"point"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+        <span class="n">magnitude</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"magnitude"</span><span class="p">)</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"unit"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">unit</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"point.unit must be a non-empty unit string."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">magnitude</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">magnitude</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"point.magnitude must be a 3-element vector."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">puw</span><span class="o">.</span><span class="n">quantity</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">magnitude</span><span class="p">],</span> <span class="n">unit</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">puw</span><span class="o">.</span><span class="n">quantity</span><span class="p">(</span><span class="n">_vector</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="s2">"point"</span><span class="p">),</span> <span class="s2">"nm"</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="toggle_background">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.viewport.toggle_background">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">toggle_background</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">"mode"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">_send</span><span class="p">({</span><span class="s2">"op"</span><span class="p">:</span> <span class="s2">"toggle_background"</span><span class="p">})</span>
+        <span class="k">return</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">set_background</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="s2">"mode"</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="reset_view">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.viewport.reset_view">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">reset_view</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">del</span> <span class="n">content</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="toggle_spin">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.viewport.toggle_spin">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">toggle_spin</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">"enabled"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">_send</span><span class="p">({</span><span class="s2">"op"</span><span class="p">:</span> <span class="s2">"toggle_spin"</span><span class="p">})</span>
+        <span class="k">return</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">spin</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="s2">"enabled"</span><span class="p">]))</span></div>
+
+
+
+<div class="viewcode-block" id="toggle_swing">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.viewport.toggle_swing">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">toggle_swing</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">"enabled"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">_send</span><span class="p">({</span><span class="s2">"op"</span><span class="p">:</span> <span class="s2">"toggle_swing"</span><span class="p">})</span>
+        <span class="k">return</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">swing</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="s2">"enabled"</span><span class="p">]))</span></div>
+
+
+
+<div class="viewcode-block" id="set_camera_mode">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.viewport.set_camera_mode">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_camera_mode</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">set_projection</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"mode"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"perspective"</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="set_fog">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.viewport.set_fog">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_fog</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">set_fog</span><span class="p">(</span>
+        <span class="n">enabled</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"enable"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)),</span>
+        <span class="n">intensity</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"intensity"</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">)),</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="create_section_from_selection">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.viewport.create_section_from_selection">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_section_from_selection</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">view</span><span class="o">.</span><span class="n">_molsys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"create_section_from_selection requires a loaded molecular system."</span><span class="p">)</span>
+    <span class="n">atom_indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">active_selection</span><span class="o">.</span><span class="n">atom_indices</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">atom_indices</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"create_section_from_selection requires a non-empty active selection."</span><span class="p">)</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">molsysmt.structure</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_center</span>
+
+    <span class="n">center</span> <span class="o">=</span> <span class="n">get_center</span><span class="p">(</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">_molsys</span><span class="p">,</span>
+        <span class="n">selection</span><span class="o">=</span><span class="n">atom_indices</span><span class="p">,</span>
+        <span class="n">structure_indices</span><span class="o">=</span><span class="p">[</span><span class="n">view</span><span class="o">.</span><span class="n">current_structure_index</span><span class="p">],</span>
+        <span class="n">syntax</span><span class="o">=</span><span class="s2">"MolSysMT"</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">center_nm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">puw</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="n">to_unit</span><span class="o">=</span><span class="s2">"nm"</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">center_nm</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">center_nm</span> <span class="o">=</span> <span class="n">center_nm</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">raw_forward</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"camera_forward"</span><span class="p">)</span>
+    <span class="n">normal</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">raw_forward</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_forward</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_forward</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+        <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">norm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">normal</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">norm</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"camera_forward must be a non-zero vector."</span><span class="p">)</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span>
+        <span class="n">point</span><span class="o">=</span><span class="n">puw</span><span class="o">.</span><span class="n">quantity</span><span class="p">(</span><span class="n">center_nm</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="s2">"nm"</span><span class="p">),</span>
+        <span class="n">normal</span><span class="o">=</span><span class="p">(</span><span class="n">normal</span> <span class="o">/</span> <span class="n">norm</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="set_section_visibility">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.viewport.set_section_visibility">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_section_visibility</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">section</span> <span class="o">=</span> <span class="n">_section</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"set_section_visibility"</span><span class="p">)</span>
+    <span class="n">visible</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"visible"</span><span class="p">)</span>
+    <span class="n">hidden</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"hidden"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">visible</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">target_visible</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">visible</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">hidden</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">target_visible</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">hidden</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">target_visible</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">section</span><span class="o">.</span><span class="n">visible</span>
+    <span class="p">(</span><span class="n">section</span><span class="o">.</span><span class="n">show</span> <span class="k">if</span> <span class="n">target_visible</span> <span class="k">else</span> <span class="n">section</span><span class="o">.</span><span class="n">hide</span><span class="p">)(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="set_section_point">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.viewport.set_section_point">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_section_point</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">_section</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"set_section_point"</span><span class="p">)</span><span class="o">.</span><span class="n">set_point</span><span class="p">(</span><span class="n">_point_quantity</span><span class="p">(</span><span class="n">content</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="set_section_normal">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.viewport.set_section_normal">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_section_normal</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">_section</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"set_section_normal"</span><span class="p">)</span><span class="o">.</span><span class="n">set_normal</span><span class="p">(</span><span class="n">_vector</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="s2">"normal"</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="set_section_invert">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.viewport.set_section_invert">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_section_invert</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">_section</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"set_section_invert"</span><span class="p">)</span><span class="o">.</span><span class="n">set_invert</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"invert"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)))</span></div>
+
+
+
+<div class="viewcode-block" id="remove_section">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.viewport.remove_section">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">remove_section</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">_section</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"remove_section"</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="set_figure_spec">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.viewport.set_figure_spec">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_figure_spec</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">preset</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"figure_preset"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"publication-light"</span><span class="p">)</span>
+    <span class="n">background</span> <span class="o">=</span> <span class="s2">"dark"</span> <span class="k">if</span> <span class="s2">"dark"</span> <span class="ow">in</span> <span class="n">preset</span> <span class="k">else</span> <span class="s2">"white"</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">set_figure_spec</span><span class="p">(</span>
+        <span class="n">FigureSpec</span><span class="p">(</span>
+            <span class="n">preset</span><span class="o">=</span><span class="n">preset</span><span class="p">,</span>
+            <span class="n">scale</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"figure_scale"</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+            <span class="n">background</span><span class="o">=</span><span class="n">background</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="export_html">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.viewport.export_html">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">export_html</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">del</span> <span class="n">content</span>
+    <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">widget</span><span class="p">,</span> <span class="s2">"publish_download"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">_request_remote_html_download</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">html</span><span class="p">(</span><span class="s2">"molsysviewer_export.html"</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="download_image">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.viewport.download_image">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">download_image</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">del</span> <span class="n">content</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">_request_remote_image_download</span><span class="p">()</span></div>
+
+
+
+<span class="n">HANDLERS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"reset_view"</span><span class="p">:</span> <span class="n">reset_view</span><span class="p">,</span>
+    <span class="s2">"toggle_background"</span><span class="p">:</span> <span class="n">toggle_background</span><span class="p">,</span>
+    <span class="s2">"toggle_spin"</span><span class="p">:</span> <span class="n">toggle_spin</span><span class="p">,</span>
+    <span class="s2">"toggle_swing"</span><span class="p">:</span> <span class="n">toggle_swing</span><span class="p">,</span>
+    <span class="s2">"set_camera_mode"</span><span class="p">:</span> <span class="n">set_camera_mode</span><span class="p">,</span>
+    <span class="s2">"set_fog"</span><span class="p">:</span> <span class="n">set_fog</span><span class="p">,</span>
+    <span class="s2">"create_section_from_selection"</span><span class="p">:</span> <span class="n">create_section_from_selection</span><span class="p">,</span>
+    <span class="s2">"set_section_visibility"</span><span class="p">:</span> <span class="n">set_section_visibility</span><span class="p">,</span>
+    <span class="s2">"set_section_point"</span><span class="p">:</span> <span class="n">set_section_point</span><span class="p">,</span>
+    <span class="s2">"set_section_normal"</span><span class="p">:</span> <span class="n">set_section_normal</span><span class="p">,</span>
+    <span class="s2">"set_section_invert"</span><span class="p">:</span> <span class="n">set_section_invert</span><span class="p">,</span>
+    <span class="s2">"remove_section"</span><span class="p">:</span> <span class="n">remove_section</span><span class="p">,</span>
+    <span class="s2">"set_figure_spec"</span><span class="p">:</span> <span class="n">set_figure_spec</span><span class="p">,</span>
+    <span class="s2">"download_image"</span><span class="p">:</span> <span class="n">download_image</span><span class="p">,</span>
+    <span class="s2">"export_html"</span><span class="p">:</span> <span class="n">export_html</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="../../../../content/about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

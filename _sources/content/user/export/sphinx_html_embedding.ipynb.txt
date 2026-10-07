@@ -1,0 +1,508 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "34396567",
+   "metadata": {},
+   "source": [
+    "# Embedding a view in your website\n",
+    "\n",
+    "Use this page when you want an interactive 3D view on a website you control: a\n",
+    "documentation site, a rendered notebook, a project page, or material attached to\n",
+    "a paper.\n",
+    "\n",
+    "It works the same way everywhere, because what you produce is an ordinary HTML\n",
+    "file plus one shared asset. Sphinx, MkDocs, Quarto, Jupyter Book, Hugo and plain\n",
+    "HTML all embed it identically. The Sphinx section near the end is a convenience,\n",
+    "not a requirement."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3b78b79d",
+   "metadata": {},
+   "source": [
+    "## The short version\n",
+    "\n",
+    "```python\n",
+    "import molsysviewer as msv\n",
+    "\n",
+    "view = msv.new_view(\"1TCD\")\n",
+    "view.export.html(\"docs/_static/views/1tcd.html\", shared_runtime=\"docs/_static\")\n",
+    "```\n",
+    "\n",
+    "That writes two things:\n",
+    "\n",
+    "- `docs/_static/views/1tcd.html` — your scene, as inline JSON;\n",
+    "- `docs/_static/viewer.js` — the MolSysViewer runtime, copied from your\n",
+    "  installation.\n",
+    "\n",
+    "Then embed the view in whatever page you like:\n",
+    "\n",
+    "```python\n",
+    "msv.tools.embed_iframe(\"docs/_static/views/1tcd.html\", path=\"docs/content/my_page.md\")\n",
+    "```\n",
+    "\n",
+    "In a notebook that call **shows the view**. Anywhere else the same value is the\n",
+    "markup, ready to paste:\n",
+    "\n",
+    "```html\n",
+    "<iframe src=\"../_static/views/1tcd.html\" width=\"100%\" height=\"480px\"\n",
+    "        style=\"border:none;\"></iframe>\n",
+    "```\n",
+    "\n",
+    "No Python kernel and no build system are needed to view the result. A view that\n",
+    "shares a runtime has to be **served** — `python -m molsysviewer.preview\n",
+    "docs/_build/html` is enough while you work — because a browser will not let a\n",
+    "page opened from a disk load a file beside it. A self-contained export, the\n",
+    "default, has nothing beside it and opens with a double click."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ca2c3f05",
+   "metadata": {},
+   "source": [
+    "## One question: shared or self-contained?\n",
+    "\n",
+    "That is the whole decision, and `shared_runtime` is the whole API for it.\n",
+    "\n",
+    "```python\n",
+    "view.export.html(path)                                  # self-contained\n",
+    "view.export.html(path, shared_runtime=\"docs/_static\")   # shared with your other views\n",
+    "```\n",
+    "\n",
+    "**Without `shared_runtime`** you get a single file that carries everything —\n",
+    "several megabytes, and it goes anywhere on its own. It opens with a double\n",
+    "click, with no server and no network, which is what makes it right for something\n",
+    "you send to a colleague or attach to a paper.\n",
+    "\n",
+    "**With a directory** you get a small file that loads the runtime from a copy\n",
+    "placed there. Right for a website: the runtime is downloaded once and cached\n",
+    "across every page, however many views you publish. The price is that these views\n",
+    "have to be served over HTTP — see *Previewing before you publish* below.\n",
+    "\n",
+    "The copy comes from the MolSysViewer you have installed, which is what makes it\n",
+    "trustworthy:\n",
+    "\n",
+    "- it is **version-exact with your scene** — the same code that produced it;\n",
+    "- your page **works offline**, and on networks that block external hosts;\n",
+    "- it keeps working regardless of what is published anywhere later;\n",
+    "- and when you upgrade MolSysViewer and regenerate, you get the new runtime."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b019798e",
+   "metadata": {},
+   "source": [
+    "### If the views and the asset are produced by different steps\n",
+    "\n",
+    "Place the asset on its own:\n",
+    "\n",
+    "```python\n",
+    "import molsysviewer as msv\n",
+    "\n",
+    "msv.tools.export_runtime_asset(\"docs/_static\")\n",
+    "```\n",
+    "\n",
+    "Useful in a `Makefile` or CI step that prepares assets before, or independently\n",
+    "of, generating scenes.\n",
+    "\n",
+    "The copy is replaced when you upgrade MolSysViewer and left alone when it is\n",
+    "already current, so a build that watches timestamps does not churn. A\n",
+    "`viewer.js` in that directory that MolSysViewer did not write is **never**\n",
+    "overwritten — the export stops and tells you, rather than destroying a bundle of\n",
+    "your own that happens to share the name.\n",
+    "\n",
+    "### Should the asset be committed?\n",
+    "\n",
+    "Both policies work; it is your repository's call.\n",
+    "\n",
+    "- **Commit it** — anyone who clones can open the views directly, with no build.\n",
+    "- **Generate it at build time and `.gitignore` it** — no large binary in your\n",
+    "  history. Your CI already has MolSysViewer installed if it generates the views,\n",
+    "  so placing the asset is one more line.\n",
+    "\n",
+    "MolSysViewer's own documentation uses the second: `docs/conf.py` calls\n",
+    "`export_runtime_asset` when the build starts."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "40f0af60",
+   "metadata": {},
+   "source": [
+    "### Not hosting anything at all\n",
+    "\n",
+    "If you would rather not keep a runtime beside your views, address the published\n",
+    "package:\n",
+    "\n",
+    "```python\n",
+    "view.export.html(path, shared_runtime=\"cdn\")\n",
+    "```\n",
+    "\n",
+    "This requires your MolSysViewer version to be a published release — exporting\n",
+    "from a development install raises, because the URL would be written now and fail\n",
+    "later, on your readers' screens. Weigh it knowing that the page then depends on\n",
+    "that version remaining available for as long as the page is read, and will not\n",
+    "render without a network connection.\n",
+    "\n",
+    "You can also give an explicit list of candidates, tried in order:\n",
+    "\n",
+    "```python\n",
+    "view.export.html(path, shared_runtime=[\"../viewer.js\", \"https://…/viewer.js\"])\n",
+    "```\n",
+    "\n",
+    "*(A directory literally named `cdn` must be written as `\"./cdn\"` or as an\n",
+    "absolute path.)*"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e896f46e",
+   "metadata": {},
+   "source": [
+    "## The two shapes side by side\n",
+    "\n",
+    "|  | no `shared_runtime` | `shared_runtime=\"<dir>\"` |\n",
+    "|---|---|---|\n",
+    "| Runtime | inside every file | one copy for all views |\n",
+    "| File size | several MB each | small |\n",
+    "| Opens by double click | yes | no — must be served |\n",
+    "| Works with no network | yes | yes |\n",
+    "| Best for | a file you send to someone | a site with more than one view |\n",
+    "\n",
+    "## Previewing before you publish\n",
+    "\n",
+    "A served site answers both columns, so this only ever comes up between building\n",
+    "your site and publishing it. Serve the build:\n",
+    "\n",
+    "```bash\n",
+    "python -m molsysviewer.preview docs/_build/html\n",
+    "```\n",
+    "\n",
+    "That starts a local server and opens a browser at it. The same thing from Python\n",
+    "is `msv.tools.preview(\"docs/_build/html\")`.\n",
+    "\n",
+    "Opening `_build/html/index.html` from the file manager instead will show empty\n",
+    "frames wherever a view shares its runtime, and the browser console will say\n",
+    "`blocked by CORS`. It is not a broken export: a page opened from a disk has no\n",
+    "origin, and a browser refuses to let it load the script sitting next to it. Any\n",
+    "web server removes the problem, which is why a published site never has it.\n",
+    "\n",
+    "A shared view addresses the local runtime and nothing else — no registry, no\n",
+    "fallback URL, nothing that can rot. If you want the published package instead,\n",
+    "ask for it: `shared_runtime=\"cdn\"`."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cafe398f",
+   "metadata": {},
+   "source": [
+    "## What the view sits on\n",
+    "\n",
+    "A view is read on a page you do not control, on a screen you have never seen, and\n",
+    "possibly in a theme that did not exist when you exported it. So the colour behind\n",
+    "it is not decided here — it is decided where the view is read.\n",
+    "\n",
+    "```python\n",
+    "view.export.html(path, background=\"transparent\")   # for a website\n",
+    "view.export.html(path)                             # \"auto\": for a file that travels alone\n",
+    "```\n",
+    "\n",
+    "| value | what the page sits on |\n",
+    "|---|---|\n",
+    "| `\"auto\"` *(default)* | the background of whatever container it is embedded in, copied exactly, and followed when that changes. With no host to ask — a file opened on its own — the reader's light/dark preference. |\n",
+    "| `\"transparent\"` | nothing. The canvas clears with alpha and the page behind shows through, including a gradient or an image, which no colour can copy. |\n",
+    "| `\"white\"` / `\"dark\"` | fixed, ignoring host and reader alike. |\n",
+    "\n",
+    "**On a documentation site, prefer `\"transparent\"`.** Both follow a theme switch,\n",
+    "but `\"transparent\"` has nothing to change, so it turns with the page; `\"auto\"`\n",
+    "reacts to it, and the repaint is perceptible. MolSysMT, the first site to publish\n",
+    "views this way, adopted `\"transparent\"` for exactly that reason.\n",
+    "\n",
+    "**For a file you send to someone, keep the default.** There is no host to\n",
+    "inherit from, and `\"auto\"` follows the reader's own preference.\n",
+    "\n",
+    "Neither needs anything from the site: no configuration, no theme-specific\n",
+    "attribute, no script in your templates. A view and the page embedding it are\n",
+    "served together, so the view can read the document around it and does.\n",
+    "\n",
+    "*(Whatever container your theme puts the view in is what it matches. If that\n",
+    "container has its own padding — `pydata-sphinx-theme` gives notebook outputs\n",
+    "`.5rem` and a rounded corner — the colour will match but the space is still\n",
+    "there. Removing it is one rule in your own stylesheet, and only worth it if you\n",
+    "want the view flush with the text.)*"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "30f47c47",
+   "metadata": {},
+   "source": [
+    "## What an embedded view can and cannot do\n",
+    "\n",
+    "The exported page is the scene plus the renderer. There is no Python behind it,\n",
+    "which is what lets it work anywhere — and it is also what sets the boundary.\n",
+    "\n",
+    "**Works:** everything already in the scene (structures, regions, colours,\n",
+    "representations, overlays, annotations, measurements), full camera control,\n",
+    "reset, fullscreen, spin, swing, trajectory playback, and the pop-out window.\n",
+    "\n",
+    "**Does not:** anything that needs the Python side to decide something — sending a\n",
+    "selection back to a notebook, `on_click` / `on_hover` callbacks, loading new\n",
+    "data, or recording new reproducible state. Compose the scene you want before\n",
+    "exporting it."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "54cedc81",
+   "metadata": {},
+   "source": [
+    "## A worked example\n",
+    "\n",
+    "Let's actually produce a file. Build a view and export it:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "fe287246",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:21:13.517937Z",
+     "iopub.status.busy": "2026-08-06T10:21:13.517486Z",
+     "iopub.status.idle": "2026-08-06T10:21:20.761790Z",
+     "shell.execute_reply": "2026-08-06T10:21:20.760502Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import molsysviewer as msv\n",
+    "\n",
+    "view = msv.new_view('1TCD')\n",
+    "view.export.html('1tcd_view.html', title='1TCD View', shared_runtime='.')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d7716868",
+   "metadata": {},
+   "source": [
+    "Place the result in a directory reserved for it in your documentation tree —\n",
+    "we suggest `docs/_static/views/` — and point every view at one shared runtime\n",
+    "directory, as shown above.\n",
+    "\n",
+    "By default the exported view includes the on-canvas controls (Reset, Fullscreen,\n",
+    "background toggle, Spin, Swing). For a more discreet embed, pass\n",
+    "`include_controls=False`.\n",
+    "\n",
+    "During a Sphinx build everything under `_static/` is copied to the output, so\n",
+    "both the view and the runtime are served automatically."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1bcc98b0",
+   "metadata": {},
+   "source": [
+    "## Embedding the result\n",
+    "\n",
+    "Counting `../` by hand is the one step of embedding that fails silently: the\n",
+    "export succeeds, the build succeeds, and the reader gets an empty frame. So let\n",
+    "the code count. Give it the view and the page that will show it:\n",
+    "\n",
+    "```python\n",
+    "import molsysviewer as msv\n",
+    "\n",
+    "msv.tools.embed_iframe(\n",
+    "    \"docs/_static/views/1tcd.html\",\n",
+    "    path=\"docs/content/user/my_page.ipynb\",\n",
+    ")\n",
+    "```\n",
+    "\n",
+    "**In a notebook, that shows the view.** In a Markdown or reStructuredText page,\n",
+    "the same call gives you the markup to paste — it is a string as well as a\n",
+    "rendering, so both ways work without thinking about which you are in.\n",
+    "\n",
+    "If you already know the relative path and only want the embed,\n",
+    "`molsysviewer.thirds.jupyter.load_html_in_notebook` takes it directly. Here it\n",
+    "shows a view generated by this project's own `docs/generate_static_views/`\n",
+    "scripts:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "a846088c",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:21:20.766536Z",
+     "iopub.status.busy": "2026-08-06T10:21:20.765944Z",
+     "iopub.status.idle": "2026-08-06T10:21:20.776482Z",
+     "shell.execute_reply": "2026-08-06T10:21:20.775144Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "\n",
+       "        <iframe\n",
+       "            width=\"100%\"\n",
+       "            height=\"480px\"\n",
+       "            src=\"../../../_static/views/demo_1TCD.html\"\n",
+       "            frameborder=\"0\"\n",
+       "            allowfullscreen\n",
+       "            \n",
+       "        ></iframe>\n",
+       "        "
+      ],
+      "text/plain": [
+       "<IPython.lib.display.IFrame at 0x7c16b192ee40>"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from molsysviewer.thirds.jupyter import load_html_in_notebook\n",
+    "\n",
+    "load_html_in_notebook('../../../_static/views/demo_1TCD.html')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "415988db",
+   "metadata": {},
+   "source": [
+    "The relative path is resolved from the **built** page's location, so count\n",
+    "directories from the output HTML rather than from the notebook source.\n",
+    "\n",
+    "Leave a blank cell below the embed so the view has some visual space."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "68624c48",
+   "metadata": {},
+   "source": [
+    "## Notebook tips: showing the view, not the plumbing\n",
+    "\n",
+    "If you write the page as a notebook, two cell tags keep the result clean while\n",
+    "the notebook stays fully reproducible.\n",
+    "\n",
+    "**Hide the output of `view.show()`.** Select the cell, open the Property\n",
+    "Inspector (the gear icon), and add the cell tag `remove-output`. `myst_nb` keeps\n",
+    "the input in the source and hides the output in the rendered HTML.\n",
+    "\n",
+    "**Hide the input of the embedding call.** Select the `load_html_in_notebook`\n",
+    "cell and add the tag `remove-input`, so readers see the view without the\n",
+    "mechanics that produced it.\n",
+    "\n",
+    "The result is a clean interactive scene on the page, with the full code still\n",
+    "present underneath."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f6a44a71",
+   "metadata": {},
+   "source": [
+    "## Generate views outside the documentation build\n",
+    "\n",
+    "Export scenes with a script, not from a notebook executed during the build:\n",
+    "\n",
+    "```python\n",
+    "# docs/generate_static_views/1tcd.py\n",
+    "import molsysviewer as msv\n",
+    "\n",
+    "view = msv.demo[\"1TCD\"]\n",
+    "view.styles.apply(tag=\"polymer-and-ligand\")\n",
+    "view.export.html(\"../_static/views/1tcd.html\", shared_runtime=\"../_static\")\n",
+    "```\n",
+    "\n",
+    "Run them when the scene changes, and commit the result. Keeping generation out of\n",
+    "the build is what makes the build fast and reproducible without a Jupyter\n",
+    "kernel."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "09f8bdeb",
+   "metadata": {},
+   "source": [
+    "## Sphinx and MyST specifics\n",
+    "\n",
+    "Everything above applies unchanged. In a `.md` page, embed with a `raw`\n",
+    "directive:\n",
+    "\n",
+    "````markdown\n",
+    "```{raw} html\n",
+    "<iframe src=\"../../../_static/views/1tcd.html\" width=\"100%\" height=\"480\"\n",
+    "        style=\"border:none;\"></iframe>\n",
+    "```\n",
+    "````\n",
+    "\n",
+    "Then run your usual `make html`. Open the generated pages and check that the\n",
+    "scene renders and that any `show()` output you meant to hide is hidden."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d932a187",
+   "metadata": {},
+   "source": [
+    "## See also\n",
+    "\n",
+    "- {doc}`html_export` — every option of `view.export.html`.\n",
+    "- {doc}`../../developer/documentation/web/build_and_layout` — how this project's\n",
+    "  own documentation is laid out and built."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "9b16638c",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:21:20.780844Z",
+     "iopub.status.busy": "2026-08-06T10:21:20.780561Z",
+     "iopub.status.idle": "2026-08-06T10:21:21.429681Z",
+     "shell.execute_reply": "2026-08-06T10:21:21.427441Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "# A lite export writes two files: the view and the shared runtime.\n",
+    "!rm -f 1tcd_view.html viewer.js"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.13.14"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

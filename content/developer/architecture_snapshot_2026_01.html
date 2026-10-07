@@ -1,0 +1,955 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../../_static/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
+    <link href="../../_static/favicon-124x124.png" sizes="124x124" rel="icon" type="image/png">
+    <link href="../../_static/favicon-128x128.png" sizes="128x128" rel="icon" type="image/png">
+    <link href="../../_static/favicon-192x192.png" sizes="192x192" rel="icon" type="image/png">
+    <link href="../../_static/icon.svg" rel="icon" type="image/svg+xml">
+  
+    <title>Architecture snapshot (2026-01) – MolSysViewer 0.24.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6b6fcda3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6b6fcda3" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
+
+    <script src="../../_static/documentation_options.js?v=a9084e48"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/developer/architecture_snapshot_2026_01';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Architecture snapshot (2025-11)" href="architecture_snapshot_2025_11.html" />
+    <link rel="prev" title="MolSysView ↔ MolSysMT operations" href="future/molsysview_molsysmt_ops.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.24.0" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.24.0 documentation - Home"/>
+    <img src="../../_static/logo_dark.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.24.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro/contributing.html">Contributing (quick start)</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="dev_setup.html">Developer setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="repo_structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration (Python)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="demo_systems.html">Demo systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ci.html">CI and automation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">MolSysViewer Concepts (Python ↔ AnyWidget ↔ Mol* ↔ WebGL)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="public_api.html">Public API and stability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol_and_payloads.html">Protocol and payloads (Python ↔ TypeScript)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="units_and_quantities.html">Units and quantities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="standalone_surfaces.html">Standalone surfaces and the Qt live model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_full.html">Architecture (full)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="addons.html">Add-ons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="regions_layers.html">Regions and layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Workflow</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="js_workflow.html">JS/TS workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Testing &amp; QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="warnings.html">Warnings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smonitor.html">SMonitor integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasing.html">Releasing and publishing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_and_citation.html">Citation and Zenodo releases</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs_workflow.html">Docs workflow (local build and RTD parity)</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="documentation/web/index.html">Documentation for the web</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/editorial_guidelines.html">Web documentation editorial guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/build_and_layout.html">Web docs build &amp; layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/myst.html">MyST in MolSysViewer documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/references.html">References and Cross-links in Documentation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="documentation/api/index.html">API documentation guidelines</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="documentation/api/docstrings.html">Docstrings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/api/doctests.html">Doctests</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Style</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="style.html">Coding style &amp; conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="type_annotations_guidelines.html">Type annotations (Python ≥3.10)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="string_style.html">String and quotation style</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Planning and history</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes_notes.html">Changes notes</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="future/index.html">Future (index)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="future/ci.html">CI roadmap (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/performance.html">Performance notes (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/security.html">Security (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/molsysview_molsysmt_ops.html">MolSysView ↔ MolSysMT operations</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Architecture snapshot (2026-01)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_snapshot_2025_11.html">Architecture snapshot (2025-11)</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="appendix/index.html">Appendix</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="appendix/historical/index.html">Historical documents</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="architecture_snapshot_2025_11.html">Architecture snapshot (2025-11)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="design_overview.html">Design overview (historical)</a></li>
+
+
+
+
+
+
+
+
+
+<li class="toctree-l3"><a class="reference internal" href="modules_overview.html">Modules overview (snapshot)</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Developer guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Architecture snapshot (2026-01)</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="architecture-snapshot-2026-01">
+<h1>Architecture snapshot (2026-01)<a class="headerlink" href="#architecture-snapshot-2026-01" title="Link to this heading">#</a></h1>
+<p><em>Last updated: 2026-01-30</em></p>
+<p>This page preserves a detailed, implementation-oriented snapshot of the current
+MolSysViewer architecture. It is not the source of truth, but it is useful when
+you need a compact description of the data flow and message protocol.</p>
+<p>If you want the current high-level view, see <a class="reference internal" href="architecture.html"><span class="doc">Architecture</span></a> and
+<a class="reference internal" href="architecture_full.html"><span class="doc">Architecture (full)</span></a>.</p>
+<p>Snapshot note:</p>
+<ul class="simple">
+<li><p>This page preserves the runtime/data-flow picture from early 2026.</p></li>
+<li><p>The current codebase now implements <code class="docutils literal notranslate"><span class="pre">MolSysView</span></code> under the
+<code class="docutils literal notranslate"><span class="pre">molsysviewer/viewer/</span></code> package instead of a single <code class="docutils literal notranslate"><span class="pre">molsysviewer/viewer.py</span></code>
+file.</p></li>
+</ul>
+<section id="high-level-layers">
+<h2>1. High-level layers<a class="headerlink" href="#high-level-layers" title="Link to this heading">#</a></h2>
+<p>MolSysViewer is split into:</p>
+<ul class="simple">
+<li><p><strong>Python layer (<code class="docutils literal notranslate"><span class="pre">molsysviewer/</span></code>)</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">MolSysView</span></code> facade and widget wrapper.</p></li>
+<li><p>Loaders for MolSysMT/PDB/mmCIF/URL.</p></li>
+<li><p>Regions/layers/whole and shapes APIs.</p></li>
+<li><p>HTML export helpers (standalone + docs-lite).</p></li>
+<li><p>In the current tree, <code class="docutils literal notranslate"><span class="pre">MolSysView</span></code> is split across
+<code class="docutils literal notranslate"><span class="pre">molsysviewer/viewer/core.py</span></code>, <code class="docutils literal notranslate"><span class="pre">history.py</span></code>, <code class="docutils literal notranslate"><span class="pre">export.py</span></code>,
+<code class="docutils literal notranslate"><span class="pre">scene_registry.py</span></code>, <code class="docutils literal notranslate"><span class="pre">representations.py</span></code>, and <code class="docutils literal notranslate"><span class="pre">presets.py</span></code>.</p></li>
+</ul>
+</li>
+<li><p><em><em>TypeScript/Mol</em> layer (<code class="docutils literal notranslate"><span class="pre">molsysviewer/js/src/</span></code>)</em>*</p>
+<ul>
+<li><p>AnyWidget entry (<code class="docutils literal notranslate"><span class="pre">index.ts</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MolSysViewerController</span></code> and handlers (<code class="docutils literal notranslate"><span class="pre">loader</span></code>, <code class="docutils literal notranslate"><span class="pre">scene</span></code>, <code class="docutils literal notranslate"><span class="pre">state</span></code>, <code class="docutils literal notranslate"><span class="pre">trajectory</span></code>).</p></li>
+<li><p>Shape builders under <code class="docutils literal notranslate"><span class="pre">shapes/</span></code>.</p></li>
+<li><p>Popup host + popup implementation.</p></li>
+</ul>
+</li>
+</ul>
+<p>The original design overview is preserved in <a class="reference internal" href="design_overview.html"><span class="doc">Design overview (historical)</span></a>.</p>
+</section>
+<section id="python-js-message-protocol">
+<h2>2. Python ↔ JS message protocol<a class="headerlink" href="#python-js-message-protocol" title="Link to this heading">#</a></h2>
+<section id="python-js">
+<h3>2.1 Python → JS<a class="headerlink" href="#python-js" title="Link to this heading">#</a></h3>
+<p>All visual actions are sent as JSON-like dictionaries with:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">op</span></code>: an operation identifier.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">options</span></code> (or additional fields) depending on the operation.</p></li>
+</ul>
+<p>Examples</p>
+<ul>
+<li><p>Load a MolSys payload:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">_send</span><span class="p">({</span>
+    <span class="s2">"op"</span><span class="p">:</span> <span class="s2">"load_molsys_payload"</span><span class="p">,</span>
+    <span class="s2">"payload"</span><span class="p">:</span> <span class="n">payload</span><span class="p">,</span>
+    <span class="s2">"label"</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</li>
+<li><p>Update visibility:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">_send</span><span class="p">({</span>
+    <span class="s2">"op"</span><span class="p">:</span> <span class="s2">"update_visibility"</span><span class="p">,</span>
+    <span class="s2">"options"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"visible_atom_indices"</span><span class="p">:</span> <span class="n">visible_indices</span><span class="p">},</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</li>
+<li><p>Shapes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">_send</span><span class="p">({</span>
+    <span class="s2">"op"</span><span class="p">:</span> <span class="s2">"add_sphere"</span><span class="p">,</span>
+    <span class="s2">"options"</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>The TypeScript union type <code class="docutils literal notranslate"><span class="pre">ViewerMessage</span></code> (<code class="docutils literal notranslate"><span class="pre">molsysviewer/js/src/messages/viewer-messages.ts</span></code>)
+is the best “contract” view.</p>
+</section>
+<section id="js-python">
+<h3>2.2 JS → Python<a class="headerlink" href="#js-python" title="Link to this heading">#</a></h3>
+<p>The widget emits events back to Python via <code class="docutils literal notranslate"><span class="pre">widget.on_msg</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ready</span></code>: frontend initialized; Python flushes <code class="docutils literal notranslate"><span class="pre">_pending_messages</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">region_ack</span></code>: region creation confirmation (<code class="docutils literal notranslate"><span class="pre">atom_indices</span></code>, <code class="docutils literal notranslate"><span class="pre">selection</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">region_deleted</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layer_ack</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layer_deleted</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">registry_cleared</span></code>: <code class="docutils literal notranslate"><span class="pre">clear_all</span></code> was executed; Python must reset registries.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">camera_snapshot</span></code>: camera state sent from the frontend.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">js_log</span></code>: debug logs when <code class="docutils literal notranslate"><span class="pre">debug_js=True</span></code>.</p></li>
+</ul>
+<p>These events keep the Python mirrors (<code class="docutils literal notranslate"><span class="pre">view.regions</span></code>, <code class="docutils literal notranslate"><span class="pre">view.layers</span></code>) consistent
+with the Mol* state tree.</p>
+</section>
+</section>
+<section id="data-path-molsysmt-mol">
+<h2>3. Data path: MolSysMT → Mol*<a class="headerlink" href="#data-path-molsysmt-mol" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>You call <code class="docutils literal notranslate"><span class="pre">MolSysView.load(molecular_system,</span> <span class="pre">...)</span></code>.</p></li>
+<li><p>Python converts inputs to <code class="docutils literal notranslate"><span class="pre">molsysmt.MolSys</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ViewerJSON</span></code> is serialized into a stable MolSys payload:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">atoms</span></code>: parallel arrays (ids, names, residue, chain, element, charge).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">structures</span></code>: snapshots with <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> (Å), optional <code class="docutils literal notranslate"><span class="pre">box</span></code> (Å), optional <code class="docutils literal notranslate"><span class="pre">time</span></code>.</p></li>
+<li><p>optional <code class="docutils literal notranslate"><span class="pre">bonds</span></code>: <code class="docutils literal notranslate"><span class="pre">indexA/indexB</span></code> (+ optional <code class="docutils literal notranslate"><span class="pre">order</span></code>).</p></li>
+</ul>
+</li>
+<li><p>Python sends <code class="docutils literal notranslate"><span class="pre">{&quot;op&quot;:</span> <span class="pre">&quot;load_molsys_payload&quot;,</span> <span class="pre">&quot;payload&quot;:</span> <span class="pre">...}</span></code>.</p></li>
+<li><p>TypeScript builds Mol* objects:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Topology</span></code>, <code class="docutils literal notranslate"><span class="pre">Coordinates</span></code>, and a <code class="docutils literal notranslate"><span class="pre">Trajectory</span></code>.</p></li>
+<li><p>A trajectory node in the Mol* state tree (<code class="docutils literal notranslate"><span class="pre">InsertMolSysTrajectory</span></code>).</p></li>
+<li><p>A default representation preset (<code class="docutils literal notranslate"><span class="pre">default</span></code> / <code class="docutils literal notranslate"><span class="pre">auto</span></code>).</p></li>
+</ul>
+</li>
+<li><p>The controller captures the loaded structure and notifies state/trajectory handlers.</p></li>
+</ol>
+<p>This path avoids intermediate PDB conversions when MolSysMT inputs are available.</p>
+<section id="new-view-convenience-modes">
+<h3>new_view convenience modes<a class="headerlink" href="#new-view-convenience-modes" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">new_view(...)</span></code> is a convenience wrapper around <code class="docutils literal notranslate"><span class="pre">MolSysView.load(...)</span></code> and adds
+<code class="docutils literal notranslate"><span class="pre">load_mode</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">load_mode=&quot;selection&quot;</span></code> (default): the selection subsets the system before loading.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">load_mode=&quot;all&quot;</span></code>: the full system loads, the global representation is hidden,
+and a region tagged <code class="docutils literal notranslate"><span class="pre">selection</span></code> is created for the requested selection.</p></li>
+</ul>
+</section>
+</section>
+<section id="visibility-and-masking">
+<h2>4. Visibility and masking<a class="headerlink" href="#visibility-and-masking" title="Link to this heading">#</a></h2>
+<section id="python">
+<h3>4.1 Python<a class="headerlink" href="#python" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MolSysView</span></code> maintains a boolean <code class="docutils literal notranslate"><span class="pre">atom_mask</span></code> (<code class="docutils literal notranslate"><span class="pre">n_atoms</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hide(selection)</span></code> updates the mask and then calls <code class="docutils literal notranslate"><span class="pre">_update_visibility_in_frontend()</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">show(selection,</span> <span class="pre">structure_indices,</span> <span class="pre">force=False)</span></code> restores parts of the mask and re-applies global visibility intent.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">visible_atom_indices</span></code> is computed as <code class="docutils literal notranslate"><span class="pre">np.nonzero(atom_mask)[0].tolist()</span></code> and sent through <code class="docutils literal notranslate"><span class="pre">update_visibility</span></code>.</p></li>
+</ul>
+</section>
+<section id="typescript">
+<h3>4.2 TypeScript<a class="headerlink" href="#typescript" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">StateHandlers.updateVisibility</span></code>:</p>
+<ul>
+<li><p>If no structure is loaded yet, stores <code class="docutils literal notranslate"><span class="pre">pendingVisibility</span></code>.</p></li>
+<li><p>Otherwise:</p>
+<ul>
+<li><p>Clears previous transparency.</p></li>
+<li><p>Computes the hidden selection as the complement of <code class="docutils literal notranslate"><span class="pre">visible_atom_indices</span></code>.</p></li>
+<li><p>Applies transparency/visibility via Mol* helpers to global reps and regions.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>The source of truth for visibility is Python.
+Mol* is responsible for render-time application.</p>
+</section>
+</section>
+<section id="regions-and-layers">
+<h2>5. Regions and layers<a class="headerlink" href="#regions-and-layers" title="Link to this heading">#</a></h2>
+<section id="python-api">
+<h3>5.1 Python API<a class="headerlink" href="#python-api" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MolSysView.new_region(...)</span></code>:</p>
+<ul>
+<li><p>Accepts a MolSysMT selection or explicit <code class="docutils literal notranslate"><span class="pre">atom_indices</span></code>.</p></li>
+<li><p>Supports complements (<code class="docutils literal notranslate"><span class="pre">complement_of_regions=[&quot;tagA&quot;,</span> <span class="pre">...]</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>).</p></li>
+<li><p>Registers a <code class="docutils literal notranslate"><span class="pre">Region</span></code> and sends <code class="docutils literal notranslate"><span class="pre">create_region</span></code>.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Region.set_representation(...)</span></code>:</p>
+<ul>
+<li><p>Normalizes representation type/preset and user preset rules.</p></li>
+<li><p>Sends <code class="docutils literal notranslate"><span class="pre">set_region_representation</span></code>.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Region.show/hide/delete</span></code>:</p>
+<ul>
+<li><p>Send <code class="docutils literal notranslate"><span class="pre">show_region</span></code>, <code class="docutils literal notranslate"><span class="pre">hide_region</span></code>, <code class="docutils literal notranslate"><span class="pre">delete_region</span></code>.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MolSysView.new_layer(...)</span></code>:</p>
+<ul>
+<li><p>Registers a <code class="docutils literal notranslate"><span class="pre">Layer</span></code> and sends <code class="docutils literal notranslate"><span class="pre">create_layer</span></code>.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Layer.show/hide/delete/set_tag</span></code>:</p>
+<ul>
+<li><p>Send <code class="docutils literal notranslate"><span class="pre">show_layer</span></code>, <code class="docutils literal notranslate"><span class="pre">hide_layer</span></code>, <code class="docutils literal notranslate"><span class="pre">delete_layer</span></code>, <code class="docutils literal notranslate"><span class="pre">set_layer_tag</span></code>.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Whole.set_representation(...)</span></code>:</p>
+<ul>
+<li><p>Resolves user preset rules in Python and sends <code class="docutils literal notranslate"><span class="pre">set_global_representation</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="typescript-state-model">
+<h3>5.2 TypeScript state model<a class="headerlink" href="#typescript-state-model" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">StateHandlers</span></code> maintains:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">regionIndex</span></code>: <code class="docutils literal notranslate"><span class="pre">tag</span> <span class="pre">-&gt;</span> <span class="pre">{</span> <span class="pre">component,</span> <span class="pre">representations[],</span> <span class="pre">atomIndices[],</span> <span class="pre">selection,</span> <span class="pre">hidden</span> <span class="pre">}</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layerMeta</span></code>: <code class="docutils literal notranslate"><span class="pre">tag</span> <span class="pre">-&gt;</span> <span class="pre">{</span> <span class="pre">kind,</span> <span class="pre">meta</span> <span class="pre">}</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tagIndex</span></code>: <code class="docutils literal notranslate"><span class="pre">tag</span> <span class="pre">-&gt;</span> <span class="pre">Set&lt;StateObjectRef&gt;</span></code> (refs for shapes/overlays)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">globalReprs</span></code>: baseline/global representations for the root structure</p></li>
+<li><p>pending flags for operations invoked before a structure exists</p></li>
+</ul>
+<p>Operations</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">create_region</span></code>: build <code class="docutils literal notranslate"><span class="pre">StructureSelection</span></code> from indices, create <code class="docutils literal notranslate"><span class="pre">StructureComponent</span></code>, add reps, store refs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set_region_representation</span></code>: replace region reps (type, preset, or user preset).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">show/hide_region</span></code>: toggle visibility via <code class="docutils literal notranslate"><span class="pre">setSubtreeVisibility</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">create_layer</span></code>: store metadata and acknowledge to Python.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">show/hide_layer</span></code>: toggle visibility of all refs under a tag.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set_global_representation</span></code>: rebuild baseline/global reps and store them in <code class="docutils literal notranslate"><span class="pre">globalReprs</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">show/hide_global</span></code>: show/hide baseline/global reps; <code class="docutils literal notranslate"><span class="pre">target=&quot;all&quot;</span></code> can include everything.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">clear_all</span></code> clears regions, layers, and global reps, removes the loaded structure,
+and emits <code class="docutils literal notranslate"><span class="pre">registry_cleared</span></code>.</p>
+</section>
+</section>
+<section id="popup-host-popup">
+<h2>6. Popup (host ↔ popup)<a class="headerlink" href="#popup-host-popup" title="Link to this heading">#</a></h2>
+<p>Host (notebook)</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PopupHostManager</span></code> opens a window and injects the runtime:</p>
+<ul>
+<li><p>Blob + <code class="docutils literal notranslate"><span class="pre">import</span></code> in notebooks, or</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">moduleUrl</span></code> in docs-lite exports.</p></li>
+</ul>
+</li>
+<li><p>Keeps a <code class="docutils literal notranslate"><span class="pre">commandLog</span></code> (Python → JS messages) to reconstruct state.</p></li>
+<li><p>Uses <code class="docutils literal notranslate"><span class="pre">postMessage</span></code> to:</p>
+<ul>
+<li><p>send <code class="docutils literal notranslate"><span class="pre">molsysviewer-initial-sync</span></code> (commands + camera snapshot + UI state),</p></li>
+<li><p>stream <code class="docutils literal notranslate"><span class="pre">molsysviewer-sync-op</span></code> messages,</p></li>
+<li><p>send <code class="docutils literal notranslate"><span class="pre">molsysviewer-sync-camera</span></code> while the user interacts.</p></li>
+</ul>
+</li>
+</ul>
+<p>Popup</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bootPopup</span></code> creates a new <code class="docutils literal notranslate"><span class="pre">MolSysViewerController</span></code> in the popup DOM.</p></li>
+<li><p>Replays the <code class="docutils literal notranslate"><span class="pre">commandLog</span></code> and applies the initial camera snapshot.</p></li>
+<li><p>Syncs camera host ↔ popup without “camera fights”.</p></li>
+</ul>
+<p>This design keeps the popup as a live mirror of the host.</p>
+</section>
+<section id="html-export-behavior-current">
+<h2>7. HTML export behavior (current)<a class="headerlink" href="#html-export-behavior-current" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>HTML export replays <code class="docutils literal notranslate"><span class="pre">_message_history</span></code> and does not require <code class="docutils literal notranslate"><span class="pre">show()</span></code> to run.</p></li>
+<li><p>If the frontend is live, <code class="docutils literal notranslate"><span class="pre">view.export.html(...)</span></code> requests a fresh camera snapshot
+before exporting (best-effort).</p></li>
+<li><p>UI-only changes (toggle buttons, manual style changes) do not populate
+<code class="docutils literal notranslate"><span class="pre">_message_history</span></code> and are not exported.</p></li>
+</ul>
+</section>
+<section id="what-was-still-aspirational-at-the-time">
+<h2>8. What was still aspirational (at the time)<a class="headerlink" href="#what-was-still-aspirational-at-the-time" title="Link to this heading">#</a></h2>
+<p>The design overview mentions additional modules (hbonds, topology, alternative engines) and richer <code class="docutils literal notranslate"><span class="pre">structure.get_*</span> <span class="pre">/</span> <span class="pre">show_*</span></code> APIs.
+At this snapshot:</p>
+<ul class="simple">
+<li><p>Implemented core:</p>
+<ul>
+<li><p>MolSys payload loading,</p></li>
+<li><p>scientific shapes (spheres, pockets, tubes, pharmacophores),</p></li>
+<li><p>regions/layers/whole,</p></li>
+<li><p>popup,</p></li>
+<li><p>trajectory controls,</p></li>
+<li><p>automatic display in notebooks via <code class="docutils literal notranslate"><span class="pre">_repr_mimebundle_</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Still future:</p>
+<ul>
+<li><p>dedicated hbonds module (<code class="docutils literal notranslate"><span class="pre">get_hbonds/show_hbonds</span></code>),</p></li>
+<li><p>topology module with higher-level APIs (<code class="docutils literal notranslate"><span class="pre">get_bonds/show_bonds</span></code>),</p></li>
+<li><p>extended numeric APIs under <code class="docutils literal notranslate"><span class="pre">structure.*</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+<p>Revisit this page when a “design” item becomes a shipped feature.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="future/molsysview_molsysmt_ops.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">MolSysView ↔ MolSysMT operations</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="architecture_snapshot_2025_11.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Architecture snapshot (2025-11)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#high-level-layers">1. High-level layers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#python-js-message-protocol">2. Python ↔ JS message protocol</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#python-js">2.1 Python → JS</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#js-python">2.2 JS → Python</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-path-molsysmt-mol">3. Data path: MolSysMT → Mol*</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#new-view-convenience-modes">new_view convenience modes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visibility-and-masking">4. Visibility and masking</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#python">4.1 Python</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#typescript">4.2 TypeScript</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regions-and-layers">5. Regions and layers</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#python-api">5.1 Python API</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#typescript-state-model">5.2 TypeScript state model</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#popup-host-popup">6. Popup (host ↔ popup)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#html-export-behavior-current">7. HTML export behavior (current)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-was-still-aspirational-at-the-time">8. What was still aspirational (at the time)</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="../about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

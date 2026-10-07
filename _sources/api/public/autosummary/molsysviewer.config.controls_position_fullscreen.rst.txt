@@ -1,0 +1,6 @@
+﻿molsysviewer.config.controls\_position\_fullscreen
+==================================================
+
+.. currentmodule:: molsysviewer.config
+
+.. autodata:: controls_position_fullscreen

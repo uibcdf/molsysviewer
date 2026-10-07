@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.off\_click
+==================================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.off_click

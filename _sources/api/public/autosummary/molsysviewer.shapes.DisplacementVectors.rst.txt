@@ -1,0 +1,23 @@
+﻿molsysviewer.shapes.DisplacementVectors
+=======================================
+
+.. currentmodule:: molsysviewer.shapes
+
+.. autoclass:: DisplacementVectors
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~DisplacementVectors.__init__
+      ~DisplacementVectors.add_displacement_vectors
+   
+   
+
+   
+   
+   

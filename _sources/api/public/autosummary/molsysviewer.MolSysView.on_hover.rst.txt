@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.on\_hover
+=================================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.on_hover

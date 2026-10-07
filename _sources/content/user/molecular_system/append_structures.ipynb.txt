@@ -1,0 +1,283 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "11c41530",
+   "metadata": {
+    "editable": true,
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": [
+     "remove-input"
+    ]
+   },
+   "source": [
+    "(User_MolecularSystem_AppendStructures)=\n",
+    "# Appending structures\n",
+    "\n",
+    "This page documents `view.load(..., mode=\"append_structures\")`.\n",
+    "\n",
+    "Use this loading mode to append additional structures to the current molecular system. If your molecular system represents a trajectory, structures are often called \"frames\". Appending structures is the most common way to extend a trajectory with an additional chunk.\n",
+    "\n",
+    "`mode=\"append_structures\"` is loader sugar: it loads the additional structures and reconciles the viewer state. For MolSysMT-owned live editing, use `view.addons.molsysmt.basic.append_structures(...)` from the MolSysMT addon.\n",
+    "\n",
+    "For more details and additional examples, see the MolSysMT tutorial: [Append structures](https://www.uibcdf.org/molsysmt/content/user/tools/basic/append_structures).\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "72b31f9f",
+   "metadata": {},
+   "source": [
+    "## Example: append a second structure\n",
+    "\n",
+    "In {doc}`add`, we combined two systems by increasing the number of atoms.\n",
+    "\n",
+    "Here we do something different: we keep the same atoms and topology, but we add a second set of coordinates. The result is a molecular system with two structures.\n",
+    "\n",
+    "A key requirement is that the system you append from represents the same topology. In this example, we guarantee that by appending from a translated copy of the same system."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "9a2e56a7-f5c8-4196-9cb0-349e34388188",
+   "metadata": {
+    "editable": true,
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:27:01.731706Z",
+     "iopub.status.busy": "2026-08-06T10:27:01.731274Z",
+     "iopub.status.idle": "2026-08-06T10:27:08.753003Z",
+     "shell.execute_reply": "2026-08-06T10:27:08.751742Z"
+    },
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "1"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import molsysviewer as msv\n",
+    "import molsysmt as msm\n",
+    "\n",
+    "view = msv.demo[\"dialanine\"]\n",
+    "msm.get(view, element=\"system\", n_structures=True)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "d3b65fb6",
+   "metadata": {
+    "editable": true,
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:27:08.757075Z",
+     "iopub.status.busy": "2026-08-06T10:27:08.756510Z",
+     "iopub.status.idle": "2026-08-06T10:27:08.762836Z",
+     "shell.execute_reply": "2026-08-06T10:27:08.761141Z"
+    },
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": [
+     "remove-output"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<molsysviewer.widget.MolSysViewerWidget object at 0x717648712f90>"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "65c89605",
+   "metadata": {
+    "editable": true,
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:27:08.766722Z",
+     "iopub.status.busy": "2026-08-06T10:27:08.766481Z",
+     "iopub.status.idle": "2026-08-06T10:27:08.773361Z",
+     "shell.execute_reply": "2026-08-06T10:27:08.771955Z"
+    },
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": [
+     "remove-input"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "\n",
+       "        <iframe\n",
+       "            width=\"100%\"\n",
+       "            height=\"480px\"\n",
+       "            src=\"../../../_static/views/demo_dialanine.html\"\n",
+       "            frameborder=\"0\"\n",
+       "            allowfullscreen\n",
+       "            \n",
+       "        ></iframe>\n",
+       "        "
+      ],
+      "text/plain": [
+       "<IPython.lib.display.IFrame at 0x7176d41eaba0>"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from molsysviewer.thirds.jupyter import load_html_in_notebook\n",
+    "\n",
+    "load_html_in_notebook(\"../../../_static/views/demo_dialanine.html\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f64229e1-ce1e-42be-ad14-37d5bf06d5a1",
+   "metadata": {},
+   "source": [
+    "Now let's add the second structure:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "35fbad7d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:27:08.776675Z",
+     "iopub.status.busy": "2026-08-06T10:27:08.776437Z",
+     "iopub.status.idle": "2026-08-06T10:27:08.958006Z",
+     "shell.execute_reply": "2026-08-06T10:27:08.956693Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "2"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import molsysmt as msm\n",
+    "import pyunitwizard as puw\n",
+    "\n",
+    "second_structure = msm.copy(view.molsys)\n",
+    "coordinates = msm.get(second_structure, element=\"atom\", coordinates=True)\n",
+    "msm.set(\n",
+    "    second_structure,\n",
+    "    coordinates=coordinates + puw.quantity([0.2, 0.0, 0.0], \"nanometer\"),\n",
+    ")\n",
+    "\n",
+    "view.load(second_structure, mode=\"append_structures\")\n",
+    "msm.get(view, element=\"system\", n_structures=True)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6bde0f23",
+   "metadata": {},
+   "source": [
+    "If you open the viewer controls and move between structures, you should see the dialanine shift position between structure 0 and structure 1 like this:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "2c9c74c2",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:27:08.961430Z",
+     "iopub.status.busy": "2026-08-06T10:27:08.961184Z",
+     "iopub.status.idle": "2026-08-06T10:27:08.966905Z",
+     "shell.execute_reply": "2026-08-06T10:27:08.965252Z"
+    },
+    "tags": [
+     "remove-input"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "\n",
+       "        <iframe\n",
+       "            width=\"100%\"\n",
+       "            height=\"480px\"\n",
+       "            src=\"../../../_static/views/two_structures_dialanine.html\"\n",
+       "            frameborder=\"0\"\n",
+       "            allowfullscreen\n",
+       "            \n",
+       "        ></iframe>\n",
+       "        "
+      ],
+      "text/plain": [
+       "<IPython.lib.display.IFrame at 0x717646c54f50>"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "load_html_in_notebook(\"../../../_static/views/two_structures_dialanine.html\")"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.13.14"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

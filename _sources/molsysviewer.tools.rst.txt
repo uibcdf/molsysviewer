@@ -1,0 +1,53 @@
+molsysviewer.tools package
+==========================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   molsysviewer.tools.basic
+
+Submodules
+----------
+
+molsysviewer.tools.benchmark module
+-----------------------------------
+
+.. automodule:: molsysviewer.tools.benchmark
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.tools.embed module
+-------------------------------
+
+.. automodule:: molsysviewer.tools.embed
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.tools.preview module
+---------------------------------
+
+.. automodule:: molsysviewer.tools.preview
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.tools.runtime\_asset module
+----------------------------------------
+
+.. automodule:: molsysviewer.tools.runtime_asset
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: molsysviewer.tools
+   :members:
+   :show-inheritance:
+   :undoc-members:

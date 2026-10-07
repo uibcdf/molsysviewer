@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.pause
+=============================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.pause

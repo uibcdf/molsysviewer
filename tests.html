@@ -1,0 +1,1260 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="_static/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
+    <link href="_static/favicon-124x124.png" sizes="124x124" rel="icon" type="image/png">
+    <link href="_static/favicon-128x128.png" sizes="128x128" rel="icon" type="image/png">
+    <link href="_static/favicon-192x192.png" sizes="192x192" rel="icon" type="image/png">
+    <link href="_static/icon.svg" rel="icon" type="image/svg+xml">
+  
+    <title>tests package – MolSysViewer 0.24.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=6b6fcda3" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=6b6fcda3" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
+
+    <script src="_static/documentation_options.js?v=a9084e48"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tests';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.24.0" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.24.0 documentation - Home"/>
+    <img src="_static/logo_dark.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.24.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">tests package</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="tests-package">
+<h1>tests package<a class="headerlink" href="#tests-package" title="Link to this heading">#</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-conftest-module">
+<h2>tests.conftest module<a class="headerlink" href="#tests-conftest-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-active-selection-module">
+<h2>tests.test_active_selection module<a class="headerlink" href="#tests-test-active-selection-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-addons-module">
+<h2>tests.test_addons module<a class="headerlink" href="#tests-test-addons-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-annotations-module">
+<h2>tests.test_annotations module<a class="headerlink" href="#tests-test-annotations-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-api-resolver-module">
+<h2>tests.test_api_resolver module<a class="headerlink" href="#tests-test-api-resolver-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-argdigest-public-api-module">
+<h2>tests.test_argdigest_public_api module<a class="headerlink" href="#tests-test-argdigest-public-api-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-argument-name-normalization-module">
+<h2>tests.test_argument_name_normalization module<a class="headerlink" href="#tests-test-argument-name-normalization-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-array-native-ack-timeout-module">
+<h2>tests.test_array_native_ack_timeout module<a class="headerlink" href="#tests-test-array-native-ack-timeout-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-array-native-transport-module">
+<h2>tests.test_array_native_transport module<a class="headerlink" href="#tests-test-array-native-transport-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-backend-error-ack-module">
+<h2>tests.test_backend_error_ack module<a class="headerlink" href="#tests-test-backend-error-ack-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-benchmark-module">
+<h2>tests.test_benchmark module<a class="headerlink" href="#tests-test-benchmark-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-boundary-digesters-module">
+<h2>tests.test_boundary_digesters module<a class="headerlink" href="#tests-test-boundary-digesters-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-box-assignment-module">
+<h2>tests.test_box_assignment module<a class="headerlink" href="#tests-test-box-assignment-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-build-html-state-module">
+<h2>tests.test_build_html_state module<a class="headerlink" href="#tests-test-build-html-state-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-camera-snapshot-request-module">
+<h2>tests.test_camera_snapshot_request module<a class="headerlink" href="#tests-test-camera-snapshot-request-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-capability-audit-module">
+<h2>tests.test_capability_audit module<a class="headerlink" href="#tests-test-capability-audit-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-catalog-templates-render-module">
+<h2>tests.test_catalog_templates_render module<a class="headerlink" href="#tests-test-catalog-templates-render-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-catalog-warning-round-trip-module">
+<h2>tests.test_catalog_warning_round_trip module<a class="headerlink" href="#tests-test-catalog-warning-round-trip-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-ci-backlog-module">
+<h2>tests.test_ci_backlog module<a class="headerlink" href="#tests-test-ci-backlog-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-citation-release-tools-module">
+<h2>tests.test_citation_release_tools module<a class="headerlink" href="#tests-test-citation-release-tools-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-color-digesters-module">
+<h2>tests.test_color_digesters module<a class="headerlink" href="#tests-test-color-digesters-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-color-layers-module">
+<h2>tests.test_color_layers module<a class="headerlink" href="#tests-test-color-layers-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-colors-module">
+<h2>tests.test_colors module<a class="headerlink" href="#tests-test-colors-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-composite-load-module">
+<h2>tests.test_composite_load module<a class="headerlink" href="#tests-test-composite-load-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-conda-receptor-evidence-module">
+<h2>tests.test_conda_receptor_evidence module<a class="headerlink" href="#tests-test-conda-receptor-evidence-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-conda-version-identity-module">
+<h2>tests.test_conda_version_identity module<a class="headerlink" href="#tests-test-conda-version-identity-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-convert-on-whole-and-region-module">
+<h2>tests.test_convert_on_whole_and_region module<a class="headerlink" href="#tests-test-convert-on-whole-and-region-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-coordinate-edits-module">
+<h2>tests.test_coordinate_edits module<a class="headerlink" href="#tests-test-coordinate-edits-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-demo-systems-module">
+<h2>tests.test_demo_systems module<a class="headerlink" href="#tests-test-demo-systems-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-dependency-contract-module">
+<h2>tests.test_dependency_contract module<a class="headerlink" href="#tests-test-dependency-contract-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-design-review-closure-module">
+<h2>tests.test_design_review_closure module<a class="headerlink" href="#tests-test-design-review-closure-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-devguide-architecture-status-module">
+<h2>tests.test_devguide_architecture_status module<a class="headerlink" href="#tests-test-devguide-architecture-status-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-devguide-links-module">
+<h2>tests.test_devguide_links module<a class="headerlink" href="#tests-test-devguide-links-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-digester-caller-contract-module">
+<h2>tests.test_digester_caller_contract module<a class="headerlink" href="#tests-test-digester-caller-contract-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-digestion-helpers-module">
+<h2>tests.test_digestion_helpers module<a class="headerlink" href="#tests-test-digestion-helpers-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-distribution-artifact-module">
+<h2>tests.test_distribution_artifact module<a class="headerlink" href="#tests-test-distribution-artifact-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-docs-static-views-module">
+<h2>tests.test_docs_static_views module<a class="headerlink" href="#tests-test-docs-static-views-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-documentation-pages-run-module">
+<h2>tests.test_documentation_pages_run module<a class="headerlink" href="#tests-test-documentation-pages-run-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-documented-representation-types-module">
+<h2>tests.test_documented_representation_types module<a class="headerlink" href="#tests-test-documented-representation-types-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-documented-whole-masks-module">
+<h2>tests.test_documented_whole_masks module<a class="headerlink" href="#tests-test-documented-whole-masks-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-dynamic-regions-module">
+<h2>tests.test_dynamic_regions module<a class="headerlink" href="#tests-test-dynamic-regions-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-e2e-fixture-worker-module">
+<h2>tests.test_e2e_fixture_worker module<a class="headerlink" href="#tests-test-e2e-fixture-worker-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-e2e-reliability-module">
+<h2>tests.test_e2e_reliability module<a class="headerlink" href="#tests-test-e2e-reliability-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-export-messages-e2e-module">
+<h2>tests.test_export_messages_e2e module<a class="headerlink" href="#tests-test-export-messages-e2e-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-export-runtime-source-module">
+<h2>tests.test_export_runtime_source module<a class="headerlink" href="#tests-test-export-runtime-source-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-exported-page-opens-from-disk-module">
+<h2>tests.test_exported_page_opens_from_disk module<a class="headerlink" href="#tests-test-exported-page-opens-from-disk-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-extract-migrates-whole-overlays-module">
+<h2>tests.test_extract_migrates_whole_overlays module<a class="headerlink" href="#tests-test-extract-migrates-whole-overlays-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-focus-with-fade-module">
+<h2>tests.test_focus_with_fade module<a class="headerlink" href="#tests-test-focus-with-fade-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-geometry-helpers-module">
+<h2>tests.test_geometry_helpers module<a class="headerlink" href="#tests-test-geometry-helpers-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-geometry-payloads-module">
+<h2>tests.test_geometry_payloads module<a class="headerlink" href="#tests-test-geometry-payloads-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-html-scene-sidecar-module">
+<h2>tests.test_html_scene_sidecar module<a class="headerlink" href="#tests-test-html-scene-sidecar-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-image-export-request-module">
+<h2>tests.test_image_export_request module<a class="headerlink" href="#tests-test-image-export-request-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-index-mapper-module">
+<h2>tests.test_index_mapper module<a class="headerlink" href="#tests-test-index-mapper-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-init-module">
+<h2>tests.test_init module<a class="headerlink" href="#tests-test-init-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-installed-test-imports-module">
+<h2>tests.test_installed_test_imports module<a class="headerlink" href="#tests-test-installed-test-imports-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-interaction-events-module">
+<h2>tests.test_interaction_events module<a class="headerlink" href="#tests-test-interaction-events-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-interaction-families-module">
+<h2>tests.test_interaction_families module<a class="headerlink" href="#tests-test-interaction-families-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-interactions-api-module">
+<h2>tests.test_interactions_api module<a class="headerlink" href="#tests-test-interactions-api-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-interactions-projection-batching-module">
+<h2>tests.test_interactions_projection_batching module<a class="headerlink" href="#tests-test-interactions-projection-batching-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-interactions-public-completion-module">
+<h2>tests.test_interactions_public_completion module<a class="headerlink" href="#tests-test-interactions-public-completion-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-interactions-qualification-module">
+<h2>tests.test_interactions_qualification module<a class="headerlink" href="#tests-test-interactions-qualification-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-interactions-residency-benchmark-module">
+<h2>tests.test_interactions_residency_benchmark module<a class="headerlink" href="#tests-test-interactions-residency-benchmark-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-interactions-scene-module">
+<h2>tests.test_interactions_scene module<a class="headerlink" href="#tests-test-interactions-scene-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-internal-render-worker-host-module">
+<h2>tests.test_internal_render_worker_host module<a class="headerlink" href="#tests-test-internal-render-worker-host-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-js-build-version-resolution-module">
+<h2>tests.test_js_build_version_resolution module<a class="headerlink" href="#tests-test-js-build-version-resolution-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-lazy-import-module">
+<h2>tests.test_lazy_import module<a class="headerlink" href="#tests-test-lazy-import-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-lazy-molecular-projection-module">
+<h2>tests.test_lazy_molecular_projection module<a class="headerlink" href="#tests-test-lazy-molecular-projection-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-legend-module">
+<h2>tests.test_legend module<a class="headerlink" href="#tests-test-legend-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-length-digesters-module">
+<h2>tests.test_length_digesters module<a class="headerlink" href="#tests-test-length-digesters-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-live-edit-rebuild-module">
+<h2>tests.test_live_edit_rebuild module<a class="headerlink" href="#tests-test-live-edit-rebuild-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-load-usability-module">
+<h2>tests.test_load_usability module<a class="headerlink" href="#tests-test-load-usability-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-loading-identity-prevalidation-module">
+<h2>tests.test_loading_identity_prevalidation module<a class="headerlink" href="#tests-test-loading-identity-prevalidation-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-manager-surface-module">
+<h2>tests.test_manager_surface module<a class="headerlink" href="#tests-test-manager-surface-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-measurements-module">
+<h2>tests.test_measurements module<a class="headerlink" href="#tests-test-measurements-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-molecular-system-paths-module">
+<h2>tests.test_molecular_system_paths module<a class="headerlink" href="#tests-test-molecular-system-paths-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-movie-module">
+<h2>tests.test_movie module<a class="headerlink" href="#tests-test-movie-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-new-view-module">
+<h2>tests.test_new_view module<a class="headerlink" href="#tests-test-new-view-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-noarch-conda-launchers-module">
+<h2>tests.test_noarch_conda_launchers module<a class="headerlink" href="#tests-test-noarch-conda-launchers-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-npm-publish-workflow-module">
+<h2>tests.test_npm_publish_workflow module<a class="headerlink" href="#tests-test-npm-publish-workflow-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-panel-action-dispatch-module">
+<h2>tests.test_panel_action_dispatch module<a class="headerlink" href="#tests-test-panel-action-dispatch-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-panel-mode-request-module">
+<h2>tests.test_panel_mode_request module<a class="headerlink" href="#tests-test-panel-mode-request-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-pending-message-flush-module">
+<h2>tests.test_pending_message_flush module<a class="headerlink" href="#tests-test-pending-message-flush-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-phase11-regions-panel-module">
+<h2>tests.test_phase11_regions_panel module<a class="headerlink" href="#tests-test-phase11-regions-panel-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-phase12-whole-panel-module">
+<h2>tests.test_phase12_whole_panel module<a class="headerlink" href="#tests-test-phase12-whole-panel-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-playback-digesters-module">
+<h2>tests.test_playback_digesters module<a class="headerlink" href="#tests-test-playback-digesters-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-popup-snapshot-module">
+<h2>tests.test_popup_snapshot module<a class="headerlink" href="#tests-test-popup-snapshot-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-popup-snapshot-completeness-module">
+<h2>tests.test_popup_snapshot_completeness module<a class="headerlink" href="#tests-test-popup-snapshot-completeness-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-popup-snapshot-fidelity-module">
+<h2>tests.test_popup_snapshot_fidelity module<a class="headerlink" href="#tests-test-popup-snapshot-fidelity-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-preview-server-module">
+<h2>tests.test_preview_server module<a class="headerlink" href="#tests-test-preview-server-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-project-style-config-module">
+<h2>tests.test_project_style_config module<a class="headerlink" href="#tests-test-project-style-config-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-promotion-gates-module">
+<h2>tests.test_promotion_gates module<a class="headerlink" href="#tests-test-promotion-gates-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-protocol-contracts-module">
+<h2>tests.test_protocol_contracts module<a class="headerlink" href="#tests-test-protocol-contracts-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-public-api-docs-module">
+<h2>tests.test_public_api_docs module<a class="headerlink" href="#tests-test-public-api-docs-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-public-api-inventory-module">
+<h2>tests.test_public_api_inventory module<a class="headerlink" href="#tests-test-public-api-inventory-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-public-entrypoint-contract-module">
+<h2>tests.test_public_entrypoint_contract module<a class="headerlink" href="#tests-test-public-entrypoint-contract-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-public-output-units-module">
+<h2>tests.test_public_output_units module<a class="headerlink" href="#tests-test-public-output-units-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-public-reference-imports-module">
+<h2>tests.test_public_reference_imports module<a class="headerlink" href="#tests-test-public-reference-imports-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-python-ecosystem-contract-module">
+<h2>tests.test_python_ecosystem_contract module<a class="headerlink" href="#tests-test-python-ecosystem-contract-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-python-js-boundary-module">
+<h2>tests.test_python_js_boundary module<a class="headerlink" href="#tests-test-python-js-boundary-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-qt-transport-contract-module">
+<h2>tests.test_qt_transport_contract module<a class="headerlink" href="#tests-test-qt-transport-contract-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-readme-addon-table-module">
+<h2>tests.test_readme_addon_table module<a class="headerlink" href="#tests-test-readme-addon-table-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-readme-quickstart-runs-module">
+<h2>tests.test_readme_quickstart_runs module<a class="headerlink" href="#tests-test-readme-quickstart-runs-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-rebuild-persistence-module">
+<h2>tests.test_rebuild_persistence module<a class="headerlink" href="#tests-test-rebuild-persistence-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-rebuild-visibility-module">
+<h2>tests.test_rebuild_visibility module<a class="headerlink" href="#tests-test-rebuild-visibility-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-region-api-completeness-module">
+<h2>tests.test_region_api_completeness module<a class="headerlink" href="#tests-test-region-api-completeness-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-region-enablement-module">
+<h2>tests.test_region_enablement module<a class="headerlink" href="#tests-test-region-enablement-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-region-isolation-module">
+<h2>tests.test_region_isolation module<a class="headerlink" href="#tests-test-region-isolation-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-region-recipes-module">
+<h2>tests.test_region_recipes module<a class="headerlink" href="#tests-test-region-recipes-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-release-evidence-module">
+<h2>tests.test_release_evidence module<a class="headerlink" href="#tests-test-release-evidence-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-release-gate-module">
+<h2>tests.test_release_gate module<a class="headerlink" href="#tests-test-release-gate-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-release-route-module">
+<h2>tests.test_release_route module<a class="headerlink" href="#tests-test-release-route-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-remote-cli-module">
+<h2>tests.test_remote_cli module<a class="headerlink" href="#tests-test-remote-cli-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-remote-digesters-module">
+<h2>tests.test_remote_digesters module<a class="headerlink" href="#tests-test-remote-digesters-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-remote-protocol-module">
+<h2>tests.test_remote_protocol module<a class="headerlink" href="#tests-test-remote-protocol-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-remote-render-worker-module">
+<h2>tests.test_remote_render_worker module<a class="headerlink" href="#tests-test-remote-render-worker-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-remote-session-router-module">
+<h2>tests.test_remote_session_router module<a class="headerlink" href="#tests-test-remote-session-router-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-remote-session-service-module">
+<h2>tests.test_remote_session_service module<a class="headerlink" href="#tests-test-remote-session-service-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-remote-view-channel-module">
+<h2>tests.test_remote_view_channel module<a class="headerlink" href="#tests-test-remote-view-channel-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-reporting-protocol-module">
+<h2>tests.test_reporting_protocol module<a class="headerlink" href="#tests-test-reporting-protocol-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-repr-mimebundle-module">
+<h2>tests.test_repr_mimebundle module<a class="headerlink" href="#tests-test-repr-mimebundle-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-representative-scale-benchmark-module">
+<h2>tests.test_representative_scale_benchmark module<a class="headerlink" href="#tests-test-representative-scale-benchmark-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-reproducible-interaction-module">
+<h2>tests.test_reproducible_interaction module<a class="headerlink" href="#tests-test-reproducible-interaction-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-runtime-router-module">
+<h2>tests.test_runtime_router module<a class="headerlink" href="#tests-test-runtime-router-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-runtime-seam-integration-module">
+<h2>tests.test_runtime_seam_integration module<a class="headerlink" href="#tests-test-runtime-seam-integration-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-scalar-color-units-module">
+<h2>tests.test_scalar_color_units module<a class="headerlink" href="#tests-test-scalar-color-units-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-scene-history-module">
+<h2>tests.test_scene_history module<a class="headerlink" href="#tests-test-scene-history-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-scene-integrity-module">
+<h2>tests.test_scene_integrity module<a class="headerlink" href="#tests-test-scene-integrity-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-scene-object-identity-module">
+<h2>tests.test_scene_object_identity module<a class="headerlink" href="#tests-test-scene-object-identity-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-scene-object-owner-module">
+<h2>tests.test_scene_object_owner module<a class="headerlink" href="#tests-test-scene-object-owner-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-scene-object-summaries-module">
+<h2>tests.test_scene_object_summaries module<a class="headerlink" href="#tests-test-scene-object-summaries-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-scene-transfer-module">
+<h2>tests.test_scene_transfer module<a class="headerlink" href="#tests-test-scene-transfer-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-selections-module">
+<h2>tests.test_selections module<a class="headerlink" href="#tests-test-selections-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-session-bundle-module">
+<h2>tests.test_session_bundle module<a class="headerlink" href="#tests-test-session-bundle-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-session-rejection-module">
+<h2>tests.test_session_rejection module<a class="headerlink" href="#tests-test-session-rejection-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-shape-digesters-module">
+<h2>tests.test_shape_digesters module<a class="headerlink" href="#tests-test-shape-digesters-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-shape-render-status-module">
+<h2>tests.test_shape_render_status module<a class="headerlink" href="#tests-test-shape-render-status-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-smonitor-application-policy-module">
+<h2>tests.test_smonitor_application_policy module<a class="headerlink" href="#tests-test-smonitor-application-policy-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-smonitor-integration-module">
+<h2>tests.test_smonitor_integration module<a class="headerlink" href="#tests-test-smonitor-integration-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-smonitor-signal-passthrough-module">
+<h2>tests.test_smonitor_signal_passthrough module<a class="headerlink" href="#tests-test-smonitor-signal-passthrough-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-source-records-module">
+<h2>tests.test_source_records module<a class="headerlink" href="#tests-test-source-records-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-source-text-encoding-module">
+<h2>tests.test_source_text_encoding module<a class="headerlink" href="#tests-test-source-text-encoding-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-source-workflow-coverage-module">
+<h2>tests.test_source_workflow_coverage module<a class="headerlink" href="#tests-test-source-workflow-coverage-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-standalone-module">
+<h2>tests.test_standalone module<a class="headerlink" href="#tests-test-standalone-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-state-focus-overlays-module">
+<h2>tests.test_state_focus_overlays module<a class="headerlink" href="#tests-test-state-focus-overlays-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-state-sections-module">
+<h2>tests.test_state_sections module<a class="headerlink" href="#tests-test-state-sections-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-state-serialization-module">
+<h2>tests.test_state_serialization module<a class="headerlink" href="#tests-test-state-serialization-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-state-structure-identity-module">
+<h2>tests.test_state_structure_identity module<a class="headerlink" href="#tests-test-state-structure-identity-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-state-v2-module">
+<h2>tests.test_state_v2 module<a class="headerlink" href="#tests-test-state-v2-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-state-view-state-module">
+<h2>tests.test_state_view_state module<a class="headerlink" href="#tests-test-state-view-state-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-static-export-snapshot-module">
+<h2>tests.test_static_export_snapshot module<a class="headerlink" href="#tests-test-static-export-snapshot-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-structure-scale-budget-module">
+<h2>tests.test_structure_scale_budget module<a class="headerlink" href="#tests-test-structure-scale-budget-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-structure-stream-ordering-module">
+<h2>tests.test_structure_stream_ordering module<a class="headerlink" href="#tests-test-structure-stream-ordering-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-structure-transfer-module">
+<h2>tests.test_structure_transfer module<a class="headerlink" href="#tests-test-structure-transfer-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-studio-loading-module">
+<h2>tests.test_studio_loading module<a class="headerlink" href="#tests-test-studio-loading-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-styles-module">
+<h2>tests.test_styles module<a class="headerlink" href="#tests-test-styles-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-support-integrations-module">
+<h2>tests.test_support_integrations module<a class="headerlink" href="#tests-test-support-integrations-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-supported-macos-architecture-module">
+<h2>tests.test_supported_macos_architecture module<a class="headerlink" href="#tests-test-supported-macos-architecture-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-tags-manager-module">
+<h2>tests.test_tags_manager module<a class="headerlink" href="#tests-test-tags-manager-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-teardown-leaves-no-widget-registered-module">
+<h2>tests.test_teardown_leaves_no_widget_registered module<a class="headerlink" href="#tests-test-teardown-leaves-no-widget-registered-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-time-and-force-digesters-module">
+<h2>tests.test_time_and_force_digesters module<a class="headerlink" href="#tests-test-time-and-force-digesters-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-tools-basic-module">
+<h2>tests.test_tools_basic module<a class="headerlink" href="#tests-test-tools-basic-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-tools-basic-merge-module">
+<h2>tests.test_tools_basic_merge module<a class="headerlink" href="#tests-test-tools-basic-merge-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-trajectory-plot-module">
+<h2>tests.test_trajectory_plot module<a class="headerlink" href="#tests-test-trajectory-plot-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-trajectory-plot-lifecycle-module">
+<h2>tests.test_trajectory_plot_lifecycle module<a class="headerlink" href="#tests-test-trajectory-plot-lifecycle-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-trajectory-plot-series-module">
+<h2>tests.test_trajectory_plot_series module<a class="headerlink" href="#tests-test-trajectory-plot-series-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-transport-ownership-module">
+<h2>tests.test_transport_ownership module<a class="headerlink" href="#tests-test-transport-ownership-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-units-under-a-user-policy-module">
+<h2>tests.test_units_under_a_user_policy module<a class="headerlink" href="#tests-test-units-under-a-user-policy-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-unrepresented-region-visibility-module">
+<h2>tests.test_unrepresented_region_visibility module<a class="headerlink" href="#tests-test-unrepresented-region-visibility-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-validate-python-wheel-runtime-module">
+<h2>tests.test_validate_python_wheel_runtime module<a class="headerlink" href="#tests-test-validate-python-wheel-runtime-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-verify-public-package-module">
+<h2>tests.test_verify_public_package module<a class="headerlink" href="#tests-test-verify-public-package-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-view-info-module">
+<h2>tests.test_view_info module<a class="headerlink" href="#tests-test-view-info-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-view-lifecycle-module">
+<h2>tests.test_view_lifecycle module<a class="headerlink" href="#tests-test-view-lifecycle-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-view-mode-configuration-module">
+<h2>tests.test_view_mode_configuration module<a class="headerlink" href="#tests-test-view-mode-configuration-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-viewer-argument-contracts-module">
+<h2>tests.test_viewer_argument_contracts module<a class="headerlink" href="#tests-test-viewer-argument-contracts-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-visibility-semantics-module">
+<h2>tests.test_visibility_semantics module<a class="headerlink" href="#tests-test-visibility-semantics-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-whole-api-module">
+<h2>tests.test_whole_api module<a class="headerlink" href="#tests-test-whole-api-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-widget-popup-source-module">
+<h2>tests.test_widget_popup_source module<a class="headerlink" href="#tests-test-widget-popup-source-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-wire-serializable-messages-module">
+<h2>tests.test_wire_serializable_messages module<a class="headerlink" href="#tests-test-wire-serializable-messages-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-write-html-module">
+<h2>tests.test_write_html module<a class="headerlink" href="#tests-test-write-html-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="tests-test-zoom-module">
+<h2>tests.test_zoom module<a class="headerlink" href="#tests-test-zoom-module" title="Link to this heading">#</a></h2>
+</section>
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading">#</a></h2>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-conftest-module">tests.conftest module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-active-selection-module">tests.test_active_selection module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-addons-module">tests.test_addons module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-annotations-module">tests.test_annotations module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-api-resolver-module">tests.test_api_resolver module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-argdigest-public-api-module">tests.test_argdigest_public_api module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-argument-name-normalization-module">tests.test_argument_name_normalization module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-array-native-ack-timeout-module">tests.test_array_native_ack_timeout module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-array-native-transport-module">tests.test_array_native_transport module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-backend-error-ack-module">tests.test_backend_error_ack module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-benchmark-module">tests.test_benchmark module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-boundary-digesters-module">tests.test_boundary_digesters module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-box-assignment-module">tests.test_box_assignment module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-build-html-state-module">tests.test_build_html_state module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-camera-snapshot-request-module">tests.test_camera_snapshot_request module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-capability-audit-module">tests.test_capability_audit module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-catalog-templates-render-module">tests.test_catalog_templates_render module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-catalog-warning-round-trip-module">tests.test_catalog_warning_round_trip module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-ci-backlog-module">tests.test_ci_backlog module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-citation-release-tools-module">tests.test_citation_release_tools module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-color-digesters-module">tests.test_color_digesters module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-color-layers-module">tests.test_color_layers module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-colors-module">tests.test_colors module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-composite-load-module">tests.test_composite_load module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-conda-receptor-evidence-module">tests.test_conda_receptor_evidence module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-conda-version-identity-module">tests.test_conda_version_identity module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-convert-on-whole-and-region-module">tests.test_convert_on_whole_and_region module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-coordinate-edits-module">tests.test_coordinate_edits module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-demo-systems-module">tests.test_demo_systems module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-dependency-contract-module">tests.test_dependency_contract module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-design-review-closure-module">tests.test_design_review_closure module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-devguide-architecture-status-module">tests.test_devguide_architecture_status module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-devguide-links-module">tests.test_devguide_links module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-digester-caller-contract-module">tests.test_digester_caller_contract module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-digestion-helpers-module">tests.test_digestion_helpers module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-distribution-artifact-module">tests.test_distribution_artifact module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-docs-static-views-module">tests.test_docs_static_views module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-documentation-pages-run-module">tests.test_documentation_pages_run module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-documented-representation-types-module">tests.test_documented_representation_types module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-documented-whole-masks-module">tests.test_documented_whole_masks module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-dynamic-regions-module">tests.test_dynamic_regions module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-e2e-fixture-worker-module">tests.test_e2e_fixture_worker module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-e2e-reliability-module">tests.test_e2e_reliability module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-export-messages-e2e-module">tests.test_export_messages_e2e module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-export-runtime-source-module">tests.test_export_runtime_source module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-exported-page-opens-from-disk-module">tests.test_exported_page_opens_from_disk module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-extract-migrates-whole-overlays-module">tests.test_extract_migrates_whole_overlays module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-focus-with-fade-module">tests.test_focus_with_fade module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-geometry-helpers-module">tests.test_geometry_helpers module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-geometry-payloads-module">tests.test_geometry_payloads module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-html-scene-sidecar-module">tests.test_html_scene_sidecar module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-image-export-request-module">tests.test_image_export_request module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-index-mapper-module">tests.test_index_mapper module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-init-module">tests.test_init module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-installed-test-imports-module">tests.test_installed_test_imports module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-interaction-events-module">tests.test_interaction_events module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-interaction-families-module">tests.test_interaction_families module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-interactions-api-module">tests.test_interactions_api module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-interactions-projection-batching-module">tests.test_interactions_projection_batching module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-interactions-public-completion-module">tests.test_interactions_public_completion module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-interactions-qualification-module">tests.test_interactions_qualification module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-interactions-residency-benchmark-module">tests.test_interactions_residency_benchmark module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-interactions-scene-module">tests.test_interactions_scene module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-internal-render-worker-host-module">tests.test_internal_render_worker_host module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-js-build-version-resolution-module">tests.test_js_build_version_resolution module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-lazy-import-module">tests.test_lazy_import module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-lazy-molecular-projection-module">tests.test_lazy_molecular_projection module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-legend-module">tests.test_legend module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-length-digesters-module">tests.test_length_digesters module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-live-edit-rebuild-module">tests.test_live_edit_rebuild module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-load-usability-module">tests.test_load_usability module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-loading-identity-prevalidation-module">tests.test_loading_identity_prevalidation module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-manager-surface-module">tests.test_manager_surface module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-measurements-module">tests.test_measurements module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-molecular-system-paths-module">tests.test_molecular_system_paths module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-movie-module">tests.test_movie module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-new-view-module">tests.test_new_view module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-noarch-conda-launchers-module">tests.test_noarch_conda_launchers module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-npm-publish-workflow-module">tests.test_npm_publish_workflow module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-panel-action-dispatch-module">tests.test_panel_action_dispatch module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-panel-mode-request-module">tests.test_panel_mode_request module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-pending-message-flush-module">tests.test_pending_message_flush module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-phase11-regions-panel-module">tests.test_phase11_regions_panel module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-phase12-whole-panel-module">tests.test_phase12_whole_panel module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-playback-digesters-module">tests.test_playback_digesters module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-popup-snapshot-module">tests.test_popup_snapshot module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-popup-snapshot-completeness-module">tests.test_popup_snapshot_completeness module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-popup-snapshot-fidelity-module">tests.test_popup_snapshot_fidelity module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-preview-server-module">tests.test_preview_server module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-project-style-config-module">tests.test_project_style_config module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-promotion-gates-module">tests.test_promotion_gates module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-protocol-contracts-module">tests.test_protocol_contracts module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-public-api-docs-module">tests.test_public_api_docs module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-public-api-inventory-module">tests.test_public_api_inventory module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-public-entrypoint-contract-module">tests.test_public_entrypoint_contract module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-public-output-units-module">tests.test_public_output_units module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-public-reference-imports-module">tests.test_public_reference_imports module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-python-ecosystem-contract-module">tests.test_python_ecosystem_contract module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-python-js-boundary-module">tests.test_python_js_boundary module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-qt-transport-contract-module">tests.test_qt_transport_contract module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-readme-addon-table-module">tests.test_readme_addon_table module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-readme-quickstart-runs-module">tests.test_readme_quickstart_runs module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-rebuild-persistence-module">tests.test_rebuild_persistence module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-rebuild-visibility-module">tests.test_rebuild_visibility module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-region-api-completeness-module">tests.test_region_api_completeness module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-region-enablement-module">tests.test_region_enablement module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-region-isolation-module">tests.test_region_isolation module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-region-recipes-module">tests.test_region_recipes module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-release-evidence-module">tests.test_release_evidence module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-release-gate-module">tests.test_release_gate module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-release-route-module">tests.test_release_route module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-remote-cli-module">tests.test_remote_cli module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-remote-digesters-module">tests.test_remote_digesters module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-remote-protocol-module">tests.test_remote_protocol module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-remote-render-worker-module">tests.test_remote_render_worker module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-remote-session-router-module">tests.test_remote_session_router module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-remote-session-service-module">tests.test_remote_session_service module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-remote-view-channel-module">tests.test_remote_view_channel module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-reporting-protocol-module">tests.test_reporting_protocol module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-repr-mimebundle-module">tests.test_repr_mimebundle module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-representative-scale-benchmark-module">tests.test_representative_scale_benchmark module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-reproducible-interaction-module">tests.test_reproducible_interaction module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-runtime-router-module">tests.test_runtime_router module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-runtime-seam-integration-module">tests.test_runtime_seam_integration module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-scalar-color-units-module">tests.test_scalar_color_units module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-scene-history-module">tests.test_scene_history module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-scene-integrity-module">tests.test_scene_integrity module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-scene-object-identity-module">tests.test_scene_object_identity module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-scene-object-owner-module">tests.test_scene_object_owner module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-scene-object-summaries-module">tests.test_scene_object_summaries module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-scene-transfer-module">tests.test_scene_transfer module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-selections-module">tests.test_selections module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-session-bundle-module">tests.test_session_bundle module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-session-rejection-module">tests.test_session_rejection module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-shape-digesters-module">tests.test_shape_digesters module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-shape-render-status-module">tests.test_shape_render_status module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-smonitor-application-policy-module">tests.test_smonitor_application_policy module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-smonitor-integration-module">tests.test_smonitor_integration module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-smonitor-signal-passthrough-module">tests.test_smonitor_signal_passthrough module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-source-records-module">tests.test_source_records module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-source-text-encoding-module">tests.test_source_text_encoding module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-source-workflow-coverage-module">tests.test_source_workflow_coverage module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-standalone-module">tests.test_standalone module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-state-focus-overlays-module">tests.test_state_focus_overlays module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-state-sections-module">tests.test_state_sections module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-state-serialization-module">tests.test_state_serialization module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-state-structure-identity-module">tests.test_state_structure_identity module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-state-v2-module">tests.test_state_v2 module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-state-view-state-module">tests.test_state_view_state module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-static-export-snapshot-module">tests.test_static_export_snapshot module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-structure-scale-budget-module">tests.test_structure_scale_budget module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-structure-stream-ordering-module">tests.test_structure_stream_ordering module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-structure-transfer-module">tests.test_structure_transfer module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-studio-loading-module">tests.test_studio_loading module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-styles-module">tests.test_styles module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-support-integrations-module">tests.test_support_integrations module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-supported-macos-architecture-module">tests.test_supported_macos_architecture module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-tags-manager-module">tests.test_tags_manager module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-teardown-leaves-no-widget-registered-module">tests.test_teardown_leaves_no_widget_registered module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-time-and-force-digesters-module">tests.test_time_and_force_digesters module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-tools-basic-module">tests.test_tools_basic module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-tools-basic-merge-module">tests.test_tools_basic_merge module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-trajectory-plot-module">tests.test_trajectory_plot module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-trajectory-plot-lifecycle-module">tests.test_trajectory_plot_lifecycle module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-trajectory-plot-series-module">tests.test_trajectory_plot_series module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-transport-ownership-module">tests.test_transport_ownership module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-units-under-a-user-policy-module">tests.test_units_under_a_user_policy module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-unrepresented-region-visibility-module">tests.test_unrepresented_region_visibility module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-validate-python-wheel-runtime-module">tests.test_validate_python_wheel_runtime module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-verify-public-package-module">tests.test_verify_public_package module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-view-info-module">tests.test_view_info module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-view-lifecycle-module">tests.test_view_lifecycle module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-view-mode-configuration-module">tests.test_view_mode_configuration module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-viewer-argument-contracts-module">tests.test_viewer_argument_contracts module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-visibility-semantics-module">tests.test_visibility_semantics module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-whole-api-module">tests.test_whole_api module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-widget-popup-source-module">tests.test_widget_popup_source module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-wire-serializable-messages-module">tests.test_wire_serializable_messages module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-write-html-module">tests.test_write_html module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-zoom-module">tests.test_zoom module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module contents</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="content/about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

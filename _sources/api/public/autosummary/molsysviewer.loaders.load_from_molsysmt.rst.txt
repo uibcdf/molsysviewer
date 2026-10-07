@@ -1,0 +1,6 @@
+﻿molsysviewer.loaders.load\_from\_molsysmt
+=========================================
+
+.. currentmodule:: molsysviewer.loaders
+
+.. autofunction:: load_from_molsysmt

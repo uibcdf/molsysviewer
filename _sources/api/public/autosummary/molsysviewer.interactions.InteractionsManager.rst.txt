@@ -1,0 +1,48 @@
+﻿molsysviewer.interactions.InteractionsManager
+=============================================
+
+.. currentmodule:: molsysviewer.interactions
+
+.. autoclass:: InteractionsManager
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~InteractionsManager.__init__
+      ~InteractionsManager.add
+      ~InteractionsManager.analyses
+      ~InteractionsManager.attach
+      ~InteractionsManager.calculation_families
+      ~InteractionsManager.clear
+      ~InteractionsManager.contains
+      ~InteractionsManager.count
+      ~InteractionsManager.delete
+      ~InteractionsManager.delete_analysis
+      ~InteractionsManager.focus_observation
+      ~InteractionsManager.get
+      ~InteractionsManager.get_analysis
+      ~InteractionsManager.hide
+      ~InteractionsManager.hide_all
+      ~InteractionsManager.info
+      ~InteractionsManager.inspect
+      ~InteractionsManager.load
+      ~InteractionsManager.query
+      ~InteractionsManager.records
+      ~InteractionsManager.save
+      ~InteractionsManager.select_observation
+      ~InteractionsManager.set_layer_tag
+      ~InteractionsManager.set_tag
+      ~InteractionsManager.show
+      ~InteractionsManager.show_all
+      ~InteractionsManager.tags
+   
+   
+
+   
+   
+   

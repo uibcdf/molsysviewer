@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.set\_play\_speed
+========================================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.set_play_speed

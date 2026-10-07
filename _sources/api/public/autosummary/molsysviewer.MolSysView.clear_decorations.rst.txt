@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.clear\_decorations
+==========================================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.clear_decorations

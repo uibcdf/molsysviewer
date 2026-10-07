@@ -1,0 +1,1433 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+    <title>molsysviewer.measurements – MolSysViewer 0.24.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6b6fcda3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6b6fcda3" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
+
+    <script src="../../_static/documentation_options.js?v=a9084e48"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/molsysviewer/measurements';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.24.0" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.24.0 documentation - Home"/>
+    <img src="../../_static/logo_dark.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.24.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">molsysviewer.measurements</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for molsysviewer.measurements</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">molsysmt</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">msm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">smonitor</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyunitwizard</span> <span class="k">as</span> <span class="n">puw</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._private.argdigest</span><span class="w"> </span><span class="kn">import</span> <span class="n">digest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._private.smonitor_emit</span><span class="w"> </span><span class="kn">import</span> <span class="n">emit_suppressed_exception</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Layer</span><span class="p">,</span> <span class="n">Measurement</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.scene_history</span><span class="w"> </span><span class="kn">import</span> <span class="n">records_scene_history</span>
+
+<span class="n">_MEASUREMENT_POLICIES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"atom"</span><span class="p">,</span> <span class="s2">"centroid"</span><span class="p">,</span> <span class="s2">"representative_atom"</span><span class="p">}</span>
+<span class="n">_NM_TO_ANGSTROM</span> <span class="o">=</span> <span class="n">puw</span><span class="o">.</span><span class="n">conversion_factor</span><span class="p">(</span><span class="s2">"nm"</span><span class="p">,</span> <span class="s2">"angstroms"</span><span class="p">)</span>
+
+<span class="n">_REPRESENTATIVE_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"protein"</span><span class="p">:</span> <span class="s2">"CA"</span><span class="p">,</span>
+    <span class="s2">"nucleic"</span><span class="p">:</span> <span class="s2">"P"</span><span class="p">,</span>
+    <span class="s2">"lipid"</span><span class="p">:</span> <span class="s2">"P"</span><span class="p">,</span>
+    <span class="s2">"other"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="MeasurementsManager">
+<a class="viewcode-back" href="../../api/public/autosummary/molsysviewer.measurements.MeasurementsManager.html#molsysviewer.measurements.MeasurementsManager">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MeasurementsManager</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Measurement manager bound to a MolSysView."""</span>
+
+<div class="viewcode-block" id="MeasurementsManager.__init__">
+<a class="viewcode-back" href="../../api/public/autosummary/molsysviewer.measurements.MeasurementsManager.html#molsysviewer.measurements.MeasurementsManager.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span> <span class="o">=</span> <span class="n">view</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint_policy_default</span> <span class="o">=</span> <span class="s2">"centroid"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_representative_atoms</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">_REPRESENTATIVE_DEFAULTS</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">layer</span>
+
+<div class="viewcode-block" id="MeasurementsManager.add">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.add">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">selections</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Create a measurement of explicit *kind*."""</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"distance"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_distance</span><span class="p">,</span>
+            <span class="s2">"angle"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_angle</span><span class="p">,</span>
+            <span class="s2">"dihedral"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_dihedral</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="n">methods</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported measurement kind </span><span class="si">{</span><span class="n">kind</span><span class="si">!r}</span><span class="s2">; choose from </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">methods</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+        <span class="k">return</span> <span class="n">method</span><span class="p">(</span><span class="o">*</span><span class="n">selections</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ensure_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">layer_tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_tag_managers</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">]</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="n">resolved_layer_tag</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">layer_tag</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">layer_tag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">tag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_ensure_layer_group</span><span class="p">(</span>  <span class="c1"># noqa: SLF001</span>
+            <span class="n">resolved_layer_tag</span><span class="p">,</span>
+            <span class="n">kind</span><span class="o">=</span><span class="s2">"measurement"</span><span class="p">,</span>
+            <span class="n">provenance</span><span class="o">=</span><span class="s2">"user"</span> <span class="k">if</span> <span class="n">layer_tag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">"auto"</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">measurement</span> <span class="o">=</span> <span class="n">Measurement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">layer_tag</span><span class="o">=</span><span class="n">resolved_layer_tag</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_scene_objects</span><span class="p">[(</span><span class="s2">"measurement"</span><span class="p">,</span> <span class="n">tag</span><span class="p">)]</span> <span class="o">=</span> <span class="n">measurement</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="k">return</span> <span class="n">measurement</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_measurement_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_scene_objects</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="s2">"measurement"</span><span class="p">,</span> <span class="n">tag</span><span class="p">))</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s2">"kind"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">"measurement"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">layer</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_require_measurement_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_measurement_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No measurement layer found for tag </span><span class="si">{</span><span class="n">tag</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">layer</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_endpoint_atom_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Resolve an endpoint argument to a list of atom indices.</span>
+
+<span class="sd">        Accepts a MolSysMT selection string or any iterable of integer indices.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_molsys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: SLF001</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"No molecular system loaded. Load a system before adding measurements."</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">msm</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_molsys</span><span class="p">,</span>  <span class="c1"># noqa: SLF001</span>
+                    <span class="n">selection</span><span class="o">=</span><span class="n">arg</span><span class="p">,</span>
+                    <span class="n">syntax</span><span class="o">=</span><span class="s2">"MolSysMT"</span><span class="p">,</span>
+                    <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+        <span class="c1"># `int(i)` is not cosmetic. Digestion hands this a numpy array, so a bare</span>
+        <span class="c1"># `list(arg)` yields `np.int64` values, and those travel into the</span>
+        <span class="c1"># `add_*_measurement` options. `np.int64` is not JSON-serializable, so</span>
+        <span class="c1"># the message cannot cross the widget wire at all: the measurement is</span>
+        <span class="c1"># created and queryable in Python and never renders. Measurements made</span>
+        <span class="c1"># from the Studio subpanel were unaffected because their indices arrive</span>
+        <span class="c1"># from JS as plain numbers, which is what made the defect look like a</span>
+        <span class="c1"># Mol* problem rather than a serialization one.</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">arg</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_normalize_endpoint_policy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint_policy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">policy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint_policy_default</span> <span class="k">if</span> <span class="n">endpoint_policy</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">endpoint_policy</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">policy</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_MEASUREMENT_POLICIES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Unsupported measurement endpoint policy </span><span class="si">{</span><span class="n">endpoint_policy</span><span class="si">!r}</span><span class="s2">. Allowed: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">_MEASUREMENT_POLICIES</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">policy</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_normalize_representative_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_representative_atoms</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Unsupported representative-atom target </span><span class="si">{</span><span class="n">target</span><span class="si">!r}</span><span class="s2">. Allowed: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_representative_atoms</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">key</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_atom_metadata_for_pick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atom_indices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_molsys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: SLF001</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">"atom_name"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"group_name"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"group_type"</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">msm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_molsys</span><span class="p">,</span>  <span class="c1"># noqa: SLF001</span>
+                <span class="n">element</span><span class="o">=</span><span class="s2">"atom"</span><span class="p">,</span>
+                <span class="n">selection</span><span class="o">=</span><span class="n">atom_indices</span><span class="p">,</span>
+                <span class="n">output_type</span><span class="o">=</span><span class="s2">"dictionary"</span><span class="p">,</span>
+                <span class="n">atom_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">group_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">group_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">emit_suppressed_exception</span><span class="p">(</span>
+                <span class="s2">"MeasurementsManager._atom_metadata_for_pick"</span><span class="p">,</span>
+                <span class="n">exc</span><span class="p">,</span>
+                <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s2">"atom_indices"</span><span class="p">:</span> <span class="nb">repr</span><span class="p">(</span><span class="n">atom_indices</span><span class="p">)},</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">"atom_name"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"group_name"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"group_type"</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="n">atom_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"atom_name"</span><span class="p">,</span> <span class="p">[])</span> <span class="ow">or</span> <span class="p">[])</span>
+        <span class="n">group_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"group_name"</span><span class="p">,</span> <span class="p">[])</span> <span class="ow">or</span> <span class="p">[])</span>
+        <span class="n">group_types</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"group_type"</span><span class="p">,</span> <span class="p">[])</span> <span class="ow">or</span> <span class="p">[])</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"atom_name"</span><span class="p">:</span> <span class="n">atom_names</span><span class="p">,</span> <span class="s2">"group_name"</span><span class="p">:</span> <span class="n">group_names</span><span class="p">,</span> <span class="s2">"group_type"</span><span class="p">:</span> <span class="n">group_types</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_representative_category_for_pick</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">atom_indices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">atom_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">group_types</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">normalized_group_types</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">group_type</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">group_type</span> <span class="ow">in</span> <span class="n">group_types</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">group_type</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="s2">"amino acid"</span> <span class="ow">in</span> <span class="n">normalized_group_types</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"protein"</span>
+        <span class="k">if</span> <span class="s2">"nucleotide"</span> <span class="ow">in</span> <span class="n">normalized_group_types</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"nucleic"</span>
+        <span class="k">if</span> <span class="s2">"lipid"</span> <span class="ow">in</span> <span class="n">normalized_group_types</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"lipid"</span>
+        <span class="n">atom_name_set</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">atom_names</span><span class="p">}</span>
+        <span class="k">if</span> <span class="s2">"CA"</span> <span class="ow">in</span> <span class="n">atom_name_set</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"protein"</span>
+        <span class="k">if</span> <span class="s2">"P"</span> <span class="ow">in</span> <span class="n">atom_name_set</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"nucleic"</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">atom_indices</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">"lipid"</span>
+        <span class="k">return</span> <span class="s2">"other"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_endpoint_metadata</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">picks_atom_indices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">endpoint_policy</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]:</span>
+        <span class="n">endpoint_kinds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">endpoint_labels</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">endpoint_atom_indices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">pick</span> <span class="ow">in</span> <span class="n">picks_atom_indices</span><span class="p">:</span>
+            <span class="n">clean_pick</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">pick</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean_pick</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">endpoint_kinds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"atom"</span><span class="p">)</span>
+                <span class="n">endpoint_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"atom"</span><span class="p">)</span>
+                <span class="n">endpoint_atom_indices</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean_pick</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom_metadata_for_pick</span><span class="p">(</span><span class="n">clean_pick</span><span class="p">)</span>
+                <span class="n">atom_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="s2">"atom_name"</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">"atom_name"</span><span class="p">]</span> <span class="k">else</span> <span class="s2">"atom"</span>
+                <span class="n">endpoint_kinds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"atom"</span><span class="p">)</span>
+                <span class="n">endpoint_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom_name</span> <span class="ow">or</span> <span class="s2">"atom"</span><span class="p">)</span>
+                <span class="n">endpoint_atom_indices</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">clean_pick</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">endpoint_policy</span> <span class="o">==</span> <span class="s2">"centroid"</span><span class="p">:</span>
+                <span class="n">endpoint_kinds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"centroid"</span><span class="p">)</span>
+                <span class="n">endpoint_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"centroid"</span><span class="p">)</span>
+                <span class="n">endpoint_atom_indices</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+                <span class="k">continue</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom_metadata_for_pick</span><span class="p">(</span><span class="n">clean_pick</span><span class="p">)</span>
+            <span class="n">atom_names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">"atom_name"</span><span class="p">]]</span>
+            <span class="n">group_types</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">"group_type"</span><span class="p">]]</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_representative_category_for_pick</span><span class="p">(</span><span class="n">clean_pick</span><span class="p">,</span> <span class="n">atom_names</span><span class="p">,</span> <span class="n">group_types</span><span class="p">)</span>
+            <span class="n">preferred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_representative_atoms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_representative_atoms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"other"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+            <span class="n">preferred</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">preferred</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">chosen_index</span> <span class="o">=</span> <span class="n">clean_pick</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">chosen_label</span> <span class="o">=</span> <span class="n">atom_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">atom_names</span> <span class="k">else</span> <span class="n">preferred</span> <span class="ow">or</span> <span class="s2">"representative_atom"</span>
+            <span class="k">if</span> <span class="n">preferred</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">atom_index</span><span class="p">,</span> <span class="n">atom_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">clean_pick</span><span class="p">,</span> <span class="n">atom_names</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">atom_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="n">preferred</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
+                        <span class="n">chosen_index</span> <span class="o">=</span> <span class="n">atom_index</span>
+                        <span class="n">chosen_label</span> <span class="o">=</span> <span class="n">atom_name</span>
+                        <span class="k">break</span>
+            <span class="n">endpoint_kinds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"representative_atom"</span><span class="p">)</span>
+            <span class="n">endpoint_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chosen_label</span> <span class="ow">or</span> <span class="n">preferred</span> <span class="ow">or</span> <span class="s2">"representative_atom"</span><span class="p">)</span>
+            <span class="n">endpoint_atom_indices</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">chosen_index</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">endpoint_kinds</span><span class="p">,</span> <span class="n">endpoint_labels</span><span class="p">,</span> <span class="n">endpoint_atom_indices</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_measurement_message</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">op</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">picks_atom_indices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">layer_tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">endpoint_policy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">value_series</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">style</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">policy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_endpoint_policy</span><span class="p">(</span><span class="n">endpoint_policy</span><span class="p">)</span>
+        <span class="n">endpoint_kinds</span><span class="p">,</span> <span class="n">endpoint_labels</span><span class="p">,</span> <span class="n">endpoint_atom_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_endpoint_metadata</span><span class="p">(</span>
+            <span class="n">picks_atom_indices</span><span class="p">,</span> <span class="n">policy</span>
+        <span class="p">)</span>
+        <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"tag"</span><span class="p">:</span> <span class="n">tag</span><span class="p">,</span>
+            <span class="s2">"layer_tag"</span><span class="p">:</span> <span class="n">layer_tag</span> <span class="ow">or</span> <span class="n">tag</span><span class="p">,</span>
+            <span class="s2">"picks_atom_indices"</span><span class="p">:</span> <span class="n">picks_atom_indices</span><span class="p">,</span>
+            <span class="s2">"endpoint_kinds"</span><span class="p">:</span> <span class="n">endpoint_kinds</span><span class="p">,</span>
+            <span class="s2">"endpoint_policy"</span><span class="p">:</span> <span class="n">policy</span><span class="p">,</span>
+            <span class="s2">"endpoint_labels"</span><span class="p">:</span> <span class="n">endpoint_labels</span><span class="p">,</span>
+            <span class="s2">"endpoint_atom_indices"</span><span class="p">:</span> <span class="n">endpoint_atom_indices</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">options</span><span class="p">[</span><span class="s2">"value"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value_series</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">options</span><span class="p">[</span><span class="s2">"value_series"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value_series</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">style</span><span class="p">:</span>
+            <span class="n">options</span><span class="p">[</span><span class="s2">"style"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">style</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">"op"</span><span class="p">:</span> <span class="n">op</span><span class="p">,</span>
+            <span class="s2">"tag"</span><span class="p">:</span> <span class="n">tag</span><span class="p">,</span>
+            <span class="s2">"options"</span><span class="p">:</span> <span class="n">options</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_record_measurement</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">op</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">picks_atom_indices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">layer_tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">endpoint_policy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">value_series</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">style</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">layer_tag</span><span class="o">=</span><span class="n">layer_tag</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_measurement_message</span><span class="p">(</span>
+            <span class="n">op</span><span class="p">,</span>
+            <span class="n">picks_atom_indices</span><span class="p">,</span>
+            <span class="n">tag</span><span class="p">,</span>
+            <span class="n">layer_tag</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s2">"layer_tag"</span><span class="p">,</span> <span class="n">tag</span><span class="p">),</span>
+            <span class="n">endpoint_policy</span><span class="o">=</span><span class="n">endpoint_policy</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">value_series</span><span class="o">=</span><span class="n">value_series</span><span class="p">,</span>
+            <span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_record_measurement_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_last_measurement_created_event</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># noqa: SLF001</span>
+            <span class="s2">"event"</span><span class="p">:</span> <span class="s2">"interaction_measurement_created"</span><span class="p">,</span>
+            <span class="s2">"action"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"add_distance_measurement"</span><span class="p">:</span> <span class="s2">"distance"</span><span class="p">,</span>
+                <span class="s2">"add_angle_measurement"</span><span class="p">:</span> <span class="s2">"angle"</span><span class="p">,</span>
+                <span class="s2">"add_dihedral_measurement"</span><span class="p">:</span> <span class="s2">"dihedral"</span><span class="p">,</span>
+            <span class="p">}[</span><span class="n">op</span><span class="p">],</span>
+            <span class="s2">"picked_count"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">picks_atom_indices</span><span class="p">),</span>
+            <span class="s2">"picks_atom_indices"</span><span class="p">:</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">picks_atom_indices</span><span class="p">],</span>
+            <span class="s2">"endpoint_kinds"</span><span class="p">:</span> <span class="n">msg</span><span class="p">[</span><span class="s2">"options"</span><span class="p">][</span><span class="s2">"endpoint_kinds"</span><span class="p">],</span>
+            <span class="s2">"endpoint_policy"</span><span class="p">:</span> <span class="n">msg</span><span class="p">[</span><span class="s2">"options"</span><span class="p">][</span><span class="s2">"endpoint_policy"</span><span class="p">],</span>
+            <span class="s2">"endpoint_labels"</span><span class="p">:</span> <span class="n">msg</span><span class="p">[</span><span class="s2">"options"</span><span class="p">][</span><span class="s2">"endpoint_labels"</span><span class="p">],</span>
+            <span class="s2">"endpoint_atom_indices"</span><span class="p">:</span> <span class="n">msg</span><span class="p">[</span><span class="s2">"options"</span><span class="p">][</span><span class="s2">"endpoint_atom_indices"</span><span class="p">],</span>
+            <span class="s2">"tag"</span><span class="p">:</span> <span class="n">tag</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">layer</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_endpoint_positions_nm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pick</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">ea_indices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">policy</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"np.ndarray | None"</span><span class="p">:</span>
+        <span class="n">molsys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_molsys</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="k">if</span> <span class="n">molsys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">policy</span> <span class="o">==</span> <span class="s2">"centroid"</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">pick</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">atoms</span> <span class="o">=</span> <span class="n">pick</span>
+            <span class="k">elif</span> <span class="n">ea_indices</span><span class="p">:</span>
+                <span class="n">atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">ea_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="k">elif</span> <span class="n">pick</span><span class="p">:</span>
+                <span class="n">atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">pick</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">msm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">molsys</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="s2">"atom"</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span> <span class="n">output_type</span><span class="o">=</span><span class="s2">"dictionary"</span><span class="p">,</span> <span class="n">coordinates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">coords</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"coordinates"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">coords</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="c1"># Convert explicitly rather than letting `np.asarray` strip the</span>
+            <span class="c1"># unit: this method's name promises nm, and a bare downcast returns</span>
+            <span class="c1"># whatever unit the source happened to use while warning about it.</span>
+            <span class="c1"># It works today only because MolSysMT standardizes to nm — an</span>
+            <span class="c1"># implicit dependency on someone else's convention, over a number</span>
+            <span class="c1"># that ends up in figures. `units_and_quantities.md` is explicit</span>
+            <span class="c1"># that the conversion belongs here, in the body, and is named.</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">puw</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">to_unit</span><span class="o">=</span><span class="s2">"nm"</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+            <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="n">arr</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">emit_suppressed_exception</span><span class="p">(</span>
+                <span class="s2">"MeasurementsManager._endpoint_positions_nm"</span><span class="p">,</span>
+                <span class="n">exc</span><span class="p">,</span>
+                <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s2">"pick"</span><span class="p">:</span> <span class="nb">repr</span><span class="p">(</span><span class="n">pick</span><span class="p">),</span> <span class="s2">"endpoint_atom_indices"</span><span class="p">:</span> <span class="nb">repr</span><span class="p">(</span><span class="n">ea_indices</span><span class="p">),</span> <span class="s2">"policy"</span><span class="p">:</span> <span class="n">policy</span><span class="p">},</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_measurement_series</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">op</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">picks_atom_indices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">endpoint_atom_indices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">endpoint_policy</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"np.ndarray | None"</span><span class="p">:</span>
+        <span class="n">positions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pick</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">picks_atom_indices</span><span class="p">):</span>
+            <span class="n">ea</span> <span class="o">=</span> <span class="n">endpoint_atom_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">endpoint_atom_indices</span><span class="p">)</span> <span class="k">else</span> <span class="p">[]</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint_positions_nm</span><span class="p">(</span><span class="n">pick</span><span class="p">,</span> <span class="n">ea</span><span class="p">,</span> <span class="n">endpoint_policy</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pos</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">positions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">frame_count</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">pos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">frame_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">positions</span> <span class="o">=</span> <span class="p">[</span><span class="n">pos</span><span class="p">[:</span><span class="n">frame_count</span><span class="p">]</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">op</span> <span class="o">==</span> <span class="s2">"add_distance_measurement"</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">positions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">positions</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">_NM_TO_ANGSTROM</span>  <span class="c1"># nm -&gt; Å</span>
+            <span class="k">if</span> <span class="n">op</span> <span class="o">==</span> <span class="s2">"add_angle_measurement"</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">v1</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">positions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">v2</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">positions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">n1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">n2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">denom</span> <span class="o">=</span> <span class="n">n1</span> <span class="o">*</span> <span class="n">n2</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">denom</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+                <span class="n">cosines</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"ij,ij-&gt;i"</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span> <span class="o">/</span> <span class="n">denom</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">cosines</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="n">op</span> <span class="o">==</span> <span class="s2">"add_dihedral_measurement"</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">p3</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">positions</span><span class="p">):</span>
+                    <span class="n">b1</span> <span class="o">=</span> <span class="n">p1</span> <span class="o">-</span> <span class="n">p0</span>
+                    <span class="n">b2</span> <span class="o">=</span> <span class="n">p2</span> <span class="o">-</span> <span class="n">p1</span>
+                    <span class="n">b3</span> <span class="o">=</span> <span class="n">p3</span> <span class="o">-</span> <span class="n">p2</span>
+                    <span class="n">n1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span> <span class="n">b2</span><span class="p">)</span>
+                    <span class="n">n2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">b2</span><span class="p">,</span> <span class="n">b3</span><span class="p">)</span>
+                    <span class="n">nn1</span><span class="p">,</span> <span class="n">nn2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">n1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">n2</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">nn1</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">nn2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="kc">None</span>
+                    <span class="n">n1</span> <span class="o">/=</span> <span class="n">nn1</span>
+                    <span class="n">n2</span> <span class="o">/=</span> <span class="n">nn2</span>
+                    <span class="n">m1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">b2</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">1</span><span class="p">))</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">)</span>
+                    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">n2</span><span class="p">)</span>
+                    <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">))))</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">emit_suppressed_exception</span><span class="p">(</span>
+                <span class="s2">"MeasurementsManager._compute_measurement_series"</span><span class="p">,</span>
+                <span class="n">exc</span><span class="p">,</span>
+                <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s2">"op"</span><span class="p">:</span> <span class="n">op</span><span class="p">,</span> <span class="s2">"endpoint_policy"</span><span class="p">:</span> <span class="n">endpoint_policy</span><span class="p">},</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_measurement_value</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">op</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">picks_atom_indices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">endpoint_atom_indices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">endpoint_policy</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_measurement_series</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">picks_atom_indices</span><span class="p">,</span> <span class="n">endpoint_atom_indices</span><span class="p">,</span> <span class="n">endpoint_policy</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">series</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">series</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_active_series_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">series_length</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="p">,</span> <span class="s2">"_current_structure_index"</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">series_length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_send_measurement</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">op</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">picks_atom_indices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">layer_tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">endpoint_policy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">value_series</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">style</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">value_series</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">policy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_endpoint_policy</span><span class="p">(</span><span class="n">endpoint_policy</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">ea_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_endpoint_metadata</span><span class="p">(</span><span class="n">picks_atom_indices</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span>
+            <span class="n">series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_measurement_series</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">picks_atom_indices</span><span class="p">,</span> <span class="n">ea_indices</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">series</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">series</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">value_series</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">series</span><span class="p">]</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_record_measurement</span><span class="p">(</span>
+            <span class="n">op</span><span class="p">,</span>
+            <span class="n">picks_atom_indices</span><span class="p">,</span>
+            <span class="n">tag</span><span class="p">,</span>
+            <span class="n">layer_tag</span><span class="o">=</span><span class="n">layer_tag</span><span class="p">,</span>
+            <span class="n">endpoint_policy</span><span class="o">=</span><span class="n">endpoint_policy</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">value_series</span><span class="o">=</span><span class="n">value_series</span><span class="p">,</span>
+            <span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_build_measurement_message</span><span class="p">(</span>
+                <span class="n">op</span><span class="p">,</span>
+                <span class="n">picks_atom_indices</span><span class="p">,</span>
+                <span class="n">tag</span><span class="p">,</span>
+                <span class="n">layer_tag</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s2">"layer_tag"</span><span class="p">,</span> <span class="n">tag</span><span class="p">),</span>
+                <span class="n">endpoint_policy</span><span class="o">=</span><span class="n">endpoint_policy</span><span class="p">,</span>
+                <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">value_series</span><span class="o">=</span><span class="n">value_series</span><span class="p">,</span>
+                <span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="k">return</span> <span class="n">layer</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sync_frontend_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span>  <span class="c1"># noqa: SLF001</span>
+            <span class="p">{</span>
+                <span class="s2">"op"</span><span class="p">:</span> <span class="s2">"set_measurement_settings"</span><span class="p">,</span>
+                <span class="s2">"options"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"endpoint_policy_default"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint_policy_default</span><span class="p">,</span>
+                    <span class="s2">"representative_atoms"</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_representative_atoms</span><span class="p">),</span>
+                <span class="p">},</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="nd">@records_scene_history</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_register_interactive_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"action"</span><span class="p">)</span>
+        <span class="n">picks</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"picks_atom_indices"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">picks</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">picks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Interactive measurement event does not contain valid picks."</span><span class="p">)</span>
+
+        <span class="n">layer_tag</span> <span class="o">=</span> <span class="n">tag</span> <span class="ow">or</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tag"</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_next_measurement_tag</span><span class="p">()</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer_tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">layer_tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Interactive measurement tag must be a non-empty string."</span><span class="p">)</span>
+        <span class="n">layer_tag</span> <span class="o">=</span> <span class="n">layer_tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">event_policy</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"endpoint_policy"</span><span class="p">)</span>
+        <span class="n">raw_value</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"value"</span><span class="p">)</span>
+        <span class="n">event_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">raw_value</span><span class="p">)</span> <span class="k">if</span> <span class="n">raw_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">"distance"</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">picks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_record_measurement</span><span class="p">(</span>
+                <span class="s2">"add_distance_measurement"</span><span class="p">,</span>
+                <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">picks</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">list</span><span class="p">(</span><span class="n">picks</span><span class="p">[</span><span class="mi">1</span><span class="p">])],</span>
+                <span class="n">layer_tag</span><span class="p">,</span>
+                <span class="n">endpoint_policy</span><span class="o">=</span><span class="n">event_policy</span><span class="p">,</span>
+                <span class="n">value</span><span class="o">=</span><span class="n">event_value</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">"angle"</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">picks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_record_measurement</span><span class="p">(</span>
+                <span class="s2">"add_angle_measurement"</span><span class="p">,</span>
+                <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">picks</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">list</span><span class="p">(</span><span class="n">picks</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">list</span><span class="p">(</span><span class="n">picks</span><span class="p">[</span><span class="mi">2</span><span class="p">])],</span>
+                <span class="n">layer_tag</span><span class="p">,</span>
+                <span class="n">endpoint_policy</span><span class="o">=</span><span class="n">event_policy</span><span class="p">,</span>
+                <span class="n">value</span><span class="o">=</span><span class="n">event_value</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">"dihedral"</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">picks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_record_measurement</span><span class="p">(</span>
+                <span class="s2">"add_dihedral_measurement"</span><span class="p">,</span>
+                <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">picks</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">list</span><span class="p">(</span><span class="n">picks</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">list</span><span class="p">(</span><span class="n">picks</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="nb">list</span><span class="p">(</span><span class="n">picks</span><span class="p">[</span><span class="mi">3</span><span class="p">])],</span>
+                <span class="n">layer_tag</span><span class="p">,</span>
+                <span class="n">endpoint_policy</span><span class="o">=</span><span class="n">event_policy</span><span class="p">,</span>
+                <span class="n">value</span><span class="o">=</span><span class="n">event_value</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Stored interactive measurement is incomplete or unsupported."</span><span class="p">)</span>
+
+        <span class="n">event</span><span class="p">[</span><span class="s2">"tag"</span><span class="p">]</span> <span class="o">=</span> <span class="n">layer_tag</span>
+        <span class="k">if</span> <span class="s2">"endpoint_kinds"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">event</span><span class="p">:</span>
+            <span class="n">event</span><span class="p">[</span><span class="s2">"endpoint_kinds"</span><span class="p">],</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_endpoint_metadata</span><span class="p">(</span>
+                <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">picks</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_endpoint_policy</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"endpoint_policy"</span><span class="p">)),</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"endpoint_policy"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">event</span><span class="p">:</span>
+            <span class="n">event</span><span class="p">[</span><span class="s2">"endpoint_policy"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint_policy_default</span>
+        <span class="k">if</span> <span class="s2">"endpoint_labels"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">event</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">event</span><span class="p">[</span><span class="s2">"endpoint_labels"</span><span class="p">],</span> <span class="n">event</span><span class="p">[</span><span class="s2">"endpoint_atom_indices"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_endpoint_metadata</span><span class="p">(</span>
+                <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">picks</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_endpoint_policy</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"endpoint_policy"</span><span class="p">)),</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"endpoint_atom_indices"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">event</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">event</span><span class="p">[</span><span class="s2">"endpoint_atom_indices"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_endpoint_metadata</span><span class="p">(</span>
+                <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">picks</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_endpoint_policy</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"endpoint_policy"</span><span class="p">)),</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_last_measurement_created_event</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="k">return</span> <span class="n">layer</span>
+
+<div class="viewcode-block" id="MeasurementsManager.records">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.records">[docs]</a>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">,</span> <span class="s2">"query"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_measurement_history</span><span class="p">)</span>  <span class="c1"># noqa: SLF001</span></div>
+
+
+<div class="viewcode-block" id="MeasurementsManager.count">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.count">[docs]</a>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">,</span> <span class="s2">"query"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_measurement_history</span><span class="p">)</span>  <span class="c1"># noqa: SLF001</span></div>
+
+
+<div class="viewcode-block" id="MeasurementsManager.tags">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.tags">[docs]</a>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">tag</span> <span class="k">for</span> <span class="n">kind</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_scene_objects</span> <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"measurement"</span><span class="p">]</span>  <span class="c1"># noqa: SLF001</span></div>
+
+
+<div class="viewcode-block" id="MeasurementsManager.contains">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.contains">[docs]</a>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_measurement_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="MeasurementsManager.get">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.get">[docs]</a>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_measurement_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MeasurementsManager.info">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.info">[docs]</a>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">,</span> <span class="s2">"query"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+        <span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_measurement_history</span><span class="p">:</span>  <span class="c1"># noqa: SLF001</span>
+            <span class="n">layer_tag</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tag"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">tag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">layer_tag</span> <span class="o">!=</span> <span class="n">tag</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">op</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"op"</span><span class="p">)</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">"add_distance_measurement"</span><span class="p">:</span> <span class="s2">"distance"</span><span class="p">,</span>
+                <span class="s2">"add_angle_measurement"</span><span class="p">:</span> <span class="s2">"angle"</span><span class="p">,</span>
+                <span class="s2">"add_dihedral_measurement"</span><span class="p">:</span> <span class="s2">"dihedral"</span><span class="p">,</span>
+            <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="s2">"measurement"</span><span class="p">)</span>
+            <span class="n">picks</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"options"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"picks_atom_indices"</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="n">endpoint_kinds</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"options"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"endpoint_kinds"</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="n">endpoint_policy</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"options"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"endpoint_policy"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint_policy_default</span><span class="p">)</span>
+            <span class="n">endpoint_labels</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"options"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"endpoint_labels"</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="n">endpoint_atom_indices</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"options"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"endpoint_atom_indices"</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"options"</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"options"</span><span class="p">),</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
+            <span class="n">raw_series</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"value_series"</span><span class="p">)</span>
+            <span class="n">raw_value</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"value"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_series</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_series</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">active_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active_series_index</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">raw_series</span><span class="p">))</span>
+                <span class="n">raw_value</span> <span class="o">=</span> <span class="n">raw_series</span><span class="p">[</span><span class="n">active_index</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">raw_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">raw_value</span><span class="p">)</span>
+                <span class="n">unit</span> <span class="o">=</span> <span class="s2">"angstrom"</span> <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"distance"</span> <span class="k">else</span> <span class="s2">"degrees"</span>
+                <span class="n">stored_value</span> <span class="o">=</span> <span class="n">puw</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">puw</span><span class="o">.</span><span class="n">quantity</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">unit</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">stored_value</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_scene_objects</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="s2">"measurement"</span><span class="p">,</span> <span class="n">layer_tag</span><span class="p">))</span>  <span class="c1"># noqa: SLF001</span>
+            <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s2">"broken"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)):</span>
+                <span class="c1"># Contract S7: a broken measurement reports NO value. The stored number was</span>
+                <span class="c1"># derived from atoms that no longer exist — restoring it onto a structure that</span>
+                <span class="c1"># cannot produce it would surface a plausible, wrong figure. A stale number is</span>
+                <span class="c1"># the worst outcome in this codebase: an error is loud, a missing value is</span>
+                <span class="c1"># visible, but a believable wrong one ends up in a paper.</span>
+                <span class="n">stored_value</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">"kind"</span><span class="p">:</span> <span class="n">kind</span><span class="p">,</span>
+                    <span class="s2">"tag"</span><span class="p">:</span> <span class="n">layer_tag</span><span class="p">,</span>
+                    <span class="s2">"owner"</span><span class="p">:</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">layer</span><span class="o">.</span><span class="n">owner</span><span class="p">,</span>
+                    <span class="s2">"layer_tag"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s2">"layer_tag"</span><span class="p">,</span> <span class="n">layer_tag</span><span class="p">),</span>
+                    <span class="s2">"n_picks"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">picks</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">picks</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+                    <span class="s2">"picks_atom_indices"</span><span class="p">:</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">picks</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">picks</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[],</span>
+                    <span class="s2">"endpoint_kinds"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">endpoint_kinds</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">endpoint_kinds</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[],</span>
+                    <span class="s2">"endpoint_policy"</span><span class="p">:</span> <span class="n">endpoint_policy</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">endpoint_policy</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint_policy_default</span><span class="p">,</span>
+                    <span class="s2">"endpoint_labels"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">endpoint_labels</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">endpoint_labels</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[],</span>
+                    <span class="s2">"endpoint_atom_indices"</span><span class="p">:</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">endpoint_atom_indices</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">endpoint_atom_indices</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="p">[],</span>
+                    <span class="s2">"value"</span><span class="p">:</span> <span class="n">stored_value</span><span class="p">,</span>
+                    <span class="s2">"visible"</span><span class="p">:</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s2">"_hidden"</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+                    <span class="s2">"active"</span><span class="p">:</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s2">"_active"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)),</span>
+                    <span class="s2">"broken"</span><span class="p">:</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s2">"broken"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)),</span>
+                    <span class="s2">"broken_reason"</span><span class="p">:</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s2">"broken_reason"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">tag</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">items</span>
+        <span class="k">if</span> <span class="n">items</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No measurement record found for tag </span><span class="si">{</span><span class="n">tag</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MeasurementsManager.series">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.series">[docs]</a>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">,</span> <span class="s2">"query"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return the stored or recomputed measurement time series for *tag*."""</span>
+        <span class="n">record</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_measurement_history</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tag"</span><span class="p">)</span> <span class="o">==</span> <span class="n">tag</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="k">if</span> <span class="n">record</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No measurement layer found for tag </span><span class="si">{</span><span class="n">tag</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">op</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"op"</span><span class="p">)</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"add_distance_measurement"</span><span class="p">:</span> <span class="s2">"distance"</span><span class="p">,</span>
+            <span class="s2">"add_angle_measurement"</span><span class="p">:</span> <span class="s2">"angle"</span><span class="p">,</span>
+            <span class="s2">"add_dihedral_measurement"</span><span class="p">:</span> <span class="s2">"dihedral"</span><span class="p">,</span>
+        <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="s2">"measurement"</span><span class="p">)</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="s2">"angstrom"</span> <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"distance"</span> <span class="k">else</span> <span class="s2">"degrees"</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"options"</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"options"</span><span class="p">),</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="n">raw_series</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"value_series"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_series</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_series</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">puw</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">puw</span><span class="o">.</span><span class="n">quantity</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">raw_series</span><span class="p">],</span> <span class="n">unit</span><span class="p">))</span>
+        <span class="n">raw_value</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"value"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">raw_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">puw</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">puw</span><span class="o">.</span><span class="n">quantity</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">raw_value</span><span class="p">)],</span> <span class="n">unit</span><span class="p">))</span>
+
+        <span class="n">picks</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"picks_atom_indices"</span><span class="p">)</span>
+        <span class="n">endpoint_atom_indices</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"endpoint_atom_indices"</span><span class="p">)</span>
+        <span class="n">endpoint_policy</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"endpoint_policy"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint_policy_default</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">picks</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">endpoint_atom_indices</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">endpoint_policy</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_measurement_series</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">picks</span><span class="p">,</span> <span class="n">endpoint_atom_indices</span><span class="p">,</span> <span class="n">endpoint_policy</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">series</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">puw</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">puw</span><span class="o">.</span><span class="n">quantity</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">series</span><span class="p">],</span> <span class="n">unit</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="MeasurementsManager.settings">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.settings">[docs]</a>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">"endpoint_policy_default"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint_policy_default</span><span class="p">,</span>
+            <span class="s2">"representative_atoms"</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_representative_atoms</span><span class="p">),</span>
+        <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="MeasurementsManager.set_endpoint_policy">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.set_endpoint_policy">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_endpoint_policy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint_policy</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint_policy_default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_endpoint_policy</span><span class="p">(</span><span class="n">endpoint_policy</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sync_frontend_settings</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MeasurementsManager.set_representative_atom">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.set_representative_atom">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_representative_atom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">atom_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">normalized_target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_representative_target</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">atom_name</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_representative_atoms</span><span class="p">[</span><span class="n">normalized_target</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sync_frontend_settings</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MeasurementsManager.show">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.show">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">,</span> <span class="s2">"visibility"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_measurement_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">layer</span></div>
+
+
+<div class="viewcode-block" id="MeasurementsManager.hide">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.hide">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">,</span> <span class="s2">"visibility"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_measurement_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">hide</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">layer</span></div>
+
+
+<div class="viewcode-block" id="MeasurementsManager.delete">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.delete">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_measurement_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MeasurementsManager.clear">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.clear">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Remove all measurements, or only the one identified by *tag*."""</span>
+        <span class="k">if</span> <span class="n">tag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">measurement_tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_require_measurement_layer</span><span class="p">(</span><span class="n">measurement_tag</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MeasurementsManager.set_tag">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.set_tag">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_measurement_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">set_tag</span><span class="p">(</span><span class="n">new_tag</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">layer</span></div>
+
+
+<div class="viewcode-block" id="MeasurementsManager.set_layer_tag">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.set_layer_tag">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_layer_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_layer_tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_measurement_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">set_layer_tag</span><span class="p">(</span><span class="n">new_layer_tag</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">layer</span></div>
+
+
+<div class="viewcode-block" id="MeasurementsManager.add_distance">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.add_distance">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_distance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">selection_a</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">selection_b</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">atom_indices_a</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">atom_indices_b</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">layer_tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">endpoint_policy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">measurement_style</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+        <span class="k">if</span> <span class="n">atom_indices_a</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"atom_indices_a is deprecated; use selection_a instead."</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">selection_a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">selection_a</span> <span class="o">=</span> <span class="n">atom_indices_a</span>
+        <span class="k">if</span> <span class="n">atom_indices_b</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"atom_indices_b is deprecated; use selection_b instead."</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">selection_b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">selection_b</span> <span class="o">=</span> <span class="n">atom_indices_b</span>
+        <span class="k">if</span> <span class="n">selection_a</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">selection_b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"selection_a and selection_b are required."</span><span class="p">)</span>
+        <span class="n">object_tag</span> <span class="o">=</span> <span class="n">tag</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_next_measurement_tag</span><span class="p">()</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_measurement</span><span class="p">(</span>
+            <span class="s2">"add_distance_measurement"</span><span class="p">,</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve_endpoint_atom_indices</span><span class="p">(</span><span class="n">selection_a</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_endpoint_atom_indices</span><span class="p">(</span><span class="n">selection_b</span><span class="p">)],</span>
+            <span class="n">object_tag</span><span class="p">,</span>
+            <span class="n">layer_tag</span><span class="o">=</span><span class="n">layer_tag</span><span class="p">,</span>
+            <span class="n">endpoint_policy</span><span class="o">=</span><span class="n">endpoint_policy</span><span class="p">,</span>
+            <span class="n">style</span><span class="o">=</span><span class="n">measurement_style</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MeasurementsManager.add_angle">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.add_angle">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_angle</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">selection_a</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">selection_b</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">selection_c</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">atom_indices_a</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">atom_indices_b</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">atom_indices_c</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">layer_tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">endpoint_policy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">measurement_style</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+        <span class="k">if</span> <span class="n">atom_indices_a</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"atom_indices_a is deprecated; use selection_a instead."</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">selection_a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">selection_a</span> <span class="o">=</span> <span class="n">atom_indices_a</span>
+        <span class="k">if</span> <span class="n">atom_indices_b</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"atom_indices_b is deprecated; use selection_b instead."</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">selection_b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">selection_b</span> <span class="o">=</span> <span class="n">atom_indices_b</span>
+        <span class="k">if</span> <span class="n">atom_indices_c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"atom_indices_c is deprecated; use selection_c instead."</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">selection_c</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">selection_c</span> <span class="o">=</span> <span class="n">atom_indices_c</span>
+        <span class="k">if</span> <span class="n">selection_a</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">selection_b</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">selection_c</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"selection_a, selection_b, and selection_c are required."</span><span class="p">)</span>
+        <span class="n">object_tag</span> <span class="o">=</span> <span class="n">tag</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_next_measurement_tag</span><span class="p">()</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_measurement</span><span class="p">(</span>
+            <span class="s2">"add_angle_measurement"</span><span class="p">,</span>
+            <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_endpoint_atom_indices</span><span class="p">(</span><span class="n">selection_a</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_endpoint_atom_indices</span><span class="p">(</span><span class="n">selection_b</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_endpoint_atom_indices</span><span class="p">(</span><span class="n">selection_c</span><span class="p">),</span>
+            <span class="p">],</span>
+            <span class="n">object_tag</span><span class="p">,</span>
+            <span class="n">layer_tag</span><span class="o">=</span><span class="n">layer_tag</span><span class="p">,</span>
+            <span class="n">endpoint_policy</span><span class="o">=</span><span class="n">endpoint_policy</span><span class="p">,</span>
+            <span class="n">style</span><span class="o">=</span><span class="n">measurement_style</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MeasurementsManager.add_dihedral">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.measurements.MeasurementsManager.add_dihedral">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"measurement"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_dihedral</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">selection_a</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">selection_b</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">selection_c</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">selection_d</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">atom_indices_a</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">atom_indices_b</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">atom_indices_c</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">atom_indices_d</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">layer_tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">endpoint_policy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">measurement_style</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+        <span class="k">if</span> <span class="n">atom_indices_a</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"atom_indices_a is deprecated; use selection_a instead."</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">selection_a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">selection_a</span> <span class="o">=</span> <span class="n">atom_indices_a</span>
+        <span class="k">if</span> <span class="n">atom_indices_b</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"atom_indices_b is deprecated; use selection_b instead."</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">selection_b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">selection_b</span> <span class="o">=</span> <span class="n">atom_indices_b</span>
+        <span class="k">if</span> <span class="n">atom_indices_c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"atom_indices_c is deprecated; use selection_c instead."</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">selection_c</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">selection_c</span> <span class="o">=</span> <span class="n">atom_indices_c</span>
+        <span class="k">if</span> <span class="n">atom_indices_d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"atom_indices_d is deprecated; use selection_d instead."</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">selection_d</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">selection_d</span> <span class="o">=</span> <span class="n">atom_indices_d</span>
+        <span class="k">if</span> <span class="n">selection_a</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">selection_b</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">selection_c</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">selection_d</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"selection_a, selection_b, selection_c, and selection_d are required."</span><span class="p">)</span>
+        <span class="n">object_tag</span> <span class="o">=</span> <span class="n">tag</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_next_measurement_tag</span><span class="p">()</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_measurement</span><span class="p">(</span>
+            <span class="s2">"add_dihedral_measurement"</span><span class="p">,</span>
+            <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_endpoint_atom_indices</span><span class="p">(</span><span class="n">selection_a</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_endpoint_atom_indices</span><span class="p">(</span><span class="n">selection_b</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_endpoint_atom_indices</span><span class="p">(</span><span class="n">selection_c</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_endpoint_atom_indices</span><span class="p">(</span><span class="n">selection_d</span><span class="p">),</span>
+            <span class="p">],</span>
+            <span class="n">object_tag</span><span class="p">,</span>
+            <span class="n">layer_tag</span><span class="o">=</span><span class="n">layer_tag</span><span class="p">,</span>
+            <span class="n">endpoint_policy</span><span class="o">=</span><span class="n">endpoint_policy</span><span class="p">,</span>
+            <span class="n">style</span><span class="o">=</span><span class="n">measurement_style</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"MeasurementsManager"</span><span class="p">]</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="../../content/about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

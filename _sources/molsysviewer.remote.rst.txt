@@ -1,0 +1,69 @@
+molsysviewer.remote package
+===========================
+
+Submodules
+----------
+
+molsysviewer.remote.internal\_worker\_host module
+-------------------------------------------------
+
+.. automodule:: molsysviewer.remote.internal_worker_host
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.remote.protocol module
+-----------------------------------
+
+.. automodule:: molsysviewer.remote.protocol
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.remote.render\_worker module
+-----------------------------------------
+
+.. automodule:: molsysviewer.remote.render_worker
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.remote.server\_cli module
+--------------------------------------
+
+.. automodule:: molsysviewer.remote.server_cli
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.remote.session\_router module
+------------------------------------------
+
+.. automodule:: molsysviewer.remote.session_router
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.remote.session\_service module
+-------------------------------------------
+
+.. automodule:: molsysviewer.remote.session_service
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.remote.view\_channel module
+----------------------------------------
+
+.. automodule:: molsysviewer.remote.view_channel
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: molsysviewer.remote
+   :members:
+   :show-inheritance:
+   :undoc-members:

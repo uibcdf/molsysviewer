@@ -1,0 +1,757 @@
+# Public API and stability
+
+This page defines what is public API in MolSysViewer.
+It also defines which contracts must remain stable.
+
+## Public Python API
+
+You treat these as public:
+
+- `molsysviewer.viewer.MolSysView`
+- `molsysviewer.new_view.new_view`
+- `molsysviewer.tools.*`
+- `molsysviewer.load.load` (convenience wrapper, if exposed)
+- `molsysviewer.demo` (demo viewers used by docs and tests)
+- `molsysviewer.config.*` (configuration and user presets)
+- `molsysviewer.config.load_project_config`
+- `molsysviewer.styles.Style`
+- `molsysviewer.styles.BUILTIN_SCENE_STYLES`
+- `molsysviewer.styles.BUILTIN_FOCUS_STYLES`
+- `molsysviewer.config.set_structure_scale_budget` / `get_structure_scale_budget`
+- `molsysviewer.tools.export_runtime_asset` / `molsysviewer.tools.embed_iframe` / `molsysviewer.tools.preview`
+
+If you rename, remove, or change behavior here, you update docs and add tests.
+
+### Uniform argument validation
+
+The addon extension API remains available as `molsysviewer.addons` and
+`view.addons`; MolSysMT itself is the native backend.
+
+Every ordinary supported public function uses ArgDigest and declares
+`skip_digestion=False`, including scene-handle methods and delegated queries.
+Use `skip_digestion=True` only for inputs already normalized; lifecycle checks
+still apply. Constructors, properties and Python protocol methods are outside
+this callable inventory. Public wrappers expose named arguments.
+
+Create an annotation with `view.annotations.add(...)`. `add_annotation` has
+been removed before 1.0. Queries such as `records()` and `info()` return detached
+nested data. After undo, import or deletion, reacquire handles through their
+manager: an old handle cannot mutate a replacement object with the same tag.
+Region and layer registries support dictionary reads; mutate through manager
+methods. Rejected operations and no-ops preserve redo.
+
+### `config.set_structure_scale_budget(budget_bytes)`
+
+MolSysViewer materializes **every** selected structure: `view.molsys` is the
+complete selected system, and scientific operations, add-ons and measurements
+rely on that. A large trajectory is therefore held in full, in Python and in the
+browser.
+
+To keep that honest, a load whose coordinates exceed a budget warns with the
+measured size and a concrete `structure_indices` subset that fits. The default
+ceiling is 256 MB of coordinates (`atoms x structures x 3 x float32`).
+
+```python
+import molsysviewer as msv
+
+msv.config.set_structure_scale_budget(1024 * 1024 * 1024)  # allow up to 1 GB
+msv.config.set_structure_scale_budget(0)                   # silence the warning
+msv.config.get_structure_scale_budget()                   # current ceiling
+```
+
+It **warns, never refuses** — only you know what your machine can hold. Note
+that opening a canvas popup roughly doubles the renderer-side cost, because two
+Mol* instances each keep their own coordinate axes.
+
+Current scope clarification for `Style`:
+
+- the current public slice is scene-recipe oriented
+- it is still backed by the existing whole-representation pathway
+- it does not yet include an independent scene-look layer such as
+  `default-look` or `illustrative`
+
+`new_view(...)` includes a convenience argument `load_mode`:
+
+- `"selection"` (default): `selection` subsets the loaded system.
+- `"all"`: the full system loads, the whole baseline is hidden, and a
+  region tagged `"selection"` is created for the selection.
+
+`molsysviewer.tools.basic` is now a public module. Current public helpers there include:
+
+- `extract(...)`
+- `copy(...)`
+- `concatenate_structures(...)`
+- `merge(...)`
+
+Removed before 1.0:
+
+- `molsysviewer.tools.basic.{get, select, info, convert, contains, compare,
+  is_composed_of}`
+- `molsysviewer.tools.basic.{remove, add, set, append_structures}`
+- top-level `molsysviewer.tools.*` reexports for those removed functions
+- `view.{remove, add, set, append_structures}`
+- `view.whole.{remove, add, set, append_structures}`
+
+Removed in 0.22 (`uibcdf/molsysviewer#71`, executed in `#75`):
+
+- `view.{get, select, convert}` — ask the whole or a region: `view.whole.get(...)`,
+  `region.get(...)`. They are thin wrappers over MolSysMT, so `msm.get(view, ...)` works too
+- `view.contains` and `view.is_composed_of`, and their `whole` and `region` counterparts —
+  `get` carries the same information (`whole.get(n_waters=True) > 0`, and the set of
+  `molecule_type`), and `msm.contains(view, ...)` still answers directly
+- `view.{hide, isolate}`, the `selection` half of `view.show()`, `view.atom_mask` and
+  `view.visible_atom_indices` — the cross-cutting atom mask never reached `export_state`,
+  so anything hidden through it came back on reload. Visibility belongs to the whole and to
+  regions, which a saved scene does carry
+- `ViewerInfo` and `RegionInfo`, with the two-section output they held: each `info` now
+  answers about one subject
+- `apply_system_edit(..., visible_atom_indices=...)`
+
+Added in the same change: `whole.convert(...)` and `region.convert(...)`.
+
+Pure molecular-system reads should use `view.whole.*`, `region.*`, or `molsysmt.*(view, ...)`.
+Live molecular edits use the native viewer API, including `view.edit(...)`,
+coordinate setters and `view.interactions.calculate(...)`. MolSysMT is the
+scientific backend; it is not a built-in addon namespace.
+
+The user-facing translation table is in
+{doc}`../user/introduction/migrating_to_0_22`.
+
+`MolSysView` is also explicitly growing an inspection-oriented object API beyond the minimal viewer shell. Public user-facing methods now include:
+
+- `close()`
+  - explicitly releases the frontend widget and its owned resources
+  - views can also be used as context managers to close them on block exit
+- `attributed_to(owner)`
+  - context manager for add-ons creating scene objects through the public API
+  - objects created inside expose the immutable informational property `owner`
+  - attribution does not grant ownership rights or prevent user operations
+- `load(..., mode="add" | "replace" | "append_structures" | "auto", ...)`
+  - current default is `mode="add"`
+  - first load initializes `whole` without creating an automatic region
+  - second additive load back-fills block 1 and creates block 2 as automatic regions
+  - later additive loads create only the new automatic load-region
+  - `mode="append_structures"` is explicit structural extension:
+    - it does not add atoms
+    - it does not create automatic load-regions
+    - it may attach the first structures to a topology-only `_molsys`
+  - `mode="auto"` is currently a conservative first version:
+    - empty viewer -> `replace`
+    - same atom count + no topology in the input -> `append_structures`
+    - same atom count + matching topology -> `append_structures`
+    - different atom count -> `add`
+- `apply_system_edit(new_molsys, atom_index_map=None, ...)`
+  - advanced integration primitive for add-ons and tooling
+  - replaces the view's molecular system and reconciles viewer-owned state
+    (regions, selections, visibility, colors, shapes, annotations,
+    measurements, layers, and index mappings)
+  - does not define molecular edit semantics; those belong to MolSysMT or an
+    add-on
+- `convert(...)`
+- `extract(...)` — returns a new **view** of a structural subset, with the scene migrated
+- `info(output_type="styler" | "dataframe" | "dictionary")`
+  - **the scene**: one row per scene object across whole, loads, styles, regions,
+    annotations, layers and the active selection. It says nothing about the molecular
+    system — that is `view.whole.info(...)`, and for a subset, `region.info(...)`
+  - `contains` and `is_composed_of` were removed: `get` carries the same information
+    (`whole.get(n_waters=True) > 0`, and the set of `molecule_type`), and `msm.contains`
+    and `msm.is_composed_of` still accept a view
+- `focus_selection(...)`
+- `focus_region(...)`
+- `make_regions_by(...)`
+  - limited for now to `element="chain" | "molecule" | "entity"`
+- `get_last_hover_event()`
+  - hover transport is off by default; reports `kind="telemetry_disabled"`
+    while off and `kind="telemetry_waiting"` before the first enabled sample
+- `hover_telemetry_enabled` (boolean property)
+  - explicitly enables or disables browser-to-Python hover telemetry
+  - registered `on_hover` callbacks keep telemetry enabled until the last one
+    is removed
+- `get_last_click_event()`
+  - current interaction payloads are intentionally minimal and atom-centric
+- `hover_target`
+  - `info()`
+  - `is_empty()`
+  - `is_empty()` raises while telemetry is disabled or waiting for its first
+    sample; those states are not equivalent to an empty canvas target
+- `context_target`
+  - `info()`
+  - `is_empty()`
+- `get_last_active_selection_event()`
+- `styles`
+  - `add(tag, style, ...)`
+  - `apply(...)`
+  - `builtin_tags()`
+  - `builtin_records()`
+  - `representation_types()`
+  - `representation_type_records()`
+  - `representation_param_schema(representation)`
+  - `representation_param_schema_records()`
+  - `representation_presets()`
+  - `representation_preset_records()`
+  - `contains(tag)`
+  - `get(tag)`
+  - `get_builtin(tag)`
+  - `tags()`
+  - `records()`
+  - `count()`
+  - `clear(tag=None)`
+  - `current()`
+  - `info()`
+  - `structural_color_schemes()`
+  - `structural_color_scheme_records()`
+  - `structural_size_schemes()`
+  - `structural_size_scheme_records()`
+  - `molstar_color_themes()`
+  - `molstar_color_theme_records()`
+  - `molstar_size_themes()`
+  - `molstar_size_theme_records()`
+  - `load_project_config(path, apply_default=False)`
+  - `focus(style_or_tag=None, *, selection, atom_indices, representation, **params)` — additive overlay over the current scene
+  - `clear_focus(tag=None)` — remove one or all active focus overlays
+  - `focus_tags()` — list of currently active focus overlay tags
+  - `builtin_focus_tags()` — list of built-in focus style names
+  - `builtin_focus_records()` — list of built-in focus style info dicts
+  - `get_builtin_focus(tag)` — retrieve a built-in focus `Style` by name
+- `load_project_config(path, *, apply_default=False)` — convenience bridge: applies styles and add-on defaults from a `_molsysviewer.py` config file in one call
+- `active_selection`
+  - `info()`
+  - `is_empty()`
+  - `clear()`
+  - `focus(...)`
+  - `new_region(...)`
+  - `add_label(...)` — deprecated alias for `annotations.add_label_from_active_selection(...)`
+  - `save(...)`
+  - canvas context-menu removal is contributed by the MolSysMT addon as
+    `remove-selected-atoms`; core does not own molecular-editing semantics
+- `view.selections`
+  - `add(tag, *, atom_indices, items=None)` — direct-index shortcut, no MolSysMT lookup
+  - `add_selection(tag, selection, *, element, mask, syntax)` — MolSysMT-based selection
+  - `add_from_active_selection(tag)`
+  - `activate(tag)`
+  - `view.selections.tags()` (method)
+  - `count()`
+  - `contains(tag)`
+  - `get(tag)`
+  - `records()`
+  - `info(tag=None)`
+  - `set_tag(tag, new_tag)`
+  - `delete(tag)`
+  - `clear(tag=None)`
+- `get_last_measurement_created_event()`
+- `new_region_from_active_selection(...)`
+- `show_orientation_axes(selection="all", *, atom_indices=None, tag=None, alpha=None)` — overlay Mol* orientation-ellipsoid axes; returns Region
+- `show_best_fit_plane(selection="all", *, atom_indices=None, tag=None, alpha=None)` — overlay Mol* best-fit plane; returns Region
+- `view.annotations.add_label_from_active_selection(...)`
+- `view.measurements.count()`
+- `view.measurements.records()`
+- `view.measurements.info()`
+  - current first slice: interactive `distance` / `angle` / `dihedral` measurements are registered automatically as replayable viewer state
+  - `info()` and `records()` now expose endpoint metadata:
+    - `endpoint_kinds`
+    - `endpoint_policy`
+    - `endpoint_labels`
+
+Shape methods that accept per-structure arrays are also public:
+
+- `view.shapes.add_sphere(..., structure_centers=[array_per_structure, ...])`
+- `view.shapes.add_triangle_faces(..., structure_vertices=[array_per_structure, ...])`
+- `view.shapes.add_links(..., structure_coordinate_pairs=[array_per_structure, ...])`
+- `view.shapes.add_channel_tube(..., structure_centers=[array_per_structure, ...])`
+- `view.shapes.links.add_hbonds(structures=[None | [[donor, acceptor], ...], ...])`
+  - per-structure atom-index pairs; JS resolves coordinates from the current loaded structure
+  - `None` in a slot hides the shape for that structure
+  - arrays are in Angstroms (raw); `add_hbonds` uses atom indices (topology-only)
+
+Related object wrappers are also part of the intended public surface:
+
+- `view.whole.focus(...)`
+- `view.whole.set_color(color)`
+- `view.regions[tag].focus(...)`
+- `view.regions[tag].set_color(color)`
+- `view.regions[tag].show_only(...)`
+- `view.regions[tag].enable(...)` / `.disable(...)` and read-only `.enabled`
+  - suspend/reapply visual effects while preserving selection, style and the
+    hidden request; `show()` / `hide()` do not enable a suspended region
+  - enabled Hide masks its atoms on Whole and hides its own representations;
+    other region representations remain independent
+- `view.regions[tag].rename(new_tag)`
+  - renames the region in Python state and sends `rename_region` to JS
+  - `_build_export_messages()` rewrites prior region ops to use the new tag, so the export replay uses the final name directly
+- `view.selections[tag].info()`
+- `view.selections[tag].activate()`
+- `view.selections[tag].focus(...)`
+- `view.selections[tag].new_region(...)`
+- `view.selections[tag].add_label(...)`
+- `view.selections[tag].set_tag(...)`
+- `view.selections[tag].delete()`
+- `view.annotations.add(text, selection=..., atom_indices=..., tag=..., layer_tag=..., label_style=...)`
+  - primary entry point for persistent labels anchored to atom selections
+  - anchor resolves via MolSysMT selection string or explicit `atom_indices`
+  - `label_style` accepts a dict with optional keys: `color` (CSS hex string), `size_em` (float), `background` (bool), `background_opacity` (float 0–1)
+  - `add_label(group_index=...)` is a deprecated alias; use `add` instead
+- `view.annotations.add_label_from_active_selection(text, tag=..., label_style=...)`
+  - anchors to all atom indices in the last active canvas selection (multi-group supported)
+  - `label_style` accepts the same dict as `add` (`color`, `size_em`)
+- `view.annotations.set_anchor(tag, selection=..., atom_indices=...)`
+  - reanchor an existing label to a different atom set
+  - `set_group_index(tag, group_index)` is a deprecated alias; use `set_anchor` instead
+- `view.annotations.set_text(tag, text)`
+- `view.annotations.set_tag(tag, new_tag)`
+- `view.annotations.set_layer_tag(tag, new_layer_tag)`
+- `view.annotations.tags()` (method)
+- `view.annotations.count()`
+- `view.annotations.contains(tag)`
+- `view.annotations.get(tag)`
+- `view.annotations.records()`
+- `view.annotations.info(tag=None)`
+- `view.annotations.show(tag)`
+- `view.annotations.hide(tag)`
+- `view.annotations.delete(tag)`
+- `view.annotations.clear(tag=None)`
+- `view.measurements.add_distance(atom_indices, tag=..., layer_tag=..., measurement_style=...)`
+- `view.measurements.add_angle(atom_indices, tag=..., layer_tag=..., measurement_style=...)`
+- `view.measurements.add_dihedral(atom_indices, tag=..., layer_tag=..., measurement_style=...)`
+  - `measurement_style` accepts a dict with optional keys: `color` (CSS hex), `size_em` (float), `background` (bool), `background_opacity` (float 0–1)
+- `view.measurements.tags()` (method)
+- `view.measurements.contains(tag)`
+- `view.measurements.get(tag)`
+- `view.measurements.show(tag)`
+- `view.measurements.hide(tag)`
+- `view.measurements.delete(tag)`
+- `view.measurements.clear(tag=None)`
+- `view.measurements.set_tag(tag, new_tag)`
+- `view.measurements.set_layer_tag(tag, new_layer_tag)`
+- `view.selections.add_from_active_selection(...)`
+
+Scene-object managers use the same callable discovery vocabulary. In
+particular, `view.shapes.tags()` (method) and `view.layers.tags()` (method)
+provide their live tags, and new logical layers are created with
+`view.layers.add(tag, ...)`.
+
+Tags are unique within a scene domain, not across the entire scene. A shape,
+annotation, measurement, region, selection, and layer may deliberately share
+the same tag; APIs resolve identity as `(domain, tag)`.
+- `view.movie`
+  - `add_keyframe(time_ms, *, camera, structure_index, layer_visibility, easing)`
+  - `add_visibility_transition(layer_tag, visible, *, at_time_ms)`
+  - `add_camera_orbit(duration_ms, *, n_turns, n_keyframes, easing)`
+  - `add_structure_sweep(*, from_index, to_index, duration_ms, start_time_ms, end_time_ms)`
+  - `play(loop=False)`
+  - `stop()`
+  - `clear()`
+  - `duration_ms` (property)
+  - `keyframes` (property)
+  - `info()`
+  - `to_dict()` / `from_dict(data)`
+  - `save(path)` / `load(path)`
+  - `export(path, *, fps, format)` — requires `imageio`; sends `play_movie` with `mode="export"` and collects frames from the JS runtime
+- `view.on_hover(callback)` / `view.off_hover(callback)`
+- `view.on_click(callback)` / `view.off_click(callback)`
+- `view.on_context(callback)` / `view.off_context(callback)`
+  - reactive (non-polling) Python callbacks for interaction events
+  - callbacks receive the same payload dict as `get_last_hover_event()` etc.
+  - multiple callbacks per event type are supported; `off_*` removes a specific one
+  - the first hover callback enables hover telemetry without reloading; removing
+    the last disables it unless `hover_telemetry_enabled` was explicitly set
+- `view.export_state()` → JSON-serializable dict
+  - captures annotations, measurements, selections, regions, shapes, layers, clipping sections, and whole state
+- `view.import_state(state, *, clear_first=True)`
+  - replays a state dict onto a viewer with compatible structure
+  - `clear_first=True` wipes existing scene objects, clipping sections, selections, and regions before replay
+- `view.save_state(path)` / `view.load_state(path, *, clear_first=True, on_conflict="raise")`
+  - atomic UTF-8 JSON file convenience around `export_state()` / `import_state()`
+  - stores the scene **and the vantage point**: camera, current structure index and
+    playback settings travel under a `view` key. `save_state` requests a fresh camera from
+    the frontend before writing; `export_state` records the last one pushed
+  - the molecular system, undo history and global visual settings are not bundled
+  - load the same or a compatible structure before calling `load_state()`; onto a
+    different structure, region recipes are re-resolved and everything else is matched by
+    atom identity, with whatever fails marked broken
+- `view.save_session(path)` / `molsysviewer.load_session(path)`
+  - a `.msv` zip carrying `manifest.json`, `state.json` and `structure.h5msm`
+  - unlike `load_state`, nothing has to be loaded first: `load_session` returns a viewer
+    already showing the system and the scene
+  - no size budget — a session is as large as its trajectory
+  - format `version: 1`, declared **experimental**
+- `view.get_camera_snapshot(*, pretty=False)` / `view.set_camera_snapshot(snapshot, *, duration_ms=0)`
+  - the camera as a plain dict, mirrored back from the frontend; `None` on a viewer that
+    has never rendered. `pretty=True` returns it as formatted JSON
+- `view.zoom(selection="all", ..., *, duration="250 ms", extra_radius="4.0 angstroms", min_radius="1.0 angstroms")`
+  - frames a selection. The three durations and radii are quantities, not bare numbers —
+    `duration_ms` remains as a deprecated alias
+- `view.whole.set_representation(representation=None, *, preset=None, **params)`
+  - the whole's own representation, distinct from any region's
+- `view.player.` — `play()`, `pause()`, `go_to_first()`, `go_to_last()`,
+  `go_to_structure(i)`, and the `index`, `fps`, `mode`, `direction`, `is_playing`,
+  `n_structures` properties
+- `view.trajectory_plot.` — `show()`, `hide()`, `update()`, `clear()`
+- `view.build_popup_scene_snapshot(mode, endpoint=None, include_molecular=True)`
+  - the message list a popup surface replays to reach the current scene
+- `molsysviewer.config.set_default_standard_units(standards)`
+  - the unit standards new quantities are expressed in
+- `view.set_structure(index)`
+- `view.play(fps=..., step=...)`
+- `view.pause()`
+- `view.set_play_speed(fps)`
+- `view.current_structure_id` (property)
+  - structure/trajectory navigation controls; `@signal(tags=["structures"])`
+- `add(...)`
+  - lower-level structural merge into `_molsys`
+  - updates additive-load block bookkeeping
+  - does **not** create automatic load-regions
+- `convert(...)`
+  - current first slice delegates to the molecular system currently stored in
+    the viewer
+  - this is intentionally compatible with richer future conversions once
+    MolSysMT supports direct `MolSysView` target-form conversions
+
+### Notebook rendering
+
+`MolSysView` implements the Jupyter display hook (`_repr_mimebundle_`). This means:
+
+- If a `MolSysView` instance is the last expression in a notebook cell, it renders automatically.
+- `MolSysView.load(...)` does **not** return the viewer, so it does not trigger rendering on its own.
+- `MolSysView.show()` remains the explicit way to display the widget in scripts or when needed.
+
+## Managing scientific interactions (experimental)
+
+`view.interactions` is a native scientific manager. It uses MolSysMT internally
+and requires its experimental public `Interactions` and H5MSM APIs; no addon
+registration is needed. The published dependency version for this feature is
+still to be fixed. Scientific analyses and visual sets are separate: attaching
+or computing stores an analysis; `add()` creates its filtered graphical set.
+The native Interactions Studio tab offers Calculate, Stored analysis and H5MSM
+file routes using the same public methods.
+An older supported provider can still initialize ordinary views. Feature
+availability is checked before scientific interaction operations; an unavailable
+backend produces an explicit compatibility error and disables Studio creation.
+
+```python
+import molsysviewer as msv
+
+view = msv.demo["pentalanine"]
+view.interactions.hbonds.get_buch_hbonds(name="buch", structure_indices="current")
+view.interactions.analyses()  # compact metadata, not expanded occurrences
+result = view.interactions.query("buch", structure_indices="current")
+result.to_dict()  # selected occurrences, including occurrence_indices
+hbonds = view.interactions.add("buch", tag="hbonds", interaction_types=["hbond"])
+hbonds.set_color("#34d399")
+hbonds.set_radius("0.025 nm")
+view.interactions.inspect("hbonds", structure_index=0, offset=0, limit=50)
+```
+
+| Method | Current contract |
+| --- | --- |
+| `analyses()` | Compact named-analysis metadata, including method, units, software and numeric byte count. |
+| `get_analysis(name)` | Complete MolSysMT result; a missing name raises `KeyError`. |
+| `query(analysis_name, ...)` | Sparse filtering by atom selection, interaction types and local structure indices. Default scope is all structures. |
+| `attach(result, name=..., assume_aligned=True)` | Declare correspondence and validate a complete result against the loaded axes. |
+| `load(filename, analysis_name=..., name=None, assume_aligned=True, ...)` | Read one named H5MSM analysis, optionally remapping source atom/structure indices. Does not load coordinates. |
+| `hbonds.get_buch_hbonds(name=..., ...)` | Buch distance criterion, default H···A threshold `2.3 angstroms`, default visible frame and `pbc=False`. |
+| `disulfides.get_disulfide_candidates(name=..., ...)` | Geometric S···S candidates, not topology edits or certified covalent bonds. Default visible frame and `pbc=False`. |
+| `delete_analysis(name)` | Explicitly remove scientific data and clear visual undo. |
+
+Queries accept a scalar or a nonconsecutive integer list for atoms and structures,
+and MolSysMT selection strings. Indices are local to `view.molsys`; Boolean or
+fractional indices are rejected. The default `involving_selection` retains any
+participating atom in the selection; `within_selection` requires all participant
+atoms inside it; `across_selection_boundary` requires atoms inside and outside
+it. `mode="between_selections"` requires disjoint
+`selection` and `selection_2`; `exclusive=True` confines all participants to
+their union. Composite participants retain their roles and atom groups.
+Evaluated frames without observations remain distinct from unevaluated frames.
+Query lists deduplicate indices; file remapping can repeat a source structure
+to produce separate destination structures.
+
+Explicit `structure_indices=[...]` or `"all"` requests calculation beyond the
+visible frame. PBC requires a valid finite box for each requested frame and
+preserves the detector's observed image vectors. A failed calculation or import
+does not publish an analysis; existing names cannot be overwritten. Independent
+attachment/import requires `assume_aligned=True`, including explicit remapping
+when atom or structure order differs. Source labels and maps are provenance,
+not automatic origin authentication.
+
+Attached results are immutable snapshots for the supported workflow. Ordinary
+`apply_system_edit` invalidates their evaluated coverage; explicit
+`interactions_policy="preserve"` declares the incoming analyses already valid.
+Unannounced molecular edits or direct array mutation are outside this contract.
+`save_session` preserves complete named results in H5MSM and verifies content
+signatures before restoring a view. `save_state` and visual undo do not store
+the scientific arrays. Tagged references include the named analysis content signature, filter, style,
+layer, visibility and broken state; importing a valid reference to different
+scientific data raises before changing the scene. Scientific arrays are stored
+once with the molecular system, outside visual history.
+
+Interaction display state uses extension version 2. Version 1 saved query filters
+are migrated on import (`incident`, `internal`, `cross`, `between`); old names
+are rejected in new public calls, including with `skip_digestion=True`.
+Scientific `selection_mode` and `evaluation_mode` are unchanged.
+
+The visual collection follows the other scene managers: `tags`, `count`,
+`contains`, `get`, `info`, `records`, `delete`, `clear`, `show`, `hide`,
+`show_all`, `hide_all`, `set_tag` and `set_layer_tag`. Each set offers
+`set_filter`, `set_color`, `set_alpha`, `set_radius` and `focus`. Visual deletion
+keeps scientific data. Referenced analyses cannot be deleted.
+
+The renderer draws H···A links for single-atom donor/hydrogen/acceptor roles
+and S···S disulfide candidates. Other interaction families and composite
+participants remain inspectable and count as unsupported graphics. Periodic
+positions use participant image differences relative to the first participant
+and the current frame box; missing required boxes suppress those links.
+
+Live projection retains one frame per set and rejects stale frame/revision
+replies. Frames outside the display filter, unevaluated frames, evaluated empty
+frames, unsupported graphics and damaged filters have separate statuses.
+Projection is refused above 50,000 observations or 8 MiB of serialized geometry
+per set/frame. Inspection pages contain at most 200 observations (Studio uses
+50); they preserve parallel occurrence identity and unsupported participants.
+An inspection reply has a 512 KiB budget, with at most 64 participants and 4,096
+participant atoms per observation. Its `evaluation_scope` is a compact count/mode
+summary. `query_revision` identifies the filter and analysis content so same-frame
+filter edits invalidate old replies. Excluded frames return no observations.
+
+The current provider codec copies all selected occurrences. The viewer counts
+first and checks a conservative numeric-copy budget before calling it. An
+oversized selection returns `inspection-limit`, its exact count and an explicit
+reason instead of silently truncating the results. This fallback is tracked in
+`uibcdf/molsysmt#264`; true public paging will replace it. These limits do not
+bound process RSS or complete-analysis residency. Large metadata is omitted only
+with an explicit inspection-limit reason; `get_analysis()` retains the full data.
+Static HTML embeds all requested frame geometry up to a shared 64 MiB export
+budget, and raises rather than truncating. These are conservative limits;
+representative large-system qualification is still pending. Scientific inspector
+pages require a live Python session; static HTML contains compiled geometry,
+not the complete scientific observation table.
+
+A structural removal that damages a fixed selection keeps a broken set;
+`set_filter` explicitly repairs it. Calculation parameters are immutable:
+calculate a new named analysis to change a cutoff. Studio edits styles and
+filters with one Apply operation, so no slider-generated history spam occurs.
+H5MSM paths address the Python session filesystem; the file form requires an
+explicit declaration of atom/structure alignment.
+
+## Internal Python APIs
+
+You can change these without a stability guarantee:
+
+- Most of `molsysviewer._private.*`
+- Helper functions inside loaders and shapes modules
+- Non-exported functions and private methods (`_name`)
+
+## Python ↔ TypeScript contracts
+
+These are stability-critical:
+
+- MolSys payload schema (Python → JS):
+  - top-level `structures` list
+  - each structure has `coordinates` (Å), optional `box` as three vectors (Å), optional `time`
+  - do not reintroduce legacy names like `positions` or `frames`
+- Message protocol (`op` + payload):
+  - the TypeScript union type `ViewerMessage` is the contract view
+  - changes must be versioned and tested
+- Tag semantics:
+  - tags must remain stable across regions, layers, and shapes
+  - `Layer.set_tag(...)` must keep working across tag renames/merges
+
+See also
+
+- {doc}`protocol_and_payloads`
+- {doc}`regions_layers`
+
+## Exports
+
+Preferred export surface:
+
+- `view.export.html(...)`
+- `view.export.image(...)`
+- `view.export.figure(...)`
+- `view.export.figure_variants(...)`
+- `view.export.figure_publication_set(...)`
+
+`view.export.image(...)` may receive an explicit `camera_snapshot=...` when the
+export should use a saved camera rather than the live current viewport.
+
+`view.export.image(...)` also accepts a first small export-oriented
+`preset=...` surface:
+
+- `current`
+- `publication-light`
+- `publication-dark`
+
+At this stage these presets are intentionally modest. They currently steer only
+the background treatment used during the capture itself, and the live viewer
+state is restored immediately after export.
+
+`view.export.figure(...)` is now the first explicit figure-oriented wrapper above
+raw image export. It currently provides:
+
+- stronger default `scale`
+- a `background=...` surface (`white`, `dark`, `transparent`, `current`)
+- figure-oriented preset defaults
+- an optional reusable `figure_spec=FigureSpec(...)` recipe layer
+- `FigureSpec.from_view(...)` to capture the current camera into a reusable
+  recipe
+- `FigureSpec.with_overrides(...)` to derive small recipe variants without
+  mutating the original
+- `FigureSpec.build_variants(...)` to expand a named batch of figure recipes
+- `view.export.figure_variants(...)` to materialize those named recipes into a
+  directory in one pass
+- `FigureSpec.build_publication_variants(...)` to get the standard small
+  `light` / `dark` / `transparent` publication bundle
+- `view.export.figure_publication_set(...)` to export that standard bundle in
+  one call
+
+`view.set_figure_spec(figure_spec=FigureSpec(...))` is now public.
+It anchors an explicit `FigureSpec` to the workbench (updates `Workbench -> Scene`)
+and stores the recipe for replay in HTML exports.
+This is the intended way to connect a Python-derived figure recipe to the live
+workbench view.
+
+The runtime `Workbench -> Scene` surface now also reflects the current built-in
+figure baseline so that figure export is visible as part of the workbench
+story, not only as a scripting API.
+
+It is still intentionally modest and should be treated as the first step toward
+the future richer `figure` export contract, not as the final publication export
+system.
+
+`view.export.html(..., shared_runtime=...)` is a public, user-facing export mode.
+It must remain reproducible.
+
+## Standalone 0 bridge
+
+The local standalone bridge remains **experimental in 1.0**. Its launchers and
+host APIs are distributed for evaluation, without a 1.0 support or compatibility
+promise. `view.export.html(...)` remains a supported export format; producing
+an HTML artifact is distinct from supporting an interactive standalone host.
+
+The current bridge is intentionally small:
+
+- `molsysviewer.build_standalone0_html(...)`
+- `molsysviewer.launch_standalone0(...)`
+- `molsysviewer ...`
+- `python -m molsysviewer.standalone ...`
+
+The public Conda `0.23.4` package omits the three `molsysviewer*` console
+launchers on Windows. The Python modules remain installable there; see
+[`#101`](https://github.com/uibcdf/molsysviewer/issues/101) for the exact
+installed-package verification required before claiming repaired launchers.
+
+These surfaces should be treated as a host-facing bridge built on top of the
+existing standalone HTML export path, not as the final standalone product.
+
+The first Qt-host prototype now also exists as an explicit experimental surface:
+
+- `molsysviewer.create_standalone_qt0_window(...)`
+- `molsysviewer.launch_standalone_qt0(...)`
+- `molsysviewer-qt ...`
+- `python -m molsysviewer.standalone_qt ...`
+
+For development, this prototype requires `PySide6` with Qt WebEngine. The
+current Linux Conda candidate uses matching `pyside6`, `qt6-webengine` and
+`qt6-positioning` 6.11.2 from conda-forge. The UIBCDF binding family remains
+an explicit rollback option through `MOLSYSVIEWER_QT_BINDING=uibcdf`. See
+`devguide/standalone_supported_environment.md` for the full recipe and the
+distinction between runtime-tested and solver-only platforms. The official
+Intel-based macOS is outside the supported matrix (`uibcdf/molsyssuite#59`);
+the standalone Qt host has no certified macOS arm64 runtime yet.
+
+This should still be read as:
+
+- a thin host prototype
+- not the final standalone host
+- not a second viewer/runtime
+
+Its current purpose is to prove that the existing standalone/runtime path can
+live inside a real app window without forking viewer semantics.
+
+### Experimental remote-session surface
+
+Remote-session entrypoints remain in the distribution only as an **unsupported
+post-1.0 preview**; they are not certified by the 1.0 release gate:
+
+- `molsysviewer-server ...`
+- `molsysviewer-qt --connect SESSION_URL`
+- `molsysviewer.remote.RemoteSessionService` and the supporting remote module
+
+They are suitable for evaluation, but not a supported 1.0 workflow. In particular,
+hosted client-rendering and managed server-GPU E2E certification are deferred.
+Their Python signatures, CLI options, wire protocol and deployment model do not
+yet carry the compatibility guarantee of the stable public API above. The
+single Python mutation authority, explicit `client`/`server` rendering
+placement, credential handling and client/server filesystem boundary are
+architectural invariants, not experimental shortcuts.
+
+If you change:
+
+- the runtime URL logic,
+- the initial message replay behavior,
+- or popup synchronization,
+
+you must validate the docs-lite output.
+
+## Canvas UX modes
+
+`MolSysView` accepts two experimental constructor arguments:
+
+```python
+view = MolSysView(controls_mode="minimal", panel_mode_style="floating")
+```
+
+- `controls_mode="classic"` (default): six text buttons (Reset, Full, Bg, Spin, Swing, Pop).
+- `controls_mode="minimal"`: three SVG icon cluster (panel / fullscreen / popup) plus a `?` help
+  button. Scene actions (reset view, toggle background, toggle spin/swing) move to the empty-canvas
+  context menu. Keyboard shortcuts: `H` toggles the help overlay, `N`/`W` open Navigate/Workbench.
+
+- `panel_mode_style="drawer"` (default): Navigate panel 560 px left, Workbench 240 px right.
+- `panel_mode_style="floating"`: centered overlay card (~72 % × 68 % of canvas), backdrop-click-to-close, zero viewport shift.
+
+Both `"classic"` / `"drawer"` remain the defaults until at least one scientific workflow
+has been validated with the new design (`0.16.x → 0.17.x` horizon).
+
+## Panel Mode
+
+The current pre-`1.0` shared panel-mode entrypoint is:
+
+- `view.set_panel_mode(...)`
+- `view.set_workspace(...)`
+- `view.set_workspace_panel(...)`
+- `view.get_panel_mode_state()`
+- `view.workspace_catalog()`
+- `view.workspace_panels(...)`
+- `view.workspace_sections(...)`
+- `view.workspace_runtime()`
+
+This API is intentionally small:
+
+- `panel="navigate"` or `panel="workbench"` opens that panel
+- `expanded=False` collapses the current panel-mode surface
+- `panel=None` lets the frontend reuse its remembered last panel when opening
+- `workspace="core"` selects the native workspace
+- other workspace ids select the corresponding add-on workspace when available
+- `view.set_workspace_panel("topo", workspace="topomt")` lands directly on a
+  local workspace panel from Python/notebook code
+- `view.get_panel_mode_state()` returns the last panel/workspace state reported
+  by the frontend runtime
+- `view.workspace_catalog()` returns the effective workspace list visible to the
+  view, including `Core`
+- `view.workspace_panels("topomt")` returns the local panel stack for that
+  workspace
+- `view.workspace_sections("topomt")` returns the visible workbench sections
+  for that workspace
+- `workspace_catalog()`, `workspace_panels(...)`, and `workspace_sections(...)`
+  also reflect the current runtime view of the shared workspace model when the
+  frontend has already reported state
+- `workspace_runtime()` returns a single notebook-facing snapshot combining:
+  runtime state, effective workspace catalog, the current workspace record, the
+  current local panel stack, the current active panel record, and the current
+  workspace sections
+
+This small surface matters especially for notebook usage:
+
+- it gives Jupyter users an explicit Python control door into the shared
+  panel/workspace runtime
+- it avoids requiring mouse-only navigation for workspace changes
+- it also lets notebook code drive the local panel stack of larger add-on
+  workspaces

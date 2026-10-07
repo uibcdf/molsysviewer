@@ -1,0 +1,1453 @@
+tests package
+=============
+
+Submodules
+----------
+
+tests.conftest module
+---------------------
+
+.. automodule:: tests.conftest
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_active\_selection module
+------------------------------------
+
+.. automodule:: tests.test_active_selection
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_addons module
+-------------------------
+
+.. automodule:: tests.test_addons
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_annotations module
+------------------------------
+
+.. automodule:: tests.test_annotations
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_api\_resolver module
+--------------------------------
+
+.. automodule:: tests.test_api_resolver
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_argdigest\_public\_api module
+-----------------------------------------
+
+.. automodule:: tests.test_argdigest_public_api
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_argument\_name\_normalization module
+------------------------------------------------
+
+.. automodule:: tests.test_argument_name_normalization
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_array\_native\_ack\_timeout module
+----------------------------------------------
+
+.. automodule:: tests.test_array_native_ack_timeout
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_array\_native\_transport module
+-------------------------------------------
+
+.. automodule:: tests.test_array_native_transport
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_backend\_error\_ack module
+--------------------------------------
+
+.. automodule:: tests.test_backend_error_ack
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_benchmark module
+----------------------------
+
+.. automodule:: tests.test_benchmark
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_boundary\_digesters module
+--------------------------------------
+
+.. automodule:: tests.test_boundary_digesters
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_box\_assignment module
+----------------------------------
+
+.. automodule:: tests.test_box_assignment
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_build\_html\_state module
+-------------------------------------
+
+.. automodule:: tests.test_build_html_state
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_camera\_snapshot\_request module
+--------------------------------------------
+
+.. automodule:: tests.test_camera_snapshot_request
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_capability\_audit module
+------------------------------------
+
+.. automodule:: tests.test_capability_audit
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_catalog\_templates\_render module
+---------------------------------------------
+
+.. automodule:: tests.test_catalog_templates_render
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_catalog\_warning\_round\_trip module
+------------------------------------------------
+
+.. automodule:: tests.test_catalog_warning_round_trip
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_ci\_backlog module
+------------------------------
+
+.. automodule:: tests.test_ci_backlog
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_citation\_release\_tools module
+-------------------------------------------
+
+.. automodule:: tests.test_citation_release_tools
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_color\_digesters module
+-----------------------------------
+
+.. automodule:: tests.test_color_digesters
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_color\_layers module
+--------------------------------
+
+.. automodule:: tests.test_color_layers
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_colors module
+-------------------------
+
+.. automodule:: tests.test_colors
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_composite\_load module
+----------------------------------
+
+.. automodule:: tests.test_composite_load
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_conda\_receptor\_evidence module
+--------------------------------------------
+
+.. automodule:: tests.test_conda_receptor_evidence
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_conda\_version\_identity module
+-------------------------------------------
+
+.. automodule:: tests.test_conda_version_identity
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_convert\_on\_whole\_and\_region module
+--------------------------------------------------
+
+.. automodule:: tests.test_convert_on_whole_and_region
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_coordinate\_edits module
+------------------------------------
+
+.. automodule:: tests.test_coordinate_edits
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_demo\_systems module
+--------------------------------
+
+.. automodule:: tests.test_demo_systems
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_dependency\_contract module
+---------------------------------------
+
+.. automodule:: tests.test_dependency_contract
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_design\_review\_closure module
+------------------------------------------
+
+.. automodule:: tests.test_design_review_closure
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_devguide\_architecture\_status module
+-------------------------------------------------
+
+.. automodule:: tests.test_devguide_architecture_status
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_devguide\_links module
+----------------------------------
+
+.. automodule:: tests.test_devguide_links
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_digester\_caller\_contract module
+---------------------------------------------
+
+.. automodule:: tests.test_digester_caller_contract
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_digestion\_helpers module
+-------------------------------------
+
+.. automodule:: tests.test_digestion_helpers
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_distribution\_artifact module
+-----------------------------------------
+
+.. automodule:: tests.test_distribution_artifact
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_docs\_static\_views module
+--------------------------------------
+
+.. automodule:: tests.test_docs_static_views
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_documentation\_pages\_run module
+--------------------------------------------
+
+.. automodule:: tests.test_documentation_pages_run
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_documented\_representation\_types module
+----------------------------------------------------
+
+.. automodule:: tests.test_documented_representation_types
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_documented\_whole\_masks module
+-------------------------------------------
+
+.. automodule:: tests.test_documented_whole_masks
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_dynamic\_regions module
+-----------------------------------
+
+.. automodule:: tests.test_dynamic_regions
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_e2e\_fixture\_worker module
+---------------------------------------
+
+.. automodule:: tests.test_e2e_fixture_worker
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_e2e\_reliability module
+-----------------------------------
+
+.. automodule:: tests.test_e2e_reliability
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_export\_messages\_e2e module
+----------------------------------------
+
+.. automodule:: tests.test_export_messages_e2e
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_export\_runtime\_source module
+------------------------------------------
+
+.. automodule:: tests.test_export_runtime_source
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_exported\_page\_opens\_from\_disk module
+----------------------------------------------------
+
+.. automodule:: tests.test_exported_page_opens_from_disk
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_extract\_migrates\_whole\_overlays module
+-----------------------------------------------------
+
+.. automodule:: tests.test_extract_migrates_whole_overlays
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_focus\_with\_fade module
+------------------------------------
+
+.. automodule:: tests.test_focus_with_fade
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_geometry\_helpers module
+------------------------------------
+
+.. automodule:: tests.test_geometry_helpers
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_geometry\_payloads module
+-------------------------------------
+
+.. automodule:: tests.test_geometry_payloads
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_html\_scene\_sidecar module
+---------------------------------------
+
+.. automodule:: tests.test_html_scene_sidecar
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_image\_export\_request module
+-----------------------------------------
+
+.. automodule:: tests.test_image_export_request
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_index\_mapper module
+--------------------------------
+
+.. automodule:: tests.test_index_mapper
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_init module
+-----------------------
+
+.. automodule:: tests.test_init
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_installed\_test\_imports module
+-------------------------------------------
+
+.. automodule:: tests.test_installed_test_imports
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_interaction\_events module
+--------------------------------------
+
+.. automodule:: tests.test_interaction_events
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_interaction\_families module
+----------------------------------------
+
+.. automodule:: tests.test_interaction_families
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_interactions\_api module
+------------------------------------
+
+.. automodule:: tests.test_interactions_api
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_interactions\_projection\_batching module
+-----------------------------------------------------
+
+.. automodule:: tests.test_interactions_projection_batching
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_interactions\_public\_completion module
+---------------------------------------------------
+
+.. automodule:: tests.test_interactions_public_completion
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_interactions\_qualification module
+----------------------------------------------
+
+.. automodule:: tests.test_interactions_qualification
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_interactions\_residency\_benchmark module
+-----------------------------------------------------
+
+.. automodule:: tests.test_interactions_residency_benchmark
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_interactions\_scene module
+--------------------------------------
+
+.. automodule:: tests.test_interactions_scene
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_internal\_render\_worker\_host module
+-------------------------------------------------
+
+.. automodule:: tests.test_internal_render_worker_host
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_js\_build\_version\_resolution module
+-------------------------------------------------
+
+.. automodule:: tests.test_js_build_version_resolution
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_lazy\_import module
+-------------------------------
+
+.. automodule:: tests.test_lazy_import
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_lazy\_molecular\_projection module
+----------------------------------------------
+
+.. automodule:: tests.test_lazy_molecular_projection
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_legend module
+-------------------------
+
+.. automodule:: tests.test_legend
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_length\_digesters module
+------------------------------------
+
+.. automodule:: tests.test_length_digesters
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_live\_edit\_rebuild module
+--------------------------------------
+
+.. automodule:: tests.test_live_edit_rebuild
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_load\_usability module
+----------------------------------
+
+.. automodule:: tests.test_load_usability
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_loading\_identity\_prevalidation module
+---------------------------------------------------
+
+.. automodule:: tests.test_loading_identity_prevalidation
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_manager\_surface module
+-----------------------------------
+
+.. automodule:: tests.test_manager_surface
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_measurements module
+-------------------------------
+
+.. automodule:: tests.test_measurements
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_molecular\_system\_paths module
+-------------------------------------------
+
+.. automodule:: tests.test_molecular_system_paths
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_movie module
+------------------------
+
+.. automodule:: tests.test_movie
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_new\_view module
+----------------------------
+
+.. automodule:: tests.test_new_view
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_noarch\_conda\_launchers module
+-------------------------------------------
+
+.. automodule:: tests.test_noarch_conda_launchers
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_npm\_publish\_workflow module
+-----------------------------------------
+
+.. automodule:: tests.test_npm_publish_workflow
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_panel\_action\_dispatch module
+------------------------------------------
+
+.. automodule:: tests.test_panel_action_dispatch
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_panel\_mode\_request module
+---------------------------------------
+
+.. automodule:: tests.test_panel_mode_request
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_pending\_message\_flush module
+------------------------------------------
+
+.. automodule:: tests.test_pending_message_flush
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_phase11\_regions\_panel module
+------------------------------------------
+
+.. automodule:: tests.test_phase11_regions_panel
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_phase12\_whole\_panel module
+----------------------------------------
+
+.. automodule:: tests.test_phase12_whole_panel
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_playback\_digesters module
+--------------------------------------
+
+.. automodule:: tests.test_playback_digesters
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_popup\_snapshot module
+----------------------------------
+
+.. automodule:: tests.test_popup_snapshot
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_popup\_snapshot\_completeness module
+------------------------------------------------
+
+.. automodule:: tests.test_popup_snapshot_completeness
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_popup\_snapshot\_fidelity module
+--------------------------------------------
+
+.. automodule:: tests.test_popup_snapshot_fidelity
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_preview\_server module
+----------------------------------
+
+.. automodule:: tests.test_preview_server
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_project\_style\_config module
+-----------------------------------------
+
+.. automodule:: tests.test_project_style_config
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_promotion\_gates module
+-----------------------------------
+
+.. automodule:: tests.test_promotion_gates
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_protocol\_contracts module
+--------------------------------------
+
+.. automodule:: tests.test_protocol_contracts
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_public\_api\_docs module
+------------------------------------
+
+.. automodule:: tests.test_public_api_docs
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_public\_api\_inventory module
+-----------------------------------------
+
+.. automodule:: tests.test_public_api_inventory
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_public\_entrypoint\_contract module
+-----------------------------------------------
+
+.. automodule:: tests.test_public_entrypoint_contract
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_public\_output\_units module
+----------------------------------------
+
+.. automodule:: tests.test_public_output_units
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_public\_reference\_imports module
+---------------------------------------------
+
+.. automodule:: tests.test_public_reference_imports
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_python\_ecosystem\_contract module
+----------------------------------------------
+
+.. automodule:: tests.test_python_ecosystem_contract
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_python\_js\_boundary module
+---------------------------------------
+
+.. automodule:: tests.test_python_js_boundary
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_qt\_transport\_contract module
+------------------------------------------
+
+.. automodule:: tests.test_qt_transport_contract
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_readme\_addon\_table module
+---------------------------------------
+
+.. automodule:: tests.test_readme_addon_table
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_readme\_quickstart\_runs module
+-------------------------------------------
+
+.. automodule:: tests.test_readme_quickstart_runs
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_rebuild\_persistence module
+---------------------------------------
+
+.. automodule:: tests.test_rebuild_persistence
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_rebuild\_visibility module
+--------------------------------------
+
+.. automodule:: tests.test_rebuild_visibility
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_region\_api\_completeness module
+--------------------------------------------
+
+.. automodule:: tests.test_region_api_completeness
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_region\_enablement module
+-------------------------------------
+
+.. automodule:: tests.test_region_enablement
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_region\_isolation module
+------------------------------------
+
+.. automodule:: tests.test_region_isolation
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_region\_recipes module
+----------------------------------
+
+.. automodule:: tests.test_region_recipes
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_release\_evidence module
+------------------------------------
+
+.. automodule:: tests.test_release_evidence
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_release\_gate module
+--------------------------------
+
+.. automodule:: tests.test_release_gate
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_release\_route module
+---------------------------------
+
+.. automodule:: tests.test_release_route
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_remote\_cli module
+------------------------------
+
+.. automodule:: tests.test_remote_cli
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_remote\_digesters module
+------------------------------------
+
+.. automodule:: tests.test_remote_digesters
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_remote\_protocol module
+-----------------------------------
+
+.. automodule:: tests.test_remote_protocol
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_remote\_render\_worker module
+-----------------------------------------
+
+.. automodule:: tests.test_remote_render_worker
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_remote\_session\_router module
+------------------------------------------
+
+.. automodule:: tests.test_remote_session_router
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_remote\_session\_service module
+-------------------------------------------
+
+.. automodule:: tests.test_remote_session_service
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_remote\_view\_channel module
+----------------------------------------
+
+.. automodule:: tests.test_remote_view_channel
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_reporting\_protocol module
+--------------------------------------
+
+.. automodule:: tests.test_reporting_protocol
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_repr\_mimebundle module
+-----------------------------------
+
+.. automodule:: tests.test_repr_mimebundle
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_representative\_scale\_benchmark module
+---------------------------------------------------
+
+.. automodule:: tests.test_representative_scale_benchmark
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_reproducible\_interaction module
+--------------------------------------------
+
+.. automodule:: tests.test_reproducible_interaction
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_runtime\_router module
+----------------------------------
+
+.. automodule:: tests.test_runtime_router
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_runtime\_seam\_integration module
+---------------------------------------------
+
+.. automodule:: tests.test_runtime_seam_integration
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_scalar\_color\_units module
+---------------------------------------
+
+.. automodule:: tests.test_scalar_color_units
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_scene\_history module
+---------------------------------
+
+.. automodule:: tests.test_scene_history
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_scene\_integrity module
+-----------------------------------
+
+.. automodule:: tests.test_scene_integrity
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_scene\_object\_identity module
+------------------------------------------
+
+.. automodule:: tests.test_scene_object_identity
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_scene\_object\_owner module
+---------------------------------------
+
+.. automodule:: tests.test_scene_object_owner
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_scene\_object\_summaries module
+-------------------------------------------
+
+.. automodule:: tests.test_scene_object_summaries
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_scene\_transfer module
+----------------------------------
+
+.. automodule:: tests.test_scene_transfer
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_selections module
+-----------------------------
+
+.. automodule:: tests.test_selections
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_session\_bundle module
+----------------------------------
+
+.. automodule:: tests.test_session_bundle
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_session\_rejection module
+-------------------------------------
+
+.. automodule:: tests.test_session_rejection
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_shape\_digesters module
+-----------------------------------
+
+.. automodule:: tests.test_shape_digesters
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_shape\_render\_status module
+----------------------------------------
+
+.. automodule:: tests.test_shape_render_status
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_smonitor\_application\_policy module
+------------------------------------------------
+
+.. automodule:: tests.test_smonitor_application_policy
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_smonitor\_integration module
+----------------------------------------
+
+.. automodule:: tests.test_smonitor_integration
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_smonitor\_signal\_passthrough module
+------------------------------------------------
+
+.. automodule:: tests.test_smonitor_signal_passthrough
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_source\_records module
+----------------------------------
+
+.. automodule:: tests.test_source_records
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_source\_text\_encoding module
+-----------------------------------------
+
+.. automodule:: tests.test_source_text_encoding
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_source\_workflow\_coverage module
+---------------------------------------------
+
+.. automodule:: tests.test_source_workflow_coverage
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_standalone module
+-----------------------------
+
+.. automodule:: tests.test_standalone
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_state\_focus\_overlays module
+-----------------------------------------
+
+.. automodule:: tests.test_state_focus_overlays
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_state\_sections module
+----------------------------------
+
+.. automodule:: tests.test_state_sections
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_state\_serialization module
+---------------------------------------
+
+.. automodule:: tests.test_state_serialization
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_state\_structure\_identity module
+---------------------------------------------
+
+.. automodule:: tests.test_state_structure_identity
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_state\_v2 module
+----------------------------
+
+.. automodule:: tests.test_state_v2
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_state\_view\_state module
+-------------------------------------
+
+.. automodule:: tests.test_state_view_state
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_static\_export\_snapshot module
+-------------------------------------------
+
+.. automodule:: tests.test_static_export_snapshot
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_structure\_scale\_budget module
+-------------------------------------------
+
+.. automodule:: tests.test_structure_scale_budget
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_structure\_stream\_ordering module
+----------------------------------------------
+
+.. automodule:: tests.test_structure_stream_ordering
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_structure\_transfer module
+--------------------------------------
+
+.. automodule:: tests.test_structure_transfer
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_studio\_loading module
+----------------------------------
+
+.. automodule:: tests.test_studio_loading
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_styles module
+-------------------------
+
+.. automodule:: tests.test_styles
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_support\_integrations module
+----------------------------------------
+
+.. automodule:: tests.test_support_integrations
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_supported\_macos\_architecture module
+-------------------------------------------------
+
+.. automodule:: tests.test_supported_macos_architecture
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_tags\_manager module
+--------------------------------
+
+.. automodule:: tests.test_tags_manager
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_teardown\_leaves\_no\_widget\_registered module
+-----------------------------------------------------------
+
+.. automodule:: tests.test_teardown_leaves_no_widget_registered
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_time\_and\_force\_digesters module
+----------------------------------------------
+
+.. automodule:: tests.test_time_and_force_digesters
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_tools\_basic module
+-------------------------------
+
+.. automodule:: tests.test_tools_basic
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_tools\_basic\_merge module
+--------------------------------------
+
+.. automodule:: tests.test_tools_basic_merge
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_trajectory\_plot module
+-----------------------------------
+
+.. automodule:: tests.test_trajectory_plot
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_trajectory\_plot\_lifecycle module
+----------------------------------------------
+
+.. automodule:: tests.test_trajectory_plot_lifecycle
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_trajectory\_plot\_series module
+-------------------------------------------
+
+.. automodule:: tests.test_trajectory_plot_series
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_transport\_ownership module
+---------------------------------------
+
+.. automodule:: tests.test_transport_ownership
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_units\_under\_a\_user\_policy module
+------------------------------------------------
+
+.. automodule:: tests.test_units_under_a_user_policy
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_unrepresented\_region\_visibility module
+----------------------------------------------------
+
+.. automodule:: tests.test_unrepresented_region_visibility
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_validate\_python\_wheel\_runtime module
+---------------------------------------------------
+
+.. automodule:: tests.test_validate_python_wheel_runtime
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_verify\_public\_package module
+------------------------------------------
+
+.. automodule:: tests.test_verify_public_package
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_view\_info module
+-----------------------------
+
+.. automodule:: tests.test_view_info
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_view\_lifecycle module
+----------------------------------
+
+.. automodule:: tests.test_view_lifecycle
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_view\_mode\_configuration module
+--------------------------------------------
+
+.. automodule:: tests.test_view_mode_configuration
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_viewer\_argument\_contracts module
+----------------------------------------------
+
+.. automodule:: tests.test_viewer_argument_contracts
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_visibility\_semantics module
+----------------------------------------
+
+.. automodule:: tests.test_visibility_semantics
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_whole\_api module
+-----------------------------
+
+.. automodule:: tests.test_whole_api
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_widget\_popup\_source module
+----------------------------------------
+
+.. automodule:: tests.test_widget_popup_source
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_wire\_serializable\_messages module
+-----------------------------------------------
+
+.. automodule:: tests.test_wire_serializable_messages
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_write\_html module
+------------------------------
+
+.. automodule:: tests.test_write_html
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+tests.test\_zoom module
+-----------------------
+
+.. automodule:: tests.test_zoom
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: tests
+   :members:
+   :show-inheritance:
+   :undoc-members:

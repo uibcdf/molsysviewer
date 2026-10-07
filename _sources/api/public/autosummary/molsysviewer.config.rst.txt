@@ -1,0 +1,16 @@
+﻿molsysviewer.config
+===================
+
+.. automodule:: molsysviewer.config
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_structure_scale_budget
+      set_default_quantities_form
+      set_default_quantities_parser
+      set_default_standard_units
+      set_structure_scale_budget
+   

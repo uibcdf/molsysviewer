@@ -1,0 +1,1139 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+    <title>molsysviewer.annotations – MolSysViewer 0.24.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6b6fcda3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6b6fcda3" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
+
+    <script src="../../_static/documentation_options.js?v=a9084e48"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/molsysviewer/annotations';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.24.0" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.24.0 documentation - Home"/>
+    <img src="../../_static/logo_dark.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.24.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">molsysviewer.annotations</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for molsysviewer.annotations</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">molsysmt</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">msm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">smonitor</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._private.annotation_vectors</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotation_vector</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._private.argdigest</span><span class="w"> </span><span class="kn">import</span> <span class="n">digest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotation</span><span class="p">,</span> <span class="n">Layer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.scene_history</span><span class="w"> </span><span class="kn">import</span> <span class="n">records_scene_history</span>
+
+
+<div class="viewcode-block" id="AnnotationsManager">
+<a class="viewcode-back" href="../../api/public/autosummary/molsysviewer.annotations.AnnotationsManager.html#molsysviewer.annotations.AnnotationsManager">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AnnotationsManager</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Annotation manager bound to a MolSysView."""</span>
+
+<div class="viewcode-block" id="AnnotationsManager.__init__">
+<a class="viewcode-back" href="../../api/public/autosummary/molsysviewer.annotations.AnnotationsManager.html#molsysviewer.annotations.AnnotationsManager.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span> <span class="o">=</span> <span class="n">view</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">layer</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ensure_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">layer_tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_tag_managers</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">]</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="n">resolved_layer_tag</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">layer_tag</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">layer_tag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">tag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_ensure_layer_group</span><span class="p">(</span>  <span class="c1"># noqa: SLF001</span>
+            <span class="n">resolved_layer_tag</span><span class="p">,</span>
+            <span class="n">kind</span><span class="o">=</span><span class="s2">"annotation"</span><span class="p">,</span>
+            <span class="n">provenance</span><span class="o">=</span><span class="s2">"user"</span> <span class="k">if</span> <span class="n">layer_tag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">"auto"</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">annotation</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">layer_tag</span><span class="o">=</span><span class="n">resolved_layer_tag</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_scene_objects</span><span class="p">[(</span><span class="s2">"annotation"</span><span class="p">,</span> <span class="n">tag</span><span class="p">)]</span> <span class="o">=</span> <span class="n">annotation</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="k">return</span> <span class="n">annotation</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_annotation_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_scene_objects</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="s2">"annotation"</span><span class="p">,</span> <span class="n">tag</span><span class="p">))</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s2">"kind"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">"annotation"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">layer</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_require_annotation_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_annotation_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No annotation layer found for tag </span><span class="si">{</span><span class="n">tag</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">layer</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_anchor_atom_indices</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">selection</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">atom_indices</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">group_index</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Resolve the label anchor to a flat list of atom indices."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_molsys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: SLF001</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"No molecular system loaded. Load a system before adding labels."</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">atom_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">resolved</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">atom_indices</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">resolved</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"atom_indices is empty."</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">resolved</span>
+
+        <span class="k">if</span> <span class="n">selection</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">resolved</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">msm</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_molsys</span><span class="p">,</span>  <span class="c1"># noqa: SLF001</span>
+                    <span class="n">selection</span><span class="o">=</span><span class="n">selection</span><span class="p">,</span>
+                    <span class="n">syntax</span><span class="o">=</span><span class="s2">"MolSysMT"</span><span class="p">,</span>
+                    <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">resolved</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Selection </span><span class="si">{</span><span class="n">selection</span><span class="si">!r}</span><span class="s2"> did not resolve to any atoms."</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">resolved</span>
+
+        <span class="k">if</span> <span class="n">group_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">"The group_index parameter is deprecated. Use selection or atom_indices instead."</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">group_index</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">group_index</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"group_index must be a single-element list."</span><span class="p">)</span>
+            <span class="n">group_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">group_index</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">resolved</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">msm</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_molsys</span><span class="p">,</span>  <span class="c1"># noqa: SLF001</span>
+                    <span class="n">selection</span><span class="o">=</span><span class="sa">f</span><span class="s2">"group_index==</span><span class="si">{</span><span class="n">group_idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="n">syntax</span><span class="o">=</span><span class="s2">"MolSysMT"</span><span class="p">,</span>
+                    <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">resolved</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Group index </span><span class="si">{</span><span class="n">group_idx</span><span class="si">}</span><span class="s2"> did not resolve to any atoms."</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">resolved</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Provide selection, atom_indices, or group_index."</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AnnotationsManager.tags">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.tags">[docs]</a>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">,</span> <span class="s2">"query"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Return the active annotation tags."""</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">tag</span> <span class="k">for</span> <span class="n">kind</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_scene_objects</span> <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"annotation"</span><span class="p">]</span>  <span class="c1"># noqa: SLF001</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.contains">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.contains">[docs]</a>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return whether an annotation layer exists for ``tag``."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_annotation_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.get">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.get">[docs]</a>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return the annotation layer for ``tag``, if present."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_annotation_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.records">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.records">[docs]</a>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Return a copy of the current replayable annotation records."""</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_annotation_history</span><span class="p">)</span>  <span class="c1"># noqa: SLF001</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.count">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.count">[docs]</a>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return the number of replayable annotation records."""</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_annotation_history</span><span class="p">)</span>  <span class="c1"># noqa: SLF001</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.info">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.info">[docs]</a>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">,</span> <span class="s2">"query"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Return compact annotation metadata for one tag or all annotations."""</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">summarize</span><span class="p">(</span><span class="n">record</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"options"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">options</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">atom_indices</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"atom_indices"</span><span class="p">)</span>
+            <span class="n">atom_indices</span> <span class="o">=</span> <span class="n">atom_indices</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atom_indices</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[]</span>
+            <span class="n">record_tag</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tag"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">record_tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">record_tag</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tag"</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tag"</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_annotation_layer</span><span class="p">(</span><span class="n">record_tag</span><span class="p">)</span> <span class="k">if</span> <span class="n">record_tag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">"kind"</span><span class="p">:</span> <span class="s2">"label"</span> <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"op"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"add_label"</span> <span class="k">else</span> <span class="s2">"annotation"</span><span class="p">,</span>
+                <span class="s2">"tag"</span><span class="p">:</span> <span class="n">record_tag</span><span class="p">,</span>
+                <span class="s2">"owner"</span><span class="p">:</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">layer</span><span class="o">.</span><span class="n">owner</span><span class="p">,</span>
+                <span class="s2">"layer_tag"</span><span class="p">:</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s2">"layer_tag"</span><span class="p">,</span> <span class="n">record_tag</span><span class="p">),</span>
+                <span class="s2">"text"</span><span class="p">:</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"text"</span><span class="p">),</span>
+                <span class="s2">"style"</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"style"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}),</span>
+                <span class="s2">"n_atoms"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">atom_indices</span><span class="p">),</span>
+                <span class="s2">"atom_indices"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">atom_indices</span><span class="p">),</span>
+                <span class="s2">"visible"</span><span class="p">:</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s2">"_hidden"</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+                <span class="s2">"active"</span><span class="p">:</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s2">"_active"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)),</span>
+                <span class="s2">"broken"</span><span class="p">:</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s2">"broken"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)),</span>
+                <span class="s2">"broken_reason"</span><span class="p">:</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s2">"broken_reason"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="s2">"position"</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+                <span class="c1"># Match add()'s declared legacy bare unit; get_coordinates()</span>
+                <span class="c1"># provides a physical quantity in the configured standard unit.</span>
+                <span class="n">res</span><span class="p">[</span><span class="s2">"position"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">options</span><span class="p">[</span><span class="s2">"position"</span><span class="p">]]</span> <span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s2">"position"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="s2">"offset_mode"</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+                <span class="n">res</span><span class="p">[</span><span class="s2">"offset_mode"</span><span class="p">]</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s2">"offset_mode"</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"offset"</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"offset_mode"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"world"</span><span class="p">:</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">._pyunitwizard</span><span class="w"> </span><span class="kn">import</span> <span class="n">puw</span>
+
+                    <span class="c1"># Reported in nm, the unit add reads bare numbers in, so</span>
+                    <span class="c1"># the report can be fed back; never in the session's standard length,</span>
+                    <span class="c1"># which the user may have changed (uibcdf/molsysviewer#96).</span>
+                    <span class="n">offset_q</span> <span class="o">=</span> <span class="n">puw</span><span class="o">.</span><span class="n">quantity</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s2">"offset"</span><span class="p">],</span> <span class="s2">"angstrom"</span><span class="p">)</span>
+                    <span class="n">offset_nm</span> <span class="o">=</span> <span class="n">puw</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">offset_q</span><span class="p">,</span> <span class="n">to_unit</span><span class="o">=</span><span class="s2">"nm"</span><span class="p">)</span>
+                    <span class="n">res</span><span class="p">[</span><span class="s2">"offset"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">offset_nm</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">res</span><span class="p">[</span><span class="s2">"offset"</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s2">"offset"</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">"leader_line"</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+                <span class="n">res</span><span class="p">[</span><span class="s2">"leader_line"</span><span class="p">]</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s2">"leader_line"</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"leader_line_style"</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+                <span class="n">res</span><span class="p">[</span><span class="s2">"leader_line_style"</span><span class="p">]</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s2">"leader_line_style"</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">res</span>
+
+        <span class="n">records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tag</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">summarize</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">records</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">records</span><span class="p">:</span>
+            <span class="n">summary</span> <span class="o">=</span> <span class="n">summarize</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">summary</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tag"</span><span class="p">)</span> <span class="o">==</span> <span class="n">tag</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">summary</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No annotation record found for tag </span><span class="si">{</span><span class="n">tag</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.add">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.add">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"label"</span><span class="p">,</span>
+        <span class="n">selection</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">atom_indices</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">position</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">offset_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"camera"</span><span class="p">,</span>
+        <span class="n">offset</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="n">leader_line</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">leader_line_style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"dashed"</span><span class="p">,</span>
+        <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">layer_tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">syntax</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"MolSysMT"</span><span class="p">,</span>
+        <span class="n">label_style</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Add a persistent annotation anchored to a set of atoms or position.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        text</span>
+<span class="sd">            Annotation text to display.</span>
+<span class="sd">        kind</span>
+<span class="sd">            Annotation kind. Currently only ``"label"`` is supported.</span>
+<span class="sd">        selection</span>
+<span class="sd">            MolSysMT selection string or expression (e.g. ``'group_index==5'``).</span>
+<span class="sd">        atom_indices</span>
+<span class="sd">            Explicit list of atom indices. Takes priority over *selection*.</span>
+<span class="sd">        position</span>
+<span class="sd">            Absolute physical coordinate (x, y, z), preferably with explicit length</span>
+<span class="sd">            units. Legacy bare triples mean nm. Takes priority over atom anchors.</span>
+<span class="sd">        offset_mode</span>
+<span class="sd">            Offset coordinate space: `"camera"` or `"world"`.</span>
+<span class="sd">        offset</span>
+<span class="sd">            Relative displacement. World offsets accept length quantities (legacy</span>
+<span class="sd">            bare triples mean nm); camera offsets are dimensionless renderer units</span>
+<span class="sd">            along camera right, up and toward the viewer.</span>
+<span class="sd">        leader_line</span>
+<span class="sd">            If True, draws a connection line from the anchor to the offset label.</span>
+<span class="sd">        leader_line_style</span>
+<span class="sd">            Style of the connection line: `"solid"`, `"dashed"`, or `"dotted"`.</span>
+<span class="sd">        tag</span>
+<span class="sd">            Unique identifier for this annotation object.</span>
+<span class="sd">        layer_tag</span>
+<span class="sd">            Layer group for this annotation.</span>
+<span class="sd">        syntax</span>
+<span class="sd">            Selection syntax (default ``"MolSysMT"``).</span>
+<span class="sd">        label_style</span>
+<span class="sd">            Optional visual style dict.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">resolved_position</span> <span class="o">=</span> <span class="n">annotation_vector</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="s2">"position"</span><span class="p">,</span> <span class="n">physical</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">resolved_atom_indices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">resolved_position</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">resolved_atom_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_anchor_atom_indices</span><span class="p">(</span><span class="n">selection</span><span class="p">,</span> <span class="n">atom_indices</span><span class="o">=</span><span class="n">atom_indices</span><span class="p">)</span>
+
+        <span class="n">offset_list</span> <span class="o">=</span> <span class="n">annotation_vector</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="s2">"offset"</span><span class="p">,</span> <span class="n">physical</span><span class="o">=</span><span class="n">offset_mode</span> <span class="o">==</span> <span class="s2">"world"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">offset_mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"camera"</span><span class="p">,</span> <span class="s2">"world"</span><span class="p">}</span> <span class="ow">or</span> <span class="n">leader_line_style</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"solid"</span><span class="p">,</span> <span class="s2">"dashed"</span><span class="p">,</span> <span class="s2">"dotted"</span><span class="p">}:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Invalid annotation offset mode or leader line style."</span><span class="p">)</span>
+
+        <span class="n">object_tag</span> <span class="o">=</span> <span class="n">tag</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_next_annotation_tag</span><span class="p">()</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="n">resolved_layer_tag</span> <span class="o">=</span> <span class="n">layer_tag</span> <span class="k">if</span> <span class="n">layer_tag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">object_tag</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_layer</span><span class="p">(</span><span class="n">object_tag</span><span class="p">,</span> <span class="n">layer_tag</span><span class="o">=</span><span class="n">layer_tag</span><span class="p">)</span>
+
+        <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"text"</span><span class="p">:</span> <span class="n">text</span><span class="p">,</span>
+            <span class="s2">"tag"</span><span class="p">:</span> <span class="n">object_tag</span><span class="p">,</span>
+            <span class="s2">"layer_tag"</span><span class="p">:</span> <span class="n">resolved_layer_tag</span><span class="p">,</span>
+            <span class="s2">"atom_indices"</span><span class="p">:</span> <span class="n">resolved_atom_indices</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">resolved_position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">options</span><span class="p">[</span><span class="s2">"position"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolved_position</span>
+            <span class="n">options</span><span class="p">[</span><span class="s2">"position_unit"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"angstrom"</span>
+        <span class="k">if</span> <span class="n">offset_mode</span> <span class="o">!=</span> <span class="s2">"camera"</span><span class="p">:</span>
+            <span class="n">options</span><span class="p">[</span><span class="s2">"offset_mode"</span><span class="p">]</span> <span class="o">=</span> <span class="n">offset_mode</span>
+        <span class="k">if</span> <span class="n">offset_list</span> <span class="o">!=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]:</span>
+            <span class="n">options</span><span class="p">[</span><span class="s2">"offset"</span><span class="p">]</span> <span class="o">=</span> <span class="n">offset_list</span>
+            <span class="n">options</span><span class="p">[</span><span class="s2">"offset_unit"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"angstrom"</span> <span class="k">if</span> <span class="n">offset_mode</span> <span class="o">==</span> <span class="s2">"world"</span> <span class="k">else</span> <span class="s2">"dimensionless"</span>
+        <span class="k">if</span> <span class="n">leader_line</span><span class="p">:</span>
+            <span class="n">options</span><span class="p">[</span><span class="s2">"leader_line"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">leader_line_style</span> <span class="o">!=</span> <span class="s2">"dashed"</span><span class="p">:</span>
+            <span class="n">options</span><span class="p">[</span><span class="s2">"leader_line_style"</span><span class="p">]</span> <span class="o">=</span> <span class="n">leader_line_style</span>
+        <span class="k">if</span> <span class="n">label_style</span><span class="p">:</span>
+            <span class="n">options</span><span class="p">[</span><span class="s2">"style"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">label_style</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_send</span><span class="p">({</span><span class="s2">"op"</span><span class="p">:</span> <span class="s2">"add_label"</span><span class="p">,</span> <span class="s2">"tag"</span><span class="p">:</span> <span class="n">object_tag</span><span class="p">,</span> <span class="s2">"options"</span><span class="p">:</span> <span class="n">options</span><span class="p">})</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="k">return</span> <span class="n">layer</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.add_label">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.add_label">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_label</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">selection</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">atom_indices</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">group_index</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">layer_tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Deprecated: use ``add()`` instead."""</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">"annotations.add_label() is deprecated; use add() instead."</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Resolve group_index here so add() doesn't need it.</span>
+        <span class="n">resolved_atom_indices</span> <span class="o">=</span> <span class="n">atom_indices</span>
+        <span class="k">if</span> <span class="n">group_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">atom_indices</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">selection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">resolved_atom_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_anchor_atom_indices</span><span class="p">(</span>
+                <span class="n">selection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atom_indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_index</span><span class="o">=</span><span class="n">group_index</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
+            <span class="n">kind</span><span class="o">=</span><span class="s2">"label"</span><span class="p">,</span>
+            <span class="n">selection</span><span class="o">=</span><span class="n">selection</span><span class="p">,</span>
+            <span class="n">atom_indices</span><span class="o">=</span><span class="n">resolved_atom_indices</span><span class="p">,</span>
+            <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span>
+            <span class="n">layer_tag</span><span class="o">=</span><span class="n">layer_tag</span><span class="p">,</span>
+            <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.add_label_from_active_selection">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.add_label_from_active_selection">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">,</span> <span class="s2">"selection"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_label_from_active_selection</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">layer_tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">label_style</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">position</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">offset_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"camera"</span><span class="p">,</span>
+        <span class="n">offset</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="n">leader_line</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">leader_line_style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"dashed"</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Add a persistent label from the last active selection or coordinates."""</span>
+        <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
+                <span class="n">position</span><span class="o">=</span><span class="n">position</span><span class="p">,</span>
+                <span class="n">offset_mode</span><span class="o">=</span><span class="n">offset_mode</span><span class="p">,</span>
+                <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span>
+                <span class="n">leader_line</span><span class="o">=</span><span class="n">leader_line</span><span class="p">,</span>
+                <span class="n">leader_line_style</span><span class="o">=</span><span class="n">leader_line_style</span><span class="p">,</span>
+                <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span>
+                <span class="n">layer_tag</span><span class="o">=</span><span class="n">layer_tag</span><span class="p">,</span>
+                <span class="n">label_style</span><span class="o">=</span><span class="n">label_style</span><span class="p">,</span>
+                <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">event</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">get_last_active_selection_event</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">event</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"No active selection stored. Select an element before adding a label."</span><span class="p">)</span>
+
+        <span class="n">atom_indices</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"atom_indices"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">atom_indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Active selection is empty. Select at least one atom before adding a label."</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
+            <span class="n">atom_indices</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">atom_indices</span><span class="p">],</span>
+            <span class="n">offset_mode</span><span class="o">=</span><span class="n">offset_mode</span><span class="p">,</span>
+            <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span>
+            <span class="n">leader_line</span><span class="o">=</span><span class="n">leader_line</span><span class="p">,</span>
+            <span class="n">leader_line_style</span><span class="o">=</span><span class="n">leader_line_style</span><span class="p">,</span>
+            <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span>
+            <span class="n">layer_tag</span><span class="o">=</span><span class="n">layer_tag</span><span class="p">,</span>
+            <span class="n">label_style</span><span class="o">=</span><span class="n">label_style</span><span class="p">,</span>
+            <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.show">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.show">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">,</span> <span class="s2">"visibility"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Show the annotation layer for ``tag``."""</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_annotation_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">layer</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.hide">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.hide">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">,</span> <span class="s2">"visibility"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Hide the annotation layer for ``tag``."""</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_annotation_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">hide</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">layer</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.show_all">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.show_all">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">,</span> <span class="s2">"visibility"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Show every annotation as one scene-history operation."""</span>
+        <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_require_annotation_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.hide_all">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.hide_all">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">,</span> <span class="s2">"visibility"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hide_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Hide every annotation as one scene-history operation."""</span>
+        <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_require_annotation_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span><span class="o">.</span><span class="n">hide</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.delete">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.delete">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Delete the annotation layer for ``tag``."""</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_annotation_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.set_tag">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.set_tag">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Rename an annotation layer tag."""</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_annotation_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">set_tag</span><span class="p">(</span><span class="n">new_tag</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">layer</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.set_layer_tag">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.set_layer_tag">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_layer_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_layer_tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Move an annotation to a different grouping layer."""</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_annotation_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">set_layer_tag</span><span class="p">(</span><span class="n">new_layer_tag</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">layer</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.clear">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.clear">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Clear annotations globally or remove one annotation layer by tag."""</span>
+        <span class="k">if</span> <span class="n">tag</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">clear_decorations</span><span class="p">(</span><span class="n">shapes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">styles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># noqa: SLF001</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.set_text">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.set_text">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Update the text of an existing annotation label."""</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_annotation_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"set_text() requires non-empty text."</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span>  <span class="c1"># noqa: SLF001</span>
+            <span class="p">{</span>
+                <span class="s2">"op"</span><span class="p">:</span> <span class="s2">"update_label"</span><span class="p">,</span>
+                <span class="s2">"tag"</span><span class="p">:</span> <span class="n">tag</span><span class="p">,</span>
+                <span class="s2">"options"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"tag"</span><span class="p">:</span> <span class="n">tag</span><span class="p">,</span>
+                    <span class="s2">"text"</span><span class="p">:</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+                <span class="p">},</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">layer</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.set_style">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.set_style">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_style</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">style</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Update an annotation's visual style without recreating its identity."""</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_annotation_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">style</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"set_style() requires a style dictionary."</span><span class="p">)</span>
+        <span class="n">record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No annotation record found for tag </span><span class="si">{</span><span class="n">tag</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span>  <span class="c1"># noqa: SLF001</span>
+            <span class="p">{</span>
+                <span class="s2">"op"</span><span class="p">:</span> <span class="s2">"update_label"</span><span class="p">,</span>
+                <span class="s2">"tag"</span><span class="p">:</span> <span class="n">tag</span><span class="p">,</span>
+                <span class="s2">"options"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"tag"</span><span class="p">:</span> <span class="n">tag</span><span class="p">,</span>
+                    <span class="s2">"text"</span><span class="p">:</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"text"</span><span class="p">),</span>
+                    <span class="s2">"atom_indices"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"atom_indices"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]),</span>
+                    <span class="s2">"layer_tag"</span><span class="p">:</span> <span class="n">layer</span><span class="o">.</span><span class="n">layer_tag</span><span class="p">,</span>
+                    <span class="s2">"style"</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">style</span><span class="p">),</span>
+                <span class="p">},</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">layer</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.set_anchor">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.set_anchor">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_anchor</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">selection</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">atom_indices</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">position</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Reanchor an existing label to atoms or one absolute physical position.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        tag</span>
+<span class="sd">            Tag of the annotation to reanchor.</span>
+<span class="sd">        selection</span>
+<span class="sd">            MolSysMT selection string (e.g. ``'group_index==3'``).</span>
+<span class="sd">        atom_indices</span>
+<span class="sd">            Explicit atom indices list.  Takes priority over *selection*.</span>
+<span class="sd">        position</span>
+<span class="sd">            Absolute coordinate with length units (legacy bare triples mean nm).</span>
+<span class="sd">            Takes priority over the atom anchor; offsets and style are retained.</span>
+<span class="sd">        """</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_annotation_layer</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="n">resolved_position</span> <span class="o">=</span> <span class="n">annotation_vector</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="s2">"position"</span><span class="p">,</span> <span class="n">physical</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">resolved_atom_indices</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">[]</span> <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_anchor_atom_indices</span><span class="p">(</span><span class="n">selection</span><span class="p">,</span> <span class="n">atom_indices</span><span class="o">=</span><span class="n">atom_indices</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No annotation record found for tag </span><span class="si">{</span><span class="n">tag</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span>  <span class="c1"># noqa: SLF001</span>
+            <span class="p">{</span>
+                <span class="s2">"op"</span><span class="p">:</span> <span class="s2">"update_label"</span><span class="p">,</span>
+                <span class="s2">"tag"</span><span class="p">:</span> <span class="n">tag</span><span class="p">,</span>
+                <span class="s2">"broken"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">"broken_reason"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">"options"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"tag"</span><span class="p">:</span> <span class="n">tag</span><span class="p">,</span>
+                    <span class="s2">"text"</span><span class="p">:</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"text"</span><span class="p">),</span>
+                    <span class="s2">"atom_indices"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">resolved_atom_indices</span><span class="p">),</span>
+                    <span class="s2">"position"</span><span class="p">:</span> <span class="n">resolved_position</span><span class="p">,</span>
+                    <span class="s2">"position_unit"</span><span class="p">:</span> <span class="s2">"angstrom"</span> <span class="k">if</span> <span class="n">resolved_position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s2">"layer_tag"</span><span class="p">:</span> <span class="n">layer</span><span class="o">.</span><span class="n">layer_tag</span><span class="p">,</span>
+                    <span class="s2">"style"</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"style"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}),</span>
+                <span class="p">},</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">broken</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">broken_reason</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_sync_annotation_summaries_runtime</span><span class="p">()</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="k">return</span> <span class="n">layer</span></div>
+
+
+<div class="viewcode-block" id="AnnotationsManager.set_group_index">
+<a class="viewcode-back" href="../../molsysviewer.html#molsysviewer.annotations.AnnotationsManager.set_group_index">[docs]</a>
+    <span class="nd">@records_scene_history</span>
+    <span class="nd">@signal</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">])</span>
+    <span class="nd">@digest</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_group_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">group_index</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Layer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Deprecated: use ``set_anchor(selection='group_index==N')`` instead."""</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">"annotations.set_group_index() is deprecated; use set_anchor(selection='group_index==N') instead."</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">gi</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">group_index</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">group_index</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">group_index</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_anchor</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="sa">f</span><span class="s2">"group_index==</span><span class="si">{</span><span class="n">gi</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"AnnotationsManager"</span><span class="p">]</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="../../content/about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

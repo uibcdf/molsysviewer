@@ -1,0 +1,881 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+    <title>molsysviewer.viewer.panel_actions.regions – MolSysViewer 0.24.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=6b6fcda3" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=6b6fcda3" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
+
+    <script src="../../../../_static/documentation_options.js?v=a9084e48"></script>
+    <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/molsysviewer/viewer/panel_actions/regions';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.24.0" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.24.0 documentation - Home"/>
+    <img src="../../../../_static/logo_dark.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.24.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">Module code</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../viewer.html" class="nav-link">molsysviewer.viewer</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../panel_actions.html" class="nav-link">molsysviewer.viewer.panel_actions</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">molsysviewer.viewer.panel_actions.regions</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for molsysviewer.viewer.panel_actions.regions</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Mapping</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._pyunitwizard</span><span class="w"> </span><span class="kn">import</span> <span class="n">puw</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_region</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tag"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">view</span><span class="o">.</span><span class="n">_regions</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No region found with tag </span><span class="si">{</span><span class="n">tag</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">view</span><span class="o">.</span><span class="n">_regions</span><span class="p">[</span><span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+
+
+<div class="viewcode-block" id="create_region_from_query">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.create_region_from_query">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_region_from_query</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">expression</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"expression"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">expression</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">expression</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">expression</span><span class="o">.</span><span class="n">strip</span><span class="p">()):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"create_region_from_query requires a non-empty expression."</span><span class="p">)</span>
+    <span class="n">raw_tag</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tag"</span><span class="p">)</span>
+    <span class="n">representation</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"representation"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">representation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">representation</span> <span class="o">=</span> <span class="s2">"inherit"</span>
+    <span class="n">region</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">_new_region_impl</span><span class="p">(</span>
+        <span class="n">selection</span><span class="o">=</span><span class="n">expression</span><span class="p">,</span>
+        <span class="n">syntax</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"syntax"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"MolSysMT"</span><span class="p">),</span>
+        <span class="n">tag</span><span class="o">=</span><span class="n">raw_tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">raw_tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">representation</span><span class="o">=</span><span class="n">representation</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">preset</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"preset"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">preset</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">preset</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="n">region</span><span class="o">.</span><span class="n">set_representation</span><span class="p">(</span><span class="n">preset</span><span class="o">=</span><span class="n">preset</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="make_regions_by">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.make_regions_by">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_regions_by</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">selection</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"selection"</span><span class="p">,</span> <span class="s2">"all"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">selection</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">selection</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"active"</span><span class="p">:</span>
+        <span class="n">selection</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">active_selection</span><span class="o">.</span><span class="n">atom_indices</span><span class="p">)</span>
+    <span class="n">regions</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">make_regions_by</span><span class="p">(</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"element"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+        <span class="n">selection</span><span class="o">=</span><span class="n">selection</span><span class="p">,</span>
+        <span class="n">representation</span><span class="o">=</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"representation"</span><span class="p">),</span>
+        <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">preset</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"preset"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">preset</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">preset</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">region</span> <span class="ow">in</span> <span class="n">regions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">region</span><span class="o">.</span><span class="n">set_representation</span><span class="p">(</span><span class="n">preset</span><span class="o">=</span><span class="n">preset</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="show_only_region">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.show_only_region">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">show_only_region</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">_region</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"show_only_region"</span><span class="p">)</span><span class="o">.</span><span class="n">show_only</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="raise_region_to_front">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.raise_region_to_front">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">raise_region_to_front</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">_region</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"raise_region_to_front"</span><span class="p">)</span><span class="o">.</span><span class="n">raise_to_front</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="send_region_to_back">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.send_region_to_back">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">send_region_to_back</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">_region</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"send_region_to_back"</span><span class="p">)</span><span class="o">.</span><span class="n">send_to_back</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="create_complementary_region">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.create_complementary_region">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_complementary_region</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">raw_tag</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"new_tag"</span><span class="p">)</span>
+    <span class="n">_region</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"create_complementary_region"</span><span class="p">)</span><span class="o">.</span><span class="n">new_complementary_region</span><span class="p">(</span>
+        <span class="n">tag</span><span class="o">=</span><span class="n">raw_tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">raw_tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="compose_regions">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.compose_regions">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compose_regions</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">left</span> <span class="o">=</span> <span class="n">_region</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="p">{</span><span class="s2">"tag"</span><span class="p">:</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tag_a"</span><span class="p">)},</span> <span class="s2">"compose_regions"</span><span class="p">)</span>
+    <span class="n">raw_operands</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"operand_tags"</span><span class="p">,</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tag_b"</span><span class="p">))</span>
+    <span class="n">operand_tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">raw_operands</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_operands</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">raw_operands</span> <span class="ow">or</span> <span class="p">[])</span>
+    <span class="n">operands</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">operand_tags</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">view</span><span class="o">.</span><span class="n">_regions</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No region found with tag </span><span class="si">{</span><span class="n">tag</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="n">left</span><span class="o">.</span><span class="n">tag</span><span class="p">:</span>
+            <span class="n">operands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">_regions</span><span class="p">[</span><span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">operands</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"compose_regions requires at least one operand region."</span><span class="p">)</span>
+    <span class="n">raw_new_tag</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"new_tag"</span><span class="p">)</span>
+    <span class="n">new_tag</span> <span class="o">=</span> <span class="n">raw_new_tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_new_tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">raw_new_tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">overwrite</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"overwrite"</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+    <span class="n">operation_tag</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">_unique_region_tag</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">new_tag</span><span class="si">}</span><span class="s2">__compose"</span><span class="p">)</span> <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">new_tag</span> <span class="ow">in</span> <span class="n">view</span><span class="o">.</span><span class="n">_regions</span> <span class="k">else</span> <span class="n">new_tag</span>
+    <span class="p">)</span>
+    <span class="n">operation</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"op"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="s2">"union"</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">operands</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">operation_tag</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="s2">"intersection"</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="o">*</span><span class="n">operands</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">operation_tag</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="s2">"difference"</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="o">*</span><span class="n">operands</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">operation_tag</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported region composition operation: </span><span class="si">{</span><span class="n">operation</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">new_tag</span> <span class="ow">in</span> <span class="n">view</span><span class="o">.</span><span class="n">_regions</span><span class="p">:</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">_regions</span><span class="p">[</span><span class="n">new_tag</span><span class="p">]</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">new_tag</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="reset_region_representation">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.reset_region_representation">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">reset_region_representation</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">_region</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"reset_region_representation"</span><span class="p">)</span><span class="o">.</span><span class="n">reset_representation</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="color_region_by_attribute">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.color_region_by_attribute">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">color_region_by_attribute</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">attribute</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"attribute"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">attribute</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"color_region_by_attribute requires a non-empty attribute."</span><span class="p">)</span>
+    <span class="n">_region</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"color_region_by_attribute"</span><span class="p">)</span><span class="o">.</span><span class="n">set_color_by_attribute</span><span class="p">(</span>
+        <span class="n">attribute</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+        <span class="n">element</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"element"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"atom"</span><span class="p">),</span>
+        <span class="n">palette</span><span class="o">=</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"palette"</span><span class="p">,</span> <span class="s2">"viridis"</span><span class="p">),</span>
+        <span class="n">value_range</span><span class="o">=</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"value_range"</span><span class="p">),</span>
+        <span class="n">replace</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"replace"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)),</span>
+        <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="reset_region_colors">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.reset_region_colors">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">reset_region_colors</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">_region</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"reset_region_colors"</span><span class="p">)</span><span class="o">.</span><span class="n">reset_colors</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="duplicate_region">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.duplicate_region">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">duplicate_region</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">raw_tag</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"new_tag"</span><span class="p">)</span>
+    <span class="n">_region</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"duplicate_region"</span><span class="p">)</span><span class="o">.</span><span class="n">duplicate</span><span class="p">(</span>
+        <span class="n">tag</span><span class="o">=</span><span class="n">raw_tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">raw_tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="show_all_regions">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.show_all_regions">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">show_all_regions</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">del</span> <span class="n">content</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">regions</span><span class="o">.</span><span class="n">show_all</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="hide_all_regions">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.hide_all_regions">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">hide_all_regions</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">del</span> <span class="n">content</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">regions</span><span class="o">.</span><span class="n">hide_all</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="set_layer_visibility">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.set_layer_visibility">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_layer_visibility</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tag"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">view</span><span class="o">.</span><span class="n">_layers</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No layer found with tag </span><span class="si">{</span><span class="n">tag</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="n">layer</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">_layers</span><span class="p">[</span><span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+    <span class="n">hidden</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"hidden"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">hidden</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">hidden</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s2">"_hidden"</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+    <span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">hide</span> <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">hidden</span><span class="p">)</span> <span class="k">else</span> <span class="n">layer</span><span class="o">.</span><span class="n">show</span><span class="p">)(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_layer</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tag"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">view</span><span class="o">.</span><span class="n">_layers</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No layer found with tag </span><span class="si">{</span><span class="n">tag</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">view</span><span class="o">.</span><span class="n">_layers</span><span class="p">[</span><span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+
+
+<div class="viewcode-block" id="create_layer">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.create_layer">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_layer</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tag"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"create_layer requires a non-empty tag."</span><span class="p">)</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="rename_layer">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.rename_layer">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">rename_layer</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">new_tag</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"new_tag"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">new_tag</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"rename_layer requires a non-empty new_tag."</span><span class="p">)</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">set_tag</span><span class="p">(</span><span class="n">_layer</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"rename_layer"</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span> <span class="n">new_tag</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_layer_member</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"member_kind"</span><span class="p">)</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"member_tag"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"region"</span><span class="p">,</span> <span class="s2">"annotation"</span><span class="p">,</span> <span class="s2">"measurement"</span><span class="p">,</span> <span class="s2">"shape"</span><span class="p">,</span> <span class="s2">"interaction"</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2"> requires a valid member_kind."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2"> requires a non-empty member_tag."</span><span class="p">)</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"region"</span><span class="p">:</span>
+        <span class="n">member</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">regions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">manager</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"annotation"</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">annotations</span><span class="p">,</span>
+            <span class="s2">"measurement"</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">measurements</span><span class="p">,</span>
+            <span class="s2">"shape"</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">shapes</span><span class="p">,</span>
+            <span class="s2">"interaction"</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">interactions</span><span class="p">,</span>
+        <span class="p">}[</span><span class="n">kind</span><span class="p">]</span>
+        <span class="n">member</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">member</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2"> found with tag </span><span class="si">{</span><span class="n">tag</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">kind</span><span class="p">,</span> <span class="n">member</span>
+
+
+<div class="viewcode-block" id="add_member_to_layer">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.add_member_to_layer">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_member_to_layer</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">layer</span> <span class="o">=</span> <span class="n">_layer</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="p">{</span><span class="s2">"tag"</span><span class="p">:</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"layer"</span><span class="p">)},</span> <span class="s2">"add_member_to_layer"</span><span class="p">)</span>
+    <span class="n">kind</span><span class="p">,</span> <span class="n">member</span> <span class="o">=</span> <span class="n">_layer_member</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"add_member_to_layer"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"region"</span><span class="p">:</span>
+        <span class="n">member</span><span class="o">.</span><span class="n">set_layer</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">member</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="remove_member_from_layer">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.remove_member_from_layer">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">remove_member_from_layer</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">layer</span> <span class="o">=</span> <span class="n">_layer</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="p">{</span><span class="s2">"tag"</span><span class="p">:</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"layer"</span><span class="p">)},</span> <span class="s2">"remove_member_from_layer"</span><span class="p">)</span>
+    <span class="n">kind</span><span class="p">,</span> <span class="n">member</span> <span class="o">=</span> <span class="n">_layer_member</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"remove_member_from_layer"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"region"</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">member</span><span class="o">.</span><span class="n">layer</span> <span class="o">!=</span> <span class="n">layer</span><span class="o">.</span><span class="n">tag</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Region </span><span class="si">{</span><span class="n">member</span><span class="o">.</span><span class="n">tag</span><span class="si">!r}</span><span class="s2"> is not a member of layer </span><span class="si">{</span><span class="n">layer</span><span class="o">.</span><span class="n">tag</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">member</span><span class="o">.</span><span class="n">remove_from_layer</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">detach</span><span class="p">(</span><span class="n">member</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ungroup_layer">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.ungroup_layer">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ungroup_layer</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">_layer</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"ungroup_layer"</span><span class="p">)</span><span class="o">.</span><span class="n">ungroup</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="delete_layer_and_contents">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.delete_layer_and_contents">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">delete_layer_and_contents</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">_layer</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"delete_layer_and_contents"</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_region_details">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.get_region_details">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_region_details</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">region</span> <span class="o">=</span> <span class="n">_region</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"get_region_details"</span><span class="p">)</span>
+    <span class="n">center</span> <span class="o">=</span> <span class="n">region</span><span class="o">.</span><span class="n">get_center</span><span class="p">(</span><span class="n">structure_indices</span><span class="o">=</span><span class="p">[</span><span class="n">view</span><span class="o">.</span><span class="n">current_structure_index</span><span class="p">],</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">_send_runtime_only</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">"op"</span><span class="p">:</span> <span class="s2">"region_details"</span><span class="p">,</span>
+            <span class="s2">"request_id"</span><span class="p">:</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"request_id"</span><span class="p">),</span>
+            <span class="s2">"tag"</span><span class="p">:</span> <span class="n">region</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span>
+            <span class="s2">"atom_count"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">atom_indices</span> <span class="ow">or</span> <span class="p">()),</span>
+            <span class="s2">"group_count"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">_scoped_indices_for_element</span><span class="p">(</span><span class="s2">"group"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]),</span>
+            <span class="s2">"chain_count"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">_scoped_indices_for_element</span><span class="p">(</span><span class="s2">"chain"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]),</span>
+            <span class="s2">"center_nm"</span><span class="p">:</span> <span class="n">puw</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="n">to_unit</span><span class="o">=</span><span class="s2">"nm"</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="s2">"structure_index"</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">current_structure_index</span><span class="p">,</span>
+            <span class="s2">"provenance"</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">provenance</span><span class="p">),</span>
+            <span class="s2">"order"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">order</span><span class="p">),</span>
+            <span class="s2">"mode"</span><span class="p">:</span> <span class="n">region</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span>
+            <span class="s2">"broken"</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"broken"</span><span class="p">)),</span>
+        <span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="toggle_region_visibility">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.toggle_region_visibility">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">toggle_region_visibility</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">region</span> <span class="o">=</span> <span class="n">_region</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"toggle_region_visibility"</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">show</span> <span class="k">if</span> <span class="n">region</span><span class="o">.</span><span class="n">_hidden</span> <span class="k">else</span> <span class="n">region</span><span class="o">.</span><span class="n">hide</span><span class="p">)(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="toggle_region_enabled">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.toggle_region_enabled">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">toggle_region_enabled</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">region</span> <span class="o">=</span> <span class="n">_region</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"toggle_region_enabled"</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">disable</span> <span class="k">if</span> <span class="n">region</span><span class="o">.</span><span class="n">enabled</span> <span class="k">else</span> <span class="n">region</span><span class="o">.</span><span class="n">enable</span><span class="p">)(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="delete_region">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.delete_region">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">delete_region</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">_region</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"delete_region"</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="rename_region">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.rename_region">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">rename_region</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">new_tag</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"new_tag"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">new_tag</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"rename_region requires non-empty new_tag."</span><span class="p">)</span>
+    <span class="n">_region</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"rename_region"</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">new_tag</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="set_region_representation">
+<a class="viewcode-back" href="../../../../molsysviewer.viewer.panel_actions.html#molsysviewer.viewer.panel_actions.regions.set_region_representation">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_region_representation</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"params"</span><span class="p">)</span>
+    <span class="n">_region</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="s2">"set_region_representation"</span><span class="p">)</span><span class="o">.</span><span class="n">set_representation</span><span class="p">(</span>
+        <span class="n">representation</span><span class="o">=</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"representation"</span><span class="p">),</span>
+        <span class="n">preset</span><span class="o">=</span><span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"preset"</span><span class="p">),</span>
+        <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="p">(</span><span class="n">params</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}),</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="n">HANDLERS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"create_region_from_query"</span><span class="p">:</span> <span class="n">create_region_from_query</span><span class="p">,</span>
+    <span class="s2">"make_regions_by"</span><span class="p">:</span> <span class="n">make_regions_by</span><span class="p">,</span>
+    <span class="s2">"show_only_region"</span><span class="p">:</span> <span class="n">show_only_region</span><span class="p">,</span>
+    <span class="s2">"raise_region_to_front"</span><span class="p">:</span> <span class="n">raise_region_to_front</span><span class="p">,</span>
+    <span class="s2">"send_region_to_back"</span><span class="p">:</span> <span class="n">send_region_to_back</span><span class="p">,</span>
+    <span class="s2">"create_complementary_region"</span><span class="p">:</span> <span class="n">create_complementary_region</span><span class="p">,</span>
+    <span class="s2">"compose_regions"</span><span class="p">:</span> <span class="n">compose_regions</span><span class="p">,</span>
+    <span class="s2">"reset_region_representation"</span><span class="p">:</span> <span class="n">reset_region_representation</span><span class="p">,</span>
+    <span class="s2">"color_region_by_attribute"</span><span class="p">:</span> <span class="n">color_region_by_attribute</span><span class="p">,</span>
+    <span class="s2">"reset_region_colors"</span><span class="p">:</span> <span class="n">reset_region_colors</span><span class="p">,</span>
+    <span class="s2">"duplicate_region"</span><span class="p">:</span> <span class="n">duplicate_region</span><span class="p">,</span>
+    <span class="s2">"show_all_regions"</span><span class="p">:</span> <span class="n">show_all_regions</span><span class="p">,</span>
+    <span class="s2">"hide_all_regions"</span><span class="p">:</span> <span class="n">hide_all_regions</span><span class="p">,</span>
+    <span class="s2">"set_layer_visibility"</span><span class="p">:</span> <span class="n">set_layer_visibility</span><span class="p">,</span>
+    <span class="s2">"create_layer"</span><span class="p">:</span> <span class="n">create_layer</span><span class="p">,</span>
+    <span class="s2">"rename_layer"</span><span class="p">:</span> <span class="n">rename_layer</span><span class="p">,</span>
+    <span class="s2">"add_member_to_layer"</span><span class="p">:</span> <span class="n">add_member_to_layer</span><span class="p">,</span>
+    <span class="s2">"remove_member_from_layer"</span><span class="p">:</span> <span class="n">remove_member_from_layer</span><span class="p">,</span>
+    <span class="s2">"ungroup_layer"</span><span class="p">:</span> <span class="n">ungroup_layer</span><span class="p">,</span>
+    <span class="s2">"delete_layer_and_contents"</span><span class="p">:</span> <span class="n">delete_layer_and_contents</span><span class="p">,</span>
+    <span class="s2">"get_region_details"</span><span class="p">:</span> <span class="n">get_region_details</span><span class="p">,</span>
+    <span class="s2">"toggle_region_visibility"</span><span class="p">:</span> <span class="n">toggle_region_visibility</span><span class="p">,</span>
+    <span class="s2">"toggle_region_enabled"</span><span class="p">:</span> <span class="n">toggle_region_enabled</span><span class="p">,</span>
+    <span class="s2">"delete_region"</span><span class="p">:</span> <span class="n">delete_region</span><span class="p">,</span>
+    <span class="s2">"rename_region"</span><span class="p">:</span> <span class="n">rename_region</span><span class="p">,</span>
+    <span class="s2">"set_region_representation"</span><span class="p">:</span> <span class="n">set_region_representation</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="../../../../content/about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

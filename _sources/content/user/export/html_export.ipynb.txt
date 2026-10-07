@@ -1,0 +1,336 @@
+{
+ "cells": [
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "id": "1bcbf763-db0d-4c17-bd80-ad2a4a0eaf6e",
+   "metadata": {
+    "editable": true,
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": []
+   },
+   "source": [
+    "# HTML Export\n",
+    "\n",
+    "Once you have the view in the state you want (loaded structure, chosen representations, camera orientation, etc.), you can export it to a standalone HTML file using the `export.html` method. This lets you embed an interactive version of the view in your own web pages.\n",
+    "\n",
+    "The exported file contains:\n",
+    "\n",
+    "- the MolSysViewer runtime — the renderer itself,\n",
+    "- the scene, as the sequence of actions that produced it (loads, visibility\n",
+    "  changes, colours, regions, camera) up to the moment you call `export.html`.\n",
+    "\n",
+    "Opening this file in a browser recreates the same interactive view. It needs no\n",
+    "Python kernel, no server and no network: everything is in the file.\n",
+    "\n",
+    "To show it, let's first of all create a simple view."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "c66ac975-0462-4cde-9a4b-d728923bbe0b",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:26:19.163757Z",
+     "iopub.status.busy": "2026-08-06T10:26:19.163486Z",
+     "iopub.status.idle": "2026-08-06T10:26:21.264994Z",
+     "shell.execute_reply": "2026-08-06T10:26:21.263715Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import molsysviewer as msv\n",
+    "from molsysviewer import new_view"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "94f41661-dcce-46ae-bf6a-7d6c4fc86a17",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:26:21.269226Z",
+     "iopub.status.busy": "2026-08-06T10:26:21.268804Z",
+     "iopub.status.idle": "2026-08-06T10:26:25.588148Z",
+     "shell.execute_reply": "2026-08-06T10:26:25.586764Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "view = new_view('1TCD')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "36707908-6f8f-481f-8a8e-2b93e959e3a1",
+   "metadata": {
+    "editable": true,
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:26:25.592153Z",
+     "iopub.status.busy": "2026-08-06T10:26:25.591742Z",
+     "iopub.status.idle": "2026-08-06T10:26:25.598809Z",
+     "shell.execute_reply": "2026-08-06T10:26:25.597569Z"
+    },
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": [
+     "remove-output"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<molsysviewer.widget.MolSysViewerWidget object at 0x7a14fd902e40>"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "235db137-8336-43c0-b072-70c8ae042f3f",
+   "metadata": {
+    "editable": true,
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:26:25.601843Z",
+     "iopub.status.busy": "2026-08-06T10:26:25.601658Z",
+     "iopub.status.idle": "2026-08-06T10:26:25.607308Z",
+     "shell.execute_reply": "2026-08-06T10:26:25.606110Z"
+    },
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": [
+     "remove-input"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "\n",
+       "        <iframe\n",
+       "            width=\"100%\"\n",
+       "            height=\"480px\"\n",
+       "            src=\"../../../_static/views/demo_1TCD.html\"\n",
+       "            frameborder=\"0\"\n",
+       "            allowfullscreen\n",
+       "            \n",
+       "        ></iframe>\n",
+       "        "
+      ],
+      "text/plain": [
+       "<IPython.lib.display.IFrame at 0x7a153ea54050>"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from molsysviewer.thirds.jupyter import load_html_in_notebook\n",
+    "load_html_in_notebook('../../../_static/views/demo_1TCD.html')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "75732169-078c-4866-9aab-4c898617e534",
+   "metadata": {},
+   "source": [
+    "## Exporting the current view\n",
+    "\n",
+    "The method `export.html` writes an HTML file containing the interactive view:\n",
+    "\n",
+    "```python\n",
+    "view.export.html(\n",
+    "    output_filename=\"embedding_test.html\",\n",
+    "    title=\"Embedding Test\",\n",
+    ")\n",
+    "```\n",
+    "\n",
+    "- `output_filename` is the path of the HTML file to create.\n",
+    "- `title` is optional and sets the `<title>` of the HTML page.\n",
+    "\n",
+    "By default, the exported view includes the on-canvas control buttons (Reset, Fullscreen, background toggle, Spin, Swing) so that readers of your documentation can manipulate the scene.\n",
+    "\n",
+    "After the file is written, you can open it directly with your browser (for example, by double-clicking on it in your file manager or serving it from a simple web server)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "371d7324",
+   "metadata": {},
+   "source": [
+    "## Shared or self-contained?\n",
+    "\n",
+    "One argument decides the shape of the output.\n",
+    "\n",
+    "|  | no `shared_runtime` (default) | `shared_runtime=\"<dir>\"` |\n",
+    "|---|---|---|\n",
+    "| Runtime | inside every file | shared, one copy for all views |\n",
+    "| File size | several MB each | small |\n",
+    "| Opens by double click | yes | no — must be served |\n",
+    "| Works with no network | yes | yes |\n",
+    "| Best for | a single file you send to someone | a site with more than one view |\n",
+    "\n",
+    "```python\n",
+    "view.export.html(\"report.html\")                                  # self-contained\n",
+    "view.export.html(\"docs-embed.html\", shared_runtime=\"docs/_static\")  # shared\n",
+    "```\n",
+    "\n",
+    "The shared copy is the runtime installed with your MolSysViewer, placed in that\n",
+    "directory — version-exact with the scene, and working offline once the site is\n",
+    "served. A browser will not let a page opened straight from a disk load the file\n",
+    "next to it, so use `python -m molsysviewer.preview docs/_build/html` while\n",
+    "you work. `\"cdn\"` and an explicit list of URLs are the two further values; see\n",
+    "{doc}`sphinx_html_embedding` for the full workflow.\n",
+    "\n",
+    "## Full signature\n",
+    "\n",
+    "```python\n",
+    "view.export.html(\n",
+    "    output_filename,           # path to write\n",
+    "    title=\"MolSysViewer\",      # HTML <title> tag\n",
+    "    include_controls=True,     # on-canvas control buttons\n",
+    "    include_popout=True,       # popout-window button\n",
+    "    shared_runtime=None,       # None, a directory, \"cdn\", or a list of URLs\n",
+    "    inline_messages=True,      # shared only: embed messages inline vs external JSON\n",
+    "    background=\"auto\",         # \"auto\", \"transparent\", \"white\" or \"dark\"\n",
+    ")\n",
+    "```"
+   ]
+  },
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "id": "7e7c2e4a-4d4a-4c3f-a5d8-3f4a7a0f8d9a",
+   "metadata": {},
+   "source": [
+    "## Exporting without displaying the widget\n",
+    "\n",
+    "You do not need to call `show()` in order to export the view. This is useful when you are generating views from a script or a non-interactive environment:\n",
+    "\n",
+    "```python\n",
+    "from molsysviewer import new_view\n",
+    "\n",
+    "view = new_view(\"1TCD\")\n",
+    "# Optionally perform additional operations here (load more systems, change visibility, etc.)\n",
+    "view.export.html(\"my_view.html\", title=\"My MolSysViewer scene\")\n",
+    "```\n",
+    "\n",
+    "The resulting `my_view.html` file is again a standalone HTML page that you can open in any modern browser."
+   ]
+  },
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "id": "f1f6a97a-6a4c-4f4b-8df7-1e0d2f658a1e",
+   "metadata": {},
+   "source": [
+    "## Hiding the built-in controls\n",
+    "\n",
+    "If you prefer a minimal viewer (for example, when embedding it inside a larger application that already provides its own UI), you can disable the MolSysViewer control buttons in the exported HTML:\n",
+    "\n",
+    "```python\n",
+    "view.export.html(\n",
+    "    \"my_view_no_toolbar.html\",\n",
+    "    title=\"My MolSysViewer scene\",\n",
+    "    include_controls=False,\n",
+    ")\n",
+    "```\n",
+    "\n",
+    "Setting `include_controls=False` hides the on-canvas toolbar (Reset, Fullscreen, background toggle, Spin, Swing) in the generated HTML, while keeping the scene itself fully interactive."
+   ]
+  },
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "id": "b7fa9f6c-6b5f-4c5e-835f-f22c1cce4bf5",
+   "metadata": {
+    "editable": true,
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": []
+   },
+   "source": [
+    "## Embedding in other documentation systems\n",
+    "\n",
+    "An exported view is an ordinary HTML file, so you can reuse it anywhere:\n",
+    "\n",
+    "- link to it from your documentation,\n",
+    "- serve it from a static web server,\n",
+    "- embed it in another page with an `<iframe>`.\n",
+    "\n",
+    "A file exported without `shared_runtime` carries everything it needs and opens\n",
+    "with a double click. One exported with it is accompanied by a single shared\n",
+    "runtime asset, which is what makes it small enough for a site with many views —\n",
+    "and which has to be reached over HTTP, so serve it.\n",
+    "\n",
+    "{doc}`sphinx_html_embedding` covers the whole workflow — where the runtime comes\n",
+    "from, how to share one copy between views, and how to embed the result in Sphinx,\n",
+    "MkDocs, Quarto or plain HTML."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "59e3d4ee-b001-474d-8131-19d299b669fe",
+   "metadata": {
+    "editable": true,
+    "execution": {
+     "iopub.execute_input": "2026-08-06T10:26:25.611478Z",
+     "iopub.status.busy": "2026-08-06T10:26:25.611261Z",
+     "iopub.status.idle": "2026-08-06T10:26:26.259000Z",
+     "shell.execute_reply": "2026-08-06T10:26:26.256714Z"
+    },
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": [
+     "remove-input",
+     "remove-output"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "!rm -f my_view.html my_view_no_toolbar.html embedding_test.html viewer.js"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.13.14"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

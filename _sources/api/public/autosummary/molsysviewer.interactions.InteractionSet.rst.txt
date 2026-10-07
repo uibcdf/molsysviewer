@@ -1,0 +1,44 @@
+﻿molsysviewer.interactions.InteractionSet
+========================================
+
+.. currentmodule:: molsysviewer.interactions
+
+.. autoclass:: InteractionSet
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~InteractionSet.__init__
+      ~InteractionSet.delete
+      ~InteractionSet.focus
+      ~InteractionSet.hide
+      ~InteractionSet.set_alpha
+      ~InteractionSet.set_color
+      ~InteractionSet.set_filter
+      ~InteractionSet.set_layer_tag
+      ~InteractionSet.set_radius
+      ~InteractionSet.set_tag
+      ~InteractionSet.show
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~InteractionSet.annotations
+      ~InteractionSet.interactions
+      ~InteractionSet.measurements
+      ~InteractionSet.members
+      ~InteractionSet.owner
+      ~InteractionSet.regions
+      ~InteractionSet.shapes
+   
+   

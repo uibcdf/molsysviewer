@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.focus\_region
+=====================================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.focus_region

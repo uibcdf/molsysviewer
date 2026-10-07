@@ -1,0 +1,6 @@
+﻿molsysviewer.new\_view
+======================
+
+.. currentmodule:: molsysviewer
+
+.. autofunction:: new_view

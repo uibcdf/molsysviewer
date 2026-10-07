@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.info
+============================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.info

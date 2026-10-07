@@ -1,0 +1,43 @@
+﻿molsysviewer.annotations.AnnotationsManager
+===========================================
+
+.. currentmodule:: molsysviewer.annotations
+
+.. autoclass:: AnnotationsManager
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~AnnotationsManager.__init__
+      ~AnnotationsManager.add
+      ~AnnotationsManager.add_label
+      ~AnnotationsManager.add_label_from_active_selection
+      ~AnnotationsManager.clear
+      ~AnnotationsManager.contains
+      ~AnnotationsManager.count
+      ~AnnotationsManager.delete
+      ~AnnotationsManager.get
+      ~AnnotationsManager.hide
+      ~AnnotationsManager.hide_all
+      ~AnnotationsManager.info
+      ~AnnotationsManager.records
+      ~AnnotationsManager.set_anchor
+      ~AnnotationsManager.set_group_index
+      ~AnnotationsManager.set_layer_tag
+      ~AnnotationsManager.set_style
+      ~AnnotationsManager.set_tag
+      ~AnnotationsManager.set_text
+      ~AnnotationsManager.show
+      ~AnnotationsManager.show_all
+      ~AnnotationsManager.tags
+   
+   
+
+   
+   
+   

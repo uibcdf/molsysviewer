@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.export\_state
+=====================================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.export_state

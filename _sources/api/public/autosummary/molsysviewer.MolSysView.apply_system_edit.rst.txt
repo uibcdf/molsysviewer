@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.apply\_system\_edit
+===========================================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.apply_system_edit

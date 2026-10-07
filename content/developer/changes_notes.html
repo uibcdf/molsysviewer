@@ -1,0 +1,687 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../../_static/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
+    <link href="../../_static/favicon-124x124.png" sizes="124x124" rel="icon" type="image/png">
+    <link href="../../_static/favicon-128x128.png" sizes="128x128" rel="icon" type="image/png">
+    <link href="../../_static/favicon-192x192.png" sizes="192x192" rel="icon" type="image/png">
+    <link href="../../_static/icon.svg" rel="icon" type="image/svg+xml">
+  
+    <title>Changes notes – MolSysViewer 0.24.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6b6fcda3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6b6fcda3" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
+
+    <script src="../../_static/documentation_options.js?v=a9084e48"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/developer/changes_notes';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Future (index)" href="future/index.html" />
+    <link rel="prev" title="Roadmap" href="roadmap.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.24.0" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.24.0 documentation - Home"/>
+    <img src="../../_static/logo_dark.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.24.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro/contributing.html">Contributing (quick start)</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="dev_setup.html">Developer setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="repo_structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration (Python)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="demo_systems.html">Demo systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ci.html">CI and automation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">MolSysViewer Concepts (Python ↔ AnyWidget ↔ Mol* ↔ WebGL)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="public_api.html">Public API and stability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol_and_payloads.html">Protocol and payloads (Python ↔ TypeScript)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="units_and_quantities.html">Units and quantities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="standalone_surfaces.html">Standalone surfaces and the Qt live model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_full.html">Architecture (full)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="addons.html">Add-ons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="regions_layers.html">Regions and layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Workflow</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="js_workflow.html">JS/TS workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Testing &amp; QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="warnings.html">Warnings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smonitor.html">SMonitor integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasing.html">Releasing and publishing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_and_citation.html">Citation and Zenodo releases</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs_workflow.html">Docs workflow (local build and RTD parity)</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="documentation/web/index.html">Documentation for the web</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/editorial_guidelines.html">Web documentation editorial guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/build_and_layout.html">Web docs build &amp; layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/myst.html">MyST in MolSysViewer documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/references.html">References and Cross-links in Documentation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="documentation/api/index.html">API documentation guidelines</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="documentation/api/docstrings.html">Docstrings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/api/doctests.html">Doctests</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Style</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="style.html">Coding style &amp; conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="type_annotations_guidelines.html">Type annotations (Python ≥3.10)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="string_style.html">String and quotation style</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Planning and history</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Changes notes</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="future/index.html">Future (index)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="future/ci.html">CI roadmap (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/performance.html">Performance notes (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/security.html">Security (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/molsysview_molsysmt_ops.html">MolSysView ↔ MolSysMT operations</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_snapshot_2026_01.html">Architecture snapshot (2026-01)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_snapshot_2025_11.html">Architecture snapshot (2025-11)</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="appendix/index.html">Appendix</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="appendix/historical/index.html">Historical documents</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="architecture_snapshot_2025_11.html">Architecture snapshot (2025-11)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="design_overview.html">Design overview (historical)</a></li>
+
+
+
+
+
+
+
+
+
+<li class="toctree-l3"><a class="reference internal" href="modules_overview.html">Modules overview (snapshot)</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Developer guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Changes notes</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="changes-notes">
+<h1>Changes notes<a class="headerlink" href="#changes-notes" title="Link to this heading">#</a></h1>
+<p>This page tracks major architectural and documentation milestones.</p>
+<ul class="simple">
+<li><p>2026-09-30: Annotation creation uses only <code class="docutils literal notranslate"><span class="pre">view.annotations.add</span></code>. Every ordinary public function, including exported class methods, exposes ArgDigest and <code class="docutils literal notranslate"><span class="pre">skip_digestion=False</span></code>. Molecular queries validate request flags using public MolSysMT metadata and preserve its public aliases. Scene review fixes protect coordinate reconciliation, transfer fidelity, handle lifetimes, detached queries, lifecycle writes, redo and Interactions inspection (<code class="docutils literal notranslate"><span class="pre">uibcdf/molsysviewer#118</span></code>–<code class="docutils literal notranslate"><span class="pre">#125</span></code>).</p></li>
+<li><p>2026-09-04: <strong>0.22 — the viewer stops answering about the molecular system.</strong> <code class="docutils literal notranslate"><span class="pre">view.{get,</span> <span class="pre">select,</span> <span class="pre">convert,</span> <span class="pre">contains,</span> <span class="pre">is_composed_of}</span></code> removed; the whole and regions answer instead, and <code class="docutils literal notranslate"><span class="pre">convert</span></code> was added to both. <code class="docutils literal notranslate"><span class="pre">info</span></code> split so each object describes one subject: <code class="docutils literal notranslate"><span class="pre">view.info()</span></code> is the scene, <code class="docutils literal notranslate"><span class="pre">whole.info()</span></code> and <code class="docutils literal notranslate"><span class="pre">region.info()</span></code> are the system. The cross-cutting atom-visibility mask is gone — <code class="docutils literal notranslate"><span class="pre">view.{hide,</span> <span class="pre">isolate}</span></code>, <code class="docutils literal notranslate"><span class="pre">view.show(selection)</span></code>, <code class="docutils literal notranslate"><span class="pre">atom_mask</span></code>, <code class="docutils literal notranslate"><span class="pre">visible_atom_indices</span></code> and the <code class="docutils literal notranslate"><span class="pre">update_visibility</span></code> wire protocol with its deltas, versioning and resync handler, in Python and TypeScript; <code class="docutils literal notranslate"><span class="pre">viewer.js</span></code> rebuilt. Visibility belongs to the whole and to regions, which a saved scene carries and the mask never did. Digestion of the surviving wrappers is delegated to MolSysMT — measured identical over its 118 attributes — which fixed <code class="docutils literal notranslate"><span class="pre">region.get</span></code> refusing 77 of them, and retired 99 copied digesters and both normalization modules. Migration table: <code class="docutils literal notranslate"><span class="pre">docs/content/user/introduction/migrating_to_0_22.md</span></code>. Proposal <code class="docutils literal notranslate"><span class="pre">uibcdf/molsysviewer#71</span></code>, execution <code class="docutils literal notranslate"><span class="pre">#75</span></code>.</p></li>
+<li><p>2025-11-18: Initial developer docs structure created.</p></li>
+<li><p>2025-11-21: Shapes and loaders refactor; API simplified.</p></li>
+<li><p>2025-12-07: Popup sync, regions/layers/whole, and trajectory controls stabilized.</p></li>
+<li><p>2026-01-XX: Developer documentation consolidated under <code class="docutils literal notranslate"><span class="pre">docs/content/developer/</span></code>.</p></li>
+<li><p>2026-04-20: Annotations API hardened: <code class="docutils literal notranslate"><span class="pre">add_annotation(selection=...)</span></code> replaces <code class="docutils literal notranslate"><span class="pre">add_label(group_index=...)</span></code> as primary entry point; <code class="docutils literal notranslate"><span class="pre">set_anchor(tag,</span> <span class="pre">selection=...)</span></code> replaces <code class="docutils literal notranslate"><span class="pre">set_group_index</span></code>; both deprecated forms kept with <code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code>. <code class="docutils literal notranslate"><span class="pre">selections.add(tag,</span> <span class="pre">*,</span> <span class="pre">atom_indices)</span></code> added as direct-index shortcut. All pre-existing test failures fixed and test suite aligned with current module layout (<code class="docutils literal notranslate"><span class="pre">viewer/core.py</span></code>).</p></li>
+<li><p>2026-04-20: Annotation label visual knobs: <code class="docutils literal notranslate"><span class="pre">add_annotation(...,</span> <span class="pre">label_style={...})</span></code> accepts <code class="docutils literal notranslate"><span class="pre">color</span></code>, <code class="docutils literal notranslate"><span class="pre">size_em</span></code>, <code class="docutils literal notranslate"><span class="pre">background</span></code>, <code class="docutils literal notranslate"><span class="pre">background_opacity</span></code>; forwarded via <code class="docutils literal notranslate"><span class="pre">LabelStyle</span></code> TS type to Mol* <code class="docutils literal notranslate"><span class="pre">addLabel</span></code> as <code class="docutils literal notranslate"><span class="pre">visualParams</span></code>. Layer-level visibility wired and fixed for shared <code class="docutils literal notranslate"><span class="pre">layer_tag</span></code> groups (<code class="docutils literal notranslate"><span class="pre">layerTagIndex</span></code> map in <code class="docutils literal notranslate"><span class="pre">AnnotationHandlers</span></code>). Canvas pickability implemented: <code class="docutils literal notranslate"><span class="pre">tooltip:</span> <span class="pre">tag</span></code> passed in <code class="docutils literal notranslate"><span class="pre">visualParams</span></code> enables <code class="docutils literal notranslate"><span class="pre">pickable:</span> <span class="pre">true</span></code> in Mol*’s <code class="docutils literal notranslate"><span class="pre">StructureSelectionsLabel3D</span></code>; hover/click events on labels are detected via <code class="docutils literal notranslate"><span class="pre">ev.current.repr.props.tooltip</span></code> and emitted as <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">kind:</span> <span class="pre">&quot;annotation&quot;,</span> <span class="pre">tag,</span> <span class="pre">text,</span> <span class="pre">atom_indices</span> <span class="pre">}</span></code> instead of the underlying atom loci. <code class="docutils literal notranslate"><span class="pre">registerInteractionObservers</span></code> extended with optional <code class="docutils literal notranslate"><span class="pre">notifyHover</span></code>/<code class="docutils literal notranslate"><span class="pre">notifyClick</span></code> override callbacks.</p></li>
+<li><p>2026-04-20: State serialization: <code class="docutils literal notranslate"><span class="pre">viewer.export_state()</span></code> → JSON-serializable dict (annotations, measurements, selections, regions with atom_indices); <code class="docutils literal notranslate"><span class="pre">viewer.import_state(state,</span> <span class="pre">clear_first=True)</span></code> replays all on a viewer with compatible structure. numpy int/float types auto-converted. 11 new tests.</p></li>
+<li><p>2026-04-20: Measurement style &amp; pickability: <code class="docutils literal notranslate"><span class="pre">add_distance/angle/dihedral(...,</span> <span class="pre">measurement_style={...})</span></code> accepts <code class="docutils literal notranslate"><span class="pre">color</span></code>, <code class="docutils literal notranslate"><span class="pre">size_em</span></code>, <code class="docutils literal notranslate"><span class="pre">background</span></code>, <code class="docutils literal notranslate"><span class="pre">background_opacity</span></code>. Measurements now receive <code class="docutils literal notranslate"><span class="pre">tooltip:</span> <span class="pre">tag</span></code> in <code class="docutils literal notranslate"><span class="pre">visualParams</span></code> enabling canvas pickability (same mechanism as annotations); hover/click on measurement visuals emits <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">kind:</span> <span class="pre">&quot;measurement&quot;,</span> <span class="pre">tag,</span> <span class="pre">atom_indices,</span> <span class="pre">measurement_name</span> <span class="pre">}</span></code>. <code class="docutils literal notranslate"><span class="pre">layer_tag</span></code> grouping added to <code class="docutils literal notranslate"><span class="pre">MeasurementHandlers</span></code> via <code class="docutils literal notranslate"><span class="pre">layerTagIndex</span></code> map. Python event callbacks added: <code class="docutils literal notranslate"><span class="pre">viewer.on_hover(fn)</span></code>, <code class="docutils literal notranslate"><span class="pre">viewer.on_click(fn)</span></code>, <code class="docutils literal notranslate"><span class="pre">viewer.on_context(fn)</span></code> / <code class="docutils literal notranslate"><span class="pre">off_*</span></code> for reactive (non-polling) interaction handling.</p></li>
+<li><p>2026-04-20: Bloque Q — E2E and unit test coverage for annotations + measurements + pickability: <code class="docutils literal notranslate"><span class="pre">resolveTooltipPayload</span></code> extracted as testable pure function (5 new unit tests); <code class="docutils literal notranslate"><span class="pre">annotations-interaction.e2e.ts</span></code> E2E (5 scenarios: add_label with style, layer visibility toggle, annotation registry, measurement_style, tooltip resolution). JS unit tests now 90 total; E2E suite adds <code class="docutils literal notranslate"><span class="pre">test:e2e:annotations</span></code> script.</p></li>
+<li><p>2026-04-20: Annotation structure-awareness (Bloque T): annotations follow atoms across structures automatically via Mol*’s <code class="docutils literal notranslate"><span class="pre">MultiStructureSelectionFromBundle</span></code> with <code class="docutils literal notranslate"><span class="pre">isTransitive:</span> <span class="pre">true</span></code>. No additional code required; the <code class="docutils literal notranslate"><span class="pre">StructureElement.Loci</span></code> → serialized bundle approach re-evaluates topologically when the model index changes.</p></li>
+<li><p>2026-04-20: Structure-aware shapes: <code class="docutils literal notranslate"><span class="pre">add_sphere(structure_centers=...)</span></code>, <code class="docutils literal notranslate"><span class="pre">add_triangle_faces(structure_vertices=...)</span></code>, <code class="docutils literal notranslate"><span class="pre">add_links(structure_coordinate_pairs=...)</span></code>, <code class="docutils literal notranslate"><span class="pre">add_channel_tube(structure_centers=...)</span></code> accept per-structure coordinate arrays in Angstroms; <code class="docutils literal notranslate"><span class="pre">add_hbonds(structures=[None,</span> <span class="pre">[[d,a],...],</span> <span class="pre">...])</span></code> accepts per-structure atom-index pairs — JS looks up current-structure coordinates automatically, storing only topology. <code class="docutils literal notranslate"><span class="pre">ShapeHandlers</span></code> subscribes to structure changes via <code class="docutils literal notranslate"><span class="pre">onTrajectoryState</span></code> and clears+rebuilds affected shapes on each structure change. A <code class="docutils literal notranslate"><span class="pre">None</span></code> entry in a structure slot hides the shape on that structure. Wire key renamed <code class="docutils literal notranslate"><span class="pre">structures_coords</span></code> / <code class="docutils literal notranslate"><span class="pre">structures_atom_pairs</span></code>. <code class="docutils literal notranslate"><span class="pre">&#64;signal(tags=[&quot;trajectory&quot;])</span></code> renamed to <code class="docutils literal notranslate"><span class="pre">[&quot;structures&quot;]</span></code> throughout public API.</p></li>
+<li><p>2026-04-21: Test coverage expansion (sections 1, 2, 3, 8): <code class="docutils literal notranslate"><span class="pre">shape-handler.test.ts</span></code> +11 JS unit tests (structures_coords storage for all 5 trajectory-shape families, frame subscription lifecycle, concurrent guard); <code class="docutils literal notranslate"><span class="pre">tests/test_protocol_contracts.py</span></code> +12 Python tests (reset_viewer/clear_all, clear_decorations/clear_scene flags, annotation/measurement layer retag history rewrite, set_global_representation replay after rebuild); <code class="docutils literal notranslate"><span class="pre">tests/test_rebuild_visibility.py</span></code> +5 Python tests (hidden-region stickiness post-rebuild + global show/hide cycle, annotation retag survival, selection index remapping, style replay across two rebuilds). JS suite now 101 tests, all passing.</p></li>
+<li><p>2026-04-21: Context menu region actions (section 6.6): “Create Region from Selection” now opens an inline tag composer (optional tag, same pattern as Save Selection) instead of auto-creating immediately; region rows in context menu gain eye-icon toggle (hide/show) and trash-icon delete buttons; new <code class="docutils literal notranslate"><span class="pre">ContextMenuAction</span></code> types <code class="docutils literal notranslate"><span class="pre">toggle_region_visibility</span></code> and <code class="docutils literal notranslate"><span class="pre">delete_region</span></code> wired through JS controller to Python handlers (<code class="docutils literal notranslate"><span class="pre">region.hide()</span></code> / <code class="docutils literal notranslate"><span class="pre">region.show()</span></code> / <code class="docutils literal notranslate"><span class="pre">region.delete()</span></code>); <code class="docutils literal notranslate"><span class="pre">new_region_from_active_selection</span></code> now receives the user-supplied tag from the composer. 90/90 JS unit tests passing.</p></li>
+<li><p>2026-04-21: Canvas UX modes implemented: <code class="docutils literal notranslate"><span class="pre">controls_mode=&quot;minimal&quot;</span></code> adds a 3-icon SVG cluster (panel/fullscreen/popup) + <code class="docutils literal notranslate"><span class="pre">?</span></code> help button in <code class="docutils literal notranslate"><span class="pre">controls.ts</span></code>; <code class="docutils literal notranslate"><span class="pre">HelpOverlay</span></code> shows a two-column cheat-sheet (Mouse | Keyboard) on <code class="docutils literal notranslate"><span class="pre">H</span></code> key or button click; <code class="docutils literal notranslate"><span class="pre">N</span></code>/<code class="docutils literal notranslate"><span class="pre">W</span></code> keyboard shortcuts toggle Navigate/Workbench panels; empty-canvas context menu gains Reset View, Toggle Background, Toggle Spin, Toggle Swing. <code class="docutils literal notranslate"><span class="pre">panel_mode_style=&quot;floating&quot;</span></code> adds a centered overlay shell (<code class="docutils literal notranslate"><span class="pre">FloatingPanelShell</span></code> in <code class="docutils literal notranslate"><span class="pre">ui/floating-panel-shell.ts</span></code>): <code class="docutils literal notranslate"><span class="pre">~72%</span> <span class="pre">×</span> <span class="pre">68%</span></code> of canvas, rounded card, backdrop-click-to-close, zero viewport shift; <code class="docutils literal notranslate"><span class="pre">GroupPanel</span></code> and <code class="docutils literal notranslate"><span class="pre">WorkbenchPanel</span></code> accept <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">floating:</span> <span class="pre">true</span> <span class="pre">}</span></code> to use the new shell; <code class="docutils literal notranslate"><span class="pre">MolSysViewerController.create()</span></code> accepts <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">panelModeStyle</span> <span class="pre">}</span></code> option threaded from <code class="docutils literal notranslate"><span class="pre">model.get(&quot;panel_mode_style&quot;)</span></code>; Python trait <code class="docutils literal notranslate"><span class="pre">panel_mode_style</span></code> added to <code class="docutils literal notranslate"><span class="pre">widget.py</span></code>, <code class="docutils literal notranslate"><span class="pre">config/__init__.py</span></code>, <code class="docutils literal notranslate"><span class="pre">viewer/core.py</span></code>. Both <code class="docutils literal notranslate"><span class="pre">&quot;classic&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;drawer&quot;</span></code> remain defaults; experimental modes activated by explicit constructor argument. 90/90 JS unit tests passing.</p></li>
+<li><p>2026-04-20: Devguide consolidated: <code class="docutils literal notranslate"><span class="pre">roadmap.md</span></code> updated to reflect all completed annotation/measurement/shape objectives; new section 5.5 records canvas minimal UX gap and transition strategy. <code class="docutils literal notranslate"><span class="pre">devguide/annotations.md</span></code> updated — Objectives A/B/C all marked ✓ with implementation details; pending section lists only genuinely deferred items. <code class="docutils literal notranslate"><span class="pre">devguide/canvas_panel_transition.md</span></code> created: documents coexistence strategy for drawer vs. floating panel and classic vs. minimal controls surface, configuration seam (<code class="docutils literal notranslate"><span class="pre">controls_mode</span></code>, <code class="docutils literal notranslate"><span class="pre">panel_mode_style</span></code>), prerequisites before switching defaults, and closing criteria at <code class="docutils literal notranslate"><span class="pre">0.16.x</span> <span class="pre">→</span> <span class="pre">0.17.x</span></code> boundary. <code class="docutils literal notranslate"><span class="pre">docs/content/developer/public_api.md</span></code> updated: added full <code class="docutils literal notranslate"><span class="pre">view.measurements</span></code> management API, <code class="docutils literal notranslate"><span class="pre">measurement_style</span></code> parameter, Python event callbacks (<code class="docutils literal notranslate"><span class="pre">on_hover/click/context</span></code>), state serialization (<code class="docutils literal notranslate"><span class="pre">export_state</span></code>/<code class="docutils literal notranslate"><span class="pre">import_state</span></code>), structure controls (<code class="docutils literal notranslate"><span class="pre">set_structure</span></code>, <code class="docutils literal notranslate"><span class="pre">play</span></code>, <code class="docutils literal notranslate"><span class="pre">pause</span></code>, <code class="docutils literal notranslate"><span class="pre">set_play_speed</span></code>), and structure-aware shape parameters.</p></li>
+<li><p>2026-04-26: Context menu richer flows (Option A): label style from context menu — color picker + size slider injected into <code class="docutils literal notranslate"><span class="pre">add_label_from_active_selection</span></code>; multi-group labels from context menu no longer restricted to single-group selections; region rename via inline pencil → tag composer → <code class="docutils literal notranslate"><span class="pre">RenameRegionMessage</span></code> TS → <code class="docutils literal notranslate"><span class="pre">Region.rename(new_tag)</span></code> Python, which updates JS <code class="docutils literal notranslate"><span class="pre">regionIndex</span></code> and Python <code class="docutils literal notranslate"><span class="pre">_regions</span></code> dict simultaneously; <code class="docutils literal notranslate"><span class="pre">ContextActionDetails</span></code> extended with <code class="docutils literal notranslate"><span class="pre">label_style</span></code> and <code class="docutils literal notranslate"><span class="pre">new_tag</span></code> fields; Back-nav fixed on all multi-step composer flows. JS unit tests extended to cover the new context action paths.</p></li>
+<li><p>2026-04-26: Export replay correctness for region rename (Option B): <code class="docutils literal notranslate"><span class="pre">HistoryMixin._record_shape_message</span></code> extended to handle <code class="docutils literal notranslate"><span class="pre">rename_region</span></code> — rewrites all prior <code class="docutils literal notranslate"><span class="pre">create_region</span></code> / <code class="docutils literal notranslate"><span class="pre">set_region_representation</span></code> / <code class="docutils literal notranslate"><span class="pre">show_region</span></code> / <code class="docutils literal notranslate"><span class="pre">hide_region</span></code> / <code class="docutils literal notranslate"><span class="pre">delete_region</span></code> entries in <code class="docutils literal notranslate"><span class="pre">_message_history</span></code> to use the new tag, then drops the <code class="docutils literal notranslate"><span class="pre">rename_region</span></code> message itself, so <code class="docutils literal notranslate"><span class="pre">_build_export_messages()</span></code> / HTML export emit the final tag from the start with no rename step. Four new tests in <code class="docutils literal notranslate"><span class="pre">tests/test_reproducible_interaction.py</span></code>: context rename updates export, label_style stored in annotation records, multi-group label from context action, and a full scientific workflow (create region → rename → multi-group styled label → distance measurement → export verification).</p></li>
+<li><p>2026-04-26: Test suite alignment: fixed 13 pre-existing failures across shapes, addons, and loaders. Shape DummyView stubs were missing <code class="docutils literal notranslate"><span class="pre">_next_shape_tag()</span></code>; expected coordinate/radius values updated from nm to Å (×10) after wire-format change. <code class="docutils literal notranslate"><span class="pre">add_spheres</span></code> plural API replaced by <code class="docutils literal notranslate"><span class="pre">add_sphere</span></code> batch (2D center array) in <code class="docutils literal notranslate"><span class="pre">test_shapes.py</span></code> and <code class="docutils literal notranslate"><span class="pre">test_argdigest_public_api.py</span></code>. <code class="docutils literal notranslate"><span class="pre">importlib.machinery.ModuleSpec</span></code> import corrected in <code class="docutils literal notranslate"><span class="pre">test_addons.py</span></code>. <code class="docutils literal notranslate"><span class="pre">get_n_atoms()</span></code> added to <code class="docutils literal notranslate"><span class="pre">DummyMolSys</span></code> stubs in <code class="docutils literal notranslate"><span class="pre">test_load_from_molsysmt.py</span></code>. <code class="docutils literal notranslate"><span class="pre">set_addon_runtime_summary</span></code> filtered from assertions in <code class="docutils literal notranslate"><span class="pre">test_build_html_state.py</span></code>.</p></li>
+<li><p>2026-04-26: Docs parity: <code class="docutils literal notranslate"><span class="pre">docs/content/user/overlays/labels.md</span></code> rewritten — <code class="docutils literal notranslate"><span class="pre">add_annotation()</span></code> as primary API, <code class="docutils literal notranslate"><span class="pre">label_style</span></code> dict, multi-group anchors, <code class="docutils literal notranslate"><span class="pre">add_label_from_active_selection(label_style=...)</span></code>, <code class="docutils literal notranslate"><span class="pre">set_text</span></code>/<code class="docutils literal notranslate"><span class="pre">set_anchor</span></code>, <code class="docutils literal notranslate"><span class="pre">annotations.info()</span></code>, layer cleanup. <code class="docutils literal notranslate"><span class="pre">docs/content/user/scene_management/regions.md</span></code> gains “Rename a region” section. <code class="docutils literal notranslate"><span class="pre">docs/content/developer/public_api.md</span></code> updated with <code class="docutils literal notranslate"><span class="pre">region.rename()</span></code>, <code class="docutils literal notranslate"><span class="pre">label_style</span></code> on <code class="docutils literal notranslate"><span class="pre">add_label_from_active_selection</span></code>, and Canvas UX modes section. <code class="docutils literal notranslate"><span class="pre">docs/content/user/viewer/panel_mode.md</span></code> gains “Experimental layout modes” section for <code class="docutils literal notranslate"><span class="pre">controls_mode</span></code> and <code class="docutils literal notranslate"><span class="pre">panel_mode_style</span></code>.</p></li>
+<li><p>2026-04-27: Interaction enrichment (roadmap item 6 — final gap): every structure-pick payload (<code class="docutils literal notranslate"><span class="pre">hover</span></code>, <code class="docutils literal notranslate"><span class="pre">click</span></code>, <code class="docutils literal notranslate"><span class="pre">context_menu</span></code>, <code class="docutils literal notranslate"><span class="pre">context_action</span></code>) now includes a <code class="docutils literal notranslate"><span class="pre">region_tags</span></code> field listing the names of all regions whose atom set contains the picked atom. <code class="docutils literal notranslate"><span class="pre">_enrich_interaction_payload</span></code> in <code class="docutils literal notranslate"><span class="pre">viewer/core.py</span></code> iterates <code class="docutils literal notranslate"><span class="pre">view.regions</span></code> and builds the tag list; 4 new Python tests in <code class="docutils literal notranslate"><span class="pre">test_interaction_events.py</span></code>.</p></li>
+<li><p>2026-04-27: Movie and video export (<code class="docutils literal notranslate"><span class="pre">view.movie</span></code> / <code class="docutils literal notranslate"><span class="pre">MolSysMovie</span></code>, roadmap item 7.5). <strong>Phase 1</strong> — Python data model: <code class="docutils literal notranslate"><span class="pre">MovieManager</span></code> as <code class="docutils literal notranslate"><span class="pre">view.movie</span></code>; <code class="docutils literal notranslate"><span class="pre">set_timeline(structure_indices,</span> <span class="pre">fps)</span></code>, <code class="docutils literal notranslate"><span class="pre">add_camera_keyframe</span></code>, <code class="docutils literal notranslate"><span class="pre">add_annotation_keyframe</span></code>, <code class="docutils literal notranslate"><span class="pre">clear</span></code>. <strong>Phase 2</strong> — JS animation engine: <code class="docutils literal notranslate"><span class="pre">MovieController</span></code> subscribes to the timeline via <code class="docutils literal notranslate"><span class="pre">SetMovieTimelineMessage</span></code> and steps through structures at the requested fps using <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame</span></code>; <code class="docutils literal notranslate"><span class="pre">PlayMovieMessage</span></code> / <code class="docutils literal notranslate"><span class="pre">PauseMovieMessage</span></code> / <code class="docutils literal notranslate"><span class="pre">StopMovieMessage</span></code> wired. <strong>Phase 3</strong> — export pipeline: frame capture via <code class="docutils literal notranslate"><span class="pre">CaptureFrameMessage</span></code> → base64 PNG → <code class="docutils literal notranslate"><span class="pre">imageio</span></code> stitch to GIF or MP4; <code class="docutils literal notranslate"><span class="pre">view.movie.export(path,</span> <span class="pre">format=&quot;gif&quot;|&quot;mp4&quot;)</span></code>. Full docs and cookbook recipes in <code class="docutils literal notranslate"><span class="pre">docs/content/user/movie/</span></code>. 6 new Python tests in <code class="docutils literal notranslate"><span class="pre">tests/test_movie.py</span></code>.</p></li>
+<li><p>2026-04-27: Bloque 4 (custom shape rendering) scope frozen: <code class="docutils literal notranslate"><span class="pre">add_displacement_vectors</span></code>, <code class="docutils literal notranslate"><span class="pre">add_links</span></code>, <code class="docutils literal notranslate"><span class="pre">add_channel_tube</span></code>, <code class="docutils literal notranslate"><span class="pre">add_triangle_faces</span></code>, <code class="docutils literal notranslate"><span class="pre">add_sphere</span></code> batch, <code class="docutils literal notranslate"><span class="pre">add_spheres</span></code>, <code class="docutils literal notranslate"><span class="pre">add_anisotropy_ellipsoids</span></code>, <code class="docutils literal notranslate"><span class="pre">add_pocket_blob</span></code>, <code class="docutils literal notranslate"><span class="pre">add_pocket_surface</span></code>, <code class="docutils literal notranslate"><span class="pre">add_pharmacophore</span></code> cover the scientific overlay surface needed for 1.0. Custom mesh/billboard/label-shape primitives deferred to post-1.0.</p></li>
+<li><p>2026-04-27: JS unit test suite and E2E coverage complete (roadmap item 8). JS unit suite: 109 tests across shape handlers, message contracts, structure-awareness, depth, panel mode, export replay, and popup live-sync. E2E suite: 9 Playwright scenario files covering region hide/show, annotations interaction, shape trajectory, export replay, and a full workflow integration scenario. All pass on the reference workstation with <code class="docutils literal notranslate"><span class="pre">PW_CHROMIUM_BIN=/usr/bin/google-chrome</span></code>.</p></li>
+<li><p>2026-04-28: <code class="docutils literal notranslate"><span class="pre">molsysviewer_molsysmt</span></code> addon expanded from 1 panel (system) to 10 panels: system, select, color, structure, transform, hbonds, topology, pbc, mechanics, build. <code class="docutils literal notranslate"><span class="pre">MolSysMTAddonRuntime</span></code> extended with ~20 per-panel state fields. <code class="docutils literal notranslate"><span class="pre">addon.py</span></code> now declares 8 context actions, 4 shape providers, 2 workbench sections, 1 export helper. Test suite: 9 → 34 tests, all passing (in <code class="docutils literal notranslate"><span class="pre">repos&#64;uibcdf/molsysmt</span></code>).</p></li>
+<li><p>2026-04-28: 5 provisional scientific tutorial notebooks added to <code class="docutils literal notranslate"><span class="pre">docs/content/user/cookbook/</span></code>: <code class="docutils literal notranslate"><span class="pre">tutorial_molsysmt_protein_inspection</span></code>, <code class="docutils literal notranslate"><span class="pre">tutorial_elasnetmt_anm_modes</span></code>, <code class="docutils literal notranslate"><span class="pre">tutorial_trajectory_analysis</span></code>, <code class="docutils literal notranslate"><span class="pre">tutorial_topomt_pocket</span></code>, <code class="docutils literal notranslate"><span class="pre">tutorial_pharmacophoremt_overlay</span></code>. Each notebook demonstrates a real scientific workflow using one of the four pre-1.0 addons.</p></li>
+<li><p>2026-04-28: Version reconciliation: <code class="docutils literal notranslate"><span class="pre">molsysviewer/js/package.json</span></code> bumped from stale <code class="docutils literal notranslate"><span class="pre">0.14.0</span></code> to <code class="docutils literal notranslate"><span class="pre">0.18.0</span></code>; git tag <code class="docutils literal notranslate"><span class="pre">0.18.0</span></code> created on the same commit. Python package version now reads <code class="docutils literal notranslate"><span class="pre">0.18.0</span></code> clean via <code class="docutils literal notranslate"><span class="pre">versioningit</span></code>.</p></li>
+<li><p>2026-04-28: Focus Styles API: <code class="docutils literal notranslate"><span class="pre">view.styles.focus(style_or_tag,</span> <span class="pre">*,</span> <span class="pre">selection,</span> <span class="pre">representation,</span> <span class="pre">**params)</span></code> creates named additive overlays over the current scene baseline without resetting it. <code class="docutils literal notranslate"><span class="pre">BUILTIN_FOCUS_STYLES</span></code> dict exposes four pre-built focus styles (<code class="docutils literal notranslate"><span class="pre">&quot;hydrophobicity&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;secondary-structure&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;chain-id&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;element-cpk&quot;</span></code>). <code class="docutils literal notranslate"><span class="pre">view.styles.clear_focus(tag=None)</span></code> removes one or all active overlays; <code class="docutils literal notranslate"><span class="pre">view.styles.focus_tags()</span></code> lists active overlay tags. <code class="docutils literal notranslate"><span class="pre">Style(kind=&quot;focus&quot;,</span> <span class="pre">representation=...)</span></code> is the corresponding data type. 16 new tests in <code class="docutils literal notranslate"><span class="pre">tests/test_styles.py</span></code>.</p></li>
+<li><p>2026-04-28: Geometry helpers: <code class="docutils literal notranslate"><span class="pre">view.show_orientation_axes(selection,</span> <span class="pre">*,</span> <span class="pre">tag,</span> <span class="pre">alpha)</span></code> and <code class="docutils literal notranslate"><span class="pre">view.show_best_fit_plane(selection,</span> <span class="pre">*,</span> <span class="pre">tag,</span> <span class="pre">alpha)</span></code> overlay Mol* orientation-ellipsoid and best-fit-plane representations on a selection. Both return a <code class="docutils literal notranslate"><span class="pre">Region</span></code> with the standard hide/show/delete lifecycle. The representation types <code class="docutils literal notranslate"><span class="pre">&quot;orientation&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;plane&quot;</span></code> are intentionally excluded from <code class="docutils literal notranslate"><span class="pre">ALLOWED_REPRESENTATIONS</span></code> (structural helpers only). 14 new tests in <code class="docutils literal notranslate"><span class="pre">tests/test_geometry_helpers.py</span></code>.</p></li>
+<li><p>2026-04-28: Project config convenience bridge: <code class="docutils literal notranslate"><span class="pre">view.load_project_config(path,</span> <span class="pre">apply_default=False)</span></code> loads styles (via <code class="docutils literal notranslate"><span class="pre">view.styles.load_project_config</span></code>) and add-on defaults (via <code class="docutils literal notranslate"><span class="pre">msv.addons.load_project_config</span></code>) in a single call. <code class="docutils literal notranslate"><span class="pre">ADDONS_ENABLED</span></code> and <code class="docutils literal notranslate"><span class="pre">ADDONS_DISABLED</span></code> documented in <code class="docutils literal notranslate"><span class="pre">docs/content/user/introduction/project_configuration.md</span></code>. <code class="docutils literal notranslate"><span class="pre">molsysviewer.config</span></code> module now exported at top level (<code class="docutils literal notranslate"><span class="pre">msv.config</span></code>).<code class="docutils literal notranslate"><span class="pre">Region._scoped_indices_for_element(&quot;bond&quot;)</span></code> implemented via <code class="docutils literal notranslate"><span class="pre">msm.get(...,</span> <span class="pre">bond_index=True)</span></code>; 2 new tests.</p></li>
+<li><p>2026-07-12: Scene manager API unified around callable <code class="docutils literal notranslate"><span class="pre">add/tags/count/records/info/contains/get/delete/clear/set_tag</span></code> operations. <code class="docutils literal notranslate"><span class="pre">view.layers</span></code> is now a live <code class="docutils literal notranslate"><span class="pre">LayersManager</span></code> dict subclass and <code class="docutils literal notranslate"><span class="pre">view.layers.add(...)</span></code> replaces <code class="docutils literal notranslate"><span class="pre">view.new_layer(...)</span></code>; annotation and selection <code class="docutils literal notranslate"><span class="pre">tags</span></code> are methods. Scene-object identity is domain-qualified as <code class="docutils literal notranslate"><span class="pre">(kind,</span> <span class="pre">tag)</span></code>, so different domains may safely share a tag. Undeclared <code class="docutils literal notranslate"><span class="pre">GroupLayer</span></code> and <code class="docutils literal notranslate"><span class="pre">add_gaussian_isosurface</span></code> aliases were removed.</p></li>
+<li><p>2026-07-14: The ElasNetMT add-on was renamed to <strong>ElastNetMT</strong>. The Python package is now <code class="docutils literal notranslate"><span class="pre">elastnetmt</span></code>, the MolSysViewer bridge module is <code class="docutils literal notranslate"><span class="pre">molsysviewer_elastnetmt</span></code>, and <code class="docutils literal notranslate"><span class="pre">KNOWN_ADDON_MODULES</span></code> discovers the new name only. Environments with the old package installed must reinstall it; the previous module name is no longer discovered.</p></li>
+<li><p>2026-07-15: Breaking scene-manager consistency fix: <code class="docutils literal notranslate"><span class="pre">info(tag)</span></code> now returns a <code class="docutils literal notranslate"><span class="pre">dict</span></code> for one tag across regions, shapes, annotations, measurements, and layers; shapes and measurements previously returned a one-element list. A missing tag raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> in all five managers; regions and layers previously leaked <code class="docutils literal notranslate"><span class="pre">KeyError</span></code>. Calling <code class="docutils literal notranslate"><span class="pre">info()</span></code> without a tag continues to return a list.</p></li>
+<li><p>2026-07-15: Layer summaries no longer expose <code class="docutils literal notranslate"><span class="pre">kind</span></code>: a layer can contain objects from several scene domains, so reporting the last attached member’s kind was misleading. The internal <code class="docutils literal notranslate"><span class="pre">Layer.kind</span></code> protocol/state field remains unchanged.</p></li>
+<li><p>2026-07-15: Scene-object creator attribution added. Add-ons can wrap public scene construction in <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">view.attributed_to(&quot;elastnetmt&quot;):</span></code>; layers, regions, shapes, annotations, measurements, and sections created inside expose an immutable <code class="docutils literal notranslate"><span class="pre">owner</span></code> property. The optional owner is shown in Studio summaries and survives state-v2 export/import. It is informational only and never restricts rename, movement, visibility, or deletion. Older v2 documents without <code class="docutils literal notranslate"><span class="pre">owner</span></code> restore objects as user-created (<code class="docutils literal notranslate"><span class="pre">owner=None</span></code>).</p></li>
+<li><p>2026-07-15: Studio &gt; Viewport now manages persisted clipping sections end to end: create at the active-selection center, show/hide, edit point and normal, invert, and delete. <code class="docutils literal notranslate"><span class="pre">Section.visible</span></code>, <code class="docutils literal notranslate"><span class="pre">show()</span></code>, <code class="docutils literal notranslate"><span class="pre">hide()</span></code>, and atomic <code class="docutils literal notranslate"><span class="pre">set_geometry()</span></code> keep state-v2 replay and scene undo coherent; section summaries are runtime-only and resent after frontend readiness. Section centers are calculated through <code class="docutils literal notranslate"><span class="pre">molsysmt.structure.get_center</span></code>, and point-edit payloads carry explicit units for Python conversion.</p></li>
+<li><p>2026-07-15: <code class="docutils literal notranslate"><span class="pre">MolSysView.close()</span></code> now releases the AnyWidget, its independently registered layout, active add-on panels, and non-Jupyter transports. <code class="docutils literal notranslate"><span class="pre">MolSysView</span></code> also supports context-manager cleanup. The test suite closes leftover MolSysViewer widgets after every test to prevent global ipywidgets registrations from retaining complete molecular systems between tests.</p></li>
+<li><p>2026-07-15: Public physical outputs now follow the standard units configured in PyUnitWizard. Length summaries and public geometry getters therefore use nanometers with the factory configuration and follow a user-selected standard instead of forcing angstroms.</p></li>
+<li><p>2026-07-17: Standalone Qt host error paths audited and closed (<code class="docutils literal notranslate"><span class="pre">devguide/audits/standalone_qt_audit_2026_07.md</span></code>, findings Q1–Q5). View-event exceptions are now reported instead of swallowed; the bridge bounds delivery retries (5 attempts, backoff, terminal failure reported) instead of stalling or looping forever; malformed frontend events are validated and rejected with a diagnostic instead of an <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> or a false <code class="docutils literal notranslate"><span class="pre">{&quot;ok&quot;:</span> <span class="pre">true}</span></code>; the documented delivery guarantee now matches the real policy; and shell-state persistence failures warn (distinguishing a corrupt saved session from an intentionally fresh one) instead of failing silently. Each fix is mutation-tested.</p></li>
+<li><p>2026-07-17: <code class="docutils literal notranslate"><span class="pre">path_to_1_0.md</span></code> and <code class="docutils literal notranslate"><span class="pre">roadmap.md</span></code> updated to reflect the post-<code class="docutils literal notranslate"><span class="pre">0.19.0</span></code> hardening: the scene-objects contract block (core runtime), the unit/lifecycle/sections/owner tightening, and the standalone Qt Q1–Q5 work that makes the roadmap’s “host-side error handling no longer silent” true in fact.</p></li>
+<li><p>2026-07-17: MolSysViewer no longer vendors its own molecular demo systems. <code class="docutils literal notranslate"><span class="pre">demo[...]</span></code> and the public <code class="docutils literal notranslate"><span class="pre">molsysviewer.systems</span></code> catalog now resolve every system through MolSysMT’s registry (<code class="docutils literal notranslate"><span class="pre">molsysmt.systems</span></code>), the ecosystem’s single source of truth, so the demos never drift out of sync with MolSysMT. The five bundled <code class="docutils literal notranslate"><span class="pre">.h5msm</span></code> files, the <code class="docutils literal notranslate"><span class="pre">molsysviewer/data/</span></code> tree, and its packaging entry were removed. Crystal demos (<code class="docutils literal notranslate"><span class="pre">181L</span></code>, <code class="docutils literal notranslate"><span class="pre">1TCD</span></code>) are resolved from the <code class="docutils literal notranslate"><span class="pre">.bcif.gz</span></code> form so their per-atom <code class="docutils literal notranslate"><span class="pre">b_factor</span></code>/<code class="docutils literal notranslate"><span class="pre">occupancy</span></code> are preserved <em>and</em> the chains match what <code class="docutils literal notranslate"><span class="pre">msm.convert('1TCD')</span></code>/<code class="docutils literal notranslate"><span class="pre">msm.convert('181L')</span></code> return — the previously bundled <code class="docutils literal notranslate"><span class="pre">.h5msm</span></code> copies had silently dropped b-factors (even MolSysMT’s own <code class="docutils literal notranslate"><span class="pre">1tcd.h5msm</span></code> lacks them), and the <code class="docutils literal notranslate"><span class="pre">.pdb</span></code> form, while it keeps b-factors, collapses the crystal chains (all waters land on the protein chain). Atom counts are unchanged for all five systems. New <code class="docutils literal notranslate"><span class="pre">tests/test_demo_systems.py</span></code> pins atom-count equivalence, crystal <code class="docutils literal notranslate"><span class="pre">b_factor</span></code> presence, and correct chain topology (mutation-verified). If a demo needs a system MolSysMT does not provide, it is requested from the MolSysMT team rather than vendored.</p></li>
+<li><p>2026-07-17: <code class="docutils literal notranslate"><span class="pre">Region.set_color_by_attribute()</span></code> / <code class="docutils literal notranslate"><span class="pre">Whole.set_color_by_attribute()</span></code> now distinguish a <em>recognized</em> attribute that carries no values in the loaded system (“has no values in the loaded system”) from an <em>unrecognized</em> one, instead of a single misleading “not available” message.</p></li>
+<li><p>2026-07-17: Per-atom colors (<code class="docutils literal notranslate"><span class="pre">set_color_by_attribute</span></code> / <code class="docutils literal notranslate"><span class="pre">set_color_by_values</span></code>) now actually render. The <code class="docutils literal notranslate"><span class="pre">msv-per-atom</span></code> color theme had two defects that made scalar coloring silently invisible: (1) it only handled <code class="docutils literal notranslate"><span class="pre">StructureElement.Location</span></code>, so every <code class="docutils literal notranslate"><span class="pre">Bond.Location</span></code> fell back to the base theme — which meant per-atom colors never showed on bond-drawing representations (ball-and-stick, licorice, line), while cartoon worked; and (2) it resolved the atom via <code class="docutils literal notranslate"><span class="pre">OrderedSet.getAt(unit.elements,</span> <span class="pre">location.element)</span></code>, treating a model-level <code class="docutils literal notranslate"><span class="pre">ElementIndex</span></code> as a position into the unit’s element array, so lookups only succeeded on the first unit and silently missed on every other chain. Both now follow the same convention as the sibling <code class="docutils literal notranslate"><span class="pre">physicochemical</span></code> theme. Three new JS tests cover the theme’s <code class="docutils literal notranslate"><span class="pre">color()</span></code> function (previously only the color map was tested, which is why the defects went unnoticed); each half of the fix is mutation-verified.</p></li>
+<li><p>2026-07-20: Python↔JS boundary audited systematically (<code class="docutils literal notranslate"><span class="pre">devguide/audits/python_js_boundary_audit_2026_07.md</span></code>), after the same defect shape appeared four times during dogfooding: a public argument accepted and validated by Python that something downstream then ignores in silence. Three scripted sweeps: arguments declared under <code class="docutils literal notranslate"><span class="pre">&#64;digest()</span></code> with no digester (26 found, each emitting <code class="docutils literal notranslate"><span class="pre">DigestNotDigestedWarning</span></code> on every call), ops emitted by Python that no frontend handler reads (1 real orphan, <code class="docutils literal notranslate"><span class="pre">dynamic_region_evaluation_warning</span></code>, out of 89 — the other five candidates were false positives from handler forms the naive sweep missed), and values Python accepts that the frontend does not know (no outstanding mismatch; this is the sweep that would have caught <code class="docutils literal notranslate"><span class="pre">ping-pong</span></code> vs <code class="docutils literal notranslate"><span class="pre">palindrome</span></code>). Sweeps 1 and 2 are cheap and deterministic and would have caught every instance found by hand.</p></li>
+<li><p>2026-07-20: Digesters added for six public arguments that had none: <code class="docutils literal notranslate"><span class="pre">region</span></code> (<code class="docutils literal notranslate"><span class="pre">focus_region</span></code>), <code class="docutils literal notranslate"><span class="pre">fade</span></code> (<code class="docutils literal notranslate"><span class="pre">focus_with_fade</span></code>), <code class="docutils literal notranslate"><span class="pre">meta</span></code> (<code class="docutils literal notranslate"><span class="pre">layers.add</span></code>), <code class="docutils literal notranslate"><span class="pre">layer</span></code> (<code class="docutils literal notranslate"><span class="pre">regions.set_layer</span></code>), <code class="docutils literal notranslate"><span class="pre">target</span></code> (<code class="docutils literal notranslate"><span class="pre">measurements.set_representative_atom</span></code>) and <code class="docutils literal notranslate"><span class="pre">transaction_id</span></code> (<code class="docutils literal notranslate"><span class="pre">partial_coordinates_update</span></code>). Each contract follows its call site: a region or layer accepts a tag or the object itself, <code class="docutils literal notranslate"><span class="pre">fade</span></code> is a transparency in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>, <code class="docutils literal notranslate"><span class="pre">meta</span></code> is copied so later mutation of the caller’s dict cannot alter stored state, <code class="docutils literal notranslate"><span class="pre">target</span></code> is normalized for lookup while the callee still validates it against its own registry, and <code class="docutils literal notranslate"><span class="pre">transaction_id</span></code> passes through unchanged since the frontend echoes it back. Booleans are rejected where they would masquerade as numbers. Re-running the audit now reports 20 missing arguments instead of 26, all in <code class="docutils literal notranslate"><span class="pre">shapes</span></code>.</p></li>
+<li><p>2026-07-20: <code class="docutils literal notranslate"><span class="pre">MolSysView.play()</span></code> works again. Every one of its arguments defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>, but the <code class="docutils literal notranslate"><span class="pre">mode</span></code> and <code class="docutils literal notranslate"><span class="pre">step</span></code> digesters rejected <code class="docutils literal notranslate"><span class="pre">None</span></code> outright, and <code class="docutils literal notranslate"><span class="pre">mode</span></code>/<code class="docutils literal notranslate"><span class="pre">direction</span></code> only recognised the <code class="docutils literal notranslate"><span class="pre">molsysviewer.player.*</span></code> callers while <code class="docutils literal notranslate"><span class="pre">MolSysView.play()</span></code> normalises to <code class="docutils literal notranslate"><span class="pre">molsysviewer.viewer.play</span></code> — so <code class="docutils literal notranslate"><span class="pre">v.play()</span></code> raised <code class="docutils literal notranslate"><span class="pre">ArgumentError</span></code>, and even an explicit <code class="docutils literal notranslate"><span class="pre">v.play(mode=&quot;loop&quot;)</span></code> was refused. Worse, <code class="docutils literal notranslate"><span class="pre">direction=&quot;forward&quot;</span></code> fell through to the 3D-vector branch and was normalised as a spatial direction. Playback was only reachable through <code class="docutils literal notranslate"><span class="pre">v.player.play(mode=&quot;loop&quot;)</span></code>. Two latent defects were fixed alongside: <code class="docutils literal notranslate"><span class="pre">direction</span></code> crashed when <code class="docutils literal notranslate"><span class="pre">caller</span></code> was <code class="docutils literal notranslate"><span class="pre">None</span></code>, and <code class="docutils literal notranslate"><span class="pre">step</span></code> accepted <code class="docutils literal notranslate"><span class="pre">True</span></code> as a valid integer.</p></li>
+<li><p>2026-07-20: Trajectory playback modes are actually implemented. <code class="docutils literal notranslate"><span class="pre">playTrajectory</span></code> accepted a <code class="docutils literal notranslate"><span class="pre">mode</span></code> and never read it: playback always advanced through Mol*’s wrap-around, so <code class="docutils literal notranslate"><span class="pre">loop</span></code> worked by accident, <code class="docutils literal notranslate"><span class="pre">once</span></code> never stopped at the end, and <code class="docutils literal notranslate"><span class="pre">ping-pong</span></code> never bounced. On top of that the vocabularies disagreed — Python’s public API says <code class="docutils literal notranslate"><span class="pre">ping-pong</span></code>, the frontend has always called it <code class="docutils literal notranslate"><span class="pre">palindrome</span></code> — so the mode was dropped even when supplied. The per-tick decision now lives in a pure <code class="docutils literal notranslate"><span class="pre">nextPlaybackStep</span></code> helper: <code class="docutils literal notranslate"><span class="pre">loop</span></code> wraps, <code class="docutils literal notranslate"><span class="pre">once</span></code> clamps to the end frame and stops, and <code class="docutils literal notranslate"><span class="pre">palindrome</span></code> reverses direction at either end (honouring the step size). <code class="docutils literal notranslate"><span class="pre">ping-pong</span></code> is accepted as a synonym of <code class="docutils literal notranslate"><span class="pre">palindrome</span></code>.</p></li>
+<li><p>2026-07-20: <code class="docutils literal notranslate"><span class="pre">view.trajectory_plot.show()</span></code> accepts NumPy arrays. Series were validated with <code class="docutils literal notranslate"><span class="pre">isinstance(value,</span> <span class="pre">collections.abc.Sequence)</span></code>, which a <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> is not, so per-frame data (RMSD, radius of gyration, an energy term, coordinates straight out of MolSysMT) was rejected and users had to call <code class="docutils literal notranslate"><span class="pre">.tolist()</span></code> by hand. One-dimensional arrays are read as a single series, two-dimensional ones as several, and mappings of arrays work as well.</p></li>
+<li><p>2026-07-17: Right-dragging the structure no longer leaves the canvas context menu open. The browser fires <code class="docutils literal notranslate"><span class="pre">contextmenu</span></code> on button press, so the menu appears before a click can be told apart from a drag — and Mol* uses the right button to pan, leaving the menu open for the whole gesture. The menu is now dismissed as soon as the pointer travels more than 5 px (measured radially) from where it opened, so a plain right-click, including a shaky one, still works.</p></li>
+<li><p>2026-07-17: The structural color selector offers <code class="docutils literal notranslate"><span class="pre">group_name</span></code> (“Group Name”) instead of <code class="docutils literal notranslate"><span class="pre">residue_name</span></code>. The panel builds its options from the backend’s scheme list, so this follows from the canonical tag rename; the composer’s fallback list was aligned too. Note that <code class="docutils literal notranslate"><span class="pre">molsysviewer/loaders/load_molsysmt.py</span></code> deliberately keeps translating <code class="docutils literal notranslate"><span class="pre">group_*</span></code> to <code class="docutils literal notranslate"><span class="pre">residue_*</span></code> in the wire payload, because those fields are written into mmCIF <code class="docutils literal notranslate"><span class="pre">atom_site</span></code> columns (<code class="docutils literal notranslate"><span class="pre">label_comp_id</span></code>, <code class="docutils literal notranslate"><span class="pre">label_seq_id</span></code>) where <em>comp</em>/residue is the standard name — that boundary is intentional and stays.</p></li>
+<li><p>2026-07-17: A pure color change no longer rebuilds the global representation. <code class="docutils literal notranslate"><span class="pre">set_color_scheme()</span></code> emits the same <code class="docutils literal notranslate"><span class="pre">set_whole_representation</span></code> op as <code class="docutils literal notranslate"><span class="pre">set_representation()</span></code>, so the frontend used to destroy and recreate the representations for a mere recolor. That triggered Mol*-internal camera adjustments and made atoms the representation cannot draw (waters under a cartoon) blink out on an operation that should only change color. When the representation, preset and non-color params are unchanged, the color theme is now updated in place; an active per-atom color overlay is preserved and only its base theme is replaced.</p></li>
+<li><p>2026-07-17: The camera is only preserved across a representation rebuild when a deliberate viewpoint exists. Restoring it unconditionally was wrong: when operations arrive before Mol* has framed a freshly loaded structure — configuring a view before displaying it, or simply running notebook cells faster than the render — the snapshot predates that framing and writing it back overwrote it, leaving the structure rendered but out of sight until the user pressed “Reset view”. A viewpoint counts as deliberate when the user has orbited/zoomed/panned, when a camera snapshot was applied explicitly, or when the view was focused on a selection; otherwise Mol* is left free to frame the structure. Diagnosed by disabling the restore entirely, which fixed the blank view and lost the user’s framing, confirming the restore as the cause. and now accepts the ecosystem’s vocabularies. Previously any non-empty string was accepted, stored, and then ignored by the frontend if it was not one of the eight curated tags — so <code class="docutils literal notranslate"><span class="pre">set_color_scheme(&quot;chain-id&quot;)</span></code> (the Mol* name) appeared to work while actually doing nothing, leaving Mol*’s default coloring on screen. Scheme names are now resolved to their canonical tag, accepting the canonical tags (<code class="docutils literal notranslate"><span class="pre">chain_default</span></code>…), the underlying Mol* theme names (<code class="docutils literal notranslate"><span class="pre">chain-id</span></code>, <code class="docutils literal notranslate"><span class="pre">element-symbol</span></code>… derived from the registry’s own <code class="docutils literal notranslate"><span class="pre">molstar_theme</span></code> field, so they cannot drift), and MolSysMT attribute names (<code class="docutils literal notranslate"><span class="pre">chain_id</span></code>, <code class="docutils literal notranslate"><span class="pre">group_name</span></code>, <code class="docutils literal notranslate"><span class="pre">entity_id</span></code>, <code class="docutils literal notranslate"><span class="pre">element</span></code>). Unknown names now raise <code class="docutils literal notranslate"><span class="pre">ArgumentError</span></code> listing the valid options. The <code class="docutils literal notranslate"><span class="pre">color_scheme</span></code> representation parameter resolves the same synonyms but still passes unknown values through, because it is shared with non-structural visuals that use their own schemes (e.g. <code class="docutils literal notranslate"><span class="pre">pharmacophore_default</span></code>). The scheme registry moved to <code class="docutils literal notranslate"><span class="pre">molsysviewer/_private/color_schemes.py</span></code> (re-exported from <code class="docutils literal notranslate"><span class="pre">styles</span></code>) so argument digesters can use it without a circular import.</p></li>
+<li><p>2026-07-17: ArgDigest digester added for the <code class="docutils literal notranslate"><span class="pre">scheme</span></code> argument of <code class="docutils literal notranslate"><span class="pre">Whole.set_color_scheme()</span></code> / <code class="docutils literal notranslate"><span class="pre">Region.set_color_scheme()</span></code>, which was emitting <code class="docutils literal notranslate"><span class="pre">DigestNotDigestedWarning</span></code> on every call.</p></li>
+<li><p>2026-07-17: ArgDigest digesters added for the color-operation arguments <code class="docutils literal notranslate"><span class="pre">value_range</span></code> and <code class="docutils literal notranslate"><span class="pre">replace</span></code>. The public scalar-color methods (<code class="docutils literal notranslate"><span class="pre">Region</span></code>/<code class="docutils literal notranslate"><span class="pre">Whole</span></code> <code class="docutils literal notranslate"><span class="pre">set_color_by_attribute</span></code> / <code class="docutils literal notranslate"><span class="pre">set_color_by_values</span></code>) declare and use both arguments under <code class="docutils literal notranslate"><span class="pre">&#64;digest()</span></code> but had no digester, so every ordinary call emitted a <code class="docutils literal notranslate"><span class="pre">DigestNotDigestedWarning</span></code> (leaving the public contract un-validated and adding integration noise downstream). <code class="docutils literal notranslate"><span class="pre">digest_value_range</span></code> accepts <code class="docutils literal notranslate"><span class="pre">None</span></code> (range inferred from the data) or a <code class="docutils literal notranslate"><span class="pre">list</span></code>/<code class="docutils literal notranslate"><span class="pre">tuple</span></code>/1-D <code class="docutils literal notranslate"><span class="pre">numpy</span></code> array of exactly two finite reals <code class="docutils literal notranslate"><span class="pre">(vmin,</span> <span class="pre">vmax)</span></code> with <code class="docutils literal notranslate"><span class="pre">vmin</span> <span class="pre">&lt;=</span> <span class="pre">vmax</span></code>, normalizing to a <code class="docutils literal notranslate"><span class="pre">[float,</span> <span class="pre">float]</span></code> pair (equal bounds are valid; the color mapper handles a zero span); <code class="docutils literal notranslate"><span class="pre">digest_replace</span></code> accepts only <code class="docutils literal notranslate"><span class="pre">bool</span></code>, with no integer/string coercion. Both reject invalid input with <code class="docutils literal notranslate"><span class="pre">ArgumentError</span></code> at the public boundary. New <code class="docutils literal notranslate"><span class="pre">tests/test_color_digesters.py</span></code> covers the unit contract, and <code class="docutils literal notranslate"><span class="pre">test_argdigest_public_api.py</span></code> asserts no missing-digester warning across all four color surfaces (mutation-verified).</p></li>
+<li><p>2026-07-29: <code class="docutils literal notranslate"><span class="pre">Whole.set_color(color)</span></code> and <code class="docutils literal notranslate"><span class="pre">Region.set_color(color)</span></code> add the direct uniform-color API requested during dogfooding. Both write through the existing layered per-atom color contract: whole color replaces only the base layer, region color replaces only that region’s atoms, and a state-None region remains colorable through the whole representation. Named, hexadecimal, packed-integer, and RGB colors use the shared color normalization boundary.</p></li>
+<li><p>2026-07-30: Runtime envelope seam (R1). A shared manifest <code class="docutils literal notranslate"><span class="pre">molsysviewer/runtime_actions.json</span></code> classifies every browser-originated action (command/event/request/ack/error), with Python-only <code class="docutils literal notranslate"><span class="pre">outbound_requests</span></code> and <code class="docutils literal notranslate"><span class="pre">raw</span></code>/<code class="docutils literal notranslate"><span class="pre">data_plane</span></code> groups excluded from enveloping; Python (<code class="docutils literal notranslate"><span class="pre">runtime_contract.py</span></code>, <code class="docutils literal notranslate"><span class="pre">viewer/runtime_router.py</span></code>) and TypeScript (<code class="docutils literal notranslate"><span class="pre">messages/runtime-actions.ts</span></code>, <code class="docutils literal notranslate"><span class="pre">messages/widget-envelope.ts</span></code>) load the same file, so both sides classify identically by construction. Python is the sole authority: inbound envelopes are validated for identity, direction and action↔payload coherence, and <code class="docutils literal notranslate"><span class="pre">command</span></code> messages are deduplicated so one accepted command yields one public-API mutation and one history checkpoint (a duplicate returns an observable <code class="docutils literal notranslate"><span class="pre">command_duplicate_ack</span></code> and is not re-applied). Enveloping lives in <code class="docutils literal notranslate"><span class="pre">MolSysViewerWidget.send</span></code> — the connector owns its wire format — so Qt stays raw and <code class="docutils literal notranslate"><span class="pre">initial_messages</span></code> / <code class="docutils literal notranslate"><span class="pre">_message_history</span></code> keep domain messages.</p></li>
+<li><p>2026-07-30: Canonical popup scene snapshot (R2). <code class="docutils literal notranslate"><span class="pre">MolSysView.build_popup_scene_snapshot(mode,</span> <span class="pre">endpoint)</span></code> rebuilds the current scene from live registries instead of replaying a journal: pure with respect to history and transport, <code class="docutils literal notranslate"><span class="pre">_message_history</span></code> and <code class="docutils literal notranslate"><span class="pre">_build_export_messages()</span></code> off limits, defensive copies, strict <code class="docutils literal notranslate"><span class="pre">canvas</span></code>/<code class="docutils literal notranslate"><span class="pre">panel</span></code> mode, dynamic regions materialized at the current frame, camera excluded as host-local ephemeral state. Inflating the journal with 10,000 unrelated ops leaves the snapshot byte-for-byte identical. Wired as a request/response across the seam: the popup emits ready, the host asks Python for <code class="docutils literal notranslate"><span class="pre">request_popup_scene_snapshot</span></code>, Python answers with a correlated projection, and the host consumes it at the seam and bootstraps. <code class="docutils literal notranslate"><span class="pre">PopupReplayLog</span></code> survives only as a timeout fallback.</p></li>
+<li><p>2026-07-30: Array-native transport hardening (D3/D4). Acknowledgement deadline (30 s, restarted on every accepted ack) evaluated on main-thread entry points only — no timer thread, because <code class="docutils literal notranslate"><span class="pre">widget.send</span></code> is unsafe off the kernel thread for AnyWidget; on expiry the retained arrays are released explicitly, the receiver is told to cancel, and the recorded JSON load is delivered with a <code class="docutils literal notranslate"><span class="pre">RuntimeWarning</span></code>. Coordinates now travel <code class="docutils literal notranslate"><span class="pre">structure-planar-c</span></code> (<code class="docutils literal notranslate"><span class="pre">[structures,</span> <span class="pre">3,</span> <span class="pre">atoms]</span></code>) so Mol* frames are zero-copy <code class="docutils literal notranslate"><span class="pre">subarray</span></code> views, removing a per-frame de-interleaving pass (930k scalar assignments and 15k allocations on 5,000×62; 30M and a full second copy on 100×100,000) at no cost in Python. A canvas popup receives its own <strong>typed</strong> molecular generation, streamed to its endpoint and relayed by the host without retaining anything, which lifted the restriction that disabled the binary path whenever <code class="docutils literal notranslate"><span class="pre">enable_popout</span></code> was set. <code class="docutils literal notranslate"><span class="pre">PopupHostManager.sendTo</span></code> delivers to one endpoint, fixing a leak where a canvas bootstrap also reached an open panel popup.</p></li>
+<li><p>2026-07-30: Pre-1.0 scale guard. MolSysViewer materializes every selected structure by design, so <code class="docutils literal notranslate"><span class="pre">molsysviewer.config.set_structure_scale_budget(bytes)</span></code> and <code class="docutils literal notranslate"><span class="pre">_private/scale_budget.py</span></code> turn an unbounded silent failure into a documented ceiling: a load whose coordinates exceed the budget (256 MB by default) warns with the measured size, notes that a canvas popup doubles the renderer-side cost, and suggests a concrete <code class="docutils literal notranslate"><span class="pre">structure_indices=range(0,</span> <span class="pre">N,</span> <span class="pre">stride)</span></code> that fits. It warns and never refuses; <code class="docutils literal notranslate"><span class="pre">0</span></code> silences it. Fixed a latent bug surfaced while wiring it: <code class="docutils literal notranslate"><span class="pre">load_from_molsysmt</span></code> called <code class="docutils literal notranslate"><span class="pre">structures.get_n_structures()</span></code>, which does not exist — the call always raised into a bare <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception</span></code>, so <code class="docutils literal notranslate"><span class="pre">n_structures</span></code> silently stayed <code class="docutils literal notranslate"><span class="pre">None</span></code> and was only recovered later by counting the serialized payload.</p></li>
+</ul>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="roadmap.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Roadmap</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="future/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Future (index)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="../about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

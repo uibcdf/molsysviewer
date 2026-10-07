@@ -1,0 +1,1538 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../../_static/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
+    <link href="../../_static/favicon-124x124.png" sizes="124x124" rel="icon" type="image/png">
+    <link href="../../_static/favicon-128x128.png" sizes="128x128" rel="icon" type="image/png">
+    <link href="../../_static/favicon-192x192.png" sizes="192x192" rel="icon" type="image/png">
+    <link href="../../_static/icon.svg" rel="icon" type="image/svg+xml">
+  
+    <title>Public API and stability – MolSysViewer 0.24.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6b6fcda3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6b6fcda3" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
+
+    <script src="../../_static/documentation_options.js?v=a9084e48"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/developer/public_api';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Protocol and payloads (Python ↔ TypeScript)" href="protocol_and_payloads.html" />
+    <link rel="prev" title="MolSysViewer Concepts (Python ↔ AnyWidget ↔ Mol* ↔ WebGL)" href="concepts.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.24.0" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.24.0 documentation - Home"/>
+    <img src="../../_static/logo_dark.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.24.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro/contributing.html">Contributing (quick start)</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="dev_setup.html">Developer setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="repo_structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration (Python)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="demo_systems.html">Demo systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ci.html">CI and automation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">MolSysViewer Concepts (Python ↔ AnyWidget ↔ Mol* ↔ WebGL)</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Public API and stability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol_and_payloads.html">Protocol and payloads (Python ↔ TypeScript)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="units_and_quantities.html">Units and quantities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="standalone_surfaces.html">Standalone surfaces and the Qt live model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_full.html">Architecture (full)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="addons.html">Add-ons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="regions_layers.html">Regions and layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Workflow</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="js_workflow.html">JS/TS workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Testing &amp; QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="warnings.html">Warnings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smonitor.html">SMonitor integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasing.html">Releasing and publishing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_and_citation.html">Citation and Zenodo releases</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs_workflow.html">Docs workflow (local build and RTD parity)</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="documentation/web/index.html">Documentation for the web</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/editorial_guidelines.html">Web documentation editorial guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/build_and_layout.html">Web docs build &amp; layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/myst.html">MyST in MolSysViewer documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/references.html">References and Cross-links in Documentation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="documentation/api/index.html">API documentation guidelines</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="documentation/api/docstrings.html">Docstrings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/api/doctests.html">Doctests</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Style</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="style.html">Coding style &amp; conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="type_annotations_guidelines.html">Type annotations (Python ≥3.10)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="string_style.html">String and quotation style</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Planning and history</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes_notes.html">Changes notes</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="future/index.html">Future (index)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="future/ci.html">CI roadmap (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/performance.html">Performance notes (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/security.html">Security (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/molsysview_molsysmt_ops.html">MolSysView ↔ MolSysMT operations</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_snapshot_2026_01.html">Architecture snapshot (2026-01)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_snapshot_2025_11.html">Architecture snapshot (2025-11)</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="appendix/index.html">Appendix</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="appendix/historical/index.html">Historical documents</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="architecture_snapshot_2025_11.html">Architecture snapshot (2025-11)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="design_overview.html">Design overview (historical)</a></li>
+
+
+
+
+
+
+
+
+
+<li class="toctree-l3"><a class="reference internal" href="modules_overview.html">Modules overview (snapshot)</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Developer guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Public API and stability</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="public-api-and-stability">
+<h1>Public API and stability<a class="headerlink" href="#public-api-and-stability" title="Link to this heading">#</a></h1>
+<p>This page defines what is public API in MolSysViewer.
+It also defines which contracts must remain stable.</p>
+<section id="public-python-api">
+<h2>Public Python API<a class="headerlink" href="#public-python-api" title="Link to this heading">#</a></h2>
+<p>You treat these as public:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.viewer.MolSysView</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.new_view.new_view</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.tools.*</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.load.load</span></code> (convenience wrapper, if exposed)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.demo</span></code> (demo viewers used by docs and tests)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.config.*</span></code> (configuration and user presets)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.config.load_project_config</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.styles.Style</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.styles.BUILTIN_SCENE_STYLES</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.styles.BUILTIN_FOCUS_STYLES</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.config.set_structure_scale_budget</span></code> / <code class="docutils literal notranslate"><span class="pre">get_structure_scale_budget</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.tools.export_runtime_asset</span></code> / <code class="docutils literal notranslate"><span class="pre">molsysviewer.tools.embed_iframe</span></code> / <code class="docutils literal notranslate"><span class="pre">molsysviewer.tools.preview</span></code></p></li>
+</ul>
+<p>If you rename, remove, or change behavior here, you update docs and add tests.</p>
+<section id="uniform-argument-validation">
+<h3>Uniform argument validation<a class="headerlink" href="#uniform-argument-validation" title="Link to this heading">#</a></h3>
+<p>The addon extension API remains available as <code class="docutils literal notranslate"><span class="pre">molsysviewer.addons</span></code> and
+<code class="docutils literal notranslate"><span class="pre">view.addons</span></code>; MolSysMT itself is the native backend.</p>
+<p>Every ordinary supported public function uses ArgDigest and declares
+<code class="docutils literal notranslate"><span class="pre">skip_digestion=False</span></code>, including scene-handle methods and delegated queries.
+Use <code class="docutils literal notranslate"><span class="pre">skip_digestion=True</span></code> only for inputs already normalized; lifecycle checks
+still apply. Constructors, properties and Python protocol methods are outside
+this callable inventory. Public wrappers expose named arguments.</p>
+<p>Create an annotation with <code class="docutils literal notranslate"><span class="pre">view.annotations.add(...)</span></code>. <code class="docutils literal notranslate"><span class="pre">add_annotation</span></code> has
+been removed before 1.0. Queries such as <code class="docutils literal notranslate"><span class="pre">records()</span></code> and <code class="docutils literal notranslate"><span class="pre">info()</span></code> return detached
+nested data. After undo, import or deletion, reacquire handles through their
+manager: an old handle cannot mutate a replacement object with the same tag.
+Region and layer registries support dictionary reads; mutate through manager
+methods. Rejected operations and no-ops preserve redo.</p>
+</section>
+<section id="config-set-structure-scale-budget-budget-bytes">
+<h3><code class="docutils literal notranslate"><span class="pre">config.set_structure_scale_budget(budget_bytes)</span></code><a class="headerlink" href="#config-set-structure-scale-budget-budget-bytes" title="Link to this heading">#</a></h3>
+<p>MolSysViewer materializes <strong>every</strong> selected structure: <code class="docutils literal notranslate"><span class="pre">view.molsys</span></code> is the
+complete selected system, and scientific operations, add-ons and measurements
+rely on that. A large trajectory is therefore held in full, in Python and in the
+browser.</p>
+<p>To keep that honest, a load whose coordinates exceed a budget warns with the
+measured size and a concrete <code class="docutils literal notranslate"><span class="pre">structure_indices</span></code> subset that fits. The default
+ceiling is 256 MB of coordinates (<code class="docutils literal notranslate"><span class="pre">atoms</span> <span class="pre">x</span> <span class="pre">structures</span> <span class="pre">x</span> <span class="pre">3</span> <span class="pre">x</span> <span class="pre">float32</span></code>).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">molsysviewer</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">msv</span>
+
+<span class="n">msv</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_structure_scale_budget</span><span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>  <span class="c1"># allow up to 1 GB</span>
+<span class="n">msv</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_structure_scale_budget</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>                   <span class="c1"># silence the warning</span>
+<span class="n">msv</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_structure_scale_budget</span><span class="p">()</span>                   <span class="c1"># current ceiling</span>
+</pre></div>
+</div>
+<p>It <strong>warns, never refuses</strong> — only you know what your machine can hold. Note
+that opening a canvas popup roughly doubles the renderer-side cost, because two
+Mol* instances each keep their own coordinate axes.</p>
+<p>Current scope clarification for <code class="docutils literal notranslate"><span class="pre">Style</span></code>:</p>
+<ul class="simple">
+<li><p>the current public slice is scene-recipe oriented</p></li>
+<li><p>it is still backed by the existing whole-representation pathway</p></li>
+<li><p>it does not yet include an independent scene-look layer such as
+<code class="docutils literal notranslate"><span class="pre">default-look</span></code> or <code class="docutils literal notranslate"><span class="pre">illustrative</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">new_view(...)</span></code> includes a convenience argument <code class="docutils literal notranslate"><span class="pre">load_mode</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;selection&quot;</span></code> (default): <code class="docutils literal notranslate"><span class="pre">selection</span></code> subsets the loaded system.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>: the full system loads, the whole baseline is hidden, and a
+region tagged <code class="docutils literal notranslate"><span class="pre">&quot;selection&quot;</span></code> is created for the selection.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">molsysviewer.tools.basic</span></code> is now a public module. Current public helpers there include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">extract(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">copy(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">concatenate_structures(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">merge(...)</span></code></p></li>
+</ul>
+<p>Removed before 1.0:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.tools.basic.{get,</span> <span class="pre">select,</span> <span class="pre">info,</span> <span class="pre">convert,</span> <span class="pre">contains,</span> <span class="pre">compare,</span> <span class="pre">is_composed_of}</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.tools.basic.{remove,</span> <span class="pre">add,</span> <span class="pre">set,</span> <span class="pre">append_structures}</span></code></p></li>
+<li><p>top-level <code class="docutils literal notranslate"><span class="pre">molsysviewer.tools.*</span></code> reexports for those removed functions</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.{remove,</span> <span class="pre">add,</span> <span class="pre">set,</span> <span class="pre">append_structures}</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.whole.{remove,</span> <span class="pre">add,</span> <span class="pre">set,</span> <span class="pre">append_structures}</span></code></p></li>
+</ul>
+<p>Removed in 0.22 (<code class="docutils literal notranslate"><span class="pre">uibcdf/molsysviewer#71</span></code>, executed in <code class="docutils literal notranslate"><span class="pre">#75</span></code>):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">view.{get,</span> <span class="pre">select,</span> <span class="pre">convert}</span></code> — ask the whole or a region: <code class="docutils literal notranslate"><span class="pre">view.whole.get(...)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">region.get(...)</span></code>. They are thin wrappers over MolSysMT, so <code class="docutils literal notranslate"><span class="pre">msm.get(view,</span> <span class="pre">...)</span></code> works too</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.contains</span></code> and <code class="docutils literal notranslate"><span class="pre">view.is_composed_of</span></code>, and their <code class="docutils literal notranslate"><span class="pre">whole</span></code> and <code class="docutils literal notranslate"><span class="pre">region</span></code> counterparts —
+<code class="docutils literal notranslate"><span class="pre">get</span></code> carries the same information (<code class="docutils literal notranslate"><span class="pre">whole.get(n_waters=True)</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, and the set of
+<code class="docutils literal notranslate"><span class="pre">molecule_type</span></code>), and <code class="docutils literal notranslate"><span class="pre">msm.contains(view,</span> <span class="pre">...)</span></code> still answers directly</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.{hide,</span> <span class="pre">isolate}</span></code>, the <code class="docutils literal notranslate"><span class="pre">selection</span></code> half of <code class="docutils literal notranslate"><span class="pre">view.show()</span></code>, <code class="docutils literal notranslate"><span class="pre">view.atom_mask</span></code> and
+<code class="docutils literal notranslate"><span class="pre">view.visible_atom_indices</span></code> — the cross-cutting atom mask never reached <code class="docutils literal notranslate"><span class="pre">export_state</span></code>,
+so anything hidden through it came back on reload. Visibility belongs to the whole and to
+regions, which a saved scene does carry</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ViewerInfo</span></code> and <code class="docutils literal notranslate"><span class="pre">RegionInfo</span></code>, with the two-section output they held: each <code class="docutils literal notranslate"><span class="pre">info</span></code> now
+answers about one subject</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apply_system_edit(...,</span> <span class="pre">visible_atom_indices=...)</span></code></p></li>
+</ul>
+<p>Added in the same change: <code class="docutils literal notranslate"><span class="pre">whole.convert(...)</span></code> and <code class="docutils literal notranslate"><span class="pre">region.convert(...)</span></code>.</p>
+<p>Pure molecular-system reads should use <code class="docutils literal notranslate"><span class="pre">view.whole.*</span></code>, <code class="docutils literal notranslate"><span class="pre">region.*</span></code>, or <code class="docutils literal notranslate"><span class="pre">molsysmt.*(view,</span> <span class="pre">...)</span></code>.
+Live molecular edits use the native viewer API, including <code class="docutils literal notranslate"><span class="pre">view.edit(...)</span></code>,
+coordinate setters and <code class="docutils literal notranslate"><span class="pre">view.interactions.calculate(...)</span></code>. MolSysMT is the
+scientific backend; it is not a built-in addon namespace.</p>
+<p>The user-facing translation table is in
+<a class="reference internal" href="../user/introduction/migrating_to_0_22.html"><span class="doc">Migrating to 0.22</span></a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MolSysView</span></code> is also explicitly growing an inspection-oriented object API beyond the minimal viewer shell. Public user-facing methods now include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">close()</span></code></p>
+<ul>
+<li><p>explicitly releases the frontend widget and its owned resources</p></li>
+<li><p>views can also be used as context managers to close them on block exit</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attributed_to(owner)</span></code></p>
+<ul>
+<li><p>context manager for add-ons creating scene objects through the public API</p></li>
+<li><p>objects created inside expose the immutable informational property <code class="docutils literal notranslate"><span class="pre">owner</span></code></p></li>
+<li><p>attribution does not grant ownership rights or prevent user operations</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">load(...,</span> <span class="pre">mode=&quot;add&quot;</span> <span class="pre">|</span> <span class="pre">&quot;replace&quot;</span> <span class="pre">|</span> <span class="pre">&quot;append_structures&quot;</span> <span class="pre">|</span> <span class="pre">&quot;auto&quot;,</span> <span class="pre">...)</span></code></p>
+<ul>
+<li><p>current default is <code class="docutils literal notranslate"><span class="pre">mode=&quot;add&quot;</span></code></p></li>
+<li><p>first load initializes <code class="docutils literal notranslate"><span class="pre">whole</span></code> without creating an automatic region</p></li>
+<li><p>second additive load back-fills block 1 and creates block 2 as automatic regions</p></li>
+<li><p>later additive loads create only the new automatic load-region</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mode=&quot;append_structures&quot;</span></code> is explicit structural extension:</p>
+<ul>
+<li><p>it does not add atoms</p></li>
+<li><p>it does not create automatic load-regions</p></li>
+<li><p>it may attach the first structures to a topology-only <code class="docutils literal notranslate"><span class="pre">_molsys</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mode=&quot;auto&quot;</span></code> is currently a conservative first version:</p>
+<ul>
+<li><p>empty viewer -&gt; <code class="docutils literal notranslate"><span class="pre">replace</span></code></p></li>
+<li><p>same atom count + no topology in the input -&gt; <code class="docutils literal notranslate"><span class="pre">append_structures</span></code></p></li>
+<li><p>same atom count + matching topology -&gt; <code class="docutils literal notranslate"><span class="pre">append_structures</span></code></p></li>
+<li><p>different atom count -&gt; <code class="docutils literal notranslate"><span class="pre">add</span></code></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apply_system_edit(new_molsys,</span> <span class="pre">atom_index_map=None,</span> <span class="pre">...)</span></code></p>
+<ul>
+<li><p>advanced integration primitive for add-ons and tooling</p></li>
+<li><p>replaces the view’s molecular system and reconciles viewer-owned state
+(regions, selections, visibility, colors, shapes, annotations,
+measurements, layers, and index mappings)</p></li>
+<li><p>does not define molecular edit semantics; those belong to MolSysMT or an
+add-on</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">convert(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extract(...)</span></code> — returns a new <strong>view</strong> of a structural subset, with the scene migrated</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">info(output_type=&quot;styler&quot;</span> <span class="pre">|</span> <span class="pre">&quot;dataframe&quot;</span> <span class="pre">|</span> <span class="pre">&quot;dictionary&quot;)</span></code></p>
+<ul>
+<li><p><strong>the scene</strong>: one row per scene object across whole, loads, styles, regions,
+annotations, layers and the active selection. It says nothing about the molecular
+system — that is <code class="docutils literal notranslate"><span class="pre">view.whole.info(...)</span></code>, and for a subset, <code class="docutils literal notranslate"><span class="pre">region.info(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">contains</span></code> and <code class="docutils literal notranslate"><span class="pre">is_composed_of</span></code> were removed: <code class="docutils literal notranslate"><span class="pre">get</span></code> carries the same information
+(<code class="docutils literal notranslate"><span class="pre">whole.get(n_waters=True)</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, and the set of <code class="docutils literal notranslate"><span class="pre">molecule_type</span></code>), and <code class="docutils literal notranslate"><span class="pre">msm.contains</span></code>
+and <code class="docutils literal notranslate"><span class="pre">msm.is_composed_of</span></code> still accept a view</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">focus_selection(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">focus_region(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make_regions_by(...)</span></code></p>
+<ul>
+<li><p>limited for now to <code class="docutils literal notranslate"><span class="pre">element=&quot;chain&quot;</span> <span class="pre">|</span> <span class="pre">&quot;molecule&quot;</span> <span class="pre">|</span> <span class="pre">&quot;entity&quot;</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_last_hover_event()</span></code></p>
+<ul>
+<li><p>hover transport is off by default; reports <code class="docutils literal notranslate"><span class="pre">kind=&quot;telemetry_disabled&quot;</span></code>
+while off and <code class="docutils literal notranslate"><span class="pre">kind=&quot;telemetry_waiting&quot;</span></code> before the first enabled sample</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hover_telemetry_enabled</span></code> (boolean property)</p>
+<ul>
+<li><p>explicitly enables or disables browser-to-Python hover telemetry</p></li>
+<li><p>registered <code class="docutils literal notranslate"><span class="pre">on_hover</span></code> callbacks keep telemetry enabled until the last one
+is removed</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_last_click_event()</span></code></p>
+<ul>
+<li><p>current interaction payloads are intentionally minimal and atom-centric</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hover_target</span></code></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">info()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">is_empty()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">is_empty()</span></code> raises while telemetry is disabled or waiting for its first
+sample; those states are not equivalent to an empty canvas target</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">context_target</span></code></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">info()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">is_empty()</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_last_active_selection_event()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">styles</span></code></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">add(tag,</span> <span class="pre">style,</span> <span class="pre">...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apply(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">builtin_tags()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">builtin_records()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">representation_types()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">representation_type_records()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">representation_param_schema(representation)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">representation_param_schema_records()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">representation_presets()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">representation_preset_records()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">contains(tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get(tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_builtin(tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tags()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">records()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">count()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear(tag=None)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">current()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">info()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">structural_color_schemes()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">structural_color_scheme_records()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">structural_size_schemes()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">structural_size_scheme_records()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molstar_color_themes()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molstar_color_theme_records()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molstar_size_themes()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molstar_size_theme_records()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">load_project_config(path,</span> <span class="pre">apply_default=False)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">focus(style_or_tag=None,</span> <span class="pre">*,</span> <span class="pre">selection,</span> <span class="pre">atom_indices,</span> <span class="pre">representation,</span> <span class="pre">**params)</span></code> — additive overlay over the current scene</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear_focus(tag=None)</span></code> — remove one or all active focus overlays</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">focus_tags()</span></code> — list of currently active focus overlay tags</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">builtin_focus_tags()</span></code> — list of built-in focus style names</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">builtin_focus_records()</span></code> — list of built-in focus style info dicts</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_builtin_focus(tag)</span></code> — retrieve a built-in focus <code class="docutils literal notranslate"><span class="pre">Style</span></code> by name</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">load_project_config(path,</span> <span class="pre">*,</span> <span class="pre">apply_default=False)</span></code> — convenience bridge: applies styles and add-on defaults from a <code class="docutils literal notranslate"><span class="pre">_molsysviewer.py</span></code> config file in one call</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">active_selection</span></code></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">info()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">is_empty()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">focus(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">new_region(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">add_label(...)</span></code> — deprecated alias for <code class="docutils literal notranslate"><span class="pre">annotations.add_label_from_active_selection(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">save(...)</span></code></p></li>
+<li><p>canvas context-menu removal is contributed by the MolSysMT addon as
+<code class="docutils literal notranslate"><span class="pre">remove-selected-atoms</span></code>; core does not own molecular-editing semantics</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.selections</span></code></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">add(tag,</span> <span class="pre">*,</span> <span class="pre">atom_indices,</span> <span class="pre">items=None)</span></code> — direct-index shortcut, no MolSysMT lookup</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">add_selection(tag,</span> <span class="pre">selection,</span> <span class="pre">*,</span> <span class="pre">element,</span> <span class="pre">mask,</span> <span class="pre">syntax)</span></code> — MolSysMT-based selection</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">add_from_active_selection(tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">activate(tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.selections.tags()</span></code> (method)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">count()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">contains(tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get(tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">records()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">info(tag=None)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set_tag(tag,</span> <span class="pre">new_tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delete(tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear(tag=None)</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_last_measurement_created_event()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">new_region_from_active_selection(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">show_orientation_axes(selection=&quot;all&quot;,</span> <span class="pre">*,</span> <span class="pre">atom_indices=None,</span> <span class="pre">tag=None,</span> <span class="pre">alpha=None)</span></code> — overlay Mol* orientation-ellipsoid axes; returns Region</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">show_best_fit_plane(selection=&quot;all&quot;,</span> <span class="pre">*,</span> <span class="pre">atom_indices=None,</span> <span class="pre">tag=None,</span> <span class="pre">alpha=None)</span></code> — overlay Mol* best-fit plane; returns Region</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.annotations.add_label_from_active_selection(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.measurements.count()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.measurements.records()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.measurements.info()</span></code></p>
+<ul>
+<li><p>current first slice: interactive <code class="docutils literal notranslate"><span class="pre">distance</span></code> / <code class="docutils literal notranslate"><span class="pre">angle</span></code> / <code class="docutils literal notranslate"><span class="pre">dihedral</span></code> measurements are registered automatically as replayable viewer state</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">info()</span></code> and <code class="docutils literal notranslate"><span class="pre">records()</span></code> now expose endpoint metadata:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">endpoint_kinds</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">endpoint_policy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">endpoint_labels</span></code></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>Shape methods that accept per-structure arrays are also public:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">view.shapes.add_sphere(...,</span> <span class="pre">structure_centers=[array_per_structure,</span> <span class="pre">...])</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.shapes.add_triangle_faces(...,</span> <span class="pre">structure_vertices=[array_per_structure,</span> <span class="pre">...])</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.shapes.add_links(...,</span> <span class="pre">structure_coordinate_pairs=[array_per_structure,</span> <span class="pre">...])</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.shapes.add_channel_tube(...,</span> <span class="pre">structure_centers=[array_per_structure,</span> <span class="pre">...])</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.shapes.links.add_hbonds(structures=[None</span> <span class="pre">|</span> <span class="pre">[[donor,</span> <span class="pre">acceptor],</span> <span class="pre">...],</span> <span class="pre">...])</span></code></p>
+<ul>
+<li><p>per-structure atom-index pairs; JS resolves coordinates from the current loaded structure</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> in a slot hides the shape for that structure</p></li>
+<li><p>arrays are in Angstroms (raw); <code class="docutils literal notranslate"><span class="pre">add_hbonds</span></code> uses atom indices (topology-only)</p></li>
+</ul>
+</li>
+</ul>
+<p>Related object wrappers are also part of the intended public surface:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">view.whole.focus(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.whole.set_color(color)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.regions[tag].focus(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.regions[tag].set_color(color)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.regions[tag].show_only(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.regions[tag].enable(...)</span></code> / <code class="docutils literal notranslate"><span class="pre">.disable(...)</span></code> and read-only <code class="docutils literal notranslate"><span class="pre">.enabled</span></code></p>
+<ul>
+<li><p>suspend/reapply visual effects while preserving selection, style and the
+hidden request; <code class="docutils literal notranslate"><span class="pre">show()</span></code> / <code class="docutils literal notranslate"><span class="pre">hide()</span></code> do not enable a suspended region</p></li>
+<li><p>enabled Hide masks its atoms on Whole and hides its own representations;
+other region representations remain independent</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.regions[tag].rename(new_tag)</span></code></p>
+<ul>
+<li><p>renames the region in Python state and sends <code class="docutils literal notranslate"><span class="pre">rename_region</span></code> to JS</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_build_export_messages()</span></code> rewrites prior region ops to use the new tag, so the export replay uses the final name directly</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.selections[tag].info()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.selections[tag].activate()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.selections[tag].focus(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.selections[tag].new_region(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.selections[tag].add_label(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.selections[tag].set_tag(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.selections[tag].delete()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.annotations.add(text,</span> <span class="pre">selection=...,</span> <span class="pre">atom_indices=...,</span> <span class="pre">tag=...,</span> <span class="pre">layer_tag=...,</span> <span class="pre">label_style=...)</span></code></p>
+<ul>
+<li><p>primary entry point for persistent labels anchored to atom selections</p></li>
+<li><p>anchor resolves via MolSysMT selection string or explicit <code class="docutils literal notranslate"><span class="pre">atom_indices</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">label_style</span></code> accepts a dict with optional keys: <code class="docutils literal notranslate"><span class="pre">color</span></code> (CSS hex string), <code class="docutils literal notranslate"><span class="pre">size_em</span></code> (float), <code class="docutils literal notranslate"><span class="pre">background</span></code> (bool), <code class="docutils literal notranslate"><span class="pre">background_opacity</span></code> (float 0–1)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">add_label(group_index=...)</span></code> is a deprecated alias; use <code class="docutils literal notranslate"><span class="pre">add</span></code> instead</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.annotations.add_label_from_active_selection(text,</span> <span class="pre">tag=...,</span> <span class="pre">label_style=...)</span></code></p>
+<ul>
+<li><p>anchors to all atom indices in the last active canvas selection (multi-group supported)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">label_style</span></code> accepts the same dict as <code class="docutils literal notranslate"><span class="pre">add</span></code> (<code class="docutils literal notranslate"><span class="pre">color</span></code>, <code class="docutils literal notranslate"><span class="pre">size_em</span></code>)</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.annotations.set_anchor(tag,</span> <span class="pre">selection=...,</span> <span class="pre">atom_indices=...)</span></code></p>
+<ul>
+<li><p>reanchor an existing label to a different atom set</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set_group_index(tag,</span> <span class="pre">group_index)</span></code> is a deprecated alias; use <code class="docutils literal notranslate"><span class="pre">set_anchor</span></code> instead</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.annotations.set_text(tag,</span> <span class="pre">text)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.annotations.set_tag(tag,</span> <span class="pre">new_tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.annotations.set_layer_tag(tag,</span> <span class="pre">new_layer_tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.annotations.tags()</span></code> (method)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.annotations.count()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.annotations.contains(tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.annotations.get(tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.annotations.records()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.annotations.info(tag=None)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.annotations.show(tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.annotations.hide(tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.annotations.delete(tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.annotations.clear(tag=None)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.measurements.add_distance(atom_indices,</span> <span class="pre">tag=...,</span> <span class="pre">layer_tag=...,</span> <span class="pre">measurement_style=...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.measurements.add_angle(atom_indices,</span> <span class="pre">tag=...,</span> <span class="pre">layer_tag=...,</span> <span class="pre">measurement_style=...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.measurements.add_dihedral(atom_indices,</span> <span class="pre">tag=...,</span> <span class="pre">layer_tag=...,</span> <span class="pre">measurement_style=...)</span></code></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">measurement_style</span></code> accepts a dict with optional keys: <code class="docutils literal notranslate"><span class="pre">color</span></code> (CSS hex), <code class="docutils literal notranslate"><span class="pre">size_em</span></code> (float), <code class="docutils literal notranslate"><span class="pre">background</span></code> (bool), <code class="docutils literal notranslate"><span class="pre">background_opacity</span></code> (float 0–1)</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.measurements.tags()</span></code> (method)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.measurements.contains(tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.measurements.get(tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.measurements.show(tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.measurements.hide(tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.measurements.delete(tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.measurements.clear(tag=None)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.measurements.set_tag(tag,</span> <span class="pre">new_tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.measurements.set_layer_tag(tag,</span> <span class="pre">new_layer_tag)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.selections.add_from_active_selection(...)</span></code></p></li>
+</ul>
+<p>Scene-object managers use the same callable discovery vocabulary. In
+particular, <code class="docutils literal notranslate"><span class="pre">view.shapes.tags()</span></code> (method) and <code class="docutils literal notranslate"><span class="pre">view.layers.tags()</span></code> (method)
+provide their live tags, and new logical layers are created with
+<code class="docutils literal notranslate"><span class="pre">view.layers.add(tag,</span> <span class="pre">...)</span></code>.</p>
+<p>Tags are unique within a scene domain, not across the entire scene. A shape,
+annotation, measurement, region, selection, and layer may deliberately share
+the same tag; APIs resolve identity as <code class="docutils literal notranslate"><span class="pre">(domain,</span> <span class="pre">tag)</span></code>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">view.movie</span></code></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">add_keyframe(time_ms,</span> <span class="pre">*,</span> <span class="pre">camera,</span> <span class="pre">structure_index,</span> <span class="pre">layer_visibility,</span> <span class="pre">easing)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">add_visibility_transition(layer_tag,</span> <span class="pre">visible,</span> <span class="pre">*,</span> <span class="pre">at_time_ms)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">add_camera_orbit(duration_ms,</span> <span class="pre">*,</span> <span class="pre">n_turns,</span> <span class="pre">n_keyframes,</span> <span class="pre">easing)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">add_structure_sweep(*,</span> <span class="pre">from_index,</span> <span class="pre">to_index,</span> <span class="pre">duration_ms,</span> <span class="pre">start_time_ms,</span> <span class="pre">end_time_ms)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">play(loop=False)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stop()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">duration_ms</span></code> (property)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">keyframes</span></code> (property)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">info()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">to_dict()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_dict(data)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">save(path)</span></code> / <code class="docutils literal notranslate"><span class="pre">load(path)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">export(path,</span> <span class="pre">*,</span> <span class="pre">fps,</span> <span class="pre">format)</span></code> — requires <code class="docutils literal notranslate"><span class="pre">imageio</span></code>; sends <code class="docutils literal notranslate"><span class="pre">play_movie</span></code> with <code class="docutils literal notranslate"><span class="pre">mode=&quot;export&quot;</span></code> and collects frames from the JS runtime</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.on_hover(callback)</span></code> / <code class="docutils literal notranslate"><span class="pre">view.off_hover(callback)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.on_click(callback)</span></code> / <code class="docutils literal notranslate"><span class="pre">view.off_click(callback)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.on_context(callback)</span></code> / <code class="docutils literal notranslate"><span class="pre">view.off_context(callback)</span></code></p>
+<ul>
+<li><p>reactive (non-polling) Python callbacks for interaction events</p></li>
+<li><p>callbacks receive the same payload dict as <code class="docutils literal notranslate"><span class="pre">get_last_hover_event()</span></code> etc.</p></li>
+<li><p>multiple callbacks per event type are supported; <code class="docutils literal notranslate"><span class="pre">off_*</span></code> removes a specific one</p></li>
+<li><p>the first hover callback enables hover telemetry without reloading; removing
+the last disables it unless <code class="docutils literal notranslate"><span class="pre">hover_telemetry_enabled</span></code> was explicitly set</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.export_state()</span></code> → JSON-serializable dict</p>
+<ul>
+<li><p>captures annotations, measurements, selections, regions, shapes, layers, clipping sections, and whole state</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.import_state(state,</span> <span class="pre">*,</span> <span class="pre">clear_first=True)</span></code></p>
+<ul>
+<li><p>replays a state dict onto a viewer with compatible structure</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear_first=True</span></code> wipes existing scene objects, clipping sections, selections, and regions before replay</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.save_state(path)</span></code> / <code class="docutils literal notranslate"><span class="pre">view.load_state(path,</span> <span class="pre">*,</span> <span class="pre">clear_first=True,</span> <span class="pre">on_conflict=&quot;raise&quot;)</span></code></p>
+<ul>
+<li><p>atomic UTF-8 JSON file convenience around <code class="docutils literal notranslate"><span class="pre">export_state()</span></code> / <code class="docutils literal notranslate"><span class="pre">import_state()</span></code></p></li>
+<li><p>stores the scene <strong>and the vantage point</strong>: camera, current structure index and
+playback settings travel under a <code class="docutils literal notranslate"><span class="pre">view</span></code> key. <code class="docutils literal notranslate"><span class="pre">save_state</span></code> requests a fresh camera from
+the frontend before writing; <code class="docutils literal notranslate"><span class="pre">export_state</span></code> records the last one pushed</p></li>
+<li><p>the molecular system, undo history and global visual settings are not bundled</p></li>
+<li><p>load the same or a compatible structure before calling <code class="docutils literal notranslate"><span class="pre">load_state()</span></code>; onto a
+different structure, region recipes are re-resolved and everything else is matched by
+atom identity, with whatever fails marked broken</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.save_session(path)</span></code> / <code class="docutils literal notranslate"><span class="pre">molsysviewer.load_session(path)</span></code></p>
+<ul>
+<li><p>a <code class="docutils literal notranslate"><span class="pre">.msv</span></code> zip carrying <code class="docutils literal notranslate"><span class="pre">manifest.json</span></code>, <code class="docutils literal notranslate"><span class="pre">state.json</span></code> and <code class="docutils literal notranslate"><span class="pre">structure.h5msm</span></code></p></li>
+<li><p>unlike <code class="docutils literal notranslate"><span class="pre">load_state</span></code>, nothing has to be loaded first: <code class="docutils literal notranslate"><span class="pre">load_session</span></code> returns a viewer
+already showing the system and the scene</p></li>
+<li><p>no size budget — a session is as large as its trajectory</p></li>
+<li><p>format <code class="docutils literal notranslate"><span class="pre">version:</span> <span class="pre">1</span></code>, declared <strong>experimental</strong></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.get_camera_snapshot(*,</span> <span class="pre">pretty=False)</span></code> / <code class="docutils literal notranslate"><span class="pre">view.set_camera_snapshot(snapshot,</span> <span class="pre">*,</span> <span class="pre">duration_ms=0)</span></code></p>
+<ul>
+<li><p>the camera as a plain dict, mirrored back from the frontend; <code class="docutils literal notranslate"><span class="pre">None</span></code> on a viewer that
+has never rendered. <code class="docutils literal notranslate"><span class="pre">pretty=True</span></code> returns it as formatted JSON</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.zoom(selection=&quot;all&quot;,</span> <span class="pre">...,</span> <span class="pre">*,</span> <span class="pre">duration=&quot;250</span> <span class="pre">ms&quot;,</span> <span class="pre">extra_radius=&quot;4.0</span> <span class="pre">angstroms&quot;,</span> <span class="pre">min_radius=&quot;1.0</span> <span class="pre">angstroms&quot;)</span></code></p>
+<ul>
+<li><p>frames a selection. The three durations and radii are quantities, not bare numbers —
+<code class="docutils literal notranslate"><span class="pre">duration_ms</span></code> remains as a deprecated alias</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.whole.set_representation(representation=None,</span> <span class="pre">*,</span> <span class="pre">preset=None,</span> <span class="pre">**params)</span></code></p>
+<ul>
+<li><p>the whole’s own representation, distinct from any region’s</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.player.</span></code> — <code class="docutils literal notranslate"><span class="pre">play()</span></code>, <code class="docutils literal notranslate"><span class="pre">pause()</span></code>, <code class="docutils literal notranslate"><span class="pre">go_to_first()</span></code>, <code class="docutils literal notranslate"><span class="pre">go_to_last()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">go_to_structure(i)</span></code>, and the <code class="docutils literal notranslate"><span class="pre">index</span></code>, <code class="docutils literal notranslate"><span class="pre">fps</span></code>, <code class="docutils literal notranslate"><span class="pre">mode</span></code>, <code class="docutils literal notranslate"><span class="pre">direction</span></code>, <code class="docutils literal notranslate"><span class="pre">is_playing</span></code>,
+<code class="docutils literal notranslate"><span class="pre">n_structures</span></code> properties</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.trajectory_plot.</span></code> — <code class="docutils literal notranslate"><span class="pre">show()</span></code>, <code class="docutils literal notranslate"><span class="pre">hide()</span></code>, <code class="docutils literal notranslate"><span class="pre">update()</span></code>, <code class="docutils literal notranslate"><span class="pre">clear()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.build_popup_scene_snapshot(mode,</span> <span class="pre">endpoint=None,</span> <span class="pre">include_molecular=True)</span></code></p>
+<ul>
+<li><p>the message list a popup surface replays to reach the current scene</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.config.set_default_standard_units(standards)</span></code></p>
+<ul>
+<li><p>the unit standards new quantities are expressed in</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.set_structure(index)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.play(fps=...,</span> <span class="pre">step=...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.pause()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.set_play_speed(fps)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.current_structure_id</span></code> (property)</p>
+<ul>
+<li><p>structure/trajectory navigation controls; <code class="docutils literal notranslate"><span class="pre">&#64;signal(tags=[&quot;structures&quot;])</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">add(...)</span></code></p>
+<ul>
+<li><p>lower-level structural merge into <code class="docutils literal notranslate"><span class="pre">_molsys</span></code></p></li>
+<li><p>updates additive-load block bookkeeping</p></li>
+<li><p>does <strong>not</strong> create automatic load-regions</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">convert(...)</span></code></p>
+<ul>
+<li><p>current first slice delegates to the molecular system currently stored in
+the viewer</p></li>
+<li><p>this is intentionally compatible with richer future conversions once
+MolSysMT supports direct <code class="docutils literal notranslate"><span class="pre">MolSysView</span></code> target-form conversions</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="notebook-rendering">
+<h3>Notebook rendering<a class="headerlink" href="#notebook-rendering" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">MolSysView</span></code> implements the Jupyter display hook (<code class="docutils literal notranslate"><span class="pre">_repr_mimebundle_</span></code>). This means:</p>
+<ul class="simple">
+<li><p>If a <code class="docutils literal notranslate"><span class="pre">MolSysView</span></code> instance is the last expression in a notebook cell, it renders automatically.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MolSysView.load(...)</span></code> does <strong>not</strong> return the viewer, so it does not trigger rendering on its own.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MolSysView.show()</span></code> remains the explicit way to display the widget in scripts or when needed.</p></li>
+</ul>
+</section>
+</section>
+<section id="managing-scientific-interactions-experimental">
+<h2>Managing scientific interactions (experimental)<a class="headerlink" href="#managing-scientific-interactions-experimental" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">view.interactions</span></code> is a native scientific manager. It uses MolSysMT internally
+and requires its experimental public <code class="docutils literal notranslate"><span class="pre">Interactions</span></code> and H5MSM APIs; no addon
+registration is needed. The published dependency version for this feature is
+still to be fixed. Scientific analyses and visual sets are separate: attaching
+or computing stores an analysis; <code class="docutils literal notranslate"><span class="pre">add()</span></code> creates its filtered graphical set.
+The native Interactions Studio tab offers Calculate, Stored analysis and H5MSM
+file routes using the same public methods.
+An older supported provider can still initialize ordinary views. Feature
+availability is checked before scientific interaction operations; an unavailable
+backend produces an explicit compatibility error and disables Studio creation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">molsysviewer</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">msv</span>
+
+<span class="n">view</span> <span class="o">=</span> <span class="n">msv</span><span class="o">.</span><span class="n">demo</span><span class="p">[</span><span class="s2">"pentalanine"</span><span class="p">]</span>
+<span class="n">view</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">hbonds</span><span class="o">.</span><span class="n">get_buch_hbonds</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"buch"</span><span class="p">,</span> <span class="n">structure_indices</span><span class="o">=</span><span class="s2">"current"</span><span class="p">)</span>
+<span class="n">view</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">analyses</span><span class="p">()</span>  <span class="c1"># compact metadata, not expanded occurrences</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">"buch"</span><span class="p">,</span> <span class="n">structure_indices</span><span class="o">=</span><span class="s2">"current"</span><span class="p">)</span>
+<span class="n">result</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>  <span class="c1"># selected occurrences, including occurrence_indices</span>
+<span class="n">hbonds</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">"buch"</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">"hbonds"</span><span class="p">,</span> <span class="n">interaction_types</span><span class="o">=</span><span class="p">[</span><span class="s2">"hbond"</span><span class="p">])</span>
+<span class="n">hbonds</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">"#34d399"</span><span class="p">)</span>
+<span class="n">hbonds</span><span class="o">.</span><span class="n">set_radius</span><span class="p">(</span><span class="s2">"0.025 nm"</span><span class="p">)</span>
+<span class="n">view</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">inspect</span><span class="p">(</span><span class="s2">"hbonds"</span><span class="p">,</span> <span class="n">structure_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Current contract</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">analyses()</span></code></p></td>
+<td><p>Compact named-analysis metadata, including method, units, software and numeric byte count.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">get_analysis(name)</span></code></p></td>
+<td><p>Complete MolSysMT result; a missing name raises <code class="docutils literal notranslate"><span class="pre">KeyError</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">query(analysis_name,</span> <span class="pre">...)</span></code></p></td>
+<td><p>Sparse filtering by atom selection, interaction types and local structure indices. Default scope is all structures.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">attach(result,</span> <span class="pre">name=...,</span> <span class="pre">assume_aligned=True)</span></code></p></td>
+<td><p>Declare correspondence and validate a complete result against the loaded axes.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">load(filename,</span> <span class="pre">analysis_name=...,</span> <span class="pre">name=None,</span> <span class="pre">assume_aligned=True,</span> <span class="pre">...)</span></code></p></td>
+<td><p>Read one named H5MSM analysis, optionally remapping source atom/structure indices. Does not load coordinates.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hbonds.get_buch_hbonds(name=...,</span> <span class="pre">...)</span></code></p></td>
+<td><p>Buch distance criterion, default H···A threshold <code class="docutils literal notranslate"><span class="pre">2.3</span> <span class="pre">angstroms</span></code>, default visible frame and <code class="docutils literal notranslate"><span class="pre">pbc=False</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">disulfides.get_disulfide_candidates(name=...,</span> <span class="pre">...)</span></code></p></td>
+<td><p>Geometric S···S candidates, not topology edits or certified covalent bonds. Default visible frame and <code class="docutils literal notranslate"><span class="pre">pbc=False</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">delete_analysis(name)</span></code></p></td>
+<td><p>Explicitly remove scientific data and clear visual undo.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Queries accept a scalar or a nonconsecutive integer list for atoms and structures,
+and MolSysMT selection strings. Indices are local to <code class="docutils literal notranslate"><span class="pre">view.molsys</span></code>; Boolean or
+fractional indices are rejected. The default <code class="docutils literal notranslate"><span class="pre">involving_selection</span></code> retains any
+participating atom in the selection; <code class="docutils literal notranslate"><span class="pre">within_selection</span></code> requires all participant
+atoms inside it; <code class="docutils literal notranslate"><span class="pre">across_selection_boundary</span></code> requires atoms inside and outside
+it. <code class="docutils literal notranslate"><span class="pre">mode=&quot;between_selections&quot;</span></code> requires disjoint
+<code class="docutils literal notranslate"><span class="pre">selection</span></code> and <code class="docutils literal notranslate"><span class="pre">selection_2</span></code>; <code class="docutils literal notranslate"><span class="pre">exclusive=True</span></code> confines all participants to
+their union. Composite participants retain their roles and atom groups.
+Evaluated frames without observations remain distinct from unevaluated frames.
+Query lists deduplicate indices; file remapping can repeat a source structure
+to produce separate destination structures.</p>
+<p>Explicit <code class="docutils literal notranslate"><span class="pre">structure_indices=[...]</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code> requests calculation beyond the
+visible frame. PBC requires a valid finite box for each requested frame and
+preserves the detector’s observed image vectors. A failed calculation or import
+does not publish an analysis; existing names cannot be overwritten. Independent
+attachment/import requires <code class="docutils literal notranslate"><span class="pre">assume_aligned=True</span></code>, including explicit remapping
+when atom or structure order differs. Source labels and maps are provenance,
+not automatic origin authentication.</p>
+<p>Attached results are immutable snapshots for the supported workflow. Ordinary
+<code class="docutils literal notranslate"><span class="pre">apply_system_edit</span></code> invalidates their evaluated coverage; explicit
+<code class="docutils literal notranslate"><span class="pre">interactions_policy=&quot;preserve&quot;</span></code> declares the incoming analyses already valid.
+Unannounced molecular edits or direct array mutation are outside this contract.
+<code class="docutils literal notranslate"><span class="pre">save_session</span></code> preserves complete named results in H5MSM and verifies content
+signatures before restoring a view. <code class="docutils literal notranslate"><span class="pre">save_state</span></code> and visual undo do not store
+the scientific arrays. Tagged references include the named analysis content signature, filter, style,
+layer, visibility and broken state; importing a valid reference to different
+scientific data raises before changing the scene. Scientific arrays are stored
+once with the molecular system, outside visual history.</p>
+<p>Interaction display state uses extension version 2. Version 1 saved query filters
+are migrated on import (<code class="docutils literal notranslate"><span class="pre">incident</span></code>, <code class="docutils literal notranslate"><span class="pre">internal</span></code>, <code class="docutils literal notranslate"><span class="pre">cross</span></code>, <code class="docutils literal notranslate"><span class="pre">between</span></code>); old names
+are rejected in new public calls, including with <code class="docutils literal notranslate"><span class="pre">skip_digestion=True</span></code>.
+Scientific <code class="docutils literal notranslate"><span class="pre">selection_mode</span></code> and <code class="docutils literal notranslate"><span class="pre">evaluation_mode</span></code> are unchanged.</p>
+<p>The visual collection follows the other scene managers: <code class="docutils literal notranslate"><span class="pre">tags</span></code>, <code class="docutils literal notranslate"><span class="pre">count</span></code>,
+<code class="docutils literal notranslate"><span class="pre">contains</span></code>, <code class="docutils literal notranslate"><span class="pre">get</span></code>, <code class="docutils literal notranslate"><span class="pre">info</span></code>, <code class="docutils literal notranslate"><span class="pre">records</span></code>, <code class="docutils literal notranslate"><span class="pre">delete</span></code>, <code class="docutils literal notranslate"><span class="pre">clear</span></code>, <code class="docutils literal notranslate"><span class="pre">show</span></code>, <code class="docutils literal notranslate"><span class="pre">hide</span></code>,
+<code class="docutils literal notranslate"><span class="pre">show_all</span></code>, <code class="docutils literal notranslate"><span class="pre">hide_all</span></code>, <code class="docutils literal notranslate"><span class="pre">set_tag</span></code> and <code class="docutils literal notranslate"><span class="pre">set_layer_tag</span></code>. Each set offers
+<code class="docutils literal notranslate"><span class="pre">set_filter</span></code>, <code class="docutils literal notranslate"><span class="pre">set_color</span></code>, <code class="docutils literal notranslate"><span class="pre">set_alpha</span></code>, <code class="docutils literal notranslate"><span class="pre">set_radius</span></code> and <code class="docutils literal notranslate"><span class="pre">focus</span></code>. Visual deletion
+keeps scientific data. Referenced analyses cannot be deleted.</p>
+<p>The renderer draws H···A links for single-atom donor/hydrogen/acceptor roles
+and S···S disulfide candidates. Other interaction families and composite
+participants remain inspectable and count as unsupported graphics. Periodic
+positions use participant image differences relative to the first participant
+and the current frame box; missing required boxes suppress those links.</p>
+<p>Live projection retains one frame per set and rejects stale frame/revision
+replies. Frames outside the display filter, unevaluated frames, evaluated empty
+frames, unsupported graphics and damaged filters have separate statuses.
+Projection is refused above 50,000 observations or 8 MiB of serialized geometry
+per set/frame. Inspection pages contain at most 200 observations (Studio uses
+50); they preserve parallel occurrence identity and unsupported participants.
+An inspection reply has a 512 KiB budget, with at most 64 participants and 4,096
+participant atoms per observation. Its <code class="docutils literal notranslate"><span class="pre">evaluation_scope</span></code> is a compact count/mode
+summary. <code class="docutils literal notranslate"><span class="pre">query_revision</span></code> identifies the filter and analysis content so same-frame
+filter edits invalidate old replies. Excluded frames return no observations.</p>
+<p>The current provider codec copies all selected occurrences. The viewer counts
+first and checks a conservative numeric-copy budget before calling it. An
+oversized selection returns <code class="docutils literal notranslate"><span class="pre">inspection-limit</span></code>, its exact count and an explicit
+reason instead of silently truncating the results. This fallback is tracked in
+<code class="docutils literal notranslate"><span class="pre">uibcdf/molsysmt#264</span></code>; true public paging will replace it. These limits do not
+bound process RSS or complete-analysis residency. Large metadata is omitted only
+with an explicit inspection-limit reason; <code class="docutils literal notranslate"><span class="pre">get_analysis()</span></code> retains the full data.
+Static HTML embeds all requested frame geometry up to a shared 64 MiB export
+budget, and raises rather than truncating. These are conservative limits;
+representative large-system qualification is still pending. Scientific inspector
+pages require a live Python session; static HTML contains compiled geometry,
+not the complete scientific observation table.</p>
+<p>A structural removal that damages a fixed selection keeps a broken set;
+<code class="docutils literal notranslate"><span class="pre">set_filter</span></code> explicitly repairs it. Calculation parameters are immutable:
+calculate a new named analysis to change a cutoff. Studio edits styles and
+filters with one Apply operation, so no slider-generated history spam occurs.
+H5MSM paths address the Python session filesystem; the file form requires an
+explicit declaration of atom/structure alignment.</p>
+</section>
+<section id="internal-python-apis">
+<h2>Internal Python APIs<a class="headerlink" href="#internal-python-apis" title="Link to this heading">#</a></h2>
+<p>You can change these without a stability guarantee:</p>
+<ul class="simple">
+<li><p>Most of <code class="docutils literal notranslate"><span class="pre">molsysviewer._private.*</span></code></p></li>
+<li><p>Helper functions inside loaders and shapes modules</p></li>
+<li><p>Non-exported functions and private methods (<code class="docutils literal notranslate"><span class="pre">_name</span></code>)</p></li>
+</ul>
+</section>
+<section id="python-typescript-contracts">
+<h2>Python ↔ TypeScript contracts<a class="headerlink" href="#python-typescript-contracts" title="Link to this heading">#</a></h2>
+<p>These are stability-critical:</p>
+<ul class="simple">
+<li><p>MolSys payload schema (Python → JS):</p>
+<ul>
+<li><p>top-level <code class="docutils literal notranslate"><span class="pre">structures</span></code> list</p></li>
+<li><p>each structure has <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> (Å), optional <code class="docutils literal notranslate"><span class="pre">box</span></code> as three vectors (Å), optional <code class="docutils literal notranslate"><span class="pre">time</span></code></p></li>
+<li><p>do not reintroduce legacy names like <code class="docutils literal notranslate"><span class="pre">positions</span></code> or <code class="docutils literal notranslate"><span class="pre">frames</span></code></p></li>
+</ul>
+</li>
+<li><p>Message protocol (<code class="docutils literal notranslate"><span class="pre">op</span></code> + payload):</p>
+<ul>
+<li><p>the TypeScript union type <code class="docutils literal notranslate"><span class="pre">ViewerMessage</span></code> is the contract view</p></li>
+<li><p>changes must be versioned and tested</p></li>
+</ul>
+</li>
+<li><p>Tag semantics:</p>
+<ul>
+<li><p>tags must remain stable across regions, layers, and shapes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Layer.set_tag(...)</span></code> must keep working across tag renames/merges</p></li>
+</ul>
+</li>
+</ul>
+<p>See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="protocol_and_payloads.html"><span class="doc">Protocol and payloads (Python ↔ TypeScript)</span></a></p></li>
+<li><p><a class="reference internal" href="regions_layers.html"><span class="doc">Regions and layers</span></a></p></li>
+</ul>
+</section>
+<section id="exports">
+<h2>Exports<a class="headerlink" href="#exports" title="Link to this heading">#</a></h2>
+<p>Preferred export surface:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">view.export.html(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.export.image(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.export.figure(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.export.figure_variants(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.export.figure_publication_set(...)</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">view.export.image(...)</span></code> may receive an explicit <code class="docutils literal notranslate"><span class="pre">camera_snapshot=...</span></code> when the
+export should use a saved camera rather than the live current viewport.</p>
+<p><code class="docutils literal notranslate"><span class="pre">view.export.image(...)</span></code> also accepts a first small export-oriented
+<code class="docutils literal notranslate"><span class="pre">preset=...</span></code> surface:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">current</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">publication-light</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">publication-dark</span></code></p></li>
+</ul>
+<p>At this stage these presets are intentionally modest. They currently steer only
+the background treatment used during the capture itself, and the live viewer
+state is restored immediately after export.</p>
+<p><code class="docutils literal notranslate"><span class="pre">view.export.figure(...)</span></code> is now the first explicit figure-oriented wrapper above
+raw image export. It currently provides:</p>
+<ul class="simple">
+<li><p>stronger default <code class="docutils literal notranslate"><span class="pre">scale</span></code></p></li>
+<li><p>a <code class="docutils literal notranslate"><span class="pre">background=...</span></code> surface (<code class="docutils literal notranslate"><span class="pre">white</span></code>, <code class="docutils literal notranslate"><span class="pre">dark</span></code>, <code class="docutils literal notranslate"><span class="pre">transparent</span></code>, <code class="docutils literal notranslate"><span class="pre">current</span></code>)</p></li>
+<li><p>figure-oriented preset defaults</p></li>
+<li><p>an optional reusable <code class="docutils literal notranslate"><span class="pre">figure_spec=FigureSpec(...)</span></code> recipe layer</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FigureSpec.from_view(...)</span></code> to capture the current camera into a reusable
+recipe</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FigureSpec.with_overrides(...)</span></code> to derive small recipe variants without
+mutating the original</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FigureSpec.build_variants(...)</span></code> to expand a named batch of figure recipes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.export.figure_variants(...)</span></code> to materialize those named recipes into a
+directory in one pass</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FigureSpec.build_publication_variants(...)</span></code> to get the standard small
+<code class="docutils literal notranslate"><span class="pre">light</span></code> / <code class="docutils literal notranslate"><span class="pre">dark</span></code> / <code class="docutils literal notranslate"><span class="pre">transparent</span></code> publication bundle</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.export.figure_publication_set(...)</span></code> to export that standard bundle in
+one call</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">view.set_figure_spec(figure_spec=FigureSpec(...))</span></code> is now public.
+It anchors an explicit <code class="docutils literal notranslate"><span class="pre">FigureSpec</span></code> to the workbench (updates <code class="docutils literal notranslate"><span class="pre">Workbench</span> <span class="pre">-&gt;</span> <span class="pre">Scene</span></code>)
+and stores the recipe for replay in HTML exports.
+This is the intended way to connect a Python-derived figure recipe to the live
+workbench view.</p>
+<p>The runtime <code class="docutils literal notranslate"><span class="pre">Workbench</span> <span class="pre">-&gt;</span> <span class="pre">Scene</span></code> surface now also reflects the current built-in
+figure baseline so that figure export is visible as part of the workbench
+story, not only as a scripting API.</p>
+<p>It is still intentionally modest and should be treated as the first step toward
+the future richer <code class="docutils literal notranslate"><span class="pre">figure</span></code> export contract, not as the final publication export
+system.</p>
+<p><code class="docutils literal notranslate"><span class="pre">view.export.html(...,</span> <span class="pre">shared_runtime=...)</span></code> is a public, user-facing export mode.
+It must remain reproducible.</p>
+</section>
+<section id="standalone-0-bridge">
+<h2>Standalone 0 bridge<a class="headerlink" href="#standalone-0-bridge" title="Link to this heading">#</a></h2>
+<p>The local standalone bridge remains <strong>experimental in 1.0</strong>. Its launchers and
+host APIs are distributed for evaluation, without a 1.0 support or compatibility
+promise. <code class="docutils literal notranslate"><span class="pre">view.export.html(...)</span></code> remains a supported export format; producing
+an HTML artifact is distinct from supporting an interactive standalone host.</p>
+<p>The current bridge is intentionally small:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.build_standalone0_html(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.launch_standalone0(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer</span> <span class="pre">...</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">molsysviewer.standalone</span> <span class="pre">...</span></code></p></li>
+</ul>
+<p>The public Conda <code class="docutils literal notranslate"><span class="pre">0.23.4</span></code> package omits the three <code class="docutils literal notranslate"><span class="pre">molsysviewer*</span></code> console
+launchers on Windows. The Python modules remain installable there; see
+<a class="reference external" href="https://github.com/uibcdf/molsysviewer/issues/101"><code class="docutils literal notranslate"><span class="pre">#101</span></code></a> for the exact
+installed-package verification required before claiming repaired launchers.</p>
+<p>These surfaces should be treated as a host-facing bridge built on top of the
+existing standalone HTML export path, not as the final standalone product.</p>
+<p>The first Qt-host prototype now also exists as an explicit experimental surface:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.create_standalone_qt0_window(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.launch_standalone_qt0(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer-qt</span> <span class="pre">...</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">molsysviewer.standalone_qt</span> <span class="pre">...</span></code></p></li>
+</ul>
+<p>For development, this prototype requires <code class="docutils literal notranslate"><span class="pre">PySide6</span></code> with Qt WebEngine. The
+current Linux Conda candidate uses matching <code class="docutils literal notranslate"><span class="pre">pyside6</span></code>, <code class="docutils literal notranslate"><span class="pre">qt6-webengine</span></code> and
+<code class="docutils literal notranslate"><span class="pre">qt6-positioning</span></code> 6.11.2 from conda-forge. The UIBCDF binding family remains
+an explicit rollback option through <code class="docutils literal notranslate"><span class="pre">MOLSYSVIEWER_QT_BINDING=uibcdf</span></code>. See
+<code class="docutils literal notranslate"><span class="pre">devguide/standalone_supported_environment.md</span></code> for the full recipe and the
+distinction between runtime-tested and solver-only platforms. The official
+Intel-based macOS is outside the supported matrix (<code class="docutils literal notranslate"><span class="pre">uibcdf/molsyssuite#59</span></code>);
+the standalone Qt host has no certified macOS arm64 runtime yet.</p>
+<p>This should still be read as:</p>
+<ul class="simple">
+<li><p>a thin host prototype</p></li>
+<li><p>not the final standalone host</p></li>
+<li><p>not a second viewer/runtime</p></li>
+</ul>
+<p>Its current purpose is to prove that the existing standalone/runtime path can
+live inside a real app window without forking viewer semantics.</p>
+<section id="experimental-remote-session-surface">
+<h3>Experimental remote-session surface<a class="headerlink" href="#experimental-remote-session-surface" title="Link to this heading">#</a></h3>
+<p>Remote-session entrypoints remain in the distribution only as an <strong>unsupported
+post-1.0 preview</strong>; they are not certified by the 1.0 release gate:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer-server</span> <span class="pre">...</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer-qt</span> <span class="pre">--connect</span> <span class="pre">SESSION_URL</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.remote.RemoteSessionService</span></code> and the supporting remote module</p></li>
+</ul>
+<p>They are suitable for evaluation, but not a supported 1.0 workflow. In particular,
+hosted client-rendering and managed server-GPU E2E certification are deferred.
+Their Python signatures, CLI options, wire protocol and deployment model do not
+yet carry the compatibility guarantee of the stable public API above. The
+single Python mutation authority, explicit <code class="docutils literal notranslate"><span class="pre">client</span></code>/<code class="docutils literal notranslate"><span class="pre">server</span></code> rendering
+placement, credential handling and client/server filesystem boundary are
+architectural invariants, not experimental shortcuts.</p>
+<p>If you change:</p>
+<ul class="simple">
+<li><p>the runtime URL logic,</p></li>
+<li><p>the initial message replay behavior,</p></li>
+<li><p>or popup synchronization,</p></li>
+</ul>
+<p>you must validate the docs-lite output.</p>
+</section>
+</section>
+<section id="canvas-ux-modes">
+<h2>Canvas UX modes<a class="headerlink" href="#canvas-ux-modes" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">MolSysView</span></code> accepts two experimental constructor arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">view</span> <span class="o">=</span> <span class="n">MolSysView</span><span class="p">(</span><span class="n">controls_mode</span><span class="o">=</span><span class="s2">"minimal"</span><span class="p">,</span> <span class="n">panel_mode_style</span><span class="o">=</span><span class="s2">"floating"</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">controls_mode=&quot;classic&quot;</span></code> (default): six text buttons (Reset, Full, Bg, Spin, Swing, Pop).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">controls_mode=&quot;minimal&quot;</span></code>: three SVG icon cluster (panel / fullscreen / popup) plus a <code class="docutils literal notranslate"><span class="pre">?</span></code> help
+button. Scene actions (reset view, toggle background, toggle spin/swing) move to the empty-canvas
+context menu. Keyboard shortcuts: <code class="docutils literal notranslate"><span class="pre">H</span></code> toggles the help overlay, <code class="docutils literal notranslate"><span class="pre">N</span></code>/<code class="docutils literal notranslate"><span class="pre">W</span></code> open Navigate/Workbench.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">panel_mode_style=&quot;drawer&quot;</span></code> (default): Navigate panel 560 px left, Workbench 240 px right.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">panel_mode_style=&quot;floating&quot;</span></code>: centered overlay card (~72 % × 68 % of canvas), backdrop-click-to-close, zero viewport shift.</p></li>
+</ul>
+<p>Both <code class="docutils literal notranslate"><span class="pre">&quot;classic&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">&quot;drawer&quot;</span></code> remain the defaults until at least one scientific workflow
+has been validated with the new design (<code class="docutils literal notranslate"><span class="pre">0.16.x</span> <span class="pre">→</span> <span class="pre">0.17.x</span></code> horizon).</p>
+</section>
+<section id="panel-mode">
+<h2>Panel Mode<a class="headerlink" href="#panel-mode" title="Link to this heading">#</a></h2>
+<p>The current pre-<code class="docutils literal notranslate"><span class="pre">1.0</span></code> shared panel-mode entrypoint is:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">view.set_panel_mode(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.set_workspace(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.set_workspace_panel(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.get_panel_mode_state()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.workspace_catalog()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.workspace_panels(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.workspace_sections(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.workspace_runtime()</span></code></p></li>
+</ul>
+<p>This API is intentionally small:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panel=&quot;navigate&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">panel=&quot;workbench&quot;</span></code> opens that panel</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">expanded=False</span></code> collapses the current panel-mode surface</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">panel=None</span></code> lets the frontend reuse its remembered last panel when opening</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">workspace=&quot;core&quot;</span></code> selects the native workspace</p></li>
+<li><p>other workspace ids select the corresponding add-on workspace when available</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.set_workspace_panel(&quot;topo&quot;,</span> <span class="pre">workspace=&quot;topomt&quot;)</span></code> lands directly on a
+local workspace panel from Python/notebook code</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.get_panel_mode_state()</span></code> returns the last panel/workspace state reported
+by the frontend runtime</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.workspace_catalog()</span></code> returns the effective workspace list visible to the
+view, including <code class="docutils literal notranslate"><span class="pre">Core</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.workspace_panels(&quot;topomt&quot;)</span></code> returns the local panel stack for that
+workspace</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.workspace_sections(&quot;topomt&quot;)</span></code> returns the visible workbench sections
+for that workspace</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">workspace_catalog()</span></code>, <code class="docutils literal notranslate"><span class="pre">workspace_panels(...)</span></code>, and <code class="docutils literal notranslate"><span class="pre">workspace_sections(...)</span></code>
+also reflect the current runtime view of the shared workspace model when the
+frontend has already reported state</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">workspace_runtime()</span></code> returns a single notebook-facing snapshot combining:
+runtime state, effective workspace catalog, the current workspace record, the
+current local panel stack, the current active panel record, and the current
+workspace sections</p></li>
+</ul>
+<p>This small surface matters especially for notebook usage:</p>
+<ul class="simple">
+<li><p>it gives Jupyter users an explicit Python control door into the shared
+panel/workspace runtime</p></li>
+<li><p>it avoids requiring mouse-only navigation for workspace changes</p></li>
+<li><p>it also lets notebook code drive the local panel stack of larger add-on
+workspaces</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="concepts.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">MolSysViewer Concepts (Python ↔ AnyWidget ↔ Mol* ↔ WebGL)</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="protocol_and_payloads.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Protocol and payloads (Python ↔ TypeScript)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#public-python-api">Public Python API</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#uniform-argument-validation">Uniform argument validation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#config-set-structure-scale-budget-budget-bytes"><code class="docutils literal notranslate"><span class="pre">config.set_structure_scale_budget(budget_bytes)</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#notebook-rendering">Notebook rendering</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#managing-scientific-interactions-experimental">Managing scientific interactions (experimental)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#internal-python-apis">Internal Python APIs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#python-typescript-contracts">Python ↔ TypeScript contracts</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exports">Exports</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#standalone-0-bridge">Standalone 0 bridge</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#experimental-remote-session-surface">Experimental remote-session surface</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#canvas-ux-modes">Canvas UX modes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#panel-mode">Panel Mode</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="../about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

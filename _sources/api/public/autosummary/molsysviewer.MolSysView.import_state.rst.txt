@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.import\_state
+=====================================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.import_state

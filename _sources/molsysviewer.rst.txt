@@ -1,0 +1,262 @@
+molsysviewer package
+====================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   molsysviewer.addon_templates
+   molsysviewer.config
+   molsysviewer.loaders
+   molsysviewer.remote
+   molsysviewer.shapes
+   molsysviewer.standalone_qt
+   molsysviewer.thirds
+   molsysviewer.tools
+   molsysviewer.transport
+   molsysviewer.viewer
+
+Submodules
+----------
+
+molsysviewer.active\_selection module
+-------------------------------------
+
+.. automodule:: molsysviewer.active_selection
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.addons module
+--------------------------
+
+.. automodule:: molsysviewer.addons
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.annotations module
+-------------------------------
+
+.. automodule:: molsysviewer.annotations
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.colors module
+--------------------------
+
+.. automodule:: molsysviewer.colors
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.demo module
+------------------------
+
+.. automodule:: molsysviewer.demo
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.exports module
+---------------------------
+
+.. automodule:: molsysviewer.exports
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.figures module
+---------------------------
+
+.. automodule:: molsysviewer.figures
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.geometry module
+----------------------------
+
+.. automodule:: molsysviewer.geometry
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.interaction\_targets module
+----------------------------------------
+
+.. automodule:: molsysviewer.interaction_targets
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.interactions module
+--------------------------------
+
+.. automodule:: molsysviewer.interactions
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.layers module
+--------------------------
+
+.. automodule:: molsysviewer.layers
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.measurements module
+--------------------------------
+
+.. automodule:: molsysviewer.measurements
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.new\_view module
+-----------------------------
+
+.. automodule:: molsysviewer.new_view
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.player module
+--------------------------
+
+.. automodule:: molsysviewer.player
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.preview module
+---------------------------
+
+.. automodule:: molsysviewer.preview
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.regions module
+---------------------------
+
+.. automodule:: molsysviewer.regions
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.runtime\_contract module
+-------------------------------------
+
+.. automodule:: molsysviewer.runtime_contract
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.scene module
+-------------------------
+
+.. automodule:: molsysviewer.scene
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.scene\_history module
+----------------------------------
+
+.. automodule:: molsysviewer.scene_history
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.selections module
+------------------------------
+
+.. automodule:: molsysviewer.selections
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.session module
+---------------------------
+
+.. automodule:: molsysviewer.session
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.shape\_adapters module
+-----------------------------------
+
+.. automodule:: molsysviewer.shape_adapters
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.standalone module
+------------------------------
+
+.. automodule:: molsysviewer.standalone
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.styles module
+--------------------------
+
+.. automodule:: molsysviewer.styles
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.systems module
+---------------------------
+
+.. automodule:: molsysviewer.systems
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.tags module
+------------------------
+
+.. automodule:: molsysviewer.tags
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.trajectory\_plot module
+------------------------------------
+
+.. automodule:: molsysviewer.trajectory_plot
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.whole module
+-------------------------
+
+.. automodule:: molsysviewer.whole
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.widget module
+--------------------------
+
+.. automodule:: molsysviewer.widget
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: molsysviewer
+   :members:
+   :show-inheritance:
+   :undoc-members:

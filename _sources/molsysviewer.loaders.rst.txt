@@ -1,0 +1,37 @@
+molsysviewer.loaders package
+============================
+
+Submodules
+----------
+
+molsysviewer.loaders.array\_native\_molsys module
+-------------------------------------------------
+
+.. automodule:: molsysviewer.loaders.array_native_molsys
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.loaders.json\_molsys module
+----------------------------------------
+
+.. automodule:: molsysviewer.loaders.json_molsys
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.loaders.load\_molsysmt module
+------------------------------------------
+
+.. automodule:: molsysviewer.loaders.load_molsysmt
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: molsysviewer.loaders
+   :members:
+   :show-inheritance:
+   :undoc-members:

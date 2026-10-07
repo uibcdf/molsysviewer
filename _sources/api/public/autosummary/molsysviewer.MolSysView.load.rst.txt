@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.load
+============================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.load

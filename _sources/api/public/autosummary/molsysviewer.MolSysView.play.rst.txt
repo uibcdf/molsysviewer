@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.play
+============================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.play

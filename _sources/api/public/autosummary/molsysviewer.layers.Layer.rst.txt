@@ -1,0 +1,42 @@
+﻿molsysviewer.layers.Layer
+=========================
+
+.. currentmodule:: molsysviewer.layers
+
+.. autoclass:: Layer
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Layer.__init__
+      ~Layer.attach
+      ~Layer.delete
+      ~Layer.detach
+      ~Layer.hide
+      ~Layer.info
+      ~Layer.set_tag
+      ~Layer.show
+      ~Layer.ungroup
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Layer.annotations
+      ~Layer.interactions
+      ~Layer.measurements
+      ~Layer.members
+      ~Layer.owner
+      ~Layer.regions
+      ~Layer.shapes
+   
+   

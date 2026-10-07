@@ -1,0 +1,899 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../../_static/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
+    <link href="../../_static/favicon-124x124.png" sizes="124x124" rel="icon" type="image/png">
+    <link href="../../_static/favicon-128x128.png" sizes="128x128" rel="icon" type="image/png">
+    <link href="../../_static/favicon-192x192.png" sizes="192x192" rel="icon" type="image/png">
+    <link href="../../_static/icon.svg" rel="icon" type="image/svg+xml">
+  
+    <title>Developer guide – MolSysViewer 0.24.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6b6fcda3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6b6fcda3" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
+
+    <script src="../../_static/documentation_options.js?v=a9084e48"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/developer/index';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Getting started" href="intro/index.html" />
+    <link rel="prev" title="Calculating and inspecting interactions" href="../user/cookbook/interactions_workbench.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.24.0" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.24.0 documentation - Home"/>
+    <img src="../../_static/logo_dark.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.24.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro/contributing.html">Contributing (quick start)</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="dev_setup.html">Developer setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="repo_structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration (Python)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="demo_systems.html">Demo systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ci.html">CI and automation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">MolSysViewer Concepts (Python ↔ AnyWidget ↔ Mol* ↔ WebGL)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="public_api.html">Public API and stability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol_and_payloads.html">Protocol and payloads (Python ↔ TypeScript)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="units_and_quantities.html">Units and quantities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="standalone_surfaces.html">Standalone surfaces and the Qt live model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_full.html">Architecture (full)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="addons.html">Add-ons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="regions_layers.html">Regions and layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Workflow</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="js_workflow.html">JS/TS workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Testing &amp; QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="warnings.html">Warnings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smonitor.html">SMonitor integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasing.html">Releasing and publishing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_and_citation.html">Citation and Zenodo releases</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs_workflow.html">Docs workflow (local build and RTD parity)</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="documentation/web/index.html">Documentation for the web</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/editorial_guidelines.html">Web documentation editorial guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/build_and_layout.html">Web docs build &amp; layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/myst.html">MyST in MolSysViewer documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/references.html">References and Cross-links in Documentation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="documentation/api/index.html">API documentation guidelines</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="documentation/api/docstrings.html">Docstrings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/api/doctests.html">Doctests</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Style</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="style.html">Coding style &amp; conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="type_annotations_guidelines.html">Type annotations (Python ≥3.10)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="string_style.html">String and quotation style</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Planning and history</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes_notes.html">Changes notes</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="future/index.html">Future (index)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="future/ci.html">CI roadmap (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/performance.html">Performance notes (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/security.html">Security (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/molsysview_molsysmt_ops.html">MolSysView ↔ MolSysMT operations</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_snapshot_2026_01.html">Architecture snapshot (2026-01)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_snapshot_2025_11.html">Architecture snapshot (2025-11)</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="appendix/index.html">Appendix</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="appendix/historical/index.html">Historical documents</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="architecture_snapshot_2025_11.html">Architecture snapshot (2025-11)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="design_overview.html">Design overview (historical)</a></li>
+
+
+
+
+
+
+
+
+
+<li class="toctree-l3"><a class="reference internal" href="modules_overview.html">Modules overview (snapshot)</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Developer guide</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="developer-guide">
+<h1>Developer guide<a class="headerlink" href="#developer-guide" title="Link to this heading">#</a></h1>
+<p>Use this section to understand how MolSysViewer is built.
+You also use it as the source of truth for contributor workflows and docs style.</p>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro/index.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev_setup.html">Developer setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev_setup.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev_setup.html#recommended-node-installation-nvm">Recommended Node installation (NVM)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev_setup.html#python-environment">Python environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev_setup.html#typescript-environment">TypeScript environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev_setup.html#typical-dev-loop">Typical dev loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev_setup.html#tests">Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev_setup.html#using-codex-or-other-ai-tools-optional">Using Codex or other AI tools (optional)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev_setup.html#documentation-workflow">Documentation workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev_setup.html#troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="repo_structure.html">Repository structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="repo_structure.html#top-level-layout">Top-level layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="repo_structure.html#python-package-molsysviewer">Python package (<code class="docutils literal notranslate"><span class="pre">molsysviewer/</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="repo_structure.html#typescript-runtime-molsysviewer-js">TypeScript runtime (<code class="docutils literal notranslate"><span class="pre">molsysviewer/js/</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="repo_structure.html#generated-artifacts">Generated artifacts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="repo_structure.html#legacy-path-mapping">Legacy path mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration (Python)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#what-belongs-here">What belongs here</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#runtime-defaults-in-molsysviewer-config">Runtime Defaults In <code class="docutils literal notranslate"><span class="pre">molsysviewer.config</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#user-presets">User Presets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#explicit-project-config-with-molsysviewer-py">Explicit Project Config With <code class="docutils literal notranslate"><span class="pre">_molsysviewer.py</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#recommended-molsysviewer-py-shape">Recommended <code class="docutils literal notranslate"><span class="pre">_molsysviewer.py</span></code> Shape</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#loading-project-config-explicitly">Loading Project Config Explicitly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#applying-project-add-on-defaults">Applying Project Add-on Defaults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#applying-project-config-to-a-viewer">Applying Project Config To A Viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#style-api-examples">Style API Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#built-in-canonical-scene-recipes">Built-In Canonical Scene Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#configuration-rule">Configuration Rule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#cross-links">Cross-links</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="demo_systems.html">Demo systems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="demo_systems.html#where-they-live">Where they live</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_systems.html#why-this-matters">Why this matters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_systems.html#recommended-usage">Recommended usage</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#basic-workflow">Basic workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#what-to-include-in-a-pr">What to include in a PR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#what-to-avoid">What to avoid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#issues">Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ci.html">CI and automation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ci.html#ci-entry-points">CI entry points</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ci.html#what-you-run-locally">What you run locally</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ci.html#placeholder">Placeholder</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">MolSysViewer Concepts (Python ↔ AnyWidget ↔ Mol* ↔ WebGL)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#layers-and-roles">Layers and roles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#message-flow-python-js-mol-webgl">Message flow (Python → JS → Mol* → WebGL)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#why-molsysviewer-vs-raw-mol">Why MolSysViewer (vs. raw Mol*)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#shape-philosophy-api-mol-webgl">Shape philosophy (API → Mol* → WebGL)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#key-components">Key components</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="public_api.html">Public API and stability</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="public_api.html#public-python-api">Public Python API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="public_api.html#managing-scientific-interactions-experimental">Managing scientific interactions (experimental)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="public_api.html#internal-python-apis">Internal Python APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="public_api.html#python-typescript-contracts">Python ↔ TypeScript contracts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="public_api.html#exports">Exports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="public_api.html#standalone-0-bridge">Standalone 0 bridge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="public_api.html#canvas-ux-modes">Canvas UX modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="public_api.html#panel-mode">Panel Mode</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="protocol_and_payloads.html">Protocol and payloads (Python ↔ TypeScript)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="protocol_and_payloads.html#viewermessage-protocol">ViewerMessage protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol_and_payloads.html#molsys-payload-schema-python-js">MolSys payload schema (Python → JS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol_and_payloads.html#partial-coordinate-edits">Partial coordinate edits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol_and_payloads.html#js-python-events">JS → Python events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol_and_payloads.html#tags-and-registries">Tags and registries</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="units_and_quantities.html">Units and quantities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="units_and_quantities.html#the-rule">The rule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="units_and_quantities.html#lazy-pyunitwizard-initialization">Lazy PyUnitWizard initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="units_and_quantities.html#writing-a-public-method-that-takes-a-magnitude">Writing a public method that takes a magnitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="units_and_quantities.html#gotchas">Gotchas</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="standalone_surfaces.html">Standalone surfaces and the Qt live model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="standalone_surfaces.html#how-each-one-is-entered">How each one is entered</a></li>
+<li class="toctree-l2"><a class="reference internal" href="standalone_surfaces.html#the-four-surfaces">The four surfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="standalone_surfaces.html#the-qt-live-message-model">The Qt live-message model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="standalone_surfaces.html#ui-state-across-loads-per-generation-policy">UI state across loads (per-generation policy)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_full.html">Architecture (full)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture_full.html#layers-and-responsibilities">Layers and responsibilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_full.html#core-data-model">Core data model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_full.html#data-flow">Data flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_full.html#visibility-model">Visibility model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_full.html#regions-layers-and-whole">Regions, layers, and whole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_full.html#shapes-pipeline">Shapes pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_full.html#popup-popout-architecture">Popup (popout) architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_full.html#trajectory-controls">Trajectory controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_full.html#implementation-notes-detailed">Implementation notes (detailed)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="addons.html">Add-ons</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="addons.html#mental-model-host-vs-view">Mental Model: Host vs View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="addons.html#public-vocabulary">Public Vocabulary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="addons.html#where-an-add-on-lives">Where an add-on lives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="addons.html#how-the-host-finds-it">How the host finds it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="addons.html#importable-module-contract">Importable Module Contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="addons.html#contribution-types">Contribution Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="addons.html#workspace-guidance">Workspace Guidance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="addons.html#discovery-and-registration">Discovery and Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="addons.html#python-lifecycle-contract">Python Lifecycle Contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="addons.html#add-on-state-and-public-api-namespace">Add-on State and Public API Namespace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="addons.html#frontend-panel-guidelines">Frontend Panel Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="addons.html#reference-implementation-add-on-tester">Reference Implementation: Add-on Tester</a></li>
+<li class="toctree-l2"><a class="reference internal" href="addons.html#first-milestone-for-downstream-teams">First Milestone for Downstream Teams</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="regions_layers.html">Regions and layers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="regions_layers.html#naming-and-concepts">Naming and concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="regions_layers.html#python-api-sketch">Python API (sketch)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="regions_layers.html#tagging-policy">Tagging policy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="regions_layers.html#js-responsibilities">JS responsibilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="regions_layers.html#visibility-whole-vs-regions-vs-display">Visibility (whole vs regions vs display)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="regions_layers.html#whole-presets-and-tags-collision-risk">Whole presets and tags: collision risk</a></li>
+<li class="toctree-l2"><a class="reference internal" href="regions_layers.html#ideas">Ideas</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="debugging.html#python-side-checks">Python-side checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debugging.html#frontend-logs">Frontend logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debugging.html#message-level-debugging">Message-level debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debugging.html#popup-popout-sync">Popup / popout sync</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debugging.html#placeholder">Placeholder</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Workflow</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="js_workflow.html">JS/TS workflow</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="js_workflow.html#source-of-truth">Source of truth</a></li>
+<li class="toctree-l2"><a class="reference internal" href="js_workflow.html#install-and-build">Install and build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="js_workflow.html#test">Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="js_workflow.html#debug">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="js_workflow.html#awaiting-a-completed-canvas-draw">Awaiting a completed canvas draw</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Testing &amp; QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="warnings.html">Warnings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="warnings.html#how-it-works">How it works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="warnings.html#where-warnings-are-emitted-current">Where warnings are emitted (current)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="warnings.html#adding-a-new-warning">Adding a new warning</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="smonitor.html">SMonitor integration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="smonitor.html#integration-surface">Integration surface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="smonitor.html#how-to-emit">How to emit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="smonitor.html#adding-a-new-signal">Adding a new signal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="releasing.html">Releasing and publishing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="releasing.html#citation-and-source-preservation">Citation and source preservation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasing.html#versioning">Versioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasing.html#js-runtime-npm">JS runtime (npm)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasing.html#python-packages-pip-conda">Python packages (pip/conda)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasing.html#candidate-evaluation">Candidate evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasing.html#current-pre-0-16-0-practical-gate">Current Pre-<code class="docutils literal notranslate"><span class="pre">0.16.0</span></code> Practical Gate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="release_and_citation.html">Citation and Zenodo releases</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs_workflow.html">Docs workflow (local build and RTD parity)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="docs_workflow.html#before-you-build">Before you build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docs_workflow.html#build-locally">Build locally</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docs_workflow.html#review-locally">Review locally</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docs_workflow.html#notebook-outputs">Notebook outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docs_workflow.html#rtd-parity-checklist">RTD parity checklist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docs_workflow.html#coordinated-source-and-installed-package-evidence">Coordinated source and installed-package evidence</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="documentation/web/index.html">Documentation for the web</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/editorial_guidelines.html">Web documentation editorial guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/build_and_layout.html">Web docs build &amp; layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/myst.html">MyST in MolSysViewer documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/references.html">References and Cross-links in Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="documentation/api/index.html">API documentation guidelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="documentation/api/index.html#api-reference-pages-autosummary">API Reference pages (autosummary)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Style</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="style.html">Coding style &amp; conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="type_annotations_guidelines.html">Type annotations (Python ≥3.10)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="string_style.html">String and quotation style</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="string_style.html#policy">Policy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="string_style.html#why-this-is-safe">Why this is safe</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Planning and history</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#current-position">Current Position</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#priority-toward-1-0">Priority Toward 1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#what-is-already-done">What Is Already Done</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#what-is-still-missing-or-incomplete">What Is Still Missing or Incomplete</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#non-goals-for-the-immediate-next-step">Non-Goals for the Immediate Next Step</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#post-1-0-goals">Post-1.0 Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#immediate-next-step">Immediate Next Step</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#long-term-vision">Long-Term Vision</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changes_notes.html">Changes notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="future/index.html">Future (index)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="future/ci.html">CI roadmap (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/performance.html">Performance notes (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/security.html">Security (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/molsysview_molsysmt_ops.html">MolSysView ↔ MolSysMT operations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_snapshot_2026_01.html">Architecture snapshot (2026-01)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture_snapshot_2026_01.html#high-level-layers">1. High-level layers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_snapshot_2026_01.html#python-js-message-protocol">2. Python ↔ JS message protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_snapshot_2026_01.html#data-path-molsysmt-mol">3. Data path: MolSysMT → Mol*</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_snapshot_2026_01.html#visibility-and-masking">4. Visibility and masking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_snapshot_2026_01.html#regions-and-layers">5. Regions and layers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_snapshot_2026_01.html#popup-host-popup">6. Popup (host ↔ popup)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_snapshot_2026_01.html#html-export-behavior-current">7. HTML export behavior (current)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_snapshot_2026_01.html#what-was-still-aspirational-at-the-time">8. What was still aspirational (at the time)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_snapshot_2025_11.html">Architecture snapshot (2025-11)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture_snapshot_2025_11.html#high-level-layers">1. High-level layers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_snapshot_2025_11.html#python-js-message-protocol">2. Python ↔ JS message protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_snapshot_2025_11.html#data-path-molsysmt-mol">3. Data path: MolSysMT → Mol*</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_snapshot_2025_11.html#visibility-and-masking">4. Visibility and masking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_snapshot_2025_11.html#regions-and-layers">5. Regions and layers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_snapshot_2025_11.html#popup-host-popup">6. Popup (host ↔ popup)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture_snapshot_2025_11.html#what-was-still-aspirational-at-the-time">7. What was still aspirational (at the time)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="appendix/index.html">Appendix</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="appendix/historical/index.html">Historical documents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../user/cookbook/interactions_workbench.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Calculating and inspecting interactions</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="intro/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Getting started</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="../about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

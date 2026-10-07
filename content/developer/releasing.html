@@ -1,0 +1,822 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../../_static/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
+    <link href="../../_static/favicon-124x124.png" sizes="124x124" rel="icon" type="image/png">
+    <link href="../../_static/favicon-128x128.png" sizes="128x128" rel="icon" type="image/png">
+    <link href="../../_static/favicon-192x192.png" sizes="192x192" rel="icon" type="image/png">
+    <link href="../../_static/icon.svg" rel="icon" type="image/svg+xml">
+  
+    <title>Releasing and publishing – MolSysViewer 0.24.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6b6fcda3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6b6fcda3" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
+
+    <script src="../../_static/documentation_options.js?v=a9084e48"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/developer/releasing';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Citation and Zenodo releases" href="release_and_citation.html" />
+    <link rel="prev" title="SMonitor integration" href="smonitor.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.24.0" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.24.0 documentation - Home"/>
+    <img src="../../_static/logo_dark.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.24.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro/contributing.html">Contributing (quick start)</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="dev_setup.html">Developer setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="repo_structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration (Python)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="demo_systems.html">Demo systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ci.html">CI and automation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">MolSysViewer Concepts (Python ↔ AnyWidget ↔ Mol* ↔ WebGL)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="public_api.html">Public API and stability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol_and_payloads.html">Protocol and payloads (Python ↔ TypeScript)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="units_and_quantities.html">Units and quantities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="standalone_surfaces.html">Standalone surfaces and the Qt live model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_full.html">Architecture (full)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="addons.html">Add-ons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="regions_layers.html">Regions and layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Workflow</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="js_workflow.html">JS/TS workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Testing &amp; QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="warnings.html">Warnings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smonitor.html">SMonitor integration</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Releasing and publishing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_and_citation.html">Citation and Zenodo releases</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs_workflow.html">Docs workflow (local build and RTD parity)</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="documentation/web/index.html">Documentation for the web</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/editorial_guidelines.html">Web documentation editorial guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/build_and_layout.html">Web docs build &amp; layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/myst.html">MyST in MolSysViewer documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/references.html">References and Cross-links in Documentation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="documentation/api/index.html">API documentation guidelines</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="documentation/api/docstrings.html">Docstrings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/api/doctests.html">Doctests</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Style</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="style.html">Coding style &amp; conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="type_annotations_guidelines.html">Type annotations (Python ≥3.10)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="string_style.html">String and quotation style</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Planning and history</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes_notes.html">Changes notes</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="future/index.html">Future (index)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="future/ci.html">CI roadmap (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/performance.html">Performance notes (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/security.html">Security (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/molsysview_molsysmt_ops.html">MolSysView ↔ MolSysMT operations</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_snapshot_2026_01.html">Architecture snapshot (2026-01)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_snapshot_2025_11.html">Architecture snapshot (2025-11)</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="appendix/index.html">Appendix</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="appendix/historical/index.html">Historical documents</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="architecture_snapshot_2025_11.html">Architecture snapshot (2025-11)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="design_overview.html">Design overview (historical)</a></li>
+
+
+
+
+
+
+
+
+
+<li class="toctree-l3"><a class="reference internal" href="modules_overview.html">Modules overview (snapshot)</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Developer guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Releasing and publishing</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="releasing-and-publishing">
+<h1>Releasing and publishing<a class="headerlink" href="#releasing-and-publishing" title="Link to this heading">#</a></h1>
+<p>Use this page when you cut a release or publish the JS runtime.</p>
+<section id="citation-and-source-preservation">
+<h2>Citation and source preservation<a class="headerlink" href="#citation-and-source-preservation" title="Link to this heading">#</a></h2>
+<p>A release is not complete when its packages are uploaded. Before tagging, run
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">devtools/prepare_release.py</span> <span class="pre">X.Y.Z</span></code> and the citation step in the release
+gate. After publishing the GitHub Release, Zenodo must archive the tagged source
+and <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">devtools/verify_zenodo_release.py</span> <span class="pre">X.Y.Z</span></code> must pass. A pushed tag alone
+does not trigger Zenodo.</p>
+<p>See <a class="reference internal" href="release_and_citation.html"><span class="doc">Citation and Zenodo releases</span></a> for the contributor procedure and
+<a class="reference external" href="https://github.com/uibcdf/molsysviewer/blob/main/devguide/release_and_citation.md"><code class="docutils literal notranslate"><span class="pre">devguide/release_and_citation.md</span></code></a>
+for the normative metadata and recovery contract.</p>
+</section>
+<section id="versioning">
+<h2>Versioning<a class="headerlink" href="#versioning" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>New public versions and tags use canonical <code class="docutils literal notranslate"><span class="pre">X.Y.Z</span></code>. MolSysSuite disallows
+new public prerelease tags; qualify candidates with exact commits and staging
+artifacts under its release-version policy.</p></li>
+<li><p>The Python version is produced by <code class="docutils literal notranslate"><span class="pre">versioningit</span></code> from Git tags.</p></li>
+<li><p>The JS package version is synchronized from Python during <code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">run</span> <span class="pre">build</span></code>
+using <code class="docutils literal notranslate"><span class="pre">molsysviewer/js/scripts/sync-python-version.mjs</span></code>.</p></li>
+<li><p>Development runtime rebuilds should use <code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">run</span> <span class="pre">build:runtime</span></code>; that command
+does not synchronize version metadata.</p></li>
+</ul>
+<p>Compatibility rule</p>
+<ul class="simple">
+<li><p>The Python package version and the npm runtime version must match.</p></li>
+<li><p>Docs-lite HTML exports should be served with the matching runtime version.
+If you mismatch versions, message ops or option schemas can drift and break embeds.</p></li>
+</ul>
+<p>See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="protocol_and_payloads.html"><span class="doc">Protocol and payloads (Python ↔ TypeScript)</span></a></p></li>
+</ul>
+</section>
+<section id="js-runtime-npm">
+<h2>JS runtime (npm)<a class="headerlink" href="#js-runtime-npm" title="Link to this heading">#</a></h2>
+<p>Package: <code class="docutils literal notranslate"><span class="pre">&#64;uibcdf/molsysviewer</span></code> published from <code class="docutils literal notranslate"><span class="pre">molsysviewer/js/</span></code>.</p>
+<p>Flow</p>
+<ol class="arabic simple">
+<li><p>Ensure <code class="docutils literal notranslate"><span class="pre">molsysviewer/js/package.json</span></code> version matches the intended tag.</p></li>
+<li><p>After the exact candidate passes its gates, create and push a tag <code class="docutils literal notranslate"><span class="pre">X.Y.Z</span></code>.</p></li>
+<li><p>Pushing the tag runs <code class="docutils literal notranslate"><span class="pre">.github/workflows/npm-publish.yaml</span></code>, which publishes
+using Trusted Publisher (OIDC).</p></li>
+</ol>
+<p>Publishing the GitHub Release for that tag does not publish to npm again. npm
+versions are immutable; a second automatic publish of the same version is a
+workflow failure, not another release step. Manual workflow dispatch requires
+an explicit tag and is reserved for recovery of a version not yet on npm.</p>
+<p>Conda publishes from a GitHub <em>Release</em>, while npm publishes from its tag.
+Historical versions may therefore exist on npm without a corresponding Conda
+package. New tags require candidate evidence because pushing one publishes the
+runtime; use commits and staging artifacts for development checkpoints.</p>
+<p><strong>A tag is what publishes to npm, and that is deliberate.</strong> It used to trigger
+only on <code class="docutils literal notranslate"><span class="pre">release:</span> <span class="pre">published</span></code>. From <code class="docutils literal notranslate"><span class="pre">0.8.0</span></code> this project tagged without creating
+GitHub Releases, so the trigger stopped firing and npm sat at <code class="docutils literal notranslate"><span class="pre">0.7.0</span></code> while
+Python reached <code class="docutils literal notranslate"><span class="pre">0.20.0</span></code> — <strong>thirteen versions</strong>, discovered on 2026-08-05 and
+republished by hand. The runtime is not a package anybody installs on purpose: it
+is what an exported view fetches, so it has to exist for every version that can
+export. That is why its trigger is the thing that always happens.</p>
+<p><strong>Do not dispatch an old tag to fill a gap without thinking.</strong> The workflow runs
+<code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">publish</span></code> with no <code class="docutils literal notranslate"><span class="pre">--tag</span></code>, so it sets <code class="docutils literal notranslate"><span class="pre">latest</span></code>. Publishing <code class="docutils literal notranslate"><span class="pre">0.12.0</span></code> today
+would move <code class="docutils literal notranslate"><span class="pre">latest</span></code> backwards from the current release, and nothing on our side
+would say so. Versions <code class="docutils literal notranslate"><span class="pre">0.8.0</span></code> through <code class="docutils literal notranslate"><span class="pre">0.19.0</span></code> are missing from npm and are
+staying missing by decision; if that is ever revisited, the publish needs an
+explicit dist-tag first.</p>
+<p><strong>Check it, do not assume it.</strong> After tagging:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gh<span class="w"> </span>run<span class="w"> </span>list<span class="w"> </span>--workflow<span class="o">=</span>npm-publish.yaml<span class="w"> </span>--limit<span class="w"> </span><span class="m">1</span>
+curl<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s2">"%{http_code}\n"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="s2">"https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@X.Y.Z/dist/viewer.js"</span>
+</pre></div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">404</span></code> there means every <code class="docutils literal notranslate"><span class="pre">view.export.html(...,</span> <span class="pre">shared_runtime=&quot;cdn&quot;)</span></code> written
+by a user of that version points at nothing. That is a public API path failing on
+somebody else’s website, months later, with nothing on our side to notice.</p>
+<p>How the version is chosen</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">run</span> <span class="pre">build</span></code> syncs the JS version from the Python version.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">run</span> <span class="pre">build:runtime</span></code> only rebuilds the runtime artifact and must be used
+for ordinary TypeScript development when version metadata should remain
+untouched.</p></li>
+<li><p>A release tag <code class="docutils literal notranslate"><span class="pre">X.Y.Z</span></code> defines the version for both artifacts.</p></li>
+<li><p>The docs-lite export should point to the same <code class="docutils literal notranslate"><span class="pre">X.Y.Z</span></code> runtime URL.</p></li>
+</ul>
+</section>
+<section id="python-packages-pip-conda">
+<h2>Python packages (pip/conda)<a class="headerlink" href="#python-packages-pip-conda" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>The Python wheel includes <code class="docutils literal notranslate"><span class="pre">molsysviewer/viewer.js</span></code> and <code class="docutils literal notranslate"><span class="pre">.map</span></code> as package data.</p></li>
+<li><p>Conda build uses <code class="docutils literal notranslate"><span class="pre">devtools/conda-build/build.sh</span></code>, which builds the JS bundle
+and then installs the Python package.</p></li>
+<li><p>Conda freezes its already validated <code class="docutils literal notranslate"><span class="pre">PKG_VERSION</span></code> into the ephemeral build source and
+disables versioningit’s hook in that private copy before regenerating tracked JS
+assets. Otherwise those build products make Git dirty and the hook gives the installed
+package a local <code class="docutils literal notranslate"><span class="pre">.dirty</span></code> suffix that disagrees with the Conda coordinate.</p></li>
+</ul>
+<p>GitHub workflow</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.github/workflows/build_and_upload_conda_packages.yaml</span></code></p></li>
+</ul>
+<p>For a coupled release, commit <code class="docutils literal notranslate"><span class="pre">devtools/conda-build/release_plan.toml</span></code> with the
+<code class="docutils literal notranslate"><span class="pre">staged</span></code> route before building. The manual build workflow uploads one immutable
+candidate only to <code class="docutils literal notranslate"><span class="pre">uibcdf/label/staging</span></code>; an additive build number is required
+for a correction. Validate the exact MolSysMT/MolSysViewer pair before tagging.
+Before dispatching that build, generate and commit <code class="docutils literal notranslate"><span class="pre">viewer.js</span></code> for the intended
+release version from a clean checkout with no generated <code class="docutils literal notranslate"><span class="pre">molsysviewer/_version.py</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>molsysviewer/js
+<span class="nv">RELEASE_VERSION</span><span class="o">=</span>X.Y.Z<span class="w"> </span>npm<span class="w"> </span>run<span class="w"> </span>build:runtime
+<span class="nb">cd</span><span class="w"> </span>../..
+python<span class="w"> </span>devtools/validate_python_wheel_runtime.py<span class="w"> </span>--expected-version<span class="w"> </span>X.Y.Z
+</pre></div>
+</div>
+<p>The build resolver intentionally prefers an existing <code class="docutils literal notranslate"><span class="pre">_version.py</span></code> over the
+environment variable. A development-generated version file would stamp the
+wrong version into the release bundle, so inspect the validator result before
+committing the generated asset. The staging workflow creates a local tag for
+the exact candidate commit, builds an ordinary Python wheel without rebuilding
+JS, then checks both wheel <code class="docutils literal notranslate"><span class="pre">METADATA</span></code> and its packaged runtime. A passing
+Conda build alone cannot certify this wheel route because Conda rebuilds JS in
+its private source copy. For the staged CI dispatch, provide the same
+<code class="docutils literal notranslate"><span class="pre">viewer_version</span></code>; CI creates a local tag at its exact workflow SHA so that
+Python tests see the intended release identity rather than an untagged
+versioningit development version. Give the same <code class="docutils literal notranslate"><span class="pre">viewer_version</span></code> to the
+Python 3.14 source-pair dispatch; it uses the identical exact-SHA local-tag
+rule before installing the two source candidates. See
+<code class="docutils literal notranslate"><span class="pre">uibcdf/molsysviewer#102</span></code>.</p>
+<p>Publishing the GitHub Release does <strong>not</strong> rebuild that staged version. After
+the exact-commit gates and Release are complete, dispatch
+<code class="docutils literal notranslate"><span class="pre">.github/workflows/promote_conda_package.yaml</span></code> from <code class="docutils literal notranslate"><span class="pre">main</span></code> with the tag commit,
+version, build number, independently observed SHA-256 and successful full
+installed-pair run. It adds <code class="docutils literal notranslate"><span class="pre">main</span></code> to the same noarch file and verifies the
+public record. If that read-only verification fails after the action reports
+successful promotion, inspect the retained receipt and dispatch
+<code class="docutils literal notranslate"><span class="pre">.github/workflows/verify_public_conda_package.yaml</span></code> with the exact version,
+build number and SHA-256. The separate verifier needs no upload token and
+must not invoke the promotion action again. A direct, unstaged release remains
+a separate route and is rejected when Anaconda already has any file for that
+version. The tag-driven
+npm publication and Zenodo ingestion remain separate; neither is evidence that
+Conda promotion succeeded.</p>
+<p>Key points</p>
+<ul class="simple">
+<li><p>Do not edit <code class="docutils literal notranslate"><span class="pre">viewer.js</span></code> or <code class="docutils literal notranslate"><span class="pre">.map</span></code> by hand.</p></li>
+<li><p>Keep the JS build manual and controlled.</p></li>
+<li><p>Avoid committing <code class="docutils literal notranslate"><span class="pre">pythonVersion</span></code> changes produced from a dirty local
+<code class="docutils literal notranslate"><span class="pre">versioningit</span></code> value.</p></li>
+</ul>
+</section>
+<section id="candidate-evaluation">
+<h2>Candidate evaluation<a class="headerlink" href="#candidate-evaluation" title="Link to this heading">#</a></h2>
+<p>Use staging artifacts with an exact source commit, intended canonical version,
+dependency closure and artifact digest. Historical prerelease metadata support
+does not authorize a new public prerelease tag. Freeze and qualify the matching
+Python and npm runtime resources before the public <code class="docutils literal notranslate"><span class="pre">X.Y.Z</span></code> tag.</p>
+</section>
+<section id="current-pre-0-16-0-practical-gate">
+<h2>Current Pre-<code class="docutils literal notranslate"><span class="pre">0.16.0</span></code> Practical Gate<a class="headerlink" href="#current-pre-0-16-0-practical-gate" title="Link to this heading">#</a></h2>
+<p>Before cutting the next strong pre-<code class="docutils literal notranslate"><span class="pre">1.0</span></code> checkpoint, verify:</p>
+<ul class="simple">
+<li><p>the recommended smoke subset in <code class="docutils literal notranslate"><span class="pre">devguide/smoke_test.md</span></code> is green</p></li>
+<li><p>the current mature product stories are still easy to find from docs:</p>
+<ul>
+<li><p>panel/workspace runtime</p></li>
+<li><p>add-on reference runtime</p></li>
+<li><p>figure export from the workbench</p></li>
+</ul>
+</li>
+<li><p>the public notebook-facing APIs still match those stories</p></li>
+<li><p>no new structural host/runtime gap appeared during the last tightening pass</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="smonitor.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">SMonitor integration</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="release_and_citation.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Citation and Zenodo releases</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#citation-and-source-preservation">Citation and source preservation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#versioning">Versioning</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#js-runtime-npm">JS runtime (npm)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#python-packages-pip-conda">Python packages (pip/conda)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#candidate-evaluation">Candidate evaluation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#current-pre-0-16-0-practical-gate">Current Pre-<code class="docutils literal notranslate"><span class="pre">0.16.0</span></code> Practical Gate</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="../about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

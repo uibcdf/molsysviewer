@@ -1,0 +1,36 @@
+﻿molsysviewer.selections.Selection
+=================================
+
+.. currentmodule:: molsysviewer.selections
+
+.. autoclass:: Selection
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Selection.__init__
+      ~Selection.activate
+      ~Selection.add_label
+      ~Selection.delete
+      ~Selection.focus
+      ~Selection.info
+      ~Selection.new_region
+      ~Selection.set_tag
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Selection.atom_indices
+      ~Selection.group_indices
+   
+   

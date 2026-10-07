@@ -1,0 +1,8 @@
+molsysviewer
+============
+
+.. toctree::
+   :maxdepth: 4
+
+   molsysviewer
+   tests

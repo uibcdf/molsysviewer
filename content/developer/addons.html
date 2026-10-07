@@ -1,0 +1,995 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../../_static/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
+    <link href="../../_static/favicon-124x124.png" sizes="124x124" rel="icon" type="image/png">
+    <link href="../../_static/favicon-128x128.png" sizes="128x128" rel="icon" type="image/png">
+    <link href="../../_static/favicon-192x192.png" sizes="192x192" rel="icon" type="image/png">
+    <link href="../../_static/icon.svg" rel="icon" type="image/svg+xml">
+  
+    <title>Add-ons – MolSysViewer 0.24.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6b6fcda3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6b6fcda3" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
+
+    <script src="../../_static/documentation_options.js?v=a9084e48"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/developer/addons';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Regions and layers" href="regions_layers.html" />
+    <link rel="prev" title="Architecture (full)" href="architecture_full.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.24.0" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.24.0 documentation - Home"/>
+    <img src="../../_static/logo_dark.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.24.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro/contributing.html">Contributing (quick start)</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="dev_setup.html">Developer setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="repo_structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration (Python)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="demo_systems.html">Demo systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ci.html">CI and automation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">MolSysViewer Concepts (Python ↔ AnyWidget ↔ Mol* ↔ WebGL)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="public_api.html">Public API and stability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol_and_payloads.html">Protocol and payloads (Python ↔ TypeScript)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="units_and_quantities.html">Units and quantities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="standalone_surfaces.html">Standalone surfaces and the Qt live model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_full.html">Architecture (full)</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Add-ons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="regions_layers.html">Regions and layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Workflow</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="js_workflow.html">JS/TS workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Testing &amp; QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="warnings.html">Warnings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smonitor.html">SMonitor integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasing.html">Releasing and publishing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_and_citation.html">Citation and Zenodo releases</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs_workflow.html">Docs workflow (local build and RTD parity)</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="documentation/web/index.html">Documentation for the web</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/editorial_guidelines.html">Web documentation editorial guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/build_and_layout.html">Web docs build &amp; layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/myst.html">MyST in MolSysViewer documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/web/references.html">References and Cross-links in Documentation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="documentation/api/index.html">API documentation guidelines</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="documentation/api/docstrings.html">Docstrings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="documentation/api/doctests.html">Doctests</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Style</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="style.html">Coding style &amp; conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="type_annotations_guidelines.html">Type annotations (Python ≥3.10)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="string_style.html">String and quotation style</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Planning and history</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes_notes.html">Changes notes</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="future/index.html">Future (index)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="future/ci.html">CI roadmap (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/performance.html">Performance notes (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/security.html">Security (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="future/molsysview_molsysmt_ops.html">MolSysView ↔ MolSysMT operations</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_snapshot_2026_01.html">Architecture snapshot (2026-01)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture_snapshot_2025_11.html">Architecture snapshot (2025-11)</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="appendix/index.html">Appendix</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="appendix/historical/index.html">Historical documents</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="architecture_snapshot_2025_11.html">Architecture snapshot (2025-11)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="design_overview.html">Design overview (historical)</a></li>
+
+
+
+
+
+
+
+
+
+<li class="toctree-l3"><a class="reference internal" href="modules_overview.html">Modules overview (snapshot)</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Developer guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Add-ons</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="add-ons">
+<h1>Add-ons<a class="headerlink" href="#add-ons" title="Link to this heading">#</a></h1>
+<p>MolSysViewer exposes an explicit add-on platform aimed at the broader MolSysSuite ecosystem.</p>
+<p>This page is the centralized source of truth for downstream teams implementing MolSysViewer add-ons.</p>
+<hr class="docutils" />
+<section id="mental-model-host-vs-view">
+<h2>Mental Model: Host vs View<a class="headerlink" href="#mental-model-host-vs-view" title="Link to this heading">#</a></h2>
+<p>The add-on model is split into two levels:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.addons</span></code>: Host-level registry.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.addons</span></code>: Per-view projection of the host registry.</p></li>
+</ul>
+<p>Add-ons belong to the MolSysViewer host, not to a single view instance. Each view inherits what the host knows and can still enable or disable add-ons locally.</p>
+</section>
+<hr class="docutils" />
+<section id="public-vocabulary">
+<h2>Public Vocabulary<a class="headerlink" href="#public-vocabulary" title="Link to this heading">#</a></h2>
+<p>Use <strong>add-on</strong> consistently. The public API avoids parallel terminology such as <code class="docutils literal notranslate"><span class="pre">plugin</span></code>.</p>
+<p>Current public surfaces include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">molsysviewer.addons</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view.addons</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AddonSpec</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AddonWorkspaceSpec</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AddonPanelSpec</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AddonContextActionSpec</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AddonSectionSpec</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AddonShapeProviderSpec</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AddonStyleHelperSpec</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AddonExportHelperSpec</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AddonToolModeSpec</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AddonLifecycleSpec</span></code></p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="where-an-add-on-lives">
+<h2>Where an add-on lives<a class="headerlink" href="#where-an-add-on-lives" title="Link to this heading">#</a></h2>
+<p><strong>MolSysViewer owns the host contract; each scientific toolkit owns its own integration.</strong>
+The integration is a top-level package inside the toolkit’s repository, not a separate
+distribution:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Toolkit repository</p></th>
+<th class="head"><p>Ships</p></th>
+<th class="head"><p>Imported as</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">molsysmt</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">molsysviewer_molsysmt/</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">molsysviewer_molsysmt</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">topomt</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">molsysviewer_topomt/</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">molsysviewer_topomt</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">elastnetmt</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">molsysviewer_elastnetmt/</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">molsysviewer_elastnetmt</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pharmacophoremt</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">molsysviewer_pharmacophoremt/</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">molsysviewer_pharmacophoremt</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>There is no <code class="docutils literal notranslate"><span class="pre">molsysviewer-topomt</span></code> distribution to install. Installing the toolkit installs
+its integration, which is the point: the team that owns the science owns the panel that
+presents it, and MolSysViewer never has to be edited to add one.</p>
+<p>An external add-on is free to be its own distribution. The pattern above is what the
+MolSysSuite toolkits do, not a requirement of the host contract.</p>
+</section>
+<section id="how-the-host-finds-it">
+<h2>How the host finds it<a class="headerlink" href="#how-the-host-finds-it" title="Link to this heading">#</a></h2>
+<p>Three routes, in decreasing order of preference. They are not equivalent, and the
+MolSysSuite add-ons do not all use the same one:</p>
+<ol class="arabic">
+<li><p><strong>An entry point</strong> in the toolkit’s <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> — installed means discovered:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[project.entry-points.</span><span class="s2">"molsysviewer.addons"</span><span class="k">]</span>
+<span class="n">molsysmt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"molsysviewer_molsysmt"</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">KNOWN_ADDON_MODULES</span></code></strong> in <code class="docutils literal notranslate"><span class="pre">molsysviewer/addons.py</span></code>, which names the four MolSysSuite
+modules explicitly. This is a courtesy for known siblings, not a mechanism external
+add-ons should rely on: it requires editing MolSysViewer.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">molsysviewer.addons.register_module(&quot;…&quot;)</span></code></strong>, always available, always explicit.</p></li>
+</ol>
+<p>An add-on that offers only route 3 works; it just will not appear until someone asks for
+it by name.</p>
+</section>
+<hr class="docutils" />
+<section id="importable-module-contract">
+<h2>Importable Module Contract<a class="headerlink" href="#importable-module-contract" title="Link to this heading">#</a></h2>
+<p>An importable add-on module must expose one of:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">addon</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ADDON</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_addon()</span></code></p></li>
+</ul>
+<p>and it must resolve to an <code class="docutils literal notranslate"><span class="pre">AddonSpec</span></code>.</p>
+</section>
+<hr class="docutils" />
+<section id="contribution-types">
+<h2>Contribution Types<a class="headerlink" href="#contribution-types" title="Link to this heading">#</a></h2>
+<p>An add-on may currently declare:</p>
+<ul class="simple">
+<li><p><strong>workspaces</strong> (<code class="docutils literal notranslate"><span class="pre">AddonWorkspaceSpec</span></code>): Defines a top-level workspace with sidebar tabs.</p></li>
+<li><p><strong>panels</strong> (<code class="docutils literal notranslate"><span class="pre">AddonPanelSpec</span></code>): Subpaneles rendered inside the workspace.</p></li>
+<li><p><strong>context_actions</strong> (<code class="docutils literal notranslate"><span class="pre">AddonContextActionSpec</span></code>): Injects items into the 3D context menu (right click) for specific kinds (e.g. <code class="docutils literal notranslate"><span class="pre">structure</span></code>, <code class="docutils literal notranslate"><span class="pre">shape</span></code>).</p></li>
+<li><p><strong>addon_sections</strong> (<code class="docutils literal notranslate"><span class="pre">AddonSectionSpec</span></code>): Injects cards into the workbench sidebar.</p></li>
+<li><p><strong>shape_providers</strong> (<code class="docutils literal notranslate"><span class="pre">AddonShapeProviderSpec</span></code>): Adds custom 3D geometries to the renderer.</p></li>
+<li><p><strong>export_helpers</strong> (<code class="docutils literal notranslate"><span class="pre">AddonExportHelperSpec</span></code>): Provides export formats (e.g. PNG, HTML).</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="workspace-guidance">
+<h2>Workspace Guidance<a class="headerlink" href="#workspace-guidance" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Core</span></code> is the native workspace.</p></li>
+<li><p>Large add-ons may define one or more workspaces.</p></li>
+<li><p>Small add-ons should remain lighter and not define a workspace (they only contribute sections or context actions).</p></li>
+<li><p>Do not treat “every add-on” and “workspace” as synonyms.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="discovery-and-registration">
+<h2>Discovery and Registration<a class="headerlink" href="#discovery-and-registration" title="Link to this heading">#</a></h2>
+<p>There are two supported paths:</p>
+<section id="manual-coupling">
+<h3>1. Manual Coupling<a class="headerlink" href="#manual-coupling" title="Link to this heading">#</a></h3>
+<p>For local development or unpublished add-ons, register the module explicitly:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">molsysviewer</span>
+
+<span class="n">molsysviewer</span><span class="o">.</span><span class="n">addons</span><span class="o">.</span><span class="n">register_module</span><span class="p">(</span><span class="s2">"molsysviewer_topomt"</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="discovery">
+<h3>2. Discovery<a class="headerlink" href="#discovery" title="Link to this heading">#</a></h3>
+<p>For known packages added to MolSysViewer’s entry points group <code class="docutils literal notranslate"><span class="pre">molsysviewer.addons</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">molsysviewer</span>
+
+<span class="n">molsysviewer</span><span class="o">.</span><span class="n">addons</span><span class="o">.</span><span class="n">discover</span><span class="p">(</span><span class="n">include_known_modules</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="python-lifecycle-contract">
+<h2>Python Lifecycle Contract<a class="headerlink" href="#python-lifecycle-contract" title="Link to this heading">#</a></h2>
+<p>If per-view behavior is needed, the module may expose a lifecycle object <code class="docutils literal notranslate"><span class="pre">AddonLifecycleSpec</span></code> or plain functions:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">on_enable(view)</span></code>: Executed when the add-on is enabled on a view.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">on_disable(view)</span></code>: Executed when disabled.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">on_context_action(view,</span> <span class="pre">action_id,</span> <span class="pre">payload)</span></code>: Handles Python-side execution of 3D context-menu clicks.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="add-on-state-and-public-api-namespace">
+<h2>Add-on State and Public API Namespace<a class="headerlink" href="#add-on-state-and-public-api-namespace" title="Link to this heading">#</a></h2>
+<p>MolSysViewer provides a dedicated namespace for each enabled add-on at <code class="docutils literal notranslate"><span class="pre">view.addons.&lt;addon_name&gt;</span></code> (e.g., <code class="docutils literal notranslate"><span class="pre">view.addons.dummy</span></code> or <code class="docutils literal notranslate"><span class="pre">view.addons.topomt</span></code>). This namespace should hold all runtime parameters, data models, and analytical results generated by the add-on for that specific view.</p>
+<p>To implement this:</p>
+<ol class="arabic">
+<li><p><strong>Define a State Dataclass:</strong>
+Define a dataclass to store the view’s add-on state. For backward compatibility with dict-based lookups, implement <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyAddonRuntime</span><span class="p">:</span>
+    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">workspace</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"my_workspace"</span>
+    <span class="n">my_data</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Define a State Factory:</strong>
+Create a factory function that takes the <code class="docutils literal notranslate"><span class="pre">view</span></code> and returns the state object. It is recommended to check if a private attribute already exists to avoid overwriting state initialized during early lifecycle hooks:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_my_addon_state</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MyAddonRuntime</span><span class="p">:</span>
+    <span class="n">runtime</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="s2">"_my_addon_runtime"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">runtime</span><span class="p">,</span> <span class="n">MyAddonRuntime</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">runtime</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">MyAddonRuntime</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">_my_addon_runtime</span> <span class="o">=</span> <span class="n">state</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">state</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Register <code class="docutils literal notranslate"><span class="pre">state_factory</span></code> in Python:</strong>
+Pass the factory function to <code class="docutils literal notranslate"><span class="pre">AddonSpec</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">addon</span> <span class="o">=</span> <span class="n">AddonSpec</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"my_addon"</span><span class="p">,</span>
+    <span class="n">state_factory</span><span class="o">=</span><span class="n">create_my_addon_state</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Resolve State Safely (<code class="docutils literal notranslate"><span class="pre">ensure_runtime</span></code>):</strong>
+Use a helper function inside your panels and python functions to resolve the runtime state safely:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ensure_runtime</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MyAddonRuntime</span><span class="p">:</span>
+    <span class="n">addons</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="s2">"addons"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">addons</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">namespace</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">addons</span><span class="p">,</span> <span class="s2">"my_addon"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="n">MyAddonRuntime</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">namespace</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="c1"># Fallback for mock environments / test doubles</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<section id="reference-implementation">
+<h3>Reference Implementation<a class="headerlink" href="#reference-implementation" title="Link to this heading">#</a></h3>
+<p>Refer to the <strong><code class="docutils literal notranslate"><span class="pre">dummy</span></code></strong> reference add-on (<code class="docutils literal notranslate"><span class="pre">view.addons.dummy</span></code>) or <strong><code class="docutils literal notranslate"><span class="pre">topomt</span></code></strong> add-on (<code class="docutils literal notranslate"><span class="pre">view.addons.topomt</span></code>) for a complete, fully tested example of this state factory pattern.</p>
+<p><code class="docutils literal notranslate"><span class="pre">state_factory</span></code> creates live, per-view runtime state; it does not by itself make
+that arbitrary state serializable or part of static HTML export. Static export
+preserves add-on output registered through core scene domains (regions, layers,
+shapes, annotations, and measurements) and materialized runtime/export-helper
+specifications. Add-ons must not claim persistence for other runtime fields
+until a versioned opt-in projection/state contract is introduced.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="frontend-panel-guidelines">
+<h2>Frontend Panel Guidelines<a class="headerlink" href="#frontend-panel-guidelines" title="Link to this heading">#</a></h2>
+<p>Add-on panels are loaded dynamically by the frontend as ES modules.</p>
+<section id="esm-signature">
+<h3>1. ESM Signature<a class="headerlink" href="#esm-signature" title="Link to this heading">#</a></h3>
+<p>The panel entry script must export a <code class="docutils literal notranslate"><span class="pre">render</span></code> function:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">render</span><span class="p">({</span><span class="w"> </span><span class="nx">model</span><span class="p">,</span><span class="w"> </span><span class="nx">el</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">el</span><span class="p">.</span><span class="nx">innerHTML</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`&lt;div&gt;Hello from my Add-on Panel&lt;/div&gt;`</span><span class="p">;</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c1">// Optional: Return a cleanup callback</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Unmounting panel..."</span><span class="p">);</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="frontend-cleanup-critical">
+<h3>2. Frontend Cleanup (Critical)<a class="headerlink" href="#frontend-cleanup-critical" title="Link to this heading">#</a></h3>
+<p>Always return a cleanup function from <code class="docutils literal notranslate"><span class="pre">render</span></code> if you register window event listeners, intervals, secondary canvas contexts, or subscriptions. MolSysViewer executes this callback before removing the panel element from the DOM.</p>
+</section>
+<section id="panel-state-isolation">
+<h3>3. Panel State Isolation<a class="headerlink" href="#panel-state-isolation" title="Link to this heading">#</a></h3>
+<p>Use <code class="docutils literal notranslate"><span class="pre">model.get()</span></code>, <code class="docutils literal notranslate"><span class="pre">model.set()</span></code>, and <code class="docutils literal notranslate"><span class="pre">model.send()</span></code> to sync state. State properties are isolated and namespace-bound to the active add-on.</p>
+</section>
+<section id="panel-subsections-and-tab-navigation-nivel-3">
+<h3>4. Panel Subsections and Tab Navigation (Nivel 3)<a class="headerlink" href="#panel-subsections-and-tab-navigation-nivel-3" title="Link to this heading">#</a></h3>
+<p>Add-ons can organize panels into multiple sub-sections or tabs. MolSysViewer automatically renders tab buttons and manages visibility transitions when the following rules are met:</p>
+<ol class="arabic">
+<li><p><strong>Define Sections in Python:</strong>
+Register sections via <code class="docutils literal notranslate"><span class="pre">addon_sections</span></code> (using <code class="docutils literal notranslate"><span class="pre">AddonSectionSpec</span></code> with <code class="docutils literal notranslate"><span class="pre">target_panel=&quot;addons&quot;</span></code>).</p></li>
+<li><p><strong>Target Specific Panels:</strong>
+To display a section only when a particular panel is active, set the panel ID in the section’s metadata:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">AddonSectionSpec</span><span class="p">(</span>
+    <span class="nb">id</span><span class="o">=</span><span class="s2">"interactive"</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">"Interactive Controls"</span><span class="p">,</span>
+    <span class="n">entry</span><span class="o">=</span><span class="s2">"..."</span><span class="p">,</span>
+    <span class="n">target_panel</span><span class="o">=</span><span class="s2">"addons"</span><span class="p">,</span>
+    <span class="n">meta</span><span class="o">=</span><span class="p">{</span><span class="s2">"panel"</span><span class="p">:</span> <span class="s2">"main"</span><span class="p">},</span>  <span class="c1"># Only visible when panel 'main' is selected</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Decorate HTML Elements in JavaScript:</strong>
+Inside your panel’s ESM <code class="docutils literal notranslate"><span class="pre">render</span></code> function, assign the matching <code class="docutils literal notranslate"><span class="pre">data-molsysviewer-addon-section</span></code> attribute to the container element of that subsection. The attribute value must follow the format <code class="docutils literal notranslate"><span class="pre">&lt;addon_name&gt;:&lt;section_id&gt;</span></code>:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">data-molsysviewer-addon-section</span><span class="o">=</span><span class="s">"my-addon:interactive"</span> <span class="na">style</span><span class="o">=</span><span class="s">"..."</span><span class="p">&gt;</span>
+    <span class="cm">&lt;!-- Interactive content here --&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Any elements without this attribute will remain visible at all times (like headers or shared controls).</p>
+</li>
+</ol>
+</section>
+<section id="aesthetics-and-css-guidelines">
+<h3>5. Aesthetics and CSS Guidelines<a class="headerlink" href="#aesthetics-and-css-guidelines" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Color Palette</strong>: Use CSS variables or coordinate with the dark mode system. Avoid hardcoded light backgrounds. Use <code class="docutils literal notranslate"><span class="pre">rgba(255,</span> <span class="pre">255,</span> <span class="pre">255,</span> <span class="pre">0.08)</span></code> for borders/hover, and <code class="docutils literal notranslate"><span class="pre">#f4f4f5</span></code> for primary text.</p></li>
+<li><p><strong>Typography</strong>: Use inherited IBM Plex Sans / system sans-serif fonts. Do not override global fonts.</p></li>
+<li><p><strong>CSS Isolation</strong>: Write scoped classes or prefix selectors to avoid style leakages into the core viewer chrome.</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="reference-implementation-add-on-tester">
+<h2>Reference Implementation: Add-on Tester<a class="headerlink" href="#reference-implementation-add-on-tester" title="Link to this heading">#</a></h2>
+<p>MolSysViewer ships a complete reference add-on called <strong><code class="docutils literal notranslate"><span class="pre">dummy_addon</span></code></strong> for testing and illustration purposes:</p>
+<ul class="simple">
+<li><p>Code: <a class="reference external" href="https://github.com/uibcdf/molsysviewer/blob/main/molsysviewer/addon_templates/dummy_addon.py"><code class="docutils literal notranslate"><span class="pre">dummy_addon.py</span></code></a></p></li>
+</ul>
+<p>You can load and inspect it immediately using the development helpers:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">molsysviewer</span>
+
+<span class="c1"># List bundled references</span>
+<span class="n">molsysviewer</span><span class="o">.</span><span class="n">addon_templates</span><span class="o">.</span><span class="n">list_reference_addons</span><span class="p">()</span>
+
+<span class="c1"># Launch a ready-made demo with the dummy addon active</span>
+<span class="n">view</span> <span class="o">=</span> <span class="n">molsysviewer</span><span class="o">.</span><span class="n">addon_templates</span><span class="o">.</span><span class="n">build_reference_demo_view</span><span class="p">(</span><span class="s2">"dummy"</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="first-milestone-for-downstream-teams">
+<h2>First Milestone for Downstream Teams<a class="headerlink" href="#first-milestone-for-downstream-teams" title="Link to this heading">#</a></h2>
+<p>To build a new add-on, follow these initial steps:</p>
+<ol class="arabic simple">
+<li><p>Define one workspace if your add-on represents a complete analytics studio.</p></li>
+<li><p>Contribute one panel.</p></li>
+<li><p>Contribute one workbench section.</p></li>
+<li><p>Contribute one context action.</p></li>
+<li><p>Implement at least one Python lifecycle callback to handle context clicks.</p></li>
+</ol>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="architecture_full.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Architecture (full)</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="regions_layers.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Regions and layers</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mental-model-host-vs-view">Mental Model: Host vs View</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#public-vocabulary">Public Vocabulary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-an-add-on-lives">Where an add-on lives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-host-finds-it">How the host finds it</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#importable-module-contract">Importable Module Contract</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contribution-types">Contribution Types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#workspace-guidance">Workspace Guidance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#discovery-and-registration">Discovery and Registration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#manual-coupling">1. Manual Coupling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#discovery">2. Discovery</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#python-lifecycle-contract">Python Lifecycle Contract</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-on-state-and-public-api-namespace">Add-on State and Public API Namespace</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reference-implementation">Reference Implementation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#frontend-panel-guidelines">Frontend Panel Guidelines</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esm-signature">1. ESM Signature</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#frontend-cleanup-critical">2. Frontend Cleanup (Critical)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#panel-state-isolation">3. Panel State Isolation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#panel-subsections-and-tab-navigation-nivel-3">4. Panel Subsections and Tab Navigation (Nivel 3)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#aesthetics-and-css-guidelines">5. Aesthetics and CSS Guidelines</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference-implementation-add-on-tester">Reference Implementation: Add-on Tester</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#first-milestone-for-downstream-teams">First Milestone for Downstream Teams</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="../about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

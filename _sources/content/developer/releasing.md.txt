@@ -1,0 +1,174 @@
+# Releasing and publishing
+
+Use this page when you cut a release or publish the JS runtime.
+
+## Citation and source preservation
+
+A release is not complete when its packages are uploaded. Before tagging, run
+`python devtools/prepare_release.py X.Y.Z` and the citation step in the release
+gate. After publishing the GitHub Release, Zenodo must archive the tagged source
+and `python devtools/verify_zenodo_release.py X.Y.Z` must pass. A pushed tag alone
+does not trigger Zenodo.
+
+See {doc}`release_and_citation` for the contributor procedure and
+[`devguide/release_and_citation.md`](https://github.com/uibcdf/molsysviewer/blob/main/devguide/release_and_citation.md)
+for the normative metadata and recovery contract.
+
+## Versioning
+
+- New public versions and tags use canonical `X.Y.Z`. MolSysSuite disallows
+  new public prerelease tags; qualify candidates with exact commits and staging
+  artifacts under its release-version policy.
+- The Python version is produced by `versioningit` from Git tags.
+- The JS package version is synchronized from Python during `npm run build`
+  using `molsysviewer/js/scripts/sync-python-version.mjs`.
+- Development runtime rebuilds should use `npm run build:runtime`; that command
+  does not synchronize version metadata.
+
+Compatibility rule
+
+- The Python package version and the npm runtime version must match.
+- Docs-lite HTML exports should be served with the matching runtime version.
+  If you mismatch versions, message ops or option schemas can drift and break embeds.
+
+See also
+
+- {doc}`protocol_and_payloads`
+
+## JS runtime (npm)
+
+Package: `@uibcdf/molsysviewer` published from `molsysviewer/js/`.
+
+Flow
+1. Ensure `molsysviewer/js/package.json` version matches the intended tag.
+2. After the exact candidate passes its gates, create and push a tag `X.Y.Z`.
+3. Pushing the tag runs `.github/workflows/npm-publish.yaml`, which publishes
+   using Trusted Publisher (OIDC).
+
+Publishing the GitHub Release for that tag does not publish to npm again. npm
+versions are immutable; a second automatic publish of the same version is a
+workflow failure, not another release step. Manual workflow dispatch requires
+an explicit tag and is reserved for recovery of a version not yet on npm.
+
+Conda publishes from a GitHub *Release*, while npm publishes from its tag.
+Historical versions may therefore exist on npm without a corresponding Conda
+package. New tags require candidate evidence because pushing one publishes the
+runtime; use commits and staging artifacts for development checkpoints.
+
+**A tag is what publishes to npm, and that is deliberate.** It used to trigger
+only on `release: published`. From `0.8.0` this project tagged without creating
+GitHub Releases, so the trigger stopped firing and npm sat at `0.7.0` while
+Python reached `0.20.0` — **thirteen versions**, discovered on 2026-08-05 and
+republished by hand. The runtime is not a package anybody installs on purpose: it
+is what an exported view fetches, so it has to exist for every version that can
+export. That is why its trigger is the thing that always happens.
+
+**Do not dispatch an old tag to fill a gap without thinking.** The workflow runs
+`npm publish` with no `--tag`, so it sets `latest`. Publishing `0.12.0` today
+would move `latest` backwards from the current release, and nothing on our side
+would say so. Versions `0.8.0` through `0.19.0` are missing from npm and are
+staying missing by decision; if that is ever revisited, the publish needs an
+explicit dist-tag first.
+
+**Check it, do not assume it.** After tagging:
+
+```bash
+gh run list --workflow=npm-publish.yaml --limit 1
+curl -s -o /dev/null -w "%{http_code}\n" \
+  "https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@X.Y.Z/dist/viewer.js"
+```
+
+A `404` there means every `view.export.html(..., shared_runtime="cdn")` written
+by a user of that version points at nothing. That is a public API path failing on
+somebody else's website, months later, with nothing on our side to notice.
+
+How the version is chosen
+
+- `npm run build` syncs the JS version from the Python version.
+- `npm run build:runtime` only rebuilds the runtime artifact and must be used
+  for ordinary TypeScript development when version metadata should remain
+  untouched.
+- A release tag `X.Y.Z` defines the version for both artifacts.
+- The docs-lite export should point to the same `X.Y.Z` runtime URL.
+
+## Python packages (pip/conda)
+
+- The Python wheel includes `molsysviewer/viewer.js` and `.map` as package data.
+- Conda build uses `devtools/conda-build/build.sh`, which builds the JS bundle
+  and then installs the Python package.
+- Conda freezes its already validated `PKG_VERSION` into the ephemeral build source and
+  disables versioningit's hook in that private copy before regenerating tracked JS
+  assets. Otherwise those build products make Git dirty and the hook gives the installed
+  package a local `.dirty` suffix that disagrees with the Conda coordinate.
+
+GitHub workflow
+- `.github/workflows/build_and_upload_conda_packages.yaml`
+
+For a coupled release, commit `devtools/conda-build/release_plan.toml` with the
+`staged` route before building. The manual build workflow uploads one immutable
+candidate only to `uibcdf/label/staging`; an additive build number is required
+for a correction. Validate the exact MolSysMT/MolSysViewer pair before tagging.
+Before dispatching that build, generate and commit `viewer.js` for the intended
+release version from a clean checkout with no generated `molsysviewer/_version.py`:
+
+```bash
+cd molsysviewer/js
+RELEASE_VERSION=X.Y.Z npm run build:runtime
+cd ../..
+python devtools/validate_python_wheel_runtime.py --expected-version X.Y.Z
+```
+
+The build resolver intentionally prefers an existing `_version.py` over the
+environment variable. A development-generated version file would stamp the
+wrong version into the release bundle, so inspect the validator result before
+committing the generated asset. The staging workflow creates a local tag for
+the exact candidate commit, builds an ordinary Python wheel without rebuilding
+JS, then checks both wheel `METADATA` and its packaged runtime. A passing
+Conda build alone cannot certify this wheel route because Conda rebuilds JS in
+its private source copy. For the staged CI dispatch, provide the same
+`viewer_version`; CI creates a local tag at its exact workflow SHA so that
+Python tests see the intended release identity rather than an untagged
+versioningit development version. Give the same `viewer_version` to the
+Python 3.14 source-pair dispatch; it uses the identical exact-SHA local-tag
+rule before installing the two source candidates. See
+`uibcdf/molsysviewer#102`.
+
+Publishing the GitHub Release does **not** rebuild that staged version. After
+the exact-commit gates and Release are complete, dispatch
+`.github/workflows/promote_conda_package.yaml` from `main` with the tag commit,
+version, build number, independently observed SHA-256 and successful full
+installed-pair run. It adds `main` to the same noarch file and verifies the
+public record. If that read-only verification fails after the action reports
+successful promotion, inspect the retained receipt and dispatch
+`.github/workflows/verify_public_conda_package.yaml` with the exact version,
+build number and SHA-256. The separate verifier needs no upload token and
+must not invoke the promotion action again. A direct, unstaged release remains
+a separate route and is rejected when Anaconda already has any file for that
+version. The tag-driven
+npm publication and Zenodo ingestion remain separate; neither is evidence that
+Conda promotion succeeded.
+
+Key points
+- Do not edit `viewer.js` or `.map` by hand.
+- Keep the JS build manual and controlled.
+- Avoid committing `pythonVersion` changes produced from a dirty local
+  `versioningit` value.
+
+## Candidate evaluation
+
+Use staging artifacts with an exact source commit, intended canonical version,
+dependency closure and artifact digest. Historical prerelease metadata support
+does not authorize a new public prerelease tag. Freeze and qualify the matching
+Python and npm runtime resources before the public `X.Y.Z` tag.
+
+## Current Pre-`0.16.0` Practical Gate
+
+Before cutting the next strong pre-`1.0` checkpoint, verify:
+
+- the recommended smoke subset in `devguide/smoke_test.md` is green
+- the current mature product stories are still easy to find from docs:
+  - panel/workspace runtime
+  - add-on reference runtime
+  - figure export from the workbench
+- the public notebook-facing APIs still match those stories
+- no new structural host/runtime gap appeared during the last tightening pass
