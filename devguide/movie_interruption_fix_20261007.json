@@ -1,0 +1,119 @@
+{
+  "schema": "molsysviewer.movie_interruption_fix@1",
+  "date": "2026-10-07",
+  "issue": "uibcdf/molsysviewer#177",
+  "base_commit": "f23d6226cf838435eb49de51e8c52cc4ba34d440",
+  "status": "locally_verified_hosted_pending",
+  "molstar": "5.4.1",
+  "production_change": "Track submitted-camera draw responsibility independently of command promises; restore observed camera and await fresh draw when stopping.",
+  "reproduction": {
+    "before": [
+      11.946221787780114,
+      13.329003917624457,
+      32.66291662045392
+    ],
+    "beforeStop": [
+      11.946221787780114,
+      13.329003917624457,
+      32.66291662045392
+    ],
+    "writes": 0,
+    "time": 361.19999980926514,
+    "returnedWhilePaused": true,
+    "atReturn": [
+      11.946221787780114,
+      13.329003917624457,
+      32.66291662045392
+    ],
+    "after": [
+      24.079999987284346,
+      0,
+      35.920000012715654
+    ]
+  },
+  "initial_probe": "A fixed 100 ms wait submitted no observable Movie tick; inconclusive. Two real rAF callbacks reproduced the pending reset.",
+  "targeted_unit": {
+    "tests": 3,
+    "passed": 3,
+    "failed": 0,
+    "command": "node /tmp/msv-177-movie-unit.mjs",
+    "note": "Direct native node:test output retains per-case counts; node --test wraps this bundle as one file-level result."
+  },
+  "mutation": {
+    "change": "In-memory replacement of cameraNeedsDraw condition by cameraWrites.size > 0",
+    "exit": 1,
+    "tests": 3,
+    "passed": 2,
+    "failed": 1,
+    "assertion": "stop returned before the camera was drawn",
+    "production_worktree_modified": false
+  },
+  "targeted_browser": {
+    "guard": "molsysviewer/js/tests/e2e/movie-playback.e2e.ts",
+    "exit": 0,
+    "real_chromium_molstar": true,
+    "skip": false,
+    "covers": [
+      "interpolation",
+      "completion inside done callback",
+      "observed intermediate playback before stop",
+      "stop remains pending until native draw resumes with zero command promises",
+      "restored camera applied before stop resolves",
+      "post-stop drift <1e-6"
+    ]
+  },
+  "js_unit_command": {
+    "command": "npm run test:js",
+    "exit": 0,
+    "file_level_tests": 1,
+    "log_sha256": "5b37639acd1d169eb5a45a563ce16b833464cf57434fbb6a0ac358667c206559"
+  },
+  "typescript": {
+    "command": "npx tsc --noEmit",
+    "exit": 0
+  },
+  "runtime": {
+    "command": "npm run build:runtime",
+    "exit": 0,
+    "generated_manually_edited": false,
+    "version_writer": "python -m versioningit --write",
+    "development_version": "0.24.0+15.gf23d6226.dirty",
+    "manifest_changed": false
+  },
+  "hosted": {
+    "status": "pending",
+    "preserved_failures": [
+      37602651230,
+      37675655282
+    ],
+    "preserved_same_head_passes": [
+      37629947438,
+      37675655286
+    ]
+  },
+  "published_tags_packages_changed": false,
+  "strict_1_0_cleared": false,
+  "sources": {
+    "molsysviewer/js/src/managers/handlers/movie-handlers.ts": "c2ea0e369c029178bf11ee7ba784cc9d3988caababd227a72124828e4904eb0d",
+    "molsysviewer/js/tests/unit/movie-handler.test.ts": "bd059e6212d09b5e05f45d095438fe4ff1fc54d04dcf0b5c4cf010448ee004aa",
+    "molsysviewer/js/tests/e2e/movie-playback.e2e.ts": "ad1362af038091af9100c348eba0c17dc2c6a3759ad857074b728752551dc05d"
+  },
+  "local_governance": [
+    {
+      "file": "msv-177-reporting-local.xml",
+      "sha256": "7645df065afdc55f3a5acf5deb682f1de52490476788b01cfbff6bd37de99142",
+      "tests": 203,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "msv-177-guidance-local.xml",
+      "sha256": "7fdc4df7d7edc6747844da8d08995d21b976152bbe3c05b62857793f957ff323",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ]
+}

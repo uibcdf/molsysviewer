@@ -1,13 +1,13 @@
 ---
 summary: Movie interruption browser gate intermittently fails its camera drift assertion
 issue: uibcdf/molsysviewer#177
-status: open
+status: partial
 opened: 2026-10-07
 closed:
 severity: medium
 verification: reproduced
 area: [movie, ci, camera]
-guard:
+guard: molsysviewer/js/tests/e2e/movie-playback.e2e.ts
 normative: devguide/scene_contracts.md
 blocked_by: []
 supersedes: []
@@ -52,3 +52,44 @@ The guard must distinguish genuine continuing playback from an old sampled camer
 without weakening interruption, interpolation or final-position semantics.
 Qualify the affected exact-source/core lane and retain both old and new verdicts.
 No tag, package or runtime rebuild is authorized by merely reporting this finding.
+
+## Diagnosis and local correction — 2026-10-07
+
+The subsequent core run `37675655282` reproduces the same boundary on `4bedcba9`:
+stop reports `[60,0,0]`, then the camera moves 84.39 toward the next playback's
+start. Its failure remains preserved. Independent source-pair run `37675655286`
+passes on that head; this does not refute the failing condition.
+
+The installed Mol* 5.4.1 source confirms Camera.SetSnapshot invokes the camera
+manager's requestCameraReset; the reset is consumed during canvas commit/draw,
+after its command promise returns. The local source checkout in
+`/home/diego/repos@others/molstar` confirms the same separation. The configured
+root `src_molstar` alias is absent here; no source/API upgrade is introduced.
+Camera coordinates in these observations are in angstroms.
+
+A diagnostic using real Chromium/Mol* pauses its native animation loop while
+Movie's own rAF submits camera resets. After two rAF callbacks, Movie time is
+361.20 ms and its command-promise set is empty. Stop returns while drawing remains
+paused; restarting Mol* moves the observed camera from approximately
+`[11.9462,13.3290,32.6629]` to `[24.0800,0,35.9200]`. An initial fixed-100-ms
+probe observed no submitted tick and was inconclusive; awaiting actual rAF
+callbacks established the missing boundary.
+
+Movie now retains submitted-camera draw responsibility separately from pending
+command promises. Stop drains commands, replaces pending resets with the observed
+camera and awaits the shared fresh-draw tool. Natural completion clears that
+responsibility only after its existing final draw; generation checks remain.
+The browser guard waits for an applied intermediate second-playback camera,
+adds the native paused-draw case and tightens post-stop drift to <1e-6. Original
+interpolation and final-completion assertions remain.
+
+Three targeted unit cases pass. An in-memory mutation restoring the old
+promise-count condition fails the new unit case with “stop returned before the
+camera was drawn”; production sources were never mutated for that control.
+The real browser guard, normal JS unit command and TypeScript check pass. The
+runtime is regenerated through build:runtime. Versioningit's configured writer
+refreshes the ignored stale version file to the current development identity
+before regeneration; package.json is unchanged. No published tag/package moves.
+Full core/exact-source hosted qualification remains pending before closure.
+
+[Exact local/hosted evidence](../movie_interruption_fix_20261007.json).

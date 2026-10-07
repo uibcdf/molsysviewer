@@ -147771,6 +147771,7 @@ var MovieHandlers = class {
   constructor(context2) {
     this.context = context2;
     this.cameraWrites = /* @__PURE__ */ new Set();
+    this.cameraNeedsDraw = false;
     this.playbackGeneration = 0;
     this.lastMovieTime = 0;
     this.lastVisibility = {};
@@ -147805,6 +147806,7 @@ var MovieHandlers = class {
           await this.waitForCameraWrites();
           await this.context.waitForDraw();
           if (generation === this.playbackGeneration) {
+            this.cameraNeedsDraw = false;
             this.context.notify?.({ event: "movie_playback_done" });
           }
         })();
@@ -147822,16 +147824,18 @@ var MovieHandlers = class {
     this.rafId = requestAnimationFrame(tick);
   }
   async stop() {
-    this.playbackGeneration += 1;
+    const generation = ++this.playbackGeneration;
     if (this.rafId !== void 0) {
       cancelAnimationFrame(this.rafId);
       this.rafId = void 0;
     }
     const atStop = this.context.getCameraSnapshot();
-    const hadInFlight = this.cameraWrites.size > 0;
-    if (hadInFlight) {
+    if (this.cameraNeedsDraw) {
       await this.waitForCameraWrites();
+      if (generation !== this.playbackGeneration) return;
       if (atStop) await this.context.setCameraSnapshot(atStop, 0);
+      await this.context.waitForDraw();
+      if (generation === this.playbackGeneration) this.cameraNeedsDraw = false;
     }
   }
   async waitForCameraWrites() {
@@ -147891,6 +147895,7 @@ var MovieHandlers = class {
     }
   }
   submitCameraSnapshot(snapshot) {
+    this.cameraNeedsDraw = true;
     const write = this.context.setCameraSnapshot(snapshot, 0);
     this.cameraWrites.add(write);
     void write.then(
@@ -172081,7 +172086,7 @@ function makeMissingAuthorityReporter(el) {
   };
 }
 function reportSceneRuntimeMismatch(el, sceneVersion) {
-  const runtimeVersion = true ? "0.24.0" : "";
+  const runtimeVersion = true ? "0.24.0+15.gf23d6226.dirty" : "";
   if (typeof sceneVersion !== "string" || !sceneVersion || !runtimeVersion) return;
   const release = (version) => version.split("+")[0].split(".dev")[0];
   if (release(sceneVersion) === release(runtimeVersion)) return;

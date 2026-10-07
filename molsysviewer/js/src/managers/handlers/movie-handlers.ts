@@ -64,6 +64,7 @@ function computeT(kfA: MovieKeyframe, kfB: MovieKeyframe, time_ms: number): numb
 export class MovieHandlers {
     private rafId?: number;
     private cameraWrites = new Set<Promise<void>>();
+    private cameraNeedsDraw = false;
     private playbackGeneration = 0;
     private lastStructureIndex?: number;
     private lastMovieTime: number = 0;
@@ -108,6 +109,7 @@ export class MovieHandlers {
                     // during scene commit/draw, after the command promise resolves.
                     await this.context.waitForDraw();
                     if (generation === this.playbackGeneration) {
+                        this.cameraNeedsDraw = false;
                         this.context.notify?.({ event: "movie_playback_done" });
                     }
                 })();
@@ -127,18 +129,21 @@ export class MovieHandlers {
     }
 
     async stop(): Promise<void> {
-        this.playbackGeneration += 1;
+        const generation = ++this.playbackGeneration;
         if (this.rafId !== undefined) {
             cancelAnimationFrame(this.rafId);
             this.rafId = undefined;
         }
-        // Mol* camera commands are asynchronous. Cancelling rAF alone can leave
-        // already-submitted frames travelling after stop_movie has returned.
+        // SetSnapshot promises resolve before Mol* consumes the requested reset.
+        // A submitted movie state can still be pending even with no cameraWrites.
+        // Freeze the observed position and await its draw before returning.
         const atStop = this.context.getCameraSnapshot();
-        const hadInFlight = this.cameraWrites.size > 0;
-        if (hadInFlight) {
+        if (this.cameraNeedsDraw) {
             await this.waitForCameraWrites();
+            if (generation !== this.playbackGeneration) return;
             if (atStop) await this.context.setCameraSnapshot(atStop, 0);
+            await this.context.waitForDraw();
+            if (generation === this.playbackGeneration) this.cameraNeedsDraw = false;
         }
     }
 
@@ -219,6 +224,7 @@ export class MovieHandlers {
     }
 
     private submitCameraSnapshot(snapshot: Camera.Snapshot): void {
+        this.cameraNeedsDraw = true;
         const write = this.context.setCameraSnapshot(snapshot, 0);
         this.cameraWrites.add(write);
         void write.then(

@@ -96,7 +96,7 @@ requires a bounded local selector profile before it can be used for a new closur
 
 ### Movie playback browser guard profile
 
-For the rendered final-camera completion contract, the bounded frontend profile
+For rendered Movie camera completion and interruption, the bounded frontend profile
 also accepts exactly `molsysviewer/js/tests/e2e/movie-playback.e2e.ts`. From
 `molsysviewer/js/`, build with `npm run build:harness` and
 `npm run build:e2e:all`, then run `node tests/e2e/movie-playback.e2e.js`.

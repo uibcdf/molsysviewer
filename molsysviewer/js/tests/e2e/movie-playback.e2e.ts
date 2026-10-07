@@ -109,13 +109,48 @@ async function run() {
 
         // A second run, interrupted: it must stop where it was, short of the end.
         await controller.handleMessage({ op: "play_movie", keyframes, loop: false });
-        await new Promise(r => setTimeout(r, 300));
+        // Observe an applied intermediate camera, rather than assuming that 300 ms
+        // of wall time implies a draw on a busy native/software renderer.
+        let observedPlayback = false;
+        for (let i = 0; i < 200; i++) {
+            const current = pos();
+            if (current && current[0] > 5 && current[0] < 55 && current[2] > 5) {
+                observedPlayback = true;
+                break;
+            }
+            await new Promise(r => requestAnimationFrame(r));
+        }
+        if (!observedPlayback) throw new Error("Interrupted movie never displayed an intermediate camera.");
         await controller.handleMessage({ op: "stop_movie" });
         const atStop = pos();
         await new Promise(r => setTimeout(r, 700));
         const afterStop = pos();
 
-        return { settled, during, after, done, atCompletion, atStop, afterStop };
+        // Reproduce the command/draw boundary deterministically with real Mol*:
+        // its animation loop is paused while the movie's own rAF submits a reset.
+        const beforePausedPlayback = pos();
+        controller.plugin.animationLoop.stop({ noDraw: true });
+        await controller.handleMessage({ op: "play_movie", keyframes: [
+            keyframes[0], { ...keyframes[1], time_ms: 10000 },
+        ], loop: false });
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+        await Promise.resolve();
+        const submittedTime = controller.movie.lastMovieTime;
+        const pendingPromises = controller.movie.cameraWrites.size;
+        let stoppedWhilePaused = false;
+        const stopping = controller.handleMessage({ op: "stop_movie" }).then(() => { stoppedWhilePaused = true; });
+        // Observe settlement before restarting Mol*; a resolved camera command
+        // alone must not let stop finish while its applied draw is still blocked.
+        await new Promise(r => setTimeout(r, 50));
+        const earlyStop = stoppedWhilePaused;
+        controller.plugin.animationLoop.start();
+        await stopping;
+        const pausedAtStop = pos();
+        await new Promise(r => setTimeout(r, 200));
+        const pausedAfterStop = pos();
+
+        return { settled, during, after, done, atCompletion, atStop, afterStop,
+            beforePausedPlayback, submittedTime, pendingPromises, earlyStop, pausedAtStop, pausedAfterStop };
     }, PDB_TEXT);
 
     const dist = (a: number[] | null, b: number[] | null) => {
@@ -156,18 +191,17 @@ async function run() {
         dist(result.afterStop, end) > 1,
         "stop_movie left the camera on the final keyframe, so nothing was interrupted",
     );
-    // Not "did not move at all": `applyState` dispatches the camera write with `void`,
-    // so one already-in-flight frame can land after the rAF is cancelled. Measured at
-    // about 3% of the distance still to travel. What must not happen is the journey
-    // continuing, which would cover essentially all of it.
     const drift = dist(result.atStop, result.afterStop);
-    const remaining = dist(result.atStop, end);
     assert.ok(
-        drift < remaining * 0.1,
-        `Camera kept travelling after stop_movie: moved ${drift.toFixed(2)} of the ` +
-            `${remaining.toFixed(2)} still to go, ${JSON.stringify(result.atStop)} -> ` +
+        drift < 1e-6,
+        `Camera kept travelling after stop_movie: moved ${drift}, ${JSON.stringify(result.atStop)} -> ` +
             JSON.stringify(result.afterStop),
     );
+    assert.ok(result.submittedTime > 0 && result.submittedTime < 10000, "paused scenario submitted no movie frame");
+    assert.equal(result.pendingPromises, 0, "scenario did not reach the resolved-command boundary");
+    assert.equal(result.earlyStop, false, "stop_movie returned with an undrawn camera reset");
+    assert.ok(dist(result.beforePausedPlayback, result.pausedAtStop) < 1e-6, "stop did not preserve the observed camera");
+    assert.ok(dist(result.pausedAtStop, result.pausedAfterStop) < 1e-6, "a queued reset landed after stop returned");
 
     await browser.close();
 

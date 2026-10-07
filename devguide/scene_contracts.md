@@ -2525,6 +2525,27 @@ Guards: `tests/test_coordinate_edits.py`, `tests/test_scene_transfer.py`,
 `tests/test_scene_integrity.py`, `tests/test_public_entrypoint_contract.py` and
 `tests/test_public_api_inventory.py`.
 
+## Movie camera completion and interruption
+
+`movie_playback_done` observes the final keyframe only after its camera command
+and a fresh Mol* draw finish. `stop_movie` cancels future playback callbacks,
+drains submitted camera commands, restores the camera observed at interruption
+and awaits that restoration's fresh draw before returning. Command acceptance
+alone does not establish applied camera state: Mol* may retain a pending reset
+after every command promise has resolved. Playback generations prevent a
+superseded final callback from reporting completion.
+
+A browser interruption check first observes an applied intermediate camera;
+elapsed wall time alone is insufficient on a busy renderer. The native Mol*
+paused-draw case also verifies zero pending command promises, an outstanding stop
+until drawing resumes, and no later camera drift. No WebGL opt-out qualifies
+these contracts. Movie export and scientific trajectory changes retain their
+separate contracts.
+
+Guards: `molsysviewer/js/tests/e2e/movie-playback.e2e.ts` and
+`molsysviewer/js/tests/unit/movie-handler.test.ts`; the shared fresh-draw owner is
+`molsysviewer/js/src/managers/canvas-draw.ts`.
+
 ## Final public design corrections — 2026-10-03
 
 The following contracts are integrated in published Viewer 0.24.0 build 1 /

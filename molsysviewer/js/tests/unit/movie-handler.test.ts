@@ -105,3 +105,57 @@ test("movie_playback_done waits for the final camera write", async () => {
         globalThis.cancelAnimationFrame = originalCancel;
     }
 });
+
+test("stop_movie waits for a restored draw after the command promise already resolved", async () => {
+    const originalRequest = globalThis.requestAnimationFrame;
+    const originalCancel = globalThis.cancelAnimationFrame;
+    let tick: FrameRequestCallback | undefined;
+    let releaseDraw: (() => void) | undefined;
+    let position = [60, 0, 0];
+    let pending: number[] | undefined;
+    const requested: number[][] = [];
+    globalThis.requestAnimationFrame = callback => { tick = callback; return 1; };
+    globalThis.cancelAnimationFrame = () => { tick = undefined; };
+
+    try {
+        const movie = new MovieHandlers({
+            getCameraSnapshot: () => ({ position: [...position] }) as any,
+            setCameraSnapshot: async snapshot => {
+                pending = [...snapshot.position];
+                requested.push(pending);
+            },
+            waitForDraw: () => new Promise<void>(resolve => {
+                releaseDraw = () => { position = pending!; resolve(); };
+            }),
+            setTrajectoryFrame: async () => {},
+            getImageDataUri: async () => undefined,
+            showLayer: async () => {},
+            hideLayer: async () => {},
+            notify: undefined,
+        });
+        await movie.play([
+            { time_ms: 0, camera: { position: [0, 0, 60], target: [0, 0, 0], up: [0, 1, 0] } },
+            { time_ms: 900, camera: { position: [60, 0, 0], target: [0, 0, 0], up: [0, 1, 0] } },
+        ]);
+        assert.ok(tick);
+        tick(performance.now() + 300);
+        await new Promise(resolve => setTimeout(resolve, 0));
+        assert.strictEqual(requested.length, 1);
+        assert.notDeepStrictEqual(pending, position);
+
+        let stopped = false;
+        const stopping = movie.stop().then(() => { stopped = true; });
+        await new Promise(resolve => setTimeout(resolve, 0));
+        assert.strictEqual(stopped, false, "stop returned before the camera was drawn");
+        assert.strictEqual(requested.length, 2, "resolved-but-unapplied command was not replaced");
+        assert.deepStrictEqual(pending, [60, 0, 0]);
+        assert.ok(releaseDraw);
+        releaseDraw();
+        await stopping;
+        assert.deepStrictEqual(position, [60, 0, 0]);
+        assert.strictEqual(tick, undefined);
+    } finally {
+        globalThis.requestAnimationFrame = originalRequest;
+        globalThis.cancelAnimationFrame = originalCancel;
+    }
+});
