@@ -157,6 +157,25 @@ Useful registry helpers:
 This is usually the right choice inside notebooks when you want a small local
 catalog without introducing project-level configuration yet.
 
+## Editing a recipe
+
+You can edit a recipe returned by a style query without changing the stored
+recipe, the active scene or another view's built-ins. Nested parameter
+dictionaries are copied at the input, registry and application boundaries.
+Register or apply your edited recipe explicitly:
+
+```python
+from molsysviewer import Style, demo
+
+view = demo["dialanine"]
+view.styles.add("detail", Style(representation="ball-and-stick", params={"alpha": 1.0}))
+recipe = view.styles.get("detail")
+recipe.params["alpha"] = 0.6
+assert view.styles.get("detail").params["alpha"] == 1.0
+view.styles.add("transparent-detail", recipe)
+view.styles.apply(tag="transparent-detail")
+```
+
 ## Current style
 
 To inspect the current scene style:

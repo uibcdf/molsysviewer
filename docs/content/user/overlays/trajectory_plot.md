@@ -77,6 +77,33 @@ time_ps = np.arange(len(end_to_end)) * 0.2      # 0.2 ps per frame
 view.trajectory_plot.show(end_to_end, x=time_ps, x_label="time (ps)", y_label="end-to-end (nm)")
 ```
 
+The supplied numeric `x` values determine the horizontal positions of samples,
+event markers and the playhead. Uneven spacing, reversed order and repeated
+values preserve the order of the loaded structures. Clicking chooses the
+nearest sample; ties keep the current structure if it is among the nearest,
+otherwise they choose the earliest matching structure in the loaded order.
+
+For example, these supplied dimensionless scores belong to three structures
+loaded from nonconsecutive source indices:
+
+```python
+import molsysviewer as msv
+
+view = msv.new_view(msv.demo["pentalanine"].molsys, structure_indices=[0, 2, 8])
+view.trajectory_plot.show(
+    [0.1, 0.4, 0.9],
+    x=[0, 2, 8],
+    x_label="source structure index",
+    y_label="score",
+    events=[{"frame": 1, "label": "second loaded structure"}],
+)
+```
+
+Event `frame` values and click results use the local loaded order: the marker
+above belongs to local frame 1, displayed at `x=2`. Each series and `x` must
+contain one finite value per loaded structure. NaN and positive or negative
+infinity are refused before changing the plot or importing scene state.
+
 ## Hide and clear
 
 ```python

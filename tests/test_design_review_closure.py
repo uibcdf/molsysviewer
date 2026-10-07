@@ -161,7 +161,8 @@ def test_styles_are_detached_at_input_registry_and_builtin_boundaries():
     applied.params["molstar_color_theme"]["params"]["carbonColor"] = "bad-applied-leaf"
     assert left.export_state() == before
     assert left.styles.current().params["molstar_color_theme"] == {
-        "name": "element-symbol", "params": {"carbonColor": "element-symbol"}
+        "name": "element-symbol",
+        "params": {"carbonColor": "element-symbol"},
     }
     assert left.styles.get("custom").params["molstar_color_theme"]["name"] == "element-symbol"
     left.styles.focus("hydrophobicity", atom_indices=[0], tag="focus")
