@@ -45,10 +45,14 @@ initially fails on an already synchronized manifest (#176). Recovery run
 Release is published, Conda build 1 is promoted unchanged and public labels/index
 are verified; build 0 remains staging-only. Viewer source preservation is
 verified at [10.5281/zenodo.23206053](https://doi.org/10.5281/zenodo.23206053).
-The sixteen public installed cells are requested from MolSysMT's owner;
-their result remains pending. Keep Interactions' public qualification (#114/#140), complete
-public documentation reconciliation, installed first-contact observations and
-the final 1.0 candidate decision as distinct remaining work. Standalone remains
+All **16/16 public installed cells** pass in
+[37587631519](https://github.com/uibcdf/molsysmt/actions/runs/37587631519).
+All actual environment ZIPs/digests, exact public package coordinates and four
+required steps per cell are independently verified. The exact-source
+`public_conda` gate also passes. Coordinated stabilization publication is complete.
+Next close supported-provider records (#114/#140/#151) against that evidence,
+reconcile public documentation, and complete installed first-contact observations
+and the final 1.0 candidate decision as distinct remaining work. Standalone remains
 experimental; remotes and the Mol* dependency update remain post-1.0.
 
 ## Pre-1.0 distribution milestone completed — 2026-09-25

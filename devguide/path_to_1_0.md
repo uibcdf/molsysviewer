@@ -9,7 +9,9 @@ staging cells, exact Windows launchers and all 39 hosted core browser suites.
 Independent verification checks actual environment archives/digests and staging
 repodata. Canonical-source Python 3.14 integration passes on all three native hosts,
 with 39 core suites and all 25 notebooks passing on Linux. The public
-pair gate awaits its sixteen installed public cells. With Diego's authorization,
+pair gate passes all **16/16** installed public cells in `37587631519`; every
+actual environment archive and the exact-source public gate are independently
+verified. With Diego's authorization,
 Viewer's fixed tag, Release, unchanged Conda build-1 promotion and npm/CDN
 are independently verified; strict 1.0 clearance remains pending. The corrected automatic-development
 hosted follow-up also passes on all three native hosts, including 39 core suites
@@ -23,7 +25,8 @@ preservation is now verified at [10.5281/zenodo.23205366](https://doi.org/10.528
 Viewer publication is authorized on 2026-10-07. npm publisher recovery (#176)
 completes upload in run `37586395370`; public integrity/CDN checks pass. Viewer
 source preservation is verified at [10.5281/zenodo.23206053](https://doi.org/10.5281/zenodo.23206053).
-Complete the requested sixteen-cell public pair before closing coordinated qualification.
+Coordinated stabilization publication and public-pair qualification are complete.
+Close the supported-provider records against this evidence.
 Public documentation and final 1.0 first-contact/candidate review remain separate.
 The older checkpoints below preserve their original scope; use
 [the current handoff](checkpoints.md#resume-in-one-page) and

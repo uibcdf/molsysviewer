@@ -5,7 +5,7 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**0.24.0 stabilization candidate (2026-10-07): exact staging and source gates qualified.**
+**0.24.0 stabilization published (2026-10-07): public pair 16/16 verified.**
 Viewer **`1a4c97a58b68b69f3a836546c9e4ac6187c3efa2`**, noarch **build 1**, pairs
 with MolSysMT **0.23.0**, **build 0 ABI3**, commit
 **`46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9`**. The provider's fixed branch
@@ -80,13 +80,20 @@ omits both build/upload paths as required. The first promotion dispatch
 observations remain in the receipt.
 Viewer source preservation is verified in `37587205154` at version DOI
 [10.5281/zenodo.23206053](https://doi.org/10.5281/zenodo.23206053). The downloaded
-source ZIP checksum matches the receipt and public API. The sixteen public
-installed cells are launched in [37587631519](https://github.com/uibcdf/molsysmt/actions/runs/37587631519)
-at the exact provider commit; their verdict remains pending.
+source ZIP checksum matches the receipt and public API. Its annotated-tag archive
+root is verified, and 23 selected source/metadata files match the exact producer.
+All **16/16 public installed cells** pass in
+[37587631519](https://github.com/uibcdf/molsysmt/actions/runs/37587631519)
+at the exact provider commit: four platforms and Python 3.11–3.14. Independent
+downloads verify every environment ZIP digest and original public package
+coordinate; all four required steps pass in each cell. The exact-source
+`public_conda` release gate passes (one check, zero failures/blocked/exceptions).
+This completes coordinated stabilization qualification; it does not clear 1.0.
 The earlier devguide reconciliation passes 277 bounded checks;
 its 45-report board snapshot precedes #176. MolSysMT confirms the exact candidates
-and publication order in its evidence commit `832e01210`. Next: qualify the
-exact public pair, preserving the completed Release/Conda/npm/Zenodo checks.
+and publication order in its evidence commit `832e01210`. Next: close the
+supported-provider reports and reconcile public documentation, retaining the
+completed public pair and Release/Conda/npm/Zenodo checks.
 See [the candidate preparation](stabilization_024_preparation_20261006.json).
 
 **Published support-library receiving check (2026-10-06): bounded pass.**
@@ -1444,12 +1451,13 @@ handoffs do not replace these artifact identities.
 
 1. Exact canonical-source integration and automatic hosted follow-up 37545069147
    pass. #175 is resolved; native verdicts and Linux notebook/core results are
-   preserved. Review the completed candidate evidence before publication.
+   preserved. Both fixed packages are now published and independently verified.
 2. Both releases are public and source preservation is verified; npm publisher
    #176 is resolved. Viewer build 1 and its public npm/CDN runtime are verified.
    Keep the immutable source/package identities fixed.
-3. Complete the sixteen-cell public pair qualification requested from MolSysMT.
-   No staging verdict supplies that public installed result.
+3. The sixteen-cell public pair qualification is complete in `37587631519`.
+   All actual environment archives and the independent exact-source gate pass;
+   preserve this public evidence separately from staging and source results.
 4. Close the supported-provider boundary of Interactions (#114/#140) using the
    actual public package, preserving earlier experimental/source evidence.
 5. Reconcile public documentation and remaining support promises. The five-stage

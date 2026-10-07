@@ -14,6 +14,16 @@ supersedes: []
 
 # Align Viewer interactions with the nine implemented MolSysMT families
 
+**Public qualification — 2026-10-07:** both fixed packages are now published;
+all sixteen public installed cells pass in `37587631519`. Independent downloads
+verify every environment archive, exact original public package coordinates
+and required step; the exact-source `public_conda` gate passes. The
+public-provider/release qualification described below is now complete. Formal
+report closure against its scientific/browser guards is the next record step;
+this does not clear the distinct final 1.0 gates. See the
+[current handoff](../checkpoints.md#resume-in-one-page) and
+[verified receipt](../stabilization_024_preparation_20261006.json).
+
 **Current qualification — 2026-10-06:** implementation is committed and
 integrated in Viewer 0.24.0 build 1 with MolSysMT 0.23.0 ABI3 build 0. All
 sixteen installed staging cells and 39 hosted core browser suites pass;

@@ -1,7 +1,7 @@
 {
   "schema": "molsysviewer.stabilization_preparation@1",
   "date": "2026-10-06",
-  "status": "Viewer_0.24.0_published_runtime_Conda_and_Zenodo_verified; awaiting_public_16_cell_pair",
+  "status": "Viewer_0.24.0_build_1_published_preserved_and_public_pair_16_of_16_verified",
   "viewer": {
     "version": "0.24.0",
     "build_number": 0,
@@ -448,10 +448,39 @@
       },
       "public_api_matches_receipt": true,
       "downloaded_source_checksum_verified": true,
-      "public_record_url": "https://zenodo.org/records/23206053"
+      "public_record_url": "https://zenodo.org/records/23206053",
+      "archive_root": "uibcdf-molsysviewer-b9ea578",
+      "archive_root_matches_annotated_tag_object": true,
+      "selected_source_and_metadata_bytes_match_exact_commit": true,
+      "compared_files": [
+        ".github/workflows/CI.yaml",
+        ".github/workflows/CI_e2e.yaml",
+        ".github/workflows/ci-python-314-source-pair.yaml",
+        ".zenodo.json",
+        "CITATION.cff",
+        "devguide/archive/README.md",
+        "devguide/archive/movie_done_precedes_final_canvas_draw.md",
+        "devguide/archive/temporary_candidate_tags_change_release_history.md",
+        "devguide/checkpoints.md",
+        "devguide/reporting_protocol.md",
+        "devguide/stabilization_024_preparation_20261006.json",
+        "docs/content/developer/js_workflow.md",
+        "molsysviewer/interactions.py",
+        "molsysviewer/js/src/index.ts",
+        "molsysviewer/js/src/managers/canvas-draw.ts",
+        "molsysviewer/js/src/managers/handlers/movie-handlers.ts",
+        "molsysviewer/js/src/managers/viewer-controller.ts",
+        "molsysviewer/js/tests/e2e/harness.ts",
+        "molsysviewer/js/tests/e2e/movie-playback.e2e.ts",
+        "molsysviewer/js/tests/unit/movie-handler.test.ts",
+        "pyproject.toml",
+        "tests/test_reporting_protocol.py",
+        "tests/test_source_workflow_coverage.py"
+      ],
+      "zip_root_observation": "GitHub names this archive with the annotated tag object prefix b9ea578, not the underlying commit prefix 1a4c97a. Tag object resolves independently to the exact commit; selected source/metadata bytes also match."
     },
     "public_pair": {
-      "status": "queued",
+      "status": "completed",
       "version": "0.24.0",
       "viewer_build": 1,
       "provider_version": "0.23.0",
@@ -472,7 +501,388 @@
       "id": 37587631519,
       "url": "https://github.com/uibcdf/molsysmt/actions/runs/37587631519",
       "head_sha": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
-      "display_title": "MT 0.23.0 build 0 + Viewer 0.24.0 build 1 | Python 3.14 | all | public"
+      "display_title": "MT 0.23.0 build 0 + Viewer 0.24.0 build 1 | Python 3.14 | all | public",
+      "conclusion": "success",
+      "attempt": 1,
+      "verified_on": "2026-10-07",
+      "independent_verification": {
+        "run_id": 37587631519,
+        "attempt": 1,
+        "head_sha": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+        "conclusion": "success",
+        "display_title": "MT 0.23.0 build 0 + Viewer 0.24.0 build 1 | Python 3.14 | all | public",
+        "verified_cells": 16,
+        "artifacts": [
+          {
+            "id": 11468038426,
+            "name": "conda-public-osx-arm64-py3.13",
+            "digest": "sha256:6652104ee5f11e1c100c9c64000a2fd3dd78fb64e46957ad0e6a65376804f8a9",
+            "platform": "osx-arm64",
+            "python": "3.13",
+            "archive_digest_and_provenance_verified": true,
+            "installed_exact_public_coordinates_and_digests_verified": true,
+            "environment_sha256": "58b47cb971ce85750f61252827a1defc1c626ebd6e721ae328f59695f9c728f3",
+            "required_steps": {
+              "Install the selected package pair": "success",
+              "Validate versions, provenance, native code, BCIF, PDB text, and viewer resources": "success",
+              "Record the exact environment": "success",
+              "Retain the environment record": "success"
+            }
+          },
+          {
+            "id": 11467795189,
+            "name": "conda-public-win-64-py3.12",
+            "digest": "sha256:449ea12a1ac5f824bb47f7338ac350b4f2f5fa28b43aca7e4493bcc670000635",
+            "platform": "win-64",
+            "python": "3.12",
+            "archive_digest_and_provenance_verified": true,
+            "installed_exact_public_coordinates_and_digests_verified": true,
+            "environment_sha256": "d0d65748dd85b3c74895be7625c8b96a85f4520996de25073fd3d4faf7b622e3",
+            "required_steps": {
+              "Install the selected package pair": "success",
+              "Validate versions, provenance, native code, BCIF, PDB text, and viewer resources": "success",
+              "Record the exact environment": "success",
+              "Retain the environment record": "success"
+            }
+          },
+          {
+            "id": 11467682925,
+            "name": "conda-public-osx-arm64-py3.12",
+            "digest": "sha256:7acb88ee90d595d31077e49247678e09e88990b54a3925e61e534ef86d31ce67",
+            "platform": "osx-arm64",
+            "python": "3.12",
+            "archive_digest_and_provenance_verified": true,
+            "installed_exact_public_coordinates_and_digests_verified": true,
+            "environment_sha256": "3a3b724c1d1af6c7b4f9854d02fff1d683d2d31b47ba66ee8d8f8ca583cea2a3",
+            "required_steps": {
+              "Install the selected package pair": "success",
+              "Validate versions, provenance, native code, BCIF, PDB text, and viewer resources": "success",
+              "Record the exact environment": "success",
+              "Retain the environment record": "success"
+            }
+          },
+          {
+            "id": 11467675841,
+            "name": "conda-public-win-64-py3.14",
+            "digest": "sha256:65931888a555ac0cd0ac59fe9336c28f8d773b9cd1689a325667ece1c988a59a",
+            "platform": "win-64",
+            "python": "3.14",
+            "archive_digest_and_provenance_verified": true,
+            "installed_exact_public_coordinates_and_digests_verified": true,
+            "environment_sha256": "c873e8d294a791cf08a0fc2d481b7eec280fdee78bd5bf73c03d4c64c4df19f5",
+            "required_steps": {
+              "Install the selected package pair": "success",
+              "Validate versions, provenance, native code, BCIF, PDB text, and viewer resources": "success",
+              "Record the exact environment": "success",
+              "Retain the environment record": "success"
+            }
+          },
+          {
+            "id": 11467655424,
+            "name": "conda-public-linux-64-py3.11",
+            "digest": "sha256:46ecc15dbb3e7419f10973b78d0bfca852932b4fde9fd08e0266f800e99b2c68",
+            "platform": "linux-64",
+            "python": "3.11",
+            "archive_digest_and_provenance_verified": true,
+            "installed_exact_public_coordinates_and_digests_verified": true,
+            "environment_sha256": "94bd3aaef7e815c1c30882fb0eb169e5975e80f9831833aa2c18a9a8d698362c",
+            "required_steps": {
+              "Install the selected package pair": "success",
+              "Validate versions, provenance, native code, BCIF, PDB text, and viewer resources": "success",
+              "Record the exact environment": "success",
+              "Retain the environment record": "success"
+            }
+          },
+          {
+            "id": 11467497302,
+            "name": "conda-public-linux-64-py3.14",
+            "digest": "sha256:75793aa9cf0875b09b9531338ef72787e1ecf4bdfa4e9c434c7110783c9aca6d",
+            "platform": "linux-64",
+            "python": "3.14",
+            "archive_digest_and_provenance_verified": true,
+            "installed_exact_public_coordinates_and_digests_verified": true,
+            "environment_sha256": "bedcec0139cecfaad7a66960b1c01b9a8fb796e004fb919a297fa07e0b1fcfd6",
+            "required_steps": {
+              "Install the selected package pair": "success",
+              "Validate versions, provenance, native code, BCIF, PDB text, and viewer resources": "success",
+              "Record the exact environment": "success",
+              "Retain the environment record": "success"
+            }
+          },
+          {
+            "id": 11467384451,
+            "name": "conda-public-osx-arm64-py3.11",
+            "digest": "sha256:2e1c38f9131c4ea5d964e81ed9bf87878664a0cb71588bd543e96c7c4009703d",
+            "platform": "osx-arm64",
+            "python": "3.11",
+            "archive_digest_and_provenance_verified": true,
+            "installed_exact_public_coordinates_and_digests_verified": true,
+            "environment_sha256": "c1fdd8ef83be738e496c95f86d34f0ead3caa5e1dd8552f20445ae8d4511911f",
+            "required_steps": {
+              "Install the selected package pair": "success",
+              "Validate versions, provenance, native code, BCIF, PDB text, and viewer resources": "success",
+              "Record the exact environment": "success",
+              "Retain the environment record": "success"
+            }
+          },
+          {
+            "id": 11467266973,
+            "name": "conda-public-linux-aarch64-py3.12",
+            "digest": "sha256:a4e07a7ad66ea1a03dbff5744da2ced1410f830173e27c1eb1b67f8ef3a901bd",
+            "platform": "linux-aarch64",
+            "python": "3.12",
+            "archive_digest_and_provenance_verified": true,
+            "installed_exact_public_coordinates_and_digests_verified": true,
+            "environment_sha256": "035b5dc70be33b9114395d8cbc8652b10ef302ca559f4fedf2f1286689ed9a1d",
+            "required_steps": {
+              "Install the selected package pair": "success",
+              "Validate versions, provenance, native code, BCIF, PDB text, and viewer resources": "success",
+              "Record the exact environment": "success",
+              "Retain the environment record": "success"
+            }
+          },
+          {
+            "id": 11467137418,
+            "name": "conda-public-win-64-py3.13",
+            "digest": "sha256:4f59a20bfa2bca5b74c07a9badaf41a0fea2e2c825b43d08047cb764c25e79e4",
+            "platform": "win-64",
+            "python": "3.13",
+            "archive_digest_and_provenance_verified": true,
+            "installed_exact_public_coordinates_and_digests_verified": true,
+            "environment_sha256": "4d9e8fe57cb48c8332979bfcd2427030976ad585613b8bd5e38a3827ea7de9c4",
+            "required_steps": {
+              "Install the selected package pair": "success",
+              "Validate versions, provenance, native code, BCIF, PDB text, and viewer resources": "success",
+              "Record the exact environment": "success",
+              "Retain the environment record": "success"
+            }
+          },
+          {
+            "id": 11467137005,
+            "name": "conda-public-linux-64-py3.13",
+            "digest": "sha256:496bc2feefb32bb182b4a2e43af9f7529067a5e0d85988ab83ac56ce1dabe9bf",
+            "platform": "linux-64",
+            "python": "3.13",
+            "archive_digest_and_provenance_verified": true,
+            "installed_exact_public_coordinates_and_digests_verified": true,
+            "environment_sha256": "3e81bf2f49747b9bed0caeda8e1c0ac312b5fcb5a54e3c844d1e58e4ffdfb471",
+            "required_steps": {
+              "Install the selected package pair": "success",
+              "Validate versions, provenance, native code, BCIF, PDB text, and viewer resources": "success",
+              "Record the exact environment": "success",
+              "Retain the environment record": "success"
+            }
+          },
+          {
+            "id": 11467032659,
+            "name": "conda-public-win-64-py3.11",
+            "digest": "sha256:7df031ad6f30479505b342b3aa5ff4116b83ea7821c7d34049c086d20ef74d74",
+            "platform": "win-64",
+            "python": "3.11",
+            "archive_digest_and_provenance_verified": true,
+            "installed_exact_public_coordinates_and_digests_verified": true,
+            "environment_sha256": "c4f92211412b202136d5753c87ff7f94ba985a16e8a3b744eafc890e669a7493",
+            "required_steps": {
+              "Install the selected package pair": "success",
+              "Validate versions, provenance, native code, BCIF, PDB text, and viewer resources": "success",
+              "Record the exact environment": "success",
+              "Retain the environment record": "success"
+            }
+          },
+          {
+            "id": 11467028434,
+            "name": "conda-public-linux-aarch64-py3.11",
+            "digest": "sha256:5720ac334620c36c5023144dc2f09a3887b68117455815915847a3700ac03f36",
+            "platform": "linux-aarch64",
+            "python": "3.11",
+            "archive_digest_and_provenance_verified": true,
+            "installed_exact_public_coordinates_and_digests_verified": true,
+            "environment_sha256": "00433c0b0289972d7409acb3909ceb98e658a85b7e9f2d1ed490907518669395",
+            "required_steps": {
+              "Install the selected package pair": "success",
+              "Validate versions, provenance, native code, BCIF, PDB text, and viewer resources": "success",
+              "Record the exact environment": "success",
+              "Retain the environment record": "success"
+            }
+          },
+          {
+            "id": 11466952462,
+            "name": "conda-public-osx-arm64-py3.14",
+            "digest": "sha256:ace6cc9f63e43116bf34e0a85597e85f91af703a23ff0c818f4dce7764a9196d",
+            "platform": "osx-arm64",
+            "python": "3.14",
+            "archive_digest_and_provenance_verified": true,
+            "installed_exact_public_coordinates_and_digests_verified": true,
+            "environment_sha256": "289cf99cb034233001ba510e913dface3ac7791ef7112eb15ef819e8dab75e2a",
+            "required_steps": {
+              "Install the selected package pair": "success",
+              "Validate versions, provenance, native code, BCIF, PDB text, and viewer resources": "success",
+              "Record the exact environment": "success",
+              "Retain the environment record": "success"
+            }
+          },
+          {
+            "id": 11466933688,
+            "name": "conda-public-linux-aarch64-py3.13",
+            "digest": "sha256:184d1c98acc7dc7874031d63ea99ece4e70aa336deb8d990a774615ba82b197a",
+            "platform": "linux-aarch64",
+            "python": "3.13",
+            "archive_digest_and_provenance_verified": true,
+            "installed_exact_public_coordinates_and_digests_verified": true,
+            "environment_sha256": "8616b7e3111147cd0400db328a3550d72b6167d0be9825cc0ecf6cd9e0a2f12c",
+            "required_steps": {
+              "Install the selected package pair": "success",
+              "Validate versions, provenance, native code, BCIF, PDB text, and viewer resources": "success",
+              "Record the exact environment": "success",
+              "Retain the environment record": "success"
+            }
+          },
+          {
+            "id": 11466729129,
+            "name": "conda-public-linux-aarch64-py3.14",
+            "digest": "sha256:637561555c79f66867bc3fb0aa819af6e8c7829afb7063cff2b2b408ef43fb4e",
+            "platform": "linux-aarch64",
+            "python": "3.14",
+            "archive_digest_and_provenance_verified": true,
+            "installed_exact_public_coordinates_and_digests_verified": true,
+            "environment_sha256": "b1d8c864df4e70ec82da6c84e71c3caf9b7987782d1ebadcb0e070efe59dd3f3",
+            "required_steps": {
+              "Install the selected package pair": "success",
+              "Validate versions, provenance, native code, BCIF, PDB text, and viewer resources": "success",
+              "Record the exact environment": "success",
+              "Retain the environment record": "success"
+            }
+          },
+          {
+            "id": 11466559561,
+            "name": "conda-public-linux-64-py3.12",
+            "digest": "sha256:de832142294f8457973d7bee9ae41822bfb29940a15a419981d73541aeb58e29",
+            "platform": "linux-64",
+            "python": "3.12",
+            "archive_digest_and_provenance_verified": true,
+            "installed_exact_public_coordinates_and_digests_verified": true,
+            "environment_sha256": "cbf6bd64df11fba218be3b3ec20b2c99adea4ec3085b177722dd29a48f08faa5",
+            "required_steps": {
+              "Install the selected package pair": "success",
+              "Validate versions, provenance, native code, BCIF, PDB text, and viewer resources": "success",
+              "Record the exact environment": "success",
+              "Retain the environment record": "success"
+            }
+          }
+        ],
+        "scope": "Sixteen public installed environments; no source/full-suite result substituted."
+      },
+      "release_gate": {
+        "source_commit": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
+        "command": "python devtools/release_gate.py --pre-release --only public_conda --candidate-evidence <fixed-public-pair-plan>",
+        "qualification_environment": "/tmp/msv-024-staging-20261006",
+        "elapsed_seconds": 18.4,
+        "passed": 1,
+        "failed": 0,
+        "blocked": 0,
+        "exceptions": 0,
+        "strict_1_0_cleared": false,
+        "output": "[PASS   ]  18.4s  public_conda the exact installed pair and solver-visible public files\n                        exact public_conda evidence verified for Viewer 0.24.0\n\n1 passed, 0 failed, 0 blocked, 0 exceptions\n\nSelected pre-1.0 checks passed; strict 1.0 release is not cleared.\n",
+        "candidate_evidence": {
+          "schema": "molsysviewer.release-evidence/1",
+          "molsysviewer": {
+            "version": "0.24.0",
+            "commit": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
+            "build_number": 1,
+            "files": [
+              {
+                "subdir": "noarch",
+                "filename": "molsysviewer-0.24.0-py_1.tar.bz2",
+                "sha256": "e31dfb114ab2e49f22b372992d0201455b91849f2631d0165b802069e13abeaa"
+              }
+            ]
+          },
+          "molsysmt": {
+            "version": "0.23.0",
+            "commit": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+            "build_number": 0,
+            "files": [
+              {
+                "subdir": "linux-aarch64",
+                "filename": "molsysmt-0.23.0-pyabi3hecc93d8_0.conda",
+                "sha256": "d588b52c843b43774ff59d4a627e4cffc0fcc86c39118f279815f4c6ec31a4dd"
+              },
+              {
+                "subdir": "linux-64",
+                "filename": "molsysmt-0.23.0-pyabi3h03bb3b7_0.conda",
+                "sha256": "7ff102db1ceb3a6098b5c020193a2bef1c5eaa4dbcbc5a0b472ee2fa44a1971b"
+              },
+              {
+                "subdir": "win-64",
+                "filename": "molsysmt-0.23.0-pyabi3h2d2bc06_0.conda",
+                "sha256": "d74d69f2ef45e6f44ae9bfc43b89ae8a48d1422c0ad32df8302f17418139eb6b"
+              },
+              {
+                "subdir": "osx-arm64",
+                "filename": "molsysmt-0.23.0-pyabi3ha0bc463_0.conda",
+                "sha256": "b2fe891f6e4fe9b167b0383a0f11c9772a5450e3fb93ad030ea5139d5aa54317"
+              }
+            ]
+          },
+          "conda": {
+            "id": 37541876875,
+            "attempt": 1
+          },
+          "hosted_e2e": {
+            "id": 37541292806,
+            "attempt": 1
+          },
+          "public_conda": {
+            "id": 37587631519,
+            "attempt": 1
+          }
+        }
+      }
+    },
+    "publisher_fix_hosted_followup": {
+      "source_commit": "493f6eb6cbed33ec1d49e15f7f6295f927f71b8e",
+      "core_browser_run": 37586394242,
+      "core_browser_conclusion": "success",
+      "three_native_source_pair_run": 37586394243,
+      "three_native_source_pair_conclusion": "success",
+      "scope": "Developer publisher/guard follow-up; does not replace immutable package producer or installed-public evidence."
+    },
+    "superseded_ci_cancellations": [
+      {
+        "id": 37584211212,
+        "head_sha": "8b93bc36e7fa36f11459575374ce7106f073e1d8",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "scope": "Superseded CI.yaml push/main run only; latest successor and fixed qualification gates retained. Cancellation is not passing validation."
+      },
+      {
+        "id": 37584392292,
+        "head_sha": "a6d5cf282d403575acf5cb16da98cd06713d415c",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "scope": "Superseded CI.yaml push/main run only; latest successor and fixed qualification gates retained. Cancellation is not passing validation."
+      },
+      {
+        "id": 37586394316,
+        "head_sha": "493f6eb6cbed33ec1d49e15f7f6295f927f71b8e",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "scope": "Superseded CI.yaml push/main run only; latest successor and fixed qualification gates retained. Cancellation is not passing validation."
+      }
+    ],
+    "final_documentation_validation": {
+      "observed_on": "2026-10-07",
+      "devguide_link_checks": {
+        "passed": 4,
+        "elapsed_seconds": 2.97
+      },
+      "reporting_and_architecture_status_checks": {
+        "passed": 225,
+        "elapsed_seconds": 2.48
+      },
+      "receipt_consistency": "16 unique platform/Python cells, 64 successful required steps, fixed producer/build and 23 compared source files verified",
+      "full_python_suite_repeated": false,
+      "unrelated_sandbox_work_preserved": true
     }
   },
   "qualification": {
@@ -588,8 +998,8 @@
     }
   },
   "remaining": [
-    "Complete and independently verify all sixteen public installed-pair cells before closing coordinated qualification",
-    "Retain public documentation reconciliation and installed first-contact/final 1.0 review as later stabilization work"
+    "Close supported-provider proposal records against the completed public evidence, retaining their original scientific/browser guards",
+    "Reconcile public documentation and complete installed first-contact/final 1.0 candidate review; stabilization publication is complete and does not clear strict 1.0"
   ],
   "hosted": {
     "staging_producer": {
