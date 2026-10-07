@@ -27,13 +27,10 @@ list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 - [`extend_python_support_to_3_14.md`](extend_python_support_to_3_14.md) — [#93](https://github.com/uibcdf/molsysviewer/issues/93) — Extend MolSysViewer Python support to 3.14 alongside MolSysMT. *(measured)*
 - [`migrate_standalone_qt_to_canonical_pyside6_6_11_2.md`](migrate_standalone_qt_to_canonical_pyside6_6_11_2.md) — [#109](https://github.com/uibcdf/molsysviewer/issues/109) — Migrate the optional standalone Qt host to canonical PySide6 6.11.2. *(measured)*
 
-### Partially done (6)
+### Partially done (3)
 
-- [`align_interactions_with_molsysmt_families.md`](align_interactions_with_molsysmt_families.md) — [#140](https://github.com/uibcdf/molsysviewer/issues/140) — Align Viewer interactions with the nine implemented MolSysMT families *(measured)*
 - [`bounded_interaction_inspection_pages.md`](bounded_interaction_inspection_pages.md) — [#142](https://github.com/uibcdf/molsysviewer/issues/142) — Use bounded public occurrence pages in the Interactions inspector *(measured)*
 - [`interaction_observation_actions.md`](interaction_observation_actions.md) — [#145](https://github.com/uibcdf/molsysviewer/issues/145) — Select and focus observation participants from the Interactions inspector *(measured)*
-- [`interactions_minimum_before_1_0.md`](interactions_minimum_before_1_0.md) — [#114](https://github.com/uibcdf/molsysviewer/issues/114) — Introduce a minimal Interactions scene domain before 1.0. *(measured)*
-- [`multiple_system_loading_contract.md`](multiple_system_loading_contract.md) — [#151](https://github.com/uibcdf/molsysviewer/issues/151) — Define batch and progressive loading of multiple molecular systems *(measured)*
 - [`native_interaction_h5msm_save.md`](native_interaction_h5msm_save.md) — [#144](https://github.com/uibcdf/molsysviewer/issues/144) — Save named interaction analyses through the native Viewer API *(measured)*
 
 ### Blocked (1)

@@ -998,8 +998,8 @@
     }
   },
   "remaining": [
-    "Close supported-provider proposal records against the completed public evidence, retaining their original scientific/browser guards",
-    "Reconcile public documentation and complete installed first-contact/final 1.0 candidate review; stabilization publication is complete and does not clear strict 1.0"
+    "Reconcile broader public documentation and complete installed first-contact/final 1.0 candidate review; stabilization publication and bounded domain closure are complete",
+    "Recertify the selected exact 1.0 producer and installed artifacts, including Interactions and composite loading, as required by path_to_1_0.md"
   ],
   "hosted": {
     "staging_producer": {
@@ -2325,5 +2325,16 @@
       "head_sha": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
       "url": "https://github.com/uibcdf/molsysmt/actions/runs/37583385927"
     }
+  },
+  "domain_closure": {
+    "date": "2026-10-07",
+    "issues": [
+      114,
+      140,
+      151
+    ],
+    "record": "devguide/domain_closure_20261007.json",
+    "fresh_installed_checks_passed": 207,
+    "strict_1_0_cleared": false
   }
 }

@@ -1,6 +1,13 @@
 # Interaction residency, queries and projection
 
-**Current qualification — 2026-10-06:** the fixed Viewer 0.24.0 build 1 /
+**Public qualification — 2026-10-07:** the exact published pair passes all
+sixteen public installed cells in `37587631519`; actual environment digests and
+the exact-source public gate are verified. This completes the public dependency
+boundary of #114/#140. The bounded measured workloads below remain applicable to
+their recorded inputs; native-GPU throughput and arbitrary large systems are
+uncertified. Final 1.0 recertification remains in the normative release plan.
+
+**Staging observation — 2026-10-06:** the fixed Viewer 0.24.0 build 1 /
 MolSysMT 0.23.0 ABI3 build 0 pair passes all sixteen installed staging cells and
 39 hosted core browser suites. Public-pair and larger GPU qualification remain
 open. Provider uibcdf/molsysmt#288 and uibcdf/molsysmt#289 source corrections and

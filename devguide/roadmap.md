@@ -50,8 +50,9 @@ All **16/16 public installed cells** pass in
 All actual environment ZIPs/digests, exact public package coordinates and four
 required steps per cell are independently verified. The exact-source
 `public_conda` gate also passes. Coordinated stabilization publication is complete.
-Next close supported-provider records (#114/#140/#151) against that evidence,
-reconcile public documentation, and complete installed first-contact observations
+Supported-provider records #114/#140/#151 are resolved with that evidence,
+the updated Interactions guide and 207 fresh installed scientific/loading checks.
+Next reconcile the broader public documentation and complete installed first-contact observations
 and the final 1.0 candidate decision as distinct remaining work. Standalone remains
 experimental; remotes and the Mol* dependency update remain post-1.0.
 

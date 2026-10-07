@@ -1,25 +1,33 @@
 ---
 summary: Introduce a minimal Interactions scene domain before 1.0.
 issue: uibcdf/molsysviewer#114
-status: partial
+status: resolved
 opened: 2026-09-28
-closed:
+closed: 2026-10-07
 verification: measured
 area: [interaction, scene, api, ui]
-guard:
-normative:
-blocked_by: [uibcdf/molsysmt#250]
+guard: tests/test_interactions_api.py
+normative: devguide/scene_contracts.md
+blocked_by: []
 supersedes: []
 ---
 
 # Introduce a minimal Interactions scene domain before 1.0
+
+**Resolved — 2026-10-07:** the bounded native Interactions domain is delivered
+in the immutable published Viewer 0.24.0 build 1 / MolSysMT 0.23.0 ABI3 build 0
+pair. The supported public provider, nine family projections, calculation/display
+scope and bounded occurrence inspection are now described in the user guide.
+Both Python examples execute against the installed pair. The original future
+1.0 recertification criterion is retained explicitly in the normative release
+plan; it is not asserted to have passed by this implementation closure.
 
 **Public qualification — 2026-10-07:** both fixed packages are now published;
 all sixteen public installed cells pass in `37587631519`. Independent downloads
 verify every environment archive, exact original public package coordinates
 and required step; the exact-source `public_conda` gate passes. The
 public-provider/release qualification described below is now complete. Formal
-report closure against its scientific/browser guards is the next record step;
+closure is recorded below with scientific/browser guards;
 this does not clear the distinct final 1.0 gates. See the
 [current handoff](../checkpoints.md#resume-in-one-page) and
 [verified receipt](../stabilization_024_preparation_20261006.json).
@@ -626,7 +634,7 @@ current minimum and differences from the initial draft.
 The independent, interactive prototype in the local scratch area used synthetic
 data and performed no calculations or file access. It is an untracked review
 aid, unavailable in a clean checkout; this section owns the proposed behavior.
-The tracked [Studio design record](post_1.0/studio_interactions_subpanel_ui_design.md)
+The tracked [Studio design record](../pending_proposals/post_1.0/studio_interactions_subpanel_ui_design.md)
 retains the panel rationale and the implemented minimum. Advanced UI remains in
 `uibcdf/molsysviewer#56`.
 
@@ -900,7 +908,9 @@ boundary without requiring the viewer to duplicate chemical perception.
    session preserves multiple named analyses and all visual fields. Scene
    undo does not duplicate scientific arrays or delete calculated results.
 
-## Resolution
+<a id="resolution"></a>
+
+## Initial implementation status — 2026-09-30
 
 Implemented experimentally in the working tree. Provider-release and
 representative workload qualification remain pending.
@@ -1144,3 +1154,40 @@ internal integration used the existing deferred CI route and does not certify
 an exact hosted or published-provider candidate. The report remains partial
 for its existing supported-artifact/release qualification. See
 [`integration_review_20261003.md`](../integration_review_20261003.md).
+
+## Final closure evidence — 2026-10-07
+
+Producer Viewer `1a4c97a58b68b69f3a836546c9e4ac6187c3efa2` / MolSysMT
+`46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9` remains unchanged. Public installed
+run `37587631519` passes all sixteen platform/Python cells; all environment
+archives/digests, original package coordinates and four required steps per cell
+are independently verified. Exact-source `public_conda` passes. Hosted core
+`37541292806` passes all 39 browser suites, and canonical-source Python 3.14
+`37542642197` passes on three native hosts, with 25 notebooks on Linux.
+
+Fresh closure checks use only installed Viewer 0.24.0 / MolSysMT 0.23.0 scientific
+modules: 42 API cases and 165 family/composite/source/box/Studio/real-scientific
+cases pass, with zero failures/errors/skips. The two updated user-guide Python
+blocks evaluate three structures and produce three observations; inspect, Hide
+and Show pass. Strict Sphinx builds successfully with warnings as errors.
+The warnings in scientific checks preserve legacy H5MSM demo migration and
+provider Pandas/box/attribute diagnostics; they are not suppressed.
+
+Guard: `tests/test_interactions_api.py`. It verifies the scientific/public workflow and atomic failure
+semantics described by this report; related scene/browser and persistence guards
+remain registered. Normative behavior is in `devguide/scene_contracts.md`. The
+[closure receipt](../domain_closure_20261007.json) retains exact evidence scope.
+
+Acceptance reconciliation: shared sparse contract and real/large-trajectory
+evidence (criterion 1) are preserved in the scientific/performance records;
+Python/Studio data/visual identity and lifecycle (2), replay/export/edit and
+bounded residency (3), documented criteria and removal of the misleading Shapes
+calculation claim (4), and atomic state/session fidelity (6) are delivered and
+guarded. Criterion 5 applies to the future 1.0 candidate: it is carried forward
+without being marked passed in
+[the normative final-candidate obligation](../path_to_1_0.md#interactions-and-composite-loading-on-the-final-10-candidate).
+The maintainer authorized closing this pre-1.0 implementation record while
+completing its outstanding documentation. Neither this closure nor the public
+0.24.0 gate is strict 1.0 clearance.
+
+Guard relevance: Its real attachment/query/calculation tests detect changed axes, lost parallel identities, incorrect empty/evaluated coverage, missing provenance and non-atomic failures; its state/session tests reject missing or altered analyses before mutation.

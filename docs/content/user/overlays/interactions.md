@@ -1,3 +1,4 @@
+(User_Overlays_Interactions)=
 # Visualizing interactions
 
 Use Interactions to show chemically interpreted relationships while retaining
@@ -5,25 +6,25 @@ their method, measurements and evaluated structures. A named scientific analysis
 is stored in your view's molecular system. A tagged visual set selects what to
 draw from that analysis. You can create several sets from the same data.
 
-:::{admonition} Experimental availability
-This feature currently requires MolSysMT's experimental public Interactions and
-H5MSM APIs. The compatible published dependency version remains to be qualified.
-Ordinary molecular viewing works without those experimental APIs; the Interactions
-form explains when its scientific backend is unavailable.
-:::
+Use MolSysMT **0.23.0 or later** with MolSysViewer **0.24.0 or later** for
+these workflows. The published 0.24.0 / 0.23.0 pair has passed installed-package,
+scientific and browser qualification. MolSysMT provides the calculations and
+H5MSM storage directly; you do not register a MolSysMT addon.
 
 ## Choosing a source
 
 The floating Studio card has an **Interactions** tab with three routes:
 
-- **Calculate:** calculate Buch hydrogen bonds or geometric disulfide candidates,
-  save the result under a name, then create a visual set.
+- **Calculate:** choose a supported interaction family and its scientific
+  parameters, save the result under a name, then create a visual set.
 - **Stored analysis:** create a visual set from an analysis already in the system.
 - **H5MSM file:** load one named analysis, then create its visual set. The path
   addresses the Python session's filesystem.
 
-Calculation uses the visible structure by default. Request all structures or an
-explicit list when you need broader coverage. Playback only queries saved results;
+Python calculation uses the visible structure by default. In Studio, choose
+**Calculate structures** independently of **Display structures**. Request all
+structures or an explicit list when you need broader calculation coverage.
+Playback only queries saved results;
 it does not calculate new interactions. A structure evaluated without results and
 a structure that was never evaluated have different statuses.
 
@@ -32,6 +33,60 @@ Buch uses a hydrogen–acceptor distance criterion, with a default threshold of
 bonds. Disulfide candidates are geometric sulfur–sulfur contacts; calculating them
 does not add covalent bonds to the topology. Periodic calculations require valid
 box vectors and preserve the images chosen by the detector.
+
+## Calculating from Python
+
+Calculate first, then add a visual set. The returned result is retained in
+`view.molsys.interactions`; adding or hiding a visual set does not recalculate it.
+This example evaluates every structure in a three-structure view:
+
+```python
+import molsysviewer as msv
+
+view = msv.new_view(msv.demo["pentalanine"].molsys, structure_indices=[0, 8, 3])
+result = view.interactions.hbonds.get_buch_hbonds(
+    name="hydrogen_bonds", structure_indices="all", pbc=False,
+)
+hbonds = view.interactions.add("hydrogen_bonds", tag="hbonds")
+```
+
+You can inspect any evaluated structure and control the set independently:
+
+```python
+observations = view.interactions.inspect("hbonds", structure_index=2)
+hbonds.hide()
+hbonds.show()
+```
+
+Use a distinct analysis name for another calculation. Existing names are not
+overwritten. Calculating does not add covalent bonds or alter molecular topology.
+Each method has an explicit signature; scientific defaults and profiles follow
+the corresponding MolSysMT detector. For example, the generic hydrogen-bond
+getter defaults to Baker–Hubbard, whereas `get_buch_hbonds` explicitly selects Buch.
+
+## Supported families and their graphics
+
+The methods below belong to `view.interactions`. Pass `name=...` and the
+scientific parameters required by the selected getter. Studio calls the same
+family getters. There is no generic public `compute()` operation.
+
+| Family | Python getter | Graphic representation |
+| --- | --- | --- |
+| Hydrogen bonds | `hbonds.get_hbonds`, `hbonds.get_buch_hbonds`, `hbonds.get_luzard_chandler_hbonds` | Hydrogen–acceptor link; donor, hydrogen and acceptor remain inspectable. |
+| Disulfide candidates | `disulfides.get_disulfide_candidates` | Sulfur–sulfur candidate link; no covalent bond is added. |
+| Ionic contacts | `ionic.get_ionic_interactions` | Positive–negative participant guide, using centroids for compound participants. |
+| Pi–pi | `pi_pi.get_pi_pi_interactions` | Ring-centroid guide. |
+| Cation–pi | `cation_pi.get_cation_pi_interactions` | Cation-to-ring-centroid guide. |
+| Halogen bonds | `halogen_bonds.get_halogen_bonds` | Halogen–acceptor link; all four scientific participant roles are retained. |
+| Hydrophobic contacts | `hydrophobic.get_hydrophobic_interactions` | Contact link between the observed participants. |
+| Metal coordination candidates | `metal_coordination.get_metal_coordination` | Metal–ligand candidate link. |
+| Water bridges | `water_bridges.get_water_bridges` | Two or three hydrogen–acceptor segments per occurrence for one or two water mediators. |
+
+A centroid guide is a visual aid. Its length does not replace a detector's
+recorded measurement, such as the minimum distance between charged groups.
+An observation can produce several segments; the displayed occurrence count
+and segment count therefore need not match. Compound participants split across
+a periodic boundary are reported as unsupported rather than silently unwrapped.
 
 ## Declaring file correspondence
 
@@ -72,16 +127,18 @@ stored-analysis section when you want to remove the data.
 Inspect shows the current frame's participants, roles, measurements and units,
 evidence, periodic images and occurrence identities. It also states the
 calculation scope. Compound participants remain inspectable even when their
-graphic representation is unsupported. Initial graphics support hydrogen–acceptor
-links and sulfur–sulfur candidate links.
+graphic representation is unsupported. Inspect the recorded measurement and unit
+when interpreting a guide or candidate link.
 
 ## Understanding limits
 
 Live projection is bounded to 50,000 selected observations and 8 MiB of geometry
 per set and frame. Inspection pages contain at most 200 observations (50 in
 Studio), with a 512 KiB reply budget and bounds on compound participant details.
-Until the provider supports bounded occurrence pages, materialization is also
-checked before copying the selected frame. An oversized request reports a limit
+The published provider supports bounded occurrence pages, which the inspector
+uses without serializing the whole analysis. A fallback for results without that
+page interface checks materialization before copying the selected frame.
+An oversized request reports a limit
 with its count; narrow the filter to inspect it. These budgets do not bound the
 memory occupied by the loaded trajectory or complete scientific analysis.
 

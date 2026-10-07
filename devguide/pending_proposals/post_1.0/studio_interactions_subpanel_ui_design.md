@@ -26,7 +26,7 @@ inspection of the current Studio panels. This specification remains the
 post-1.0 advanced UI plan. Its multi-family controls, persistence timeline,
 and Mol* `GPU/Fast` label are unvalidated design sketches, not 1.0 promises.
 **Visual Language:** Standard Studio Workbench design system (`panels/ui-helpers.ts`).  
-The current minimal design is in [the active pre-1.0 report](../interactions_minimum_before_1_0.md#studio-subpanel-design-2026-09-30).
+The current minimal design is in [the active pre-1.0 report](../../archive/interactions_minimum_before_1_0.md#studio-subpanel-design-2026-09-30).
 It follows the current panel source, distinguishes stored analyses from visual
 sets, and documents empty/unevaluated states and the three native source routes.
 The broader sketches below do not replace that bounded design.

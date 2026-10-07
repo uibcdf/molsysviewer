@@ -1,25 +1,32 @@
 ---
 summary: Define batch and progressive loading of multiple molecular systems
 issue: uibcdf/molsysviewer#151
-status: partial
+status: resolved
 opened: 2026-10-03
-closed:
+closed: 2026-10-07
 verification: measured
 area: [load, api, studio]
-guard:
-normative:
+guard: tests/test_composite_load.py
+normative: devguide/architecture.md
 blocked_by: []
 supersedes: []
 ---
 
 # Define batch and progressive loading of multiple molecular systems
 
+**Resolved — 2026-10-07:** the accepted single `view.load` contract,
+`multiple=True` batch intent, progressive composition, source/base-region maps,
+controlled box assignment and Studio controls are delivered and qualified with
+the published pair. Arbitrary incoming-analysis composition, independent players,
+automatic alignment/broadcasting and a hard memory ceiling are not added to the
+bounded contract. Their existing explicit refusals and deferred scope remain.
+
 **Public qualification — 2026-10-07:** both fixed packages are now published;
 all sixteen public installed cells pass in `37587631519`. Independent downloads
 verify every environment archive, exact original public package coordinates
 and required step; the exact-source `public_conda` gate passes. The
 public-provider/release qualification described below is now complete. Formal
-report closure against its scientific/browser guards is the next record step;
+closure is recorded below with scientific/browser guards;
 this does not clear the distinct final 1.0 gates. See the
 [current handoff](../checkpoints.md#resume-in-one-page) and
 [verified receipt](../stabilization_024_preparation_20261006.json).
@@ -64,7 +71,9 @@ Agree examples for four files, four IDs and mixed forms; equivalent progressive/
 
 The execution order and maintained decision context are in `devguide/final_design_closure_20261003.md`.
 
-## Resolution
+<a id="resolution"></a>
+
+## Initial local resolution — 2026-10-03
 
 Loading preparation/composition, source persistence/remapping, controlled
 box assignment and Studio loading controls are implemented locally. Integrated
@@ -637,3 +646,32 @@ branch. The provider blockers are removed from front matter; this proposal
 remains partial for supported published artifacts and its existing release
 qualification, not for the repaired source behavior. See
 [`scientific_usability_review_20261004.md`](../scientific_usability_review_20261004.md).
+
+## Final closure evidence — 2026-10-07
+
+Producer Viewer `1a4c97a58b68b69f3a836546c9e4ac6187c3efa2` / MolSysMT
+`46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9` remains unchanged. Public installed
+run `37587631519` passes all sixteen platform/Python cells; all environment
+archives/digests, original package coordinates and four required steps per cell
+are independently verified. Exact-source `public_conda` passes. Hosted core
+`37541292806` passes all 39 browser suites, and canonical-source Python 3.14
+`37542642197` passes on three native hosts, with 25 notebooks on Linux.
+
+Fresh closure checks use only installed Viewer 0.24.0 / MolSysMT 0.23.0 scientific
+modules: 42 API cases and 165 family/composite/source/box/Studio/real-scientific
+cases pass, with zero failures/errors/skips. The two updated user-guide Python
+blocks evaluate three structures and produce three observations; inspect, Hide
+and Show pass. Strict Sphinx builds successfully with warnings as errors.
+The warnings in scientific checks preserve legacy H5MSM demo migration and
+provider Pandas/box/attribute diagnostics; they are not suppressed.
+
+Guard: `tests/test_composite_load.py`. It verifies the scientific/public workflow and atomic failure
+semantics described by this report; related scene/browser and persistence guards
+remain registered. Normative behavior is in `devguide/architecture.md`. The
+[closure receipt](../domain_closure_20261007.json) retains exact evidence scope.
+
+The remaining compatible-public-provider/exact-candidate qualification is now
+complete for this pre-1.0 delivery. Final 1.0 recertification remains a separate
+[release obligation](../path_to_1_0.md#interactions-and-composite-loading-on-the-final-10-candidate).
+
+Guard relevance: Its batch/progressive equality and source-map assertions detect lost source identity or atom/frame correspondence; failure cases assert that science, scene, sources, history and messages stay unchanged, and trajectory/box cases enforce explicit pairing and first-box ownership.

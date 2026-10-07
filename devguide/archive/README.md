@@ -1,5 +1,9 @@
 # Archived implementation plans
 
+- [`interactions_minimum_before_1_0.md`](interactions_minimum_before_1_0.md) — #114: native Interactions, documentation and exact public-pair qualification delivered; future 1.0 recertification retained in the release plan.
+- [`align_interactions_with_molsysmt_families.md`](align_interactions_with_molsysmt_families.md) — #140: nine explicit family wrappers and role/image projections qualified with published MolSysMT 0.23.0.
+- [`multiple_system_loading_contract.md`](multiple_system_loading_contract.md) — #151: single-entry batch/progressive composition, source maps, first-box policy and Studio qualified with the public pair.
+
 - [`npm_publication_rejects_synchronized_version.md`](npm_publication_rejects_synchronized_version.md) — #176: accept synchronized release manifests, guard with real npm and recover publication from the unchanged canonical tag; upload accepted with signed provenance.
 
 - [`automatic_source_version_retags_development.md`](automatic_source_version_retags_development.md) — #175: rebuild/reinstall the development runtime before source validation while preserving dispatch-only candidate tags; policy/workflow and eight real offline exports pass.

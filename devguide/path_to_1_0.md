@@ -26,7 +26,9 @@ Viewer publication is authorized on 2026-10-07. npm publisher recovery (#176)
 completes upload in run `37586395370`; public integrity/CDN checks pass. Viewer
 source preservation is verified at [10.5281/zenodo.23206053](https://doi.org/10.5281/zenodo.23206053).
 Coordinated stabilization publication and public-pair qualification are complete.
-Close the supported-provider records against this evidence.
+The bounded supported-provider records #114/#140/#151 are resolved with this
+evidence and the corrected Interactions user guide; 207 fresh installed checks
+pass. Their final-candidate obligation is retained explicitly below.
 Public documentation and final 1.0 first-contact/candidate review remain separate.
 The older checkpoints below preserve their original scope; use
 [the current handoff](checkpoints.md#resume-in-one-page) and
@@ -323,6 +325,35 @@ server-GPU and full 42-suite commands remain available. A green core lane
 does not certify any remote scenario (`uibcdf/molsysviewer#100`).
 
 ---
+
+## Interactions and composite loading on the final 1.0 candidate
+
+**Normative release obligation:** closing implementation issues #114, #140 and
+#151 certifies their bounded delivery in the published 0.24.0 / 0.23.0 pair.
+It does not certify an as-yet unselected 1.0 producer. The original #114
+acceptance criterion 5 survives here: after choosing the exact 1.0 commit,
+recertify Interactions and composite loading with its supported provider and
+installed artifacts before tagging or publishing 1.0. Evidence from a different
+producer or a source checkout cannot substitute for that installed candidate.
+
+Include real calculations for all nine advertised families, occurrence/segment
+identity, evaluated-empty versus unevaluated structures, nonconsecutive atom/frame
+queries, periodic observed geometry, state/session/H5MSM fidelity and edit
+invalidation. Include batch/progressive loading, mixed forms, durable source maps,
+first-system box ownership and atomic acquisition/compatibility failures.
+The scientific guards are `tests/test_interactions_api.py`,
+`tests/test_interaction_families.py`, `tests/test_interactions_qualification.py`,
+`tests/test_composite_load.py`, `tests/test_source_records.py`,
+`tests/test_box_assignment.py` and `tests/test_studio_loading.py`. Core browser
+qualification must include the existing `interactions-subpanel` and
+`composite-load` suites against the matching runtime. Check the user guide and
+executable tutorial with the selected pair, and preserve the measured residency
+and explicit payload limits without advertising unmeasured GPU or size ceilings.
+
+Use `devtools/release_gate.py` and exact-candidate evidence for the required
+source, installed staging/public, runtime and hosted core checks. A selected
+pre-1.0 gate or a closed issue is not strict 1.0 clearance. Public documentation
+reconciliation and installed first-contact observation remain release work.
 
 ## Remaining `1.0.0` gates
 

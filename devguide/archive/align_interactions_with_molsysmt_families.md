@@ -1,9 +1,9 @@
 ---
 summary: Align Viewer interactions with the nine implemented MolSysMT families
 issue: uibcdf/molsysviewer#140
-status: partial
+status: resolved
 opened: 2026-10-01
-closed:
+closed: 2026-10-07
 verification: measured
 area: [interactions, scientific-api, studio]
 guard: tests/test_interaction_families.py
@@ -14,12 +14,17 @@ supersedes: []
 
 # Align Viewer interactions with the nine implemented MolSysMT families
 
+**Resolved — 2026-10-07:** all nine explicit family wrappers and their
+supported role/centroid/image projections are delivered and qualified with the
+published pair. No generic public calculation dispatcher remains. Occurrences,
+segments and scientific measurements retain their separate meanings.
+
 **Public qualification — 2026-10-07:** both fixed packages are now published;
 all sixteen public installed cells pass in `37587631519`. Independent downloads
 verify every environment archive, exact original public package coordinates
 and required step; the exact-source `public_conda` gate passes. The
 public-provider/release qualification described below is now complete. Formal
-report closure against its scientific/browser guards is the next record step;
+closure is recorded below with scientific/browser guards;
 this does not clear the distinct final 1.0 gates. See the
 [current handoff](../checkpoints.md#resume-in-one-page) and
 [verified receipt](../stabilization_024_preparation_20261006.json).
@@ -106,7 +111,9 @@ seven new Viewer projections or the currently published MolSysMT 0.22.4 package.
 Additional provider families do not automatically become mandatory MolSysMT 1.0
 criteria. Consumer geometry and actual browser validation remain Viewer-owned.
 
-## Resolution
+<a id="resolution"></a>
+
+## Initial source resolution — 2026-10-01
 
 Source integration is qualified, with publication still pending. The new 25-case regression module
 passes against the isolated installed experimental provider. It checks all nine
@@ -411,3 +418,32 @@ internal integration used the existing deferred CI route and does not certify
 an exact hosted or published-provider candidate. The report remains partial
 for its existing supported-artifact/release qualification. See
 [`integration_review_20261003.md`](../integration_review_20261003.md).
+
+## Final closure evidence — 2026-10-07
+
+Producer Viewer `1a4c97a58b68b69f3a836546c9e4ac6187c3efa2` / MolSysMT
+`46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9` remains unchanged. Public installed
+run `37587631519` passes all sixteen platform/Python cells; all environment
+archives/digests, original package coordinates and four required steps per cell
+are independently verified. Exact-source `public_conda` passes. Hosted core
+`37541292806` passes all 39 browser suites, and canonical-source Python 3.14
+`37542642197` passes on three native hosts, with 25 notebooks on Linux.
+
+Fresh closure checks use only installed Viewer 0.24.0 / MolSysMT 0.23.0 scientific
+modules: 42 API cases and 165 family/composite/source/box/Studio/real-scientific
+cases pass, with zero failures/errors/skips. The two updated user-guide Python
+blocks evaluate three structures and produce three observations; inspect, Hide
+and Show pass. Strict Sphinx builds successfully with warnings as errors.
+The warnings in scientific checks preserve legacy H5MSM demo migration and
+provider Pandas/box/attribute diagnostics; they are not suppressed.
+
+Guard: `tests/test_interaction_families.py`. It verifies the scientific/public workflow and atomic failure
+semantics described by this report; related scene/browser and persistence guards
+remain registered. Normative behavior is in `devguide/interactions_pre_1_0_plan.md`. The
+[closure receipt](../domain_closure_20261007.json) retains exact evidence scope.
+
+The remaining compatible-public-provider/exact-candidate qualification is now
+complete for this pre-1.0 delivery. Final 1.0 recertification remains a separate
+[release obligation](../path_to_1_0.md#interactions-and-composite-loading-on-the-final-10-candidate).
+
+Guard relevance: Its independent role/centroid/image oracle detects wrong endpoints, lost occurrence/segment identities or counts for all nine families and both water orders; actual H5MSM/session round trips and explicit family signatures detect lossy storage or a generic dispatcher.

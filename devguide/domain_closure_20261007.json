@@ -1,0 +1,114 @@
+{
+  "schema": "molsysviewer.domain_closure@1",
+  "date": "2026-10-07",
+  "issues": [
+    114,
+    140,
+    151
+  ],
+  "base_commit": "fd8f499e5216df432fd5f52c67647983a935ce27",
+  "scope": "Bounded pre-1.0 implementation and public-provider qualification; strict 1.0 recertification remains mandatory in path_to_1_0.md",
+  "production_source_changed": false,
+  "installed_viewer": {
+    "version": "0.24.0",
+    "build": 1,
+    "producer": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
+    "sha256": "e31dfb114ab2e49f22b372992d0201455b91849f2631d0165b802069e13abeaa"
+  },
+  "installed_provider": {
+    "version": "0.23.0",
+    "build": 0,
+    "abi": "ABI3",
+    "producer": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9"
+  },
+  "scientific_qualification_environment": "/tmp/msv-024-staging-20261006",
+  "runner": "devtools/qualify_installed_interactions.py, -I, installed-package mode and pre/post import-origin verification",
+  "fresh_checks": [
+    {
+      "file": "msv-issues-114-140-151-api-20261007.xml",
+      "sha256": "30b07ced63aa1d1bd1ef38d99aa79e925000a65d069b26b368d4cfa24d202003",
+      "tests": 42,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "msv-issues-114-140-151-functional-20261007.xml",
+      "sha256": "ae3088eb09965915827a4ce207706672a5d645a3f2a26ac155acadc6bef6e274",
+      "tests": 165,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "tested_modules": [
+    "tests/test_interactions_api.py",
+    "tests/test_interaction_families.py",
+    "tests/test_composite_load.py",
+    "tests/test_source_records.py",
+    "tests/test_box_assignment.py",
+    "tests/test_studio_loading.py",
+    "tests/test_interactions_qualification.py"
+  ],
+  "inherited_unchanged_runtime_evidence": {
+    "public_pair": 37587631519,
+    "public_cells": 16,
+    "all_actual_environment_archives_verified": true,
+    "all_required_steps_verified": true,
+    "exact_source_public_gate": "PASS; 1 passed, 0 failed/blocked/exceptions",
+    "hosted_core": 37541292806,
+    "hosted_core_suites": 39,
+    "canonical_source_py314": 37542642197,
+    "native_hosts": 3,
+    "linux_notebooks": 25,
+    "maintained_public_receipt": "devguide/stabilization_024_preparation_20261006.json"
+  },
+  "documentation": {
+    "page": "docs/content/user/overlays/interactions.md",
+    "sha256": "5a6b67231e7cce7a5480c6687c2e681fea5fb0ede9e4ef98f65966e98f8d55f3",
+    "executed_blocks": 2,
+    "installed_versions_verified": true,
+    "evaluated_structures": 3,
+    "observations": 3,
+    "inspect_hide_show_pass": true,
+    "sphinx_command": "conda run --no-capture-output -n molsyssuite@uibcdf_3.14 make -C docs html SPHINXOPTS=\"-W --keep-going -j 2\"",
+    "sphinx_exit_code": 0
+  },
+  "guards": {
+    "114": "tests/test_interactions_api.py",
+    "140": "tests/test_interaction_families.py",
+    "151": "tests/test_composite_load.py"
+  },
+  "final_1_0_obligation": {
+    "status": "pending_until_exact_1_0_candidate_is_selected_and_recertified",
+    "normative": "devguide/path_to_1_0.md#interactions-and-composite-loading-on-the-final-10-candidate",
+    "original_requirement": "#114 acceptance criterion 5",
+    "strict_1_0_cleared": false
+  },
+  "full_suite_repeated": false,
+  "reason_for_bounded_validation": "Documentation/report closure only; no production source or runtime changes. Prior exact-source, installed and browser results retain their scope.",
+  "governance_checks": [
+    {
+      "file": "msv-issues-114-140-151-links-fixed-20261007.xml",
+      "sha256": "ecac8d5c369158359f4f704ec50be6fc92cdc88f67c96e043dc7edcbb56a9a43",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "msv-issues-114-140-151-guidance-20261007.xml",
+      "sha256": "69591bb6d1fb48d5fe71fabf937bf9e19c0e28c0877d448f48776ec5622f6671",
+      "tests": 224,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "initial_link_check": {
+    "result": "1 failed, 1 passed; stopped after first failure",
+    "diagnosis": "Archiving #114 changed the base of its relative link to the deferred Studio design.",
+    "fix": "Route the link through ../pending_proposals/post_1.0/.",
+    "verification": "All four link tests pass after correction; the original failing JUnit remains retained."
+  }
+}

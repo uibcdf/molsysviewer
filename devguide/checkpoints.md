@@ -91,9 +91,13 @@ coordinate; all four required steps pass in each cell. The exact-source
 This completes coordinated stabilization qualification; it does not clear 1.0.
 The earlier devguide reconciliation passes 277 bounded checks;
 its 45-report board snapshot precedes #176. MolSysMT confirms the exact candidates
-and publication order in its evidence commit `832e01210`. Next: close the
-supported-provider reports and reconcile public documentation, retaining the
-completed public pair and Release/Conda/npm/Zenodo checks.
+and publication order in its evidence commit `832e01210`.
+The bounded reports #114/#140/#151 are resolved: public qualification and
+updated Interactions documentation are complete, with 207 fresh installed
+scientific/loading checks passing. Final 1.0 recertification remains mandatory
+in the release plan. Next: reconcile the broader public documentation and
+complete installed first-contact/final-candidate review, retaining the completed
+public pair and Release/Conda/npm/Zenodo checks.
 See [the candidate preparation](stabilization_024_preparation_20261006.json).
 
 **Published support-library receiving check (2026-10-06): bounded pass.**
@@ -581,7 +585,7 @@ The expanded real Mol* Interactions suite passes, including 20 new calculated
 and restored scenes. #140 remains partial: code is uncommitted, compatible
 published-provider and whole-product publication CI remain pending. See
 [the current plan](interactions_pre_1_0_plan.md#family-api-update--2026-10-01)
-and [the detailed record](pending_proposals/align_interactions_with_molsysmt_families.md).
+and [the detailed record](archive/align_interactions_with_molsysmt_families.md).
 The sibling editable MolSysMT and prior Viewer work have been preserved.
 
 **Direct-main CI qualification (2026-10-01):** `main` and `origin/main` are
@@ -1458,8 +1462,10 @@ handoffs do not replace these artifact identities.
 3. The sixteen-cell public pair qualification is complete in `37587631519`.
    All actual environment archives and the independent exact-source gate pass;
    preserve this public evidence separately from staging and source results.
-4. Close the supported-provider boundary of Interactions (#114/#140) using the
-   actual public package, preserving earlier experimental/source evidence.
+4. Done: #114/#140/#151 are resolved and archived with the public package
+   evidence, updated Interactions guide and 207 fresh installed checks.
+   Preserve earlier experimental/source verdicts and the normative obligation
+   to recertify the eventual 1.0 candidate.
 5. Reconcile public documentation and remaining support promises. The five-stage
    human notebook review is complete; retain it. Installed first-contact review
    and final 1.0 candidate qualification remain separate. Standalone is

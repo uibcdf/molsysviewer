@@ -1,6 +1,23 @@
 # Minimal Interactions before 1.0
 
-## Current implementation and qualification — 2026-10-06
+## Current implementation and qualification — 2026-10-07
+
+**Delivered:** the bounded native domain, nine family wrappers and Studio workflow
+are published in Viewer 0.24.0 build 1 with MolSysMT 0.23.0 ABI3 build 0.
+All sixteen public installed cells pass in `37587631519`; the actual environment
+archives and the exact-source public gate are independently verified. The user
+page now describes the supported provider, all nine projections, explicit
+calculation/display scopes and bounded inspection. Its two Python blocks run
+against the exact installed pair.
+
+The implementation records #114/#140 close at this pre-1.0 delivery boundary.
+The original #114 requirement to recertify the eventual **1.0** candidate is
+retained in [the normative final-candidate obligation](path_to_1_0.md#interactions-and-composite-loading-on-the-final-10-candidate).
+Closing the implementation records does not satisfy that future obligation.
+Measured CPU/scientific workloads and real-Mol* correctness establish the bounded
+slice; native-GPU throughput and arbitrary large-system limits are not certified.
+
+## Staging qualification — observed 2026-10-06
 
 The API, renderer and Studio changes are committed and integrated. Viewer
 0.24.0 build 1 with MolSysMT 0.23.0 ABI3 build 0 passes all sixteen installed
@@ -115,7 +132,7 @@ split compound groups are refused rather than internally unwrapped.
 
 Work is tracked in uibcdf/molsysviewer#140, with the exact experimental provider
 revision and verification record in
-[the active report](pending_proposals/align_interactions_with_molsysmt_families.md).
+[the archived report](archive/align_interactions_with_molsysmt_families.md).
 This expands the working-tree integration; it does not certify a public provider
 release or automatically make all nine families mandatory MolSysMT 1.0 gates.
 
@@ -126,7 +143,7 @@ Python routes, tagged visual sets, current-frame Mol* geometry and the native
 Studio subpanel. Six synthetic coordinate/interaction workloads are recorded in
 [the performance observations](interactions_performance.md). Provider-release,
 larger GPU workload qualification and final candidate validation remain open; #114 remains
-partial. The [implementation record](pending_proposals/interactions_minimum_before_1_0.md#native-scene-and-studio-implementation-2026-09-30)
+partial. The [implementation record](archive/interactions_minimum_before_1_0.md#native-scene-and-studio-implementation-2026-09-30)
 states the supported behavior and limits.
 
 Bounded real detector, sparse-query, periodic-image and H5MSM/session checks
@@ -143,7 +160,7 @@ The broader viewer domain and UI remain in `uibcdf/molsysviewer#48` and
 after 1.0. This plan coordinates those records; it is not a queue entry.
 
 The API design lives in the
-[active proposal](pending_proposals/interactions_minimum_before_1_0.md#python-api-design-for-implementation-2026-09-29)
+[archived proposal](archive/interactions_minimum_before_1_0.md#python-api-design-for-implementation-2026-09-29)
 with its implementation record. Existing analyses, independent H5MSM import and native
 calculation converge on `view.molsys.interactions`. Tagged scene objects
 reference those data. MolSysMT is the scientific backend without requiring

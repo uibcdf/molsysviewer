@@ -3,9 +3,11 @@
 ## Current status
 
 The single-system modes are implemented. The later independent-system contract
-is implemented under [#151](pending_proposals/multiple_system_loading_contract.md)
-and passes the fixed 0.24.0 / MolSysMT 0.23.0 staged qualification. Public-pair
-qualification remains pending; see the [current handoff](checkpoints.md#resume-in-one-page).
+is implemented under [#151](archive/multiple_system_loading_contract.md)
+and passes the fixed 0.24.0 build 1 / MolSysMT 0.23.0 ABI3 build 0
+qualification, including all sixteen public installed cells in `37587631519`.
+The implementation report is resolved; see the
+[current handoff](checkpoints.md#resume-in-one-page).
 
 ## Implemented now
 

@@ -65,7 +65,7 @@ from complementary topology/coordinate forms. The maintainer accepted one
 is introduced. The authorized first implementation now prepares independent
 sources and a composed candidate, with compact source records and explicit
 multi-frame pairing/time validation. The maintained implementation and remaining
-scope are in `pending_proposals/multiple_system_loading_contract.md`.
+scope are in `archive/multiple_system_loading_contract.md`.
 
 Its detailed bounded contract candidate now covers shared/per-source selectors,
 explicit ordinal pairing, time checks, compact durable source maps, source-region

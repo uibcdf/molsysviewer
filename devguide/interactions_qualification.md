@@ -1,6 +1,19 @@
 # Interactions qualification
 
-## Current staging qualification — 2026-10-06
+## Current public qualification — 2026-10-07
+
+The exact Viewer 0.24.0 noarch build 1 / MolSysMT 0.23.0 ABI3 build 0 pair is
+published. All sixteen public installed cells pass in `37587631519`, with
+independent environment archive/digest, coordinate and required-step verification.
+The exact-source `public_conda` gate passes. Hosted core correctness, scientific
+source qualification and the human walkthrough retain the distinct evidence in
+[the verified receipt](stabilization_024_preparation_20261006.json).
+The pre-1.0 implementation reports #114/#140 close with this public boundary;
+[final 1.0 recertification](path_to_1_0.md#interactions-and-composite-loading-on-the-final-10-candidate)
+remains mandatory. No native-GPU throughput or arbitrary system-size promise is
+inferred from browser correctness or these dated measurements.
+
+## Staging qualification — observed 2026-10-06
 
 Viewer **0.24.0 noarch build 1**, producer
 `1a4c97a58b68b69f3a836546c9e4ac6187c3efa2`, with MolSysMT **0.23.0 ABI3 build 0**,
@@ -26,7 +39,7 @@ isolated installed wheel built from provider commit
 source artifact, not a published release. The reproducible inputs, 25 new
 scientific cases, 70 existing API/scene/inventory cases, full-suite observation
 and bounded sandbox correction are recorded in
-[uibcdf/molsysviewer#140](pending_proposals/align_interactions_with_molsysmt_families.md#resolution).
+[uibcdf/molsysviewer#140](archive/align_interactions_with_molsysmt_families.md#resolution).
 The real Mol* subpanel suite passes with 20 additional calculated/restored
 scenes covering nine families and both supported water orders, periodic
 positions for the newer families, compound centroids and multi-leg occurrence

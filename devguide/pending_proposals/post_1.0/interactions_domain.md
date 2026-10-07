@@ -16,6 +16,13 @@ supersedes: []
 
 **Status:** approved post-1.0 design (finalized 2026-07-20).
 
+**Delivered baseline — 2026-10-07:** native Interactions, all nine advertised
+family wrappers and minimal Studio are published and qualified in Viewer 0.24.0 /
+MolSysMT 0.23.0. #114/#140 are resolved. This proposal still owns growth beyond
+that bounded baseline: additional formats/families, persistence/residence
+analytics and dynamic evaluation. Final 1.0 candidate recertification remains
+in the release plan; it is not a missing post-1.0 family implementation.
+
 **Review 2026-10-03:** the working tree now contains nine native family wrappers
 and the minimal Studio workflow under #114/#140, with compatible published-provider
 qualification still pending. They are not missing future families merely because
@@ -31,7 +38,7 @@ additional families, input modes, analytics, and dynamic evaluation. Its
 atom-pair examples are historical design sketches, not the shared result
 contract; participant roles and inferred-versus-declared evidence must be
 settled with MolSysMT first. The 2026-09-29
-[active minimum design](../interactions_minimum_before_1_0.md#python-api-design-for-implementation-2026-09-29)
+[active minimum design](../../archive/interactions_minimum_before_1_0.md#python-api-design-for-implementation-2026-09-29)
 now defines separate named scientific analyses and tagged displays, native
 calculation, and declared H5MSM import. Its API and invalidation decisions
 take precedence over the older sketches below. Additional external formats,

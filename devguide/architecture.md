@@ -128,8 +128,11 @@ explicit subset/reorder correspondence for both axes. A changed structure count
 without that correspondence clears old frame maps with `status="unverified"`.
 Explicit `load(mode="append_structures")` preserves known prefix maps; new frames
 have no fabricated original-frame provenance. Noncoverage is explicit in the map.
-Guard: `tests/test_source_records.py`. Integrated qualification remains under
-uibcdf/molsysviewer#151; no hard memory ceiling is established.
+Guard: `tests/test_source_records.py`. Integrated/source and exact public-pair
+qualification are complete;
+[uibcdf/molsysviewer#151](archive/multiple_system_loading_contract.md) records
+the resolved bounded contract. No hard memory ceiling or arbitrary
+incoming-analysis composition is established.
 
 ### Studio loading
 
