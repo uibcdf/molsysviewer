@@ -65,3 +65,21 @@ internal integration used the existing deferred CI route and does not certify
 an exact hosted or published-provider candidate. The report remains partial
 for its existing supported-artifact/release qualification. See
 [`integration_review_20261003.md`](../integration_review_20261003.md).
+
+## Remaining applied-recipe boundary — 2026-10-07
+
+Review finds a boundary not covered by the original scalar applied-style check.
+Styles.apply copies its input, then expands that copy's params into Whole and
+returns the same Style. Whole retains the nested dictionaries received through
+keyword arguments. Mutating the returned nested color-theme recipe therefore
+changes the canonical scene without applying a new recipe. A real dialanine
+probe observes `element-symbol` becoming `caller-mutation` in styles.current();
+the original input remains detached. The published 0.24.0 baseline still has
+this remaining boundary; its earlier qualification does not prove it corrected.
+
+Styles.apply now transfers a deep copy of params to Whole, keeping its returned
+recipe caller-owned. The existing guard additionally mutates both the nested
+theme and a leaf in its params, then checks unchanged canonical state, current
+style and registered recipe. Exact-source and installed-candidate qualification
+for this follow-up remains pending. No published package is replaced by this
+source correction.

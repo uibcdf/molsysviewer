@@ -155,6 +155,15 @@ def test_styles_are_detached_at_input_registry_and_builtin_boundaries():
     result.params["color_scheme"] = "bad-applied"
     assert right.styles.get_builtin("cartoon-chain").params["color_scheme"] == "chain_default"
     assert left.whole.params["color_scheme"] == "chain_default"
+    applied = left.styles.apply(style=left.styles.get("custom"))
+    before = left.export_state()
+    applied.params["molstar_color_theme"]["name"] = "bad-applied-nested"
+    applied.params["molstar_color_theme"]["params"]["carbonColor"] = "bad-applied-leaf"
+    assert left.export_state() == before
+    assert left.styles.current().params["molstar_color_theme"] == {
+        "name": "element-symbol", "params": {"carbonColor": "element-symbol"}
+    }
+    assert left.styles.get("custom").params["molstar_color_theme"]["name"] == "element-symbol"
     left.styles.focus("hydrophobicity", atom_indices=[0], tag="focus")
     exported = left.export_state()
     exported["focus"]["focus"]["style"]["params"]["molstar_color_theme"]["name"] = "bad-state-query"

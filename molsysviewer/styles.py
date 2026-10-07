@@ -277,7 +277,7 @@ class StylesManager:
             resolved.representation,
             preset=target_preset,
             skip_digestion=True,
-            **resolved.params,
+            **deepcopy(resolved.params),
         )
         self._last_applied_name = resolved.name
         return resolved
