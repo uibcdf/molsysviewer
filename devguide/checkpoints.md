@@ -99,14 +99,21 @@ are now also resolved: 47 fresh installed tests and five executable user-guide
 blocks cover bounded pages, native H5MSM save and participant select/focus.
 Design corrections #146/#147/#148 are resolved with 27 fresh installed tests,
 twelve labels-guide blocks and a legacy-fingerprint re-resolution probe. Their
-source/runtime remains the published baseline. At successor `513391c1`, both
-annotation browser scenarios and Linux scientific tests pass, but the aggregate
-source-pair gate fails on Movie interruption (#177). A separate core run passes;
-standard CI still fails on experimental Qt WebGL startup (#35). These verdicts
-remain separate; no complete successor source-pair/standard-CI pass is claimed.
-Final 1.0 recertification remains mandatory in the release plan.
-Next: diagnose Movie interruption #177, review remaining partially completed
-bug reports and reconcile broader documentation, then
+source/runtime remains the published baseline. The Movie interruption failures
+on successors `513391c1` and `4bedcba9` remain preserved. #177 is now resolved
+in source `7880e2e3`: stop restores the observed camera through a fresh Mol* draw,
+with a unit mutation control and real native paused-draw browser guard.
+Core [37680239149](https://github.com/uibcdf/molsysviewer/actions/runs/37680239149)
+passes 39/39; exact-source pair
+[37680239068](https://github.com/uibcdf/molsysviewer/actions/runs/37680239068)
+passes on all three Python 3.14 hosts (Linux 2,879 passed/27 skipped, macOS
+2,852/54, Windows 2,853/53), plus 39 core suites and 25 notebooks on Linux.
+Standard CI `37680239319` passes six scientific cells but fails on experimental
+Qt WebGL startup (#35). These source results do not replace the published
+0.24.0 packages or clear final 1.0 recertification. See
+[the Movie correction receipt](movie_interruption_fix_20261007.json).
+Next: review remaining partially completed bug reports, beginning with #149/#150,
+and reconcile broader documentation, then
 complete installed first-contact/final-candidate review, retaining the completed
 public pair and Release/Conda/npm/Zenodo checks.
 See [the candidate preparation](stabilization_024_preparation_20261006.json).
@@ -1478,8 +1485,11 @@ handoffs do not replace these artifact identities.
    Preserve earlier experimental/source verdicts and the normative obligation
    to recertify the eventual 1.0 candidate. #142/#144/#145 are also resolved
    with 47 installed workflow/scene checks and the completed user-guide examples.
-5. Review the remaining partially completed bug reports against the published
-   baseline; distinguish unmet behavior from obsolete qualification blockers.
+5. Done: Movie interruption #177 is corrected and qualified on source `7880e2e3`;
+   the independent core and three-host Python 3.14 source pair pass. Keep the
+   experimental Qt failure separate. Review remaining partial reports #149/#150
+   against the published baseline, distinguishing unmet behavior from obsolete
+   qualification blockers.
 6. Reconcile public documentation and remaining support promises. The five-stage
    human notebook review is complete; retain it. Installed first-contact review
    and final 1.0 candidate qualification remain separate. Standalone is

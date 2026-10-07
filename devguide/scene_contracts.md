@@ -2551,9 +2551,12 @@ Guards: `molsysviewer/js/tests/e2e/movie-playback.e2e.ts` and
 The following contracts are integrated in published Viewer 0.24.0 build 1 /
 MolSysMT 0.23.0 ABI3 build 0. #146/#147/#148 are resolved with 27 fresh installed
 tests and twelve executable labels-guide blocks; #149/#150 retain their own
-review records. Final 1.0 qualification remains a separate gate. Successor-head
-Movie interruption (#177) and experimental Qt startup (#35) failures retain their
-failure verdicts and do not undo the bounded annotation/identity/load evidence.
+review records. Final 1.0 qualification remains a separate gate. The earlier
+Movie interruption failures retain their verdicts; #177 is corrected in source
+`7880e2e3` under the camera contract above, with passing exact-source/core gates
+recorded in [the correction receipt](movie_interruption_fix_20261007.json).
+Experimental Qt startup (#35) still fails in standard CI; that observation does
+not undo the bounded annotation/identity/load evidence.
 
 - Annotations have either an atom anchor or an absolute position anchor. State
   encodes the latter as `{type: "position", coordinates: [...], unit: "angstrom"}`.

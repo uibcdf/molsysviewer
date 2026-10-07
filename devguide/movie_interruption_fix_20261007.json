@@ -3,7 +3,7 @@
   "date": "2026-10-07",
   "issue": "uibcdf/molsysviewer#177",
   "base_commit": "f23d6226cf838435eb49de51e8c52cc4ba34d440",
-  "status": "locally_verified_hosted_pending",
+  "status": "source_and_core_qualified",
   "molstar": "5.4.1",
   "production_change": "Track submitted-camera draw responsibility independently of command promises; restore observed camera and await fresh draw when stopping.",
   "reproduction": {
@@ -81,7 +81,7 @@
     "manifest_changed": false
   },
   "hosted": {
-    "status": "pending",
+    "status": "required_core_and_source_pair_passed",
     "preserved_failures": [
       37602651230,
       37675655282
@@ -89,7 +89,218 @@
     "preserved_same_head_passes": [
       37629947438,
       37675655286
-    ]
+    ],
+    "core": {
+      "run": 37680239149,
+      "head_sha": "7880e2e35467addabef617ec7f3f8231bd02e79f",
+      "conclusion": "success",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37680239149",
+      "native_json_sha256": "3ecc38f294d4efe1bb67788e522bc5974cae9640d6588f01c4ab8aa2d1eb8836",
+      "jobs": [
+        {
+          "name": "Core E2E",
+          "id": 112994080483,
+          "conclusion": "success",
+          "required_steps": {
+            "Run core E2E tests": "success"
+          }
+        },
+        {
+          "name": "Check skipped-commit backlog",
+          "id": 112994080628,
+          "conclusion": "skipped",
+          "required_steps": {}
+        }
+      ],
+      "suites_passed": 39,
+      "native_log_sha256": "f4118eab612548cc5b400ec49cf5385f46b28b53f5131de0cd7879b8619db6f2"
+    },
+    "source_pair": {
+      "run": 37680239068,
+      "head_sha": "7880e2e35467addabef617ec7f3f8231bd02e79f",
+      "conclusion": "success",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37680239068",
+      "native_json_sha256": "eb303489f053a40767f926990645381740145ab3c4ade15819161d2d9d19a532",
+      "jobs": [
+        {
+          "name": "Source pair on macos-15, Python 3.14",
+          "id": 112994077379,
+          "conclusion": "success",
+          "required_steps": {
+            "Require an exact MolSysMT commit": "success",
+            "Guard native MolSysMT paths in the installed pair": "success",
+            "Test MolSysMT integration against the installed pair": "success",
+            "Run MolSysViewer Python tests": "success",
+            "Run all core browser suites against the exact source pair": "skipped",
+            "Execute every documented notebook against the exact source pair": "skipped"
+          }
+        },
+        {
+          "name": "Source pair on ubuntu-latest, Python 3.14",
+          "id": 112994077670,
+          "conclusion": "success",
+          "required_steps": {
+            "Require an exact MolSysMT commit": "success",
+            "Guard native MolSysMT paths in the installed pair": "success",
+            "Test MolSysMT integration against the installed pair": "success",
+            "Run MolSysViewer Python tests": "success",
+            "Run all core browser suites against the exact source pair": "success",
+            "Execute every documented notebook against the exact source pair": "success"
+          }
+        },
+        {
+          "name": "Source pair on windows-2025, Python 3.14",
+          "id": 112994077816,
+          "conclusion": "success",
+          "required_steps": {
+            "Require an exact MolSysMT commit": "success",
+            "Guard native MolSysMT paths in the installed pair": "success",
+            "Test MolSysMT integration against the installed pair": "success",
+            "Run MolSysViewer Python tests": "success",
+            "Run all core browser suites against the exact source pair": "skipped",
+            "Execute every documented notebook against the exact source pair": "skipped"
+          }
+        }
+      ],
+      "platforms": {
+        "linux": {
+          "python": "3.14",
+          "passed": 2879,
+          "skipped": 27,
+          "failures": 0,
+          "errors": 0,
+          "native_job_log_sha256": "747d2e1d51169e895978fa28753e719c02868fb421aa60fad8bb879ae89e8b28",
+          "core_suites_passed": 39,
+          "notebooks_executed": 25,
+          "notebooks_failed": 0
+        },
+        "macos": {
+          "python": "3.14",
+          "passed": 2852,
+          "skipped": 54,
+          "failures": 0,
+          "errors": 0,
+          "native_job_log_sha256": "26d0f2fcfaed4cb2386600c491fdae3ba19e01ea178304b64088de44903a0089"
+        },
+        "windows": {
+          "python": "3.14",
+          "passed": 2853,
+          "skipped": 53,
+          "failures": 0,
+          "errors": 0,
+          "native_job_log_sha256": "f4767250af765c82ceb6f5668078128995f8922510fe8b6ef16512237701b1f0"
+        }
+      }
+    },
+    "documented_notebooks": {
+      "run": 37680239383,
+      "head_sha": "7880e2e35467addabef617ec7f3f8231bd02e79f",
+      "conclusion": "success",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37680239383",
+      "native_json_sha256": "2b8d1e9b0b325b64cc8b11c0c166fa3799b92d350ec9c0af0080bd8125be953f",
+      "jobs": [
+        {
+          "name": "Execute the documented notebooks",
+          "id": 112994080182,
+          "conclusion": "success",
+          "required_steps": {
+            "Execute every documented notebook": "success"
+          }
+        }
+      ],
+      "executed": 25,
+      "failed": 0,
+      "native_log_sha256": "0fe236d0311ce83b1815a58d98a53d81fa6854bf0b395dad30300339d736c1dd"
+    },
+    "standard_ci": {
+      "run": 37680239319,
+      "head_sha": "7880e2e35467addabef617ec7f3f8231bd02e79f",
+      "conclusion": "failure",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37680239319",
+      "native_json_sha256": "2bd8a80fe62758ad8e99b9b76079047c998cd9d1e4e22847407eeadb6c4c2ef5",
+      "jobs": [
+        {
+          "name": "Check skipped-commit backlog",
+          "id": 112994081730,
+          "conclusion": "skipped",
+          "required_steps": {}
+        },
+        {
+          "name": "Test on macos-15, Python 3.12",
+          "id": 112994091700,
+          "conclusion": "success",
+          "required_steps": {
+            "Run tests": "success"
+          }
+        },
+        {
+          "name": "Qt pipeline completes (Xvfb, software WebGL)",
+          "id": 112994091713,
+          "conclusion": "failure",
+          "required_steps": {
+            "Qt transport round-trip in a real Qt process": "failure"
+          }
+        },
+        {
+          "name": "Test on macos-15, Python 3.11",
+          "id": 112994091718,
+          "conclusion": "success",
+          "required_steps": {
+            "Run tests": "success"
+          }
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.12",
+          "id": 112994091793,
+          "conclusion": "success",
+          "required_steps": {
+            "Run tests": "success"
+          }
+        },
+        {
+          "name": "Test on macos-15, Python 3.13",
+          "id": 112994091856,
+          "conclusion": "success",
+          "required_steps": {
+            "Run tests": "success"
+          }
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.11",
+          "id": 112994091914,
+          "conclusion": "success",
+          "required_steps": {
+            "Run tests": "success"
+          }
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.13",
+          "id": 112994091948,
+          "conclusion": "success",
+          "required_steps": {
+            "Run tests": "success"
+          }
+        },
+        {
+          "name": "PR full suite",
+          "id": 113002577387,
+          "conclusion": "skipped",
+          "required_steps": {}
+        }
+      ],
+      "scientific_cells_passed": 6,
+      "experimental_qt": {
+        "job": 112994091713,
+        "test": "tests/test_standalone.py::test_qt_live_model_smoke_real_window",
+        "failed": 1,
+        "deselected": 2905,
+        "failure": "Bridge did not become ready: exported scene has no WebGL canvas; context creation failed before replacement.",
+        "owning_issue": "uibcdf/molsysviewer#35",
+        "native_job_log_sha256": "68b88f3d1a735f7f474789464c960ea9d3c33f2e2d61230466cba3976f3e598a",
+        "receptor_cause_accepted": false,
+        "receptor_diagnostic_feedback": "uibcdf/gh-run-receptor#62"
+      }
+    }
   },
   "published_tags_packages_changed": false,
   "strict_1_0_cleared": false,
@@ -110,6 +321,31 @@
     {
       "file": "msv-177-guidance-local.xml",
       "sha256": "7fdc4df7d7edc6747844da8d08995d21b976152bbe3c05b62857793f957ff323",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "implementation_commit": "7880e2e35467addabef617ec7f3f8231bd02e79f",
+  "provider_source_commit": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+  "reproduction_artifact_sha256": "12112eaa6d3d001cd4b98feb8df6c1440e77132866eff01c42877418903516c5",
+  "temporary_resources": {
+    "retained": "Native logs, JSON captures, reproduction result and local JUnit evidence remain in /tmp while needed.",
+    "cleanup": "Task-owned probe/mutation scripts and bundled units removed at closeout; human scratch and qualification environments preserved."
+  },
+  "closure_governance": [
+    {
+      "file": "msv-177-reporting-closure.xml",
+      "sha256": "be29bb48651f1697dd888189f36da4cf8bcd180fa0fc08184f6b20fd60369b99",
+      "tests": 200,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "msv-177-guidance-closure.xml",
+      "sha256": "a80e674757a969a385b65ba29ca418cc83c8612a1dc175a666674808eaaa7433",
       "tests": 9,
       "failures": 0,
       "errors": 0,

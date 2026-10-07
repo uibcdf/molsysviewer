@@ -56,10 +56,15 @@ Workflow follow-ups #142/#144/#145 are resolved with 47 fresh installed tests an
 five executable guide blocks for paging, scientific files and participant actions.
 Design corrections #146/#147/#148 are resolved with 27 fresh installed checks,
 twelve labels-guide blocks and conservative legacy fingerprint recovery.
-Successor-head source-pair CI fails on Movie interruption (#177), even though
-annotation scenarios and Python science pass; a separate core run passes.
-Standard CI retains its experimental Qt WebGL startup failure (#35).
-Next diagnose #177 and review remaining partial reports against the public pair,
+Movie interruption #177 is corrected in source `7880e2e3`: stop restores the
+observed camera and awaits its fresh draw even after command promises resolve.
+Core `37680239149` passes 39/39; exact-source pair `37680239068` passes all three
+Python 3.14 hosts, plus 39 core suites and 25 notebooks on Linux. Earlier Movie
+failure verdicts remain preserved in [the correction receipt](movie_interruption_fix_20261007.json).
+Standard CI `37680239319` passes six scientific cells but retains its experimental
+Qt WebGL startup failure (#35). The source correction does not replace published
+0.24.0 artifacts or qualify the eventual 1.0 candidate.
+Next review remaining partial reports #149/#150 against the public pair,
 reconcile broader documentation and complete installed first-contact observations
 and the final 1.0 candidate decision as distinct remaining work. Standalone remains
 experimental; remotes and the Mol* dependency update remain post-1.0.

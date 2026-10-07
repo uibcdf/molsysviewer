@@ -1,9 +1,9 @@
 ---
 summary: Movie interruption browser gate intermittently fails its camera drift assertion
 issue: uibcdf/molsysviewer#177
-status: partial
+status: resolved
 opened: 2026-10-07
-closed:
+closed: 2026-10-07
 severity: medium
 verification: reproduced
 area: [movie, ci, camera]
@@ -14,6 +14,10 @@ supersedes: []
 ---
 
 # Movie interruption browser gate intermittently fails its camera drift assertion
+
+**Resolved — 2026-10-07:** source `7880e2e3`, mutation control and real paused-draw
+guard; independent core and three-host Python 3.14 source-pair gates pass. The
+published 0.24.0 package and experimental Qt qualification remain separate.
 
 **Reported — 2026-10-07:** native logs of Python 3.14 source-pair run
 `37602651230` on exact Viewer `513391c1`. No new local reproduction or correction
@@ -90,6 +94,31 @@ The real browser guard, normal JS unit command and TypeScript check pass. The
 runtime is regenerated through build:runtime. Versioningit's configured writer
 refreshes the ignored stale version file to the current development identity
 before regeneration; package.json is unchanged. No published tag/package moves.
-Full core/exact-source hosted qualification remains pending before closure.
+The exact core/source-pair hosted qualification below completes the correction.
 
 [Exact local/hosted evidence](../movie_interruption_fix_20261007.json).
+
+## Resolution — 2026-10-07
+
+Resolved in source commit `7880e2e35467addabef617ec7f3f8231bd02e79f`.
+Independent core run [37680239149](https://github.com/uibcdf/molsysviewer/actions/runs/37680239149)
+passes all 39 suites, including the native paused-reset interruption guard.
+Exact-source pair [37680239068](https://github.com/uibcdf/molsysviewer/actions/runs/37680239068)
+also passes on all three Python 3.14 hosts with fixed MolSysMT `46ef28eb`:
+Linux 2,879 passed/27 skipped, macOS 2,852/54 and Windows 2,853/53, zero
+failures/errors. Linux additionally passes 39 core suites and 25 notebooks;
+browser/notebook steps are intentionally Linux-only. Independent notebook run
+`37680239383` executes all 25 without failures. Native step state, log digests
+and the old failed and passing observations remain in the linked receipt.
+
+The guard detects command acceptance without applied drawing: stop stays pending
+with zero command promises until the native animation loop resumes, then the
+restored camera remains stable. The old-condition mutation fails its unit guard;
+post-stop drift tolerance was tightened, not widened.
+
+Standard CI `37680239319` passes its six scientific cells but retains failure
+in experimental Qt startup, before replacement, under uibcdf/molsysviewer#35.
+The receptor's DBus cause is not accepted as a diagnosis; native logs establish
+the missing WebGL canvas. No Qt fix or full standard-CI success is claimed.
+The published 0.24.0 tag/packages remain unchanged; final 1.0 qualification is
+still required for its eventual candidate.

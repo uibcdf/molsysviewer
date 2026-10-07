@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [`movie_stop_camera_drift.md`](movie_stop_camera_drift.md) — #177: stop restores the observed camera through a fresh Mol* draw; mutation guard and exact-source/core qualification pass.
+
 - [`annotation_anchor_contract.md`](annotation_anchor_contract.md) — #146: typed atom/coordinate anchors, offsets, leaders and lifecycle qualified against the public pair.
 - [`state_identity_topology_cache.md`](state_identity_topology_cache.md) — #147: frame-independent identity and same-size edit cache invalidation preserve correct atom correspondence.
 - [`load_prevalidation_mutation.md`](load_prevalidation_mutation.md) — #148: conversion/identity/append prevalidation preserves prior scene, messages, analyses and history.

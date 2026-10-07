@@ -2366,5 +2366,19 @@
       "uibcdf/molsysviewer#177",
       "uibcdf/molsysviewer#35"
     ]
+  },
+  "movie_interruption_source_followup": {
+    "date": "2026-10-07",
+    "issue": 177,
+    "implementation_commit": "7880e2e35467addabef617ec7f3f8231bd02e79f",
+    "record": "devguide/movie_interruption_fix_20261007.json",
+    "core_run": 37680239149,
+    "source_pair_run": 37680239068,
+    "required_gates_conclusion": "success",
+    "standard_ci_run": 37680239319,
+    "standard_ci_conclusion": "failure",
+    "remaining_failure": "experimental Qt WebGL startup (uibcdf/molsysviewer#35)",
+    "published_candidate_replaced": false,
+    "strict_1_0_cleared": false
   }
 }

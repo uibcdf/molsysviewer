@@ -19,12 +19,11 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Partially done (9)
+### Partially done (8)
 
 - [`box_edit_silent_provider_failure.md`](box_edit_silent_provider_failure.md) — [#155](https://github.com/uibcdf/molsysviewer/issues/155) — Box initialization reports success when the provider leaves the cell absent *(medium, reproduced)*
 - [`installed_scientific_cli_fixture_namespace.md`](installed_scientific_cli_fixture_namespace.md) — [#153](https://github.com/uibcdf/molsysviewer/issues/153) — Installed scientific CLI cannot resolve its development fixtures *(medium, reproduced)*
 - [`interactions_e2e_repeated_python_startup.md`](interactions_e2e_repeated_python_startup.md) — [#154](https://github.com/uibcdf/molsysviewer/issues/154) — Repeated Python cold starts make Interactions core E2E exceed its deadline *(medium, reproduced)*
-- [`movie_stop_camera_drift.md`](movie_stop_camera_drift.md) — [#177](https://github.com/uibcdf/molsysviewer/issues/177) — Movie interruption browser gate intermittently fails its camera drift assertion *(medium, reproduced)*
 - [`noarch_conda_launchers_missing_on_windows.md`](noarch_conda_launchers_missing_on_windows.md) — [#101](https://github.com/uibcdf/molsysviewer/issues/101) — The noarch Conda package omits three MolSysViewer launchers on Windows. *(medium, reproduced)*
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*
 - [`style_value_isolation.md`](style_value_isolation.md) — [#149](https://github.com/uibcdf/molsysviewer/issues/149) — Style parameter dictionaries alias inputs, registries and global builtins *(medium, measured)*

@@ -32,10 +32,14 @@ pass. Workflow follow-ups #142/#144/#145 are also resolved with 47 fresh
 installed checks and five executable user-guide blocks. The final-candidate
 obligation is retained explicitly below.
 #146/#147/#148 also close with 27 installed checks, twelve labels-guide blocks
-and a legacy-fingerprint probe. The latest successor source-pair CI fails on
-Movie interruption (#177); annotation scenarios and scientific Python pass in
-that same run. A separate core run passes; experimental Qt startup still fails
-in standard CI (#35). These are distinct verdicts, not full-gate clearance.
+and a legacy-fingerprint probe. Movie interruption #177 is now corrected in
+source `7880e2e3`, with a mutation control and native paused-draw guard.
+Core `37680239149` passes 39/39; exact-source pair `37680239068` passes on all
+three Python 3.14 hosts, plus 39 core suites and 25 notebooks on Linux.
+The source fix does not replace published 0.24.0 artifacts; old failure verdicts
+remain in [the Movie receipt](movie_interruption_fix_20261007.json).
+Standard CI `37680239319` passes six scientific cells but retains experimental
+Qt startup failure (#35). These distinct results do not clear the final 1.0 gate.
 Public documentation and final 1.0 first-contact/candidate review remain separate.
 The older checkpoints below preserve their original scope; use
 [the current handoff](checkpoints.md#resume-in-one-page) and

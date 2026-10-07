@@ -106,3 +106,11 @@ uibcdf/gh-run-receptor#62. No DBus workaround, renderer change or blind rerun is
 introduced. The original standard CI verdict remains failure even though its
 scientific/lint jobs pass. Keep Qt admission/provider migration under #109/#113
 and the existing workstation validation criteria separate.
+
+The same startup boundary is observed in job `112994091713` of run
+`37680239319` on exact Viewer `7880e2e35467addabef617ec7f3f8231bd02e79f`.
+The native job log reports one failed selected test and 2,905 deselected cases:
+the bridge cannot become ready because no WebGL canvas is created. The log also
+contains the failed CDN fallback; neither observation proves a replacement
+defect. The Movie interruption source correction and its passing core browser
+gate do not clear this independent experimental Qt result.
