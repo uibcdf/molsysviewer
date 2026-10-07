@@ -77,8 +77,8 @@ documents, and historical audits.
   explicit published-provider boundary.
 - [`installed_artifact_qualification.md`](installed_artifact_qualification.md):
   fixed Viewer 0.24.0 build 1 / MolSysMT 0.23.0 ABI3 build 0 qualified in all
-  sixteen staging cells, exact Windows launchers and hosted core browser suites;
-  public-pair and final 1.0 qualification remain pending.
+  sixteen staging and public cells, exact Windows launchers and hosted core browser
+  suites; the final 1.0 candidate and later source corrections retain separate gates.
 - [`stabilization_024_preparation_20261006.json`](stabilization_024_preparation_20261006.json):
   exact candidate coordinates, artifact digests, native CI verdicts and publication boundary.
 - [`pending_bugs/`](pending_bugs/): confirmed unresolved defects.

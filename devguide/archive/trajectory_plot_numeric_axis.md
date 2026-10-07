@@ -1,9 +1,9 @@
 ---
 summary: Trajectory plot x coordinates and nonfinite values have inconsistent rendering semantics
 issue: uibcdf/molsysviewer#150
-status: partial
+status: resolved
 opened: 2026-10-03
-closed:
+closed: 2026-10-07
 severity: medium
 verification: measured
 area: [trajectory, plot, serialization]
@@ -14,6 +14,11 @@ supersedes: []
 ---
 
 # Trajectory plot x coordinates and nonfinite values have inconsistent rendering semantics
+
+**Resolved — 2026-10-07:** the published Viewer 0.24.0 build 1 / MolSysMT
+0.23.0 ABI3 build 0 pair is qualified. Fresh installed finite-value and lifecycle
+guards, numeric geometry/seeking units and executable guide examples pass.
+Earlier dated sections retain their original scope.
 
 **Current qualification — 2026-10-06:** implementation is committed and
 integrated in Viewer 0.24.0 build 1 with MolSysMT 0.23.0 ABI3 build 0. All
@@ -65,3 +70,39 @@ internal integration used the existing deferred CI route and does not certify
 an exact hosted or published-provider candidate. The report remains partial
 for its existing supported-artifact/release qualification. See
 [`integration_review_20261003.md`](../integration_review_20261003.md).
+
+## Published qualification and closure — 2026-10-07
+
+The earlier public-provider/release blocker is complete: both fixed packages,
+Releases and version-specific Zenodo records are public, and independent
+verification establishes all sixteen public installed cells in `37587631519`.
+The plot Python owner, numeric TypeScript owner and its unit/browser guards
+match the published Viewer producer `1a4c97a5` byte for byte. No additional plot
+implementation change is required.
+
+Twelve fresh checks run through the isolated installed-science qualifier on the
+original promoted files: six NaN/positive-infinity/negative-infinity refusals
+across series/x and six real-system lifecycle cases. They check API/state-import
+refusal before mutation, strict JSON serialization, nonconsecutive/repeated
+structure extraction with remapped event markers, state/session/copy and
+unchanged structure-axis validation. Seven direct Node unit cases pass, including
+irregular/nonmonotonic/repeated x, shared sample/event/playhead positions,
+current-frame/earliest-frame tie resolution and finite extreme/constant SVG
+geometry. This unit DOM observation remains separate from real browser evidence.
+
+The real Mol* plot browser guard checks nonuniform horizontal spacing and
+coincident repeated values; complete core `37680239149` and exact-source pair
+`37680239068` already pass on the unchanged plot sources. The public guide now
+states local frame identity, click ties and finite input semantics. Its new
+three-structure example executes against the installed public pair; Sphinx
+passes with warnings treated as errors. Missing-data/coverage series retain
+their separate future contract.
+
+The fresh local full-source attempt is failure, not qualification: 22 cases
+cannot bind loopback sockets/start Chromium or complete Qt graphics inside the
+restricted executor. This does not replace the passing hosted science/core
+and public-artifact evidence. The companion #149 applied-style correction is a
+separate source follow-up and has not replaced the published package.
+
+[Checks, artifact identity and preserved verdicts](../styles_plot_closure_20261007.json).
+Final 1.0 candidate recertification remains mandatory in the release plan.

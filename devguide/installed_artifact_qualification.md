@@ -1,5 +1,16 @@
 # Installed-artifact qualification
 
+**Public stabilization qualified — 2026-10-07:** Viewer 0.24.0 noarch build 1
+and MolSysMT 0.23.0 ABI3 build 0 are published and independently verified in all
+sixteen public installed cells of `37587631519`. Release, Conda, npm/CDN and
+both version-specific Zenodo records are verified in
+[the preparation receipt](stabilization_024_preparation_20261006.json).
+The dated staging and earlier development records below retain their own scope.
+This public milestone does not qualify the eventual 1.0 candidate. The remaining
+applied-style alias found in #149 has a source correction and a controlled
+development-wheel check; it has not changed the published 0.24.0 package.
+See [the styles/plot follow-up](styles_plot_closure_20261007.json).
+
 **Stabilization candidate — 2026-10-06:** Viewer 0.24.0 noarch build 1 from
 `1a4c97a58b68b69f3a836546c9e4ac6187c3efa2` with MolSysMT 0.23.0 ABI3 build 0
 from `46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9` passes all sixteen installed

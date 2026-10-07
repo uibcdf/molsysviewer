@@ -1,0 +1,422 @@
+{
+  "schema": "molsysviewer.styles_plot_closure@1",
+  "date": "2026-10-07",
+  "issues": [
+    149,
+    150
+  ],
+  "status": "resolved_source_and_public_plot_qualified",
+  "base_commit": "5ef54ab6df99fce4c786ac9a0046f7fd08f55627",
+  "implementation_commit": "027374ed8b5ada9ae363b8449c925f1d793c8cff",
+  "reviewed_candidate_commit": "bd824ea146b678dce763bb88a39e332227f7beab",
+  "published_baseline": {
+    "viewer": "0.24.0",
+    "build": 1,
+    "producer": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
+    "provider": "0.23.0",
+    "provider_build": 0,
+    "provider_producer": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+    "public_pair_run": 37587631519,
+    "verified_public_cells": 16,
+    "record": "devguide/stabilization_024_preparation_20261006.json"
+  },
+  "styles": {
+    "remaining_boundary_reproduced_in_public_0_24_0": true,
+    "probe": {
+      "version": "0.24.0",
+      "origin": "/tmp/msv-024-staging-20261006/lib/python3.14/site-packages/molsysviewer/__init__.py",
+      "before": "element-symbol",
+      "after_mutating_returned_recipe": "caller-mutation",
+      "original_recipe": "element-symbol",
+      "remaining_boundary_reproduced": true
+    },
+    "probe_sha256": "19e83e2b679fc363b6dd558280feddee77277751046386cfdeabfd00658e6ae9",
+    "correction": "Styles.apply deep-copies params at the Whole ownership transfer; returned nested recipes remain caller-owned.",
+    "published_0_24_0_replaced": false,
+    "guard": "tests/test_design_review_closure.py::test_styles_are_detached_at_input_registry_and_builtin_boundaries",
+    "qualification_status": "corrected_installed_development_wheel_and_exact_hosted_source_qualified"
+  },
+  "plot": {
+    "production_change_required": false,
+    "source_and_guards_match_published_producer": {
+      "molsysviewer/trajectory_plot.py": true,
+      "molsysviewer/js/src/ui/trajectory-plot-overlay.ts": true,
+      "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts": true,
+      "molsysviewer/js/tests/unit/trajectory-plot-overlay.test.ts": true
+    },
+    "guard": "tests/test_design_review_closure.py::test_nonfinite_plot_values_are_refused_before_mutation",
+    "numeric_geometry_guard": "molsysviewer/js/tests/unit/trajectory-plot-overlay.test.ts",
+    "browser_guard": "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts",
+    "public_baseline_checks": {
+      "file": "msv-150-installed-public-baseline-20261007.xml",
+      "sha256": "af073c03f869c4c8ecd7c79621f44e18c1a8f5edcb7e35f0d2093fe51cb5d469",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "targeted_numeric_js_unit": {
+      "tests": 7,
+      "passed": 7,
+      "failed": 0,
+      "log_sha256": "42cf14b00ee8045ab65835b3ca46a9187a7d5717a78ec30d0aea1ed89a3a2d33",
+      "scope": "Unit geometry and seeking, separate from real Mol* browser evidence."
+    },
+    "qualification_status": "resolved_against_public_pair"
+  },
+  "local_targeted_source": {
+    "file": "msv-149-150-targeted-20261007.xml",
+    "sha256": "e63f0bd11768c82126c2c1affa5fc370262e0a273e73366bd9426120c4e7b2ff",
+    "tests": 13,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "installed_candidate": {
+    "version": "0.24.0+19.gbd824ea1.dirty",
+    "wheel": "molsysviewer-0.24.0+19.gbd824ea1.dirty-py3-none-any.whl",
+    "wheel_sha256": "5d870213f008bb12796ea45bb8a755a3c24cc573802ce8987f3cf1e4ab220095",
+    "producer": "bd824ea146b678dce763bb88a39e332227f7beab",
+    "build_scope": "Controlled development wheel; generated runtime refreshed in an isolated packaging copy. Dirty suffix identifies generated bundle changes, not uncommitted production code.",
+    "source_and_wheel_runtime_validator": "PASS",
+    "pip_check": "PASS",
+    "environment": "/tmp/msv-149-installed-20261007",
+    "source_copy": "/tmp/msv-149-build-source-20261007",
+    "imports": "Scientific imports verified before/after collection from this environment site-packages via qualify_installed_interactions.py -I.",
+    "provider": "Original staging MolSysMT 0.23.0 ABI3 build-0 file promoted unchanged; public-URL 16-cell qualification remains separate.",
+    "checks": {
+      "file": "msv-149-150-installed-candidate-20261007.xml",
+      "sha256": "2add0d8ce08cff43e3710b1714fe3ab0827510d8856d7060623e5c91b454e88c",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "original_public_environment_preserved": true,
+    "provider_conda": {
+      "name": "molsysmt",
+      "version": "0.23.0",
+      "build": "pyabi3h03bb3b7_0",
+      "url": "https://conda.anaconda.org/uibcdf/label/staging/linux-64/molsysmt-0.23.0-pyabi3h03bb3b7_0.conda",
+      "sha256": "7ff102db1ceb3a6098b5c020193a2bef1c5eaa4dbcbc5a0b472ee2fa44a1971b",
+      "md5": "910376ed59c081b851bf4a9c529d3457"
+    },
+    "original_public_styles_sha256": "166a423f1f359c1f93961089725dd3c5f97c67876fdc2eb95ae8c9407084c5ab"
+  },
+  "local_full_source": {
+    "file": "msv-149-150-full-source-20261007.xml",
+    "sha256": "a813c7cd604544226869237c526ffbf9193c8171d40c0ddc0ee97c5ddcd39da6",
+    "tests": 2905,
+    "failures": 22,
+    "errors": 0,
+    "skipped": 23,
+    "passed": 2860,
+    "conclusion": "failure",
+    "restricted_sandbox": true,
+    "diagnosis": "Loopback binds unavailable; Chromium setsockopt returns EPERM; two Qt probes also lack usable OpenGL/Vulkan and abort on shutdown EPERM. No full local pass claimed.",
+    "log_sha256": "949d3a6e58966916f4baf338ba47bb597dfa0def83ce0934c5df3dab069213b2",
+    "full_suite_repeated": false
+  },
+  "documentation": {
+    "executed_new_examples": 2,
+    "execution_environment": "/tmp/msv-024-staging-20261006",
+    "pages": {
+      "docs/content/user/representations/styles.md": "f6a6c6b01a07cde163a161f2d3cca04f7fca4b2e2223226b35c8bb43eb7840a2",
+      "docs/content/user/overlays/trajectory_plot.md": "370ab4c0a916afc0aba7185c80c08fded13a7d783d8acead25cc4bcead9e2d96"
+    },
+    "sphinx": {
+      "exit": 0,
+      "command": "make -C docs html SPHINXOPTS=\"-W --keep-going -j 2\" in molsyssuite@uibcdf_3.14",
+      "log_sha256": "fc02fe50ed01eaaf94de18fe7a3020df411e1d67e68b6dce96b27e10fefe2251"
+    }
+  },
+  "refuted_invocations": {
+    "first_wheel_validation": "Used repository source_root by omission, comparing its unchanged earlier runtime with the isolated candidate version. Explicit isolated source_root and wheel validation passes. No wheel or product correction was needed."
+  },
+  "hosted": {
+    "status": "required_source_core_policy_and_notebooks_passed",
+    "initial_policy_failure": {
+      "run": 37685072608,
+      "head": "027374ed8b5ada9ae363b8449c925f1d793c8cff",
+      "cause": "New dictionary assertion required formatter line splitting; corrected without behavioral change in bd824ea1.",
+      "native_failed_log_sha256": "205959d2a84d41c7b8ca456e1bfdfeb12840c98fb6756a1b35c98a2dfee2299e"
+    },
+    "format_and_docs_followup_policy": {
+      "run": 37685753835,
+      "head": "bd824ea146b678dce763bb88a39e332227f7beab",
+      "conclusion": "success"
+    },
+    "source_pair_run": 37685753081,
+    "core_run": 37685752799,
+    "standard_ci_run": 37685752885,
+    "notebooks_run": 37685752720,
+    "core": {
+      "run": 37685752799,
+      "head": "bd824ea146b678dce763bb88a39e332227f7beab",
+      "conclusion": "success",
+      "suites_passed": 39,
+      "trajectory_plot_guard": "passed",
+      "log_sha256": "356196c058dd5372d3d221293e10ed20f86dddf7630dcae2c752e0974a0a48ca",
+      "head_sha": "bd824ea146b678dce763bb88a39e332227f7beab",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37685752799",
+      "native_json_sha256": "dd7699e8e20b988665bd5131b2167a238e9c1ac4c3076dbeabbf837e0ad0e459",
+      "jobs": [
+        {
+          "name": "Core E2E",
+          "id": 113012999590,
+          "conclusion": "success",
+          "relevant_steps": {
+            "Run core E2E tests": "success"
+          }
+        },
+        {
+          "name": "Check skipped-commit backlog",
+          "id": 113013001368,
+          "conclusion": "skipped",
+          "relevant_steps": {}
+        }
+      ]
+    },
+    "source_pair": {
+      "run": 37685753081,
+      "head_sha": "bd824ea146b678dce763bb88a39e332227f7beab",
+      "conclusion": "success",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37685753081",
+      "native_json_sha256": "87c657c1db3abdea75d5884896f591a1e417963d4dba6cb2cc14d38353af2c3a",
+      "jobs": [
+        {
+          "name": "Source pair on windows-2025, Python 3.14",
+          "id": 113013000623,
+          "conclusion": "success",
+          "relevant_steps": {
+            "Require an exact MolSysMT commit": "success",
+            "Test MolSysMT integration against the installed pair": "success",
+            "Run MolSysViewer Python tests": "success",
+            "Run all core browser suites against the exact source pair": "skipped",
+            "Execute every documented notebook against the exact source pair": "skipped"
+          }
+        },
+        {
+          "name": "Source pair on macos-15, Python 3.14",
+          "id": 113013001109,
+          "conclusion": "success",
+          "relevant_steps": {
+            "Require an exact MolSysMT commit": "success",
+            "Test MolSysMT integration against the installed pair": "success",
+            "Run MolSysViewer Python tests": "success",
+            "Run all core browser suites against the exact source pair": "skipped",
+            "Execute every documented notebook against the exact source pair": "skipped"
+          }
+        },
+        {
+          "name": "Source pair on ubuntu-latest, Python 3.14",
+          "id": 113013001162,
+          "conclusion": "success",
+          "relevant_steps": {
+            "Require an exact MolSysMT commit": "success",
+            "Test MolSysMT integration against the installed pair": "success",
+            "Run MolSysViewer Python tests": "success",
+            "Run all core browser suites against the exact source pair": "success",
+            "Execute every documented notebook against the exact source pair": "success"
+          }
+        }
+      ],
+      "platforms": {
+        "linux": {
+          "python": "3.14",
+          "passed": 2876,
+          "skipped": 27,
+          "failed": 0,
+          "errors": 0,
+          "native_job_log_sha256": "17394a78b5370d628163900f83baa8b3adb61aaa413b1d9974da34f78d25dd6e",
+          "core_suites_passed": 39,
+          "notebooks_executed": 25,
+          "notebooks_failed": 0
+        },
+        "macos": {
+          "python": "3.14",
+          "passed": 2849,
+          "skipped": 54,
+          "failed": 0,
+          "errors": 0,
+          "native_job_log_sha256": "0d17b1fc624b834ddf16b3dd7bde7b1f389fa8e110c1de31864bb94e421fa171"
+        },
+        "windows": {
+          "python": "3.14",
+          "passed": 2850,
+          "skipped": 53,
+          "failed": 0,
+          "errors": 0,
+          "native_job_log_sha256": "3f7c40ba527d4463ae43c226b345c1e6d84c338c835bdfe6a2481d1914f2d272"
+        }
+      }
+    },
+    "standard_ci": {
+      "run": 37685752885,
+      "head_sha": "bd824ea146b678dce763bb88a39e332227f7beab",
+      "conclusion": "failure",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37685752885",
+      "native_json_sha256": "63e8621e15b5ab8d90b60c3f978ff812f92feea466575f94becacbd1357aa680",
+      "jobs": [
+        {
+          "name": "Qt pipeline completes (Xvfb, software WebGL)",
+          "id": 113013000704,
+          "conclusion": "failure",
+          "relevant_steps": {
+            "Qt transport round-trip in a real Qt process": "failure"
+          }
+        },
+        {
+          "name": "Test on macos-15, Python 3.12",
+          "id": 113013001142,
+          "conclusion": "success",
+          "relevant_steps": {
+            "Run tests": "success"
+          }
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.11",
+          "id": 113013001225,
+          "conclusion": "success",
+          "relevant_steps": {
+            "Run tests": "success"
+          }
+        },
+        {
+          "name": "Test on macos-15, Python 3.13",
+          "id": 113013001272,
+          "conclusion": "success",
+          "relevant_steps": {
+            "Run tests": "success"
+          }
+        },
+        {
+          "name": "Test on macos-15, Python 3.11",
+          "id": 113013001273,
+          "conclusion": "success",
+          "relevant_steps": {
+            "Run tests": "success"
+          }
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.12",
+          "id": 113013001335,
+          "conclusion": "success",
+          "relevant_steps": {
+            "Run tests": "success"
+          }
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.13",
+          "id": 113013001394,
+          "conclusion": "success",
+          "relevant_steps": {
+            "Run tests": "success"
+          }
+        },
+        {
+          "name": "Check skipped-commit backlog",
+          "id": 113013046604,
+          "conclusion": "skipped",
+          "relevant_steps": {}
+        },
+        {
+          "name": "PR full suite",
+          "id": 113020914771,
+          "conclusion": "skipped",
+          "relevant_steps": {}
+        }
+      ],
+      "scientific_cells_passed": 6,
+      "remaining_experimental_failure": {
+        "job": 113013000704,
+        "test": "tests/test_standalone.py::test_qt_live_model_smoke_real_window",
+        "failed": 1,
+        "deselected": 2902,
+        "mechanism": "Qt bridge cannot become ready: exported scene has no WebGL canvas; context creation fails before replacement.",
+        "issue": "uibcdf/molsysviewer#35",
+        "native_job_log_sha256": "e504139404196dfbec83753deb266ab2e5320adfda964d36878d4bc38494a571",
+        "receptor_dbus_cause_accepted": false,
+        "diagnostic_feedback": "uibcdf/gh-run-receptor#62"
+      }
+    },
+    "policy": {
+      "run": 37685753835,
+      "head_sha": "bd824ea146b678dce763bb88a39e332227f7beab",
+      "conclusion": "success",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37685753835",
+      "native_json_sha256": "14fa0411df6ce3f25d1302b94896779bcdd551c0f18e85cff672196102bb963b",
+      "jobs": [
+        {
+          "name": "Dependency metadata audit",
+          "id": 113013002821,
+          "conclusion": "success",
+          "relevant_steps": {}
+        },
+        {
+          "name": "policy / conformance",
+          "id": 113013003073,
+          "conclusion": "success",
+          "relevant_steps": {}
+        }
+      ]
+    },
+    "notebooks": {
+      "run": 37685752720,
+      "head_sha": "bd824ea146b678dce763bb88a39e332227f7beab",
+      "conclusion": "success",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37685752720",
+      "native_json_sha256": "d81ac292db30d1ba1ad0a8908c911b4a828b888997f73c745dedd86514b78688",
+      "jobs": [
+        {
+          "name": "Execute the documented notebooks",
+          "id": 113012999029,
+          "conclusion": "success",
+          "relevant_steps": {
+            "Execute every documented notebook": "success"
+          }
+        }
+      ],
+      "executed": 25,
+      "failed": 0
+    }
+  },
+  "sources_sha256": {
+    "molsysviewer/styles.py": "d6bb552b581b9d4854cf7d9a385ad772afe9f30741252df60e3fc8f53e451056",
+    "molsysviewer/trajectory_plot.py": "bb3c6a0de63ce4bef61ce503442a2c920b5a11e990ab5cc2ce6b02c285db0a2f",
+    "molsysviewer/js/src/ui/trajectory-plot-overlay.ts": "210b9fe1f075758204e89876f6379c15f680a97b30e850849e8cbd8d0450adb6",
+    "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts": "8fc84213e963df77626f71de8b44a5f344ac3f7a6796a9a775ffde9f3348e610",
+    "molsysviewer/js/tests/unit/trajectory-plot-overlay.test.ts": "757f737a0646b0064346b1b75f0b3935e1abf34fa96f0c0b6cb982039dbf0846",
+    "tests/test_design_review_closure.py": "e801f29a82453da0be64ab887f390960fda64fdcae8740253686e898d56b01d8"
+  },
+  "strict_1_0_cleared": false,
+  "published_tags_packages_changed": false,
+  "temporary_resources": {
+    "removed_after_qualification": [
+      "/tmp/msv-149-installed-20261007",
+      "/tmp/msv-149-build-source-20261007",
+      "/tmp/msv-150-plot-unit-20261007.mjs",
+      "/tmp/msv-149-artifacts-20261007/molsysviewer-0.24.0+18.g027374ed.dirty-py3-none-any.whl"
+    ],
+    "retained": "Qualified development wheel, native logs/JSON, probe and JUnit receipts remain in /tmp while needed.",
+    "preserved": "Original /tmp/msv-024-staging-20261006 qualification environment, shared development environment and human sandbox work."
+  },
+  "final_governance_checks": {
+    "reporting_protocol": {
+      "file": "msv-149-150-reporting-closure-20261007.xml",
+      "sha256": "67043df1e8cc6ad09930fb8833ecb4530cc30e92d78011a525a23bf8f3e3822e",
+      "tests": 194,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "guidance_links_and_architecture": {
+      "file": "msv-149-150-guidance-closure-20261007.xml",
+      "sha256": "05aed272cadf2404d4cb5934409b23eb67e4719136a7090ba80b2848ad79ee2f",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  }
+}

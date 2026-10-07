@@ -2380,5 +2380,29 @@
     "remaining_failure": "experimental Qt WebGL startup (uibcdf/molsysviewer#35)",
     "published_candidate_replaced": false,
     "strict_1_0_cleared": false
+  },
+  "styles_plot_followup": {
+    "date": "2026-10-07",
+    "issues": [
+      149,
+      150
+    ],
+    "record": "devguide/styles_plot_closure_20261007.json",
+    "style_fix_commit": "027374ed8b5ada9ae363b8449c925f1d793c8cff",
+    "reviewed_source_candidate": "bd824ea146b678dce763bb88a39e332227f7beab",
+    "style_correction_in_published_0_24_0": false,
+    "plot_sources_match_published_candidate": true,
+    "installed_development_design_checks": 13,
+    "public_plot_checks": 12,
+    "numeric_js_units": 7,
+    "source_pair_run": 37685753081,
+    "source_pair_conclusion": "success",
+    "independent_core_run": 37685752799,
+    "core_suites_passed": 39,
+    "standard_ci_run": 37685752885,
+    "standard_ci_conclusion": "failure",
+    "remaining_standard_failure": "experimental Qt startup (uibcdf/molsysviewer#35)",
+    "strict_1_0_cleared": false,
+    "published_candidate_replaced": false
   }
 }

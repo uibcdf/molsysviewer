@@ -112,8 +112,21 @@ Standard CI `37680239319` passes six scientific cells but fails on experimental
 Qt WebGL startup (#35). These source results do not replace the published
 0.24.0 packages or clear final 1.0 recertification. See
 [the Movie correction receipt](movie_interruption_fix_20261007.json).
-Next: review remaining partially completed bug reports, beginning with #149/#150,
-and reconcile broader documentation, then
+#149/#150 are now resolved. The plot owner and its guards match the public
+producer; twelve fresh installed finite-input/lifecycle checks and seven numeric
+geometry/seeking units pass. Review of #149 finds a remaining nested applied
+recipe alias in the public package. Source `027374ed` corrects it; checkpoint
+`bd824ea1` and a controlled development wheel pass thirteen design guards,
+runtime/version validation and pip check. Exact-source pair `37685753081`
+passes Python 3.14 on all three hosts (Linux 2,876 passed/27 skipped, macOS
+2,849/54, Windows 2,850/53), plus 39 core suites and 25 notebooks on Linux.
+Independent core `37685752799` passes 39/39; six standard scientific cells pass.
+The first formatting gate and the local sandbox full-suite failure remain
+preserved, as does experimental Qt startup. This style correction is in source,
+not the unchanged public 0.24.0 files. See
+[the styles/plot closure](styles_plot_closure_20261007.json).
+Next: review remaining partial reports, starting with plot lifecycle #143,
+then packaging/tooling/box records #101/#153/#154/#155; reconcile broader documentation and
 complete installed first-contact/final-candidate review, retaining the completed
 public pair and Release/Conda/npm/Zenodo checks.
 See [the candidate preparation](stabilization_024_preparation_20261006.json).
@@ -1487,9 +1500,11 @@ handoffs do not replace these artifact identities.
    with 47 installed workflow/scene checks and the completed user-guide examples.
 5. Done: Movie interruption #177 is corrected and qualified on source `7880e2e3`;
    the independent core and three-host Python 3.14 source pair pass. Keep the
-   experimental Qt failure separate. Review remaining partial reports #149/#150
-   against the published baseline, distinguishing unmet behavior from obsolete
-   qualification blockers.
+   experimental Qt failure separate. #149/#150 are also resolved: the remaining
+   applied-recipe alias has installed development-wheel/exact-source evidence;
+   the numeric plot contract is qualified on the public pair. Review #143, then
+   #101/#153/#154/#155, distinguishing unmet behavior from obsolete qualification
+   blockers.
 6. Reconcile public documentation and remaining support promises. The five-stage
    human notebook review is complete; retain it. Installed first-contact review
    and final 1.0 candidate qualification remain separate. Standalone is

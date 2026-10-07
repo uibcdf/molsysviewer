@@ -64,7 +64,15 @@ failure verdicts remain preserved in [the correction receipt](movie_interruption
 Standard CI `37680239319` passes six scientific cells but retains its experimental
 Qt WebGL startup failure (#35). The source correction does not replace published
 0.24.0 artifacts or qualify the eventual 1.0 candidate.
-Next review remaining partial reports #149/#150 against the public pair,
+#149/#150 are resolved with [the styles/plot closure](styles_plot_closure_20261007.json).
+Numeric plot sources/guards match the public producer, with twelve fresh installed
+checks and seven geometry/seeking units passing. The remaining applied-recipe
+alias found in the public package is corrected in source `027374ed`; its reviewed
+checkpoint `bd824ea1` passes thirteen installed development-wheel guards,
+three-host Python 3.14 source pair `37685753081`, 39 core suites and 25 notebooks.
+The correction awaits the next qualified release; public 0.24.0 files are unchanged.
+Next review partial plot lifecycle #143, then #101/#153/#154/#155 against their
+actual delivered behavior and qualification,
 reconcile broader documentation and complete installed first-contact observations
 and the final 1.0 candidate decision as distinct remaining work. Standalone remains
 experimental; remotes and the Mol* dependency update remain post-1.0.

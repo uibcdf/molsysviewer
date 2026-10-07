@@ -1,5 +1,9 @@
 # Archived implementation plans
 
+- [`style_value_isolation.md`](style_value_isolation.md) — #149: nested applied recipes detach from Whole; strengthened guard, installed development wheel and exact-source qualification complete.
+
+- [`trajectory_plot_numeric_axis.md`](trajectory_plot_numeric_axis.md) — #150: numeric x geometry, deterministic frame seeking and finite-input refusal qualified against the public pair.
+
 - [`movie_stop_camera_drift.md`](movie_stop_camera_drift.md) — #177: stop restores the observed camera through a fresh Mol* draw; mutation guard and exact-source/core qualification pass.
 
 - [`annotation_anchor_contract.md`](annotation_anchor_contract.md) — #146: typed atom/coordinate anchors, offsets, leaders and lifecycle qualified against the public pair.

@@ -2548,10 +2548,17 @@ Guards: `molsysviewer/js/tests/e2e/movie-playback.e2e.ts` and
 
 ## Final public design corrections — 2026-10-03
 
-The following contracts are integrated in published Viewer 0.24.0 build 1 /
-MolSysMT 0.23.0 ABI3 build 0. #146/#147/#148 are resolved with 27 fresh installed
-tests and twelve executable labels-guide blocks; #149/#150 retain their own
-review records. Final 1.0 qualification remains a separate gate. The earlier
+The initial implementations of these contracts shipped in Viewer 0.24.0 build 1 /
+MolSysMT 0.23.0 ABI3 build 0. The remaining nested applied-recipe boundary in #149
+is corrected in source `027374ed`, with an installed development-wheel guard;
+that correction has not changed the published package. #150 is qualified on the
+unchanged public plot sources. #146/#147/#148 are resolved with 27 fresh installed
+tests and twelve executable labels-guide blocks. #149/#150 are also resolved:
+the applied-recipe correction passes thirteen installed development-wheel guards
+and exact-source pair `37685753081`; the unchanged public plot passes twelve
+installed checks and seven geometry/seeking units. Their
+[closure receipt](styles_plot_closure_20261007.json) preserves both source and
+public boundaries. Final 1.0 qualification remains a separate gate. The earlier
 Movie interruption failures retain their verdicts; #177 is corrected in source
 `7880e2e3` under the camera contract above, with passing exact-source/core gates
 recorded in [the correction receipt](movie_interruption_fix_20261007.json).
@@ -2588,7 +2595,8 @@ not undo the bounded annotation/identity/load evidence.
 - Styles own detached nested recipe inputs; registered and builtin Style queries
   return detached values, including focus styles. A caller may edit its returned
   recipe and explicitly register/apply it; editing that value does not alter the
-  registry or another viewer.
+  registry or another viewer. The recipe returned by `view.styles.apply()` is also
+  caller-owned: editing its nested params leaves the active Whole state unchanged.
 - Optional plot x values define the numeric horizontal axis for samples, events,
   playhead and nearest-sample seeking. Local frame order remains authoritative
   for nonmonotonic/repeated x. Ties prefer the current nearest frame, otherwise

@@ -41,6 +41,14 @@ remain in [the Movie receipt](movie_interruption_fix_20261007.json).
 Standard CI `37680239319` passes six scientific cells but retains experimental
 Qt startup failure (#35). These distinct results do not clear the final 1.0 gate.
 Public documentation and final 1.0 first-contact/candidate review remain separate.
+#149/#150 are now resolved. Plot finite-value/numeric-axis behavior is qualified
+on the unchanged public pair. Review found a remaining nested applied-style
+alias in 0.24.0; source `027374ed` fixes it, and `bd824ea1` has installed
+development-wheel and exact-source evidence (`37685753081`, three Python 3.14
+hosts, 39 core suites and 25 notebooks). This fix and Movie #177 must be carried
+into the next qualified artifact; neither correction has replaced public 0.24.0.
+See [the styles/plot receipt](styles_plot_closure_20261007.json). Final 1.0
+recertification still applies to its exact code, bytes and dependency closure.
 The older checkpoints below preserve their original scope; use
 [the current handoff](checkpoints.md#resume-in-one-page) and
 [its preparation receipt](stabilization_024_preparation_20261006.json).
