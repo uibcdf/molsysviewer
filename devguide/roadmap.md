@@ -34,12 +34,13 @@ package producer. Earlier failed attempts retain their original verdicts.
 The corrected automatic-development hosted follow-up passes on all three native
 hosts, including 39 core suites and 25 notebooks on Linux. Devguide reconciliation
 and its issue-board checks pass. Both owners confirm the fixed candidates and
-MolSysMT-first / Viewer-second publication sequence. Obtain Diego's final
-publication authorization for that agreement.
-No public tag, GitHub Release or promotion is created. MolSysMT 0.23.0
-is staging-only, so public-channel CI cannot yet solve the required dependency;
-the exact public pair gate remains blocked. Coordinate public releases and
-promote the already verified immutable files after maintainer authorization,
+MolSysMT-first / Viewer-second publication sequence. MolSysMT 0.23.0 is now
+published: its exact tag and four original ABI3 build-0 files, public labels
+and solver indices are independently verified. Its Zenodo ingestion remains
+reported pending. Obtain Diego's final authorization for Viewer publication.
+No Viewer public tag, GitHub Release or promotion is created; the exact public
+pair gate awaits Viewer availability. Publish Viewer and
+promote its already verified immutable build-1 file after maintainer authorization,
 then run the sixteen public installed cells and verify GitHub Release/Zenodo
 preservation. Keep Interactions' public qualification (#114/#140), complete
 public documentation reconciliation, installed first-contact observations and

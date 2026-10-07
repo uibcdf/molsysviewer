@@ -9,15 +9,17 @@ staging cells, exact Windows launchers and all 39 hosted core browser suites.
 Independent verification checks actual environment archives/digests and staging
 repodata. Canonical-source Python 3.14 integration passes on all three native hosts,
 with 39 core suites and all 25 notebooks passing on Linux. The public
-pair gate is blocked until the coordinated public release; no tag, Release,
+pair gate awaits Viewer publication; no Viewer tag, Release,
 promotion or strict 1.0 clearance is created. The corrected automatic-development
 hosted follow-up also passes on all three native hosts, including 39 core suites
 and 25 notebooks on Linux. The provider's final-source gate passes all eight
 Linux/macOS cells with the exact final Viewer source; independent scientific
 certificate and JUnit checks agree with its published receipt. Both owners
 confirm the candidates and publication sequence. Devguide is reconciled with
-the current evidence. Obtain Diego's final publication authorization, publish
-MolSysMT before Viewer, qualify the exact public pair and verify preserved citation records.
+the current evidence. MolSysMT 0.23.0 is now published; its exact tag and four
+original public build-0 files are independently verified. Its Zenodo ingestion
+remains reported pending. Obtain Diego's final Viewer publication authorization,
+publish Viewer, qualify the exact public pair and verify preserved citation records.
 Public documentation and final 1.0 first-contact/candidate review remain separate.
 The older checkpoints below preserve their original scope; use
 [the current handoff](checkpoints.md#resume-in-one-page) and

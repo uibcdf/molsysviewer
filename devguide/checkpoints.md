@@ -54,12 +54,16 @@ Canonical exact-source Python 3.14 integration passes in
 [37542642197](https://github.com/uibcdf/molsysviewer/actions/runs/37542642197).
 Linux passes 2,879 cases/27 skips, macOS 2,852/54 and Windows 2,853/53,
 with zero failures; Linux additionally passes 39 core suites and all 25 notebooks.
-Public-channel CI fails before tests because MolSysMT 0.23.0 is staging-only;
-the public installed gate remains BLOCKED. No public tag, release or promotion
-is created. Devguide reconciliation passes 277 bounded checks and all 45 active
+The earlier public-channel CI failed before tests while MolSysMT 0.23.0 was
+staging-only. Its [0.23.0 Release](https://github.com/uibcdf/molsysmt/releases/tag/0.23.0)
+is now published at the exact provider commit. Independent downloads verify all
+four public-package receipts, original SHA-256 values, `main` labels and
+solver-visible indices. Provider Zenodo ingestion is reported pending.
+Viewer's public installed gate awaits its own publication; no Viewer public
+tag, release or promotion is created. Devguide reconciliation passes 277 bounded checks and all 45 active
 reports agree with the issue board. MolSysMT confirms the exact candidates and
 publication order in its evidence commit `832e01210`. Next: obtain Diego's final
-publication authorization, publish/verify MolSysMT first and Viewer second,
+Viewer publication authorization and publish/verify Viewer after the verified provider,
 then qualify the exact public pair and verify GitHub Release/Zenodo preservation.
 See [the candidate preparation](stabilization_024_preparation_20261006.json).
 
@@ -1419,9 +1423,10 @@ handoffs do not replace these artifact identities.
 1. Exact canonical-source integration and automatic hosted follow-up 37545069147
    pass. #175 is resolved; native verdicts and Linux notebook/core results are
    preserved. Review the completed candidate evidence before publication.
-2. Obtain Diego's final authorization for the agreed MolSysMT-first / Viewer-second
-   publication. Staging and the final provider-source gate are qualified; the public
-   dependency/pair is not yet published. Keep already staged files and SHA-256
+2. Obtain Diego's final authorization for Viewer publication. MolSysMT's public
+   release and four original files are verified; Viewer staging and the final
+   provider-source gate are qualified. The public pair is not yet qualified.
+   Keep already staged files and SHA-256
    identities fixed through the coordinated promotion.
 3. With publication authorization, create the canonical tag and GitHub Release,
    promote the verified immutable package and complete the sixteen-cell public

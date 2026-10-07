@@ -1,7 +1,7 @@
 {
   "schema": "molsysviewer.stabilization_preparation@1",
   "date": "2026-10-06",
-  "status": "exact_staging_canonical_and_provider_source_gates_qualified; awaiting_Diego_final_publication_authorization",
+  "status": "provider_publication_verified; awaiting_Diego_final_Viewer_publication_authorization",
   "viewer": {
     "version": "0.24.0",
     "build_number": 0,
@@ -165,8 +165,8 @@
     }
   },
   "remaining": [
-    "Obtain Diego final authorization for the agreed exact MolSysMT-first / Viewer-second publication",
-    "Publish and promote exact artifacts only with maintainer authorization",
+    "Obtain Diego final authorization for exact Viewer 0.24.0 publication; MolSysMT 0.23.0 public prerequisite is independently verified",
+    "Publish Viewer exact commit 1a4c97a5, npm runtime and promote original Conda build 1 only with maintainer authorization",
     "Complete public-channel 16-cell qualification, GitHub Release and Zenodo archival verification before declaring publication complete"
   ],
   "hosted": {
@@ -1178,6 +1178,260 @@
       "Qualify all sixteen public installed-pair cells and independently verify both Zenodo records"
     ],
     "publication_authorized": false,
-    "package_commits_and_sha256_unchanged": true
+    "package_commits_and_sha256_unchanged": true,
+    "provider_publication_verified": true
+  },
+  "molsysmt_public_receiving": {
+    "received_on": "2026-10-07",
+    "runs": [
+      {
+        "id": 37583470115,
+        "head_sha": "832e012104a5af154eefff2cd2c931be3fbeced3",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/uibcdf/molsysmt/actions/runs/37583470115",
+        "artifacts": [
+          {
+            "id": 11465702061,
+            "name": "molsysmt-conda-promotion-0.23.0-linux-64",
+            "digest": "sha256:1ef159221e862b6e7f413366dff5c29807bc609689b35839ca281e227803338e"
+          },
+          {
+            "id": 11465247843,
+            "name": "molsysmt-independent-public-conda-0.23.0",
+            "digest": "sha256:6d017aca943b3617d28a60c0c9b6f11b337e0f9264070d5d6ef4172a68a68e73"
+          },
+          {
+            "id": 11465247769,
+            "name": "molsysmt-installed-matrix-0.23.0",
+            "digest": "sha256:267200a0e672be885a48aa7d0849f1576c26bc8c46adf0bc830043e18ac280d2"
+          }
+        ]
+      },
+      {
+        "id": 37583473201,
+        "head_sha": "832e012104a5af154eefff2cd2c931be3fbeced3",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/uibcdf/molsysmt/actions/runs/37583473201",
+        "artifacts": [
+          {
+            "id": 11466240114,
+            "name": "molsysmt-conda-promotion-0.23.0-linux-aarch64",
+            "digest": "sha256:d18f03a28b3e373faf0e25b13dbe69f611c00c8a3c4f63c222d0d34d8e492874"
+          },
+          {
+            "id": 11465816924,
+            "name": "molsysmt-independent-public-conda-0.23.0",
+            "digest": "sha256:e2b30ba370f0677a486eadbb14577de78637c76fcf23edd480b3909f25175c9c"
+          },
+          {
+            "id": 11465207906,
+            "name": "molsysmt-installed-matrix-0.23.0",
+            "digest": "sha256:04883449f16f5231ff4dd40bf0dea3f5e555c5d2affdd2dcc6504c3f509a7803"
+          }
+        ]
+      },
+      {
+        "id": 37583476153,
+        "head_sha": "832e012104a5af154eefff2cd2c931be3fbeced3",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/uibcdf/molsysmt/actions/runs/37583476153",
+        "artifacts": [
+          {
+            "id": 11465702057,
+            "name": "molsysmt-conda-promotion-0.23.0-osx-arm64",
+            "digest": "sha256:c74a8156e7dfd7773e4fced63c24f33369d0f29bcdadbde30e30cb3075eab6dc"
+          },
+          {
+            "id": 11465626307,
+            "name": "molsysmt-installed-matrix-0.23.0",
+            "digest": "sha256:b9fa68ca88d587c665cfed3558229e92c341d418065dad8ef12e47fca300724c"
+          },
+          {
+            "id": 11465572319,
+            "name": "molsysmt-independent-public-conda-0.23.0",
+            "digest": "sha256:69a555bc784bdd582cac400edd380e30aa5783cc35e8d4ce203a93b507961c59"
+          }
+        ]
+      },
+      {
+        "id": 37583479224,
+        "head_sha": "832e012104a5af154eefff2cd2c931be3fbeced3",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/uibcdf/molsysmt/actions/runs/37583479224",
+        "artifacts": [
+          {
+            "id": 11466135827,
+            "name": "molsysmt-installed-matrix-0.23.0",
+            "digest": "sha256:a6bf3e022aec87303049c2def1ddf014792f01744e7cb4157c349b510d23cbb6"
+          },
+          {
+            "id": 11465134558,
+            "name": "molsysmt-independent-public-conda-0.23.0",
+            "digest": "sha256:093e0d37350f02958350e045fceb8c7c23e9fa523a93a003d4bd301742d61828"
+          },
+          {
+            "id": 11465109691,
+            "name": "molsysmt-conda-promotion-0.23.0-win-64",
+            "digest": "sha256:b327a34cf8e06b5b8e0f3c4ff7f5ba40daa427db237965d8bf2b1bbae198336d"
+          }
+        ]
+      }
+    ],
+    "files": [
+      {
+        "basename": "linux-64/molsysmt-0.23.0-pyabi3h03bb3b7_0.conda",
+        "labels": [
+          "staging",
+          "main"
+        ],
+        "sha256": "7ff102db1ceb3a6098b5c020193a2bef1c5eaa4dbcbc5a0b472ee2fa44a1971b",
+        "build_number": 0
+      },
+      {
+        "basename": "linux-aarch64/molsysmt-0.23.0-pyabi3hecc93d8_0.conda",
+        "labels": [
+          "staging",
+          "main"
+        ],
+        "sha256": "d588b52c843b43774ff59d4a627e4cffc0fcc86c39118f279815f4c6ec31a4dd",
+        "build_number": 0
+      },
+      {
+        "basename": "osx-arm64/molsysmt-0.23.0-pyabi3ha0bc463_0.conda",
+        "labels": [
+          "staging",
+          "main"
+        ],
+        "sha256": "b2fe891f6e4fe9b167b0383a0f11c9772a5450e3fb93ad030ea5139d5aa54317",
+        "build_number": 0
+      },
+      {
+        "basename": "win-64/molsysmt-0.23.0-pyabi3h2d2bc06_0.conda",
+        "labels": [
+          "staging",
+          "main"
+        ],
+        "sha256": "d74d69f2ef45e6f44ae9bfc43b89ae8a48d1422c0ad32df8302f17418139eb6b",
+        "build_number": 0
+      }
+    ],
+    "independent_receipts": [
+      {
+        "run_id": 37583470115,
+        "artifact_id": 11465247843,
+        "archive_digest": "sha256:6d017aca943b3617d28a60c0c9b6f11b337e0f9264070d5d6ef4172a68a68e73",
+        "body_sha256": "c959132aadb1b62fb94530775bbf4c75c03f108466f93c3914edbf5b8f79c469",
+        "evidence": {
+          "checked_at": "2026-10-07T06:48:20.112107+00:00",
+          "files": [
+            {
+              "filename": "molsysmt-0.23.0-pyabi3h03bb3b7_0.conda",
+              "main_label": "verified",
+              "owner": "uibcdf",
+              "package": "molsysmt",
+              "sha256": "7ff102db1ceb3a6098b5c020193a2bef1c5eaa4dbcbc5a0b472ee2fa44a1971b",
+              "solver_index": "verified",
+              "subdir": "linux-64",
+              "url": "https://conda.anaconda.org/uibcdf/linux-64/molsysmt-0.23.0-pyabi3h03bb3b7_0.conda",
+              "version": "0.23.0"
+            }
+          ],
+          "schema": "molsyssuite.public-conda@1",
+          "state": "verified"
+        }
+      },
+      {
+        "run_id": 37583473201,
+        "artifact_id": 11465816924,
+        "archive_digest": "sha256:e2b30ba370f0677a486eadbb14577de78637c76fcf23edd480b3909f25175c9c",
+        "body_sha256": "f05552029cfc9d0bb3d5eb5b2e7485ab0a13275827c401b751bd14a608ff84d9",
+        "evidence": {
+          "checked_at": "2026-10-07T06:48:21.321337+00:00",
+          "files": [
+            {
+              "filename": "molsysmt-0.23.0-pyabi3hecc93d8_0.conda",
+              "main_label": "verified",
+              "owner": "uibcdf",
+              "package": "molsysmt",
+              "sha256": "d588b52c843b43774ff59d4a627e4cffc0fcc86c39118f279815f4c6ec31a4dd",
+              "solver_index": "verified",
+              "subdir": "linux-aarch64",
+              "url": "https://conda.anaconda.org/uibcdf/linux-aarch64/molsysmt-0.23.0-pyabi3hecc93d8_0.conda",
+              "version": "0.23.0"
+            }
+          ],
+          "schema": "molsyssuite.public-conda@1",
+          "state": "verified"
+        }
+      },
+      {
+        "run_id": 37583476153,
+        "artifact_id": 11465572319,
+        "archive_digest": "sha256:69a555bc784bdd582cac400edd380e30aa5783cc35e8d4ce203a93b507961c59",
+        "body_sha256": "f7aaf478cc719796c6514131999f40043457140bb1e01851829ca18687b1cf41",
+        "evidence": {
+          "checked_at": "2026-10-07T06:48:18.472423+00:00",
+          "files": [
+            {
+              "filename": "molsysmt-0.23.0-pyabi3ha0bc463_0.conda",
+              "main_label": "verified",
+              "owner": "uibcdf",
+              "package": "molsysmt",
+              "sha256": "b2fe891f6e4fe9b167b0383a0f11c9772a5450e3fb93ad030ea5139d5aa54317",
+              "solver_index": "verified",
+              "subdir": "osx-arm64",
+              "url": "https://conda.anaconda.org/uibcdf/osx-arm64/molsysmt-0.23.0-pyabi3ha0bc463_0.conda",
+              "version": "0.23.0"
+            }
+          ],
+          "schema": "molsyssuite.public-conda@1",
+          "state": "verified"
+        }
+      },
+      {
+        "run_id": 37583479224,
+        "artifact_id": 11465134558,
+        "archive_digest": "sha256:093e0d37350f02958350e045fceb8c7c23e9fa523a93a003d4bd301742d61828",
+        "body_sha256": "1d77ae07719e9728b3b84e731808bafd6be7d25df52d59f03b2cae2561cf410f",
+        "evidence": {
+          "checked_at": "2026-10-07T06:48:31.660411+00:00",
+          "files": [
+            {
+              "filename": "molsysmt-0.23.0-pyabi3h2d2bc06_0.conda",
+              "main_label": "verified",
+              "owner": "uibcdf",
+              "package": "molsysmt",
+              "sha256": "d74d69f2ef45e6f44ae9bfc43b89ae8a48d1422c0ad32df8302f17418139eb6b",
+              "solver_index": "verified",
+              "subdir": "win-64",
+              "url": "https://conda.anaconda.org/uibcdf/win-64/molsysmt-0.23.0-pyabi3h2d2bc06_0.conda",
+              "version": "0.23.0"
+            }
+          ],
+          "schema": "molsyssuite.public-conda@1",
+          "state": "verified"
+        }
+      }
+    ],
+    "release": {
+      "id": 405461162,
+      "tag_name": "0.23.0",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-10-07T06:46:29Z",
+      "html_url": "https://github.com/uibcdf/molsysmt/releases/tag/0.23.0",
+      "target_commitish": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9"
+    },
+    "tag_commit": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+    "sha256_match_original_four_files": true,
+    "artifact_archive_digests_verified": true,
+    "zenodo": {
+      "state": "ingestion_pending",
+      "scope": "Provider-reported first probe; archival not signed off here."
+    }
   }
 }
