@@ -58,7 +58,13 @@ The earlier public-channel CI failed before tests while MolSysMT 0.23.0 was
 staging-only. Its [0.23.0 Release](https://github.com/uibcdf/molsysmt/releases/tag/0.23.0)
 is now published at the exact provider commit. Independent downloads verify all
 four public-package receipts, original SHA-256 values, `main` labels and
-solver-visible indices. Provider Zenodo ingestion is reported pending.
+solver-visible indices. Its hosted documentation passes in run `37583385927`.
+Provider source preservation is verified in run `37583715416`: the downloaded
+receipt digest and public Zenodo API agree on version DOI
+[10.5281/zenodo.23205366](https://doi.org/10.5281/zenodo.23205366), source ZIP
+`uibcdf/molsysmt-0.23.0.zip` and `md5:9e2aa4844c6b8ef030b92dcca6bc7bd3`.
+This supersedes the initial pending ingestion observation in the receipt;
+source preservation does not claim package archival.
 Viewer's public installed gate awaits its own publication; no Viewer public
 tag, release or promotion is created. Devguide reconciliation passes 277 bounded checks and all 45 active
 reports agree with the issue board. MolSysMT confirms the exact candidates and

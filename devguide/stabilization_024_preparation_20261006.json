@@ -1,7 +1,7 @@
 {
   "schema": "molsysviewer.stabilization_preparation@1",
   "date": "2026-10-06",
-  "status": "provider_publication_verified; awaiting_Diego_final_Viewer_publication_authorization",
+  "status": "provider_publication_and_source_preservation_verified; awaiting_Diego_final_Viewer_publication_authorization",
   "viewer": {
     "version": "0.24.0",
     "build_number": 0,
@@ -1430,8 +1430,63 @@
     "sha256_match_original_four_files": true,
     "artifact_archive_digests_verified": true,
     "zenodo": {
-      "state": "ingestion_pending",
-      "scope": "Provider-reported first probe; archival not signed off here."
+      "initial_provider_report": {
+        "state": "ingestion_pending",
+        "scope": "Provider-reported first probe; archival not signed off here."
+      },
+      "state": "verified",
+      "run_id": 37583715416,
+      "url": "https://github.com/uibcdf/molsysmt/actions/runs/37583715416",
+      "run_head_sha": "832e012104a5af154eefff2cd2c931be3fbeced3",
+      "artifact": {
+        "id": 11466210652,
+        "name": "zenodo-public-evidence",
+        "digest": "sha256:7562544339c746e7682ae71cc4b146869671247f84c0dd3da902341488025007",
+        "workflow_run": {
+          "id": 37583715416,
+          "repository_id": 137937243,
+          "head_repository_id": 137937243,
+          "head_branch": "main",
+          "head_sha": "832e012104a5af154eefff2cd2c931be3fbeced3"
+        }
+      },
+      "artifact_digest_verified": true,
+      "public_api_doi_version_and_inventory_match": true,
+      "evidence": {
+        "repository": "uibcdf/molsysmt",
+        "observed_at": "2026-10-07T06:50:15.518812+00:00",
+        "exit_status": 0,
+        "results": [
+          {
+            "repository": "uibcdf/molsysmt",
+            "tag": "0.23.0",
+            "version": "0.23.0",
+            "published_at": "2026-10-07T06:46:29Z",
+            "observed_at": "2026-10-07T06:50:15.518812+00:00",
+            "age_hours": 0.063,
+            "archive_coverage": "source-snapshot",
+            "escalation_required": false,
+            "state": "verified",
+            "record_id": 23205366,
+            "concept_doi": "10.5281/zenodo.1298752",
+            "version_doi": "10.5281/zenodo.23205366",
+            "files": [
+              {
+                "key": "uibcdf/molsysmt-0.23.0.zip",
+                "size": 153784473,
+                "checksum": "md5:9e2aa4844c6b8ef030b92dcca6bc7bd3"
+              }
+            ]
+          }
+        ]
+      },
+      "scope": "Published source snapshot only; Conda/npm artifact preservation is not claimed."
+    },
+    "hosted_docs": {
+      "id": 37583385927,
+      "conclusion": "success",
+      "head_sha": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+      "url": "https://github.com/uibcdf/molsysmt/actions/runs/37583385927"
     }
   }
 }

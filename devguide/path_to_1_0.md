@@ -17,8 +17,9 @@ Linux/macOS cells with the exact final Viewer source; independent scientific
 certificate and JUnit checks agree with its published receipt. Both owners
 confirm the candidates and publication sequence. Devguide is reconciled with
 the current evidence. MolSysMT 0.23.0 is now published; its exact tag and four
-original public build-0 files are independently verified. Its Zenodo ingestion
-remains reported pending. Obtain Diego's final Viewer publication authorization,
+original public build-0 files are independently verified. Its Zenodo source
+preservation is now verified at [10.5281/zenodo.23205366](https://doi.org/10.5281/zenodo.23205366).
+Obtain Diego's final Viewer publication authorization,
 publish Viewer, qualify the exact public pair and verify preserved citation records.
 Public documentation and final 1.0 first-contact/candidate review remain separate.
 The older checkpoints below preserve their original scope; use
