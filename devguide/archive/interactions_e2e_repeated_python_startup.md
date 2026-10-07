@@ -1,9 +1,9 @@
 ---
 summary: Repeated Python cold starts make Interactions core E2E exceed its deadline
 issue: uibcdf/molsysviewer#154
-status: partial
+status: resolved
 opened: 2026-10-03
-closed:
+closed: 2026-10-07
 severity: medium
 verification: reproduced
 area: [testing, interactions, ci]
@@ -14,6 +14,12 @@ supersedes: []
 ---
 
 # Repeated Python cold starts make Interactions core E2E exceed its deadline
+
+**Resolved — 2026-10-07:** the published producer contains the persistent
+fixture transport and all three mandatory Interactions scenarios. Fresh worker
+and runner guards pass against the public pair and source rules; the complete
+39-suite hosted core passes within the normal per-suite deadline. Earlier dated
+failed attempts retain their verdicts.
 
 **Current qualification — 2026-10-06:** implementation is committed and
 integrated in Viewer 0.24.0 build 1 with MolSysMT 0.23.0 ABI3 build 0. All
@@ -97,3 +103,35 @@ internal integration used the existing deferred CI route and does not certify
 an exact hosted or published-provider candidate. The report remains partial
 for its existing supported-artifact/release qualification. See
 [`integration_review_20261003.md`](../integration_review_20261003.md).
+
+
+## Public qualification and closure — 2026-10-07
+
+The persistent fixture bridge, Python worker, scenario owner and core runner
+match published Viewer producer `1a4c97a5`. Imports remain warm while each request
+constructs/closes an independent real view; every previous Mol* controller is
+disposed before the next scene. No deadline increase or scenario removal is used.
+
+Seven fresh runner/reliability cases pass. The named guard keeps lifecycle,
+geometry and calculation scenarios mandatory, pins the persistent request/close
+transport and independent scene disposal, and retains the 180-second default.
+The real worker case passes in the original promoted 0.24.0 / 0.23.0 installed
+pair: hidden state does not leak into a fresh request, a bad family returns an
+error, a subsequent request recovers identically, and EOF removes every unique
+worker-owned fixture. Scientific origins are independently checked by the
+installed qualifier before/after collection.
+
+Existing core `37685752799` passes all 39 suites on these unchanged owners. Its
+native timestamps bound start-to-success-marker intervals at 28.365 seconds
+for lifecycle, 153.106 for geometry and 129.176 for all 17 calculation forms.
+These are observations of one hosted execution, not universal latency promises.
+Exact-source pair `37685753081` also passes Linux core, 25 notebooks and all three
+native Python 3.14 suites. Completed public-pair `37587631519` qualifies 16/16
+installed cells. This closure reuses verified unchanged-owner evidence; it does
+not repeat the browser lane or convert the earlier timeouts into successes.
+
+Guard: `tests/test_e2e_reliability.py::test_all_interactions_scenarios_keep_default_deadlines_and_fresh_worker`.
+The behavioral companion is
+`tests/test_e2e_fixture_worker.py::test_interactions_worker_keeps_fresh_views_and_cleans_files`.
+[Exact provenance and preserved failures](../remaining_partial_closure_20261007.json).
+Final 1.0 recertification remains separate. Published packages are unchanged.

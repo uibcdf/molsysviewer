@@ -1,0 +1,318 @@
+{
+  "schema": "molsysviewer.remaining_partial_closure@1",
+  "date": "2026-10-07",
+  "issues": [
+    101,
+    153,
+    154,
+    155
+  ],
+  "status": "resolved_public_qualification_complete",
+  "reviewed_source_baseline": "8b08e1c4ccf1f9602f568b9fe6cf82d639df1be8",
+  "production_changes_required": false,
+  "published_baseline": {
+    "viewer": "0.24.0",
+    "build": 1,
+    "producer": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
+    "provider": "0.23.0",
+    "provider_build": 0,
+    "provider_producer": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+    "public_pair_run": 37587631519,
+    "verified_public_cells": 16,
+    "record": "devguide/stabilization_024_preparation_20261006.json"
+  },
+  "unchanged_owners_and_guards": {
+    "devtools/conda-build/meta.yaml": {
+      "sha256": "a7381ee9738528b27b6b082b4cf10b72f2deb1feb3a779a4134389fbef3cf118",
+      "matches_published_producer": true
+    },
+    "devtools/conda-build/verify_noarch_launchers.py": {
+      "sha256": "a6d544c823a4b15200dd7ff7ed960a23edab45e0db989ee5f203a297b3ff7878",
+      "matches_published_producer": true
+    },
+    "tests/test_noarch_conda_launchers.py": {
+      "sha256": "1ade14755a44b37b0666406fd07f0b6972635e282dde098d73832ecce344b514",
+      "matches_published_producer": true
+    },
+    ".github/workflows/verify_public_conda_package.yaml": {
+      "sha256": "aa5fd0a4229e05bf3fbc32bc75aff4e464d05edffc5c353dcbcf8b37c230cd5d",
+      "matches_published_producer": true
+    },
+    ".github/workflows/verify_staged_noarch_launchers.yaml": {
+      "sha256": "7ccf8382286c9c0e8aa45225e958890afe486b63bc092da640c6933d4c18924f",
+      "matches_published_producer": true
+    },
+    "devtools/_fixture_namespace.py": {
+      "sha256": "fa19da23c7c9df8409ac2cb2a0ecbe2dfb279804840b3adcd3e362b5519598ce",
+      "matches_published_producer": true
+    },
+    "devtools/qualify_interaction_families.py": {
+      "sha256": "54ba01593ae2be9d9fb841d18045829fde452523faa968cbfcae61bb8eb650ed",
+      "matches_published_producer": true
+    },
+    "devtools/qualify_installed_interactions.py": {
+      "sha256": "af6e22d0bfe717183b0142b2e020296d4ee7fb1d8707508e029704c0275b428a",
+      "matches_published_producer": true
+    },
+    "devtools/benchmarks/interactions_detector.py": {
+      "sha256": "7fd6216d2a422c507d5a72bb4b1a645cf45c3ef5c81d44b94521e27ed8ad23be",
+      "matches_published_producer": true
+    },
+    "tests/test_installed_test_imports.py": {
+      "sha256": "a13626d19bd7742b04a6978f6154cd4deb841faf4f20525d3eab843f34f6963f",
+      "matches_published_producer": true
+    },
+    "tests/test_e2e_fixture_worker.py": {
+      "sha256": "cdcfb2e8441fd8f4414786a755df3d8872bb86118a91ccbc226fc624f108f5f3",
+      "matches_published_producer": true
+    },
+    "tests/test_e2e_reliability.py": {
+      "sha256": "02c8872c75e40bf8fd3c5b785be021635cb5e58acb1f1acdf145bc59ddb6f876",
+      "matches_published_producer": true
+    },
+    "molsysviewer/js/tests/e2e/python-fixture-bridge.ts": {
+      "sha256": "beeacec7f9060704d4e285d1129417f91e609216f9aed9079d01562e830bdfbd",
+      "matches_published_producer": true
+    },
+    "molsysviewer/js/tests/e2e/interactions-subpanel-bridge.py": {
+      "sha256": "97511abd3f4485f222ae11dd0e4a9dff1cb9ec7f895df63e62bf8a07c875b369",
+      "matches_published_producer": true
+    },
+    "molsysviewer/js/tests/e2e/interactions-subpanel-scenarios.ts": {
+      "sha256": "22caf14150319059fb4917efcb09d63e368ce5c74f53ee20390b28a737be4b6b",
+      "matches_published_producer": true
+    },
+    "molsysviewer/js/tests/e2e/interactions-subpanel.e2e.ts": {
+      "sha256": "42142ba052a27c0bed7b9f33c11b2263910c8408d22d877d3e5ddf0dbaa35abe",
+      "matches_published_producer": true
+    },
+    "molsysviewer/js/tests/e2e/interactions-geometry.e2e.ts": {
+      "sha256": "0b0e490f656ca71c5e4f036edd7b18b78e97eecdcaf9f25571fa74410318fb05",
+      "matches_published_producer": true
+    },
+    "molsysviewer/js/tests/e2e/interactions-calculation.e2e.ts": {
+      "sha256": "e24fa2f8738e5c8c11c1aed5dcef5905482412a1934776c8c9e3c4d3c0e722b5",
+      "matches_published_producer": true
+    },
+    "molsysviewer/js/tests/e2e/e2e-runner.ts": {
+      "sha256": "48a346da6969450eff678a390beec0ae81ea582f8b588786b782516ecda2178c",
+      "matches_published_producer": true
+    },
+    "molsysviewer/viewer/scene.py": {
+      "sha256": "b4972b51c1f440ea715d4c911c77bb0df2d22f955026813261271991b09f9136",
+      "matches_published_producer": true
+    },
+    "tests/test_box_assignment.py": {
+      "sha256": "dbd4c991bb139abe4b7c2c095e55e0770de6a4b4ebcb87b4cf037de9bfd40d0c",
+      "matches_published_producer": true
+    }
+  },
+  "windows_launchers": {
+    "commands": [
+      "molsysviewer",
+      "molsysviewer-qt",
+      "molsysviewer-server"
+    ],
+    "scope": "Installed .exe files and --help outside checkout; not visible Qt/GPU or remote certification.",
+    "filename": "molsysviewer-0.24.0-py_1.tar.bz2",
+    "sha256": "e31dfb114ab2e49f22b372992d0201455b91849f2631d0165b802069e13abeaa",
+    "gate": {
+      "staging": {
+        "run": 37542333568,
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37542333568",
+        "head": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
+        "attempt": 1,
+        "conclusion": "success",
+        "native_json_sha256": "4130ddb956f97887592b6783876d777287ab2a64d3074619e78a56614c912a0f",
+        "required_steps": {
+          "Validate candidate checkout": "success",
+          "Install the exact staged Conda package": "success",
+          "Verify installed record and commands outside the checkout": "success"
+        },
+        "log_sha256": "2de2c7526961d034ebc14cfe7cd053532bf3921e36466e52dd2fecc04d7a05eb"
+      },
+      "public": {
+        "run": 37693319370,
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37693319370",
+        "head": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
+        "attempt": 1,
+        "conclusion": "success",
+        "native_json_sha256": "e4f2dfbe536aa6877b04ae0ba3e60d704a4019bbadb418a698bb125a31bad461",
+        "required_steps": {
+          "Verify exact public file without promotion": "success",
+          "Install the exact public Conda package": "success",
+          "Verify installed record and commands outside the checkout": "success"
+        },
+        "log_sha256": "3585fca27d81574de59b00a8633bcc53725a91f7616868709741849ba1522147",
+        "declared_python": "3.13"
+      }
+    },
+    "public_receipt": {
+      "artifact_id": 11514710179,
+      "zip_sha256": "eb046ffad6b95cdc375c07a828ea3038b93b84cd7541d0b9112ae6cdcc1db489",
+      "github_digest_verified": true,
+      "member": "public-conda-AtjRofsi.json",
+      "body": {
+        "checked_at": "2026-10-07T22:00:43.203354+00:00",
+        "files": [
+          {
+            "filename": "molsysviewer-0.24.0-py_1.tar.bz2",
+            "main_label": "verified",
+            "owner": "uibcdf",
+            "package": "molsysviewer",
+            "sha256": "e31dfb114ab2e49f22b372992d0201455b91849f2631d0165b802069e13abeaa",
+            "solver_index": "verified",
+            "subdir": "noarch",
+            "url": "https://conda.anaconda.org/uibcdf/noarch/molsysviewer-0.24.0-py_1.tar.bz2",
+            "version": "0.24.0"
+          }
+        ],
+        "schema": "molsyssuite.public-conda@1",
+        "state": "verified"
+      }
+    },
+    "exact_promotion": {
+      "run": 37587274965,
+      "receipt_digest": "sha256:099758d98a73d3956426345fa4e9260f76f1a1bbaadf8b7297b2551d88a3ba6b",
+      "archive_digest_previously_verified": true,
+      "body": {
+        "package": "uibcdf/molsysviewer/0.24.0/noarch/molsysviewer-0.24.0-py_1.tar.bz2",
+        "schema": "uibcdf.conda-promotion@1",
+        "sha256": "e31dfb114ab2e49f22b372992d0201455b91849f2631d0165b802069e13abeaa",
+        "source_label": "staging",
+        "status": "verified",
+        "target_label": "main"
+      }
+    },
+    "single_new_read_only_dispatch": 37693319370,
+    "guard": "tests/test_noarch_conda_launchers.py",
+    "local_guards": {
+      "file": "msv-101-launcher-guards-20261007.xml",
+      "sha256": "96706fd1dd47868fea310a072ecc71ff71b92514a89cb80eaa183be4e61277cd",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "modules": {
+        "tests.test_noarch_conda_launchers": 5
+      }
+    },
+    "staged_receptor": {
+      "conclusion": "PASS",
+      "profile": "generic",
+      "log_sha256": "8b3cdcea9c52a53f43ff1f8184df9fea84063c6b612253729bcd7b236451c3cb",
+      "native_fallback": "Exact identities, steps, original ZIP digest and installed-command verdict inspected independently."
+    },
+    "public_receptor": {
+      "conclusion": "PASS",
+      "profile": "generic",
+      "log_sha256": "baca6655cbe573763e0079d5b1b517d7620d8785fcea4571d4f3153175cf502a",
+      "native_fallback": "Exact identities, steps, original ZIP digest and installed-command verdict inspected independently."
+    }
+  },
+  "installed_cli_worker_box": {
+    "file": "msv-153-154-155-installed-20261007.xml",
+    "sha256": "7d6470899863da89b72dcbe853bee625753389c6dacee540ed880320f8e3ce38",
+    "tests": 49,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "modules": {
+      "tests.test_installed_test_imports": 4,
+      "tests.test_e2e_fixture_worker": 1,
+      "tests.test_box_assignment": 44
+    }
+  },
+  "installed_provenance": {
+    "viewer": "0.24.0",
+    "provider": "0.23.0",
+    "environment": "/tmp/msv-024-staging-20261006",
+    "science": "Original staging files promoted unchanged; local checks are not new public-URL installations. Qualifier -I verifies versions and scientific origins before/after collection. Checkout supplies fixture tools/tests only. Independent public-URL matrix 37587631519 remains separate.",
+    "box_branch": "Public MolSysMT 0.23.0 supports real absent-cell initialization; historical genuine 0.22.4 refusal remains prior evidence, not a branch freshly exercised here."
+  },
+  "runner_guards": {
+    "file": "msv-154-reliability-20261007.xml",
+    "sha256": "8627d75a5213e86740077dd1bb32dc82acb7b499adcc31f93deab1f3569787a1",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "modules": {
+      "tests.test_e2e_reliability": 7
+    }
+  },
+  "hosted_unchanged_owner_evidence": {
+    "core": {
+      "run": 37685752799,
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37685752799",
+      "head": "bd824ea146b678dce763bb88a39e332227f7beab",
+      "conclusion": "success",
+      "native_json_sha256": "dd7699e8e20b988665bd5131b2167a238e9c1ac4c3076dbeabbf837e0ad0e459",
+      "reused": true
+    },
+    "source_pair": {
+      "run": 37685753081,
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37685753081",
+      "head": "bd824ea146b678dce763bb88a39e332227f7beab",
+      "conclusion": "success",
+      "native_json_sha256": "87c657c1db3abdea75d5884896f591a1e417963d4dba6cb2cc14d38353af2c3a",
+      "reused": true
+    }
+  },
+  "interaction_default_deadline_observation": {
+    "log_sha256": "356196c058dd5372d3d221293e10ed20f86dddf7630dcae2c752e0974a0a48ca",
+    "default_deadline_seconds": 180,
+    "intervals": {
+      "interactions-subpanel": {
+        "start": "2026-10-07T21:01:27.2300167Z",
+        "success_marker": "2026-10-07T21:01:55.5954034Z",
+        "elapsed_seconds": 28.365
+      },
+      "interactions-geometry": {
+        "start": "2026-10-07T21:01:56.9426989Z",
+        "success_marker": "2026-10-07T21:04:30.0486240Z",
+        "elapsed_seconds": 153.106
+      },
+      "interactions-calculation": {
+        "start": "2026-10-07T21:04:30.1367553Z",
+        "success_marker": "2026-10-07T21:06:39.3128715Z",
+        "elapsed_seconds": 129.176
+      }
+    },
+    "scope": "One hosted start-to-success-marker observation, not a universal benchmark; no increased deadline or omitted scientific scenario. All 39 core suites and 17 calculation forms passed."
+  },
+  "preserved_failures": {
+    "old_windows_public_run": 36860171883,
+    "old_package": "molsysviewer-0.23.4-py_5.tar.bz2",
+    "old_sha256": "85e701449a7310a05d0ab43bdafe98b313d784fd48240f2b6ed53a627a323aeb",
+    "old_verdict": "failure: Missing installed launcher: molsysviewer",
+    "cli_negative_11_root_cause": "unproven historical failed attempt; not reclassified by subsequent success",
+    "earlier_timeouts": "Preserved in #154 report; subsequent default-deadline success is distinct.",
+    "local_full_and_experimental_qt_record": "devguide/styles_plot_closure_20261007.json",
+    "failures_reclassified_as_pass": false
+  },
+  "strict_1_0_cleared": false,
+  "tags_packages_promotions_changed_in_this_review": false,
+  "next_artifact_source_fixes": [
+    149,
+    177
+  ],
+  "final_governance_checks": {
+    "reporting_protocol": {
+      "file": "msv-remaining-partial-reporting-20261007.xml",
+      "sha256": "a1e7f861e4182627a5d2c29bce9e9e1e050493a6c5b5fb54ba483e3cbdd1b43c",
+      "tests": 179,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "guidance_links_and_architecture": {
+      "file": "msv-remaining-partial-guidance-20261007.xml",
+      "sha256": "ab0f923e7bb263718e90c2fc85434faa5fadd3d7929dd4d0ce091e7f37ef6357",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  }
+}

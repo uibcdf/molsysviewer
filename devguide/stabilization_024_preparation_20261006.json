@@ -2417,5 +2417,23 @@
     "reused_source_pair_run": 37685753081,
     "published_candidate_replaced": false,
     "strict_1_0_cleared": false
+  },
+  "remaining_partial_followup": {
+    "date": "2026-10-07",
+    "issues": [
+      101,
+      153,
+      154,
+      155
+    ],
+    "status": "resolved",
+    "record": "devguide/remaining_partial_closure_20261007.json",
+    "new_public_windows_run": 37693319370,
+    "public_windows_conclusion": "success",
+    "fresh_launcher_guards": 5,
+    "fresh_installed_cli_worker_box_checks": 49,
+    "runner_guards": 7,
+    "published_candidate_replaced": false,
+    "strict_1_0_cleared": false
   }
 }

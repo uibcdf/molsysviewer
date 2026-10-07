@@ -52,7 +52,12 @@ recertification still applies to its exact code, bytes and dependency closure.
 #143 multi-card lifecycle is resolved on the unchanged public owners/guards,
 with six fresh installed cases and two executable guide examples.
 See [the lifecycle closure](trajectory_plot_lifecycle_closure_20261007.json).
-The next partial records to review are #101/#153/#154/#155.
+#101/#153/#154/#155 are resolved with exact public Windows `37693319370`,
+49 installed CLI/worker/box cases and twelve launcher/runner guards.
+See [the closure record](remaining_partial_closure_20261007.json). No core pre-1.0
+bug report remains partial; experimental standalone #35 and deferred remote
+work keep their own scopes. Broader public documentation, installed first-contact
+and the exact final-candidate/release decision remain.
 The older checkpoints below preserve their original scope; use
 [the current handoff](checkpoints.md#resume-in-one-page) and
 [its preparation receipt](stabilization_024_preparation_20261006.json).

@@ -139,6 +139,15 @@ staged Windows evidence for a repaired file, exact-file promotion, and the
 independent public Windows verifier. Local guards and a corrected recipe are
 insufficient to declare the public launcher defect repaired.
 
+**Completed for #101 — 2026-10-07:** repaired noarch Viewer 0.24.0 build 1
+passes staged Windows `37542333568`, exact-file promotion `37587274965`, and
+independent public label/index plus installed Windows `37693319370`. The latter
+executes all three `.exe --help` commands outside the checkout after checking
+version, build, public URL and the original SHA-256.
+[The closure receipt](remaining_partial_closure_20261007.json) binds the actual
+steps, artifact ZIP digest and original file. The older 0.23.4 failure remains
+historical; visible-window standalone and final 1.0 qualification are separate.
+
 ## Results and exceptions
 
 `PASS` means that check's evidence agrees. `FAIL` means available evidence is

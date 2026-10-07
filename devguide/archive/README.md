@@ -1,5 +1,11 @@
 # Archived implementation plans
 
+- [`noarch_conda_launchers_missing_on_windows.md`](noarch_conda_launchers_missing_on_windows.md) — #101: build 1 passes staged and public Windows installed-command checks; exact promotion and historical broken file retained.
+
+- [`installed_scientific_cli_fixture_namespace.md`](installed_scientific_cli_fixture_namespace.md) — #153: fixture-only namespace and isolated direct CLI qualified with four fresh installed import guards.
+- [`interactions_e2e_repeated_python_startup.md`](interactions_e2e_repeated_python_startup.md) — #154: fresh-state fixture worker and all mandatory scenarios qualified under the normal deadline.
+- [`box_edit_silent_provider_failure.md`](box_edit_silent_provider_failure.md) — #155: verified cell edits qualified with 44 real installed box guards; historical old-provider refusal preserved.
+
 - [`trajectory_plot_card_lifecycle.md`](trajectory_plot_card_lifecycle.md) — #143: retained multi-card state, tagged/all hide and clear, restoration and frame remapping qualified on the public pair; executable guide completed.
 
 - [`style_value_isolation.md`](style_value_isolation.md) — #149: nested applied recipes detach from Whole; strengthened guard, installed development wheel and exact-source qualification complete.

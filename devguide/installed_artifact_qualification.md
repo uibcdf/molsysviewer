@@ -10,6 +10,13 @@ This public milestone does not qualify the eventual 1.0 candidate. The remaining
 applied-style alias found in #149 has a source correction and a controlled
 development-wheel check; it has not changed the published 0.24.0 package.
 See [the styles/plot follow-up](styles_plot_closure_20261007.json).
+The separate public Windows launcher check `37693319370` now passes exact build
+1/version/public URL/SHA-256 and all three installed `.exe --help` commands
+outside the checkout. Five local launcher guards, seven runner guards and 49
+installed CLI/worker/box checks also pass; #101/#153/#154/#155 are resolved.
+[Their receipt](remaining_partial_closure_20261007.json) preserves public-artifact
+and source/tool provenance separately. This closes those scoped defects, not
+visible-window Qt/GPU or final 1.0 qualification.
 
 **Stabilization candidate — 2026-10-06:** Viewer 0.24.0 noarch build 1 from
 `1a4c97a58b68b69f3a836546c9e4ac6187c3efa2` with MolSysMT 0.23.0 ABI3 build 0

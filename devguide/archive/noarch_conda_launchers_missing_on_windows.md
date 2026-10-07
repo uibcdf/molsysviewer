@@ -1,19 +1,24 @@
 ---
 summary: The noarch Conda package omits three MolSysViewer launchers on Windows.
 issue: uibcdf/molsysviewer#101
-status: partial
+status: resolved
 opened: 2026-09-24
-closed:
+closed: 2026-10-07
 severity: medium
 verification: reproduced
 area: [conda, cli]
-guard:
-normative:
+guard: tests/test_noarch_conda_launchers.py
+normative: devguide/release_gate_evidence.md
 blocked_by: []
 supersedes: []
 ---
 
 # Noarch Conda package omits three Windows launchers
+
+**Resolved — 2026-10-07:** the repaired Viewer 0.24.0 noarch build 1 passes
+its staged Windows gate, exact-file promotion and the independent public Windows
+check. All three installed `.exe --help` commands execute outside the checkout.
+The old 0.23.4 artifact and its reproduced failure remain immutable history.
 
 **Reported:** 2026-09-24 by the suite noarch recipe survey.
 **Status — 2026-10-06:** Partial; the repaired Viewer 0.24.0 noarch build 1
@@ -107,3 +112,41 @@ published defect, not repaired-candidate qualification. Native failure log:
 `/tmp/msv-shared-verifier-hosted-failure-20261001.log`. No new workflow or
 package mutation was requested during this inspection. The repair acceptance
 criteria above remain outstanding.
+
+
+## Public Windows qualification and closure — 2026-10-07
+
+The source recipe fix from `c35ce1b2` is present in published producer
+`1a4c97a58b68b69f3a836546c9e4ac6187c3efa2`. The new immutable file is
+`molsysviewer-0.24.0-py_1.tar.bz2`, SHA-256
+`e31dfb114ab2e49f22b372992d0201455b91849f2631d0165b802069e13abeaa`.
+Its staged Windows gate `37542333568` passes candidate checkout, exact package
+installation, record validation and all three commands. Promotion `37587274965`
+verifies that exact file and moves its label to main without rebuilding it.
+The previously recorded independent public matrix `37587631519` passes 16/16.
+
+This review finds the separate post-promotion Windows launcher check had not yet
+run for the repaired file. A single read-only dispatch on tag `0.24.0` runs
+`verify_public_conda_package.yaml` as `37693319370`. Its actual head is the exact
+published producer; current attempt 1 completes with both jobs successful.
+The independent label/solver-index verifier passes, then Windows installs
+`uibcdf::molsysviewer=0.24.0=py_1` with Python 3.13. From RUNNER_TEMP it verifies
+version, noarch build, public URL and SHA-256, resolves each launcher inside
+its environment with the `.exe` extension and executes each with `--help`.
+The native log explicitly reports all three installed Windows launchers passing.
+No tag, release, reconstruction, promotion or duplicated pair dispatch is performed.
+
+Five fresh cases in `tests/test_noarch_conda_launchers.py` pass. Recipe parity
+pins the complete set of project scripts and callable targets; additional cases
+reject wrong digests/channels and require both Windows release routes to invoke
+the installed verifier with exact coordinates. The three help checks establish
+installed commands, not visible-window Qt or remote-render certification; #35
+remains experimental and remote support remains post-1.0.
+
+Guard: `tests/test_noarch_conda_launchers.py`.
+The public receipt ZIP digest is independently compared to GitHub before reading
+its bounded JSON. [Exact receipts, native steps and hashes](../remaining_partial_closure_20261007.json).
+Cross-suite historical tracking remains uibcdf/molsyssuite#47; the component
+repair is complete. The failed old-file run `36860171883` retains its failed
+verdict and does not become a pass because the additive release is repaired.
+Final 1.0 candidate qualification remains separate.

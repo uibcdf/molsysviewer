@@ -75,8 +75,11 @@ The correction awaits the next qualified release; public 0.24.0 files are unchan
 two executable guide examples on the original promoted public-version files;
 [the closure record](trajectory_plot_lifecycle_closure_20261007.json) binds the
 unchanged owners to existing hosted/browser evidence.
-Next review #101/#153/#154/#155 against their actual delivered behavior and qualification,
-reconcile broader documentation and complete installed first-contact observations
+#101/#153/#154/#155 are resolved: the separate exact-file public Windows
+launcher gate passes, alongside 49 installed CLI/worker/box checks and twelve
+launcher/runner guards. [The closure record](remaining_partial_closure_20261007.json)
+preserves artifact digests, unchanged owners and historical failures.
+Next reconcile broader documentation and complete installed first-contact observations
 and the final 1.0 candidate decision as distinct remaining work. Standalone remains
 experimental; remotes and the Mol* dependency update remain post-1.0.
 

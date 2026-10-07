@@ -1,9 +1,9 @@
 ---
 summary: Box initialization reports success when the provider leaves the cell absent
 issue: uibcdf/molsysviewer#155
-status: partial
+status: resolved
 opened: 2026-10-03
-closed:
+closed: 2026-10-07
 severity: medium
 verification: reproduced
 area: [api, box, dependencies]
@@ -14,6 +14,11 @@ supersedes: []
 ---
 
 # Box initialization reports success when the provider leaves the cell absent
+
+**Resolved — 2026-10-07:** the published Viewer 0.24.0 / MolSysMT 0.23.0
+pair passes all 44 real box-assignment guards. The public release/16-cell blocker
+is complete. The older 0.22.4 silent no-op reproduction and compatibility-refusal
+observation retain their historical scope.
 
 **Current qualification — 2026-10-06:** implementation is committed and
 integrated in Viewer 0.24.0 build 1 with MolSysMT 0.23.0 ABI3 build 0. All
@@ -80,3 +85,37 @@ tests, with 23 skipped. The latest wheel hash is
 Product publication remains, so the issue stays partial. The guard probes the
 real provider capability and verifies either the accepted scientific cell or
 the explicit error plus unchanged system, scene, sources and message journal.
+
+
+## Public qualification and closure — 2026-10-07
+
+SceneMixin.set_box and the regression module match the published Viewer producer
+`1a4c97a5` byte for byte. The public setter verifies the actual stored cell through
+public msm.get with dimensions and unit-converted values; a mismatch restores the
+previous cell and raises before scene publication or analysis invalidation.
+Current Viewer requires MolSysMT >=0.23.0; old-provider compatibility observations
+remain evidence of the earlier guard work, not a current supported-version claim.
+
+All 44 box-assignment cases pass in the original Viewer 0.24.0 files promoted
+unchanged with MolSysMT 0.23.0, using isolated scientific imports checked before
+and after collection. The named capability guard explicitly clears the real cell,
+probes the real provider and confirms initialization matches the requested cell in
+nm. The current provider takes the supported branch; this fresh run does not claim
+to exercise the historical unsupported branch or simulate a silent no-op.
+
+Additional cases verify per-structure edits and selective analysis invalidation,
+coordinate/source/region preservation, box removal and graphical box refresh,
+H5MSM and Structures sources, explicit time units, refusal before mutation with
+and without digestion, and copy/extraction/session preservation. The conditional
+guard retains explicit error plus unchanged system/state/sources/message journal
+assertions for a genuinely incapable provider; earlier real 0.22.4 results retain
+that branch's prior evidence without a mock or provider fork.
+
+Public-URL pair `37587631519` passes sixteen installed cells. Existing exact-source
+pair `37685753081` passes all three Python 3.14 hosts, with Linux core and notebooks.
+No new production change is needed to close the publication blocker. The separate
+local full-suite/experimental Qt failures stay recorded in the styles/plot receipt.
+
+Guard: `tests/test_box_assignment.py::test_provider_box_initialization_is_verified`.
+[Artifact identities and final evidence](../remaining_partial_closure_20261007.json).
+Final 1.0 qualification remains separate; published tags and files are unchanged.

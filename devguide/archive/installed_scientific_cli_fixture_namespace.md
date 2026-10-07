@@ -1,9 +1,9 @@
 ---
 summary: Installed scientific CLI cannot resolve its development fixtures
 issue: uibcdf/molsysviewer#153
-status: partial
+status: resolved
 opened: 2026-10-03
-closed:
+closed: 2026-10-07
 severity: medium
 verification: reproduced
 area: [testing, installed_artifacts, interaction]
@@ -14,6 +14,11 @@ supersedes: []
 ---
 
 # Installed scientific CLI cannot resolve its development fixtures
+
+**Resolved — 2026-10-07:** all four installed import/CLI guards pass on the
+original promoted Viewer 0.24.0 / MolSysMT 0.23.0 files. The public 16/16 pair
+qualification removes the former publication blocker. Earlier dated sections
+retain their historical artifact and failed-attempt scope.
 
 **Current qualification — 2026-10-06:** implementation is committed and
 integrated in Viewer 0.24.0 build 1 with MolSysMT 0.23.0 ABI3 build 0. All
@@ -73,3 +78,31 @@ internal integration used the existing deferred CI route and does not certify
 an exact hosted or published-provider candidate. The report remains partial
 for its existing supported-artifact/release qualification. See
 [`integration_review_20261003.md`](../integration_review_20261003.md).
+
+
+## Public qualification and closure — 2026-10-07
+
+The private namespace helper, family/detector CLIs, installed qualifier and its
+four-case regression module match the published Viewer producer `1a4c97a5` byte
+for byte. Fixtures still come from the selected checkout; the helper does not
+put that checkout on the scientific import path or package fixture tools into
+the runtime wheel. No further implementation change is required.
+
+Four fresh installed cases pass with Viewer 0.24.0 and MolSysMT 0.23.0 origins
+verified before and after collection. The direct family guard executes an
+isolated subprocess outside the checkout, confirms both versions and exact
+site-packages origins and requires positive observations for all ten real family
+fixtures. Other cases cover fixture consumers without test-directory discovery,
+installed metadata precedence and rejection of a real source scientific module.
+The standalone worker guard also passes against the same installed pair.
+
+The original staging files were promoted unchanged; these local checks are not
+new public-URL installations. Public-URL run `37587631519` independently qualifies
+all sixteen cells. Existing exact-source pair `37685753081` passes three Python
+3.14 hosts, and core `37685752799` passes all 39 suites on unchanged fixture tools.
+Their reuse does not replace the preserved earlier failed full/CLI attempts.
+The former -11 cause remains unproven; subsequent positive results do not erase it.
+
+Guard: `tests/test_installed_test_imports.py::test_direct_family_cli_uses_installed_science_without_checkout_on_sys_path`.
+[Final evidence and qualification boundaries](../remaining_partial_closure_20261007.json).
+Final 1.0 artifact qualification remains separate; published files are unchanged.

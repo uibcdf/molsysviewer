@@ -129,9 +129,16 @@ Plot lifecycle #143 is also resolved: six fresh installed guards and two guide
 examples pass on the original promoted public-version pair. Owners and guards
 match the published producer; existing 39-suite core evidence is reused. See
 [the plot lifecycle closure](trajectory_plot_lifecycle_closure_20261007.json).
-Next: review packaging/tooling/box records #101/#153/#154/#155; reconcile broader documentation and
-complete installed first-contact/final-candidate review, retaining the completed
-public pair and Release/Conda/npm/Zenodo checks.
+#101/#153/#154/#155 are also resolved: public Windows `37693319370` passes
+exact build/digest and all three installed launchers; 49 fresh installed
+CLI/worker/box cases, five launcher guards and seven runner guards pass.
+Unchanged owners bind the existing scientific/core evidence. See
+[the remaining partial closures](remaining_partial_closure_20261007.json).
+The only partial bug report left is experimental standalone #35, outside the
+core 1.0 gate; its failed hosted graphics observations stay preserved.
+Next: reconcile broader public documentation and complete installed first-contact
+and final-candidate review, carrying Movie #177 and styles #149 into the next
+qualified artifact. Retain the completed public pair and publication checks.
 See [the candidate preparation](stabilization_024_preparation_20261006.json).
 
 **Published support-library receiving check (2026-10-06): bounded pass.**
@@ -1506,8 +1513,8 @@ handoffs do not replace these artifact identities.
    experimental Qt failure separate. #149/#150 are also resolved: the remaining
    applied-recipe alias has installed development-wheel/exact-source evidence;
    the numeric plot contract and #143 multi-card lifecycle are qualified on the
-   public pair. Review #101/#153/#154/#155, distinguishing unmet behavior from obsolete qualification
-   blockers.
+   public pair. #101/#153/#154/#155 are resolved with exact public Windows and
+   installed-tool/box evidence; experimental #35 retains its separate scope.
 6. Reconcile public documentation and remaining support promises. The five-stage
    human notebook review is complete; retain it. Installed first-contact review
    and final 1.0 candidate qualification remain separate. Standalone is
