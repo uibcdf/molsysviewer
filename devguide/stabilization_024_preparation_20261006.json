@@ -2349,5 +2349,22 @@
     "documentation_blocks": 5,
     "production_logic_or_runtime_changed": false,
     "strict_1_0_cleared": false
+  },
+  "design_contract_closure": {
+    "date": "2026-10-07",
+    "issues": [
+      146,
+      147,
+      148
+    ],
+    "record": "devguide/design_contract_closure_20261007.json",
+    "fresh_installed_checks": 27,
+    "documentation_blocks": 12,
+    "production_logic_or_runtime_changed": false,
+    "strict_1_0_cleared": false,
+    "successor_failures_retained": [
+      "uibcdf/molsysviewer#177",
+      "uibcdf/molsysviewer#35"
+    ]
   }
 }

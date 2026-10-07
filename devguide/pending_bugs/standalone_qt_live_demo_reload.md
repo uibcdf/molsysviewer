@@ -89,3 +89,20 @@ state, replay, or export.
 - Status reaches `Ready.` with no failed deliveries or stale payloads.
 - Python and the rendered scene identify the same loaded system after every
   replacement.
+
+## Hosted Qt observation — 2026-10-07
+
+Exact-head standard CI `37629258208` on Viewer `513391c1` fails
+`tests/test_standalone.py::test_qt_live_model_smoke_real_window` at line 1951.
+The bridge never becomes ready: the frontend reports an exported scene with no
+WebGL canvas and cannot create a WebGL rendering context. The failing lane is
+Xvfb/software WebGL; this is not the required visible native-GPU observation.
+It therefore neither closes the reload defect nor establishes a reload regression:
+startup failed before the replacement workflow. Qt remains experimental.
+
+The compact Actions diagnostic selected nearby DBus stderr as its cause. Native
+logs established the assertion above; that diagnostic limitation is reported in
+uibcdf/gh-run-receptor#62. No DBus workaround, renderer change or blind rerun is
+introduced. The original standard CI verdict remains failure even though its
+scientific/lint jobs pass. Keep Qt admission/provider migration under #109/#113
+and the existing workstation validation criteria separate.

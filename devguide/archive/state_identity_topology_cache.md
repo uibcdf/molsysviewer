@@ -1,9 +1,9 @@
 ---
 summary: State identity can trust different atom associations and stale topology caches
 issue: uibcdf/molsysviewer#147
-status: partial
+status: resolved
 opened: 2026-10-03
-closed:
+closed: 2026-10-07
 severity: high
 verification: measured
 area: [state, identity, live_edit]
@@ -14,6 +14,12 @@ supersedes: []
 ---
 
 # State identity can trust different atom associations and stale topology caches
+
+**Resolved — 2026-10-07:** Fingerprint schema 2 records ordered available hierarchy and atom identities independently of trajectory coordinates. Announced same-object/same-count edits invalidate both caches. Missing optional hierarchy remains explicit and old fingerprints conservatively re-resolve anchors.
+
+The supported-public-package qualification boundary is complete in Viewer
+0.24.0 build 1 / MolSysMT 0.23.0 ABI3 build 0. Earlier dated sections retain
+their original observations; current hosted failures are recorded separately.
 
 **Current qualification — 2026-10-06:** implementation is committed and
 integrated in Viewer 0.24.0 build 1 with MolSysMT 0.23.0 ABI3 build 0. All
@@ -65,3 +71,34 @@ internal integration used the existing deferred CI route and does not certify
 an exact hosted or published-provider candidate. The report remains partial
 for its existing supported-artifact/release qualification. See
 [`integration_review_20261003.md`](../integration_review_20261003.md).
+
+## Final closure evidence — 2026-10-07
+
+The exact public pair passes sixteen installed cells in `37587631519`; published
+producers and package bytes remain unchanged. Fresh isolated qualification passes
+**27 tests, zero failures/errors/skips**, with both scientific imports verified
+in site-packages: 13 design-review cases and 14 identity/loading cases. The local
+qualification uses original staging files promoted unchanged; public-channel
+availability is established separately by the verified sixteen-cell run.
+
+All twelve labels-guide Python blocks execute against that installed pair. A
+separate old atom-name-only fingerprint probe deliberately changes a saved index
+and verifies identity re-resolution restores the intended atom with a mismatch
+warning. The new coordinate/world-offset and reanchor examples name units
+explicitly. The initial drafted active-selection call failed; it was corrected
+to the existing public active_selection.set operation before publication.
+
+At exact successor head `513391c1`, native source-pair logs retain both annotation
+browser scenarios passing and 2,884 Linux Python tests passing (27 explicit skips).
+That run's aggregate verdict is **failure**, from Movie interruption (#177).
+Separate core `37629947438` passes. Standard CI `37629258208` remains **failure**
+from Qt WebGL startup, retained under #35. Neither failure is erased or treated as
+a full gate pass. They do not refute these separately observed bounded contracts;
+final 1.0 recertification still requires its own complete gates.
+
+Guard: `tests/test_design_review_closure.py::test_announced_same_size_edit_invalidates_atom_identity_cache`. A real in-place group-ID edit keeps the same object and atom count while changing both the fingerprint and annotation identity. Detached exports cannot mutate the cached fingerprint; related cases verify changed associations and frame independence.
+
+Normative contract: `devguide/scene_contracts.md`.
+[Exact closure receipt](../design_contract_closure_20261007.json).
+No production Python/TypeScript logic, runtime, tag or package is changed by this
+closure. Standalone remains experimental; this record does not qualify Qt/GPU.

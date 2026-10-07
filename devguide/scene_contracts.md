@@ -2527,8 +2527,12 @@ Guards: `tests/test_coordinate_edits.py`, `tests/test_scene_transfer.py`,
 
 ## Final public design corrections — 2026-10-03
 
-The following contracts are implemented locally under #146–#150. Candidate
-integration and supported-provider qualification remain separate release gates.
+The following contracts are integrated in published Viewer 0.24.0 build 1 /
+MolSysMT 0.23.0 ABI3 build 0. #146/#147/#148 are resolved with 27 fresh installed
+tests and twelve executable labels-guide blocks; #149/#150 retain their own
+review records. Final 1.0 qualification remains a separate gate. Successor-head
+Movie interruption (#177) and experimental Qt startup (#35) failures retain their
+failure verdicts and do not undo the bounded annotation/identity/load evidence.
 
 - Annotations have either an atom anchor or an absolute position anchor. State
   encodes the latter as `{type: "position", coordinates: [...], unit: "angstrom"}`.

@@ -1,5 +1,9 @@
 # Archived implementation plans
 
+- [`annotation_anchor_contract.md`](annotation_anchor_contract.md) — #146: typed atom/coordinate anchors, offsets, leaders and lifecycle qualified against the public pair.
+- [`state_identity_topology_cache.md`](state_identity_topology_cache.md) — #147: frame-independent identity and same-size edit cache invalidation preserve correct atom correspondence.
+- [`load_prevalidation_mutation.md`](load_prevalidation_mutation.md) — #148: conversion/identity/append prevalidation preserves prior scene, messages, analyses and history.
+
 - [`bounded_interaction_inspection_pages.md`](bounded_interaction_inspection_pages.md) — #142: public bounded inspection pages remain readable beyond render limits without whole-query materialization.
 - [`native_interaction_h5msm_save.md`](native_interaction_h5msm_save.md) — #144: named complete H5MSM export/reload preserves scientific data and refuses non-atomic destination changes.
 - [`interaction_observation_actions.md`](interaction_observation_actions.md) — #145: current-page participant select/focus rejects stale identities and preserves compound atom membership.

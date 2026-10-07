@@ -1,0 +1,128 @@
+{
+  "schema": "molsysviewer.design_contract_closure@1",
+  "date": "2026-10-07",
+  "issues": [
+    146,
+    147,
+    148
+  ],
+  "base_commit": "513391c134b24c34969efae770015eab3f3f3fb2",
+  "production_logic_or_runtime_changed": false,
+  "production_sources_match_published_producer": true,
+  "viewer": {
+    "version": "0.24.0",
+    "build": 1,
+    "producer": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2"
+  },
+  "provider": {
+    "version": "0.23.0",
+    "build": 0,
+    "producer": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9"
+  },
+  "qualification_environment": "/tmp/msv-024-staging-20261006",
+  "runner": "devtools/qualify_installed_interactions.py with -I and before/after installed import checks",
+  "local_environment_scope": "Original staging files promoted unchanged; sixteen-cell public qualification separately verifies public URLs and package coordinates.",
+  "fresh_installed_checks": [
+    {
+      "file": "msv-issues-146-147-148-design-20261007.xml",
+      "sha256": "360df82a60c523fdc4926da4cb6b2345147f336cca0fe2d1dc2b6a720cb04709",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "msv-issues-146-147-148-identity-loading-20261007.xml",
+      "sha256": "81871f4b72c7fb873fd3a69695ed71ac7243a8b5a03052128e36aeb9d0ce008f",
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "documentation_and_legacy_probe": {
+    "blocks": 12,
+    "viewer": "0.24.0",
+    "provider": "0.23.0",
+    "viewer_origin": "/tmp/msv-024-staging-20261006/lib/python3.14/site-packages/molsysviewer/__init__.py",
+    "provider_origin": "/tmp/msv-024-staging-20261006/lib/python3.14/site-packages/molsysmt/__init__.py",
+    "labels_examples": "PASS",
+    "legacy_schema1_reresolution": "PASS"
+  },
+  "documentation_sha256": "8c5290648e63d001bb12ebb022d59c864a3de161a059c0345a2179e0a5be60f6",
+  "initial_documentation_validation": {
+    "error": "AttributeError: SelectionsManager has no set_active in newly drafted block 5",
+    "correction": "Use the existing public view.active_selection.set([0, 1]); corrected execution passes all twelve blocks. No product defect or API expansion."
+  },
+  "public_pair": {
+    "run": 37587631519,
+    "verified_cells": 16,
+    "evidence": "devguide/stabilization_024_preparation_20261006.json"
+  },
+  "hosted_evidence": {
+    "head": "513391c134b24c34969efae770015eab3f3f3fb2",
+    "source_pair": {
+      "run": 37602651230,
+      "aggregate_conclusion": "failure",
+      "linux_python_tests_passed": 2884,
+      "linux_python_tests_skipped": 27,
+      "annotation_interaction": "passed in native log",
+      "annotation_subpanel": "passed in native log",
+      "failure": "movie-playback interruption drift assertion",
+      "issue": "uibcdf/molsysviewer#177",
+      "native_failure_log_sha256": "867353f96a12e8e3465c0e21bab3b4d16f4dbd184e8609cd1e5616c6093461c7"
+    },
+    "separate_core": {
+      "run": 37629947438,
+      "conclusion": "success"
+    },
+    "standard_ci": {
+      "run": 37629258208,
+      "conclusion": "failure",
+      "failure": "Qt startup failed before bridge readiness: WebGL context unavailable",
+      "owning_qualification": "uibcdf/molsysviewer#35",
+      "native_failure_log_sha256": "4091ae5535a90693b8fefa3c55466c5ca56da97d8a0ea7fbb890463a46131231"
+    },
+    "diagnostic_feedback": "uibcdf/gh-run-receptor#62"
+  },
+  "guards": {
+    "146": "tests/test_design_review_closure.py::test_coordinate_annotation_lifecycle",
+    "147": "tests/test_design_review_closure.py::test_announced_same_size_edit_invalidates_atom_identity_cache",
+    "148": "tests/test_design_review_closure.py::test_invalid_replacement_conversion_preserves_scene"
+  },
+  "strict_1_0_cleared": false,
+  "full_python_suite_repeated": false,
+  "sphinx": {
+    "command": "conda run --no-capture-output -n molsyssuite@uibcdf_3.14 make -C docs html SPHINXOPTS=\"-W --keep-going -j 2\"",
+    "log": "msv-issues-146-147-148-sphinx-20261007.log",
+    "status": "PASS",
+    "exit_code": 0,
+    "sha256": "e39529ac68d16d31ef8343af3f7188b4122e9c8e27fbe3624d3fb67258836dcd"
+  },
+  "governance_and_documentation_checks": [
+    {
+      "file": "msv-design-contract-reporting-20261007.xml",
+      "sha256": "b82b747b79923932db60b8500a456ca662715e0ce99d13e9772e3949ac204c71",
+      "tests": 203,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "msv-design-contract-links-20261007.xml",
+      "sha256": "3b585bcf88e4b086c24c5c722d442fbac39f0d0607ac90c8b7e7e6cd5ee53bf4",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "msv-design-contract-documentation-20261007.xml",
+      "sha256": "2d339dc8f3c2003d076a65042a10ea7d70cb72807a36f2ce6949c18b7a5a13b4",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ]
+}

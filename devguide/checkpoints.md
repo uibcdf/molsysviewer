@@ -97,9 +97,16 @@ updated Interactions documentation are complete, with 207 fresh installed
 scientific/loading checks passing. Their workflow follow-ups #142/#144/#145
 are now also resolved: 47 fresh installed tests and five executable user-guide
 blocks cover bounded pages, native H5MSM save and participant select/focus.
+Design corrections #146/#147/#148 are resolved with 27 fresh installed tests,
+twelve labels-guide blocks and a legacy-fingerprint re-resolution probe. Their
+source/runtime remains the published baseline. At successor `513391c1`, both
+annotation browser scenarios and Linux scientific tests pass, but the aggregate
+source-pair gate fails on Movie interruption (#177). A separate core run passes;
+standard CI still fails on experimental Qt WebGL startup (#35). These verdicts
+remain separate; no complete successor source-pair/standard-CI pass is claimed.
 Final 1.0 recertification remains mandatory in the release plan.
-Next: review remaining partially completed bug reports and reconcile broader
-documentation, then
+Next: diagnose Movie interruption #177, review remaining partially completed
+bug reports and reconcile broader documentation, then
 complete installed first-contact/final-candidate review, retaining the completed
 public pair and Release/Conda/npm/Zenodo checks.
 See [the candidate preparation](stabilization_024_preparation_20261006.json).

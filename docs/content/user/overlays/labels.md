@@ -1,6 +1,6 @@
 # Labels
 
-Labels are persistent text annotations anchored to atoms in the scene.
+Labels are persistent text annotations anchored to atoms or an absolute coordinate.
 They belong to `annotations`, not `shapes`, and are controlled through `layers`.
 
 ## Add a label
@@ -37,7 +37,7 @@ Control color and size with `label_style`:
 ```python
 view.annotations.add(
     text="Active site",
-    selection="group_index==3",
+    selection="group_index==1",
     tag="active-label",
     label_style={"color": "#ff4444", "size_em": 1.4},
 )
@@ -53,16 +53,18 @@ will be placed at their centroid:
 ```python
 view.annotations.add(
     text="Backbone",
-    selection="group_index in [0, 1, 2]",
+    selection="group_index in [0, 1]",
     tag="backbone-label",
 )
 ```
 
 ## Label from active canvas selection
 
-After clicking one or more residues on the canvas, add a label at that selection:
+After clicking one or more residues on the canvas, add a label at that selection.
+You can also set the active atoms from Python:
 
 ```python
+view.active_selection.set([0, 1])
 view.annotations.add_label_from_active_selection(
     text="Selected residues",
     label_style={"color": "#40c0e0", "size_em": 1.2},
@@ -72,17 +74,53 @@ view.annotations.add_label_from_active_selection(
 This is the same operation exposed by **Add Label** in the canvas context menu,
 which additionally provides a color picker and size slider in the inline composer.
 
-## Layers and cleanup
+## Anchoring to a coordinate
+
+Use an absolute coordinate for a marker that stays fixed while atoms move.
+Supply explicit length units for positions and world offsets:
+
+```python
+import pyunitwizard as puw
+
+note = view.annotations.add(
+    "Reference point",
+    position=puw.quantity([1, 2, 3], "nm"),
+    offset_mode="world",
+    offset=puw.quantity([2, 0, 0], "angstrom"),
+    leader_line=True,
+    leader_line_style="dotted",
+    tag="reference-label",
+)
+note.set_coordinates(puw.quantity([4, 5, 6], "angstrom"))
+```
+
+Legacy bare triples mean nm for positions and world offsets, independently of
+your session's standard units. With `offset_mode="camera"`, offsets instead
+use dimensionless renderer units along camera right, up and toward the viewer.
+World offsets stay fixed when the camera rotates. Leaders accept `solid`,
+`dashed` and `dotted` styles.
+
+You can switch between anchor kinds without recreating the annotation:
+
+```python
+view.annotations.set_anchor("reference-label", atom_indices=[0, 1])
+view.annotations.set_anchor(
+    "reference-label", position=puw.quantity([1, 2, 3], "nm"),
+)
+```
+
+Text/style edits, hiding, undo/redo, state/session saving, copying and extraction
+preserve coordinate anchors. Coordinates in exported state carry explicit
+angstrom units. Coordinate anchors stay at their absolute position across frames;
+atom anchors follow their participants.
+
+## Showing and hiding
 
 Labels participate in normal layer semantics:
 
 ```python
 view.annotations.hide("n-term-label")
 view.annotations.show("n-term-label")
-view.annotations.delete("n-term-label")
-
-# Clear all labels at once
-view.annotations.clear()
 ```
 
 Or via the layer directly:
@@ -104,4 +142,13 @@ view.annotations.set_anchor("n-term-label", selection="group_index==1")
 view.annotations.info()          # list of all annotation summaries
 view.annotations.info("n-term-label")  # single annotation
 view.annotations.tags()          # list of active tags
+```
+
+## Cleaning up
+
+Delete one annotation or clear all labels:
+
+```python
+view.annotations.delete("n-term-label")
+view.annotations.clear()
 ```

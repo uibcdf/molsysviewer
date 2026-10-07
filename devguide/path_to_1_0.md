@@ -31,6 +31,11 @@ evidence and the corrected Interactions user guide; 207 fresh installed checks
 pass. Workflow follow-ups #142/#144/#145 are also resolved with 47 fresh
 installed checks and five executable user-guide blocks. The final-candidate
 obligation is retained explicitly below.
+#146/#147/#148 also close with 27 installed checks, twelve labels-guide blocks
+and a legacy-fingerprint probe. The latest successor source-pair CI fails on
+Movie interruption (#177); annotation scenarios and scientific Python pass in
+that same run. A separate core run passes; experimental Qt startup still fails
+in standard CI (#35). These are distinct verdicts, not full-gate clearance.
 Public documentation and final 1.0 first-contact/candidate review remain separate.
 The older checkpoints below preserve their original scope; use
 [the current handoff](checkpoints.md#resume-in-one-page) and

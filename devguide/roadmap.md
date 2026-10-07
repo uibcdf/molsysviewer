@@ -54,7 +54,12 @@ Supported-provider records #114/#140/#151 are resolved with that evidence,
 the updated Interactions guide and 207 fresh installed scientific/loading checks.
 Workflow follow-ups #142/#144/#145 are resolved with 47 fresh installed tests and
 five executable guide blocks for paging, scientific files and participant actions.
-Next review remaining partial bug reports against the published baseline,
+Design corrections #146/#147/#148 are resolved with 27 fresh installed checks,
+twelve labels-guide blocks and conservative legacy fingerprint recovery.
+Successor-head source-pair CI fails on Movie interruption (#177), even though
+annotation scenarios and Python science pass; a separate core run passes.
+Standard CI retains its experimental Qt WebGL startup failure (#35).
+Next diagnose #177 and review remaining partial reports against the public pair,
 reconcile broader documentation and complete installed first-contact observations
 and the final 1.0 candidate decision as distinct remaining work. Standalone remains
 experimental; remotes and the Mol* dependency update remain post-1.0.
