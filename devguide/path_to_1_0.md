@@ -49,6 +49,10 @@ hosts, 39 core suites and 25 notebooks). This fix and Movie #177 must be carried
 into the next qualified artifact; neither correction has replaced public 0.24.0.
 See [the styles/plot receipt](styles_plot_closure_20261007.json). Final 1.0
 recertification still applies to its exact code, bytes and dependency closure.
+#143 multi-card lifecycle is resolved on the unchanged public owners/guards,
+with six fresh installed cases and two executable guide examples.
+See [the lifecycle closure](trajectory_plot_lifecycle_closure_20261007.json).
+The next partial records to review are #101/#153/#154/#155.
 The older checkpoints below preserve their original scope; use
 [the current handoff](checkpoints.md#resume-in-one-page) and
 [its preparation receipt](stabilization_024_preparation_20261006.json).

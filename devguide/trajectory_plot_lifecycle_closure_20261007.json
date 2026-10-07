@@ -1,0 +1,135 @@
+{
+  "schema": "molsysviewer.trajectory_plot_lifecycle_closure@1",
+  "date": "2026-10-07",
+  "issue": "uibcdf/molsysviewer#143",
+  "status": "resolved_public_lifecycle_qualified",
+  "reviewed_source_baseline": "6b4b60deaec7334e2a398e5c3dee3d1f9238a039",
+  "production_change_required": false,
+  "guard": "tests/test_trajectory_plot_lifecycle.py",
+  "published_baseline": {
+    "viewer": "0.24.0",
+    "build": 1,
+    "producer": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
+    "provider": "0.23.0",
+    "provider_build": 0,
+    "provider_producer": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+    "public_pair_run": 37587631519,
+    "verified_public_cells": 16,
+    "record": "devguide/stabilization_024_preparation_20261006.json"
+  },
+  "unchanged_owners_and_guards": {
+    "molsysviewer/trajectory_plot.py": {
+      "sha256": "bb3c6a0de63ce4bef61ce503442a2c920b5a11e990ab5cc2ce6b02c285db0a2f",
+      "matches_published_producer": true
+    },
+    "tests/test_trajectory_plot_lifecycle.py": {
+      "sha256": "0b0b79a5ae5ca6718967fc4f29e332434e39e06814dd9881e7da884ac156a7cb",
+      "matches_published_producer": true
+    },
+    "molsysviewer/js/src/ui/trajectory-plot-overlay.ts": {
+      "sha256": "210b9fe1f075758204e89876f6379c15f680a97b30e850849e8cbd8d0450adb6",
+      "matches_published_producer": true
+    },
+    "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts": {
+      "sha256": "8fc84213e963df77626f71de8b44a5f344ac3f7a6796a9a775ffde9f3348e610",
+      "matches_published_producer": true
+    },
+    "molsysviewer/js/tests/unit/trajectory-plot-overlay.test.ts": {
+      "sha256": "757f737a0646b0064346b1b75f0b3935e1abf34fa96f0c0b6cb982039dbf0846",
+      "matches_published_producer": true
+    }
+  },
+  "installed_lifecycle": {
+    "file": "msv-143-installed-lifecycle-20261007.xml",
+    "sha256": "1ead2cb0fe84d050776d32cf86ffad88f502b7bc20d6afbeea47637c7f9211da",
+    "tests": 6,
+    "passed": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "case_names": [
+      "test_multiple_cards_hide_restore_clear_and_detached_records",
+      "test_cards_survive_state_session_copy_and_nonconsecutive_extraction",
+      "test_frame_and_import_validation_precede_mutation",
+      "test_card_close_event_retains_data_in_python",
+      "test_structure_axis_changes_are_refused_before_mutation",
+      "test_first_load_checks_prepared_plot_axis_before_mutation"
+    ],
+    "log_sha256": "bc8be9be51826a00c1e068da188265d861e0017747fac03f2a1e61d17933e73c",
+    "viewer": "0.24.0",
+    "provider": "0.23.0",
+    "environment": "/tmp/msv-024-staging-20261006",
+    "provenance": "Original staging files promoted unchanged; this is not a new public-URL installation. Independent public-URL 16/16 qualification is retained separately. Scientific origins/versions checked before and after collection by qualify_installed_interactions.py with -I.",
+    "installed_plot_source_sha256": "bb3c6a0de63ce4bef61ce503442a2c920b5a11e990ab5cc2ce6b02c285db0a2f"
+  },
+  "documentation": {
+    "page": "docs/content/user/overlays/trajectory_plot.md",
+    "page_sha256": "80ee210cd21ccd97e5fb8f97f6e7d1042dc9ebd8400ff3b00ba9a771021ed02e",
+    "examples": 2,
+    "executed_examples_record": "msv-143-doc-examples-20261007.json",
+    "execution_record_sha256": "e461718f3e489626d5c887ac8eb9e4e0ad8a2f0bfda7ee368cfabd185f17ac8f",
+    "snippet_sha256": [
+      "3352bff9e587e72cd84ca5cbbadbd9aa4b1f9668a99c2f67c7e9fe1ad0973167",
+      "373057b5353adc490738a4bc1e7443c48fc6a54a66eb659ac45c01eabf02a4c9"
+    ],
+    "viewer_origin": "/tmp/msv-024-staging-20261006/lib/python3.14/site-packages/molsysviewer/__init__.py",
+    "provider_origin": "/tmp/msv-024-staging-20261006/lib/python3.14/site-packages/molsysmt/__init__.py",
+    "note": "Final coordinate-edit/correspondence narrative added after example execution; both executed snippet hashes still match the final page.",
+    "sphinx": {
+      "conclusion": "success",
+      "warnings_as_errors": true,
+      "command": "make -C docs html SPHINXOPTS=\"-W --keep-going -j 2\" in molsyssuite@uibcdf_3.14",
+      "log_sha256": "ae7934a5a0b963d29855ad26de8f7b4f47ff61fba0aff371338d8d801b7384f1"
+    }
+  },
+  "hosted_evidence": {
+    "core": {
+      "run": 37685752799,
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37685752799",
+      "head": "bd824ea146b678dce763bb88a39e332227f7beab",
+      "conclusion": "success",
+      "native_json_sha256": "dd7699e8e20b988665bd5131b2167a238e9c1ac4c3076dbeabbf837e0ad0e459",
+      "reused": true
+    },
+    "source_pair": {
+      "run": 37685753081,
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37685753081",
+      "head": "bd824ea146b678dce763bb88a39e332227f7beab",
+      "conclusion": "success",
+      "native_json_sha256": "87c657c1db3abdea75d5884896f591a1e417963d4dba6cb2cc14d38353af2c3a",
+      "reused": true
+    }
+  },
+  "hosted_scope": "Reuse verified existing core 39/39 and three-host Python 3.14 source-pair evidence on unchanged plot owners/guards; Linux core and 25 notebooks passed. No new browser or full-suite dispatch. Browser close callback and Python event handler are separately inspected/tested, not claimed as an end-to-end transport round trip.",
+  "preserved_failures": {
+    "record": "devguide/styles_plot_closure_20261007.json",
+    "local_restricted_executor_full_suite": "failure, 22 failed / 2860 passed / 23 skipped",
+    "standard_ci_37685752885": "failure in experimental Qt startup; six scientific cells passed",
+    "qt_owner": "uibcdf/molsysviewer#35",
+    "failures_reclassified_as_pass": false
+  },
+  "published_tags_and_packages_changed": false,
+  "strict_1_0_cleared": false,
+  "next_artifact_source_fixes": [
+    149,
+    177
+  ],
+  "final_governance_checks": {
+    "reporting_protocol": {
+      "file": "msv-143-reporting-closure-20261007.xml",
+      "sha256": "67542dd25bb10c29a8f07910053d79469722d4c5b3dc82aef5f99c948322c2ca",
+      "tests": 191,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "guidance_links_architecture_and_documented_api": {
+      "file": "msv-143-guidance-closure-20261007.xml",
+      "sha256": "51ee717d74fc6dd059134506eeed98a931473449a34653bff6afeb4953cd5937",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  }
+}

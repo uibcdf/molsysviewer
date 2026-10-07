@@ -71,8 +71,11 @@ alias found in the public package is corrected in source `027374ed`; its reviewe
 checkpoint `bd824ea1` passes thirteen installed development-wheel guards,
 three-host Python 3.14 source pair `37685753081`, 39 core suites and 25 notebooks.
 The correction awaits the next qualified release; public 0.24.0 files are unchanged.
-Next review partial plot lifecycle #143, then #101/#153/#154/#155 against their
-actual delivered behavior and qualification,
+#143 multi-card lifecycle is also resolved with six fresh installed guards and
+two executable guide examples on the original promoted public-version files;
+[the closure record](trajectory_plot_lifecycle_closure_20261007.json) binds the
+unchanged owners to existing hosted/browser evidence.
+Next review #101/#153/#154/#155 against their actual delivered behavior and qualification,
 reconcile broader documentation and complete installed first-contact observations
 and the final 1.0 candidate decision as distinct remaining work. Standalone remains
 experimental; remotes and the Mol* dependency update remain post-1.0.

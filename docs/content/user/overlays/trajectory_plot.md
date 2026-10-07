@@ -106,9 +106,47 @@ infinity are refused before changing the plot or importing scene state.
 
 ## Hide and clear
 
+Use a different `tag` for each card you want to keep. For example, these two
+dimensionless score series belong to the same three loaded structures:
+
 ```python
-view.trajectory_plot.hide()      # keep the data, hide the overlay
-view.trajectory_plot.clear()     # drop the plot entirely
+import molsysviewer as msv
+
+view = msv.new_view(msv.demo["pentalanine"].molsys, structure_indices=[0, 2, 8])
+view.trajectory_plot.show([0.1, 0.4, 0.9], tag="score_a", title="Score A")
+view.trajectory_plot.show([0.8, 0.5, 0.2], tag="score_b", title="Score B")
+
+view.trajectory_plot.hide("score_a")   # Score B stays visible
+view.trajectory_plot.show(tag="score_a")  # restore its retained data
+view.trajectory_plot.clear("score_b")  # remove only Score B
 ```
 
-`update()` is an alias of `show()`: pushing a new state replaces the previous one.
+Closing a card in the canvas also hides it and retains its data. Restore it with
+`show(tag=...)`. After `clear(tag)`, supply a new series to create that card again.
+`records()` returns detached records of all retained cards, including hidden ones;
+editing these records does not change the plots.
+
+Without a tag, `hide()` and `clear()` affect every card:
+
+```python
+view.trajectory_plot.hide()      # retain every card's data, hide all cards
+view.trajectory_plot.show(tag="score_a")  # restore one retained card
+view.trajectory_plot.clear()     # remove every card and its data
+```
+
+`update()` is an alias of `show()`: supplying a new series replaces the card
+with that tag and leaves other tags unchanged.
+
+## Keeping plots with the system
+
+Cards and their visibility survive scene-state and session saving, copying a
+view and extracting structures. Extraction keeps values and `x` in the selected
+local order, including repeated structures, and remaps event markers to that
+order.
+
+Clear the cards before appending structures or applying a system edit that
+changes the number of loaded structures. Hidden cards still retain a series
+for the original structure axis, so hiding them does not remove this check.
+Plot data is supplied by you and is not recalculated after coordinate edits.
+Keeping cards when replacing a system with the same structure count declares
+that their values still correspond to its local structure order.

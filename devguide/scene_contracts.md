@@ -2461,6 +2461,13 @@ bounds: `tests/test_interactions_scene.py::test_oversized_frame_is_refused_befor
 
 ## Trajectory plot cards — 2026-10-02
 
+**Qualified — 2026-10-07:** #143 is resolved on the unchanged public Viewer
+0.24.0 / MolSysMT 0.23.0 pair, with six fresh installed lifecycle guards and two
+executable hide/restore/clear guide examples. Existing real Mol* browser evidence
+is reused on byte-identical owners/guards. See
+[the closure record](trajectory_plot_lifecycle_closure_20261007.json). Final 1.0
+artifact qualification remains separate.
+
 `trajectory_plot` retains one canonical collection of cards keyed by tag in
 scene-look state. Its bulk runtime message reconstructs every retained card,
 including hidden cards. `show(series, tag=...)` creates/replaces that card;

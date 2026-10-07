@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [`trajectory_plot_card_lifecycle.md`](trajectory_plot_card_lifecycle.md) — #143: retained multi-card state, tagged/all hide and clear, restoration and frame remapping qualified on the public pair; executable guide completed.
+
 - [`style_value_isolation.md`](style_value_isolation.md) — #149: nested applied recipes detach from Whole; strengthened guard, installed development wheel and exact-source qualification complete.
 
 - [`trajectory_plot_numeric_axis.md`](trajectory_plot_numeric_axis.md) — #150: numeric x geometry, deterministic frame seeking and finite-input refusal qualified against the public pair.

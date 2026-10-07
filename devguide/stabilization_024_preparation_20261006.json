@@ -2404,5 +2404,18 @@
     "remaining_standard_failure": "experimental Qt startup (uibcdf/molsysviewer#35)",
     "strict_1_0_cleared": false,
     "published_candidate_replaced": false
+  },
+  "plot_lifecycle_followup": {
+    "date": "2026-10-07",
+    "issue": 143,
+    "status": "resolved",
+    "record": "devguide/trajectory_plot_lifecycle_closure_20261007.json",
+    "owners_and_guards_match_public_producer": true,
+    "fresh_installed_lifecycle_checks": 6,
+    "executed_guide_examples": 2,
+    "reused_core_run": 37685752799,
+    "reused_source_pair_run": 37685753081,
+    "published_candidate_replaced": false,
+    "strict_1_0_cleared": false
   }
 }

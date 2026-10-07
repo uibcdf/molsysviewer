@@ -125,8 +125,11 @@ The first formatting gate and the local sandbox full-suite failure remain
 preserved, as does experimental Qt startup. This style correction is in source,
 not the unchanged public 0.24.0 files. See
 [the styles/plot closure](styles_plot_closure_20261007.json).
-Next: review remaining partial reports, starting with plot lifecycle #143,
-then packaging/tooling/box records #101/#153/#154/#155; reconcile broader documentation and
+Plot lifecycle #143 is also resolved: six fresh installed guards and two guide
+examples pass on the original promoted public-version pair. Owners and guards
+match the published producer; existing 39-suite core evidence is reused. See
+[the plot lifecycle closure](trajectory_plot_lifecycle_closure_20261007.json).
+Next: review packaging/tooling/box records #101/#153/#154/#155; reconcile broader documentation and
 complete installed first-contact/final-candidate review, retaining the completed
 public pair and Release/Conda/npm/Zenodo checks.
 See [the candidate preparation](stabilization_024_preparation_20261006.json).
@@ -1502,8 +1505,8 @@ handoffs do not replace these artifact identities.
    the independent core and three-host Python 3.14 source pair pass. Keep the
    experimental Qt failure separate. #149/#150 are also resolved: the remaining
    applied-recipe alias has installed development-wheel/exact-source evidence;
-   the numeric plot contract is qualified on the public pair. Review #143, then
-   #101/#153/#154/#155, distinguishing unmet behavior from obsolete qualification
+   the numeric plot contract and #143 multi-card lifecycle are qualified on the
+   public pair. Review #101/#153/#154/#155, distinguishing unmet behavior from obsolete qualification
    blockers.
 6. Reconcile public documentation and remaining support promises. The five-stage
    human notebook review is complete; retain it. Installed first-contact review
