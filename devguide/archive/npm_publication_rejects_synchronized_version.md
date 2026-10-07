@@ -1,13 +1,13 @@
 ---
 summary: Npm publication rejects an already synchronized release version.
 issue: uibcdf/molsysviewer#176
-status: active
+status: resolved
 opened: 2026-10-07
-closed:
+closed: 2026-10-07
 severity: high
 verification: reproduced
 area: [release, npm]
-guard:
+guard: tests/test_npm_publish_workflow.py::test_npm_version_injection_accepts_synced_and_stale_manifests
 normative:
 blocked_by: []
 supersedes: []
@@ -55,4 +55,11 @@ without that mismatch. The two Qt transport checks pass after activating the
 required 3.14 environment; the shell had retained `CONDA_PREFIX` from 3.13.
 The full suite is not repeated or described as green. Logs are retained in
 `/tmp/msv-024-npm-recovery-*-20261007.log` and the maintained candidate receipt.
-Manual npm publication still needs the corrected workflow pushed to main.
+The correction is pushed in `493f6eb6`. Manual recovery run
+[37586395370](https://github.com/uibcdf/molsysviewer/actions/runs/37586395370)
+checks out the fixed tag at `1a4c97a5`, builds version 0.24.0 and completes
+`npm publish` successfully with signed provenance. npm accepts the upload and
+reports asynchronous processing; independent public registry/CDN availability
+remains a publication check in the candidate receipt, not a failed version command.
+The guard executes that workflow command against both synchronized and older
+real manifests; removing the flag makes the synchronized case fail.

@@ -1,7 +1,7 @@
 {
   "schema": "molsysviewer.stabilization_preparation@1",
   "date": "2026-10-06",
-  "status": "Viewer_publication_authorized_and_tag_published; npm_workflow_recovery_176_in_progress",
+  "status": "Viewer_0.24.0_published_runtime_Conda_and_Zenodo_verified; awaiting_public_16_cell_pair",
   "viewer": {
     "version": "0.24.0",
     "build_number": 0,
@@ -49,8 +49,8 @@
   "candidate_version_unoccupied_at_receiving": true,
   "publication": {
     "public_tag_created": true,
-    "github_release_created": false,
-    "artifacts_promoted": false,
+    "github_release_created": true,
+    "artifacts_promoted": true,
     "version": "0.24.0",
     "viewer_commit": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
     "viewer_build_number": 1,
@@ -107,7 +107,372 @@
         "log": "/tmp/msv-024-npm-recovery-qt-activated-20261007.log",
         "diagnosis": "Initial outside-sandbox attempt inherited CONDA_PREFIX from 3.13. Activating molsyssuite@uibcdf_3.14 resolved the Qt helper/resource mismatch.",
         "scope": "Headless transport only; no standalone visible-GPU certification."
+      },
+      "fix_commit": "493f6eb6cbed33ec1d49e15f7f6295f927f71b8e",
+      "publication_run": {
+        "id": 37586395370,
+        "conclusion": "success",
+        "source_checkout": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
+        "upload_version": "0.24.0",
+        "signed_provenance": true,
+        "registry_state": "0.24.0 publicly available; npm integrity/runtime and byte-identical CDN verified",
+        "log": "/tmp/msv-024-npm-recovery-workflow-20261007.log"
       }
+    },
+    "release": {
+      "id": 405492422,
+      "tag": "0.24.0",
+      "published_at": "2026-10-07T07:25:12Z",
+      "url": "https://github.com/uibcdf/molsysviewer/releases/tag/0.24.0",
+      "draft": false,
+      "prerelease": false,
+      "tag_commit": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
+      "target_commitish_field": "main",
+      "tag_preserved_and_resolved_independently": true
+    },
+    "release_create_observation": "Explicit redundant --target SHA was rejected for missing workflow scope. Creating the Release from the existing verified tag without --target succeeded; tag still resolves to the exact candidate.",
+    "npm_public": {
+      "version": "0.24.0",
+      "registry_url": "https://registry.npmjs.org/@uibcdf%2fmolsysviewer/0.24.0",
+      "dist": {
+        "shasum": "95b71c3e9d49aab9520cf6a81ab5ae2d532e6627",
+        "tarball": "https://registry.npmjs.org/@uibcdf/molsysviewer/-/molsysviewer-0.24.0.tgz",
+        "fileCount": 3,
+        "integrity": "sha512-Un/rRo155kSVaeW+B1CoITX7Vyxc19vFLfk1LhvTxqEr5nwD1WLM8CHabvHCCrud8Bpi+UOKHgrFxzQ87C9YNg==",
+        "signatures": [
+          {
+            "sig": "MEQCICkpsF92vBkZSjAF4QqS8BK3+SP6/V9o6JdRCZGg5iDgAiAyC4I9DhcYdfM6AkXWhh2TS2yQZnYN/5ngE0zbGJM98A==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEQCIBQjyJueW5TCLIQNvE6BCCQeC2XF/QHA9NK5BSZOOv9LAiBp3Ego8q9LznLZS5eq4P87/qkTFAlxX9DVVKciIJNVzg==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@uibcdf%2fmolsysviewer@0.24.0",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 19720536
+      },
+      "manifest_version": "0.24.0",
+      "python_version": "0.24.0",
+      "runtime_version": "0.24.0",
+      "runtime_sha256": "e4cb6a819d391760254ce3c7a88d1fe9d8fa372a45bab506373580211c25fde9",
+      "runtime_bytes": 6616335,
+      "cdn_url": "https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@0.24.0/dist/viewer.js",
+      "cdn_bytes_match_npm": true,
+      "tarball_integrity_verified": true,
+      "npm_run_id": 37586395370,
+      "workflow_commit": "493f6eb6cbed33ec1d49e15f7f6295f927f71b8e",
+      "source_tag": "0.24.0",
+      "source_commit": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2"
+    },
+    "conda_public": {
+      "run_id": 37587274965,
+      "conclusion": "success",
+      "artifacts": [
+        {
+          "artifact_id": 11466768342,
+          "name": "molsysviewer-independent-public-conda-0.24.0",
+          "digest": "sha256:b88ea18b56c810b697e291924efe11d1861c208128a17a0abe8426235b0afd4c",
+          "archive_digest_verified": true,
+          "bodies": [
+            {
+              "member": "public-conda-BkXUQcTH.json",
+              "body": {
+                "checked_at": "2026-10-07T07:26:51.616299+00:00",
+                "files": [
+                  {
+                    "filename": "molsysviewer-0.24.0-py_1.tar.bz2",
+                    "main_label": "verified",
+                    "owner": "uibcdf",
+                    "package": "molsysviewer",
+                    "sha256": "e31dfb114ab2e49f22b372992d0201455b91849f2631d0165b802069e13abeaa",
+                    "solver_index": "verified",
+                    "subdir": "noarch",
+                    "url": "https://conda.anaconda.org/uibcdf/noarch/molsysviewer-0.24.0-py_1.tar.bz2",
+                    "version": "0.24.0"
+                  }
+                ],
+                "schema": "molsyssuite.public-conda@1",
+                "state": "verified"
+              }
+            }
+          ]
+        },
+        {
+          "artifact_id": 11466723388,
+          "name": "molsysviewer-conda-promotion-0.24.0-py_1",
+          "digest": "sha256:099758d98a73d3956426345fa4e9260f76f1a1bbaadf8b7297b2551d88a3ba6b",
+          "archive_digest_verified": true,
+          "bodies": [
+            {
+              "member": "conda-promotion-receipt.json",
+              "body": {
+                "package": "uibcdf/molsysviewer/0.24.0/noarch/molsysviewer-0.24.0-py_1.tar.bz2",
+                "schema": "uibcdf.conda-promotion@1",
+                "sha256": "e31dfb114ab2e49f22b372992d0201455b91849f2631d0165b802069e13abeaa",
+                "source_label": "staging",
+                "status": "verified",
+                "target_label": "main"
+              }
+            }
+          ]
+        },
+        {
+          "artifact_id": 11466424664,
+          "name": "molsysviewer-installed-matrix-0.24.0",
+          "digest": "sha256:6c0af74ab2a21f13e3a59f01bd5aaff728052d67e3c0210e9cf8a996a4ae2cd4",
+          "archive_digest_verified": true,
+          "bodies": [
+            {
+              "member": "installed-matrix-F4jL9tEj.json",
+              "body": {
+                "candidate_sha": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+                "checked_at": "2026-10-07T07:26:21.976973+00:00",
+                "jobs": [
+                  {
+                    "conclusion": "success",
+                    "job_id": 112536573485,
+                    "kind": "prepare",
+                    "name": "Validate the requested package versions"
+                  },
+                  {
+                    "conclusion": "success",
+                    "job_id": 112536619397,
+                    "kind": "installed",
+                    "name": "linux-64 \u00b7 Python 3.11",
+                    "platform": "linux-64",
+                    "python": "3.11"
+                  },
+                  {
+                    "conclusion": "success",
+                    "job_id": 112536619411,
+                    "kind": "installed",
+                    "name": "linux-aarch64 \u00b7 Python 3.13",
+                    "platform": "linux-aarch64",
+                    "python": "3.13"
+                  },
+                  {
+                    "conclusion": "success",
+                    "job_id": 112536619427,
+                    "kind": "installed",
+                    "name": "linux-64 \u00b7 Python 3.14",
+                    "platform": "linux-64",
+                    "python": "3.14"
+                  },
+                  {
+                    "conclusion": "success",
+                    "job_id": 112536619434,
+                    "kind": "installed",
+                    "name": "linux-aarch64 \u00b7 Python 3.11",
+                    "platform": "linux-aarch64",
+                    "python": "3.11"
+                  },
+                  {
+                    "conclusion": "success",
+                    "job_id": 112536619442,
+                    "kind": "installed",
+                    "name": "osx-arm64 \u00b7 Python 3.14",
+                    "platform": "osx-arm64",
+                    "python": "3.14"
+                  },
+                  {
+                    "conclusion": "success",
+                    "job_id": 112536619480,
+                    "kind": "installed",
+                    "name": "linux-64 \u00b7 Python 3.13",
+                    "platform": "linux-64",
+                    "python": "3.13"
+                  },
+                  {
+                    "conclusion": "success",
+                    "job_id": 112536619496,
+                    "kind": "installed",
+                    "name": "win-64 \u00b7 Python 3.13",
+                    "platform": "win-64",
+                    "python": "3.13"
+                  },
+                  {
+                    "conclusion": "success",
+                    "job_id": 112536619503,
+                    "kind": "installed",
+                    "name": "linux-64 \u00b7 Python 3.12",
+                    "platform": "linux-64",
+                    "python": "3.12"
+                  },
+                  {
+                    "conclusion": "success",
+                    "job_id": 112536619510,
+                    "kind": "installed",
+                    "name": "linux-aarch64 \u00b7 Python 3.12",
+                    "platform": "linux-aarch64",
+                    "python": "3.12"
+                  },
+                  {
+                    "conclusion": "success",
+                    "job_id": 112536619511,
+                    "kind": "installed",
+                    "name": "osx-arm64 \u00b7 Python 3.12",
+                    "platform": "osx-arm64",
+                    "python": "3.12"
+                  },
+                  {
+                    "conclusion": "success",
+                    "job_id": 112536619513,
+                    "kind": "installed",
+                    "name": "win-64 \u00b7 Python 3.14",
+                    "platform": "win-64",
+                    "python": "3.14"
+                  },
+                  {
+                    "conclusion": "success",
+                    "job_id": 112536619553,
+                    "kind": "installed",
+                    "name": "osx-arm64 \u00b7 Python 3.11",
+                    "platform": "osx-arm64",
+                    "python": "3.11"
+                  },
+                  {
+                    "conclusion": "success",
+                    "job_id": 112536619579,
+                    "kind": "installed",
+                    "name": "linux-aarch64 \u00b7 Python 3.14",
+                    "platform": "linux-aarch64",
+                    "python": "3.14"
+                  },
+                  {
+                    "conclusion": "success",
+                    "job_id": 112536619580,
+                    "kind": "installed",
+                    "name": "win-64 \u00b7 Python 3.12",
+                    "platform": "win-64",
+                    "python": "3.12"
+                  },
+                  {
+                    "conclusion": "success",
+                    "job_id": 112536619605,
+                    "kind": "installed",
+                    "name": "win-64 \u00b7 Python 3.11",
+                    "platform": "win-64",
+                    "python": "3.11"
+                  },
+                  {
+                    "conclusion": "success",
+                    "job_id": 112536619689,
+                    "kind": "installed",
+                    "name": "osx-arm64 \u00b7 Python 3.13",
+                    "platform": "osx-arm64",
+                    "python": "3.13"
+                  }
+                ],
+                "repository": "uibcdf/molsysmt",
+                "run_attempt": 1,
+                "run_id": 37541876875,
+                "schema": "molsyssuite.installed-matrix@1",
+                "state": "verified",
+                "title": "MT 0.23.0 build 0 + Viewer 0.24.0 build 1 | Python 3.14 | all",
+                "workflow": ".github/workflows/validate_conda_staging.yaml"
+              }
+            }
+          ]
+        }
+      ],
+      "public_files": [
+        {
+          "basename": "noarch/molsysviewer-0.24.0-py_0.tar.bz2",
+          "sha256": "c7b3332e5f1da170eb804c8979b191420f481098063a73a269ba8c02d6f19781",
+          "labels": [
+            "staging"
+          ]
+        },
+        {
+          "basename": "noarch/molsysviewer-0.24.0-py_1.tar.bz2",
+          "sha256": "e31dfb114ab2e49f22b372992d0201455b91849f2631d0165b802069e13abeaa",
+          "labels": [
+            "staging",
+            "main"
+          ]
+        }
+      ],
+      "original_build_1_sha256_verified": true,
+      "build_0_not_promoted": true
+    },
+    "initial_promotion_preflight": {
+      "id": 37587118096,
+      "conclusion": "failure",
+      "reason": "Release creation had failed; the Release API returned 404 during preflight. All promotion/public verification steps were skipped. No package was mutated."
+    },
+    "release_route_run": {
+      "id": 37587205281,
+      "conclusion": "success",
+      "source_commit": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
+      "route": "staged",
+      "build_upload_steps": "skipped as required; no rebuilding"
+    },
+    "zenodo": {
+      "run_id": 37587205154,
+      "artifact_id": 11467016676,
+      "artifact_digest": "sha256:8a331ba505949ec8c9376a449e22bd8857bc262b58fe44db81b6dd78fbaef980",
+      "archive_digest_verified": true,
+      "evidence": {
+        "repository": "uibcdf/molsysviewer",
+        "observed_at": "2026-10-07T07:25:25.754796+00:00",
+        "exit_status": 0,
+        "results": [
+          {
+            "repository": "uibcdf/molsysviewer",
+            "tag": "0.24.0",
+            "version": "0.24.0",
+            "published_at": "2026-10-07T07:25:12Z",
+            "observed_at": "2026-10-07T07:25:25.754796+00:00",
+            "age_hours": 0.004,
+            "archive_coverage": "source-snapshot",
+            "escalation_required": false,
+            "state": "verified",
+            "record_id": 23206053,
+            "concept_doi": "10.5281/zenodo.18072956",
+            "version_doi": "10.5281/zenodo.23206053",
+            "files": [
+              {
+                "key": "uibcdf/molsysviewer-0.24.0.zip",
+                "size": 24560894,
+                "checksum": "md5:7335fc5b63254d841ea0184aadfdce3f"
+              }
+            ]
+          }
+        ]
+      },
+      "public_api_matches_receipt": true,
+      "downloaded_source_checksum_verified": true,
+      "public_record_url": "https://zenodo.org/records/23206053"
+    },
+    "public_pair": {
+      "status": "queued",
+      "version": "0.24.0",
+      "viewer_build": 1,
+      "provider_version": "0.23.0",
+      "provider_build": 0,
+      "platforms": [
+        "linux-64",
+        "linux-aarch64",
+        "osx-arm64",
+        "win-64"
+      ],
+      "python_versions": [
+        "3.11",
+        "3.12",
+        "3.13",
+        "3.14"
+      ],
+      "dispatch_owner": "MolSysMT session; avoid duplicate dispatches",
+      "id": 37587631519,
+      "url": "https://github.com/uibcdf/molsysmt/actions/runs/37587631519",
+      "head_sha": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+      "display_title": "MT 0.23.0 build 0 + Viewer 0.24.0 build 1 | Python 3.14 | all | public"
     }
   },
   "qualification": {
@@ -223,9 +588,8 @@
     }
   },
   "remaining": [
-    "Verify tag-triggered npm 0.24.0 and CDN runtime, then publish matching GitHub Release",
-    "Promote and independently verify original noarch build 1 without rebuilding",
-    "Complete public-channel 16-cell qualification and Viewer Zenodo source preservation before declaring the coordinated publication complete"
+    "Complete and independently verify all sixteen public installed-pair cells before closing coordinated qualification",
+    "Retain public documentation reconciliation and installed first-contact/final 1.0 review as later stabilization work"
   ],
   "hosted": {
     "staging_producer": {

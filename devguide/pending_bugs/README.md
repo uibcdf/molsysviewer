@@ -19,10 +19,6 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (1)
-
-- [`npm_publication_rejects_synchronized_version.md`](npm_publication_rejects_synchronized_version.md) — [#176](https://github.com/uibcdf/molsysviewer/issues/176) — Npm publication rejects an already synchronized release version. *(high, reproduced)*
-
 ### Partially done (11)
 
 - [`annotation_anchor_contract.md`](annotation_anchor_contract.md) — [#146](https://github.com/uibcdf/molsysviewer/issues/146) — Annotation coordinate anchors and callout options lack a coherent public lifecycle *(high, measured)*

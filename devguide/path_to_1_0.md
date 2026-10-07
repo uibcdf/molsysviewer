@@ -9,9 +9,9 @@ staging cells, exact Windows launchers and all 39 hosted core browser suites.
 Independent verification checks actual environment archives/digests and staging
 repodata. Canonical-source Python 3.14 integration passes on all three native hosts,
 with 39 core suites and all 25 notebooks passing on Linux. The public
-pair gate awaits Viewer availability; its fixed canonical tag is now pushed with
-Diego's explicit authorization. Release, promotion and strict 1.0 clearance
-remain pending. The corrected automatic-development
+pair gate awaits its sixteen installed public cells. With Diego's authorization,
+Viewer's fixed tag, Release, unchanged Conda build-1 promotion and npm/CDN
+are independently verified; strict 1.0 clearance remains pending. The corrected automatic-development
 hosted follow-up also passes on all three native hosts, including 39 core suites
 and 25 notebooks on Linux. The provider's final-source gate passes all eight
 Linux/macOS cells with the exact final Viewer source; independent scientific
@@ -20,8 +20,10 @@ confirm the candidates and publication sequence. Devguide is reconciled with
 the current evidence. MolSysMT 0.23.0 is now published; its exact tag and four
 original public build-0 files are independently verified. Its Zenodo source
 preservation is now verified at [10.5281/zenodo.23205366](https://doi.org/10.5281/zenodo.23205366).
-Viewer publication is authorized on 2026-10-07. Complete the npm publisher
-recovery (#176), publish Viewer, qualify the exact public pair and verify preserved citation records.
+Viewer publication is authorized on 2026-10-07. npm publisher recovery (#176)
+completes upload in run `37586395370`; public integrity/CDN checks pass. Viewer
+source preservation is verified at [10.5281/zenodo.23206053](https://doi.org/10.5281/zenodo.23206053).
+Complete the requested sixteen-cell public pair before closing coordinated qualification.
 Public documentation and final 1.0 first-contact/candidate review remain separate.
 The older checkpoints below preserve their original scope; use
 [the current handoff](checkpoints.md#resume-in-one-page) and

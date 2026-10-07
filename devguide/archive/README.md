@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [`npm_publication_rejects_synchronized_version.md`](npm_publication_rejects_synchronized_version.md) — #176: accept synchronized release manifests, guard with real npm and recover publication from the unchanged canonical tag; upload accepted with signed provenance.
+
 - [`automatic_source_version_retags_development.md`](automatic_source_version_retags_development.md) — #175: rebuild/reinstall the development runtime before source validation while preserving dispatch-only candidate tags; policy/workflow and eight real offline exports pass.
 
 - [`automatic_source_pair_runtime_version.md`](automatic_source_pair_runtime_version.md) — #173: initial canonical source binding passes bounded export checks; its automatic-event policy conflict is corrected by #175, preserving the original failed attempt.

@@ -40,12 +40,13 @@ and solver indices are independently verified. Its source preservation is now
 verified at version DOI [10.5281/zenodo.23205366](https://doi.org/10.5281/zenodo.23205366),
 with matching receipt and public API inventory. Diego authorizes Viewer publication
 on 2026-10-07, and the exact canonical 0.24.0 tag is pushed. Its npm publisher
-fails before build/publish on an already synchronized manifest (#176); complete
-that workflow recovery. Viewer Release and Conda promotion remain pending; the exact public
-pair gate awaits Viewer availability. Publish Viewer and
-promote its already verified immutable build-1 file after maintainer authorization,
-then run the sixteen public installed cells and verify GitHub Release/Zenodo
-preservation. Keep Interactions' public qualification (#114/#140), complete
+initially fails on an already synchronized manifest (#176). Recovery run
+`37586395370` and independent npm/CDN integrity/version checks pass. Viewer
+Release is published, Conda build 1 is promoted unchanged and public labels/index
+are verified; build 0 remains staging-only. Viewer source preservation is
+verified at [10.5281/zenodo.23206053](https://doi.org/10.5281/zenodo.23206053).
+The sixteen public installed cells are requested from MolSysMT's owner;
+their result remains pending. Keep Interactions' public qualification (#114/#140), complete
 public documentation reconciliation, installed first-contact observations and
 the final 1.0 candidate decision as distinct remaining work. Standalone remains
 experimental; remotes and the Mol* dependency update remain post-1.0.

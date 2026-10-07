@@ -68,13 +68,25 @@ source preservation does not claim package archival.
 Diego explicitly authorizes Viewer publication on 2026-10-07. The canonical
 `0.24.0` tag is pushed at the exact fixed producer. npm run `37584736989` fails
 before build/publish because the qualified manifest already carries 0.24.0;
-publisher recovery is tracked in [#176](pending_bugs/npm_publication_rejects_synchronized_version.md).
-Viewer's Release, Conda promotion, public installed pair and source preservation
-remain pending. The earlier devguide reconciliation passes 277 bounded checks;
+publisher recovery is tracked in [#176](archive/npm_publication_rejects_synchronized_version.md).
+The corrected publisher in `493f6eb6` completes build/upload in run
+`37586395370`; independent tarball integrity, version and byte-identical CDN
+checks pass. The [Viewer 0.24.0 Release](https://github.com/uibcdf/molsysviewer/releases/tag/0.24.0)
+is published from the unchanged tag. Conda promotion `37587274965` passes:
+all receipt digests, original build-1 SHA-256, public `main` label and solver
+index are verified; build 0 remains staging-only. Release route `37587205281`
+omits both build/upload paths as required. The first promotion dispatch
+`37587118096` fails before mutation while Release creation is rejected; both
+observations remain in the receipt.
+Viewer source preservation is verified in `37587205154` at version DOI
+[10.5281/zenodo.23206053](https://doi.org/10.5281/zenodo.23206053). The downloaded
+source ZIP checksum matches the receipt and public API. The sixteen public
+installed cells are launched in [37587631519](https://github.com/uibcdf/molsysmt/actions/runs/37587631519)
+at the exact provider commit; their verdict remains pending.
+The earlier devguide reconciliation passes 277 bounded checks;
 its 45-report board snapshot precedes #176. MolSysMT confirms the exact candidates
-and publication order in its evidence commit `832e01210`. Next: complete the
-authorized npm recovery, publish/verify Viewer after the verified provider,
-then qualify the exact public pair and verify GitHub Release/Zenodo preservation.
+and publication order in its evidence commit `832e01210`. Next: qualify the
+exact public pair, preserving the completed Release/Conda/npm/Zenodo checks.
 See [the candidate preparation](stabilization_024_preparation_20261006.json).
 
 **Published support-library receiving check (2026-10-06): bounded pass.**
@@ -1433,15 +1445,11 @@ handoffs do not replace these artifact identities.
 1. Exact canonical-source integration and automatic hosted follow-up 37545069147
    pass. #175 is resolved; native verdicts and Linux notebook/core results are
    preserved. Review the completed candidate evidence before publication.
-2. Complete the authorized Viewer publication and npm publisher recovery (#176).
-   MolSysMT's public release and source preservation are verified; the Viewer tag
-   is pushed at the exact producer. The public pair is not yet qualified.
-   Keep already staged files and SHA-256
-   identities fixed through the coordinated promotion.
-3. Publish the GitHub Release for the fixed canonical tag,
-   promote the verified immutable package and complete the sixteen-cell public
-   pair qualification plus npm/Conda and Zenodo checks. No staging verdict
-   supplies those public/archival results.
+2. Both releases are public and source preservation is verified; npm publisher
+   #176 is resolved. Viewer build 1 and its public npm/CDN runtime are verified.
+   Keep the immutable source/package identities fixed.
+3. Complete the sixteen-cell public pair qualification requested from MolSysMT.
+   No staging verdict supplies that public installed result.
 4. Close the supported-provider boundary of Interactions (#114/#140) using the
    actual public package, preserving earlier experimental/source evidence.
 5. Reconcile public documentation and remaining support promises. The five-stage
