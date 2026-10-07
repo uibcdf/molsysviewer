@@ -38,8 +38,10 @@ MolSysMT-first / Viewer-second publication sequence. MolSysMT 0.23.0 is now
 published: its exact tag and four original ABI3 build-0 files, public labels
 and solver indices are independently verified. Its source preservation is now
 verified at version DOI [10.5281/zenodo.23205366](https://doi.org/10.5281/zenodo.23205366),
-with matching receipt and public API inventory. Obtain Diego's final authorization for Viewer publication.
-No Viewer public tag, GitHub Release or promotion is created; the exact public
+with matching receipt and public API inventory. Diego authorizes Viewer publication
+on 2026-10-07, and the exact canonical 0.24.0 tag is pushed. Its npm publisher
+fails before build/publish on an already synchronized manifest (#176); complete
+that workflow recovery. Viewer Release and Conda promotion remain pending; the exact public
 pair gate awaits Viewer availability. Publish Viewer and
 promote its already verified immutable build-1 file after maintainer authorization,
 then run the sixteen public installed cells and verify GitHub Release/Zenodo

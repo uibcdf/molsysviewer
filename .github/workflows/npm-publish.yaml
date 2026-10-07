@@ -48,7 +48,7 @@ jobs:
         run: |
           CLEAN_VERSION="${{ github.event.inputs.tag || github.ref_name }}"
           [[ "$CLEAN_VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
-          npm version $CLEAN_VERSION --no-git-tag-version
+          npm version "$CLEAN_VERSION" --no-git-tag-version --allow-same-version
           npm pkg set repository.type="git"
           npm pkg set repository.url="https://github.com/uibcdf/molsysviewer"
           npm pkg set repository.directory="molsysviewer/js"

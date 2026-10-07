@@ -1,7 +1,7 @@
 {
   "schema": "molsysviewer.stabilization_preparation@1",
   "date": "2026-10-06",
-  "status": "provider_publication_and_source_preservation_verified; awaiting_Diego_final_Viewer_publication_authorization",
+  "status": "Viewer_publication_authorized_and_tag_published; npm_workflow_recovery_176_in_progress",
   "viewer": {
     "version": "0.24.0",
     "build_number": 0,
@@ -48,9 +48,67 @@
   "dependency_floor": "molsysmt>=0.23.0",
   "candidate_version_unoccupied_at_receiving": true,
   "publication": {
-    "public_tag_created": false,
+    "public_tag_created": true,
     "github_release_created": false,
-    "artifacts_promoted": false
+    "artifacts_promoted": false,
+    "version": "0.24.0",
+    "viewer_commit": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
+    "viewer_build_number": 1,
+    "tag_object": "b9ea5781c7101fd0831532b58c96c307dbcc882d",
+    "npm_run": {
+      "id": 37584736989,
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37584736989",
+      "status": "completed",
+      "conclusion": "failure",
+      "diagnosis": "Version not changed in version injection; build and publication never executed",
+      "issue": "uibcdf/molsysviewer#176"
+    },
+    "release_notes_path": "/tmp/molsysviewer-0.24.0-release-notes-20261007.md",
+    "historical_fetch_observation": "A broad fetch refused to replace differing historical local tags. Main was synchronized with --no-tags; no existing tag was changed.",
+    "npm_recovery": {
+      "issue": "uibcdf/molsysviewer#176",
+      "change": "Accept an already synchronized version using npm version --allow-same-version, without changing the exact-tag checkout.",
+      "targeted_guard": {
+        "selector": "tests/test_npm_publish_workflow.py::test_npm_version_injection_accepts_synced_and_stale_manifests",
+        "result": "pass",
+        "file_passed": 3
+      },
+      "full_suite": {
+        "passed": 2882,
+        "failed": 23,
+        "skipped": 23,
+        "seconds": 482.21,
+        "log": "/tmp/msv-024-npm-recovery-full-20261007.log",
+        "diagnosis": "Twenty-two sandbox socket/Chromium/Qt permission failures; one generated capability inventory changed from unreleased to 0.24.0 after tagging.",
+        "full_suite_repeated": false
+      },
+      "followup": {
+        "scope": "Affected socket/browser/Qt selectors plus regenerated capability inventory and npm guard outside sandbox",
+        "status": "completed",
+        "log": "/tmp/msv-024-npm-recovery-followup-20261007.log",
+        "passed": 261,
+        "skipped": 1,
+        "failed": 1,
+        "seconds": 48.1,
+        "diagnosis": "Sandbox permission cases resolved; stopped at matching-export version notice. Ignored local _version.py reports 0.23.4+71.g3b475639.dirty while the committed runtime is canonical 0.24.0. Preserved that unrelated local file."
+      },
+      "installed_canonical_exports": {
+        "passed": 8,
+        "failed": 0,
+        "seconds": 41.31,
+        "environment": "/tmp/msv-024-staging-20261006",
+        "log": "/tmp/msv-024-npm-recovery-installed-exports-20261007.log",
+        "source_shadowing_rejected": true
+      },
+      "qt_transport": {
+        "passed": 2,
+        "failed": 0,
+        "seconds": 6.1,
+        "log": "/tmp/msv-024-npm-recovery-qt-activated-20261007.log",
+        "diagnosis": "Initial outside-sandbox attempt inherited CONDA_PREFIX from 3.13. Activating molsyssuite@uibcdf_3.14 resolved the Qt helper/resource mismatch.",
+        "scope": "Headless transport only; no standalone visible-GPU certification."
+      }
+    }
   },
   "qualification": {
     "dependency_contract_audit": "pass",
@@ -165,9 +223,9 @@
     }
   },
   "remaining": [
-    "Obtain Diego final authorization for exact Viewer 0.24.0 publication; MolSysMT 0.23.0 public prerequisite is independently verified",
-    "Publish Viewer exact commit 1a4c97a5, npm runtime and promote original Conda build 1 only with maintainer authorization",
-    "Complete public-channel 16-cell qualification, GitHub Release and Zenodo archival verification before declaring publication complete"
+    "Verify tag-triggered npm 0.24.0 and CDN runtime, then publish matching GitHub Release",
+    "Promote and independently verify original noarch build 1 without rebuilding",
+    "Complete public-channel 16-cell qualification and Viewer Zenodo source preservation before declaring the coordinated publication complete"
   ],
   "hosted": {
     "staging_producer": {
@@ -1177,9 +1235,14 @@
       "MolSysViewer owner publishes 0.24.0, promotes/verifies its original build-1 noarch file and verifies npm/CDN",
       "Qualify all sixteen public installed-pair cells and independently verify both Zenodo records"
     ],
-    "publication_authorized": false,
+    "publication_authorized": true,
     "package_commits_and_sha256_unchanged": true,
-    "provider_publication_verified": true
+    "provider_publication_verified": true,
+    "viewer_authorization": {
+      "date": "2026-10-07",
+      "user_statement": "te doy mi autorizaci\u00f3n",
+      "scope": "Canonical Viewer 0.24.0 tag and GitHub Release at 1a4c97a58b68b69f3a836546c9e4ac6187c3efa2; npm/CDN; original Conda build-1 promotion; public installed-pair and Zenodo verification."
+    }
   },
   "molsysmt_public_receiving": {
     "received_on": "2026-10-07",
