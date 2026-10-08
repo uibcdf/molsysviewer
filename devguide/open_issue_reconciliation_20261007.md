@@ -110,3 +110,13 @@ its offscreen/cleanup evidence is distinct from visible-window host validation.
 Seven real npm/version-resolution guards also pass. These cover the repaired
 version-source and publication-injection failure mechanisms; no permanent
 publication monitoring or historical backfill is introduced.
+
+## Confirmed board closeout
+
+Issues #78/#82/#89/#95/#97/#152 are CLOSED with the published decisions and
+records from `a59c9692`. The board has 28 remaining open issues; all 27 active
+queue documents agree with it. The board-only external report #80 remains open.
+Exact-head policy `37734137505`, Conda governance `37734137627` and actual
+notebook execution `37734136842` pass. The broader scientific/core/source-pair
+runs retain their current native statuses in the receipt; this closeout is not
+final 1.0 certification. No publication was dispatched by this task.

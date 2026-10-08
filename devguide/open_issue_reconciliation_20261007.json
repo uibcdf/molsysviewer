@@ -335,7 +335,9 @@
     "consumer_sha256": "dab9d96a897f0e229837ffeda2a7277029a344cace6530a79ac55e5a90d3e529",
     "canonical_url": "https://github.com/uibcdf/ackredit/blob/main/standards/ACKREDIT_GUIDE.md",
     "canonical_sha256": "6353892d552eab79973cecec5f8e3c8c31e146416e1cb481786e21cd3fcbf99d",
-    "later_sync_claimed": false
+    "later_sync_claimed": false,
+    "original_requested_guide_commit": "14b6b3a53be2b43f6ae7fc079e10cb78ed7f959f",
+    "original_requested_guide_sha256": "24615e3a8894c7cba67fc92fd0323369e725c3bd88096df9eda9311ab8890ff5"
   },
   "validation": {
     "focused_public_docs_reporting_links": {
@@ -361,17 +363,127 @@
     "ruff": "passed on new guard"
   },
   "board_closures": {
-    "status": "awaiting evidence commit publication",
+    "status": "verified",
+    "evidence_commit": "a59c9692e126b67d5d743bcc4273b4fcb03eeece",
     "issues": [
-      78,
-      82,
-      89,
-      95,
-      97,
-      152
+      {
+        "closedAt": "2026-10-08T05:48:38Z",
+        "number": 78,
+        "state": "CLOSED",
+        "url": "https://github.com/uibcdf/molsysviewer/issues/78"
+      },
+      {
+        "closedAt": "2026-10-08T05:48:29Z",
+        "number": 82,
+        "state": "CLOSED",
+        "url": "https://github.com/uibcdf/molsysviewer/issues/82"
+      },
+      {
+        "closedAt": "2026-10-08T05:48:31Z",
+        "number": 89,
+        "state": "CLOSED",
+        "url": "https://github.com/uibcdf/molsysviewer/issues/89"
+      },
+      {
+        "closedAt": "2026-10-08T05:48:34Z",
+        "number": 95,
+        "state": "CLOSED",
+        "url": "https://github.com/uibcdf/molsysviewer/issues/95"
+      },
+      {
+        "closedAt": "2026-10-08T05:48:36Z",
+        "number": 97,
+        "state": "CLOSED",
+        "url": "https://github.com/uibcdf/molsysviewer/issues/97"
+      },
+      {
+        "closedAt": "2026-10-08T05:48:41Z",
+        "number": 152,
+        "state": "CLOSED",
+        "url": "https://github.com/uibcdf/molsysviewer/issues/152"
+      }
     ],
-    "expected_open_after": 28
+    "remaining_open_count": 28,
+    "remaining_open_issues": [
+      115,
+      113,
+      109,
+      100,
+      93,
+      80,
+      59,
+      58,
+      57,
+      56,
+      55,
+      54,
+      53,
+      52,
+      51,
+      50,
+      49,
+      48,
+      47,
+      46,
+      45,
+      44,
+      43,
+      42,
+      41,
+      39,
+      36,
+      35
+    ],
+    "queue_sync": {
+      "documents": 27,
+      "verdict": "agree with board"
+    }
   },
   "integration_base": "7a952517",
-  "integration_note": "Remote #178 disposable Qt HTML ownership is integrated unchanged; original real offscreen probes pass in its receipt. This does not replace visible-window/GPU certification or the final source/artifact gate."
+  "integration_note": "Remote #178 disposable Qt HTML ownership is integrated unchanged; original real offscreen probes pass in its receipt. This does not replace visible-window/GPU certification or the final source/artifact gate.",
+  "hosted_at_review": [
+    {
+      "conclusion": "success",
+      "databaseId": 37734137627,
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37734137627",
+      "workflowName": "Conda publication governance"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 37734137505,
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37734137505",
+      "workflowName": "MolSysSuite policy"
+    },
+    {
+      "conclusion": "",
+      "databaseId": 37734136881,
+      "status": "in_progress",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37734136881",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "",
+      "databaseId": 37734136781,
+      "status": "in_progress",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37734136781",
+      "workflowName": "Python 3.14 source pair"
+    },
+    {
+      "conclusion": "",
+      "databaseId": 37734136819,
+      "status": "in_progress",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37734136819",
+      "workflowName": "CI_e2e"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 37734136842,
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37734136842",
+      "workflowName": "Documentation notebooks"
+    }
+  ],
+  "hosted_scope": "Policy, Conda governance and actual documentation notebook execution pass at a59c9692. Source CI, core E2E and source-pair results retain their native current status; no new final-candidate pass is inferred."
 }
