@@ -1,3 +1,3 @@
-version = "0.24.0"
+version = "0.24.1"
 route = "staged"
-reason = "MolSysMT 0.23.0 supplies Interactions, H5MSM and mixed-source loading; the coupled 0.24.0 candidate requires exact installed-pair qualification before public promotion."
+reason = "Package the integrated #149/#177 corrections and experimental Interactions consumer contract; qualify the exact 0.24.1 artifact with the agreed MolSysMT candidate before public promotion."

@@ -1,5 +1,12 @@
 # Development checkpoint
 
+**Next candidate preparation — 2026-10-08:**
+the [experimental Interactions consumer contract](interactions_compatibility_contract.md)
+is agreed with the provider. Preparing [0.24.1 noarch build 0](stabilization_0241_preparation_20261008.md)
+will package #149/#177 before the final documentation review. Its installed
+qualification with proposed MolSysMT 1.0.0 build 0 awaits frozen producer/file
+identities. Public versions remain 0.24.0/0.23.0; no new publication is authorized.
+
 **Source-only archive checkpoint — 2026-10-08:**
 `archive/pre-0.24.1-20261008` preserves `0067a2c2`, with policy-v1.5.7,
 archive-excluding version derivation and guarded publishers. 204 selected checks

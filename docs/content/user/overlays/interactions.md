@@ -11,6 +11,12 @@ these workflows. The published 0.24.0 / 0.23.0 pair has passed installed-package
 scientific and browser qualification. MolSysMT provides the calculations and
 H5MSM storage directly; you do not register a MolSysMT addon.
 
+Interactions results, queries/pages and detection families remain **experimental**,
+including in MolSysMT 1.0. A qualified package pair does not make the scientific
+profiles stable or promise compatibility with every future provider version.
+Observation indices belong to one version of an analysis: saving and querying
+preserve them, but replacing or remapping the analysis can reassign them.
+
 ## Choosing a source
 
 The floating Studio card has an **Interactions** tab with three routes:
@@ -27,6 +33,16 @@ structures or an explicit list when you need broader calculation coverage.
 Playback only queries saved results;
 it does not calculate new interactions. A structure evaluated without results and
 a structure that was never evaluated have different statuses.
+
+Public molecular-data setters invalidate old evaluated coverage. Direct changes
+to raw arrays require explicit invalidation. Changing coordinates or calculation
+parameters does not automatically recalculate an analysis.
+
+Inspection pages bound the observations and participants copied after constructing
+a query. They do not bound total memory: queries can retain indexes and metadata
+can grow with the structure count. The current workflow loads named analyses into
+memory; it does not provide public file queries without loading the selected
+H5MSM analysis.
 
 Buch uses a hydrogen–acceptor distance criterion, with a default threshold of
 2.3 Å. This is a particular criterion, not a general certification of hydrogen

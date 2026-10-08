@@ -41,6 +41,7 @@ documents, and historical audits.
 
 - [`open_issue_reconciliation_20261007.md`](open_issue_reconciliation_20261007.md): complete 34-issue scope review, public-promise corrections, historical publication decisions and remaining 1.0 gates.
 - [`public_distribution_contract.md`](public_distribution_contract.md): public Conda/core backend route and experimental native-host boundary.
+- [`interactions_compatibility_contract.md`](interactions_compatibility_contract.md): agreed experimental consumption, identity, paging, geometry and invalidation limits for the next installed pair.
 
 - [`human_usability_review_20261006.md`](human_usability_review_20261006.md): completed five-stage remote-Jupyter review with Diego; observations, corrected usability defects and tutorial follow-up retained.
 

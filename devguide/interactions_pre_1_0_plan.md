@@ -1,5 +1,11 @@
 # Minimal Interactions before 1.0
 
+**Consumer agreement — 2026-10-08:** the provider confirms continuity of the
+implemented sparse/query/H5MSM contract while all result, page and detector APIs
+remain experimental. The [consumer contract](interactions_compatibility_contract.md)
+records occurrence identity within one analysis version, post-query paging
+bounds, explicit invalidation and the next exact-artifact qualification.
+
 ## Current implementation and qualification — 2026-10-07
 
 **Delivered:** the bounded native domain, nine family wrappers and Studio workflow

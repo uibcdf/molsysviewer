@@ -418,13 +418,14 @@ the same tag; APIs resolve identity as `(domain, tag)`.
 
 `view.interactions` is a native scientific manager. It uses MolSysMT internally
 and requires its experimental public `Interactions` and H5MSM APIs; no addon
-registration is needed. The published dependency version for this feature is
-still to be fixed. Scientific analyses and visual sets are separate: attaching
+registration is needed. The dependency floor is `molsysmt>=0.23.0`. Its result,
+page and detector APIs remain experimental even when the provider package reaches
+1.0; qualification of one exact pair does not guarantee future compatibility.
+Scientific analyses and visual sets are separate: attaching
 or computing stores an analysis; `add()` creates its filtered graphical set.
 The native Interactions Studio tab offers Calculate, Stored analysis and H5MSM
 file routes using the same public methods.
-An older supported provider can still initialize ordinary views. Feature
-availability is checked before scientific interaction operations; an unavailable
+Feature availability is checked before scientific interaction operations; an unavailable
 backend produces an explicit compatibility error and disables Studio creation.
 
 ```python
@@ -464,6 +465,11 @@ Evaluated frames without observations remain distinct from unevaluated frames.
 Query lists deduplicate indices; file remapping can repeat a source structure
 to produce separate destination structures.
 
+`occurrence_indices` are references within one version of a complete analysis,
+preserved by queries and persistence. Replacement, remapping or a new analysis
+version can reassign them. They are not global IDs; observation actions also
+check the current analysis signature, query revision and frame.
+
 Explicit `structure_indices=[...]` or `"all"` requests calculation beyond the
 visible frame. PBC requires a valid finite box for each requested frame and
 preserves the detector's observed image vectors. A failed calculation or import
@@ -475,7 +481,9 @@ not automatic origin authentication.
 Attached results are immutable snapshots for the supported workflow. Ordinary
 `apply_system_edit` invalidates their evaluated coverage; explicit
 `interactions_policy="preserve"` declares the incoming analyses already valid.
-Unannounced molecular edits or direct array mutation are outside this contract.
+Provider public setters invalidate coverage. Editing raw arrays requires explicit
+invalidation; unannounced mutation is outside this contract. There is no automatic
+recalculation.
 `save_session` preserves complete named results in H5MSM and verifies content
 signatures before restoring a view. `save_state` and visual undo do not store
 the scientific arrays. Tagged references include the named analysis content signature, filter, style,
@@ -494,9 +502,11 @@ The visual collection follows the other scene managers: `tags`, `count`,
 `set_filter`, `set_color`, `set_alpha`, `set_radius` and `focus`. Visual deletion
 keeps scientific data. Referenced analyses cannot be deleted.
 
-The renderer draws H···A links for single-atom donor/hydrogen/acceptor roles
-and S···S disulfide candidates. Other interaction families and composite
-participants remain inspectable and count as unsupported graphics. Periodic
+The renderer supports the nine exposed families, including compound participant
+centroid guides and water-bridge segments. The user guide lists their getters
+and geometry. Centroid guides do not replace detector measurements. Unknown
+kinds and compound groups split across a periodic boundary remain inspectable
+and count as unsupported graphics. Periodic
 positions use participant image differences relative to the first participant
 and the current frame box; missing required boxes suppress those links.
 
@@ -511,16 +521,20 @@ participant atoms per observation. Its `evaluation_scope` is a compact count/mod
 summary. `query_revision` identifies the filter and analysis content so same-frame
 filter edits invalidate old replies. Excluded frames return no observations.
 
-The current provider codec copies all selected occurrences. The viewer counts
-first and checks a conservative numeric-copy budget before calling it. An
-oversized selection returns `inspection-limit`, its exact count and an explicit
-reason instead of silently truncating the results. This fallback is tracked in
-`uibcdf/molsysmt#264`; true public paging will replace it. These limits do not
-bound process RSS or complete-analysis residency. Large metadata is omitted only
+Inspection uses the experimental public `molsysmt.interactions.page@1` codec
+through `to_page` when available. It limits copied occurrences and participants
+after query construction; query positions, secondary indexes and per-structure
+metadata can still consume memory. The older full-codec fallback counts first
+and checks a conservative numeric-copy budget. An oversized selection returns
+`inspection-limit`, its exact count and an explicit reason instead of silently
+truncating results. Neither route bounds process RSS or complete-analysis residency,
+or provides public file queries without loading the selected H5MSM analysis.
+Large metadata is omitted only
 with an explicit inspection-limit reason; `get_analysis()` retains the full data.
 Static HTML embeds all requested frame geometry up to a shared 64 MiB export
-budget, and raises rather than truncating. These are conservative limits;
-representative large-system qualification is still pending. Scientific inspector
+budget, and raises rather than truncating. Bounded workloads have been qualified
+on the public 0.24.0 / 0.23.0 pair; arbitrary sizes and native-GPU throughput
+remain uncertified. Scientific inspector
 pages require a live Python session; static HTML contains compiled geometry,
 not the complete scientific observation table.
 

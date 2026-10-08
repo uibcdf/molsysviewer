@@ -21,11 +21,10 @@ build:
     - molsysviewer = molsysviewer.standalone:main
     - molsysviewer-qt = molsysviewer.standalone_qt:main
     - molsysviewer-server = molsysviewer.remote.server_cli:main
-  # Staging and release builds use distinct coordinates. Build 0 is historical; the
-  # corrected manual staging path sets build 1, and a GitHub Release uses build 2 after
-  # the staged pair has passed.
+  # Start a new version at build 0. Artifact repairs require an additive build.
+  # A staged Release promotes the same validated file; it never rebuilds it.
   # Never overwrite staged bytes under a coordinate that has already been inspected.
-  number: "{{ environ.get('MOLSYSVIEWER_CONDA_BUILD_NUMBER', '1') }}"
+  number: "{{ environ.get('MOLSYSVIEWER_CONDA_BUILD_NUMBER', '0') }}"
 
 requirements:
   host:

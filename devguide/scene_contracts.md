@@ -2344,6 +2344,11 @@ exists; `region.show_only()` does, and it is the surviving half of that sentence
 
 ## Interactions extension — 2026-09-30 (experimental provider contract)
 
+The [2026-10-08 consumer agreement](interactions_compatibility_contract.md)
+clarifies the experimental stability, analysis-version occurrence identity,
+post-query paging bounds and explicit invalidation requirements. It does not
+promote provider science or promise unconditional future compatibility.
+
 The `interaction` domain obeys T, S0–S7 and V. Scientific analyses live in
 `view.molsys.interactions`; `view.interactions.add(analysis_name, ...)` creates a
 separate tagged visual reference. Deleting a set keeps the scientific analysis;
@@ -2380,9 +2385,13 @@ Migration copies input records, applies even to broken sets, and validates
 vocabulary before replacing the scene. Version 2 records require canonical
 names. Restored state is emitted as extension version 2; H5MSM remains 0.5.
 
-Native graphic support is H···A for single-atom donor/hydrogen/acceptor roles,
-and S···S disulfide candidates. Other kinds or compound participants remain
-inspectable and are counted as unsupported rendering. Periodic participant
+Native graphics cover the nine public families: H···A links, S···S candidates,
+ionic and ring-centroid guides, cation–pi, halogen and hydrophobic links,
+metal–ligand candidates and water-bridge segments. Compound participant roles
+and occurrence/segment identity are retained. A centroid guide does not replace
+the detector's distance measurement. Unsupported kinds and periodic compound
+groups split across the boundary remain inspectable and are counted as unsupported
+rendering. Periodic participant
 positions use `(image_p - image_0) @ box`, with row-vector boxes in nm. Graphics
 cannot invent periodic images or replace a missing required box with zero.
 Only the visible/requested frame is retained during live projection. The

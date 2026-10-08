@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import io
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -15,6 +16,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 ROUTE_FILE = ROOT / "devtools" / "conda-build" / "release_route.py"
 PROMOTION = ROOT / ".github" / "workflows" / "promote_conda_package.yaml"
+PREPARED_VERSION = re.search(r"^version: (.+)$", (ROOT / "CITATION.cff").read_text(), re.MULTILINE).group(1)
 
 spec = importlib.util.spec_from_file_location("conda_release_route", ROUTE_FILE)
 assert spec is not None and spec.loader is not None
@@ -24,11 +26,11 @@ spec.loader.exec_module(route)
 
 def test_staged_plan_is_bound_to_the_new_version():
     plan = route.read_plan()
-    assert plan["version"] == "0.24.0"
+    assert plan["version"] == PREPARED_VERSION
     assert plan["route"] == "staged"
     assert plan["reason"].strip()
-    assert route.select_route("0.24.0", "workflow_dispatch") == "staged"
-    assert route.select_route("0.24.0", "release") == "staged"
+    assert route.select_route(PREPARED_VERSION, "workflow_dispatch") == "staged"
+    assert route.select_route(PREPARED_VERSION, "release") == "staged"
     with pytest.raises(ValueError, match="release plan is for"):
         route.select_route("9.9.9", "release")
 
@@ -40,7 +42,7 @@ def test_dispatch_command_emits_the_selected_route(tmp_path):
             sys.executable,
             str(ROUTE_FILE),
             "--version",
-            "0.24.0",
+            PREPARED_VERSION,
             "--event",
             "workflow_dispatch",
             "--github-output",
