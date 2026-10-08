@@ -4,6 +4,7 @@ import {
     decodePopupEvent,
     encodePopupMessage,
     isPopupChannelIdentity,
+    popupTargetOrigin,
 } from "../messages/popup-channel";
 import {
     RUNTIME_PROTOCOL_VERSION,
@@ -13,16 +14,10 @@ import {
 } from "../messages/runtime-router";
 import { ArrayNativeStreamReceiver } from "../messages/array-native-stream";
 import { popupActionAllows } from "../messages/runtime-actions";
+import { mountControls } from "../ui/controls";
+import { createLocalUiModel } from "../ui/local-ui-model";
 
-/**
- * This function contains the entire logic that runs INSIDE the popup window.
- * IMPORTANT: This function is serialized via .toString() and executed in a separate window context.
- * Therefore, it MUST NOT rely on any external closure variables, imports, or scope from this file.
- * It can only use:
- * 1. Standard browser APIs (window, document, etc.)
- * 2. Variables explicitly injected into the popup's window object (e.g. window.molsysviewer_path)
- * 3. Globals exposed by the viewer bundle loaded inside the popup (e.g. window.MolSysViewerController)
- */
+/** Boot the popup through the same imported runtime module as its host. */
 export const bootPopup = async (loadedModule?: any) => {
     const openerWin = window.opener;
     if (!openerWin) {
@@ -119,8 +114,7 @@ export const bootPopup = async (loadedModule?: any) => {
             payload: data,
         };
         if (runtimeRouter.route(envelope).status !== "accepted") return;
-        const origin = window.location?.origin;
-        const targetOrigin = origin && origin !== "null" ? origin : "*";
+        const targetOrigin = popupTargetOrigin(window.location);
         try { openerWin.postMessage(encodePopupMessage(popupChannel, envelope), targetOrigin); } catch (e) {}
     };
 
@@ -241,6 +235,13 @@ export const bootPopup = async (loadedModule?: any) => {
         },
     );
 
+    const uiModel = createLocalUiModel({ panel_mode_style: initOptions.panelModeStyle || "integrated" });
+    const updateControlsUi = (data: any) => {
+        for (const [field, trait] of Object.entries({
+            autohide: "autohide_controls", autohideScope: "autohide_scope", showControls: "show_controls",
+            controlsPosition: "controls_position", controlsPositionFullscreen: "controls_position_fullscreen",
+        })) if (data[field] !== undefined) uiModel.set(trait, data[field]);
+    };
     // Create a new instance of MolSysViewerController for the popout
     const popControllerPromise = (async () => {
         // Wait a tick to ensure DOM is ready
@@ -253,7 +254,7 @@ export const bootPopup = async (loadedModule?: any) => {
             } else {
                 sendToHost("molsysviewer-log-from-popout", msg);
             }
-        }, undefined, initOptions);
+        }, undefined, { ...initOptions, model: uiModel });
 
         if (initOptions.isPanelOnly) {
             ctrl.setCanvasVisibility(false);
@@ -372,12 +373,13 @@ export const bootPopup = async (loadedModule?: any) => {
                     }
 
                     // Sync autohide state
-                    if (data.autohide !== undefined) updateAutohide(!!data.autohide);
+                    updateControlsUi(data);
                     window.clearTimeout(revealTimer);
                     revealViewer();
                     break;
 
                 case "molsysviewer-sync-ui":
+                    updateControlsUi(data);
                     if (data.viewerMode) ctrl.setViewerMode(data.viewerMode);
                     if (data.controlsMode) ctrl.setControlsMode(data.controlsMode);
                     if (data.panelModeStyle) ctrl.setPanelModeStyle(data.panelModeStyle);
@@ -388,7 +390,7 @@ export const bootPopup = async (loadedModule?: any) => {
                     break;
 
                 case "molsysviewer-sync-autohide":
-                    updateAutohide(!!data.enabled);
+                    updateControlsUi({ autohide: !!data.enabled, autohideScope: data.scope });
                     break;
 
                 case "molsysviewer-sync-op":
@@ -432,251 +434,13 @@ export const bootPopup = async (loadedModule?: any) => {
             .catch(error => console.error("Popout message queue error", error));
     });
 
-    // Re-implement button making helper inside popup scope
-    const makeBtn = (label: string, onClick: () => void) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.textContent = label;
-        btn.style.padding = "2px 6px";
-        btn.style.fontSize = "11px";
-        btn.style.lineHeight = "16px";
-        btn.style.height = "22px";
-        btn.style.minHeight = "22px";
-        btn.style.boxSizing = "border-box";
-        btn.style.display = "inline-flex";
-        btn.style.alignItems = "center";
-        btn.style.justifyContent = "center";
-        btn.style.border = "1px solid rgba(255,255,255,0.5)";
-        btn.style.borderRadius = "4px";
-        btn.style.background = "rgba(0,0,0,0.5)";
-        btn.style.color = "#fff";
-        btn.style.cursor = "pointer";
-        btn.addEventListener("click", onClick);
-        return btn;
-    };
-
-    const overlay = document.createElement("div");
-    overlay.className = "molsysviewer-controls";
-    overlay.style.position = "absolute";
-    overlay.style.top = "8px";
-    overlay.style.right = "8px";
-    overlay.style.display = "flex";
-    overlay.style.gap = "6px";
-    overlay.style.zIndex = "10";
-    overlay.style.pointerEvents = "none";
-    overlay.style.flexWrap = "nowrap";
-    // Add transition for smooth autohide
-    overlay.style.transition = "opacity 150ms ease";
-
-    const addBtn = (label: string, handler: () => void): HTMLButtonElement | undefined => {
-        if (initOptions.isPanelOnly) return undefined;
-        const b = makeBtn(label, handler);
-        b.style.pointerEvents = "auto";
-        overlay.appendChild(b);
-        return b;
-    };
-
-    // ... (Button definitions remain same) ...
-
-    // Autohide Logic for Popup
-    let autohide = false; // Default state, will be synced from host
-    
-    const applyShow = (visible: boolean) => {
-        if (autohide) {
-            overlay.style.opacity = visible ? "1" : "0";
-            overlay.style.pointerEvents = visible ? "auto" : "none";
-        } else {
-            overlay.style.opacity = "1";
-            overlay.style.pointerEvents = "auto";
-        }
-    };
-
-    const onEnter = () => applyShow(true);
-    const onLeave = () => applyShow(false);
-
-    const updateAutohide = (enabled: boolean) => {
-        if (enabled === autohide) return;
-        autohide = enabled;
-        
-        if (autohide) {
-            // Enable listeners
-            container?.addEventListener("pointerenter", onEnter);
-            container?.addEventListener("pointerleave", onLeave);
-            applyShow(false); // Initially hide until enter
-        } else {
-            // Disable listeners
-            container?.removeEventListener("pointerenter", onEnter);
-            container?.removeEventListener("pointerleave", onLeave);
-            applyShow(true); // Always show
-        }
-    };
-
-    // ... (Logic to handle incoming messages - update switch) ...
-    // Insert this case into the existing switch(type) block in the message listener:
-    /*
-                case "molsysviewer-sync-autohide":
-                    updateAutohide(!!data.enabled);
-                    break;
-                
-                case "molsysviewer-initial-sync":
-                    // ... (existing sync logic) ...
-                    if (data.autohide !== undefined) updateAutohide(!!data.autohide);
-                    break;
-    */
-    // I will apply the changes to the message listener below in a separate replacement block or merge logic.
-    
-    addBtn("Reset", async () => {
-        sendToHost("molsysviewer-sync-op", { op: "reset_view" });
-    });
-    addBtn("Full", async () => {
-        const ctrl = await popControllerPromise;
-        ctrl.toggleFullscreen();
-    });
-    addBtn("Bg", async () => {
-        sendToHost("molsysviewer-sync-op", { op: "toggle_background" });
-    });
-    addBtn("Spin", async () => {
-        sendToHost("molsysviewer-sync-op", { op: "toggle_spin" });
-    });
-    addBtn("Swing", async () => {
-        sendToHost("molsysviewer-sync-op", { op: "toggle_swing" });
-    });
-    let isUiVisible = true;
-    const uiBtn = addBtn("UI", async () => {
-        const ctrl = await popControllerPromise;
-        isUiVisible = !isUiVisible;
-        ctrl.sharedShell?.setVisible(isUiVisible);
-        if (uiBtn) uiBtn.style.background = isUiVisible ? "rgba(0,0,0,0.5)" : "rgba(239,68,68,0.6)";
-    });
-    addBtn("Pop", () => {
-        try { window.close(); } catch (e) {}
-    });
-    if (initOptions.isPanelOnly) {
-        overlay.style.display = "none";
-    }
-    container?.appendChild(overlay);
-
-    // ... (Trajectory controls creation) ...
-
-
-    // Trajectory controls (as an extension of the top-right buttons)
-    const traj = document.createElement("div");
-    traj.style.display = "none"; // show only for multi-structure systems
-    traj.style.alignItems = "center";
-    traj.style.gap = "6px";
-    traj.style.pointerEvents = "auto";
-    traj.style.marginLeft = "6px";
-
-    let currentStep = 1;
-    let currentFps = 30;
-
-    const btnPrev = makeBtn("−", async () => {
-        sendToHost("molsysviewer-sync-op", { op: "step_trajectory", by: -currentStep });
-    });
-    
-    const btnPlayPause = makeBtn("▶", async () => {
-        const ctrl = await popControllerPromise;
-        const isPlaying = ctrl.trajectory.getTrajectoryState().isPlaying; // Get current state
-        if (isPlaying) {
-            sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "stop" });
-        } else {
-            sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "play", fps: currentFps, step: currentStep });
-        }
-    });
-    btnPlayPause.style.paddingTop = "0px";
-    btnPlayPause.style.paddingBottom = "0px";
-    btnPlayPause.style.lineHeight = "18px";
-    btnPlayPause.style.minWidth = "28px";
-    btnPlayPause.style.width = "28px";
-    btnPlayPause.title = "Play/Pause Trajectory";
-
-    const btnNext = makeBtn("+", async () => {
-        sendToHost("molsysviewer-sync-op", { op: "step_trajectory", by: currentStep });
-    });
-
-    [btnPrev, btnPlayPause, btnNext].forEach(b => {
-        b.style.pointerEvents = "auto";
-    });
-
-    const slider = document.createElement("input");
-    slider.type = "range";
-    slider.min = "0";
-    slider.max = "0";
-    slider.value = "0";
-    slider.className = "molsysviewer-slider";
-    slider.style.width = "160px";
-    slider.style.flex = "0 0 160px";
-    slider.style.pointerEvents = "auto";
-    slider.style.appearance = "none";
-    (slider.style as any).WebkitAppearance = "none";
-    (slider.style as any).MozAppearance = "none";
-    slider.style.setProperty("accent-color", "transparent");
-    const updateSliderBg = () => {
-        const track = "rgba(200,200,200,0.35)";
-        slider.style.background = track;
-    };
-    slider.oninput = async () => {
-        const val = Number(slider.value);
-        if (!Number.isFinite(val)) return;
-        sendToHost("molsysviewer-sync-op", { op: "set_trajectory_frame", index: val });
-        updateSliderBg();
-    };
-
-    const label = document.createElement("span");
-    label.style.color = "rgba(0,0,0,0.55)";
-    label.style.fontSize = "11px";
-    label.style.minWidth = "60px";
-    label.style.textAlign = "center";
-    label.style.padding = "0px";
-    label.style.height = "16px";
-    label.style.lineHeight = "16px";
-    label.style.boxSizing = "border-box";
-    label.style.border = "0";
-    label.style.borderRadius = "0";
-    label.style.background = "transparent";
-    label.textContent = "0 / 0";
-
-    traj.appendChild(btnPrev);
-    traj.appendChild(btnPlayPause);
-    traj.appendChild(btnNext);
-    traj.appendChild(slider);
-    traj.appendChild(label);
-    
-    if (initOptions.isPanelOnly) {
-        traj.style.display = "none";
-    } else {
-        overlay.appendChild(traj);
-    }
-
-    popControllerPromise.then(c => {
-        const applyState = (state: any) => {
-            const frameCount = state.frameCount;
-            const current = state.currentFrame;
-            const isPlaying = state.isPlaying;
-
-            traj.style.display = frameCount > 1 ? "flex" : "none";
-            slider.max = frameCount > 0 ? String(frameCount - 1) : "0";
-            slider.value = String(Math.min(current, frameCount > 0 ? frameCount - 1 : 0));
-            updateSliderBg();
-            label.textContent = frameCount > 0 ? `${current + 1} / ${frameCount}` : "0 / 0";
-            const disabled = !state.hasTrajectory || frameCount <= 1;
-            [btnPrev, btnNext, slider, btnPlayPause].forEach(el => {
-                (el as HTMLButtonElement | HTMLInputElement).disabled = disabled;
-            });
-            
-            // Update Play/Pause button text
-            btnPlayPause.textContent = isPlaying ? "⏸" : "▶";
-            btnPlayPause.title = isPlaying ? "Pause Trajectory" : "Play Trajectory";
-            overlay.style.opacity = "1";
-            overlay.style.display = "flex";
-        };
-        c.onTrajectoryState(applyState, { immediate: false });
-        const initialState = c.trajectory.getTrajectoryState();
-        if (initialState.hasTrajectory || initialState.expectedFrameCount !== undefined) {
-            applyState(initialState);
-        }
-    });
-
+    // Canvas controls share mode, reveal policy and lifetime with the widget.
+    // A panel-only popup has no canvas controls or hidden trajectory bar.
+    const controlsProvider = loadedModule?.mountControls || mountControls;
+    const ctrl = await popControllerPromise;
+    if (!initOptions.isPanelOnly) controlsProvider(ctrl, uiModel,
+        (msg: any) => sendToHost("molsysviewer-sync-op", msg), container!, () => window.close(),
+        { popupButtonTitle: "Close popup" });
     // Notify host
     sendToHost(initOptions.isPanelOnly ? "molsysviewer-panel-ready" : "molsysviewer-pop-ready", null);
 };

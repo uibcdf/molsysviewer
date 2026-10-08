@@ -140061,6 +140061,1196 @@ var DefaultPluginSpec = () => ({
 // src/assets/varela-round/font-data.ts
 var VARELA_ROUND_WOFF2_DATA_URL = "data:font/woff2;base64,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";
 
+// src/ui/help-overlay.ts
+var DEFAULT_SECTIONS = {
+  mouse: [
+    ["Left drag", "Rotate"],
+    ["Right drag", "Pan"],
+    ["Scroll", "Zoom"],
+    ["Left click", "Select element"],
+    ["Shift + Click", "Add to selection"],
+    ["Shift + Alt + Click", "Range selection (same chain)"],
+    ["Double click", "Focus on element"],
+    ["Right click", "Context menu"]
+  ],
+  keyboard: [
+    ["N", "Open / close Studio"],
+    ["W", "Open / close Workbench"],
+    ["V", "Toggle canvas visibility"],
+    ["H", "Toggle this help"],
+    ["Esc", "Close panel / cancel"]
+  ]
+};
+function injectHelpStyles() {
+  const styleId = "molsysviewer-help-styles";
+  if (document.getElementById(styleId)) return;
+  const style = document.createElement("style");
+  style.id = styleId;
+  style.textContent = `
+        .molsysviewer-help-card {
+            width: min(640px, 88%);
+            height: min(480px, calc(100% - 40px));
+            overflow-y: auto;
+            background: rgba(18, 18, 22, 0.92);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.45);
+            color: #f4f4f5;
+            font-family: "IBM Plex Sans", system-ui, sans-serif;
+            font-size: 13px;
+            padding: 20px 24px 24px;
+            box-sizing: border-box;
+            transition: all 150ms cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        /* Custom elegant scrollbar for the help card */
+        .molsysviewer-help-card::-webkit-scrollbar {
+            width: 4px;
+        }
+        .molsysviewer-help-card::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .molsysviewer-help-card::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 99px;
+        }
+        .molsysviewer-help-card::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .molsysviewer-help-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .molsysviewer-help-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .molsysviewer-help-close {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.45);
+            cursor: default;
+            padding: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            transition: color 120ms ease;
+        }
+        .molsysviewer-help-close:hover {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .molsysviewer-help-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+        }
+        .molsysviewer-help-section-title {
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            opacity: 0.45;
+            margin-bottom: 10px;
+        }
+        .molsysviewer-help-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .molsysviewer-help-key {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 2px 7px;
+            font-size: 11px;
+            font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+            white-space: nowrap;
+            flex-shrink: 0;
+            line-height: 1.6;
+        }
+        .molsysviewer-help-desc {
+            opacity: 0.75;
+            text-align: right;
+            font-size: 12px;
+        }
+    `;
+  document.head.appendChild(style);
+}
+function makeSection(heading, rows) {
+  const section = document.createElement("div");
+  const h = document.createElement("div");
+  h.className = "molsysviewer-help-section-title";
+  h.textContent = heading;
+  section.appendChild(h);
+  for (const [key2, desc] of rows) {
+    const row3 = document.createElement("div");
+    row3.className = "molsysviewer-help-row";
+    const keyEl = document.createElement("span");
+    keyEl.className = "molsysviewer-help-key";
+    keyEl.textContent = key2;
+    const descEl = document.createElement("span");
+    descEl.className = "molsysviewer-help-desc";
+    descEl.textContent = desc;
+    row3.appendChild(keyEl);
+    row3.appendChild(descEl);
+    section.appendChild(row3);
+  }
+  return section;
+}
+var HelpOverlay = class {
+  constructor(host, sections = DEFAULT_SECTIONS) {
+    this.host = host;
+    this.visible = false;
+    injectHelpStyles();
+    this.root = document.createElement("div");
+    Object.assign(this.root.style, {
+      position: "absolute",
+      inset: "0",
+      display: "none",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: "40",
+      pointerEvents: "auto"
+    });
+    const card8 = document.createElement("div");
+    card8.className = "molsysviewer-help-card";
+    const header2 = document.createElement("div");
+    header2.className = "molsysviewer-help-header";
+    const title = document.createElement("span");
+    title.className = "molsysviewer-help-title";
+    title.textContent = "Canvas Quick Reference";
+    const closeBtn = document.createElement("button");
+    closeBtn.type = "button";
+    closeBtn.title = "Close (H or Esc)";
+    closeBtn.className = "molsysviewer-help-close";
+    closeBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/></svg>`;
+    closeBtn.addEventListener("click", () => this.hide());
+    header2.appendChild(title);
+    header2.appendChild(closeBtn);
+    card8.appendChild(header2);
+    const grid = document.createElement("div");
+    grid.className = "molsysviewer-help-grid";
+    grid.appendChild(makeSection("Mouse", sections.mouse));
+    grid.appendChild(makeSection("Keyboard", sections.keyboard));
+    card8.appendChild(grid);
+    this.root.addEventListener("pointerdown", (ev) => {
+      if (ev.target === this.root) this.hide();
+    });
+    this.root.appendChild(card8);
+    this.host.appendChild(this.root);
+  }
+  toggle() {
+    this.visible ? this.hide() : this.show();
+  }
+  show() {
+    this.visible = true;
+    this.root.style.display = "flex";
+    this.onVisibilityChange?.(true);
+    const onKey = (ev) => {
+      if (ev.target?.closest?.("input, textarea, [contenteditable]")) return;
+      if (!this.host.contains(ev.target)) return;
+      if (ev.key === "Escape" || ev.key.toLowerCase() === "h") {
+        ev.stopPropagation();
+        this.hide();
+      }
+    };
+    window.addEventListener("keydown", onKey, true);
+    this.releaseKeyHandler = () => window.removeEventListener("keydown", onKey, true);
+  }
+  hide() {
+    this.visible = false;
+    this.root.style.display = "none";
+    this.onVisibilityChange?.(false);
+    this.releaseKeyHandler?.();
+    this.releaseKeyHandler = void 0;
+  }
+  isVisible() {
+    return this.visible;
+  }
+  dispose() {
+    this.hide();
+    this.root.remove();
+  }
+};
+
+// src/ui/controls-visibility.ts
+var ControlsVisibility = class {
+  constructor(host, surface, hotspot, config2) {
+    this.host = host;
+    this.surface = surface;
+    this.hotspot = hotspot;
+    this.config = config2;
+    this.release = [];
+    this.keyboardFocus = false;
+    this.touchRevealed = false;
+    this.disposed = false;
+    hotspot.setAttribute("data-molsysviewer-controls-hotspot", "true");
+    hotspot.setAttribute("role", "button");
+    hotspot.setAttribute("aria-label", "Show canvas controls");
+    const listen = (target, event, callback) => {
+      target.addEventListener(event, callback);
+      this.release.push(() => target.removeEventListener(event, callback));
+    };
+    const refresh = () => this.refresh();
+    for (const element of [host, hotspot, surface]) {
+      listen(element, "pointerenter", refresh);
+      listen(element, "pointerleave", refresh);
+    }
+    listen(host, "focusin", refresh);
+    listen(host, "focusout", () => queueMicrotask(refresh));
+    listen(document, "keydown", () => {
+      this.keyboardFocus = true;
+      this.refresh();
+    });
+    listen(document, "pointermove", () => {
+      if (!this.keyboardFocus) return;
+      this.keyboardFocus = false;
+      this.refresh();
+    });
+    listen(document, "pointerdown", (event) => {
+      this.keyboardFocus = false;
+      if (!surface.contains(event.target) && !hotspot.contains(event.target)) this.touchRevealed = false;
+      this.refresh();
+    });
+    listen(hotspot, "pointerdown", (event) => {
+      event.stopPropagation();
+      this.keyboardFocus = false;
+      this.touchRevealed = event.pointerType === "touch";
+      hotspot.focus();
+      this.refresh();
+    });
+    listen(hotspot, "keydown", (event) => {
+      const key2 = event.key;
+      if (key2 !== "Enter" && key2 !== " ") return;
+      event.preventDefault();
+      event.stopPropagation();
+      surface.querySelector("button:not([disabled])")?.focus();
+    });
+    surface.style.transition = "opacity 200ms ease";
+    this.refresh();
+  }
+  refresh() {
+    if (this.disposed) return;
+    const { visible, autohide, scope, suppressed } = this.config();
+    const available = visible && !suppressed;
+    const focused = this.surface.contains(document.activeElement) || document.activeElement === this.hotspot;
+    const hovered = scope === "canvas" ? this.host.matches(":hover") : this.hotspot.matches(":hover") || this.surface.matches(":hover");
+    const show = available && (!autohide || hovered || this.keyboardFocus && focused || this.touchRevealed);
+    this.surface.style.opacity = show ? "1" : "0";
+    this.surface.style.visibility = show ? "visible" : "hidden";
+    this.surface.style.pointerEvents = show ? "auto" : "none";
+    this.surface.setAttribute("aria-hidden", show ? "false" : "true");
+    this.hotspot.style.display = available && autohide ? "block" : "none";
+    this.hotspot.tabIndex = available && autohide ? 0 : -1;
+  }
+  dispose() {
+    this.disposed = true;
+    for (const release of this.release) release();
+  }
+};
+
+// src/ui/viewport-icon-button.ts
+var VIEWPORT_ICON_PANEL = `<rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="5.5" y1="2.5" x2="5.5" y2="13.5"/>`;
+var VIEWPORT_ICON_FULLSCREEN = `<polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>`;
+var VIEWPORT_ICON_EXIT_FULLSCREEN = `<polyline points="5,2 5,5 2,5"/><polyline points="11,2 11,5 14,5"/><polyline points="14,11 11,11 11,14"/><polyline points="2,11 5,11 5,14"/>`;
+var VIEWPORT_ICON_POPUP = `<line x1="5.5" y1="10.5" x2="11.5" y2="4.5"/><polyline points="8,4 12,4 12,8"/><polyline points="5.5,7 3,7 3,13 9,13 9,10.5"/>`;
+var VIEWPORT_ICON_HELP = `<circle cx="8" cy="8" r="6"/><path d="M6.2,6.5a1.9,1.9,0,0,1,3.8,0c0,1.9-1.9,1.9-1.9,3" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="12.8" x2="8" y2="12.8" stroke-width="2" stroke-linecap="round"/>`;
+var VIEWPORT_ICON_RESET = `<path d="M3.1,5.5A5.5,5.5,0,1,1,2.8,10"/><polyline points="2,2 2,6 6,6"/>`;
+function setViewportIcon(button2, svgInner) {
+  button2.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;">${svgInner}</svg>`;
+}
+function makeViewportIconButton(svgInner, title, onClick) {
+  const button2 = document.createElement("button");
+  button2.type = "button";
+  button2.title = title;
+  setViewportIcon(button2, svgInner);
+  Object.assign(button2.style, {
+    width: "28px",
+    height: "28px",
+    minWidth: "28px",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "0",
+    border: "1px solid rgba(255, 255, 255, 0.15)",
+    borderRadius: "6px",
+    background: "rgba(18, 18, 22, 0.75)",
+    color: "rgba(255, 255, 255, 0.75)",
+    cursor: "default",
+    userSelect: "none",
+    pointerEvents: "auto",
+    boxSizing: "border-box",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+    transition: "all 120ms ease"
+  });
+  button2.addEventListener("mouseenter", () => {
+    button2.style.background = "rgba(18, 18, 22, 0.95)";
+    button2.style.borderColor = "rgba(255, 255, 255, 0.35)";
+    button2.style.color = "rgba(255, 255, 255, 0.98)";
+  });
+  button2.addEventListener("mouseleave", () => {
+    button2.style.background = "rgba(18, 18, 22, 0.75)";
+    button2.style.borderColor = "rgba(255, 255, 255, 0.15)";
+    button2.style.color = "rgba(255, 255, 255, 0.75)";
+  });
+  button2.addEventListener("click", onClick);
+  return button2;
+}
+
+// src/ui/controls.ts
+var activeBuilds = /* @__PURE__ */ new WeakMap();
+var mountedControls = /* @__PURE__ */ new WeakMap();
+function disposeControls(controller) {
+  mountedControls.get(controller)?.();
+  mountedControls.delete(controller);
+}
+function mountControls(...args) {
+  const [controller, model, , container] = args;
+  disposeControls(controller);
+  const rebuild = () => {
+    const overlay = buildControls(...args);
+    if (overlay) container.appendChild(overlay);
+  };
+  let queued = false, disposed = false;
+  const scheduleRebuild = () => {
+    if (queued) return;
+    queued = true;
+    queueMicrotask(() => {
+      queued = false;
+      if (!disposed) rebuild();
+    });
+  };
+  model.on("change:controls_mode", scheduleRebuild);
+  model.on("change:panel_mode_style", scheduleRebuild);
+  rebuild();
+  const dispose2 = () => {
+    disposed = true;
+    model.off?.("change:controls_mode", scheduleRebuild);
+    model.off?.("change:panel_mode_style", scheduleRebuild);
+    activeBuilds.get(container)?.();
+    activeBuilds.delete(container);
+    mountedControls.delete(controller);
+  };
+  mountedControls.set(controller, dispose2);
+  return dispose2;
+}
+var makeButton = (label2, onClick) => {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.textContent = label2;
+  btn.style.padding = "2px 6px";
+  btn.style.fontSize = "11px";
+  btn.style.lineHeight = "16px";
+  btn.style.height = "22px";
+  btn.style.minHeight = "22px";
+  btn.style.boxSizing = "border-box";
+  btn.style.display = "inline-flex";
+  btn.style.alignItems = "center";
+  btn.style.justifyContent = "center";
+  btn.style.border = "1px solid rgba(255,255,255,0.5)";
+  btn.style.borderRadius = "4px";
+  btn.style.background = "rgba(0,0,0,0.5)";
+  btn.style.color = "#fff";
+  btn.style.cursor = "default";
+  btn.style.userSelect = "none";
+  btn.addEventListener("click", onClick);
+  return btn;
+};
+var makeMinimalTrajButton = (svgInner, title, onClick) => {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.title = title;
+  btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;">${svgInner}</svg>`;
+  Object.assign(btn.style, {
+    width: "28px",
+    height: "28px",
+    minWidth: "28px",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "0",
+    border: "1px solid rgba(255, 255, 255, 0.15)",
+    borderRadius: "6px",
+    background: "rgba(18, 18, 22, 0.75)",
+    color: "rgba(255, 255, 255, 0.75)",
+    cursor: "default",
+    userSelect: "none",
+    pointerEvents: "auto",
+    boxSizing: "border-box",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+    transition: "all 120ms ease"
+  });
+  btn.addEventListener("mouseenter", () => {
+    btn.style.background = "rgba(18, 18, 22, 0.95)";
+    btn.style.borderColor = "rgba(255, 255, 255, 0.35)";
+    btn.style.color = "rgba(255, 255, 255, 0.98)";
+  });
+  btn.addEventListener("mouseleave", () => {
+    btn.style.background = "rgba(18, 18, 22, 0.75)";
+    btn.style.borderColor = "rgba(255, 255, 255, 0.15)";
+    btn.style.color = "rgba(255, 255, 255, 0.75)";
+  });
+  btn.addEventListener("click", onClick);
+  return btn;
+};
+var injectStyles = () => {
+  let el = document.getElementById("molsysviewer-traj-style");
+  if (!el) {
+    el = document.createElement("style");
+    el.id = "molsysviewer-traj-style";
+    document.head.appendChild(el);
+  }
+  const css = `
+        .molsysviewer-controls {
+            font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "DejaVu Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        }
+        .molsysviewer-controls button,
+        .molsysviewer-controls input,
+        .molsysviewer-controls select,
+        .molsysviewer-controls textarea,
+        .molsysviewer-controls span {
+            font-family: inherit;
+        }
+        .molsysviewer-controls,
+        .molsysviewer-controls * {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+        }
+        .molsysviewer-traj-input::-webkit-inner-spin-button,
+        .molsysviewer-traj-input::-webkit-outer-spin-button {
+            -webkit-appearance: none !important;
+            appearance: none !important;
+            -moz-appearance: none !important;
+            margin: 0 !important;
+        }
+        .molsysviewer-traj-input {
+            -moz-appearance: textfield !important;
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            color: rgba(255,255,255,0.9);
+            background: rgba(40,40,40,0.6);
+            caret-color: transparent;
+        }
+        .molsysviewer-slider {
+            background: transparent;
+            height: 16px;
+            border-radius: 999px;
+            overflow: visible;
+        }
+        .molsysviewer-slider::-webkit-slider-runnable-track {
+            background: rgba(200,200,200,0.35) !important;
+            height: 16px;
+            border-radius: 999px;
+        }
+        .molsysviewer-slider::-moz-range-track {
+            background: rgba(200,200,200,0.35) !important;
+            height: 16px;
+            border-radius: 999px;
+        }
+        .molsysviewer-slider::-ms-track {
+            background: rgba(200,200,200,0.35) !important;
+            height: 16px;
+            border-radius: 999px;
+            border: none;
+            color: transparent;
+        }
+        .molsysviewer-slider::-webkit-slider-thumb {
+            -webkit-appearance: none !important;
+            appearance: none !important;
+            width: 16px;
+            height: 16px;
+            border-radius: 50% !important;
+            background: rgb(80,80,80) !important;
+            border: none !important;
+            box-shadow: none !important;
+            margin-top: 0px;
+        }
+        .molsysviewer-slider::-webkit-slider-thumb:hover,
+        .molsysviewer-slider::-webkit-slider-thumb:active,
+        .molsysviewer-slider::-webkit-slider-thumb:focus {
+            background: rgb(80,80,80) !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        .molsysviewer-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50% !important;
+            background: rgb(80,80,80) !important;
+            border: none !important;
+        }
+        .molsysviewer-slider::-moz-range-thumb:hover,
+        .molsysviewer-slider::-moz-range-thumb:active,
+        .molsysviewer-slider::-moz-range-thumb:focus {
+            background: rgba(80,80,80,0.95) !important;
+            border: none !important;
+        }
+        .molsysviewer-slider::-ms-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50% !important;
+            background: rgba(80,80,80,0.95) !important;
+            border: none !important;
+        }
+        .molsysviewer-slider-minimal {
+            background: transparent;
+            height: 4px;
+            border-radius: 999px;
+            overflow: visible;
+        }
+        .molsysviewer-slider-minimal::-webkit-slider-runnable-track {
+            background: rgba(255, 255, 255, 0.3) !important;
+            height: 4px;
+            border-radius: 999px;
+        }
+        .molsysviewer-slider-minimal::-moz-range-track {
+            background: rgba(255, 255, 255, 0.3) !important;
+            height: 4px;
+            border-radius: 999px;
+        }
+        .molsysviewer-slider-minimal::-ms-track {
+            background: rgba(255, 255, 255, 0.3) !important;
+            height: 4px;
+            border-radius: 999px;
+            border: none;
+            color: transparent;
+        }
+        .molsysviewer-slider-minimal::-webkit-slider-thumb {
+            -webkit-appearance: none !important;
+            appearance: none !important;
+            width: 10px;
+            height: 10px;
+            border-radius: 50% !important;
+            background: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+            margin-top: -3px;
+            cursor: default;
+        }
+        .molsysviewer-slider-minimal::-webkit-slider-thumb:hover,
+        .molsysviewer-slider-minimal::-webkit-slider-thumb:active {
+            background: #ffffff !important;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.6) !important;
+        }
+        .molsysviewer-slider-minimal::-moz-range-thumb {
+            width: 10px;
+            height: 10px;
+            border-radius: 50% !important;
+            background: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+            cursor: default;
+        }
+        .molsysviewer-slider-minimal::-moz-range-thumb:hover,
+        .molsysviewer-slider-minimal::-moz-range-thumb:active {
+            background: #ffffff !important;
+        }
+        .molsysviewer-slider-minimal::-ms-thumb {
+            width: 10px;
+            height: 10px;
+            border-radius: 50% !important;
+            background: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+        }
+        .molsysviewer-traj-capsule {
+            height: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 10px;
+            background: rgba(18, 18, 22, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        }
+    `;
+  el.textContent = css;
+};
+var makeNumberControl = (initial, onChange, title, minimal = false) => {
+  const wrapper = document.createElement("div");
+  wrapper.style.position = "relative";
+  wrapper.style.display = "inline-block";
+  wrapper.style.width = minimal ? "42px" : "52px";
+  wrapper.style.height = minimal ? "28px" : "22px";
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = String(initial);
+  input.style.width = minimal ? "42px" : "52px";
+  input.style.height = minimal ? "28px" : "22px";
+  input.style.fontSize = minimal ? "11px" : "11px";
+  input.style.fontFamily = '"IBM Plex Sans", system-ui, sans-serif';
+  input.style.fontWeight = minimal ? "600" : "normal";
+  input.style.textAlign = "center";
+  input.style.boxSizing = "border-box";
+  if (minimal) {
+    input.style.color = "rgba(255,255,255,0.9)";
+    input.style.background = "rgba(18, 18, 22, 0.75)";
+    input.style.border = "1px solid rgba(255,255,255,0.15)";
+    input.style.borderRadius = "6px";
+    input.style.padding = "0 14px 0 6px";
+  } else {
+    input.style.color = "rgba(255,255,255,0.9)";
+    input.style.background = "rgba(40,40,40,0.6)";
+    input.style.border = "1px solid rgba(255,255,255,0.55)";
+    input.style.borderRadius = "4px";
+    input.style.padding = "0 18px 0 4px";
+  }
+  input.style.appearance = "none";
+  input.style.MozAppearance = "textfield";
+  input.style.WebkitAppearance = "none";
+  input.className = "molsysviewer-traj-input";
+  input.title = title;
+  input.setAttribute("inputmode", "numeric");
+  input.setAttribute("pattern", "[0-9]*");
+  input.onchange = () => {
+    const val = Number(input.value);
+    const n = Number.isFinite(val) && val > 0 ? Math.floor(val) : initial;
+    onChange(n);
+    input.value = String(n);
+  };
+  const spinner = document.createElement("div");
+  spinner.style.position = "absolute";
+  spinner.style.top = "1px";
+  spinner.style.right = "2px";
+  spinner.style.width = minimal ? "12px" : "14px";
+  spinner.style.height = minimal ? "26px" : "18px";
+  spinner.style.display = "flex";
+  spinner.style.flexDirection = "column";
+  spinner.style.alignItems = "center";
+  const mkArrow = (charOrSvg, delta2, extraTop = "0px") => {
+    const btn = document.createElement("div");
+    if (minimal) {
+      btn.innerHTML = charOrSvg;
+      btn.style.display = "flex";
+      btn.style.alignItems = "center";
+      btn.style.justifyContent = "center";
+      btn.style.width = "12px";
+      btn.style.height = "12px";
+    } else {
+      btn.textContent = charOrSvg;
+      btn.style.fontSize = "10px";
+      btn.style.lineHeight = "10px";
+      btn.style.height = "9px";
+    }
+    btn.style.color = "rgba(255, 255, 255, 0.75)";
+    btn.style.background = "transparent";
+    btn.style.border = "none";
+    btn.style.textAlign = "center";
+    btn.style.cursor = "default";
+    btn.style.marginTop = extraTop;
+    btn.onclick = () => {
+      const val = Number(input.value);
+      const next = Number.isFinite(val) ? val + delta2 : delta2;
+      const n = next > 0 ? Math.floor(next) : 1;
+      onChange(n);
+      input.value = String(n);
+    };
+    return btn;
+  };
+  const upBtn = mkArrow(
+    minimal ? `<svg xmlns="http://www.w3.org/2000/svg" width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5,4.5 4,2 6.5,4.5"/></svg>` : "\u25B2",
+    1,
+    "0px"
+  );
+  const downBtn = mkArrow(
+    minimal ? `<svg xmlns="http://www.w3.org/2000/svg" width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5,1.5 4,4 6.5,1.5"/></svg>` : "\u25BC",
+    -1,
+    minimal ? "2px" : "0px"
+  );
+  spinner.appendChild(upBtn);
+  spinner.appendChild(downBtn);
+  wrapper.appendChild(input);
+  wrapper.appendChild(spinner);
+  return { wrapper, input };
+};
+var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPopClick) => {
+  activeBuilds.get(container)?.();
+  const release = [];
+  const timers = [];
+  const listen = (target, event, callback, capture = false) => {
+    target.addEventListener(event, callback, capture);
+    release.push(() => target.removeEventListener(event, callback, capture));
+  };
+  const observe = (event, callback) => {
+    model.on(event, callback);
+    release.push(() => model.off?.(event, callback));
+  };
+  let refreshVisibility = () => {
+  };
+  const controlsMode = model.get("controls_mode") || "classic";
+  const isCinema = controlsMode === "cinema";
+  const isMinimal = controlsMode === "minimal" || isCinema;
+  const helpOverlay = new HelpOverlay(container);
+  release.push(() => helpOverlay.dispose());
+  c8.setHelpOpener(() => helpOverlay.show());
+  const onHelpKey = (ev) => {
+    if (ev.target?.closest?.("input, textarea, [contenteditable]")) return;
+    if (!container.contains(ev.target)) return;
+    if (ev.key.toLowerCase() === "h") {
+      ev.preventDefault();
+      ev.stopPropagation();
+      helpOverlay.toggle();
+    }
+  };
+  listen(window, "keydown", onHelpKey, true);
+  if (isCinema) {
+    const toast = document.createElement("div");
+    toast.textContent = "Cinema Mode active. Press N/W for panels, H for help.";
+    Object.assign(toast.style, {
+      position: "absolute",
+      bottom: "24px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      background: "rgba(18, 18, 22, 0.88)",
+      color: "rgba(244, 244, 245, 0.95)",
+      padding: "8px 16px",
+      borderRadius: "999px",
+      fontSize: "11px",
+      fontWeight: "500",
+      fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+      border: "1px solid rgba(255, 255, 255, 0.12)",
+      boxShadow: "0 8px 24px rgba(0, 0, 0, 0.35)",
+      zIndex: "100",
+      pointerEvents: "none",
+      transition: "opacity 0.8s ease-in-out",
+      opacity: "1"
+    });
+    container.appendChild(toast);
+    release.push(() => toast.remove());
+    timers.push(setTimeout(() => {
+      toast.style.opacity = "0";
+      timers.push(setTimeout(() => {
+        toast.remove();
+      }, 800));
+    }, 3200));
+  }
+  injectStyles();
+  let overlay;
+  if (!isCinema) {
+    overlay = document.createElement("div");
+    overlay.className = "molsysviewer-controls";
+    overlay.style.position = "absolute";
+    overlay.style.display = "flex";
+    overlay.style.gap = "6px";
+    overlay.style.zIndex = "10";
+    overlay.style.pointerEvents = "none";
+    overlay.style.flexWrap = "nowrap";
+    overlay.style.opacity = "0";
+    overlay.style.display = "none";
+  }
+  const panelModeStyle = model.get("panel_mode_style") || "drawer";
+  const traj = document.createElement("div");
+  traj.setAttribute("data-molsysviewer-trajectory-controls", "true");
+  traj.style.display = "flex";
+  traj.style.alignItems = "center";
+  traj.style.gap = "6px";
+  traj.style.pointerEvents = "auto";
+  traj.style.marginLeft = isMinimal ? "0px" : "6px";
+  traj.style.marginRight = isMinimal ? "10px" : "0px";
+  traj.style.paddingLeft = "0px";
+  traj.style.borderLeft = "0px";
+  traj.style.display = "none";
+  let currentStep = 1;
+  let currentFps = 30;
+  let btnPrev;
+  let btnNext;
+  let stepControl = null;
+  let fpsControl = null;
+  let trajCapsule;
+  const btnPlayPause = isMinimal ? makeMinimalTrajButton(`<polygon points="5,3 13,8 5,13" fill="currentColor"/>`, "Play Trajectory", () => {
+    const isPlaying = c8.trajectory.getTrajectoryState().isPlaying;
+    if (isPlaying) {
+      c8.stopTrajectoryPlayback();
+      sendSync({ op: "set_trajectory_playback", action: "stop" });
+    } else {
+      c8.playTrajectory({ fps: currentFps, step: currentStep });
+      sendSync({
+        op: "set_trajectory_playback",
+        action: "play",
+        fps: currentFps,
+        step: currentStep
+      });
+    }
+  }) : makeButton("\u25B6 / \u23F8", () => {
+    const isPlaying = c8.trajectory.getTrajectoryState().isPlaying;
+    if (isPlaying) {
+      c8.stopTrajectoryPlayback();
+      sendSync({ op: "set_trajectory_playback", action: "stop" });
+    } else {
+      c8.playTrajectory({ fps: currentFps, step: currentStep });
+      sendSync({
+        op: "set_trajectory_playback",
+        action: "play",
+        fps: currentFps,
+        step: currentStep
+      });
+    }
+  });
+  btnPlayPause.setAttribute("data-molsysviewer-trajectory-playback", "play");
+  if (isMinimal) {
+    btnPrev = makeMinimalTrajButton(`<rect x="3" y="3" width="2" height="10" fill="currentColor"/><polygon points="12,3 6,8 12,13" fill="currentColor"/>`, "Previous Step", () => {
+      c8.stepTrajectory(-currentStep);
+      sendSync({ op: "step_trajectory", by: -currentStep });
+    });
+    btnNext = makeMinimalTrajButton(`<polygon points="4,3 10,8 4,13" fill="currentColor"/><rect x="11" y="3" width="2" height="10" fill="currentColor"/>`, "Next Step", () => {
+      c8.stepTrajectory(currentStep);
+      sendSync({ op: "step_trajectory", by: currentStep });
+    });
+  } else {
+    btnPlayPause.style.paddingTop = "0px";
+    btnPlayPause.style.paddingBottom = "0px";
+    btnPlayPause.style.lineHeight = "18px";
+    btnPlayPause.style.minWidth = "28px";
+    btnPlayPause.style.width = "28px";
+    btnPrev = makeButton("\u2212", () => {
+      c8.stepTrajectory(-currentStep);
+      sendSync({ op: "step_trajectory", by: -currentStep });
+    });
+    btnNext = makeButton("+", () => {
+      c8.stepTrajectory(currentStep);
+      sendSync({ op: "step_trajectory", by: currentStep });
+    });
+  }
+  btnPrev?.setAttribute("data-molsysviewer-trajectory-step", "previous");
+  btnNext?.setAttribute("data-molsysviewer-trajectory-step", "next");
+  const slider = document.createElement("input");
+  slider.setAttribute("data-molsysviewer-trajectory-frame", "true");
+  slider.type = "range";
+  slider.min = "0";
+  slider.max = "0";
+  slider.value = "0";
+  slider.className = isMinimal ? "molsysviewer-slider-minimal" : "molsysviewer-slider";
+  slider.style.width = isMinimal ? "100px" : "160px";
+  slider.style.flex = isMinimal ? "0 0 100px" : "0 0 160px";
+  slider.style.background = "transparent";
+  slider.style.appearance = "none";
+  slider.style.WebkitAppearance = "none";
+  slider.style.MozAppearance = "none";
+  slider.style.setProperty("accent-color", "transparent");
+  slider.style.borderRadius = "999px";
+  slider.style.overflow = "visible";
+  const updateSliderBg = () => {
+    if (isMinimal) {
+      slider.style.background = "transparent";
+    } else {
+      const track = "rgba(200,200,200,0.35)";
+      slider.style.background = track;
+    }
+  };
+  slider.oninput = () => {
+    const val = Number(slider.value);
+    if (!Number.isFinite(val)) return;
+    void c8.setTrajectoryFrame(val);
+    sendSync({ op: "set_trajectory_frame", index: val });
+    updateSliderBg();
+  };
+  updateSliderBg();
+  const label2 = document.createElement("span");
+  label2.setAttribute("data-molsysviewer-trajectory-label", "true");
+  if (isMinimal) {
+    label2.style.color = "rgba(255, 255, 255, 0.85)";
+    label2.style.fontSize = "11px";
+    label2.style.fontFamily = '"IBM Plex Sans", system-ui, sans-serif';
+    label2.style.fontWeight = "600";
+    label2.style.minWidth = "42px";
+    label2.style.textAlign = "right";
+  } else {
+    label2.style.color = "rgba(0,0,0,0.5)";
+    label2.style.fontSize = "11px";
+    label2.style.minWidth = "60px";
+    label2.style.textAlign = "center";
+  }
+  label2.textContent = "0 / 0";
+  if (isMinimal) {
+    trajCapsule = document.createElement("div");
+    trajCapsule.className = "molsysviewer-traj-capsule";
+    trajCapsule.appendChild(slider);
+    trajCapsule.appendChild(label2);
+    traj.appendChild(trajCapsule);
+    if (btnPrev) traj.appendChild(btnPrev);
+    traj.appendChild(btnPlayPause);
+    if (btnNext) traj.appendChild(btnNext);
+    if (isCinema) {
+      stepControl = makeNumberControl(1, (n) => {
+        currentStep = n;
+        const state = c8.trajectory.getTrajectoryState();
+        if (state.isPlaying) {
+          c8.playTrajectory({ fps: currentFps, step: currentStep });
+        }
+      }, "Step size", true);
+      fpsControl = makeNumberControl(30, (n) => {
+        currentFps = n;
+        const state = c8.trajectory.getTrajectoryState();
+        if (state.isPlaying) {
+          c8.playTrajectory({ fps: currentFps, step: currentStep });
+        }
+      }, "FPS", true);
+      traj.appendChild(stepControl.wrapper);
+      traj.appendChild(fpsControl.wrapper);
+    }
+  } else {
+    stepControl = makeNumberControl(1, (n) => {
+      currentStep = n;
+      const state = c8.trajectory.getTrajectoryState();
+      if (state.isPlaying) {
+        btnPlayPause.setAttribute("data-molsysviewer-trajectory-playback", "stop");
+        c8.playTrajectory({ fps: currentFps, step: currentStep });
+      }
+    }, "Step size", isMinimal);
+    fpsControl = makeNumberControl(30, (n) => {
+      currentFps = n;
+      const state = c8.trajectory.getTrajectoryState();
+      if (state.isPlaying) {
+        c8.playTrajectory({ fps: currentFps, step: currentStep });
+      }
+    }, "FPS", isMinimal);
+    if (btnPrev) traj.appendChild(btnPrev);
+    traj.appendChild(btnPlayPause);
+    if (btnNext) traj.appendChild(btnNext);
+    traj.appendChild(slider);
+    traj.appendChild(label2);
+    traj.appendChild(stepControl.wrapper);
+    traj.appendChild(fpsControl.wrapper);
+  }
+  let cinemaHotspot;
+  if (isCinema) {
+    Object.assign(traj.style, {
+      position: "absolute",
+      bottom: "12px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      opacity: "0",
+      display: "flex",
+      alignItems: "center",
+      gap: "6px",
+      zIndex: "10",
+      pointerEvents: "auto",
+      transition: "transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.2s ease"
+    });
+    const triggerArea = document.createElement("div");
+    Object.assign(triggerArea.style, {
+      position: "absolute",
+      bottom: "0px",
+      left: "0px",
+      width: "100%",
+      height: "56px",
+      zIndex: "9",
+      pointerEvents: "auto",
+      background: "transparent"
+    });
+    cinemaHotspot = triggerArea;
+    container.appendChild(triggerArea);
+    container.appendChild(traj);
+    release.push(() => triggerArea.remove(), () => traj.remove());
+  } else if (overlay) {
+    overlay.appendChild(traj);
+  }
+  let fullscreenBtn = null;
+  if (controlsMode === "minimal" && overlay) {
+    const mkIcon = (svgInner, title, handler) => {
+      const btn = makeViewportIconButton(svgInner, title, handler);
+      overlay.appendChild(btn);
+      return btn;
+    };
+    mkIcon(VIEWPORT_ICON_PANEL, "Panel mode (N / W)", () => c8.togglePanelMode());
+    fullscreenBtn = mkIcon(VIEWPORT_ICON_FULLSCREEN, "Fullscreen", () => c8.toggleFullscreen());
+    if (onPopClick) mkIcon(VIEWPORT_ICON_POPUP, opts?.popupButtonTitle || "Open popup", onPopClick);
+    mkIcon(VIEWPORT_ICON_HELP, "Help (H)", () => helpOverlay.toggle());
+  } else if (overlay) {
+    const mk = (label3, handler) => {
+      const b8 = makeButton(label3, handler);
+      b8.style.pointerEvents = "auto";
+      overlay.appendChild(b8);
+      return b8;
+    };
+    mk("Reset", async () => {
+      await c8.resetView();
+      sendSync({ op: "reset_view" });
+    });
+    fullscreenBtn = mk("Full", () => c8.toggleFullscreen());
+    mk("Bg", async () => {
+      await c8.toggleBackground();
+      sendSync({ op: "toggle_background", mode: c8.isDarkMode ? "dark" : "light" });
+    });
+    mk("Spin", async () => {
+      await c8.toggleSpin();
+      sendSync({ op: "toggle_spin", enable: c8.isSpinActive });
+    });
+    mk("Swing", async () => {
+      await c8.toggleSwing();
+      sendSync({ op: "toggle_swing", enable: c8.isSwingActive });
+    });
+    if (onPopClick) mk(opts?.popupButtonTitle === "Close popup" ? "Close" : "Pop", onPopClick).title = opts?.popupButtonTitle || "Open popup";
+    mk("Help", () => helpOverlay.toggle());
+    if (panelModeStyle === "floating" || panelModeStyle === "floating-unified" || panelModeStyle === "integrated") {
+      mk("Panel", () => c8.togglePanelMode());
+    }
+  }
+  let hasSeenState = false;
+  let lastIsPlaying = null;
+  const applyTrajectoryState = (state) => {
+    hasSeenState = true;
+    const frameCount = state.frameCount;
+    const current2 = state.currentFrame;
+    traj.style.display = frameCount > 1 ? "flex" : "none";
+    slider.max = frameCount > 0 ? String(frameCount - 1) : "0";
+    slider.value = String(Math.min(current2, frameCount > 0 ? frameCount - 1 : 0));
+    updateSliderBg();
+    label2.textContent = frameCount > 0 ? `${current2 + 1} / ${frameCount}` : "0 / 0";
+    const disabled = !state.hasTrajectory || frameCount <= 1;
+    const elsToDisable = [slider, btnPlayPause];
+    if (btnPrev) elsToDisable.push(btnPrev);
+    if (btnNext) elsToDisable.push(btnNext);
+    if (stepControl) elsToDisable.push(stepControl.input);
+    if (fpsControl) elsToDisable.push(fpsControl.input);
+    elsToDisable.forEach((el) => {
+      el.disabled = disabled;
+    });
+    if (state.isPlaying !== lastIsPlaying) {
+      lastIsPlaying = state.isPlaying;
+      if (state.isPlaying) {
+        if (isMinimal) {
+          btnPlayPause.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><rect x="4" y="3" width="2.5" height="10" fill="currentColor"/><rect x="9.5" y="3" width="2.5" height="10" fill="currentColor"/></svg>`;
+        } else {
+          btnPlayPause.textContent = "\u23F8";
+        }
+        btnPlayPause.title = "Pause Trajectory";
+      } else {
+        btnPlayPause.setAttribute("data-molsysviewer-trajectory-playback", "play");
+        if (isMinimal) {
+          btnPlayPause.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><polygon points="5,3 13,8 5,13" fill="currentColor"/></svg>`;
+        } else {
+          btnPlayPause.textContent = "\u25B6";
+        }
+        btnPlayPause.title = "Play Trajectory";
+      }
+    }
+    if (overlay) {
+      overlay.style.display = "flex";
+    }
+    refreshVisibility();
+  };
+  release.push(c8.onTrajectoryState(applyTrajectoryState, { immediate: false }));
+  const initialState = c8.trajectory.getTrajectoryState();
+  if (initialState.hasTrajectory || initialState.expectedFrameCount !== void 0) {
+    applyTrajectoryState(initialState);
+  }
+  const hotspot = document.createElement("div");
+  Object.assign(hotspot.style, {
+    position: "absolute",
+    width: "130px",
+    height: "55px",
+    zIndex: "9",
+    // Below the overlay (10) so buttons receive clicks
+    background: "transparent",
+    pointerEvents: "auto",
+    display: "none"
+  });
+  container.appendChild(hotspot);
+  release.push(() => hotspot.remove(), () => overlay?.remove());
+  const placeOverlay = () => {
+    if (!overlay) return;
+    const isFullscreen = !!document.fullscreenElement;
+    const rawPos = isFullscreen ? model.get("controls_position_fullscreen") : model.get("controls_position");
+    let use = ["top", "right"];
+    if (Array.isArray(rawPos)) {
+      use = rawPos;
+    } else if (typeof rawPos === "string") {
+      if (rawPos === "top-left") use = ["top", "left"];
+      else if (rawPos === "top-right") use = ["top", "right"];
+      else if (rawPos === "bottom-left") use = ["bottom", "left"];
+      else if (rawPos === "bottom-center") use = ["bottom", "center"];
+      else if (rawPos === "bottom-right") use = ["bottom", "right"];
+    }
+    const gap = isFullscreen ? "36px" : "12px";
+    overlay.style.top = use.includes("top") ? gap : "";
+    overlay.style.bottom = use.includes("bottom") ? gap : "";
+    overlay.style.left = use.includes("left") ? gap : "";
+    overlay.style.right = use.includes("right") ? gap : "";
+    overlay.style.transform = "";
+    if (use.includes("center")) {
+      overlay.style.left = "50%";
+      overlay.style.transform = "translateX(-50%)";
+    }
+    hotspot.style.top = use.includes("top") ? "0" : "";
+    hotspot.style.bottom = use.includes("bottom") ? "0" : "";
+    hotspot.style.left = use.includes("left") ? "0" : "";
+    hotspot.style.right = use.includes("right") ? "0" : "";
+    hotspot.style.transform = "";
+    if (use.includes("center")) {
+      hotspot.style.left = "50%";
+      hotspot.style.transform = "translateX(-50%)";
+    }
+    hotspot.style.width = `${Math.min(container.clientWidth, overlay.offsetWidth + 2 * parseFloat(gap))}px`;
+    hotspot.style.height = `${overlay.offsetHeight + 2 * parseFloat(gap)}px`;
+  };
+  const updateFullscreenButtonState = () => {
+    const isFullscreen = !!document.fullscreenElement;
+    if (fullscreenBtn) {
+      if (controlsMode === "minimal") {
+        const svg = fullscreenBtn.querySelector("svg");
+        if (svg) {
+          const path = isFullscreen ? VIEWPORT_ICON_EXIT_FULLSCREEN : VIEWPORT_ICON_FULLSCREEN;
+          svg.innerHTML = path;
+        }
+        fullscreenBtn.title = isFullscreen ? "Exit Fullscreen" : "Fullscreen";
+      } else {
+        fullscreenBtn.textContent = isFullscreen ? "Exit" : "Full";
+      }
+    }
+  };
+  const revealArea = overlay ? hotspot : cinemaHotspot;
+  if (revealArea) {
+    const surface = overlay || traj;
+    const visibility = new ControlsVisibility(container, surface, revealArea, () => ({
+      visible: hasSeenState && model.get("show_controls") !== false && (!!overlay || c8.trajectory.getTrajectoryState().frameCount > 1),
+      autohide: model.get("autohide_controls") !== false,
+      scope: model.get("autohide_scope") || "controls",
+      suppressed: helpOverlay.isVisible() || !!(c8.sharedShell?.isVisible() && c8.sharedShell.isExpanded && !c8.sharedShell.isSplit && !c8.sharedShell.isAmbient)
+    }));
+    refreshVisibility = () => {
+      placeOverlay();
+      visibility.refresh();
+    };
+    release.push(() => visibility.dispose());
+    const resizeObserver = new ResizeObserver(refreshVisibility);
+    resizeObserver.observe(surface);
+    release.push(() => resizeObserver.disconnect());
+    listen(document, "fullscreenchange", () => {
+      container.style.backgroundColor = document.fullscreenElement ? c8.isDarkMode ? "#101010" : "#ffffff" : "";
+      updateFullscreenButtonState();
+      refreshVisibility();
+    });
+    for (const trait of ["controls_position", "controls_position_fullscreen", "show_controls", "autohide_controls", "autohide_scope"]) {
+      observe(`change:${trait}`, refreshVisibility);
+    }
+    helpOverlay.onVisibilityChange = refreshVisibility;
+    release.push(c8.registerLayoutChangeListener(refreshVisibility));
+    updateFullscreenButtonState();
+    refreshVisibility();
+  }
+  if (cinemaHotspot) {
+    cinemaHotspot.setAttribute("aria-label", "Show trajectory controls");
+    hotspot.style.display = "none";
+  }
+  activeBuilds.set(container, () => {
+    for (const timer2 of timers) clearTimeout(timer2);
+    for (const cleanup of release) cleanup();
+  });
+  return overlay;
+};
+
 // src/plugin/structure.ts
 async function recyclePreviousNode(plugin, previous) {
   if (!previous) return;
@@ -150996,7 +152186,7 @@ function makeSectionHeader(title) {
   header2.appendChild(text);
   return header2;
 }
-function makeButton(text, onClick) {
+function makeButton2(text, onClick) {
   const btn = document.createElement("button");
   btn.textContent = text;
   Object.assign(btn.style, {
@@ -151420,7 +152610,7 @@ var ViewportPanel = class extends BasePanel {
     textSpan.textContent = `${modeLabel} \xB7 ${bgLabel}${spinText}${swingText}${clipText}`;
     info.appendChild(textSpan);
     row3.appendChild(info);
-    const resetBtn = makeButton("Reset View", () => {
+    const resetBtn = makeButton2("Reset View", () => {
       this.ctx.onAction("reset_view");
     });
     resetBtn.style.padding = "3px 6px";
@@ -151509,7 +152699,7 @@ var ViewportPanel = class extends BasePanel {
     section.setAttribute("data-molsysviewer-viewport-sections", "true");
     Object.assign(section.style, { display: "flex", flexDirection: "column", gap: "7px", paddingBottom: "10px" });
     const heading = makeSectionHeader("Clipping Sections");
-    const create3 = makeButton("Create from selection", () => {
+    const create3 = makeButton2("Create from selection", () => {
       this.ctx.onAction("create_section_from_selection");
     });
     create3.disabled = !this.sectionSettings.systemLoaded || this.sectionSettings.activeSelectionCount === 0;
@@ -151547,12 +152737,12 @@ var ViewportPanel = class extends BasePanel {
       identity3.appendChild(owner);
     }
     top.appendChild(identity3);
-    const visibility = makeButton(item2.hidden ? "Show" : "Hide", () => this.ctx.onAction("set_section_visibility", {
+    const visibility = makeButton2(item2.hidden ? "Show" : "Hide", () => this.ctx.onAction("set_section_visibility", {
       tag: item2.tag,
       visible: item2.hidden
     }));
     visibility.setAttribute("data-molsysviewer-section-visibility", item2.tag);
-    const remove3 = makeButton("Delete", () => this.ctx.onAction("remove_section", { tag: item2.tag }));
+    const remove3 = makeButton2("Delete", () => this.ctx.onAction("remove_section", { tag: item2.tag }));
     remove3.setAttribute("data-molsysviewer-section-delete", item2.tag);
     for (const btn of [visibility, remove3]) {
       btn.style.flex = "0 0 auto";
@@ -151568,7 +152758,7 @@ var ViewportPanel = class extends BasePanel {
       this.ctx.onAction("set_section_invert", { tag: item2.tag, invert: checked });
     });
     invertRow.setAttribute("data-molsysviewer-section-invert", item2.tag);
-    const flipBtn = makeButton("Flip Normal", () => {
+    const flipBtn = makeButton2("Flip Normal", () => {
       const flippedNormal = item2.normal.map((v4) => -v4);
       this.ctx.onAction("set_section_normal", { tag: item2.tag, normal: flippedNormal });
     });
@@ -151760,7 +152950,7 @@ var ExportPanel = class extends BasePanel {
     }));
     const downloadRow = document.createElement("div");
     Object.assign(downloadRow.style, { display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" });
-    const downloadButton = makeButton("Download PNG Image", () => {
+    const downloadButton = makeButton2("Download PNG Image", () => {
       this.ctx.onAction("download_image");
     });
     downloadButton.setAttribute("data-molsysviewer-export-image", "true");
@@ -151779,7 +152969,7 @@ var ExportPanel = class extends BasePanel {
     const htmlLabel = document.createElement("span");
     htmlLabel.textContent = "Save standalone interactive view as HTML page";
     Object.assign(htmlLabel.style, { fontSize: "10px", color: "rgba(244,244,245,0.56)" });
-    const htmlButton = makeButton("Download Standalone HTML View", () => {
+    const htmlButton = makeButton2("Download Standalone HTML View", () => {
       this.ctx.onAction("export_html");
     });
     htmlButton.setAttribute("data-molsysviewer-export-html", "true");
@@ -151939,7 +153129,7 @@ var LayersPanel = class extends BasePanel {
       alignItems: "center",
       flexShrink: "0"
     });
-    const showAllBtn = makeButton("Show all", () => {
+    const showAllBtn = makeButton2("Show all", () => {
       for (const layer of totalUserLayers) {
         if (layer.hidden) {
           this.ctx.onAction("set_layer_visibility", { tag: layer.tag, hidden: false });
@@ -151948,7 +153138,7 @@ var LayersPanel = class extends BasePanel {
     });
     showAllBtn.style.padding = "3px 6px";
     showAllBtn.style.fontSize = "10px";
-    const hideAllBtn = makeButton("Hide all", () => {
+    const hideAllBtn = makeButton2("Hide all", () => {
       for (const layer of totalUserLayers) {
         if (!layer.hidden) {
           this.ctx.onAction("set_layer_visibility", { tag: layer.tag, hidden: true });
@@ -151971,7 +153161,7 @@ var LayersPanel = class extends BasePanel {
     Object.assign(form.style, { display: "grid", gridTemplateColumns: "minmax(0, 1fr) auto", gap: "6px" });
     const input = this.makeInput("Layer name (e.g. active-site)");
     input.setAttribute("data-molsysviewer-layer-create-input", "true");
-    const create3 = makeButton("Create", () => {
+    const create3 = makeButton2("Create", () => {
       const tag = input.value.trim();
       if (tag) {
         this.ctx.onAction("create_layer", { tag });
@@ -152081,19 +153271,19 @@ var LayersPanel = class extends BasePanel {
       alignItems: "center",
       marginTop: "4px"
     });
-    const eye = makeButton(layer.hidden ? "\u29BB" : "\u{1F441}", () => {
+    const eye = makeButton2(layer.hidden ? "\u29BB" : "\u{1F441}", () => {
       this.ctx.onAction("set_layer_visibility", { tag: layer.tag, hidden: !layer.hidden });
     });
     eye.title = layer.hidden ? "Show layer" : "Hide layer";
     eye.setAttribute("data-molsysviewer-layer-visibility", layer.tag);
-    const editBtn = makeButton("Edit", () => {
+    const editBtn = makeButton2("Edit", () => {
       if (this.expanded.has(layer.tag)) this.expanded.delete(layer.tag);
       else this.expanded.add(layer.tag);
       this.scheduleRender();
     });
     editBtn.title = "Manage members, rename or delete";
     editBtn.setAttribute("data-molsysviewer-layer-details", layer.tag);
-    const remove3 = makeButton("\u{1F5D1}", () => {
+    const remove3 = makeButton2("\u{1F5D1}", () => {
       const question = `Delete layer '${layer.tag}' and its ${layer.members.length} member${layer.members.length === 1 ? "" : "s"}?`;
       if (typeof confirm !== "function" || confirm(question)) {
         this.ctx.onAction("delete_layer_and_contents", { tag: layer.tag });
@@ -152141,7 +153331,7 @@ var LayersPanel = class extends BasePanel {
       }
       this.styleControl(picker);
       picker.style.flex = "1 1 auto";
-      const add = makeButton("Add", () => {
+      const add = makeButton2("Add", () => {
         const [memberKind, memberTag] = JSON.parse(picker.value);
         if (!memberKind || !memberTag) return;
         this.ctx.onAction("add_member_to_layer", {
@@ -152173,7 +153363,7 @@ var LayersPanel = class extends BasePanel {
     const renameInput = this.makeInput("New layer name");
     renameInput.style.flex = "1 1 auto";
     renameInput.setAttribute("data-molsysviewer-layer-rename-input", layer.tag);
-    const renameButton = makeButton("Rename", () => {
+    const renameButton = makeButton2("Rename", () => {
       const newTag = renameInput.value.trim();
       if (newTag && newTag !== layer.tag) this.ctx.onAction("rename_layer", { tag: layer.tag, new_tag: newTag });
     });
@@ -152202,11 +153392,11 @@ var LayersPanel = class extends BasePanel {
     editor.appendChild(lifecycleHeader);
     const lifecycle = document.createElement("div");
     Object.assign(lifecycle.style, { display: "flex", gap: "6px" });
-    const ungroup = makeButton("Ungroup Layer", () => this.ctx.onAction("ungroup_layer", { tag: layer.tag }));
+    const ungroup = makeButton2("Ungroup Layer", () => this.ctx.onAction("ungroup_layer", { tag: layer.tag }));
     ungroup.style.padding = "4px 8px";
     ungroup.style.fontSize = "11px";
     ungroup.setAttribute("data-molsysviewer-layer-ungroup", layer.tag);
-    const destroy = makeButton("Delete Contents", () => {
+    const destroy = makeButton2("Delete Contents", () => {
       const question = `Delete layer '${layer.tag}' and its ${layer.members.length} member${layer.members.length === 1 ? "" : "s"}?`;
       if (typeof confirm !== "function" || confirm(question)) {
         this.ctx.onAction("delete_layer_and_contents", { tag: layer.tag });
@@ -152237,7 +153427,7 @@ var LayersPanel = class extends BasePanel {
     const label2 = document.createElement("div");
     label2.textContent = `${member.title} \xB7 ${member.kind}${member.atomCount === void 0 ? "" : ` \xB7 ${member.atomCount} atoms`}${member.owner ? ` \xB7 from ${member.owner}` : ""}`;
     Object.assign(label2.style, { minWidth: "0", fontSize: "11px", color: member.hidden ? "rgba(244,244,245,0.42)" : "#f4f4f5" });
-    const remove3 = makeButton("Remove", () => this.ctx.onAction("remove_member_from_layer", {
+    const remove3 = makeButton2("Remove", () => this.ctx.onAction("remove_member_from_layer", {
       layer: layerTag,
       member_kind: member.kind,
       member_tag: member.tag
@@ -152838,9 +154028,9 @@ var RegionsPanel = class extends BasePanel {
       alignItems: "center",
       flexShrink: "0"
     });
-    const showAll = makeButton("Show all", () => this.ctx.onAction("show_all_regions"));
+    const showAll = makeButton2("Show all", () => this.ctx.onAction("show_all_regions"));
     showAll.setAttribute("data-molsysviewer-region-show-all", "true");
-    const hideAll = makeButton("Hide all", () => this.ctx.onAction("hide_all_regions"));
+    const hideAll = makeButton2("Hide all", () => this.ctx.onAction("hide_all_regions"));
     hideAll.setAttribute("data-molsysviewer-region-hide-all", "true");
     for (const btn of [showAll, hideAll]) {
       btn.style.padding = "3px 6px";
@@ -153039,7 +154229,7 @@ var RegionsPanel = class extends BasePanel {
       flexWrap: "wrap",
       gap: "4px"
     });
-    const visibilityBtn = makeButton(item2.hidden ? "Show" : "Hide", () => toggleVisibility());
+    const visibilityBtn = makeButton2(item2.hidden ? "Show" : "Hide", () => toggleVisibility());
     visibilityBtn.setAttribute("data-molsysviewer-region-visibility", item2.tag);
     visibilityBtn.title = visibilityTitle;
     visibilityBtn.disabled = !enabled;
@@ -153058,12 +154248,12 @@ var RegionsPanel = class extends BasePanel {
     enabledControl.appendChild(enabledToggle);
     enabledControl.appendChild(document.createTextNode("Enabled"));
     btnRow.appendChild(enabledControl);
-    const renameBtn = makeButton("Rename", () => {
+    const renameBtn = makeButton2("Rename", () => {
       this.regionRenameTag = item2.tag;
       this.scheduleRender();
     });
     renameBtn.setAttribute("data-molsysviewer-region-rename", item2.tag);
-    const styleBtn = makeButton("Style", () => {
+    const styleBtn = makeButton2("Style", () => {
       if (this.activeStyleRegionTag === item2.tag) {
         this.activeStyleRegionTag = null;
         this.regionStyleBackups.delete(item2.tag);
@@ -153078,7 +154268,7 @@ var RegionsPanel = class extends BasePanel {
       this.scheduleRender();
     });
     styleBtn.setAttribute("data-molsysviewer-region-style", item2.tag);
-    const inspectBtn = makeButton("Inspect", () => {
+    const inspectBtn = makeButton2("Inspect", () => {
       if (this.regionInspectOpen.has(item2.tag)) {
         this.regionInspectOpen.delete(item2.tag);
         this.regionDetailsRequests.delete(item2.tag);
@@ -153090,7 +154280,7 @@ var RegionsPanel = class extends BasePanel {
       this.scheduleRender();
     });
     inspectBtn.setAttribute("data-molsysviewer-region-inspect", item2.tag);
-    const deleteBtn = makeButton("\u{1F5D1}", () => this.ctx.onAction("delete_region", { tag: item2.tag }));
+    const deleteBtn = makeButton2("\u{1F5D1}", () => this.ctx.onAction("delete_region", { tag: item2.tag }));
     deleteBtn.setAttribute("data-molsysviewer-region-delete", item2.tag);
     for (const btn of [visibilityBtn, renameBtn, styleBtn, inspectBtn, deleteBtn]) {
       btn.style.flex = "0 1 auto";
@@ -153148,9 +154338,9 @@ var RegionsPanel = class extends BasePanel {
           this.scheduleRender();
         }
       });
-      const submit = makeButton("Rename", confirmRename);
+      const submit = makeButton2("Rename", confirmRename);
       submit.setAttribute("data-molsysviewer-region-rename-confirm", item2.tag);
-      const cancel = makeButton("Cancel", () => {
+      const cancel = makeButton2("Cancel", () => {
         this.regionRenameTag = null;
         this.scheduleRender();
       });
@@ -153163,19 +154353,19 @@ var RegionsPanel = class extends BasePanel {
         const collision = document.createElement("div");
         collision.setAttribute("data-molsysviewer-region-rename-collision", collisionTag);
         collision.textContent = `"${collisionTag}" already exists.`;
-        const chooseRename = makeButton("Rename", () => {
+        const chooseRename = makeButton2("Rename", () => {
           this.regionRenameCollisionTag = null;
           this.scheduleRender();
         });
         chooseRename.setAttribute("data-molsysviewer-region-collision-rename", "rename");
-        const overwrite = makeButton("Overwrite", () => {
+        const overwrite = makeButton2("Overwrite", () => {
           this.ctx.onAction("delete_region", { tag: collisionTag });
           this.ctx.onAction("rename_region", { tag: item2.tag, new_tag: collisionTag });
           this.regionRenameTag = null;
           this.regionRenameCollisionTag = null;
         });
         overwrite.setAttribute("data-molsysviewer-region-collision-overwrite", "rename");
-        const cancelCollision = makeButton("Cancel", () => {
+        const cancelCollision = makeButton2("Cancel", () => {
           this.regionRenameTag = null;
           this.regionRenameCollisionTag = null;
           this.scheduleRender();
@@ -153239,7 +154429,7 @@ var RegionsPanel = class extends BasePanel {
       provenance.textContent = `provenance: ${JSON.stringify(details.provenance)}`;
       panel.appendChild(provenance);
     }
-    const refresh = makeButton("Refresh", () => {
+    const refresh = makeButton2("Refresh", () => {
       this.requestRegionDetails(tag);
       this.scheduleRender();
     });
@@ -153292,7 +154482,7 @@ var RegionsPanel = class extends BasePanel {
       gap: "4px",
       flexWrap: "nowrap"
     });
-    const undoBtn = makeButton("Undo", () => {
+    const undoBtn = makeButton2("Undo", () => {
       this.ctx.onAction("undo_active_selection");
     });
     undoBtn.setAttribute("data-molsysviewer-region-style-undo", tag);
@@ -153303,7 +154493,7 @@ var RegionsPanel = class extends BasePanel {
       undoBtn.style.cursor = "not-allowed";
     }
     actions.appendChild(undoBtn);
-    const redoBtn = makeButton("Redo", () => {
+    const redoBtn = makeButton2("Redo", () => {
       this.ctx.onAction("redo_active_selection");
     });
     redoBtn.setAttribute("data-molsysviewer-region-style-redo", tag);
@@ -153314,7 +154504,7 @@ var RegionsPanel = class extends BasePanel {
       redoBtn.style.cursor = "not-allowed";
     }
     actions.appendChild(redoBtn);
-    const revertBtn = makeButton("Revert", () => {
+    const revertBtn = makeButton2("Revert", () => {
       const backup = this.regionStyleBackups.get(tag);
       if (backup) {
         this.ctx.onAction("set_region_representation", {
@@ -153412,7 +154602,7 @@ var RegionsPanel = class extends BasePanel {
       }
     );
     attribute.setAttribute("data-molsysviewer-region-style-color-attribute", tag);
-    const resetColors = makeButton(
+    const resetColors = makeButton2(
       "Reset colors",
       () => this.ctx.onAction("reset_region_colors", { tag })
     );
@@ -153548,7 +154738,7 @@ var RegionsPanel = class extends BasePanel {
       alignItems: "center",
       flexShrink: "0"
     });
-    const newRegionBtn = makeButton("New region", () => {
+    const newRegionBtn = makeButton2("New region", () => {
       this.showRegionCreateForm = !this.showRegionCreateForm;
       this.scheduleRender();
       if (this.showRegionCreateForm) {
@@ -153561,7 +154751,7 @@ var RegionsPanel = class extends BasePanel {
     newRegionBtn.style.padding = "4px 8px";
     newRegionBtn.style.fontSize = "11px";
     newRegionBtn.style.whiteSpace = "nowrap";
-    const deselectBtn = makeButton("Deactivate", () => {
+    const deselectBtn = makeButton2("Deactivate", () => {
       this.ctx.onAction("set_active_selection_operation", { operation: "none" });
       this.showRegionCreateForm = false;
       this.scheduleRender();
@@ -153623,7 +154813,7 @@ var RegionsPanel = class extends BasePanel {
           this.scheduleRender();
         }
       });
-      const confirmBtn = makeButton("Create", confirmCreate);
+      const confirmBtn = makeButton2("Create", confirmCreate);
       confirmBtn.setAttribute("data-molsysviewer-region-create-confirm", "true");
       Object.assign(confirmBtn.style, {
         background: "#6366f1",
@@ -153827,7 +155017,7 @@ var RegionsPanel = class extends BasePanel {
   }
   getRegionsQueryComposer() {
     if (!this.regionsQueryComposer) {
-      const helpBtn = makeButton("?", () => {
+      const helpBtn = makeButton2("?", () => {
         this.regionsCheatSheetOpen = !this.regionsCheatSheetOpen;
         this.scheduleRender();
       });
@@ -154330,7 +155520,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           inlineForm.style.display = "flex";
           inlineInput.focus?.();
         };
-        const activateBtn = makeButton(isActive ? "Deactivate" : "Activate", () => {
+        const activateBtn = makeButton2(isActive ? "Deactivate" : "Activate", () => {
           if (isActive) {
             this.ctx.onAction("set_active_selection_operation", { operation: "none" });
           } else {
@@ -154338,13 +155528,13 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           }
         });
         activateBtn.setAttribute("data-molsysviewer-saved-selection-activate", item2.tag);
-        const renameBtn = makeButton("Rename", () => showForm("rename"));
+        const renameBtn = makeButton2("Rename", () => showForm("rename"));
         renameBtn.setAttribute("data-molsysviewer-saved-selection-rename", item2.tag);
-        const regionBtn = makeButton("Region", () => showForm("region"));
+        const regionBtn = makeButton2("Region", () => showForm("region"));
         regionBtn.setAttribute("data-molsysviewer-saved-selection-to-region", item2.tag);
-        const labelBtn = makeButton("Annotation", () => showForm("label"));
+        const labelBtn = makeButton2("Annotation", () => showForm("label"));
         labelBtn.setAttribute("data-molsysviewer-saved-selection-to-label", item2.tag);
-        const deleteBtn = makeButton("\u{1F5D1}", () => this.ctx.onAction("delete_selection", { tag: item2.tag }));
+        const deleteBtn = makeButton2("\u{1F5D1}", () => this.ctx.onAction("delete_selection", { tag: item2.tag }));
         deleteBtn.setAttribute("data-molsysviewer-saved-selection-delete", item2.tag);
         for (const btn of [activateBtn, renameBtn, regionBtn, labelBtn, deleteBtn]) {
           btn.style.flex = "0 1 auto";
@@ -154437,7 +155627,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       alignItems: "center",
       flexShrink: "0"
     });
-    const deselectBtn = makeButton("Deactivate", () => {
+    const deselectBtn = makeButton2("Deactivate", () => {
       this.ctx.onAction("set_active_selection_operation", { operation: "none" });
       this.showActiveSelectionSaveForm = false;
       this.scheduleRender();
@@ -154448,7 +155638,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       deselectBtn.style.opacity = "0.42";
       deselectBtn.style.cursor = "not-allowed";
     }
-    const saveBtn = makeButton("Save...", () => {
+    const saveBtn = makeButton2("Save...", () => {
       this.showActiveSelectionSaveForm = !this.showActiveSelectionSaveForm;
       this.scheduleRender();
       if (this.showActiveSelectionSaveForm) {
@@ -154524,7 +155714,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           cancelForm();
         }
       });
-      const confirmBtn = makeButton("Create", submitForm);
+      const confirmBtn = makeButton2("Create", submitForm);
       confirmBtn.setAttribute("data-molsysviewer-active-selection-save-confirm", "true");
       Object.assign(confirmBtn.style, {
         background: "#6366f1",
@@ -154678,7 +155868,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
   }
   getSelectionQueryComposer() {
     if (this.selectionQueryComposer === null) {
-      this.helpBtn = makeButton("?", () => {
+      this.helpBtn = makeButton2("?", () => {
         this.selectionCheatSheetOpen = !this.selectionCheatSheetOpen;
         this.scheduleRender();
       });
@@ -155303,7 +156493,7 @@ var SystemLoadControls = class {
     this.fields.appendChild(hint);
     this.rowsHost = document.createElement("div");
     this.fields.appendChild(this.rowsHost);
-    const add = makeButton("Add source", () => {
+    const add = makeButton2("Add source", () => {
       this.addRow();
     });
     add.setAttribute("data-molsysviewer-load-add-source", "true");
@@ -155319,7 +156509,7 @@ var SystemLoadControls = class {
     rule.textContent = "For combining several structures per source, declare pairing. Counts and available times must match. Coordinates are not aligned; whole keeps its first/current box.";
     rule.style.color = "rgba(244,244,245,0.65)";
     this.fields.appendChild(rule);
-    const submit = makeButton("Load", () => this.submit());
+    const submit = makeButton2("Load", () => this.submit());
     submit.setAttribute("data-molsysviewer-load-submit", "true");
     this.fields.appendChild(submit);
     this.status = document.createElement("div");
@@ -155372,7 +156562,7 @@ var SystemLoadControls = class {
         field2("structures", "Structures: 0, 8, 3 or all (0-based)");
       }
       if (this.rows.length > 1) {
-        const remove3 = makeButton("Remove source", () => {
+        const remove3 = makeButton2("Remove source", () => {
           this.rows.splice(index, 1);
           this.renderRows();
         });
@@ -155879,7 +157069,7 @@ var WholePanel = class {
       gap: "4px",
       flexWrap: "nowrap"
     });
-    const toggle = makeButton(summary.visible ? "Hide" : "Show", () => {
+    const toggle = makeButton2(summary.visible ? "Hide" : "Show", () => {
       if (summary.visible && summary.none_state_region_count > 0) {
         const ok = window.confirm(`${summary.none_state_region_count} region(s) have no own representation and will disappear while the whole is hidden.`);
         if (!ok) return;
@@ -155888,7 +157078,7 @@ var WholePanel = class {
     });
     toggle.setAttribute("data-molsysviewer-whole-visibility", summary.visible ? "hide" : "show");
     actions.appendChild(toggle);
-    const undoBtn = makeButton("Undo", () => {
+    const undoBtn = makeButton2("Undo", () => {
       this.ctx.onAction("undo_active_selection");
     });
     undoBtn.setAttribute("data-molsysviewer-whole-undo", "true");
@@ -155899,7 +157089,7 @@ var WholePanel = class {
       undoBtn.style.cursor = "not-allowed";
     }
     actions.appendChild(undoBtn);
-    const redoBtn = makeButton("Redo", () => {
+    const redoBtn = makeButton2("Redo", () => {
       this.ctx.onAction("redo_active_selection");
     });
     redoBtn.setAttribute("data-molsysviewer-whole-redo", "true");
@@ -155910,7 +157100,7 @@ var WholePanel = class {
       redoBtn.style.cursor = "not-allowed";
     }
     actions.appendChild(redoBtn);
-    const resetBtn = makeButton("Reset", () => {
+    const resetBtn = makeButton2("Reset", () => {
       this.ctx.onAction("reset_whole_representation");
       this.ctx.onAction("reset_whole_colors");
     });
@@ -156089,7 +157279,7 @@ var WholePanel = class {
       color: "#f4f4f5",
       fontSize: "11px"
     });
-    const commit = makeButton("Apply", () => {
+    const commit = makeButton2("Apply", () => {
       if (!attr.value) return;
       const parsed = scalarColorRangeFromInput(range2.value);
       this.ctx.onAction("color_whole_by_attribute", {
@@ -156349,7 +157539,7 @@ var MeasuresPanel = class extends BasePanel {
       ["Show all", "show_all_measurements"],
       ["Hide all", "hide_all_measurements"]
     ]) {
-      const button2 = makeButton(label2, () => {
+      const button2 = makeButton2(label2, () => {
         this.ctx.onAction(action);
       });
       button2.style.padding = "3px 6px";
@@ -156371,7 +157561,7 @@ var MeasuresPanel = class extends BasePanel {
   }
   getMeasuresQueryComposer() {
     if (!this.measuresQueryComposer) {
-      const helpBtn = makeButton("?", () => {
+      const helpBtn = makeButton2("?", () => {
         this.measuresCheatSheetOpen = !this.measuresCheatSheetOpen;
         this.scheduleRender();
       });
@@ -156472,7 +157662,7 @@ var MeasuresPanel = class extends BasePanel {
       label2.style.color = "#fff";
       label2.style.flexShrink = "0";
       leftPart.appendChild(label2);
-      const selectBtn = makeButton(slot2 ? slot2.summary : "Set selection \u25BC", () => {
+      const selectBtn = makeButton2(slot2 ? slot2.summary : "Set selection \u25BC", () => {
         if (!isExpanded) {
           this.inlineTab = hasActive ? "active" : "query";
         }
@@ -156498,7 +157688,7 @@ var MeasuresPanel = class extends BasePanel {
         alignItems: "center",
         flexShrink: "0"
       });
-      const clearBtn = makeButton("Clear", () => {
+      const clearBtn = makeButton2("Clear", () => {
         this.stagedSlots[i] = null;
         this.scheduleRender();
       });
@@ -156541,7 +157731,7 @@ var MeasuresPanel = class extends BasePanel {
     formRow.appendChild(nameInput);
     const requiredSlots = this.stagedSlots.slice(0, requiredCount);
     const canCreate = this.settings.systemLoaded && requiredSlots.every((slot2) => slot2 !== null);
-    const createButton = makeButton("Create", () => {
+    const createButton = makeButton2("Create", () => {
       const picks = requiredSlots.map((slot2) => slot2.atom_indices);
       const endpoint_policy = requiredSlots[0]?.policy;
       const details = {
@@ -156700,7 +157890,7 @@ var MeasuresPanel = class extends BasePanel {
     } else {
       activeCard.style.display = "none";
     }
-    const deselectBtn = makeButton("Deactivate", () => {
+    const deselectBtn = makeButton2("Deactivate", () => {
       this.ctx.onAction("set_active_selection_operation", { operation: "none" });
       this.scheduleRender();
     });
@@ -156808,9 +157998,9 @@ var MeasuresPanel = class extends BasePanel {
       color: item2.broken ? "rgba(244,244,245,0.46)" : "#f4f4f5"
     });
     head.appendChild(value);
-    const eye = makeButton(item2.hidden ? "\u29BB" : "\u{1F441}", () => this.ctx.onAction("toggle_measurement_visibility", { tag: item2.tag }));
+    const eye = makeButton2(item2.hidden ? "\u29BB" : "\u{1F441}", () => this.ctx.onAction("toggle_measurement_visibility", { tag: item2.tag }));
     eye.setAttribute("data-molsysviewer-measurement-visibility", item2.tag);
-    const focus = makeButton("Focus", () => this.ctx.onAction("focus_measurement", { tag: item2.tag }));
+    const focus = makeButton2("Focus", () => this.ctx.onAction("focus_measurement", { tag: item2.tag }));
     focus.setAttribute("data-molsysviewer-measurement-focus", item2.tag);
     for (const button2 of [eye, focus]) {
       button2.style.flex = "0 0 auto";
@@ -156818,7 +158008,7 @@ var MeasuresPanel = class extends BasePanel {
       button2.style.fontSize = "10px";
       head.appendChild(button2);
     }
-    const edit = makeButton("Edit", () => {
+    const edit = makeButton2("Edit", () => {
       this.editTag = this.editTag === item2.tag ? null : item2.tag;
       this.scheduleRender();
     });
@@ -156827,7 +158017,7 @@ var MeasuresPanel = class extends BasePanel {
     edit.style.padding = "3px 6px";
     edit.style.fontSize = "10px";
     head.appendChild(edit);
-    const destroy = makeButton("\u{1F5D1}", () => this.ctx.onAction("delete_measurement", { tag: item2.tag }));
+    const destroy = makeButton2("\u{1F5D1}", () => this.ctx.onAction("delete_measurement", { tag: item2.tag }));
     destroy.setAttribute("data-molsysviewer-measurement-delete", item2.tag);
     destroy.style.padding = "3px 6px";
     destroy.style.fontSize = "10px";
@@ -156845,7 +158035,7 @@ var MeasuresPanel = class extends BasePanel {
       renameInput.setAttribute("data-molsysviewer-measurement-rename-input", item2.tag);
       this.styleControl(renameInput);
       renameInput.style.flex = "1 1 auto";
-      const renameBtn = makeButton("Rename", () => {
+      const renameBtn = makeButton2("Rename", () => {
         const newTag = renameInput.value.trim();
         if (newTag && newTag !== item2.tag) {
           this.ctx.onAction("rename_measurement", { tag: item2.tag, new_tag: newTag });
@@ -156864,7 +158054,7 @@ var MeasuresPanel = class extends BasePanel {
       layerInput.setAttribute("data-molsysviewer-measurement-layer-input", item2.tag);
       this.styleControl(layerInput);
       layerInput.style.flex = "1 1 auto";
-      const layerBtn = makeButton("Set layer", () => {
+      const layerBtn = makeButton2("Set layer", () => {
         const layer = layerInput.value.trim();
         this.ctx.onAction("set_measurement_layer", { tag: item2.tag, layer });
       });
@@ -156890,7 +158080,7 @@ var MeasuresPanel = class extends BasePanel {
     const isSeriesExpanded = this.expandedSeries.has(item2.tag);
     const seriesRow = document.createElement("div");
     Object.assign(seriesRow.style, { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "4px" });
-    const seriesToggleBtn = makeButton(isSeriesExpanded ? "Hide Series" : "Show Trajectory Series", () => {
+    const seriesToggleBtn = makeButton2(isSeriesExpanded ? "Hide Series" : "Show Trajectory Series", () => {
       if (isSeriesExpanded) {
         this.expandedSeries.delete(item2.tag);
       } else {
@@ -157267,7 +158457,7 @@ var AnnotationsPanel = class extends BasePanel {
   }
   getAnnotationsQueryComposer() {
     if (!this.annotationsQueryComposer) {
-      const helpBtn = makeButton("?", () => {
+      const helpBtn = makeButton2("?", () => {
         this.annotationsCheatSheetOpen = !this.annotationsCheatSheetOpen;
         this.scheduleRender();
       });
@@ -157365,7 +158555,7 @@ var AnnotationsPanel = class extends BasePanel {
     });
     textInput.setAttribute("data-molsysviewer-annotation-create-text", "true");
     formRow.appendChild(textInput);
-    const addBtn = makeButton("Create", () => {
+    const addBtn = makeButton2("Create", () => {
       const text = textInput.value.trim();
       if (!text) return;
       this.newText = "";
@@ -157726,7 +158916,7 @@ var AnnotationsPanel = class extends BasePanel {
         const text = document.createElement("span");
         text.textContent = `\u2713 Staged anchor: ${desc}`;
         statusCard.appendChild(text);
-        const clearBtn = makeButton("Clear", () => {
+        const clearBtn = makeButton2("Clear", () => {
           this.stagedAnchor = null;
           this.scheduleRender();
         });
@@ -157812,24 +159002,24 @@ var AnnotationsPanel = class extends BasePanel {
       alignItems: "center",
       marginTop: "4px"
     });
-    const focus = makeButton("Focus", () => this.onFocus(item2.atomIndices));
+    const focus = makeButton2("Focus", () => this.onFocus(item2.atomIndices));
     focus.title = "Focus annotation anchor";
     focus.disabled = item2.atomIndices.length === 0;
     focus.setAttribute("data-molsysviewer-annotation-focus", item2.tag);
-    const eye = makeButton(
+    const eye = makeButton2(
       item2.hidden ? "\u29BB" : "\u{1F441}",
       () => this.ctx.onAction("toggle_annotation_visibility", { tag: item2.tag })
     );
     eye.title = item2.hidden ? "Show annotation" : "Hide annotation";
     eye.setAttribute("data-molsysviewer-annotation-visibility", item2.tag);
-    const editBtn = makeButton("Edit", () => {
+    const editBtn = makeButton2("Edit", () => {
       this.selectedTag = item2.tag;
       this.editDetailsTag = this.editDetailsTag === item2.tag ? null : item2.tag;
       this.scheduleRender();
     });
     editBtn.title = "Rename, layer, or re-anchor";
     editBtn.setAttribute("data-molsysviewer-annotation-more", item2.tag);
-    const remove3 = makeButton("\u{1F5D1}", () => this.ctx.onAction("delete_annotation", { tag: item2.tag }));
+    const remove3 = makeButton2("\u{1F5D1}", () => this.ctx.onAction("delete_annotation", { tag: item2.tag }));
     remove3.title = "Delete annotation";
     remove3.setAttribute("data-molsysviewer-annotation-delete", item2.tag);
     for (const button2 of [focus, eye, editBtn, remove3]) {
@@ -157897,7 +159087,7 @@ var AnnotationsPanel = class extends BasePanel {
     rename.value = item2.tag;
     Object.assign(rename.style, { flex: "1 1 auto", ...INPUT_STYLE2 });
     rename.setAttribute("data-molsysviewer-annotation-rename-input", item2.tag);
-    const renameButton = makeButton(
+    const renameButton = makeButton2(
       "Rename",
       () => this.ctx.onAction("rename_annotation", { tag: item2.tag, new_tag: rename.value.trim() })
     );
@@ -157922,7 +159112,7 @@ var AnnotationsPanel = class extends BasePanel {
     layer.placeholder = "No user layer";
     Object.assign(layer.style, { flex: "1 1 auto", ...INPUT_STYLE2 });
     layer.setAttribute("data-molsysviewer-annotation-layer-input", item2.tag);
-    const layerButton = makeButton(
+    const layerButton = makeButton2(
       "Set layer",
       () => this.ctx.onAction("set_annotation_layer", { tag: item2.tag, layer: layer.value.trim() || null })
     );
@@ -157939,7 +159129,7 @@ var AnnotationsPanel = class extends BasePanel {
     layerRow.appendChild(layer);
     layerRow.appendChild(layerButton);
     editor.appendChild(layerRow);
-    const reanchor = makeButton(
+    const reanchor = makeButton2(
       "Use active selection",
       () => this.ctx.onAction("reanchor_annotation", { tag: item2.tag })
     );
@@ -158067,7 +159257,7 @@ var AnnotationsPanel = class extends BasePanel {
       ["Show all", "show_all_annotations"],
       ["Hide all", "hide_all_annotations"]
     ]) {
-      const button2 = makeButton(label2, () => {
+      const button2 = makeButton2(label2, () => {
         this.ctx.onAction(action);
       });
       button2.style.padding = "3px 6px";
@@ -158789,7 +159979,7 @@ var InteractionsPanel = class extends BasePanel {
     const enabled = this.items.filter((item2) => !item2.hidden).length;
     this.host.appendChild(note2(`${enabled}/${this.items.length} sets enabled \xB7 structure ${this.frame}`));
     const all3 = row2();
-    append(all3, makeButton("Show all", () => this.emit("show_all_interactions")), makeButton("Hide all", () => this.emit("hide_all_interactions")));
+    append(all3, makeButton2("Show all", () => this.emit("show_all_interactions")), makeButton2("Hide all", () => this.emit("hide_all_interactions")));
     this.host.appendChild(all3);
     if (this.error) this.host.appendChild(note2(this.error));
     const form = box4();
@@ -158798,7 +159988,7 @@ var InteractionsPanel = class extends BasePanel {
     if (!this.editing) {
       const tabs = row2();
       for (const [value, text] of [["calculate", "Calculate"], ["stored", "Stored analysis"], ["file", "H5MSM file"]]) {
-        const btn = makeButton(text, () => {
+        const btn = makeButton2(text, () => {
           this.source = value;
           this.scheduleRender();
         });
@@ -158889,13 +160079,13 @@ var InteractionsPanel = class extends BasePanel {
     });
     details.appendChild(note2(`A: ${this.a ? `${this.a.length} atoms` : "all atoms"} \xB7 B: ${this.b ? `${this.b.length} atoms` : "unset"}`));
     const slots = row2();
-    append(slots, makeButton("Stage A", () => {
+    append(slots, makeButton2("Stage A", () => {
       this.slot = "a";
       this.scheduleRender();
-    }), makeButton("Stage B", () => {
+    }), makeButton2("Stage B", () => {
       this.slot = "b";
       this.scheduleRender();
-    }), makeButton("Reset selections", () => {
+    }), makeButton2("Reset selections", () => {
       this.a = this.b = null;
       this.scheduleRender();
     }));
@@ -158934,7 +160124,7 @@ var InteractionsPanel = class extends BasePanel {
       field(form, "Radius (nm)", this.radius, "radius", (value) => this.radius = value, "number");
       field(form, "Opacity (0\u20131)", this.alpha, "alpha", (value) => this.alpha = value, "number");
     }
-    const submit = makeButton(this.busy !== null ? "Working\u2026" : this.editing ? "Apply changes" : this.source === "calculate" ? "Calculate and create set" : this.source === "file" ? "Load and create set" : "Create set", () => {
+    const submit = makeButton2(this.busy !== null ? "Working\u2026" : this.editing ? "Apply changes" : this.source === "calculate" ? "Calculate and create set" : this.source === "file" ? "Load and create set" : "Create set", () => {
       try {
         if (this.mode === "between_selections" && (!this.a || !this.b)) throw new Error("Stage disjoint selections A and B first.");
         const filter5 = this.filter();
@@ -158993,7 +160183,7 @@ var InteractionsPanel = class extends BasePanel {
     submit.disabled = this.busy !== null || !this.loaded || !this.backendAvailable || !this.editing && this.source === "calculate" && (!this.families.length || !this.criterion()) || !this.editing && this.source === "file" && !this.aligned || !this.editing && this.source === "stored" && !this.stored;
     submit.setAttribute("data-molsysviewer-interaction-create", "true");
     form.appendChild(submit);
-    if (this.editing) form.appendChild(makeButton("Done editing", () => {
+    if (this.editing) form.appendChild(makeButton2("Done editing", () => {
       this.editing = null;
       this.tag = this.layer = "";
       this.scheduleRender();
@@ -159006,12 +160196,12 @@ var InteractionsPanel = class extends BasePanel {
       append(card8, note2(`${item2.tag} \xB7 ${item2.analysis_name}`), note2(statusText(item2)), note2(`${item2.hidden ? "Hidden" : item2.layer_hidden ? "Hidden by layer" : "Enabled"} \xB7 layer ${item2.layer_tag}`));
       const actions = row2();
       for (const [text, action] of [["Focus", "focus_interaction"], [item2.hidden ? "Show" : "Hide", "toggle_interaction_visibility"], ["Delete", "delete_interaction"]]) {
-        const button2 = makeButton(text, () => this.emit(action, { tag: item2.tag }));
+        const button2 = makeButton2(text, () => this.emit(action, { tag: item2.tag }));
         if (action === "focus_interaction") button2.disabled = !item2.n_supported;
         actions.appendChild(button2);
       }
-      actions.appendChild(makeButton("Edit", () => this.openObject(item2.tag)));
-      actions.appendChild(makeButton("Inspect", () => this.inspect(item2.tag)));
+      actions.appendChild(makeButton2("Edit", () => this.openObject(item2.tag)));
+      actions.appendChild(makeButton2("Inspect", () => this.inspect(item2.tag)));
       card8.appendChild(actions);
       if (this.inspecting === item2.tag) {
         if (!this.inspection) card8.appendChild(note2("Requesting current structure observations\u2026"));
@@ -159033,7 +160223,7 @@ var InteractionsPanel = class extends BasePanel {
               query_revision: data.query_revision
             };
             for (const [label2, action] of [["Select participants", "select_interaction_observation"], ["Focus participants", "focus_interaction_observation"]]) {
-              const button2 = makeButton(label2, () => this.emit(action, identity3));
+              const button2 = makeButton2(label2, () => this.emit(action, identity3));
               button2.setAttribute("data-molsysviewer-interaction-observation-action", action);
               actions2.appendChild(button2);
             }
@@ -159041,8 +160231,8 @@ var InteractionsPanel = class extends BasePanel {
             card8.appendChild(detail);
           }
           const pagination = row2();
-          if (data.offset) pagination.appendChild(makeButton("Previous", () => this.inspect(item2.tag, Math.max(0, data.offset - 50))));
-          if (data.status !== "inspection-limit" && data.next_offset != null) pagination.appendChild(makeButton("Next", () => this.inspect(item2.tag, data.next_offset)));
+          if (data.offset) pagination.appendChild(makeButton2("Previous", () => this.inspect(item2.tag, Math.max(0, data.offset - 50))));
+          if (data.status !== "inspection-limit" && data.next_offset != null) pagination.appendChild(makeButton2("Next", () => this.inspect(item2.tag, data.next_offset)));
           card8.appendChild(pagination);
         }
       }
@@ -159063,13 +160253,13 @@ var InteractionsPanel = class extends BasePanel {
       card8.appendChild(note2(`${analysis.name} \xB7 ${analysis.n_occurrences} observations \xB7 ${analysis.n_evaluated_structures}/${analysis.n_structures} structures \xB7 ${analysis.n_references} visual references`));
       card8.appendChild(note2(`${analysis.method} \xB7 ${JSON.stringify(analysis.parameters)} \xB7 ${JSON.stringify(analysis.software)}`));
       const actions = row2();
-      actions.appendChild(makeButton("Use", () => {
+      actions.appendChild(makeButton2("Use", () => {
         this.source = "stored";
         this.stored = analysis.name;
         this.editing = null;
         this.scheduleRender();
       }));
-      const remove3 = makeButton("Delete analysis", () => this.emit("delete_interaction_analysis", { analysis_name: analysis.name }));
+      const remove3 = makeButton2("Delete analysis", () => this.emit("delete_interaction_analysis", { analysis_name: analysis.name }));
       remove3.disabled = analysis.n_references > 0;
       remove3.title = "Deleting an analysis clears scene undo history.";
       actions.appendChild(remove3);
@@ -159335,7 +160525,7 @@ var ShapesPanel = class extends BasePanel {
       ["Show all", "show_all_shapes"],
       ["Hide all", "hide_all_shapes"]
     ]) {
-      const button2 = makeButton(label2, () => {
+      const button2 = makeButton2(label2, () => {
         this.ctx.onAction(action);
       });
       button2.style.padding = "3px 6px";
@@ -159476,7 +160666,7 @@ var ShapesPanel = class extends BasePanel {
           borderRadius: "6px",
           border: "1px solid rgba(255,255,255,0.08)"
         });
-        const anchorBtn = makeButton("Anchor", () => {
+        const anchorBtn = makeButton2("Anchor", () => {
           this.stagedAnchor1 = [...this.selection.atom_indices];
           this.stagedAnchorLabel = "selection";
           this.scheduleRender();
@@ -159523,7 +160713,7 @@ var ShapesPanel = class extends BasePanel {
         Object.assign(dBox.style, { display: "flex", flexDirection: "column", gap: "6px" });
         const a1Box = document.createElement("div");
         Object.assign(a1Box.style, { display: "flex", alignItems: "center", gap: "8px" });
-        const btn1 = makeButton("Anchor 1 (Start)", () => {
+        const btn1 = makeButton2("Anchor 1 (Start)", () => {
           this.stagedAnchor1 = [...this.selection.atom_indices];
           this.scheduleRender();
         });
@@ -159537,7 +160727,7 @@ var ShapesPanel = class extends BasePanel {
         dBox.appendChild(a1Box);
         const a2Box = document.createElement("div");
         Object.assign(a2Box.style, { display: "flex", alignItems: "center", gap: "8px" });
-        const btn2 = makeButton("Anchor 2 (End)", () => {
+        const btn2 = makeButton2("Anchor 2 (End)", () => {
           this.stagedAnchor2 = [...this.selection.atom_indices];
           this.scheduleRender();
         });
@@ -159609,7 +160799,7 @@ var ShapesPanel = class extends BasePanel {
       formCard.appendChild(styleRow);
       const createBtnRow = document.createElement("div");
       Object.assign(createBtnRow.style, { display: "flex", justifyContent: "flex-end", marginTop: "4px" });
-      const createBtn = makeButton("Create Shape", () => {
+      const createBtn = makeButton2("Create Shape", () => {
         const payload = {
           shape_type: this.selectedOp,
           tag: this.customTag.trim() || void 0,
@@ -159669,19 +160859,19 @@ var ShapesPanel = class extends BasePanel {
       alignItems: "center",
       marginTop: "4px"
     });
-    const focus = makeButton("Focus", () => this.ctx.onAction("focus_shape", { tag: item2.tag }));
+    const focus = makeButton2("Focus", () => this.ctx.onAction("focus_shape", { tag: item2.tag }));
     focus.title = "Focus shape";
     focus.setAttribute("data-molsysviewer-shape-focus", item2.tag);
-    const eye = makeButton(item2.hidden ? "\u29BB" : "\u{1F441}", () => this.ctx.onAction("toggle_shape_visibility", { tag: item2.tag }));
+    const eye = makeButton2(item2.hidden ? "\u29BB" : "\u{1F441}", () => this.ctx.onAction("toggle_shape_visibility", { tag: item2.tag }));
     eye.title = item2.hidden ? "Show shape" : "Hide shape";
     eye.setAttribute("data-molsysviewer-shape-visibility", item2.tag);
-    const more = makeButton("Edit", () => {
+    const more = makeButton2("Edit", () => {
       this.detailsTag = this.detailsTag === item2.tag ? null : item2.tag;
       this.scheduleRender();
     });
     more.title = "Rename, layer, or edit style";
     more.setAttribute("data-molsysviewer-shape-more", item2.tag);
-    const remove3 = makeButton("\u{1F5D1}", () => this.ctx.onAction("delete_shape", { tag: item2.tag }));
+    const remove3 = makeButton2("\u{1F5D1}", () => this.ctx.onAction("delete_shape", { tag: item2.tag }));
     remove3.title = "Delete shape";
     remove3.setAttribute("data-molsysviewer-shape-delete", item2.tag);
     for (const button2 of [focus, eye, more, remove3]) {
@@ -159733,7 +160923,7 @@ var ShapesPanel = class extends BasePanel {
     rename.value = item2.tag;
     Object.assign(rename.style, { flex: "1 1 auto", ...INPUT_STYLE3 });
     rename.setAttribute("data-molsysviewer-shape-rename", item2.tag);
-    const renameButton = makeButton("Rename", () => {
+    const renameButton = makeButton2("Rename", () => {
       const newTag = rename.value.trim();
       if (newTag && newTag !== item2.tag) this.ctx.onAction("rename_shape", { tag: item2.tag, new_tag: newTag });
     });
@@ -159751,7 +160941,7 @@ var ShapesPanel = class extends BasePanel {
     layer.placeholder = "Layer (blank detaches)";
     Object.assign(layer.style, { flex: "1 1 auto", ...INPUT_STYLE3 });
     layer.setAttribute("data-molsysviewer-shape-layer", item2.tag);
-    const layerButton = makeButton("Set layer", () => this.ctx.onAction("set_shape_layer", {
+    const layerButton = makeButton2("Set layer", () => this.ctx.onAction("set_shape_layer", {
       tag: item2.tag,
       layer: layer.value.trim() || null
     }));
@@ -161937,7 +163127,7 @@ var GroupPanel = class {
   // ── 5. Viewport Section Rendering ────────────────────────
   // ── Helper UI Constructors ──────────────────────────────
   makeButton(text, onClick) {
-    return makeButton(text, onClick);
+    return makeButton2(text, onClick);
   }
   makeRowElement(titleText, subtitleText, onActivate, onDelete, visibility, onStyle) {
     return makeRowElement(titleText, subtitleText, onActivate, onDelete, visibility, onStyle);
@@ -162016,6 +163206,21 @@ var GroupPanel = class {
         this.renderSettingsSection();
       }
     });
+    const scopeLabel = document.createElement("label");
+    scopeLabel.textContent = "Reveal controls near";
+    Object.assign(scopeLabel.style, { display: "block", fontSize: "11px", marginTop: "10px" });
+    const scopeSelect = this.makeStyledSelect([
+      { value: "controls", label: "Buttons" },
+      { value: "canvas", label: "Entire canvas" }
+    ], this.model?.get("autohide_scope") || "controls", (value) => {
+      this.model?.set("autohide_scope", value);
+      this.model?.save_changes();
+    });
+    scopeSelect.setAttribute("aria-label", "Controls reveal area");
+    scopeSelect.setAttribute("data-molsysviewer-autohide-scope", "true");
+    scopeSelect.disabled = !autohideEnabled;
+    scopeLabel.appendChild(scopeSelect);
+    configCard.appendChild(scopeLabel);
   }
   getTabOrder() {
     const order = [];
@@ -163707,6 +164912,7 @@ var MolSysViewerController = class _MolSysViewerController {
       });
       sharedShell.setVisible(true);
       this.sharedShell = sharedShell;
+      sharedShell.onLayoutChange = (state) => this.triggerLayoutChange(state);
       if (floatingUnified && !this.isPanelOnly) {
         sharedShell.onResize = () => {
           this.updateCanvasInsets();
@@ -164305,6 +165511,10 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   registerLayoutChangeListener(cb2) {
     this.layoutChangeListeners.push(cb2);
+    return () => {
+      const index = this.layoutChangeListeners.indexOf(cb2);
+      if (index >= 0) this.layoutChangeListeners.splice(index, 1);
+    };
   }
   triggerLayoutChange(state) {
     for (const cb2 of this.layoutChangeListeners) {
@@ -164555,12 +165765,20 @@ var MolSysViewerController = class _MolSysViewerController {
     }
   }
   setViewerMode(mode) {
+    const presets = {
+      classic: ["classic", "drawer"],
+      integrated: ["minimal", "integrated"],
+      cinema: ["cinema", "integrated"]
+    };
+    if (!presets[mode]) return;
     if (this.model) {
       this.model.set("viewer_mode", mode);
       this.model.save_changes();
     } else {
       this.localViewerMode = mode;
     }
+    this.setPanelModeStyle(presets[mode][1]);
+    this.setControlsMode(presets[mode][0]);
   }
   setControlsMode(mode) {
     if (this.model) {
@@ -164627,6 +165845,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.notify?.({ event: "webgl_context_restored" });
   }
   dispose() {
+    disposeControls(this);
     this.helpOpener = void 0;
     this.annotations.dispose();
     this.interactions.clear();
@@ -167194,6 +168413,10 @@ function samePopupChannel(actual, expected) {
 function encodePopupMessage(channel, envelope) {
   return { channel, envelope };
 }
+function popupTargetOrigin(location2) {
+  const origin = location2?.origin;
+  return location2?.protocol === "file:" || !origin || origin === "null" || origin === "file://" ? "*" : origin;
+}
 function decodePopupMessage(value, expected) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const message = value;
@@ -167896,6 +169119,39 @@ var ArrayNativeStreamReceiver = class {
   }
 };
 
+// src/ui/local-ui-model.ts
+function createLocalUiModel(initial = {}) {
+  const values2 = {
+    viewer_mode: "integrated",
+    controls_mode: "minimal",
+    panel_mode_style: "integrated",
+    show_controls: true,
+    autohide_controls: true,
+    autohide_scope: "controls",
+    controls_position: ["top", "right"],
+    controls_position_fullscreen: ["top", "right"],
+    ...initial
+  };
+  const listeners = /* @__PURE__ */ new Map();
+  return {
+    get: (key2) => values2[key2],
+    set(key2, value) {
+      if (values2[key2] === value) return;
+      values2[key2] = value;
+      for (const listener of [...listeners.get(`change:${key2}`) || []]) listener();
+    },
+    on(event, callback) {
+      if (!listeners.has(event)) listeners.set(event, /* @__PURE__ */ new Set());
+      listeners.get(event).add(callback);
+    },
+    off(event, callback) {
+      listeners.get(event)?.delete(callback);
+    },
+    save_changes() {
+    }
+  };
+}
+
 // src/popup/popup-logic.ts
 var bootPopup = async (loadedModule) => {
   const openerWin = window.opener;
@@ -167974,8 +169230,7 @@ var bootPopup = async (loadedModule) => {
       payload: data
     };
     if (runtimeRouter.route(envelope).status !== "accepted") return;
-    const origin = window.location?.origin;
-    const targetOrigin = origin && origin !== "null" ? origin : "*";
+    const targetOrigin = popupTargetOrigin(window.location);
     try {
       openerWin.postMessage(encodePopupMessage(popupChannel, envelope), targetOrigin);
     } catch (e) {
@@ -168089,35 +169344,45 @@ var bootPopup = async (loadedModule) => {
   const arrayNativeStream = new ArrayNativeStreamReceiver(
     (event) => sendToHost("molsysviewer-structure-data-ack", event),
     async (begin, payload) => {
-      const ctrl2 = await popControllerPromise;
-      await ctrl2.loadArrayNativeMolSysPayload(payload, begin.label);
+      const ctrl3 = await popControllerPromise;
+      await ctrl3.loadArrayNativeMolSysPayload(payload, begin.label);
     }
   );
+  const uiModel = createLocalUiModel({ panel_mode_style: initOptions.panelModeStyle || "integrated" });
+  const updateControlsUi = (data) => {
+    for (const [field2, trait] of Object.entries({
+      autohide: "autohide_controls",
+      autohideScope: "autohide_scope",
+      showControls: "show_controls",
+      controlsPosition: "controls_position",
+      controlsPositionFullscreen: "controls_position_fullscreen"
+    })) if (data[field2] !== void 0) uiModel.set(trait, data[field2]);
+  };
   const popControllerPromise = (async () => {
     await new Promise((r) => setTimeout(r, 100));
-    const ctrl2 = await MolSysViewerController2.create(container, (msg) => {
+    const ctrl3 = await MolSysViewerController2.create(container, (msg) => {
       if (msg && typeof msg === "object" && typeof msg.event === "string") {
         sendToHost("molsysviewer-popup-interaction", msg);
       } else {
         sendToHost("molsysviewer-log-from-popout", msg);
       }
-    }, void 0, initOptions);
+    }, void 0, { ...initOptions, model: uiModel });
     if (initOptions.isPanelOnly) {
-      ctrl2.setCanvasVisibility(false);
-      if (ctrl2.sharedShell) {
-        ctrl2.sharedShell.setSplit(true);
-        ctrl2.sharedShell.setVisible(true);
+      ctrl3.setCanvasVisibility(false);
+      if (ctrl3.sharedShell) {
+        ctrl3.sharedShell.setSplit(true);
+        ctrl3.sharedShell.setVisible(true);
       }
       const activePanel = initOptions.activePanel || "navigate";
-      void ctrl2.handleMessage({ op: "set_panel_mode", panel: activePanel, expanded: true });
+      void ctrl3.handleMessage({ op: "set_panel_mode", panel: activePanel, expanded: true });
     }
     const waitForCanvas3d = async (retries = 50) => {
       for (let i = 0; i < retries; i++) {
-        if (ctrl2.plugin?.canvas3d) return true;
+        if (ctrl3.plugin?.canvas3d) return true;
         if (i % 10 === 0) {
           console.log(`[Popout] Waiting for Canvas3D... (${i}/${retries})`, {
-            plugin: !!ctrl2.plugin,
-            canvas3d: !!ctrl2.plugin?.canvas3d
+            plugin: !!ctrl3.plugin,
+            canvas3d: !!ctrl3.plugin?.canvas3d
           });
         }
         await new Promise((r) => setTimeout(r, 100));
@@ -168129,13 +169394,13 @@ var bootPopup = async (loadedModule) => {
         console.warn("MolSysViewer Popout: Canvas3D failed to initialize after timeout (visuals may work but sync won't).");
         return;
       }
-      const c3d = ctrl2.plugin.canvas3d;
+      const c3d = ctrl3.plugin.canvas3d;
       let popCameraSyncTimer = null;
       const syncCamera = () => {
         if (!isUserInteracting) return;
         if (popCameraSyncTimer) clearTimeout(popCameraSyncTimer);
         popCameraSyncTimer = setTimeout(() => {
-          sendToHost("molsysviewer-sync-camera", ctrl2.getCameraSnapshot());
+          sendToHost("molsysviewer-sync-camera", ctrl3.getCameraSnapshot());
           popCameraSyncTimer = null;
         }, 20);
       };
@@ -168146,7 +169411,7 @@ var bootPopup = async (loadedModule) => {
         console.warn("MolSysViewer Popout: didDraw event not found for sync.");
       }
     });
-    return ctrl2;
+    return ctrl3;
   })();
   const handlePopupMessage = async (ev) => {
     const message = decodePopupEvent(ev, openerWin, popupChannel);
@@ -168167,56 +169432,57 @@ var bootPopup = async (loadedModule) => {
     }
     const type3 = routed.envelope.action;
     const data = routed.envelope.payload;
-    const ctrl2 = await popControllerPromise;
+    const ctrl3 = await popControllerPromise;
     try {
       switch (type3) {
         case "molsysviewer-initial-sync":
           if (Array.isArray(data.hierarchyItems)) {
-            ctrl2.setHierarchyItems(data.hierarchyItems);
+            ctrl3.setHierarchyItems(data.hierarchyItems);
           }
           if (Array.isArray(data.messages)) {
             for (const msg of data.messages) {
-              await ctrl2.handleMessage(msg);
+              await ctrl3.handleMessage(msg);
             }
           }
           if (data.cameraSnapshot) {
-            ctrl2.setCameraSnapshot(data.cameraSnapshot, 0);
+            ctrl3.setCameraSnapshot(data.cameraSnapshot, 0);
           }
-          if (data.isSpinActive) await ctrl2.toggleSpin(true);
-          if (data.isSwingActive) await ctrl2.toggleSwing(true);
-          if (data.isDarkMode) await ctrl2.toggleBackground("dark");
-          if (data.viewerMode) ctrl2.setViewerMode(data.viewerMode);
-          if (data.controlsMode) ctrl2.setControlsMode(data.controlsMode);
-          if (data.panelModeStyle) ctrl2.setPanelModeStyle(data.panelModeStyle);
-          if (ctrl2.sharedShell) {
-            if (data.isAmbient !== void 0) ctrl2.sharedShell.setAmbient(data.isAmbient);
-            if (data.isSplit !== void 0) ctrl2.sharedShell.setSplit(data.isSplit);
+          if (data.isSpinActive) await ctrl3.toggleSpin(true);
+          if (data.isSwingActive) await ctrl3.toggleSwing(true);
+          if (data.isDarkMode) await ctrl3.toggleBackground("dark");
+          if (data.viewerMode) ctrl3.setViewerMode(data.viewerMode);
+          if (data.controlsMode) ctrl3.setControlsMode(data.controlsMode);
+          if (data.panelModeStyle) ctrl3.setPanelModeStyle(data.panelModeStyle);
+          if (ctrl3.sharedShell) {
+            if (data.isAmbient !== void 0) ctrl3.sharedShell.setAmbient(data.isAmbient);
+            if (data.isSplit !== void 0) ctrl3.sharedShell.setSplit(data.isSplit);
           }
-          if (data.autohide !== void 0) updateAutohide(!!data.autohide);
+          updateControlsUi(data);
           window.clearTimeout(revealTimer);
           revealViewer();
           break;
         case "molsysviewer-sync-ui":
-          if (data.viewerMode) ctrl2.setViewerMode(data.viewerMode);
-          if (data.controlsMode) ctrl2.setControlsMode(data.controlsMode);
-          if (data.panelModeStyle) ctrl2.setPanelModeStyle(data.panelModeStyle);
-          if (ctrl2.sharedShell) {
-            if (data.isAmbient !== void 0) ctrl2.sharedShell.setAmbient(data.isAmbient);
-            if (data.isSplit !== void 0) ctrl2.sharedShell.setSplit(data.isSplit);
+          updateControlsUi(data);
+          if (data.viewerMode) ctrl3.setViewerMode(data.viewerMode);
+          if (data.controlsMode) ctrl3.setControlsMode(data.controlsMode);
+          if (data.panelModeStyle) ctrl3.setPanelModeStyle(data.panelModeStyle);
+          if (ctrl3.sharedShell) {
+            if (data.isAmbient !== void 0) ctrl3.sharedShell.setAmbient(data.isAmbient);
+            if (data.isSplit !== void 0) ctrl3.sharedShell.setSplit(data.isSplit);
           }
           break;
         case "molsysviewer-sync-autohide":
-          updateAutohide(!!data.enabled);
+          updateControlsUi({ autohide: !!data.enabled, autohideScope: data.scope });
           break;
         case "molsysviewer-sync-op":
-          await ctrl2.handleMessage(data);
+          await ctrl3.handleMessage(data);
           break;
         case "molsysviewer-sync-hierarchy":
-          if (Array.isArray(data?.items)) ctrl2.setHierarchyItems(data.items);
+          if (Array.isArray(data?.items)) ctrl3.setHierarchyItems(data.items);
           break;
         case "molsysviewer-sync-camera":
           if (data && !isUserInteracting) {
-            ctrl2.setCameraSnapshot(data, 0);
+            ctrl3.setCameraSnapshot(data, 0);
           }
           break;
         // D4: Python streams this popup its own typed molecular
@@ -168224,7 +169490,7 @@ var bootPopup = async (loadedModule) => {
         // the same way, so the stream stays flow-controlled end to end.
         case "molsysviewer-structure-data":
           if (data?.message?.op === "load_molsys_payload") {
-            await ctrl2.handleMessage(data.message);
+            await ctrl3.handleMessage(data.message);
             sendToHost("molsysviewer-structure-data-ack", {
               event: "structure_data_json_complete"
             });
@@ -168241,206 +169507,16 @@ var bootPopup = async (loadedModule) => {
   window.addEventListener("message", (ev) => {
     popupInboundQueue = popupInboundQueue.then(() => handlePopupMessage(ev)).catch((error2) => console.error("Popout message queue error", error2));
   });
-  const makeBtn = (label3, onClick) => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.textContent = label3;
-    btn.style.padding = "2px 6px";
-    btn.style.fontSize = "11px";
-    btn.style.lineHeight = "16px";
-    btn.style.height = "22px";
-    btn.style.minHeight = "22px";
-    btn.style.boxSizing = "border-box";
-    btn.style.display = "inline-flex";
-    btn.style.alignItems = "center";
-    btn.style.justifyContent = "center";
-    btn.style.border = "1px solid rgba(255,255,255,0.5)";
-    btn.style.borderRadius = "4px";
-    btn.style.background = "rgba(0,0,0,0.5)";
-    btn.style.color = "#fff";
-    btn.style.cursor = "pointer";
-    btn.addEventListener("click", onClick);
-    return btn;
-  };
-  const overlay = document.createElement("div");
-  overlay.className = "molsysviewer-controls";
-  overlay.style.position = "absolute";
-  overlay.style.top = "8px";
-  overlay.style.right = "8px";
-  overlay.style.display = "flex";
-  overlay.style.gap = "6px";
-  overlay.style.zIndex = "10";
-  overlay.style.pointerEvents = "none";
-  overlay.style.flexWrap = "nowrap";
-  overlay.style.transition = "opacity 150ms ease";
-  const addBtn = (label3, handler) => {
-    if (initOptions.isPanelOnly) return void 0;
-    const b8 = makeBtn(label3, handler);
-    b8.style.pointerEvents = "auto";
-    overlay.appendChild(b8);
-    return b8;
-  };
-  let autohide = false;
-  const applyShow = (visible) => {
-    if (autohide) {
-      overlay.style.opacity = visible ? "1" : "0";
-      overlay.style.pointerEvents = visible ? "auto" : "none";
-    } else {
-      overlay.style.opacity = "1";
-      overlay.style.pointerEvents = "auto";
-    }
-  };
-  const onEnter = () => applyShow(true);
-  const onLeave = () => applyShow(false);
-  const updateAutohide = (enabled) => {
-    if (enabled === autohide) return;
-    autohide = enabled;
-    if (autohide) {
-      container?.addEventListener("pointerenter", onEnter);
-      container?.addEventListener("pointerleave", onLeave);
-      applyShow(false);
-    } else {
-      container?.removeEventListener("pointerenter", onEnter);
-      container?.removeEventListener("pointerleave", onLeave);
-      applyShow(true);
-    }
-  };
-  addBtn("Reset", async () => {
-    sendToHost("molsysviewer-sync-op", { op: "reset_view" });
-  });
-  addBtn("Full", async () => {
-    const ctrl2 = await popControllerPromise;
-    ctrl2.toggleFullscreen();
-  });
-  addBtn("Bg", async () => {
-    sendToHost("molsysviewer-sync-op", { op: "toggle_background" });
-  });
-  addBtn("Spin", async () => {
-    sendToHost("molsysviewer-sync-op", { op: "toggle_spin" });
-  });
-  addBtn("Swing", async () => {
-    sendToHost("molsysviewer-sync-op", { op: "toggle_swing" });
-  });
-  let isUiVisible = true;
-  const uiBtn = addBtn("UI", async () => {
-    const ctrl2 = await popControllerPromise;
-    isUiVisible = !isUiVisible;
-    ctrl2.sharedShell?.setVisible(isUiVisible);
-    if (uiBtn) uiBtn.style.background = isUiVisible ? "rgba(0,0,0,0.5)" : "rgba(239,68,68,0.6)";
-  });
-  addBtn("Pop", () => {
-    try {
-      window.close();
-    } catch (e) {
-    }
-  });
-  if (initOptions.isPanelOnly) {
-    overlay.style.display = "none";
-  }
-  container?.appendChild(overlay);
-  const traj = document.createElement("div");
-  traj.style.display = "none";
-  traj.style.alignItems = "center";
-  traj.style.gap = "6px";
-  traj.style.pointerEvents = "auto";
-  traj.style.marginLeft = "6px";
-  let currentStep = 1;
-  let currentFps = 30;
-  const btnPrev = makeBtn("\u2212", async () => {
-    sendToHost("molsysviewer-sync-op", { op: "step_trajectory", by: -currentStep });
-  });
-  const btnPlayPause = makeBtn("\u25B6", async () => {
-    const ctrl2 = await popControllerPromise;
-    const isPlaying = ctrl2.trajectory.getTrajectoryState().isPlaying;
-    if (isPlaying) {
-      sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "stop" });
-    } else {
-      sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "play", fps: currentFps, step: currentStep });
-    }
-  });
-  btnPlayPause.style.paddingTop = "0px";
-  btnPlayPause.style.paddingBottom = "0px";
-  btnPlayPause.style.lineHeight = "18px";
-  btnPlayPause.style.minWidth = "28px";
-  btnPlayPause.style.width = "28px";
-  btnPlayPause.title = "Play/Pause Trajectory";
-  const btnNext = makeBtn("+", async () => {
-    sendToHost("molsysviewer-sync-op", { op: "step_trajectory", by: currentStep });
-  });
-  [btnPrev, btnPlayPause, btnNext].forEach((b8) => {
-    b8.style.pointerEvents = "auto";
-  });
-  const slider = document.createElement("input");
-  slider.type = "range";
-  slider.min = "0";
-  slider.max = "0";
-  slider.value = "0";
-  slider.className = "molsysviewer-slider";
-  slider.style.width = "160px";
-  slider.style.flex = "0 0 160px";
-  slider.style.pointerEvents = "auto";
-  slider.style.appearance = "none";
-  slider.style.WebkitAppearance = "none";
-  slider.style.MozAppearance = "none";
-  slider.style.setProperty("accent-color", "transparent");
-  const updateSliderBg = () => {
-    const track = "rgba(200,200,200,0.35)";
-    slider.style.background = track;
-  };
-  slider.oninput = async () => {
-    const val = Number(slider.value);
-    if (!Number.isFinite(val)) return;
-    sendToHost("molsysviewer-sync-op", { op: "set_trajectory_frame", index: val });
-    updateSliderBg();
-  };
-  const label2 = document.createElement("span");
-  label2.style.color = "rgba(0,0,0,0.55)";
-  label2.style.fontSize = "11px";
-  label2.style.minWidth = "60px";
-  label2.style.textAlign = "center";
-  label2.style.padding = "0px";
-  label2.style.height = "16px";
-  label2.style.lineHeight = "16px";
-  label2.style.boxSizing = "border-box";
-  label2.style.border = "0";
-  label2.style.borderRadius = "0";
-  label2.style.background = "transparent";
-  label2.textContent = "0 / 0";
-  traj.appendChild(btnPrev);
-  traj.appendChild(btnPlayPause);
-  traj.appendChild(btnNext);
-  traj.appendChild(slider);
-  traj.appendChild(label2);
-  if (initOptions.isPanelOnly) {
-    traj.style.display = "none";
-  } else {
-    overlay.appendChild(traj);
-  }
-  popControllerPromise.then((c8) => {
-    const applyState = (state) => {
-      const frameCount = state.frameCount;
-      const current2 = state.currentFrame;
-      const isPlaying = state.isPlaying;
-      traj.style.display = frameCount > 1 ? "flex" : "none";
-      slider.max = frameCount > 0 ? String(frameCount - 1) : "0";
-      slider.value = String(Math.min(current2, frameCount > 0 ? frameCount - 1 : 0));
-      updateSliderBg();
-      label2.textContent = frameCount > 0 ? `${current2 + 1} / ${frameCount}` : "0 / 0";
-      const disabled = !state.hasTrajectory || frameCount <= 1;
-      [btnPrev, btnNext, slider, btnPlayPause].forEach((el) => {
-        el.disabled = disabled;
-      });
-      btnPlayPause.textContent = isPlaying ? "\u23F8" : "\u25B6";
-      btnPlayPause.title = isPlaying ? "Pause Trajectory" : "Play Trajectory";
-      overlay.style.opacity = "1";
-      overlay.style.display = "flex";
-    };
-    c8.onTrajectoryState(applyState, { immediate: false });
-    const initialState = c8.trajectory.getTrajectoryState();
-    if (initialState.hasTrajectory || initialState.expectedFrameCount !== void 0) {
-      applyState(initialState);
-    }
-  });
+  const controlsProvider = loadedModule?.mountControls || mountControls;
+  const ctrl2 = await popControllerPromise;
+  if (!initOptions.isPanelOnly) controlsProvider(
+    ctrl2,
+    uiModel,
+    (msg) => sendToHost("molsysviewer-sync-op", msg),
+    container,
+    () => window.close(),
+    { popupButtonTitle: "Close popup" }
+  );
   sendToHost(initOptions.isPanelOnly ? "molsysviewer-panel-ready" : "molsysviewer-pop-ready", null);
 };
 
@@ -168607,7 +169683,7 @@ var PopupHostManager = class {
                             const module = await import("${resolvedModuleUrl ?? ""}");
                             const boot = module.bootPopup || (module.default && module.default.bootPopup);
                             if (boot) {
-                                boot(module);
+                                await boot(module);
                             } else {
                                 console.error("MolSysViewer Popout: bootPopup not found in module");
                             }
@@ -168631,7 +169707,7 @@ var PopupHostManager = class {
                             const module = await import("${popBlobUrl}");
                             const boot = module.bootPopup || (module.default && module.default.bootPopup);
                             if (boot) {
-                                boot(module);
+                                await boot(module);
                             } else {
                                 console.error("MolSysViewer Popout: bootPopup not found in module");
                             }
@@ -168778,8 +169854,7 @@ var PopupHostManager = class {
     };
   }
   targetOrigin() {
-    const origin = window.location?.origin;
-    return origin && origin !== "null" ? origin : "*";
+    return popupTargetOrigin(window.location);
   }
   createRouter() {
     const router = new RuntimeMessageRouter(this.viewerId, this.sessionId);
@@ -168816,1186 +169891,6 @@ var PopupHostManager = class {
     }
     target.postMessage(encodePopupMessage(channel, envelope), this.targetOrigin());
   }
-};
-
-// src/ui/help-overlay.ts
-var DEFAULT_SECTIONS = {
-  mouse: [
-    ["Left drag", "Rotate"],
-    ["Right drag", "Pan"],
-    ["Scroll", "Zoom"],
-    ["Left click", "Select element"],
-    ["Shift + Click", "Add to selection"],
-    ["Shift + Alt + Click", "Range selection (same chain)"],
-    ["Double click", "Focus on element"],
-    ["Right click", "Context menu"]
-  ],
-  keyboard: [
-    ["N", "Open / close Studio"],
-    ["W", "Open / close Workbench"],
-    ["V", "Toggle canvas visibility"],
-    ["H", "Toggle this help"],
-    ["Esc", "Close panel / cancel"]
-  ]
-};
-function injectHelpStyles() {
-  const styleId = "molsysviewer-help-styles";
-  if (document.getElementById(styleId)) return;
-  const style = document.createElement("style");
-  style.id = styleId;
-  style.textContent = `
-        .molsysviewer-help-card {
-            width: min(640px, 88%);
-            height: min(480px, calc(100% - 40px));
-            overflow-y: auto;
-            background: rgba(18, 18, 22, 0.92);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 24px 64px rgba(0,0,0,0.45);
-            color: #f4f4f5;
-            font-family: "IBM Plex Sans", system-ui, sans-serif;
-            font-size: 13px;
-            padding: 20px 24px 24px;
-            box-sizing: border-box;
-            transition: all 150ms cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-        
-        /* Custom elegant scrollbar for the help card */
-        .molsysviewer-help-card::-webkit-scrollbar {
-            width: 4px;
-        }
-        .molsysviewer-help-card::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .molsysviewer-help-card::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 99px;
-        }
-        .molsysviewer-help-card::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .molsysviewer-help-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 18px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .molsysviewer-help-title {
-            font-weight: 600;
-            font-size: 14px;
-        }
-        .molsysviewer-help-close {
-            background: transparent;
-            border: none;
-            color: rgba(255, 255, 255, 0.45);
-            cursor: default;
-            padding: 4px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 5px;
-            transition: color 120ms ease;
-        }
-        .molsysviewer-help-close:hover {
-            color: rgba(255, 255, 255, 0.9);
-        }
-        .molsysviewer-help-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 28px;
-        }
-        .molsysviewer-help-section-title {
-            font-weight: 600;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.07em;
-            opacity: 0.45;
-            margin-bottom: 10px;
-        }
-        .molsysviewer-help-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            padding: 5px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
-        .molsysviewer-help-key {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            padding: 2px 7px;
-            font-size: 11px;
-            font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
-            white-space: nowrap;
-            flex-shrink: 0;
-            line-height: 1.6;
-        }
-        .molsysviewer-help-desc {
-            opacity: 0.75;
-            text-align: right;
-            font-size: 12px;
-        }
-    `;
-  document.head.appendChild(style);
-}
-function makeSection(heading, rows) {
-  const section = document.createElement("div");
-  const h = document.createElement("div");
-  h.className = "molsysviewer-help-section-title";
-  h.textContent = heading;
-  section.appendChild(h);
-  for (const [key2, desc] of rows) {
-    const row3 = document.createElement("div");
-    row3.className = "molsysviewer-help-row";
-    const keyEl = document.createElement("span");
-    keyEl.className = "molsysviewer-help-key";
-    keyEl.textContent = key2;
-    const descEl = document.createElement("span");
-    descEl.className = "molsysviewer-help-desc";
-    descEl.textContent = desc;
-    row3.appendChild(keyEl);
-    row3.appendChild(descEl);
-    section.appendChild(row3);
-  }
-  return section;
-}
-var HelpOverlay = class {
-  constructor(host, sections = DEFAULT_SECTIONS) {
-    this.host = host;
-    this.visible = false;
-    injectHelpStyles();
-    this.root = document.createElement("div");
-    Object.assign(this.root.style, {
-      position: "absolute",
-      inset: "0",
-      display: "none",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: "40",
-      pointerEvents: "auto"
-    });
-    const card8 = document.createElement("div");
-    card8.className = "molsysviewer-help-card";
-    const header2 = document.createElement("div");
-    header2.className = "molsysviewer-help-header";
-    const title = document.createElement("span");
-    title.className = "molsysviewer-help-title";
-    title.textContent = "Canvas Quick Reference";
-    const closeBtn = document.createElement("button");
-    closeBtn.type = "button";
-    closeBtn.title = "Close (H or Esc)";
-    closeBtn.className = "molsysviewer-help-close";
-    closeBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/></svg>`;
-    closeBtn.addEventListener("click", () => this.hide());
-    header2.appendChild(title);
-    header2.appendChild(closeBtn);
-    card8.appendChild(header2);
-    const grid = document.createElement("div");
-    grid.className = "molsysviewer-help-grid";
-    grid.appendChild(makeSection("Mouse", sections.mouse));
-    grid.appendChild(makeSection("Keyboard", sections.keyboard));
-    card8.appendChild(grid);
-    this.root.addEventListener("pointerdown", (ev) => {
-      if (ev.target === this.root) this.hide();
-    });
-    this.root.appendChild(card8);
-    this.host.appendChild(this.root);
-  }
-  toggle() {
-    this.visible ? this.hide() : this.show();
-  }
-  show() {
-    this.visible = true;
-    this.root.style.display = "flex";
-    this.onVisibilityChange?.(true);
-    const onKey = (ev) => {
-      if (ev.target?.closest?.("input, textarea, [contenteditable]")) return;
-      if (!this.host.contains(ev.target)) return;
-      if (ev.key === "Escape" || ev.key.toLowerCase() === "h") {
-        ev.stopPropagation();
-        this.hide();
-      }
-    };
-    window.addEventListener("keydown", onKey, true);
-    this.releaseKeyHandler = () => window.removeEventListener("keydown", onKey, true);
-  }
-  hide() {
-    this.visible = false;
-    this.root.style.display = "none";
-    this.onVisibilityChange?.(false);
-    this.releaseKeyHandler?.();
-    this.releaseKeyHandler = void 0;
-  }
-  isVisible() {
-    return this.visible;
-  }
-  dispose() {
-    this.hide();
-    this.root.remove();
-  }
-};
-
-// src/ui/viewport-icon-button.ts
-var VIEWPORT_ICON_PANEL = `<rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="5.5" y1="2.5" x2="5.5" y2="13.5"/>`;
-var VIEWPORT_ICON_FULLSCREEN = `<polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>`;
-var VIEWPORT_ICON_EXIT_FULLSCREEN = `<polyline points="5,2 5,5 2,5"/><polyline points="11,2 11,5 14,5"/><polyline points="14,11 11,11 11,14"/><polyline points="2,11 5,11 5,14"/>`;
-var VIEWPORT_ICON_POPUP = `<line x1="5.5" y1="10.5" x2="11.5" y2="4.5"/><polyline points="8,4 12,4 12,8"/><polyline points="5.5,7 3,7 3,13 9,13 9,10.5"/>`;
-var VIEWPORT_ICON_HELP = `<circle cx="8" cy="8" r="6"/><path d="M6.2,6.5a1.9,1.9,0,0,1,3.8,0c0,1.9-1.9,1.9-1.9,3" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="12.8" x2="8" y2="12.8" stroke-width="2" stroke-linecap="round"/>`;
-var VIEWPORT_ICON_RESET = `<path d="M3.1,5.5A5.5,5.5,0,1,1,2.8,10"/><polyline points="2,2 2,6 6,6"/>`;
-function setViewportIcon(button2, svgInner) {
-  button2.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;">${svgInner}</svg>`;
-}
-function makeViewportIconButton(svgInner, title, onClick) {
-  const button2 = document.createElement("button");
-  button2.type = "button";
-  button2.title = title;
-  setViewportIcon(button2, svgInner);
-  Object.assign(button2.style, {
-    width: "28px",
-    height: "28px",
-    minWidth: "28px",
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "0",
-    border: "1px solid rgba(255, 255, 255, 0.15)",
-    borderRadius: "6px",
-    background: "rgba(18, 18, 22, 0.75)",
-    color: "rgba(255, 255, 255, 0.75)",
-    cursor: "default",
-    userSelect: "none",
-    pointerEvents: "auto",
-    boxSizing: "border-box",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
-    transition: "all 120ms ease"
-  });
-  button2.addEventListener("mouseenter", () => {
-    button2.style.background = "rgba(18, 18, 22, 0.95)";
-    button2.style.borderColor = "rgba(255, 255, 255, 0.35)";
-    button2.style.color = "rgba(255, 255, 255, 0.98)";
-  });
-  button2.addEventListener("mouseleave", () => {
-    button2.style.background = "rgba(18, 18, 22, 0.75)";
-    button2.style.borderColor = "rgba(255, 255, 255, 0.15)";
-    button2.style.color = "rgba(255, 255, 255, 0.75)";
-  });
-  button2.addEventListener("click", onClick);
-  return button2;
-}
-
-// src/ui/controls.ts
-var makeButton2 = (label2, onClick) => {
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.textContent = label2;
-  btn.style.padding = "2px 6px";
-  btn.style.fontSize = "11px";
-  btn.style.lineHeight = "16px";
-  btn.style.height = "22px";
-  btn.style.minHeight = "22px";
-  btn.style.boxSizing = "border-box";
-  btn.style.display = "inline-flex";
-  btn.style.alignItems = "center";
-  btn.style.justifyContent = "center";
-  btn.style.border = "1px solid rgba(255,255,255,0.5)";
-  btn.style.borderRadius = "4px";
-  btn.style.background = "rgba(0,0,0,0.5)";
-  btn.style.color = "#fff";
-  btn.style.cursor = "default";
-  btn.style.userSelect = "none";
-  btn.addEventListener("click", onClick);
-  return btn;
-};
-var makeMinimalTrajButton = (svgInner, title, onClick) => {
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.title = title;
-  btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;">${svgInner}</svg>`;
-  Object.assign(btn.style, {
-    width: "28px",
-    height: "28px",
-    minWidth: "28px",
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "0",
-    border: "1px solid rgba(255, 255, 255, 0.15)",
-    borderRadius: "6px",
-    background: "rgba(18, 18, 22, 0.75)",
-    color: "rgba(255, 255, 255, 0.75)",
-    cursor: "default",
-    userSelect: "none",
-    pointerEvents: "auto",
-    boxSizing: "border-box",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-    transition: "all 120ms ease"
-  });
-  btn.addEventListener("mouseenter", () => {
-    btn.style.background = "rgba(18, 18, 22, 0.95)";
-    btn.style.borderColor = "rgba(255, 255, 255, 0.35)";
-    btn.style.color = "rgba(255, 255, 255, 0.98)";
-  });
-  btn.addEventListener("mouseleave", () => {
-    btn.style.background = "rgba(18, 18, 22, 0.75)";
-    btn.style.borderColor = "rgba(255, 255, 255, 0.15)";
-    btn.style.color = "rgba(255, 255, 255, 0.75)";
-  });
-  btn.addEventListener("click", onClick);
-  return btn;
-};
-var injectStyles = () => {
-  let el = document.getElementById("molsysviewer-traj-style");
-  if (!el) {
-    el = document.createElement("style");
-    el.id = "molsysviewer-traj-style";
-    document.head.appendChild(el);
-  }
-  const css = `
-        .molsysviewer-controls {
-            font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "DejaVu Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-        }
-        .molsysviewer-controls button,
-        .molsysviewer-controls input,
-        .molsysviewer-controls select,
-        .molsysviewer-controls textarea,
-        .molsysviewer-controls span {
-            font-family: inherit;
-        }
-        .molsysviewer-controls,
-        .molsysviewer-controls * {
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-        }
-        .molsysviewer-traj-input::-webkit-inner-spin-button,
-        .molsysviewer-traj-input::-webkit-outer-spin-button {
-            -webkit-appearance: none !important;
-            appearance: none !important;
-            -moz-appearance: none !important;
-            margin: 0 !important;
-        }
-        .molsysviewer-traj-input {
-            -moz-appearance: textfield !important;
-            appearance: none !important;
-            -webkit-appearance: none !important;
-            color: rgba(255,255,255,0.9);
-            background: rgba(40,40,40,0.6);
-            caret-color: transparent;
-        }
-        .molsysviewer-slider {
-            background: transparent;
-            height: 16px;
-            border-radius: 999px;
-            overflow: visible;
-        }
-        .molsysviewer-slider::-webkit-slider-runnable-track {
-            background: rgba(200,200,200,0.35) !important;
-            height: 16px;
-            border-radius: 999px;
-        }
-        .molsysviewer-slider::-moz-range-track {
-            background: rgba(200,200,200,0.35) !important;
-            height: 16px;
-            border-radius: 999px;
-        }
-        .molsysviewer-slider::-ms-track {
-            background: rgba(200,200,200,0.35) !important;
-            height: 16px;
-            border-radius: 999px;
-            border: none;
-            color: transparent;
-        }
-        .molsysviewer-slider::-webkit-slider-thumb {
-            -webkit-appearance: none !important;
-            appearance: none !important;
-            width: 16px;
-            height: 16px;
-            border-radius: 50% !important;
-            background: rgb(80,80,80) !important;
-            border: none !important;
-            box-shadow: none !important;
-            margin-top: 0px;
-        }
-        .molsysviewer-slider::-webkit-slider-thumb:hover,
-        .molsysviewer-slider::-webkit-slider-thumb:active,
-        .molsysviewer-slider::-webkit-slider-thumb:focus {
-            background: rgb(80,80,80) !important;
-            border: none !important;
-            box-shadow: none !important;
-        }
-        .molsysviewer-slider::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
-            border-radius: 50% !important;
-            background: rgb(80,80,80) !important;
-            border: none !important;
-        }
-        .molsysviewer-slider::-moz-range-thumb:hover,
-        .molsysviewer-slider::-moz-range-thumb:active,
-        .molsysviewer-slider::-moz-range-thumb:focus {
-            background: rgba(80,80,80,0.95) !important;
-            border: none !important;
-        }
-        .molsysviewer-slider::-ms-thumb {
-            width: 16px;
-            height: 16px;
-            border-radius: 50% !important;
-            background: rgba(80,80,80,0.95) !important;
-            border: none !important;
-        }
-        .molsysviewer-slider-minimal {
-            background: transparent;
-            height: 4px;
-            border-radius: 999px;
-            overflow: visible;
-        }
-        .molsysviewer-slider-minimal::-webkit-slider-runnable-track {
-            background: rgba(255, 255, 255, 0.3) !important;
-            height: 4px;
-            border-radius: 999px;
-        }
-        .molsysviewer-slider-minimal::-moz-range-track {
-            background: rgba(255, 255, 255, 0.3) !important;
-            height: 4px;
-            border-radius: 999px;
-        }
-        .molsysviewer-slider-minimal::-ms-track {
-            background: rgba(255, 255, 255, 0.3) !important;
-            height: 4px;
-            border-radius: 999px;
-            border: none;
-            color: transparent;
-        }
-        .molsysviewer-slider-minimal::-webkit-slider-thumb {
-            -webkit-appearance: none !important;
-            appearance: none !important;
-            width: 10px;
-            height: 10px;
-            border-radius: 50% !important;
-            background: #ffffff !important;
-            border: none !important;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
-            margin-top: -3px;
-            cursor: default;
-        }
-        .molsysviewer-slider-minimal::-webkit-slider-thumb:hover,
-        .molsysviewer-slider-minimal::-webkit-slider-thumb:active {
-            background: #ffffff !important;
-            box-shadow: 0 1px 5px rgba(0,0,0,0.6) !important;
-        }
-        .molsysviewer-slider-minimal::-moz-range-thumb {
-            width: 10px;
-            height: 10px;
-            border-radius: 50% !important;
-            background: #ffffff !important;
-            border: none !important;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
-            cursor: default;
-        }
-        .molsysviewer-slider-minimal::-moz-range-thumb:hover,
-        .molsysviewer-slider-minimal::-moz-range-thumb:active {
-            background: #ffffff !important;
-        }
-        .molsysviewer-slider-minimal::-ms-thumb {
-            width: 10px;
-            height: 10px;
-            border-radius: 50% !important;
-            background: #ffffff !important;
-            border: none !important;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
-        }
-        .molsysviewer-traj-capsule {
-            height: 28px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0 10px;
-            background: rgba(18, 18, 22, 0.75);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 6px;
-            box-sizing: border-box;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-        }
-    `;
-  el.textContent = css;
-};
-var makeNumberControl = (initial, onChange, title, minimal = false) => {
-  const wrapper = document.createElement("div");
-  wrapper.style.position = "relative";
-  wrapper.style.display = "inline-block";
-  wrapper.style.width = minimal ? "42px" : "52px";
-  wrapper.style.height = minimal ? "28px" : "22px";
-  const input = document.createElement("input");
-  input.type = "text";
-  input.value = String(initial);
-  input.style.width = minimal ? "42px" : "52px";
-  input.style.height = minimal ? "28px" : "22px";
-  input.style.fontSize = minimal ? "11px" : "11px";
-  input.style.fontFamily = '"IBM Plex Sans", system-ui, sans-serif';
-  input.style.fontWeight = minimal ? "600" : "normal";
-  input.style.textAlign = "center";
-  input.style.boxSizing = "border-box";
-  if (minimal) {
-    input.style.color = "rgba(255,255,255,0.9)";
-    input.style.background = "rgba(18, 18, 22, 0.75)";
-    input.style.border = "1px solid rgba(255,255,255,0.15)";
-    input.style.borderRadius = "6px";
-    input.style.padding = "0 14px 0 6px";
-  } else {
-    input.style.color = "rgba(255,255,255,0.9)";
-    input.style.background = "rgba(40,40,40,0.6)";
-    input.style.border = "1px solid rgba(255,255,255,0.55)";
-    input.style.borderRadius = "4px";
-    input.style.padding = "0 18px 0 4px";
-  }
-  input.style.appearance = "none";
-  input.style.MozAppearance = "textfield";
-  input.style.WebkitAppearance = "none";
-  input.className = "molsysviewer-traj-input";
-  input.title = title;
-  input.setAttribute("inputmode", "numeric");
-  input.setAttribute("pattern", "[0-9]*");
-  input.onchange = () => {
-    const val = Number(input.value);
-    const n = Number.isFinite(val) && val > 0 ? Math.floor(val) : initial;
-    onChange(n);
-    input.value = String(n);
-  };
-  const spinner = document.createElement("div");
-  spinner.style.position = "absolute";
-  spinner.style.top = "1px";
-  spinner.style.right = "2px";
-  spinner.style.width = minimal ? "12px" : "14px";
-  spinner.style.height = minimal ? "26px" : "18px";
-  spinner.style.display = "flex";
-  spinner.style.flexDirection = "column";
-  spinner.style.alignItems = "center";
-  const mkArrow = (charOrSvg, delta2, extraTop = "0px") => {
-    const btn = document.createElement("div");
-    if (minimal) {
-      btn.innerHTML = charOrSvg;
-      btn.style.display = "flex";
-      btn.style.alignItems = "center";
-      btn.style.justifyContent = "center";
-      btn.style.width = "12px";
-      btn.style.height = "12px";
-    } else {
-      btn.textContent = charOrSvg;
-      btn.style.fontSize = "10px";
-      btn.style.lineHeight = "10px";
-      btn.style.height = "9px";
-    }
-    btn.style.color = "rgba(255, 255, 255, 0.75)";
-    btn.style.background = "transparent";
-    btn.style.border = "none";
-    btn.style.textAlign = "center";
-    btn.style.cursor = "default";
-    btn.style.marginTop = extraTop;
-    btn.onclick = () => {
-      const val = Number(input.value);
-      const next = Number.isFinite(val) ? val + delta2 : delta2;
-      const n = next > 0 ? Math.floor(next) : 1;
-      onChange(n);
-      input.value = String(n);
-    };
-    return btn;
-  };
-  const upBtn = mkArrow(
-    minimal ? `<svg xmlns="http://www.w3.org/2000/svg" width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5,4.5 4,2 6.5,4.5"/></svg>` : "\u25B2",
-    1,
-    "0px"
-  );
-  const downBtn = mkArrow(
-    minimal ? `<svg xmlns="http://www.w3.org/2000/svg" width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5,1.5 4,4 6.5,1.5"/></svg>` : "\u25BC",
-    -1,
-    minimal ? "2px" : "0px"
-  );
-  spinner.appendChild(upBtn);
-  spinner.appendChild(downBtn);
-  wrapper.appendChild(input);
-  wrapper.appendChild(spinner);
-  return { wrapper, input };
-};
-var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPopClick) => {
-  const controlsMode = model.get("controls_mode") || "classic";
-  const isCinema = controlsMode === "cinema";
-  const isMinimal = controlsMode === "minimal" || isCinema;
-  const helpOverlay = new HelpOverlay(container);
-  c8.setHelpOpener(() => helpOverlay.show());
-  const onHelpKey = (ev) => {
-    if (ev.target?.closest?.("input, textarea, [contenteditable]")) return;
-    if (!container.contains(ev.target)) return;
-    if (ev.key.toLowerCase() === "h") {
-      ev.preventDefault();
-      ev.stopPropagation();
-      helpOverlay.toggle();
-    }
-  };
-  window.addEventListener("keydown", onHelpKey, true);
-  if (isCinema) {
-    const toast = document.createElement("div");
-    toast.textContent = "Cinema Mode active. Press N/W for panels, H for help.";
-    Object.assign(toast.style, {
-      position: "absolute",
-      bottom: "24px",
-      left: "50%",
-      transform: "translateX(-50%)",
-      background: "rgba(18, 18, 22, 0.88)",
-      color: "rgba(244, 244, 245, 0.95)",
-      padding: "8px 16px",
-      borderRadius: "999px",
-      fontSize: "11px",
-      fontWeight: "500",
-      fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
-      border: "1px solid rgba(255, 255, 255, 0.12)",
-      boxShadow: "0 8px 24px rgba(0, 0, 0, 0.35)",
-      zIndex: "100",
-      pointerEvents: "none",
-      transition: "opacity 0.8s ease-in-out",
-      opacity: "1"
-    });
-    container.appendChild(toast);
-    setTimeout(() => {
-      toast.style.opacity = "0";
-      setTimeout(() => {
-        toast.remove();
-      }, 800);
-    }, 3200);
-  }
-  injectStyles();
-  let overlay;
-  if (!isCinema) {
-    overlay = document.createElement("div");
-    overlay.className = "molsysviewer-controls";
-    overlay.style.position = "absolute";
-    overlay.style.display = "flex";
-    overlay.style.gap = "6px";
-    overlay.style.zIndex = "10";
-    overlay.style.pointerEvents = "none";
-    overlay.style.flexWrap = "nowrap";
-    overlay.style.opacity = "0";
-    overlay.style.opacity = "0";
-    overlay.style.display = "none";
-  }
-  const panelModeStyle = model.get("panel_mode_style") || "drawer";
-  const traj = document.createElement("div");
-  traj.setAttribute("data-molsysviewer-trajectory-controls", "true");
-  traj.style.display = "flex";
-  traj.style.alignItems = "center";
-  traj.style.gap = "6px";
-  traj.style.pointerEvents = "auto";
-  traj.style.marginLeft = isMinimal ? "0px" : "6px";
-  traj.style.marginRight = isMinimal ? "10px" : "0px";
-  traj.style.paddingLeft = "0px";
-  traj.style.borderLeft = "0px";
-  traj.style.display = "none";
-  let currentStep = 1;
-  let currentFps = 30;
-  let btnPrev;
-  let btnNext;
-  let stepControl = null;
-  let fpsControl = null;
-  let trajCapsule;
-  const btnPlayPause = isMinimal ? makeMinimalTrajButton(`<polygon points="5,3 13,8 5,13" fill="currentColor"/>`, "Play Trajectory", () => {
-    const isPlaying = c8.trajectory.getTrajectoryState().isPlaying;
-    if (isPlaying) {
-      c8.stopTrajectoryPlayback();
-      sendSync({ op: "set_trajectory_playback", action: "stop" });
-    } else {
-      c8.playTrajectory({ fps: currentFps, step: currentStep });
-      sendSync({
-        op: "set_trajectory_playback",
-        action: "play",
-        fps: currentFps,
-        step: currentStep
-      });
-    }
-  }) : makeButton2("\u25B6 / \u23F8", () => {
-    const isPlaying = c8.trajectory.getTrajectoryState().isPlaying;
-    if (isPlaying) {
-      c8.stopTrajectoryPlayback();
-      sendSync({ op: "set_trajectory_playback", action: "stop" });
-    } else {
-      c8.playTrajectory({ fps: currentFps, step: currentStep });
-      sendSync({
-        op: "set_trajectory_playback",
-        action: "play",
-        fps: currentFps,
-        step: currentStep
-      });
-    }
-  });
-  btnPlayPause.setAttribute("data-molsysviewer-trajectory-playback", "play");
-  if (isMinimal) {
-    btnPrev = makeMinimalTrajButton(`<rect x="3" y="3" width="2" height="10" fill="currentColor"/><polygon points="12,3 6,8 12,13" fill="currentColor"/>`, "Previous Step", () => {
-      c8.stepTrajectory(-currentStep);
-      sendSync({ op: "step_trajectory", by: -currentStep });
-    });
-    btnNext = makeMinimalTrajButton(`<polygon points="4,3 10,8 4,13" fill="currentColor"/><rect x="11" y="3" width="2" height="10" fill="currentColor"/>`, "Next Step", () => {
-      c8.stepTrajectory(currentStep);
-      sendSync({ op: "step_trajectory", by: currentStep });
-    });
-  } else {
-    btnPlayPause.style.paddingTop = "0px";
-    btnPlayPause.style.paddingBottom = "0px";
-    btnPlayPause.style.lineHeight = "18px";
-    btnPlayPause.style.minWidth = "28px";
-    btnPlayPause.style.width = "28px";
-    btnPrev = makeButton2("\u2212", () => {
-      c8.stepTrajectory(-currentStep);
-      sendSync({ op: "step_trajectory", by: -currentStep });
-    });
-    btnNext = makeButton2("+", () => {
-      c8.stepTrajectory(currentStep);
-      sendSync({ op: "step_trajectory", by: currentStep });
-    });
-  }
-  btnPrev?.setAttribute("data-molsysviewer-trajectory-step", "previous");
-  btnNext?.setAttribute("data-molsysviewer-trajectory-step", "next");
-  const slider = document.createElement("input");
-  slider.setAttribute("data-molsysviewer-trajectory-frame", "true");
-  slider.type = "range";
-  slider.min = "0";
-  slider.max = "0";
-  slider.value = "0";
-  slider.className = isMinimal ? "molsysviewer-slider-minimal" : "molsysviewer-slider";
-  slider.style.width = isMinimal ? "100px" : "160px";
-  slider.style.flex = isMinimal ? "0 0 100px" : "0 0 160px";
-  slider.style.background = "transparent";
-  slider.style.appearance = "none";
-  slider.style.WebkitAppearance = "none";
-  slider.style.MozAppearance = "none";
-  slider.style.setProperty("accent-color", "transparent");
-  slider.style.borderRadius = "999px";
-  slider.style.overflow = "visible";
-  const updateSliderBg = () => {
-    if (isMinimal) {
-      slider.style.background = "transparent";
-    } else {
-      const track = "rgba(200,200,200,0.35)";
-      slider.style.background = track;
-    }
-  };
-  slider.oninput = () => {
-    const val = Number(slider.value);
-    if (!Number.isFinite(val)) return;
-    void c8.setTrajectoryFrame(val);
-    sendSync({ op: "set_trajectory_frame", index: val });
-    updateSliderBg();
-  };
-  updateSliderBg();
-  const label2 = document.createElement("span");
-  label2.setAttribute("data-molsysviewer-trajectory-label", "true");
-  if (isMinimal) {
-    label2.style.color = "rgba(255, 255, 255, 0.85)";
-    label2.style.fontSize = "11px";
-    label2.style.fontFamily = '"IBM Plex Sans", system-ui, sans-serif';
-    label2.style.fontWeight = "600";
-    label2.style.minWidth = "42px";
-    label2.style.textAlign = "right";
-  } else {
-    label2.style.color = "rgba(0,0,0,0.5)";
-    label2.style.fontSize = "11px";
-    label2.style.minWidth = "60px";
-    label2.style.textAlign = "center";
-  }
-  label2.textContent = "0 / 0";
-  if (isMinimal) {
-    trajCapsule = document.createElement("div");
-    trajCapsule.className = "molsysviewer-traj-capsule";
-    trajCapsule.appendChild(slider);
-    trajCapsule.appendChild(label2);
-    traj.appendChild(trajCapsule);
-    if (btnPrev) traj.appendChild(btnPrev);
-    traj.appendChild(btnPlayPause);
-    if (btnNext) traj.appendChild(btnNext);
-    if (isCinema) {
-      stepControl = makeNumberControl(1, (n) => {
-        currentStep = n;
-        const state = c8.trajectory.getTrajectoryState();
-        if (state.isPlaying) {
-          c8.playTrajectory({ fps: currentFps, step: currentStep });
-        }
-      }, "Step size", true);
-      fpsControl = makeNumberControl(30, (n) => {
-        currentFps = n;
-        const state = c8.trajectory.getTrajectoryState();
-        if (state.isPlaying) {
-          c8.playTrajectory({ fps: currentFps, step: currentStep });
-        }
-      }, "FPS", true);
-      traj.appendChild(stepControl.wrapper);
-      traj.appendChild(fpsControl.wrapper);
-    }
-  } else {
-    stepControl = makeNumberControl(1, (n) => {
-      currentStep = n;
-      const state = c8.trajectory.getTrajectoryState();
-      if (state.isPlaying) {
-        btnPlayPause.setAttribute("data-molsysviewer-trajectory-playback", "stop");
-        c8.playTrajectory({ fps: currentFps, step: currentStep });
-      }
-    }, "Step size", isMinimal);
-    fpsControl = makeNumberControl(30, (n) => {
-      currentFps = n;
-      const state = c8.trajectory.getTrajectoryState();
-      if (state.isPlaying) {
-        c8.playTrajectory({ fps: currentFps, step: currentStep });
-      }
-    }, "FPS", isMinimal);
-    if (btnPrev) traj.appendChild(btnPrev);
-    traj.appendChild(btnPlayPause);
-    if (btnNext) traj.appendChild(btnNext);
-    traj.appendChild(slider);
-    traj.appendChild(label2);
-    traj.appendChild(stepControl.wrapper);
-    traj.appendChild(fpsControl.wrapper);
-  }
-  if (isCinema) {
-    Object.assign(traj.style, {
-      position: "absolute",
-      bottom: "12px",
-      left: "50%",
-      transform: "translateX(-50%) translateY(45px)",
-      opacity: "0",
-      display: "flex",
-      alignItems: "center",
-      gap: "6px",
-      zIndex: "10",
-      pointerEvents: "auto",
-      transition: "transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.2s ease"
-    });
-    const triggerArea = document.createElement("div");
-    Object.assign(triggerArea.style, {
-      position: "absolute",
-      bottom: "0px",
-      left: "0px",
-      width: "100%",
-      height: "56px",
-      zIndex: "9",
-      pointerEvents: "auto",
-      background: "transparent"
-    });
-    const showScrubber = () => {
-      traj.style.transform = "translateX(-50%) translateY(0)";
-      traj.style.opacity = "1";
-    };
-    const hideScrubber = () => {
-      traj.style.transform = "translateX(-50%) translateY(45px)";
-      traj.style.opacity = "0";
-    };
-    triggerArea.addEventListener("mouseenter", showScrubber);
-    traj.addEventListener("mouseenter", showScrubber);
-    triggerArea.addEventListener("mouseleave", (e) => {
-      if (e.relatedTarget !== traj && !traj.contains(e.relatedTarget)) {
-        hideScrubber();
-      }
-    });
-    traj.addEventListener("mouseleave", (e) => {
-      if (e.relatedTarget !== triggerArea && !triggerArea.contains(e.relatedTarget)) {
-        hideScrubber();
-      }
-    });
-    container.appendChild(triggerArea);
-    container.appendChild(traj);
-  } else if (overlay) {
-    overlay.appendChild(traj);
-  }
-  let fullscreenBtn = null;
-  if (controlsMode === "minimal" && overlay) {
-    const mkIcon = (svgInner, title, handler) => {
-      const btn = makeViewportIconButton(svgInner, title, handler);
-      overlay.appendChild(btn);
-      return btn;
-    };
-    mkIcon(VIEWPORT_ICON_PANEL, "Panel mode (N / W)", () => c8.togglePanelMode());
-    fullscreenBtn = mkIcon(VIEWPORT_ICON_FULLSCREEN, "Fullscreen", () => c8.toggleFullscreen());
-    if (onPopClick) mkIcon(VIEWPORT_ICON_POPUP, "Open popup", onPopClick);
-    mkIcon(VIEWPORT_ICON_HELP, "Help (H)", () => helpOverlay.toggle());
-  } else if (overlay) {
-    const mk = (label3, handler) => {
-      const b8 = makeButton2(label3, handler);
-      b8.style.pointerEvents = "auto";
-      overlay.appendChild(b8);
-      return b8;
-    };
-    mk("Reset", async () => {
-      await c8.resetView();
-      sendSync({ op: "reset_view" });
-    });
-    fullscreenBtn = mk("Full", () => c8.toggleFullscreen());
-    mk("Bg", async () => {
-      await c8.toggleBackground();
-      sendSync({ op: "toggle_background", mode: c8.isDarkMode ? "dark" : "light" });
-    });
-    mk("Spin", async () => {
-      await c8.toggleSpin();
-      sendSync({ op: "toggle_spin", enable: c8.isSpinActive });
-    });
-    mk("Swing", async () => {
-      await c8.toggleSwing();
-      sendSync({ op: "toggle_swing", enable: c8.isSwingActive });
-    });
-    if (onPopClick) mk("Pop", onPopClick);
-    mk("Help", () => helpOverlay.toggle());
-    if (panelModeStyle === "floating" || panelModeStyle === "floating-unified" || panelModeStyle === "integrated") {
-      mk("Panel", () => c8.togglePanelMode());
-    }
-  }
-  let hasSeenState = false;
-  let lastIsPlaying = null;
-  const applyTrajectoryState = (state) => {
-    hasSeenState = true;
-    const frameCount = state.frameCount;
-    const current2 = state.currentFrame;
-    traj.style.display = frameCount > 1 ? "flex" : "none";
-    slider.max = frameCount > 0 ? String(frameCount - 1) : "0";
-    slider.value = String(Math.min(current2, frameCount > 0 ? frameCount - 1 : 0));
-    updateSliderBg();
-    label2.textContent = frameCount > 0 ? `${current2 + 1} / ${frameCount}` : "0 / 0";
-    const disabled = !state.hasTrajectory || frameCount <= 1;
-    const elsToDisable = [slider, btnPlayPause];
-    if (btnPrev) elsToDisable.push(btnPrev);
-    if (btnNext) elsToDisable.push(btnNext);
-    if (stepControl) elsToDisable.push(stepControl.input);
-    if (fpsControl) elsToDisable.push(fpsControl.input);
-    elsToDisable.forEach((el) => {
-      el.disabled = disabled;
-    });
-    if (state.isPlaying !== lastIsPlaying) {
-      lastIsPlaying = state.isPlaying;
-      if (state.isPlaying) {
-        if (isMinimal) {
-          btnPlayPause.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><rect x="4" y="3" width="2.5" height="10" fill="currentColor"/><rect x="9.5" y="3" width="2.5" height="10" fill="currentColor"/></svg>`;
-        } else {
-          btnPlayPause.textContent = "\u23F8";
-        }
-        btnPlayPause.title = "Pause Trajectory";
-      } else {
-        btnPlayPause.setAttribute("data-molsysviewer-trajectory-playback", "play");
-        if (isMinimal) {
-          btnPlayPause.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><polygon points="5,3 13,8 5,13" fill="currentColor"/></svg>`;
-        } else {
-          btnPlayPause.textContent = "\u25B6";
-        }
-        btnPlayPause.title = "Play Trajectory";
-      }
-    }
-    if (overlay) {
-      overlay.style.display = "flex";
-      overlay.style.opacity = "1";
-      overlay.style.pointerEvents = "none";
-    }
-  };
-  c8.onTrajectoryState(applyTrajectoryState, { immediate: false });
-  const initialState = c8.trajectory.getTrajectoryState();
-  if (initialState.hasTrajectory || initialState.expectedFrameCount !== void 0) {
-    applyTrajectoryState(initialState);
-  }
-  const hotspot = document.createElement("div");
-  Object.assign(hotspot.style, {
-    position: "absolute",
-    width: "130px",
-    height: "55px",
-    zIndex: "9",
-    // Below the overlay (10) so buttons receive clicks
-    background: "transparent",
-    pointerEvents: "auto",
-    display: "none"
-  });
-  container.appendChild(hotspot);
-  const placeOverlay = () => {
-    if (!overlay) return;
-    const isFullscreen = !!document.fullscreenElement;
-    const rawPos = isFullscreen ? model.get("controls_position_fullscreen") : model.get("controls_position");
-    let use = ["top", "right"];
-    if (Array.isArray(rawPos)) {
-      use = rawPos;
-    } else if (typeof rawPos === "string") {
-      if (rawPos === "top-left") use = ["top", "left"];
-      else if (rawPos === "top-right") use = ["top", "right"];
-      else if (rawPos === "bottom-left") use = ["bottom", "left"];
-      else if (rawPos === "bottom-center") use = ["bottom", "center"];
-      else if (rawPos === "bottom-right") use = ["bottom", "right"];
-    }
-    const gap = isFullscreen ? "36px" : "12px";
-    overlay.style.top = use.includes("top") ? gap : "";
-    overlay.style.bottom = use.includes("bottom") ? gap : "";
-    overlay.style.left = use.includes("left") ? gap : "";
-    overlay.style.right = use.includes("right") ? gap : "";
-    overlay.style.transform = "";
-    if (use.includes("center")) {
-      overlay.style.left = "50%";
-      overlay.style.transform = "translateX(-50%)";
-    }
-    hotspot.style.top = use.includes("top") ? "0" : "";
-    hotspot.style.bottom = use.includes("bottom") ? "0" : "";
-    hotspot.style.left = use.includes("left") ? "0" : "";
-    hotspot.style.right = use.includes("right") ? "0" : "";
-    hotspot.style.transform = "";
-    if (use.includes("center")) {
-      hotspot.style.left = "50%";
-      hotspot.style.transform = "translateX(-50%)";
-    }
-    if (isFullscreen) {
-      hotspot.style.width = "200px";
-      hotspot.style.height = "85px";
-    } else {
-      hotspot.style.width = "130px";
-      hotspot.style.height = "55px";
-    }
-  };
-  const updateFullscreenButtonState = () => {
-    const isFullscreen = !!document.fullscreenElement;
-    if (fullscreenBtn) {
-      if (controlsMode === "minimal") {
-        const svg = fullscreenBtn.querySelector("svg");
-        if (svg) {
-          const path = isFullscreen ? VIEWPORT_ICON_EXIT_FULLSCREEN : VIEWPORT_ICON_FULLSCREEN;
-          svg.innerHTML = path;
-        }
-        fullscreenBtn.title = isFullscreen ? "Exit Fullscreen" : "Fullscreen";
-      } else {
-        fullscreenBtn.textContent = isFullscreen ? "Exit" : "Full";
-      }
-    }
-  };
-  if (overlay) {
-    let autohide = !!model.get("autohide_controls");
-    let isHovered = false;
-    let fadeTimeout = null;
-    const target = container;
-    const shouldHideControls = () => {
-      const isHelpOpen = helpOverlay.isVisible();
-      const isFloatingPanelOpen = !!c8.sharedShell && c8.sharedShell.isVisible() && c8.sharedShell.isExpanded && !c8.sharedShell.isSplit && !c8.sharedShell.isAmbient;
-      return isHelpOpen || isFloatingPanelOpen;
-    };
-    const applyShow = (visible) => {
-      if (!hasSeenState) return;
-      const forceHide = shouldHideControls();
-      if (autohide) {
-        overlay.style.opacity = visible && !forceHide ? "1" : "0";
-        overlay.style.pointerEvents = visible && !forceHide ? "auto" : "none";
-      } else {
-        overlay.style.display = visible && !forceHide ? "flex" : "none";
-      }
-    };
-    const triggerTemporaryShow = () => {
-      if (!autohide) return;
-      const isFullscreen = !!document.fullscreenElement;
-      const isSplit = c8.sharedShell?.isSplit;
-      if (!isFullscreen && !isSplit) return;
-      if (fadeTimeout) clearTimeout(fadeTimeout);
-      applyShow(true);
-      fadeTimeout = setTimeout(() => {
-        if (!isHovered) {
-          applyShow(false);
-        }
-      }, 1500);
-    };
-    const onEnterWhole = () => {
-      isHovered = true;
-      applyShow(true);
-    };
-    const onLeaveWhole = () => {
-      isHovered = false;
-      applyShow(false);
-    };
-    const onEnterHotspot = () => {
-      isHovered = true;
-      if (fadeTimeout) clearTimeout(fadeTimeout);
-      applyShow(true);
-    };
-    const onLeaveHotspot = () => {
-      isHovered = false;
-      applyShow(false);
-    };
-    const updateAutohideMode = () => {
-      if (!autohide) return;
-      const isFullscreen = !!document.fullscreenElement;
-      const isSplit = c8.sharedShell?.isSplit;
-      const useCornerHotspot = isFullscreen || isSplit;
-      target.removeEventListener("pointerenter", onEnterWhole);
-      target.removeEventListener("pointerleave", onLeaveWhole);
-      hotspot.removeEventListener("pointerenter", onEnterHotspot);
-      hotspot.removeEventListener("pointerleave", onLeaveHotspot);
-      overlay.removeEventListener("pointerenter", onEnterHotspot);
-      overlay.removeEventListener("pointerleave", onLeaveHotspot);
-      if (useCornerHotspot) {
-        hotspot.style.display = "block";
-        hotspot.addEventListener("pointerenter", onEnterHotspot);
-        hotspot.addEventListener("pointerleave", onLeaveHotspot);
-        overlay.addEventListener("pointerenter", onEnterHotspot);
-        overlay.addEventListener("pointerleave", onLeaveHotspot);
-      } else {
-        hotspot.style.display = "none";
-        target.addEventListener("pointerenter", onEnterWhole);
-        target.addEventListener("pointerleave", onLeaveWhole);
-      }
-    };
-    placeOverlay();
-    updateFullscreenButtonState();
-    document.addEventListener("fullscreenchange", () => {
-      const isFullscreen = !!document.fullscreenElement;
-      if (isFullscreen) {
-        const isDark = c8.isDarkMode;
-        container.style.backgroundColor = isDark ? "#101010" : "#ffffff";
-      } else {
-        container.style.backgroundColor = "";
-      }
-      placeOverlay();
-      updateFullscreenButtonState();
-      updateAutohideMode();
-      triggerTemporaryShow();
-    });
-    model.on("change:controls_position", placeOverlay);
-    model.on("change:controls_position_fullscreen", placeOverlay);
-    helpOverlay.onVisibilityChange = () => {
-      applyShow(autohide ? isHovered : !!model.get("show_controls"));
-    };
-    c8.registerLayoutChangeListener((state) => {
-      updateAutohideMode();
-      if (state.isSplit && state.visible && state.expanded) {
-        triggerTemporaryShow();
-      }
-      applyShow(autohide ? isHovered : !!model.get("show_controls"));
-    });
-    const enableAutohide = () => {
-      overlay.style.transition = "opacity 250ms ease-in-out";
-      updateAutohideMode();
-      triggerTemporaryShow();
-    };
-    const disableAutohide = () => {
-      hotspot.style.display = "none";
-      target.removeEventListener("pointerenter", onEnterWhole);
-      target.removeEventListener("pointerleave", onLeaveWhole);
-      hotspot.removeEventListener("pointerenter", onEnterHotspot);
-      hotspot.removeEventListener("pointerleave", onLeaveHotspot);
-      overlay.removeEventListener("pointerenter", onEnterHotspot);
-      overlay.removeEventListener("pointerleave", onLeaveHotspot);
-      overlay.style.opacity = "1";
-      overlay.style.pointerEvents = "auto";
-      applyShow(!!model.get("show_controls"));
-    };
-    if (autohide) enableAutohide();
-    else applyShow(!!model.get("show_controls"));
-    model.on("change:show_controls", () => applyShow(!!model.get("show_controls")));
-    model.on("change:autohide_controls", () => {
-      const next = !!model.get("autohide_controls");
-      if (next === autohide) return;
-      autohide = next;
-      if (autohide) {
-        enableAutohide();
-        applyShow(false);
-      } else {
-        disableAutohide();
-      }
-    });
-  }
-  return overlay;
 };
 
 // src/utils/logger.ts
@@ -172713,6 +172608,7 @@ async function bootDocsView(opts) {
     console.log("[MolSysViewer docs]", level, ...args);
   };
   const ui = opts.ui || {};
+  const model = createLocalUiModel(ui);
   let initialMessages = Array.isArray(opts.initialMessages) ? opts.initialMessages : [];
   if (typeof ui.messages_url === "string" && ui.messages_url) {
     const url = new URL(ui.messages_url, window.location.href);
@@ -172808,9 +172704,10 @@ async function bootDocsView(opts) {
   target.addEventListener("wheel", onWheel, { passive: true });
   hostEl.appendChild(target);
   const trajInfo = parseInitialTrajectoryInfo(initialMessages);
-  const panelModeStyle = ui.panel_mode_style || "drawer";
+  const panelModeStyle = model.get("panel_mode_style");
   const controllerPromise = MolSysViewerController.create(target, makeMissingAuthorityReporter(hostEl), void 0, {
     panelModeStyle,
+    model,
     hasInitialStructures: trajInfo.hasStructures,
     // There is no Python behind an exported page. Said here rather than
     // inferred, because a callback that quietly drops what it is given looks
@@ -172825,14 +172722,8 @@ async function bootDocsView(opts) {
     sessionId: typeof ui.runtime_session_id === "string" ? ui.runtime_session_id : void 0
   });
   const enablePopout = !!ui.enable_popout && (!!opts.runtimeUrl || !!runtimeSource);
-  const model = {
-    get: (k) => k in ui ? ui[k] : void 0,
-    on: (_, __) => {
-    },
-    off: (_, __) => {
-    }
-  };
   controllerPromise.then((c8) => {
+    popupMgr.setController(c8);
     if (trajInfo.frameCount !== void 0) {
       c8.trajectory.setExpectedFrameCount(trajInfo.frameCount);
     }
@@ -172844,7 +172735,7 @@ async function bootDocsView(opts) {
       popupReplay.record(msg);
       popupMgr.send("molsysviewer-sync-op", msg);
     };
-    const overlay = buildControls(
+    mountControls(
       c8,
       model,
       sendSync,
@@ -172855,7 +172746,18 @@ async function bootDocsView(opts) {
         initialFrameCount: trajInfo.frameCount
       }
     );
-    if (overlay) target.appendChild(overlay);
+    for (const trait of ["viewer_mode", "controls_mode", "panel_mode_style", "show_controls", "autohide_controls", "autohide_scope", "controls_position", "controls_position_fullscreen"]) {
+      model.on(`change:${trait}`, () => popupMgr.send("molsysviewer-sync-ui", {
+        viewerMode: c8.getViewerMode(),
+        controlsMode: c8.getControlsMode(),
+        panelModeStyle: c8.getPanelModeStyle(),
+        showControls: model.get("show_controls"),
+        autohide: model.get("autohide_controls"),
+        autohideScope: model.get("autohide_scope"),
+        controlsPosition: model.get("controls_position"),
+        controlsPositionFullscreen: model.get("controls_position_fullscreen")
+      }));
+    }
     if (c8.plugin.canvas3d) {
       let hostCameraSyncTimer = null;
       const c3d = c8.plugin.canvas3d;
@@ -172889,7 +172791,14 @@ async function bootDocsView(opts) {
             isSpinActive: controller.isSpinActive,
             isSwingActive: controller.isSwingActive,
             isDarkMode: controller.isDarkMode,
-            autohide: !!ui.autohide_controls
+            autohide: model.get("autohide_controls") !== false,
+            autohideScope: model.get("autohide_scope"),
+            showControls: model.get("show_controls"),
+            controlsPosition: model.get("controls_position"),
+            controlsPositionFullscreen: model.get("controls_position_fullscreen"),
+            viewerMode: controller.getViewerMode(),
+            controlsMode: controller.getControlsMode(),
+            panelModeStyle: controller.getPanelModeStyle()
           });
           break;
         case "molsysviewer-sync-op":
@@ -173316,34 +173225,23 @@ function render({ model, el }) {
     if (trajInfo.frameCount !== void 0) {
       c8.trajectory.setExpectedFrameCount(trajInfo.frameCount);
     }
-    let overlay = void 0;
-    const updateControls = () => {
-      if (overlay) {
-        overlay.remove();
+    mountControls(
+      c8,
+      model,
+      (msg) => {
+        popupMgr.send("molsysviewer-sync-op", msg);
+        const authorityAction = trajectorySyncToAuthority(msg);
+        if (authorityAction) sendToPython(authorityAction);
+      },
+      target,
+      enablePopout ? () => popupMgr.open("canvas") : void 0,
+      {
+        initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
+        initialFrameCount: trajInfo.frameCount
       }
-      overlay = buildControls(
-        c8,
-        model,
-        (msg) => {
-          popupMgr.send("molsysviewer-sync-op", msg);
-          const authorityAction = trajectorySyncToAuthority(msg);
-          if (authorityAction) sendToPython(authorityAction);
-        },
-        target,
-        enablePopout ? () => popupMgr.open("canvas") : void 0,
-        {
-          initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
-          initialFrameCount: trajInfo.frameCount
-        }
-      );
-      if (overlay) {
-        target.appendChild(overlay);
-      }
-    };
-    updateControls();
+    );
     popupMgr.setController(c8);
     model.on("change:controls_mode", () => {
-      updateControls();
       popupMgr.send("molsysviewer-sync-ui", { controlsMode: model.get("controls_mode") });
     });
     model.on("change:viewer_mode", () => {
@@ -173427,6 +173325,10 @@ function render({ model, el }) {
               isSwingActive: controller.isSwingActive,
               isDarkMode: controller.isDarkMode,
               autohide: !!model.get("autohide_controls"),
+              autohideScope: model.get("autohide_scope"),
+              showControls: model.get("show_controls"),
+              controlsPosition: model.get("controls_position"),
+              controlsPositionFullscreen: model.get("controls_position_fullscreen"),
               viewerMode: controller.getViewerMode(),
               controlsMode: controller.getControlsMode(),
               panelModeStyle: controller.getPanelModeStyle(),
@@ -173458,6 +173360,10 @@ function render({ model, el }) {
               isSwingActive: controller.isSwingActive,
               isDarkMode: controller.isDarkMode,
               autohide: !!model.get("autohide_controls"),
+              autohideScope: model.get("autohide_scope"),
+              showControls: model.get("show_controls"),
+              controlsPosition: model.get("controls_position"),
+              controlsPositionFullscreen: model.get("controls_position_fullscreen"),
               viewerMode: controller.getViewerMode(),
               controlsMode: controller.getControlsMode(),
               panelModeStyle: controller.getPanelModeStyle(),
@@ -173684,9 +173590,15 @@ function render({ model, el }) {
     enqueueMessage(msg, { syncToPopup: true });
   };
   model.on("msg:custom", onCustomMsg);
-  model.on("change:autohide_controls", () => {
-    popupMgr.send("molsysviewer-sync-autohide", { enabled: !!model.get("autohide_controls") });
-  });
+  for (const trait of ["autohide_controls", "autohide_scope", "show_controls", "controls_position", "controls_position_fullscreen"]) {
+    model.on(`change:${trait}`, () => popupMgr.send("molsysviewer-sync-ui", {
+      autohide: !!model.get("autohide_controls"),
+      autohideScope: model.get("autohide_scope"),
+      showControls: model.get("show_controls"),
+      controlsPosition: model.get("controls_position"),
+      controlsPositionFullscreen: model.get("controls_position_fullscreen")
+    }));
+  }
   return () => {
     console.log("[MolSysViewer] Disposing widget...");
     window.removeEventListener("message", messageHandler);
@@ -173729,6 +173641,7 @@ export {
   bootRemoteRenderedClient,
   bootRenderWorker,
   index_default as default,
+  mountControls,
   needsRunningSession,
   render
 };

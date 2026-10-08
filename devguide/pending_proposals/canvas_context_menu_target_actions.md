@@ -329,6 +329,8 @@ not an installed artifact qualification or final human visual acceptance.
 
 ## Resolution
 
-Pending the principal maintainer's final visual acceptance of the UX refinement.
+The principal maintainer accepts the parallel-menu UX in the refreshed notebook
+review. Cinema and the inconsistent reveal area are followed under
+`uibcdf/molsysviewer#180`; their corrected runtime still needs human confirmation.
 The functional notebook review and defect reconfirmation are accepted. Current interaction guidance records the delivered workflows;
 archive this report and close #179 only with addressable guards and evidence.

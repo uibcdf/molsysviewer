@@ -216,6 +216,29 @@ counts agree. The full regression is not green and is not repeated; this
 preserves the experimental Qt scope under #109/#113. Ruff and generated-index
 checks pass.
 
+### Cinema and control-area reveal — 2026-10-08
+
+The maintainer accepts the adaptive parallel-menu layout, then reports Cinema
+not applying its controls preset and Dock-only button-area reveal. The runtime
+now applies Cinema, shares one controls renderer with exports/popups and exposes
+`autohide_scope="controls"` (default) or `"canvas"` through Python/config/Settings.
+Frame updates retain visibility. Mode rebuilding disposes old bars, hotspots,
+Help handlers and layout/trajectory subscriptions. File-export popups now use
+the correct opaque target origin while preserving channel authentication.
+
+The real Python export/Mol*/Chromium guard verifies those behaviors, keyboard
+access, Dock/fullscreen, popup synchronization and three preset cycles with
+stable listener counts. Seven affected suites pass in the initial shared run;
+export-framing's old always-visible-button assumption is adapted to reveal
+before clicking, and it and Movie pass their separate 2/2 recovery. All nine
+selected owners pass across those campaigns; this is targeted evidence.
+Seven focused Python configuration checks, 69 frontend owner cases, 25
+inventory/link checks, 184 reporting/profile checks, TypeScript, runtime rebuild
+and Ruff pass. The full Python/JS runs retain their initial failures and scoped
+recovery in [the #180 report](pending_proposals/cinema_and_controls_reveal_policy.md).
+Human visual confirmation of these two corrections remains pending. Publication
+and both 1.0 versions remain paused.
+
 ## Python Interaction Callbacks
 
 ### Verified (2026-06-25)

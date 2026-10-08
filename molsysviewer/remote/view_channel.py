@@ -61,6 +61,7 @@ class RemoteViewChannel:
         self.show_controls = True
         self.enable_popout = False
         self.autohide_controls = True
+        self.autohide_scope = "controls"
         self.debug_js = False
         self.controls_position = ["top", "right"]
         self.controls_position_fullscreen = ["top", "right"]

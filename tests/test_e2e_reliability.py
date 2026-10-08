@@ -87,7 +87,8 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
     # 41-42: scientific geometry and all calculation forms keep separate default
     # deadlines; all three Interactions scenarios remain mandatory in core.
     # 43: the shared context-menu shell and its molecular/Studio workflows.
-    assert len(expected) == 43
+    # 44: controls reveal policy and Cinema lifetime in a real export/popup.
+    assert len(expected) == 44
     assert declared == expected
     build_command = package["scripts"]["build:e2e:all"]
     compiled = set(re.findall(r"tests/e2e/([^ ]+)\.e2e\.ts", build_command))

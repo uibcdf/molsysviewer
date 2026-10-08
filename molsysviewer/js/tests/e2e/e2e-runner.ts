@@ -8,6 +8,7 @@ import { e2eLaunchOptions, failOrExplicitlySkip } from "./e2e-browser";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SUITES = [
     "context-menu",
+    "controls-visibility",
     "annotations-interaction",
     "annotations-subpanel",
     "array-native-load",

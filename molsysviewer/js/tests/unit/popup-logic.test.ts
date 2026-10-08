@@ -148,16 +148,19 @@ function flushAsync() {
     return new Promise(resolve => setImmediate(resolve));
 }
 
-function findByText(root: any, text: string): any | undefined {
-    if (root?.textContent === text) return root;
-    for (const child of root?.children ?? []) {
-        const found = findByText(child, text);
-        if (found) return found;
-    }
-    return undefined;
+// Rendering is exercised by the real exported-page/popup browser guard.
+// These tests isolate the authenticated protocol and shared UI model projection.
+function popupModule(ctrl: any) {
+    return {
+        MolSysViewerController: { create: async () => ctrl },
+        mountControls(_controller: any, model: any, sendSync: any) {
+            ctrl.controlsModel = model;
+            ctrl.sendControlsSync = sendSync;
+        },
+    };
 }
 
-test("bootPopup replays initial sync and enables autohide listeners", async () => {
+test("bootPopup replays initial sync and projects controls preferences", async () => {
     const previousWindow = (globalThis as any).window;
     const previousDocument = (globalThis as any).document;
     const previousSetTimeout = (globalThis as any).setTimeout;
@@ -227,7 +230,7 @@ test("bootPopup replays initial sync and enables autohide listeners", async () =
     (globalThis as any).clearTimeout = (_id: number) => {};
 
     try {
-        await bootPopup({ MolSysViewerController: { create: async () => ctrl } });
+        await bootPopup(popupModule(ctrl));
         await flushAsync();
 
         assert.deepStrictEqual(env.postedToHost[0].channel, TEST_CHANNEL);
@@ -309,6 +312,7 @@ test("bootPopup replays initial sync and enables autohide listeners", async () =
                     isSwingActive: true,
                     isDarkMode: true,
                     autohide: true,
+                    autohideScope: "canvas",
                 },
             ),
         });
@@ -324,12 +328,10 @@ test("bootPopup replays initial sync and enables autohide listeners", async () =
         assert.deepStrictEqual(calls.spin, [true]);
         assert.deepStrictEqual(calls.swing, [true]);
         assert.deepStrictEqual(calls.bg, ["dark"]);
-        assert.ok(env.container.listenerCount("pointerenter") > 0);
-        assert.ok(env.container.listenerCount("pointerleave") > 0);
+        assert.equal(ctrl.controlsModel.get("autohide_controls"), true);
+        assert.equal(ctrl.controlsModel.get("autohide_scope"), "canvas");
 
-        const resetButton = findByText(env.container, "Reset");
-        assert.ok(resetButton);
-        resetButton.dispatch("click");
+        ctrl.sendControlsSync({ op: "reset_view" });
         await flushAsync();
         assert.deepStrictEqual(calls.reset, []);
         assert.deepStrictEqual(calls.handled, [
@@ -433,7 +435,7 @@ test("bootPopup gates camera sync by interaction in both directions", async () =
     (globalThis as any).clearTimeout = (_id: number) => {};
 
     try {
-        await bootPopup({ MolSysViewerController: { create: async () => ctrl } });
+        await bootPopup(popupModule(ctrl));
         await flushAsync();
         assert.ok(drawSubscriber);
 
@@ -514,7 +516,7 @@ test("bootPopup dispatches molsysviewer-sync-op to controller (live mirror)", as
     (globalThis as any).clearTimeout = (_id: number) => {};
 
     try {
-        await bootPopup({ MolSysViewerController: { create: async () => ctrl } });
+        await bootPopup(popupModule(ctrl));
         await flushAsync();
 
         env.windowObj.dispatch("message", {
@@ -541,7 +543,7 @@ test("bootPopup dispatches molsysviewer-sync-op to controller (live mirror)", as
     }
 });
 
-test("bootPopup molsysviewer-sync-autohide disables and re-enables autohide listeners", async () => {
+test("bootPopup molsysviewer-sync-autohide updates shared controls policy", async () => {
     const previousWindow = (globalThis as any).window;
     const previousDocument = (globalThis as any).document;
     const previousSetTimeout = (globalThis as any).setTimeout;
@@ -575,27 +577,27 @@ test("bootPopup molsysviewer-sync-autohide disables and re-enables autohide list
     (globalThis as any).clearTimeout = (_id: number) => {};
 
     try {
-        await bootPopup({ MolSysViewerController: { create: async () => ctrl } });
+        await bootPopup(popupModule(ctrl));
         await flushAsync();
 
-        // No listeners yet (autohide starts false)
-        assert.strictEqual(env.container.listenerCount("pointerenter"), 0);
+        assert.equal(ctrl.controlsModel.get("autohide_controls"), true);
 
         // Enable autohide
         env.windowObj.dispatch("message", {
             source: env.windowObj.opener,
-            data: hostWire("molsysviewer-sync-autohide", { enabled: true }),
+            data: hostWire("molsysviewer-sync-autohide", { enabled: true, scope: "canvas" }),
         });
         await flushAsync();
-        assert.ok(env.container.listenerCount("pointerenter") > 0, "pointerenter listener added on autohide enable");
+        assert.equal(ctrl.controlsModel.get("autohide_controls"), true);
+        assert.equal(ctrl.controlsModel.get("autohide_scope"), "canvas");
 
-        // Disable autohide — listeners removed
+        // Disable autohide without reconstructing the controls.
         env.windowObj.dispatch("message", {
             source: env.windowObj.opener,
             data: hostWire("molsysviewer-sync-autohide", { enabled: false }),
         });
         await flushAsync();
-        assert.strictEqual(env.container.listenerCount("pointerenter"), 0, "pointerenter listener removed on autohide disable");
+        assert.equal(ctrl.controlsModel.get("autohide_controls"), false);
     } finally {
         (globalThis as any).window = previousWindow;
         (globalThis as any).document = previousDocument;

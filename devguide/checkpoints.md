@@ -13,7 +13,15 @@ prioritize object tags, simplify related-region rows and soften pointer hover.
 Their real-browser guard passes. The final accepted navigation adds one
 click-driven adjacent secondary card, edge flipping, a narrow-canvas Back
 fallback, secondary forms, soft separators and focusable unavailable actions
-with explanations. Its refreshed visual review remains pending.
+with explanations. The maintainer accepts that refreshed visual review and
+reports two viewport corrections under `uibcdf/molsysviewer#180`: apply Cinema
+and retain button-area auto-hide after leaving Dock. The delivered correction
+adds `autohide_scope="controls"` (default) or `"canvas"`, Settings parity and
+shared controls in widget/exports/popups. Frame updates cannot reveal hidden
+controls and mode rebuilds release their previous listeners and scrubber. The
+real disk-export test also found and corrected opaque file-origin popup delivery.
+See [the owning report](pending_proposals/cinema_and_controls_reveal_policy.md)
+for current validation and pending human reconfirmation.
 The final extended real-browser guard passes, including an actual secondary
 window; five affected suites pass in shared Chromium. The 17 focused menu cases,
 TypeScript/runtime build and 181 reporting/index checks pass; the full JS run
@@ -21,7 +29,7 @@ passed 323 cases before the final browser-discovered explanation reflow fix.
 Both Viewer and MolSysMT 1.0 publication remain paused. The menu changes
 require a new Viewer candidate/version, not yet chosen. Keep 0.24.1 build 1,
 its fixed reference and qualification evidence unchanged; they do not certify
-the future menu. Resume with #179, then human review, replacement-candidate
+the future menu. Resume with #180/#179 acceptance, then replacement-candidate
 qualification and public documentation/installed first contact.
 
 **Prior candidate preparation — 2026-10-08 (retained scope):**

@@ -5,7 +5,8 @@ import { ViewerMessage } from "./messages/viewer-messages";
 import { bootPopup } from "./popup/popup-logic";
 import { PopupHostManager } from "./managers/popup-host";
 import { waitForCanvasDraw } from "./managers/canvas-draw";
-import { buildControls } from "./ui/controls";
+import { mountControls } from "./ui/controls";
+import { createLocalUiModel } from "./ui/local-ui-model";
 import { createLogger } from "./utils/logger";
 import type {
     LoadMolSysArrayPayloadMessage,
@@ -227,6 +228,7 @@ function reportSceneRuntimeMismatch(el: HTMLElement, sceneVersion: unknown) {
 // Re-export bootPopup so it is available in the bundle's public interface
 export { bootPopup };
 export { MolSysViewerController }; // Export Controller for Popup context usage
+export { mountControls }; // Shared controls provider for popup module consumers.
 export async function bootDocsView(opts: {
     el: HTMLElement;
     initialMessages?: ViewerMessage[];
@@ -242,6 +244,7 @@ export async function bootDocsView(opts: {
     };
 
     const ui = opts.ui || {};
+    const model = createLocalUiModel(ui);
     let initialMessages = Array.isArray(opts.initialMessages) ? opts.initialMessages : [];
     if (typeof ui.messages_url === "string" && ui.messages_url) {
         const url = new URL(ui.messages_url, window.location.href);
@@ -339,9 +342,10 @@ export async function bootDocsView(opts: {
     const trajInfo = parseInitialTrajectoryInfo(initialMessages);
 
     // Initialize Controller (no-op notify)
-    const panelModeStyle = (ui.panel_mode_style as string) || "drawer";
+    const panelModeStyle = model.get("panel_mode_style") as string;
     const controllerPromise = MolSysViewerController.create(target, makeMissingAuthorityReporter(hostEl), undefined, { 
         panelModeStyle,
+        model,
         hasInitialStructures: trajInfo.hasStructures,
         // There is no Python behind an exported page. Said here rather than
         // inferred, because a callback that quietly drops what it is given looks
@@ -365,15 +369,9 @@ export async function bootDocsView(opts: {
     // opens an empty window is worse than no button.
     const enablePopout = !!ui.enable_popout && (!!opts.runtimeUrl || !!runtimeSource);
 
-    // Minimal model stub for buildControls
-    const model = {
-        get: (k: string) => (k in ui ? ui[k] : undefined),
-        on: (_: string, __: any) => {},
-        off: (_: string, __: any) => {}
-    };
-
     // Build UI Controls & Setup Sync
     controllerPromise.then(c => {
+        popupMgr.setController(c);
         // If initial messages include a MolSys payload, pre-seed the frame count so the
         // trajectory bar can appear immediately (avoids a brief "buttons first, bar later" flicker).
         if (trajInfo.frameCount !== undefined) {
@@ -396,7 +394,7 @@ export async function bootDocsView(opts: {
             popupReplay.record(msg);
             popupMgr.send("molsysviewer-sync-op", msg);
         };
-        const overlay = buildControls(
+        mountControls(
             c,
             model,
             sendSync,
@@ -407,7 +405,15 @@ export async function bootDocsView(opts: {
                 initialFrameCount: trajInfo.frameCount,
             }
         );
-        if (overlay) target.appendChild(overlay);
+
+        for (const trait of ["viewer_mode", "controls_mode", "panel_mode_style", "show_controls", "autohide_controls", "autohide_scope", "controls_position", "controls_position_fullscreen"]) {
+            model.on(`change:${trait}`, () => popupMgr.send("molsysviewer-sync-ui", {
+                viewerMode: c.getViewerMode(), controlsMode: c.getControlsMode(), panelModeStyle: c.getPanelModeStyle(),
+                showControls: model.get("show_controls"), autohide: model.get("autohide_controls"),
+                autohideScope: model.get("autohide_scope"), controlsPosition: model.get("controls_position"),
+                controlsPositionFullscreen: model.get("controls_position_fullscreen"),
+            }));
+        }
 
         // Camera sync (Host -> Popup)
         if (c.plugin.canvas3d) {
@@ -445,7 +451,14 @@ export async function bootDocsView(opts: {
                         isSpinActive: controller.isSpinActive,
                         isSwingActive: controller.isSwingActive,
                         isDarkMode: controller.isDarkMode,
-                        autohide: !!ui.autohide_controls
+                        autohide: model.get("autohide_controls") !== false,
+                        autohideScope: model.get("autohide_scope"),
+                        showControls: model.get("show_controls"),
+                        controlsPosition: model.get("controls_position"),
+                        controlsPositionFullscreen: model.get("controls_position_fullscreen"),
+                        viewerMode: controller.getViewerMode(),
+                        controlsMode: controller.getControlsMode(),
+                        panelModeStyle: controller.getPanelModeStyle(),
                     });
                     break;
                 case "molsysviewer-sync-op":
@@ -1072,35 +1085,18 @@ export function render({ model, el }: { model: any; el: HTMLElement }) {
                 c.trajectory.setExpectedFrameCount(trajInfo.frameCount);
             }
 
-            let overlay: HTMLElement | undefined = undefined;
-            const updateControls = () => {
-                if (overlay) {
-                    overlay.remove();
-                }
-                overlay = buildControls(
-                    c,
-                    model,
-                    (msg) => {
-                        popupMgr.send("molsysviewer-sync-op", msg);
-                        const authorityAction = trajectorySyncToAuthority(msg);
-                        if (authorityAction) sendToPython(authorityAction);
-                    },
-                    target,
-                    enablePopout ? () => popupMgr.open("canvas") : undefined,
-                    {
-                        initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
-                        initialFrameCount: trajInfo.frameCount,
-                    }
-                );
-                if (overlay) {
-                    target.appendChild(overlay);
-                }
-            };
-            updateControls();
+            mountControls(
+                c, model, (msg) => {
+                    popupMgr.send("molsysviewer-sync-op", msg);
+                    const authorityAction = trajectorySyncToAuthority(msg);
+                    if (authorityAction) sendToPython(authorityAction);
+                }, target, enablePopout ? () => popupMgr.open("canvas") : undefined,
+                { initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
+                    initialFrameCount: trajInfo.frameCount },
+            );
             popupMgr.setController(c);
 
             model.on("change:controls_mode", () => {
-                updateControls();
                 popupMgr.send("molsysviewer-sync-ui", { controlsMode: model.get("controls_mode") });
             });
             model.on("change:viewer_mode", () => {
@@ -1204,6 +1200,10 @@ export function render({ model, el }: { model: any; el: HTMLElement }) {
                                 isSwingActive: controller.isSwingActive,
                                 isDarkMode: controller.isDarkMode,
                                 autohide: !!model.get("autohide_controls"),
+                                autohideScope: model.get("autohide_scope"),
+                                showControls: model.get("show_controls"),
+                                controlsPosition: model.get("controls_position"),
+                                controlsPositionFullscreen: model.get("controls_position_fullscreen"),
                                 viewerMode: controller.getViewerMode(),
                                 controlsMode: controller.getControlsMode(),
                                 panelModeStyle: controller.getPanelModeStyle(),
@@ -1242,6 +1242,10 @@ export function render({ model, el }: { model: any; el: HTMLElement }) {
                                 isSwingActive: controller.isSwingActive,
                                 isDarkMode: controller.isDarkMode,
                                 autohide: !!model.get("autohide_controls"),
+                                autohideScope: model.get("autohide_scope"),
+                                showControls: model.get("show_controls"),
+                                controlsPosition: model.get("controls_position"),
+                                controlsPositionFullscreen: model.get("controls_position_fullscreen"),
                                 viewerMode: controller.getViewerMode(),
                                 controlsMode: controller.getControlsMode(),
                                 panelModeStyle: controller.getPanelModeStyle(),
@@ -1529,9 +1533,13 @@ export function render({ model, el }: { model: any; el: HTMLElement }) {
         model.on("msg:custom", onCustomMsg);
         
         // Sync autohide setting to popup
-        model.on("change:autohide_controls", () => {
-            popupMgr.send("molsysviewer-sync-autohide", { enabled: !!model.get("autohide_controls") });
-        });
+        for (const trait of ["autohide_controls", "autohide_scope", "show_controls", "controls_position", "controls_position_fullscreen"]) {
+            model.on(`change:${trait}`, () => popupMgr.send("molsysviewer-sync-ui", {
+                autohide: !!model.get("autohide_controls"), autohideScope: model.get("autohide_scope"),
+                showControls: model.get("show_controls"), controlsPosition: model.get("controls_position"),
+                controlsPositionFullscreen: model.get("controls_position_fullscreen"),
+            }));
+        }
 
         // RETURN CLEANUP FUNCTION (supported by anywidget)
         return () => {

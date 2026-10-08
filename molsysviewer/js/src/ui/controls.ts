@@ -1,6 +1,7 @@
-import { MolSysViewerController } from "../managers/viewer-controller";
+import type { MolSysViewerController } from "../managers/viewer-controller";
 import { ViewerMessage } from "../messages/viewer-messages";
 import { HelpOverlay } from "./help-overlay";
+import { ControlsVisibility } from "./controls-visibility";
 import {
     makeViewportIconButton,
     VIEWPORT_ICON_EXIT_FULLSCREEN,
@@ -14,6 +15,44 @@ import {
 
 // Helper to send sync messages to popout
 type SyncCallback = (msg: ViewerMessage) => void;
+
+const activeBuilds = new WeakMap<HTMLElement, () => void>();
+const mountedControls = new WeakMap<MolSysViewerController, () => void>();
+
+/** Release controls before a canvas/controller is destroyed. */
+export function disposeControls(controller: MolSysViewerController): void {
+    mountedControls.get(controller)?.();
+    mountedControls.delete(controller);
+}
+
+/** Mount once; rebuild the controls surface when its mode changes. */
+export function mountControls(...args: Parameters<typeof buildControls>): () => void {
+    const [controller, model, , container] = args;
+    disposeControls(controller);
+    const rebuild = () => {
+        const overlay = buildControls(...args);
+        if (overlay) container.appendChild(overlay);
+    };
+    let queued = false, disposed = false;
+    const scheduleRebuild = () => {
+        if (queued) return;
+        queued = true;
+        queueMicrotask(() => { queued = false; if (!disposed) rebuild(); });
+    };
+    model.on("change:controls_mode", scheduleRebuild);
+    model.on("change:panel_mode_style", scheduleRebuild);
+    rebuild();
+    const dispose = () => {
+        disposed = true;
+        model.off?.("change:controls_mode", scheduleRebuild);
+        model.off?.("change:panel_mode_style", scheduleRebuild);
+        activeBuilds.get(container)?.();
+        activeBuilds.delete(container);
+        mountedControls.delete(controller);
+    };
+    mountedControls.set(controller, dispose);
+    return dispose;
+}
 
 const makeButton = (label: string, onClick: () => void) => {
     const btn = document.createElement("button");
@@ -366,14 +405,27 @@ export const buildControls = (
     sendSync: SyncCallback,
     container: HTMLElement,
     onPopClick?: () => void,
-    opts?: { initialHasTrajectory?: boolean; initialFrameCount?: number },
+    opts?: { initialHasTrajectory?: boolean; initialFrameCount?: number; popupButtonTitle?: string },
     onPanelPopClick?: () => void
 ) => {
+    activeBuilds.get(container)?.();
+    const release: Array<() => void> = [];
+    const timers: Array<ReturnType<typeof setTimeout>> = [];
+    const listen = (target: EventTarget, event: string, callback: EventListener, capture = false) => {
+        target.addEventListener(event, callback, capture);
+        release.push(() => target.removeEventListener(event, callback, capture));
+    };
+    const observe = (event: string, callback: () => void) => {
+        model.on(event, callback);
+        release.push(() => model.off?.(event, callback));
+    };
+    let refreshVisibility = () => {};
     const controlsMode = (model.get("controls_mode") as string) || "classic";
     const isCinema = controlsMode === "cinema";
     const isMinimal = controlsMode === "minimal" || isCinema;
 
     const helpOverlay = new HelpOverlay(container);
+    release.push(() => helpOverlay.dispose());
     c.setHelpOpener(() => helpOverlay.show());
 
     const onHelpKey = (ev: KeyboardEvent) => {
@@ -385,7 +437,7 @@ export const buildControls = (
             helpOverlay.toggle();
         }
     };
-    window.addEventListener("keydown", onHelpKey, true);
+    listen(window, "keydown", onHelpKey as EventListener, true);
 
     if (isCinema) {
         // Render a subtle, elegant, self-dismissing helper toast for accessibility
@@ -411,13 +463,14 @@ export const buildControls = (
             opacity: "1",
         });
         container.appendChild(toast);
+        release.push(() => toast.remove());
 
-        setTimeout(() => {
+        timers.push(setTimeout(() => {
             toast.style.opacity = "0";
-            setTimeout(() => {
+            timers.push(setTimeout(() => {
                 toast.remove();
-            }, 800);
-        }, 3200);
+            }, 800));
+        }, 3200));
     }
 
     injectStyles();
@@ -433,7 +486,6 @@ export const buildControls = (
         overlay.style.pointerEvents = "none";
         overlay.style.flexWrap = "nowrap";
         overlay.style.opacity = "0"; // Reveal after initial trajectory state to avoid flash
-        overlay.style.opacity = "0";
         overlay.style.display = "none";
     }
 
@@ -630,12 +682,13 @@ export const buildControls = (
         traj.appendChild(fpsControl.wrapper);
     }
 
+    let cinemaHotspot: HTMLDivElement | undefined;
     if (isCinema) {
         Object.assign(traj.style, {
             position: "absolute",
             bottom: "12px",
             left: "50%",
-            transform: "translateX(-50%) translateY(45px)",
+            transform: "translateX(-50%)",
             opacity: "0",
             display: "flex",
             alignItems: "center",
@@ -657,31 +710,10 @@ export const buildControls = (
             background: "transparent",
         });
 
-        const showScrubber = () => {
-            traj.style.transform = "translateX(-50%) translateY(0)";
-            traj.style.opacity = "1";
-        };
-        const hideScrubber = () => {
-            traj.style.transform = "translateX(-50%) translateY(45px)";
-            traj.style.opacity = "0";
-        };
-
-        triggerArea.addEventListener("mouseenter", showScrubber);
-        traj.addEventListener("mouseenter", showScrubber);
-
-        triggerArea.addEventListener("mouseleave", (e) => {
-            if (e.relatedTarget !== traj && !traj.contains(e.relatedTarget as Node)) {
-                hideScrubber();
-            }
-        });
-        traj.addEventListener("mouseleave", (e) => {
-            if (e.relatedTarget !== triggerArea && !triggerArea.contains(e.relatedTarget as Node)) {
-                hideScrubber();
-            }
-        });
-
+        cinemaHotspot = triggerArea;
         container.appendChild(triggerArea);
         container.appendChild(traj);
+        release.push(() => triggerArea.remove(), () => traj.remove());
     } else if (overlay) {
         overlay.appendChild(traj);
     }
@@ -697,7 +729,7 @@ export const buildControls = (
 
         mkIcon(VIEWPORT_ICON_PANEL, "Panel mode (N / W)", () => c.togglePanelMode());
         fullscreenBtn = mkIcon(VIEWPORT_ICON_FULLSCREEN, "Fullscreen", () => c.toggleFullscreen());
-        if (onPopClick) mkIcon(VIEWPORT_ICON_POPUP, "Open popup", onPopClick);
+        if (onPopClick) mkIcon(VIEWPORT_ICON_POPUP, opts?.popupButtonTitle || "Open popup", onPopClick);
         mkIcon(VIEWPORT_ICON_HELP, "Help (H)", () => helpOverlay.toggle());
     } else if (overlay) {
         const mk = (label: string, handler: () => void) => {
@@ -725,7 +757,7 @@ export const buildControls = (
             sendSync({ op: "toggle_swing", enable: c.isSwingActive });
         });
         
-        if (onPopClick) mk("Pop", onPopClick);
+        if (onPopClick) mk(opts?.popupButtonTitle === "Close popup" ? "Close" : "Pop", onPopClick).title = opts?.popupButtonTitle || "Open popup";
         mk("Help", () => helpOverlay.toggle());
         if (panelModeStyle === "floating" || panelModeStyle === "floating-unified" || panelModeStyle === "integrated") {
             mk("Panel", () => c.togglePanelMode());
@@ -774,12 +806,11 @@ export const buildControls = (
         }
         if (overlay) {
             overlay.style.display = "flex";
-            overlay.style.opacity = "1";
-            overlay.style.pointerEvents = "none";
         }
+        refreshVisibility();
     };
 
-    c.onTrajectoryState(applyTrajectoryState, { immediate: false });
+    release.push(c.onTrajectoryState(applyTrajectoryState, { immediate: false }));
     const initialState = c.trajectory.getTrajectoryState();
     if (initialState.hasTrajectory || initialState.expectedFrameCount !== undefined) {
         applyTrajectoryState(initialState);
@@ -796,6 +827,7 @@ export const buildControls = (
         display: "none",
     });
     container.appendChild(hotspot);
+    release.push(() => hotspot.remove(), () => overlay?.remove());
 
     const placeOverlay = () => {
         if (!overlay) return;
@@ -841,14 +873,9 @@ export const buildControls = (
             hotspot.style.transform = "translateX(-50%)";
         }
 
-        // Dynamic hotspot sizing to accommodate the gap and overlay size
-        if (isFullscreen) {
-            hotspot.style.width = "200px";
-            hotspot.style.height = "85px";
-        } else {
-            hotspot.style.width = "130px";
-            hotspot.style.height = "55px";
-        }
+        // Cover the actual controls (including trajectory), plus their margin.
+        hotspot.style.width = `${Math.min(container.clientWidth, overlay.offsetWidth + 2 * parseFloat(gap))}px`;
+        hotspot.style.height = `${overlay.offsetHeight + 2 * parseFloat(gap)}px`;
     };
 
     const updateFullscreenButtonState = () => {
@@ -867,161 +894,44 @@ export const buildControls = (
         }
     };
 
-    if (overlay) {
-        let autohide = !!model.get("autohide_controls");
-        let isHovered = false;
-        let fadeTimeout: any = null;
-        const target = container;
-
-        const shouldHideControls = () => {
-            const isHelpOpen = helpOverlay.isVisible();
-            const isFloatingPanelOpen = !!c.sharedShell && 
-                                        c.sharedShell.isVisible() && 
-                                        c.sharedShell.isExpanded && 
-                                        !c.sharedShell.isSplit && 
-                                        !c.sharedShell.isAmbient;
-            return isHelpOpen || isFloatingPanelOpen;
-        };
-
-        const applyShow = (visible: boolean) => {
-            if (!hasSeenState) return;
-            const forceHide = shouldHideControls();
-            if (autohide) {
-                overlay!.style.opacity = (visible && !forceHide) ? "1" : "0";
-                overlay!.style.pointerEvents = (visible && !forceHide) ? "auto" : "none";
-            } else {
-                overlay!.style.display = (visible && !forceHide) ? "flex" : "none";
-            }
-        };
-
-        const triggerTemporaryShow = () => {
-            if (!autohide) return;
-            const isFullscreen = !!document.fullscreenElement;
-            const isSplit = c.sharedShell?.isSplit;
-            if (!isFullscreen && !isSplit) return;
-
-            if (fadeTimeout) clearTimeout(fadeTimeout);
-            applyShow(true);
-            fadeTimeout = setTimeout(() => {
-                if (!isHovered) {
-                    applyShow(false);
-                }
-            }, 1500);
-        };
-
-        const onEnterWhole = () => {
-            isHovered = true;
-            applyShow(true);
-        };
-
-        const onLeaveWhole = () => {
-            isHovered = false;
-            applyShow(false);
-        };
-
-        const onEnterHotspot = () => {
-            isHovered = true;
-            if (fadeTimeout) clearTimeout(fadeTimeout);
-            applyShow(true);
-        };
-
-        const onLeaveHotspot = () => {
-            isHovered = false;
-            applyShow(false);
-        };
-
-        const updateAutohideMode = () => {
-            if (!autohide) return;
-            const isFullscreen = !!document.fullscreenElement;
-            const isSplit = c.sharedShell?.isSplit;
-            const useCornerHotspot = isFullscreen || isSplit;
-            
-            target.removeEventListener("pointerenter", onEnterWhole);
-            target.removeEventListener("pointerleave", onLeaveWhole);
-            hotspot.removeEventListener("pointerenter", onEnterHotspot);
-            hotspot.removeEventListener("pointerleave", onLeaveHotspot);
-            overlay!.removeEventListener("pointerenter", onEnterHotspot);
-            overlay!.removeEventListener("pointerleave", onLeaveHotspot);
-
-            if (useCornerHotspot) {
-                hotspot.style.display = "block";
-                hotspot.addEventListener("pointerenter", onEnterHotspot);
-                hotspot.addEventListener("pointerleave", onLeaveHotspot);
-                overlay!.addEventListener("pointerenter", onEnterHotspot);
-                overlay!.addEventListener("pointerleave", onLeaveHotspot);
-            } else {
-                hotspot.style.display = "none";
-                target.addEventListener("pointerenter", onEnterWhole);
-                target.addEventListener("pointerleave", onLeaveWhole);
-            }
-        };
-
-        placeOverlay();
-        updateFullscreenButtonState();
-        document.addEventListener("fullscreenchange", () => {
-            const isFullscreen = !!document.fullscreenElement;
-            if (isFullscreen) {
-                const isDark = c.isDarkMode;
-                container.style.backgroundColor = isDark ? "#101010" : "#ffffff";
-            } else {
-                container.style.backgroundColor = "";
-            }
-            placeOverlay();
+    const revealArea = overlay ? hotspot : cinemaHotspot;
+    if (revealArea) {
+        const surface = overlay || traj;
+        const visibility = new ControlsVisibility(container, surface, revealArea, () => ({
+            visible: hasSeenState && model.get("show_controls") !== false
+                && (!!overlay || c.trajectory.getTrajectoryState().frameCount > 1),
+            autohide: model.get("autohide_controls") !== false,
+            scope: model.get("autohide_scope") || "controls",
+            suppressed: helpOverlay.isVisible() || !!(c.sharedShell?.isVisible()
+                && c.sharedShell.isExpanded && !c.sharedShell.isSplit && !c.sharedShell.isAmbient),
+        }));
+        refreshVisibility = () => { placeOverlay(); visibility.refresh(); };
+        release.push(() => visibility.dispose());
+        const resizeObserver = new ResizeObserver(refreshVisibility);
+        resizeObserver.observe(surface);
+        release.push(() => resizeObserver.disconnect());
+        listen(document, "fullscreenchange", () => {
+            container.style.backgroundColor = document.fullscreenElement
+                ? (c.isDarkMode ? "#101010" : "#ffffff") : "";
             updateFullscreenButtonState();
-            updateAutohideMode();
-            triggerTemporaryShow();
+            refreshVisibility();
         });
-        model.on("change:controls_position", placeOverlay);
-        model.on("change:controls_position_fullscreen", placeOverlay);
-
-        helpOverlay.onVisibilityChange = () => {
-            applyShow(autohide ? isHovered : !!model.get("show_controls"));
-        };
-
-        c.registerLayoutChangeListener((state) => {
-            updateAutohideMode();
-            if (state.isSplit && state.visible && state.expanded) {
-                triggerTemporaryShow();
-            }
-            applyShow(autohide ? isHovered : !!model.get("show_controls"));
-        });
-
-        const enableAutohide = () => {
-            overlay!.style.transition = "opacity 250ms ease-in-out";
-            updateAutohideMode();
-            triggerTemporaryShow();
-        };
-
-        const disableAutohide = () => {
-            hotspot.style.display = "none";
-            target.removeEventListener("pointerenter", onEnterWhole);
-            target.removeEventListener("pointerleave", onLeaveWhole);
-            hotspot.removeEventListener("pointerenter", onEnterHotspot);
-            hotspot.removeEventListener("pointerleave", onLeaveHotspot);
-            overlay!.removeEventListener("pointerenter", onEnterHotspot);
-            overlay!.removeEventListener("pointerleave", onLeaveHotspot);
-            
-            overlay!.style.opacity = "1";
-            overlay!.style.pointerEvents = "auto";
-            applyShow(!!model.get("show_controls"));
-        };
-
-        if (autohide) enableAutohide();
-        else applyShow(!!model.get("show_controls"));
-
-        model.on("change:show_controls", () => applyShow(!!model.get("show_controls")));
-        model.on("change:autohide_controls", () => {
-            const next = !!model.get("autohide_controls");
-            if (next === autohide) return;
-            autohide = next;
-            if (autohide) {
-                enableAutohide();
-                applyShow(false);
-            } else {
-                disableAutohide();
-            }
-        });
+        for (const trait of ["controls_position", "controls_position_fullscreen", "show_controls", "autohide_controls", "autohide_scope"]) {
+            observe(`change:${trait}`, refreshVisibility);
+        }
+        helpOverlay.onVisibilityChange = refreshVisibility;
+        release.push(c.registerLayoutChangeListener(refreshVisibility));
+        updateFullscreenButtonState();
+        refreshVisibility();
     }
+    if (cinemaHotspot) {
+        cinemaHotspot.setAttribute("aria-label", "Show trajectory controls");
+        hotspot.style.display = "none";
+    }
+    activeBuilds.set(container, () => {
+        for (const timer of timers) clearTimeout(timer);
+        for (const cleanup of release) cleanup();
+    });
 
     return overlay;
 };

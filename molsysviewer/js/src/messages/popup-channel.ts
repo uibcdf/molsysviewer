@@ -100,6 +100,15 @@ export function encodePopupMessage(
     return { channel, envelope };
 }
 
+/** File exports have an opaque recipient origin even if location reports file://.
+ * Authentication remains in decodePopupEvent (window, channel and endpoint).
+ */
+export function popupTargetOrigin(location?: { origin?: string; protocol?: string }): string {
+    const origin = location?.origin;
+    return location?.protocol === "file:" || !origin || origin === "null" || origin === "file://"
+        ? "*" : origin;
+}
+
 export function decodePopupMessage(
     value: unknown,
     expected: PopupChannelIdentity,

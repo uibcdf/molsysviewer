@@ -148,6 +148,19 @@ Other browser targets still require explicit adoption.
 **Archive, never delete.** A repository that deletes a closed entry breaks every reference
 into it.
 
+### Canvas controls browser guard profile
+
+The bounded selector for Cinema, control-area reveal and shared popup controls
+is exactly `molsysviewer/js/tests/e2e/controls-visibility.e2e.ts`. From
+`molsysviewer/js`, build with `npm run build:harness` and `npm run build:e2e:all`,
+then run `node tests/e2e/controls-visibility.e2e.js`. It is also mandatory in
+`npm run test:e2e:core`. Its real Python export and Mol*/Chromium popup check
+Cinema cycles, Dock/fullscreen, Settings, both reveal scopes, keyboard access,
+hidden-frame updates and subscription cleanup. Browser/WebGL failures fail;
+`E2E_ALLOW_SKIP=1` does not qualify closure. Suffixes, globs and commands are
+rejected. The offline validator checks the fixture, actions, popup entrypoint
+and build/core registration.
+
 ### GroupPanel unit guard profile
 
 The bounded frontend unit selector is exactly

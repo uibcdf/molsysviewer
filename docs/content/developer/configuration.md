@@ -18,10 +18,33 @@ Current built-in viewer defaults live in:
 
 - `molsysviewer.config.show_controls`
 - `molsysviewer.config.autohide_controls`
+- `molsysviewer.config.autohide_scope` (`"controls"` by default, or `"canvas"`)
 - `molsysviewer.config.controls_position`
 - `molsysviewer.config.controls_position_fullscreen`
 
 These are simple Python module-level defaults.
+
+### Canvas control visibility
+
+The default reveals controls near their button area, consistently in floating,
+Dock and fullscreen layouts. Changing frames does not reveal hidden controls.
+Settings exposes the same choice as **Reveal controls near: Buttons / Entire
+canvas**. Keyboard users can focus the reveal area and press Enter or Space;
+touch users can tap it.
+
+```python
+view.set_controls_visible(True, autohide=True, autohide_scope="controls")
+view.set_controls_visible(True, autohide=True, autohide_scope="canvas")
+view.set_controls_visible(True, autohide=False)
+view.set_controls_visible(False)
+```
+
+`visible=False` overrides reveal. Explicit scope is retained when auto-hide is
+disabled. Copies and HTML exports carry the reveal preferences; export control
+inclusion is governed by `include_controls`. Canvas popups share the controls
+renderer and receive the host's UI state. **View → Cinema** applies
+the Cinema controls preset: viewport buttons disappear, while a trajectory with
+multiple structures has a revealable bottom scrubber.
 
 ## User Presets
 

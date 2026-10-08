@@ -127,7 +127,7 @@ def _transfer_state(source, target, atom_map=None, frames=None, *, merge=False):
 
 
 def _copy_auxiliary(source, target, atom_index_map=None):
-    for name in ("show_controls", "autohide_controls", "controls_position", "controls_position_fullscreen"):
+    for name in ("show_controls", "autohide_controls", "autohide_scope", "controls_position", "controls_position_fullscreen"):
         setattr(target.widget, name, deepcopy(getattr(source.widget, name)))
     target._last_label = source._last_label
     plot = deepcopy(target._scene_look.get("trajectory_plot"))

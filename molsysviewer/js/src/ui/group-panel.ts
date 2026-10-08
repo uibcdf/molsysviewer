@@ -1143,6 +1143,20 @@ export class GroupPanel {
                 this.renderSettingsSection();
             }
         });
+        const scopeLabel = document.createElement("label");
+        scopeLabel.textContent = "Reveal controls near";
+        Object.assign(scopeLabel.style, { display: "block", fontSize: "11px", marginTop: "10px" });
+        const scopeSelect = this.makeStyledSelect([
+            { value: "controls", label: "Buttons" }, { value: "canvas", label: "Entire canvas" },
+        ], this.model?.get("autohide_scope") || "controls", value => {
+            this.model?.set("autohide_scope", value);
+            this.model?.save_changes();
+        });
+        scopeSelect.setAttribute("aria-label", "Controls reveal area");
+        scopeSelect.setAttribute("data-molsysviewer-autohide-scope", "true");
+        scopeSelect.disabled = !autohideEnabled;
+        scopeLabel.appendChild(scopeSelect);
+        configCard.appendChild(scopeLabel);
     }
 
     private getTabOrder(): TabKey[] {

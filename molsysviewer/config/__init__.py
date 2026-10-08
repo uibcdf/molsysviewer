@@ -7,8 +7,11 @@ Adjust the values here to control default viewer behavior without editing code.
 # Show overlay controls (Reset, Full, Bg, Spin, Swing, trajectory bar) by default.
 show_controls: bool = True
 
-# If True, controls auto-hide when the mouse leaves the canvas and show on hover.
+# If True, controls auto-hide outside the area selected by autohide_scope.
 autohide_controls: bool = True
+
+# "controls": reveal near the buttons; "canvas": reveal anywhere in the canvas.
+autohide_scope: str = "controls"
 
 # Overlay position: list containing any combination of "top"/"bottom" and "left"/"right".
 controls_position = ["top", "right"]
@@ -41,6 +44,7 @@ from .user_presets import load_user_presets, user_presets
 __all__ = [
     "show_controls",
     "autohide_controls",
+    "autohide_scope",
     "controls_position",
     "controls_position_fullscreen",
     "controls_mode",

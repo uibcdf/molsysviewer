@@ -3,6 +3,7 @@ import {
     createSecureRuntimeId,
     decodePopupEvent,
     encodePopupMessage,
+    popupTargetOrigin,
     type PopupChannelIdentity,
     type PopupMode,
     type PopupWireMessage,
@@ -229,7 +230,7 @@ export class PopupHostManager {
                             const module = await import("${resolvedModuleUrl ?? ""}");
                             const boot = module.bootPopup || (module.default && module.default.bootPopup);
                             if (boot) {
-                                boot(module);
+                                await boot(module);
                             } else {
                                 console.error("MolSysViewer Popout: bootPopup not found in module");
                             }
@@ -255,7 +256,7 @@ export class PopupHostManager {
                             const module = await import("${popBlobUrl}");
                             const boot = module.bootPopup || (module.default && module.default.bootPopup);
                             if (boot) {
-                                boot(module);
+                                await boot(module);
                             } else {
                                 console.error("MolSysViewer Popout: bootPopup not found in module");
                             }
@@ -428,8 +429,7 @@ export class PopupHostManager {
     }
 
     private targetOrigin(): string {
-        const origin = window.location?.origin;
-        return origin && origin !== "null" ? origin : "*";
+        return popupTargetOrigin(window.location);
     }
 
     private createRouter(): RuntimeMessageRouter {

@@ -159,6 +159,9 @@ async function checkActualArtifacts(page: Page) {
                 console.log(`[E2E exported-page-framing]   periodic frame ${frame} checked`);
             }
             // A Python-owned scene mutation must explain why it cannot run.
+            const revealArea = await page.getByRole("button", { name: "Show canvas controls", exact: true }).boundingBox();
+            assert.ok(revealArea);
+            await page.mouse.move(revealArea.x + revealArea.width / 2, revealArea.y + revealArea.height / 2);
             await page.getByRole("button", { name: "Panel mode (N / W)", exact: true }).click();
             await page.locator('[data-molsysviewer-group-panel-tab="regions"]').click();
             await page.locator('button[data-molsysviewer-region-visibility="saved-region"]').click();

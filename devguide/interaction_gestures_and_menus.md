@@ -89,6 +89,18 @@ was active. Ordinary context menus do not offer Hide Canvas. Backend-owned
 mutations have one event; local layout/navigation actions are consumed locally.
 Viewport toggles carry the requested state so a backend echo is idempotent.
 
+View mode choices apply their controls preset, including Cinema's bottom
+trajectory scrubber and absence of viewport buttons. The canvas controls owner
+uses an explicit reveal policy: `autohide_scope="controls"` by default reveals
+near the buttons; `"canvas"` reveals anywhere inside the canvas. Dock, floating
+and fullscreen retain the same policy. `autohide=False` keeps enabled controls
+visible, and `visible=False` overrides reveal. Settings offers these choices.
+Keyboard focus and touch can reveal controls; invisible controls cannot intercept
+canvas picks. Frame updates do not override visibility. Exports and popups use
+the same renderer and release subscriptions, hotspots and Cinema elements when
+switching modes or disposing the controller. A popup announces readiness after
+its controller and controls are mounted.
+
 Keyboard navigation uses arrows, Home/End and Enter/Space. Escape returns from a
 submenu or closes the root menu before cancelling a tool or clearing selection.
 Composers occupy the secondary card, retain native input ownership, and keep

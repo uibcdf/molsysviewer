@@ -5,8 +5,10 @@ required before 1.0 (`uibcdf/molsysviewer#179`). **Implementation delivered; fin
 menu shell, shared scene/Studio navigation, molecular-target and object/occurrence
 workflows are delivered. The maintainer confirms both reported defects are
 corrected and the reviewed workflows function; the accepted final vocabulary
-and visual refinements, including adaptive parallel submenus, await a refreshed
-runtime review.
+and visual refinements, including adaptive parallel submenus, are accepted in
+the refreshed notebook review. Two resulting viewport corrections—Cinema and
+consistent controls reveal—are tracked under `uibcdf/molsysviewer#180` in
+[their owning report](pending_proposals/cinema_and_controls_reveal_policy.md).
 The [owning report](pending_proposals/canvas_context_menu_target_actions.md)
 records the inspected findings. Current executable contracts are maintained in
 [`interaction_gestures_and_menus.md`](interaction_gestures_and_menus.md) and

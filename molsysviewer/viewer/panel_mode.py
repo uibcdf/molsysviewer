@@ -63,15 +63,24 @@ class PanelModeMixin:
         visible: bool,
         *,
         autohide: bool | None = None,
+        autohide_scope: str | None = None,
         position: list[str] | tuple[str, str] | None = None,
         position_fullscreen: list[str] | tuple[str, str] | None = None,
         skip_digestion: bool = False,
     ) -> None:
-        """Show or hide the on-canvas controls. Optionally toggle autohide and positions."""
+        """Show or hide canvas controls and configure their reveal area.
+
+        With ``autohide=True``, ``autohide_scope="controls"`` reveals the buttons
+        near their area (the default); ``"canvas"`` reveals them anywhere in the
+        canvas. ``autohide=False`` keeps enabled controls visible. ``visible=False``
+        hides them regardless of hover. Positions apply in either reveal mode.
+        """
         try:
             self.widget.show_controls = bool(visible)
             if autohide is not None:
                 self.widget.autohide_controls = bool(autohide)
+            if autohide_scope is not None:
+                self.widget.autohide_scope = autohide_scope
             if position is not None:
                 self.widget.controls_position = list(position)
             if position_fullscreen is not None:

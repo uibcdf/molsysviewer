@@ -365,6 +365,8 @@ class MolSysView(
             self.widget.autohide_controls = bool(config.autohide_controls)
         except Exception:
             self.widget.autohide_controls = False
+        scope = getattr(config, "autohide_scope", "controls")
+        self.widget.autohide_scope = scope if scope in ("controls", "canvas") else "controls"
 
         try:
             pos = list(config.controls_position)
@@ -3527,6 +3529,8 @@ class MolSysView(
         ui_config = {
             "show_controls": bool(include_controls),
             "autohide_controls": bool(getattr(self.widget, "autohide_controls", False)),
+            "autohide_scope": str(getattr(self.widget, "autohide_scope", "controls")),
+            "viewer_mode": str(getattr(self.widget, "viewer_mode", "integrated")),
             "controls_position": list(getattr(self.widget, "controls_position", ["top", "right"])),
             "controls_position_fullscreen": list(
                 getattr(self.widget, "controls_position_fullscreen", ["bottom", "right"])

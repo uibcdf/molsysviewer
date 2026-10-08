@@ -25,6 +25,7 @@ def controls_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict
     return {
         "visible": _signal_value(args, kwargs, 1, "visible"),
         "autohide": _signal_value(args, kwargs, 2, "autohide"),
+        "autohide_scope": kwargs.get("autohide_scope"),
     }
 
 

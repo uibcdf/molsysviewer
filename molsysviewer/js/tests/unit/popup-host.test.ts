@@ -3,6 +3,16 @@ import test from "node:test";
 
 import { PopupHostManager } from "../../src/managers/popup-host";
 import type { PopupChannelIdentity } from "../../src/messages/popup-channel";
+import { popupTargetOrigin } from "../../src/messages/popup-channel";
+
+test("popup target origin preserves network origins and supports opaque file exports", () => {
+    assert.equal(popupTargetOrigin({ protocol: "https:", origin: "https://viewer.example" }), "https://viewer.example");
+    assert.equal(popupTargetOrigin({ protocol: "http:", origin: "http://localhost:8888" }), "http://localhost:8888");
+    assert.equal(popupTargetOrigin({ protocol: "file:", origin: "file://" }), "*");
+    assert.equal(popupTargetOrigin({ protocol: "file:", origin: "null" }), "*");
+    assert.equal(popupTargetOrigin({ protocol: "about:", origin: "null" }), "*");
+    assert.equal(popupTargetOrigin(), "*");
+});
 
 let popupMessageCounter = 0;
 

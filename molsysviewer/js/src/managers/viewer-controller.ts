@@ -14,6 +14,7 @@ import { ButtonsType } from "molstar/lib/mol-util/input/input-observer";
 import { Vec2 } from "molstar/lib/mol-math/linear-algebra";
 
 import { VARELA_ROUND_WOFF2_DATA_URL } from "../assets/varela-round/font-data";
+import { disposeControls } from "../ui/controls";
 import { ViewerMessage, KnownViewerMessage } from "../messages/viewer-messages";
 import { LoadedStructure } from "../plugin/structure";
 import { LoaderHandlers } from "./handlers/loader-handlers";
@@ -665,6 +666,10 @@ export class MolSysViewerController {
     private readonly layoutChangeListeners: Array<(state: { isSplit: boolean, isAmbient: boolean, visible: boolean, expanded: boolean }) => void> = [];
     public registerLayoutChangeListener(cb: (state: { isSplit: boolean, isAmbient: boolean, visible: boolean, expanded: boolean }) => void) {
         this.layoutChangeListeners.push(cb);
+        return () => {
+            const index = this.layoutChangeListeners.indexOf(cb);
+            if (index >= 0) this.layoutChangeListeners.splice(index, 1);
+        };
     }
     public triggerLayoutChange(state: { isSplit: boolean, isAmbient: boolean, visible: boolean, expanded: boolean }) {
         for (const cb of this.layoutChangeListeners) {
@@ -964,12 +969,18 @@ export class MolSysViewerController {
     }
 
     setViewerMode(mode: string) {
+        const presets: Record<string, [string, string]> = {
+            classic: ["classic", "drawer"], integrated: ["minimal", "integrated"], cinema: ["cinema", "integrated"],
+        };
+        if (!presets[mode]) return;
         if (this.model) {
             this.model.set("viewer_mode", mode);
             this.model.save_changes();
         } else {
             this.localViewerMode = mode;
         }
+        this.setPanelModeStyle(presets[mode][1]);
+        this.setControlsMode(presets[mode][0]);
     }
     setControlsMode(mode: string) {
         if (this.model) {
@@ -1136,6 +1147,7 @@ export class MolSysViewerController {
             });
             sharedShell.setVisible(true);
             this.sharedShell = sharedShell;
+            sharedShell.onLayoutChange = state => this.triggerLayoutChange(state);
 
             if (floatingUnified && !this.isPanelOnly) {
                 sharedShell.onResize = () => {
@@ -1784,6 +1796,7 @@ export class MolSysViewerController {
     }
 
     dispose(): void {
+        disposeControls(this);
         this.helpOpener = undefined;
         this.annotations.dispose();
         this.interactions.clear();

@@ -88,6 +88,7 @@ class MolSysViewerWidget(anywidget.AnyWidget):
     runtime_viewer_id = T.Unicode(default_value="").tag(sync=True)
     runtime_session_id = T.Unicode(default_value="").tag(sync=True)
     autohide_controls = T.Bool(default_value=True).tag(sync=True)
+    autohide_scope = T.Enum(["controls", "canvas"], default_value="controls").tag(sync=True)
     debug_js = T.Bool(default_value=False).tag(sync=True)
     controls_position = T.List(T.Unicode(), default_value=["top", "right"]).tag(sync=True)
     controls_position_fullscreen = T.List(T.Unicode(), default_value=["top", "right"]).tag(sync=True)
