@@ -1,8 +1,66 @@
 from __future__ import annotations
 
+from numbers import Integral
 from typing import Any, Mapping
 
 from ...active_selection import _combine
+
+
+def _context_atoms(view: Any, content: Mapping[str, Any]) -> list[int]:
+    """Resolve the declared target scope using the canonical molecular owner."""
+    context = content.get("context")
+    if not isinstance(context, Mapping):
+        raise ValueError("A context target is required.")
+    if context.get("kind") not in {"structure", "shape", "annotation", "measurement"}:
+        raise ValueError("This target does not support molecular scope resolution.")
+    if view._molsys is None:
+        raise ValueError("No molecular system loaded.")
+    frame = content.get("structure_index")
+    if frame is not None and (
+        isinstance(frame, bool) or not isinstance(frame, Integral) or frame != view.current_structure_index
+    ):
+        raise ValueError("The context frame has changed; open the menu again.")
+    atoms = context.get("atom_indices")
+    if not isinstance(atoms, (list, tuple)) or not atoms:
+        raise ValueError("This context target has no atom anchors.")
+    n_atoms = int(view._molsys.get_n_atoms())
+    if any(isinstance(atom, bool) or not isinstance(atom, Integral) or not 0 <= atom < n_atoms for atom in atoms):
+        raise ValueError("Context atom indices are invalid for the current system.")
+    scope = content.get("scope", "target")
+    if scope == "target":
+        return sorted(set(int(atom) for atom in atoms))
+    if context.get("kind") != "structure":
+        raise ValueError("Only a molecular target supports atom/residue/chain scopes.")
+    if scope == "atom":
+        atom = context.get("atom_index")
+        if isinstance(atom, bool) or not isinstance(atom, Integral) or atom not in atoms:
+            raise ValueError("There is no unambiguous pointed atom in this target.")
+        return [int(atom)]
+    if scope not in {"group", "chain"}:
+        raise ValueError(f"Unsupported context scope: {scope!r}.")
+    return view._atoms_for_selection_level(list(atoms), scope)
+
+
+def select_context_target(view: Any, content: Mapping[str, Any]) -> None:
+    operation = content.get("op", "replace")
+    if operation not in {"replace", "add", "subtract"}:
+        raise ValueError(f"Unsupported target selection operation: {operation!r}.")
+    atoms = _context_atoms(view, content)
+    view.active_selection.set(_combine(view.active_selection.atom_indices, atoms, operation), skip_digestion=True)
+
+
+def create_region_from_target(view: Any, content: Mapping[str, Any]) -> None:
+    from .regions import create_region_from_query
+
+    atoms = _context_atoms(view, content)
+    create_region_from_query(view, {**content, "expression": atoms, "syntax": "Indices"})
+
+
+def create_annotation_from_target(view: Any, content: Mapping[str, Any]) -> None:
+    from .scene_objects import create_annotation
+
+    atoms = _context_atoms(view, content)
+    create_annotation(view, {**content, "atom_indices": atoms})
 
 
 def _required_text(content: Mapping[str, Any], key: str, action: str) -> str:
@@ -159,6 +217,9 @@ def clear_selection(view: Any, content: Mapping[str, Any]) -> None:
 
 
 HANDLERS = {
+    "select_context_target": select_context_target,
+    "create_region_from_target": create_region_from_target,
+    "create_annotation_from_target": create_annotation_from_target,
     "create_region_from_selection": create_region_from_selection,
     "activate_selection": activate_selection,
     "save_selection": save_selection,

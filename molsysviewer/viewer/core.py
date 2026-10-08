@@ -799,32 +799,40 @@ class MolSysView(
         if level not in {"group", "component", "molecule", "chain", "entity"}:
             raise ValueError(f"Unsupported selection expansion level: {level!r}.")
 
-        query_system, query_atoms = self._active_selection_query_system()
+        _, query_atoms = self._active_selection_query_system()
         if len(query_atoms) == 0:
             raise ValueError("expand_selection has no active atoms available in the loaded system.")
 
+        expanded_atoms = self._atoms_for_selection_level(query_atoms, level)
+        self.active_selection.set(expanded_atoms, skip_digestion=True)
+
+    def _atoms_for_selection_level(self, atom_indices: list[int], level: str) -> list[int]:
+        """Resolve a molecular scope without changing the active selection."""
+        if self._molsys is None:
+            raise ValueError("No molecular system loaded.")
+        if level not in {"group", "component", "molecule", "chain", "entity"}:
+            raise ValueError(f"Unsupported molecular scope: {level!r}.")
         level_indices = msm.get(
-            query_system,
+            self._molsys,
             element="atom",
-            selection=query_atoms,
+            selection=atom_indices,
             **{f"{level}_index": True},
             output_type="values",
             skip_digestion=True,
         )
         deduped_level_indices = sorted({int(item) for item in level_indices if item is not None})
         if len(deduped_level_indices) == 0:
-            self.active_selection.clear(skip_digestion=True)
-            return
+            return []
 
         atom_index_result = msm.get(
-            query_system,
+            self._molsys,
             element=level,
             selection=deduped_level_indices,
             atom_index=True,
             skip_digestion=True,
         )
         expanded_atoms = self._flatten_atom_index_result(atom_index_result)
-        self.active_selection.set(sorted(set(expanded_atoms)), skip_digestion=True)
+        return sorted(set(expanded_atoms))
 
     def _expand_selection_spatial_action(self, content: Mapping[str, Any]) -> None:
         current_atoms = list(self.active_selection.atom_indices)

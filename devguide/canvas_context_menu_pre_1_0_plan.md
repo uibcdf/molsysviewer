@@ -2,8 +2,8 @@
 
 **Decision — 2026-10-08:** the principal maintainer accepts this redesign as
 required before 1.0 (`uibcdf/molsysviewer#179`). **Partially implemented:** the
-menu shell and shared scene/Studio navigation are delivered; molecular-target
-and occurrence workflows and human acceptance remain pending.
+menu shell, shared scene/Studio navigation and molecular-target workflows are
+delivered; object/occurrence workflows and human acceptance remain pending.
 The [owning report](pending_proposals/canvas_context_menu_target_actions.md)
 records the inspected findings. Current executable contracts remain in
 [`interaction_gestures_and_menus.md`](interaction_gestures_and_menus.md) and
@@ -160,6 +160,16 @@ of their stages. Browser-owned navigation is consumed locally; backend-owned
 mutations have one dispatch. View toggles carry an explicit requested state so
 the Python echo does not toggle them again. The owning report records validation
 and outstanding work; this foundation does not close #179.
+
+Stage 2 resolves explicit replace/add/remove target selections in the canonical
+MolSys atom space, with atom/residue/chain scopes. Target region and annotation
+composers leave the active selection intact. Read-only target inspection and
+staged Shapes/Interactions navigation reuse Studio owners; Interactions staging
+neither calculates nor silently applies a display filter. The form starts with
+target A and current-structure calculation scope, and asks for a name. Measure
+has three actions and an explicit endpoint selector; progress names the policy,
+and individual-atom mode refuses ambiguous multi-atom picks. Load/clear/frame
+changes dismiss the menu and its read-only target snapshot.
 
 1. **Menu shell and context contract.** Extract reusable target/action
    applicability, add bounded submenus and meaningful headings, implement

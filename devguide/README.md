@@ -39,7 +39,7 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- [`canvas_context_menu_pre_1_0_plan.md`](canvas_context_menu_pre_1_0_plan.md): #179 is partially implemented (menu foundation and shared scene/Studio access); target/occurrence workflows and human review remain, publication is paused, and 0.24.1 needs a replacement candidate.
+- [`canvas_context_menu_pre_1_0_plan.md`](canvas_context_menu_pre_1_0_plan.md): #179 is partially implemented (menu foundation, scene/Studio access and molecular-target workflows); object/occurrence actions and human review remain, publication is paused, and 0.24.1 needs a replacement candidate.
 - [`open_issue_reconciliation_20261007.md`](open_issue_reconciliation_20261007.md): complete 34-issue scope review, public-promise corrections, historical publication decisions and remaining 1.0 gates.
 - [`public_distribution_contract.md`](public_distribution_contract.md): public Conda/core backend route and experimental native-host boundary.
 - [`interactions_compatibility_contract.md`](interactions_compatibility_contract.md): agreed experimental consumption, identity, paging, geometry and invalidation limits for the next installed pair.

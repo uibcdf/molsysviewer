@@ -48,6 +48,7 @@ export class SystemPanel implements StudioPanel {
     private host: HTMLElement | null = null;
     private stripsRow: HTMLDivElement | null = null;
     private loading: SystemLoadControls | null = null;
+    private inspector: HTMLDivElement | null = null;
     /** Hierarchy relayed from a host, used only when this endpoint has none. */
     private relayedItems: GroupSelectionItem[] | null = null;
 
@@ -107,6 +108,10 @@ export class SystemPanel implements StudioPanel {
             gap: "6px",
         });
         host.appendChild(this.makeSystemHeader());
+        this.inspector = document.createElement("div");
+        this.inspector.setAttribute("data-molsysviewer-context-inspector", "true");
+        this.inspector.style.display = "none";
+        host.appendChild(this.inspector);
         if (this.hasAuthority) {
             this.loading = new SystemLoadControls(this.ctx);
             host.appendChild(this.loading.root);
@@ -173,6 +178,31 @@ export class SystemPanel implements StudioPanel {
             strip.updateContextTarget(target);
         }
     }
+
+    /** A read-only target snapshot, independent from the active selection. */
+    inspectTarget(target: ContextMenuTarget, frame?: number): void {
+        if (!this.inspector || target.kind !== "structure") return;
+        this.inspector.replaceChildren();
+        Object.assign(this.inspector.style, { display: "block", padding: "8px", borderRadius: "8px", background: "rgba(0,0,0,0.18)", fontSize: "12px" });
+        const heading = document.createElement("strong"); heading.textContent = "Context target";
+        this.inspector.appendChild(heading);
+        const entries: [string, string | number | undefined][] = [
+            ["Residue", target.group_name ?? target.metadata?.group_name],
+            ["Residue ID", target.metadata?.group_id], ["Chain", target.chain_name ?? target.metadata?.chain_id],
+            ["Pointed atom", target.atom_index === undefined ? undefined : target.metadata?.atom_name],
+            ["Atom index", target.atom_index], ["Source", target.source_label],
+            ["Target atoms", target.atom_indices.length], ["Structure index", frame],
+        ];
+        for (const [label, value] of entries) {
+            if (value === undefined) continue;
+            const row = document.createElement("div"); row.textContent = `${label}: ${value}`;
+            this.inspector.appendChild(row);
+        }
+        const close = document.createElement("button"); close.type = "button"; close.textContent = "Close inspection";
+        close.addEventListener("click", () => this.clearInspection()); this.inspector.appendChild(close);
+    }
+
+    clearInspection(): void { if (this.inspector) { this.inspector.replaceChildren(); this.inspector.style.display = "none"; } }
 
     addLabelOverlay(msg: AddLabelMessage): void {
         this.annotationMessages.push(msg);

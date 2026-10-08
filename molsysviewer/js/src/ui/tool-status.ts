@@ -5,6 +5,7 @@ export type ToolStatusState =
         pickedCount: number;
         requiredPicks: number;
         remainingPicks: number;
+        endpointPolicy?: "atom" | "centroid" | "representative_atom";
     };
 
 function actionLabel(action: "distance" | "angle" | "dihedral"): string {
@@ -57,11 +58,14 @@ export class ToolStatusOverlay {
         });
 
         const detail = document.createElement("div");
-        detail.textContent = `Pick ${state.remainingPicks} more atom${state.remainingPicks === 1 ? "" : "s"} (${state.pickedCount}/${state.requiredPicks})`;
+        const noun = state.endpointPolicy === "atom" ? "atom" : "endpoint";
+        detail.textContent = `Pick ${state.remainingPicks} more ${noun}${state.remainingPicks === 1 ? "" : "s"} (${state.pickedCount}/${state.requiredPicks})`;
         detail.style.opacity = "0.95";
 
         const hint = document.createElement("div");
-        hint.textContent = "Esc cancels";
+        const policy = state.endpointPolicy === "centroid" ? "Centers of picked atom sets"
+            : state.endpointPolicy === "representative_atom" ? "Representative atoms" : "Individual atoms";
+        hint.textContent = `${policy} · Esc cancels`;
         Object.assign(hint.style, {
             marginTop: "6px",
             opacity: "0.72",

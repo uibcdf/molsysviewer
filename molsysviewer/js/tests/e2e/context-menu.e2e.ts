@@ -71,7 +71,7 @@ view.close()
         assert.equal(await context.getByRole("menu", { name: "Measure", exact: true }).isVisible(), true);
         assert.equal(await context.getByRole("menuitem", { name: "Distance", exact: true }).isVisible(), true);
         await page.keyboard.press("End");
-        assert.equal(await page.evaluate(() => document.activeElement?.textContent), "Dihedral (Representative Atom)");
+        assert.equal(await page.evaluate(() => document.activeElement?.textContent), "Dihedral");
         await page.keyboard.press("Home");
         assert.equal(await page.evaluate(() => document.activeElement?.textContent), "‹ Back");
         await page.keyboard.press("Escape");
@@ -90,6 +90,87 @@ view.close()
         assert.equal(afterEscape.events, stateBefore.events);
         assert.equal(afterEscape.focusInViewer, true);
 
+        // Work on residue B while the working selection remains residue A.
+        const secondGroup = page.locator('[data-molsysviewer-group-item="true"]').nth(1);
+        const contextualRequests: any[] = [];
+        const latestRequest = () => page.evaluate(() => [...(window as any).__messages].reverse()
+            .find((message: any) => message.event === "interaction_context_action"));
+        await secondGroup.click({ button: "right" });
+        await context.getByRole("menuitem", { name: "Inspect Target…", exact: true }).click();
+        assert.equal(await page.locator('[data-molsysviewer-context-inspector]').isVisible(), true);
+        assert.equal(await page.evaluate(() => JSON.stringify((window as any).__controller.currentActiveSelection)), selectionBefore);
+        await secondGroup.click({ button: "right" });
+        await context.locator('[data-molsysviewer-context-submenu="Create"]').click();
+        await context.getByRole("menuitem", { name: "Region from Target…", exact: true }).click();
+        await context.getByLabel("Target atom scope").selectOption("group");
+        await context.getByPlaceholder("Region tag (optional)").fill("context-residue");
+        await context.getByRole("button", { name: "Create Region", exact: true }).click();
+        contextualRequests.push(await latestRequest());
+        await secondGroup.click({ button: "right" });
+        await context.locator('[data-molsysviewer-context-submenu="Create"]').click();
+        await context.getByRole("menuitem", { name: "Annotation from Target…", exact: true }).click();
+        await context.getByPlaceholder("Label text").fill("Residue B");
+        await context.getByRole("button", { name: "Create Label", exact: true }).click();
+        contextualRequests.push(await latestRequest());
+        assert.equal(await page.evaluate(() => JSON.stringify((window as any).__controller.currentActiveSelection)), selectionBefore);
+        await secondGroup.click({ button: "right" });
+        await context.locator('[data-molsysviewer-context-submenu="Create"]').click();
+        await context.getByRole("menuitem", { name: "Shape from Target in Studio…", exact: true }).click();
+        assert.equal(await page.evaluate(() => (window as any).__controller.groupPanel.activeTab), "shapes");
+        assert.match(await page.locator('[data-molsysviewer-group-panel-section="shapes"]').textContent(), /Anchored to context target/);
+        assert.equal(await page.evaluate(() => JSON.stringify((window as any).__controller.currentActiveSelection)), selectionBefore);
+        await page.locator('[data-molsysviewer-group-panel-tab="system"]').click();
+        const calculationCount = await page.evaluate(() => (window as any).__messages.filter((m: any) => m.action === "create_interaction").length);
+        await secondGroup.click({ button: "right" });
+        await context.locator('[data-molsysviewer-context-submenu="Interactions"]').click();
+        await context.getByRole("menuitem", { name: "Calculate for Target…", exact: true }).click();
+        assert.equal(await page.locator('[data-molsysviewer-interaction-calc-scope="true"]').inputValue(), "a");
+        assert.equal(await page.locator('[data-molsysviewer-interaction-field="calc-structures"]').inputValue(), "current");
+        assert.equal(await page.evaluate(() => (window as any).__messages.filter((m: any) => m.action === "create_interaction").length), calculationCount);
+        assert.equal(await page.evaluate(() => JSON.stringify((window as any).__controller.currentActiveSelection)), selectionBefore);
+        await page.locator('[data-molsysviewer-group-panel-tab="system"]').click();
+        for (const label of ["Add to selection · residue", "Remove from selection · residue", "Replace selection · residue"]) {
+            await secondGroup.click({ button: "right" });
+            await context.locator('[data-molsysviewer-context-submenu="Select"]').click();
+            await context.getByRole("menuitem", { name: label, exact: true }).click();
+            contextualRequests.push(await latestRequest());
+        }
+        // Replay the actual browser requests through the real Python owner.
+        const backend = spawnSync(process.env.PYTHON || "python", ["-c", `
+import json, sys
+import molsysviewer as msv
+from molsysviewer.interactions import _to_plain
+from molsysviewer.viewer.panel_actions import dispatch_panel_action
+payload = json.load(sys.stdin)
+view = msv.demo["dialanine"]
+view.active_selection.set(payload["selection"])
+view._ready = True
+sent = []
+view.widget.send = sent.append
+states = []
+for request in payload["requests"]:
+    sent.clear()
+    dispatch_panel_action(view, request)
+    states.append({"selection": view.active_selection.atom_indices, "messages": list(sent)})
+print(json.dumps(_to_plain({"states": states, "region": list(view.regions.get("context-residue").atom_indices), "annotation": view.annotations.info()[-1]})))
+view.close()
+`], { cwd: resolve(dir, "../../../.."), encoding: "utf8", input: JSON.stringify({ selection: JSON.parse(selectionBefore).atom_indices, requests: contextualRequests }) });
+        assert.equal(backend.status, 0, backend.stderr || String(backend.error));
+        const result = JSON.parse(backend.stdout);
+        const working = JSON.parse(selectionBefore).atom_indices;
+        const pointed = contextualRequests[0].context.atom_indices;
+        assert.deepEqual(result.region, pointed);
+        assert.deepEqual(result.annotation.atom_indices, pointed);
+        assert.deepEqual(result.states[0].selection, working);
+        assert.deepEqual(result.states[1].selection, working);
+        assert.deepEqual(new Set(result.states[2].selection), new Set([...working, ...pointed]));
+        assert.deepEqual(result.states[3].selection, working.filter((atom: number) => !pointed.includes(atom)));
+        assert.deepEqual(result.states[4].selection, pointed);
+        await page.evaluate(async batches => {
+            for (const state of batches) for (const message of state.messages) await (window as any).__controller.handleMessage(message, { throwOnError: true });
+        }, result.states);
+        assert.deepEqual(await page.evaluate(() => (window as any).__controller.currentActiveSelection.atom_indices), pointed);
+
         // View controls exist on molecular targets; root size is independent of
         // the saved collection, and the collection route selects its Studio tab.
         await page.evaluate(() => {
@@ -99,7 +180,7 @@ view.close()
         await firstGroup.click({ button: "right" });
         assert.equal(await context.locator('[data-molsysviewer-context-submenu="View"]').count(), 1);
         assert.equal(await context.locator('[data-molsysviewer-saved-selection]').count(), 0);
-        assert.ok(await context.locator('[role="menu"]:visible button:visible').count() <= 12);
+        assert.ok(await context.locator('[role="menu"]:visible button:visible').count() <= 16);
         await context.getByRole("menuitem", { name: "Saved selections in Studio…", exact: true }).click();
         assert.equal(await page.evaluate(() => (window as any).__controller.groupPanel.activeTab), "selection");
         assert.equal(await context.isVisible(), false);
@@ -179,6 +260,28 @@ view.close()
         assert.equal(await page.evaluate(() => (window as any).__controller.measurementTools.isActive()), true);
         await page.keyboard.press("Escape");
         assert.equal(await page.evaluate(() => (window as any).__controller.measurementTools.isActive()), false);
+
+        // A popped-out Studio has hierarchy but no local trajectory. Its
+        // topology request must not declare a fictitious frame zero.
+        await page.evaluate(async () => {
+            const w = window as any, viewer = w.__controller;
+            const host = document.createElement("div"); host.id = "panel-only";
+            Object.assign(host.style, { position: "relative", width: "700px", height: "520px" });
+            document.body.appendChild(host);
+            const panel = await w.Harness.createController("panel-only", { isPanelOnly: true, panelModeStyle: "split" });
+            panel.setHierarchyItems(JSON.parse(JSON.stringify(viewer.getHierarchyItems())));
+            w.__controller = viewer;
+            w.__panel = panel;
+        });
+        const panel = page.locator("#panel-only");
+        await panel.locator('[data-molsysviewer-group-item="true"]').first().click({ button: "right" });
+        const panelMenu = panel.locator('[data-molsysviewer-context-menu="true"]');
+        await panelMenu.locator('[data-molsysviewer-context-submenu="Select"]').click();
+        await panelMenu.getByRole("menuitem", { name: "Replace selection · residue", exact: true }).click();
+        const panelRequest = await latestRequest();
+        assert.equal(panelRequest.action, "select_context_target");
+        assert.equal(panelRequest.structure_index, undefined);
+        assert.ok(panelRequest.context.atom_indices.length > 0);
 
         assert.deepEqual(errors, []);
         console.log("[E2E context menu] real dialanine rendering; compact submenus, keys/Escape, selection preservation, Studio, history, scope guards and single dispatch pass");

@@ -469,7 +469,7 @@ test("ViewerContextMenu renders delete action for shape targets", () => {
     }
 });
 
-test("ViewerContextMenu renders representative-atom measurement actions for structure targets", () => {
+test("ViewerContextMenu uses an explicit endpoint selector with three measurement actions", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
@@ -487,11 +487,13 @@ test("ViewerContextMenu renders representative-atom measurement actions for stru
         const root = (menu as any).root as FakeElement;
         const texts = collectTexts(root);
         assert.ok(texts.includes("Distance"));
-        assert.ok(texts.includes("Distance (Representative Atom)"));
-        assert.ok(texts.includes("Angle (Representative Atom)"));
-        assert.ok(texts.includes("Dihedral (Representative Atom)"));
+        assert.ok(texts.includes("Representative atoms (explicit)"));
+        const policy = findNodeByTag(root, "select");
+        assert.ok(policy);
+        policy!.value = "representative_atom";
+        policy!.dispatch("change");
 
-        const button = findNodeByText(root, "Distance (Representative Atom)");
+        const button = findNodeByText(root, "Distance");
         assert.ok(button);
         button!.dispatch("click");
 

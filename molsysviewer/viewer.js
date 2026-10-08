@@ -148249,7 +148249,7 @@ var ViewerContextMenu = class {
   /** Dismiss one menu level before global Escape affects selection or Studio. */
   handleEscape(event) {
     if (!this.isOpen() || event.key !== "Escape") return false;
-    if (event.target?.closest?.("input, textarea, select, [contenteditable]")) return false;
+    if (event.target?.closest?.("input, textarea, [contenteditable]")) return false;
     if (!this.navigation.containsCurrentPage()) this.reopen();
     else if (!this.navigation.back()) this.close();
     event.preventDefault();
@@ -148304,7 +148304,7 @@ var ViewerContextMenu = class {
     header2.textContent = targetTitle(target);
     Object.assign(header2.style, { padding: "6px 8px 8px", fontWeight: "600", borderBottom: "1px solid rgba(255,255,255,0.10)", marginBottom: "6px" });
     main.appendChild(header2);
-    if (target.kind === "structure" && target.metadata?.atom_name) {
+    if (target.kind === "structure" && target.atom_index !== void 0 && target.metadata?.atom_name) {
       const atom2 = document.createElement("div");
       atom2.textContent = `Pointed atom: ${target.metadata.atom_name}`;
       Object.assign(atom2.style, { padding: "0 8px 6px", opacity: "0.75", fontSize: "12px" });
@@ -148312,15 +148312,58 @@ var ViewerContextMenu = class {
     }
     if (target.kind === "structure") {
       main.appendChild(this.makeActionButton("Focus Target", "focus_target"));
-      this.navigation.addSubmenu(main, "Measure", (view2) => {
-        const policy = document.createElement("div");
-        policy.textContent = "Default endpoints: centers of picked atom sets";
-        Object.assign(policy.style, { padding: "4px 10px", fontSize: "12px", opacity: "0.75" });
-        view2.appendChild(policy);
-        for (const [label2, action] of [["Distance", "distance"], ["Angle", "angle"], ["Dihedral", "dihedral"]]) {
-          view2.appendChild(this.makeActionButton(label2, action, { endpoint_policy: "centroid" }));
-          view2.appendChild(this.makeActionButton(`${label2} (Representative Atom)`, action, { endpoint_policy: "representative_atom" }));
+      main.appendChild(this.makeActionButton("Inspect Target\u2026", "inspect_target"));
+      this.navigation.addSubmenu(main, "Select", (view2) => {
+        for (const [scope, label2] of [["atom", "Pointed atom"], ["group", "Residue"], ["chain", "Chain"]]) {
+          const heading = document.createElement("div");
+          heading.textContent = label2;
+          Object.assign(heading.style, { padding: "6px 10px", fontWeight: "600" });
+          view2.appendChild(heading);
+          for (const [op4, name] of [["replace", "Replace selection"], ["add", "Add to selection"], ["subtract", "Remove from selection"]]) {
+            const button2 = this.makeActionButton(`${name} \xB7 ${label2.toLowerCase()}`, "select_context_target", { scope, op: op4 });
+            if (scope === "atom" && target.atom_index === void 0) {
+              button2.disabled = true;
+              button2.setAttribute("aria-disabled", "true");
+              button2.title = "This target does not identify one pointed atom";
+              button2.style.opacity = "0.45";
+            }
+            view2.appendChild(button2);
+          }
         }
+      });
+      this.navigation.addSubmenu(main, "Create", (view2) => {
+        view2.appendChild(this.makeActionButton("Region from Target\u2026", "create_region_from_target"));
+        view2.appendChild(this.makeActionButton("Annotation from Target\u2026", "create_annotation_from_target"));
+        view2.appendChild(this.makeActionButton("Shape from Target in Studio\u2026", "open_shapes_for_target"));
+      });
+      this.navigation.addSubmenu(main, "Measure", (view2) => {
+        const policyLabel = document.createElement("label");
+        policyLabel.textContent = "Endpoints";
+        const policy = document.createElement("select");
+        policy.setAttribute("data-molsysviewer-measure-endpoint-policy", "true");
+        policy.setAttribute("aria-label", "Measurement endpoint policy");
+        for (const [value, label2] of [["centroid", "Centers of picked atom sets"], ["atom", "Individual atoms"], ["representative_atom", "Representative atoms (explicit)"]]) {
+          const option = document.createElement("option");
+          option.value = value;
+          option.textContent = label2;
+          option.disabled = value === "atom" && target.atom_index === void 0;
+          policy.appendChild(option);
+        }
+        policy.value = "centroid";
+        Object.assign(policy.style, { display: "block", width: "100%", margin: "6px 0", color: "inherit", background: "#27272a" });
+        policyLabel.appendChild(policy);
+        view2.appendChild(policyLabel);
+        for (const [label2, action] of [["Distance", "distance"], ["Angle", "angle"], ["Dihedral", "dihedral"]]) {
+          const details = { endpoint_policy: "centroid" };
+          policy.addEventListener("change", () => {
+            details.endpoint_policy = policy.value;
+          });
+          view2.appendChild(this.makeActionButton(label2, action, details));
+        }
+      });
+      this.navigation.addSubmenu(main, "Interactions", (view2) => {
+        view2.appendChild(this.makeActionButton("Inspect and Display Existing\u2026", "open_interactions_for_target", { workflow: "inspect" }));
+        view2.appendChild(this.makeActionButton("Calculate for Target\u2026", "open_interactions_for_target", { workflow: "calculate" }));
       });
     } else if (target.kind === "interaction") {
       if (target.tag?.trim()) this.navigation.addSubmenu(main, "Interaction set", (view2) => {
@@ -148443,6 +148486,12 @@ var ViewerContextMenu = class {
       }
     }
     const needsSelectionAtoms = ["focus_selection", "save_selection", "create_region_from_selection", "create_section_from_selection", "add_label_from_selection", "expand_selection"].includes(action);
+    if (["distance", "angle", "dihedral"].includes(action) && this.currentSceneState?.canMeasure === false) {
+      button2.disabled = true;
+      button2.setAttribute("aria-disabled", "true");
+      button2.title = "Measurement picking requires the canvas";
+      button2.style.opacity = "0.45";
+    }
     if (action === "focus_target" && this.currentTarget?.kind !== "empty" && !this.currentTarget?.atom_indices?.length || needsSelectionAtoms && !this.currentSelection?.atom_indices?.length) {
       button2.disabled = true;
       button2.setAttribute("aria-disabled", "true");
@@ -148469,16 +148518,16 @@ var ViewerContextMenu = class {
     });
     button2.addEventListener("click", () => {
       if (!this.currentTarget || button2.disabled || !this.isActionAllowed(action)) return;
-      if (action === "add_label_from_selection") {
-        this.renderLabelComposer();
+      if (action === "add_label_from_selection" || action === "create_annotation_from_target") {
+        this.renderLabelComposer(action === "create_annotation_from_target");
         return;
       }
       if (action === "save_selection") {
         this.renderSelectionComposer();
         return;
       }
-      if (action === "create_region_from_selection") {
-        this.renderRegionComposer();
+      if (action === "create_region_from_selection" || action === "create_region_from_target") {
+        this.renderRegionComposer(action === "create_region_from_target");
         return;
       }
       if (action === "activate_selection") {
@@ -148674,11 +148723,11 @@ var ViewerContextMenu = class {
     if (this.isActionAllowed("delete_region")) row3.appendChild(deleteBtn);
     return row3;
   }
-  renderRegionComposer() {
+  renderRegionComposer(fromTarget = false) {
     if (!this.currentTarget) return;
     this.scrollEl.replaceChildren();
     const title = document.createElement("div");
-    title.textContent = "New Region from Selection";
+    title.textContent = fromTarget ? "New Region from Target" : "New Region from Selection";
     Object.assign(title.style, {
       padding: "6px 8px 8px 8px",
       fontWeight: "600",
@@ -148687,13 +148736,14 @@ var ViewerContextMenu = class {
     });
     this.scrollEl.appendChild(title);
     const subtitle = document.createElement("div");
-    subtitle.textContent = selectionSummary(this.currentSelection);
+    subtitle.textContent = fromTarget ? targetTitle(this.currentTarget) : selectionSummary(this.currentSelection);
     Object.assign(subtitle.style, {
       padding: "0 8px 8px 8px",
       opacity: "0.82",
       fontSize: "12px"
     });
     this.scrollEl.appendChild(subtitle);
+    const scope = fromTarget ? this.appendTargetScope() : null;
     const input = document.createElement("input");
     input.type = "text";
     input.value = "";
@@ -148740,11 +148790,12 @@ var ViewerContextMenu = class {
     const submit = () => {
       if (!this.currentTarget) return;
       const tag = String(input.value ?? "").trim();
-      const details = tag.length > 0 ? { tag } : {};
-      this.onAction?.("create_region_from_selection", this.currentTarget, details);
+      const action = fromTarget ? "create_region_from_target" : "create_region_from_selection";
+      const details = { ...tag.length > 0 ? { tag } : {}, ...scope ? { scope: scope.value } : {} };
+      this.onAction?.(action, this.currentTarget, details);
       this.notify?.({
         event: "interaction_context_action",
-        action: "create_region_from_selection",
+        action,
         context: this.currentTarget,
         ...details
       });
@@ -148986,11 +149037,30 @@ var ViewerContextMenu = class {
     this.scrollEl.appendChild(actions);
     input.select?.();
   }
-  renderLabelComposer() {
+  appendTargetScope() {
+    const label2 = document.createElement("label");
+    label2.textContent = "Atom scope";
+    const select2 = document.createElement("select");
+    select2.setAttribute("data-molsysviewer-context-target-scope", "true");
+    select2.setAttribute("aria-label", "Target atom scope");
+    for (const [value, name] of [["target", "Target atoms"], ["atom", "Pointed atom"], ["group", "Residue"], ["chain", "Chain"]]) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = name;
+      option.disabled = value === "atom" && (this.currentTarget?.kind !== "structure" || this.currentTarget.atom_index === void 0);
+      select2.appendChild(option);
+    }
+    select2.value = "target";
+    Object.assign(select2.style, { display: "block", width: "100%", margin: "6px 0 10px", color: "inherit", background: "#27272a" });
+    label2.appendChild(select2);
+    this.scrollEl.appendChild(label2);
+    return select2;
+  }
+  renderLabelComposer(fromTarget = false) {
     if (!this.currentTarget) return;
     this.scrollEl.replaceChildren();
     const title = document.createElement("div");
-    title.textContent = "Label from selection";
+    title.textContent = fromTarget ? "Annotation from target" : "Label from selection";
     Object.assign(title.style, {
       padding: "6px 8px 8px 8px",
       fontWeight: "600",
@@ -148998,6 +149068,7 @@ var ViewerContextMenu = class {
       marginBottom: "8px"
     });
     this.scrollEl.appendChild(title);
+    const scope = fromTarget ? this.appendTargetScope() : null;
     const input = document.createElement("input");
     input.type = "text";
     input.value = "";
@@ -149087,11 +149158,12 @@ var ViewerContextMenu = class {
         color: colorInput.value,
         size_em: parseFloat(sizeInput.value)
       };
-      const details = { text, label_style };
-      this.onAction?.("add_label_from_selection", this.currentTarget, details);
+      const action = fromTarget ? "create_annotation_from_target" : "add_label_from_selection";
+      const details = { text, label_style, ...scope ? { scope: scope.value } : {} };
+      this.onAction?.(action, this.currentTarget, details);
       this.notify?.({
         event: "interaction_context_action",
-        action: "add_label_from_selection",
+        action,
         context: this.currentTarget,
         ...details
       });
@@ -149315,6 +149387,7 @@ var MeasurementToolController = class {
   start(action, rawLoci, endpointPolicy = "centroid") {
     const loci = normalizeToElementLoci(rawLoci);
     if (!loci) return;
+    if (endpointPolicy === "atom" && lociToAtomIndices(loci).length !== 1) return;
     if (this.activeAction) this.cancel(false);
     this.previousGranularity = this.plugin?.managers?.interactivity?.props?.granularity ?? null;
     this.plugin?.managers?.interactivity?.setProps?.({ granularity: "element" });
@@ -149328,6 +149401,7 @@ var MeasurementToolController = class {
     if (!this.activeAction) return;
     const loci = normalizeToElementLoci(rawLoci);
     if (!loci) return;
+    if (this.activeEndpointPolicy === "atom" && lociToAtomIndices(loci).length !== 1) return;
     this.picks = [...this.picks, loci];
     void this.plugin?.managers?.structure?.measurement?.addOrderLabels?.(this.picks);
     const action = this.activeAction;
@@ -149341,6 +149415,7 @@ var MeasurementToolController = class {
   cancel(notify = true) {
     if (!this.activeAction) return;
     const action = this.activeAction;
+    const endpointPolicy = this.activeEndpointPolicy;
     void this.plugin?.managers?.structure?.measurement?.addOrderLabels?.([]);
     this.restoreGranularity();
     this.activeAction = null;
@@ -149354,7 +149429,8 @@ var MeasurementToolController = class {
         required_picks: requiredPicks(action),
         picked_count: 0,
         remaining_picks: requiredPicks(action),
-        picks_atom_indices: []
+        picks_atom_indices: [],
+        endpoint_policy: endpointPolicy
       });
     }
   }
@@ -149393,7 +149469,8 @@ var MeasurementToolController = class {
       required_picks: requiredPicks(action),
       picked_count: picks.length,
       remaining_picks: 0,
-      picks_atom_indices: picks.map((loci) => lociToAtomIndices(loci))
+      picks_atom_indices: picks.map((loci) => lociToAtomIndices(loci)),
+      endpoint_policy: this.activeEndpointPolicy
     });
     this.restoreGranularity();
     this.activeAction = null;
@@ -149409,7 +149486,8 @@ var MeasurementToolController = class {
       required_picks: required,
       picked_count: this.picks.length,
       remaining_picks: Math.max(0, required - this.picks.length),
-      picks_atom_indices: this.picks.map((loci) => lociToAtomIndices(loci))
+      picks_atom_indices: this.picks.map((loci) => lociToAtomIndices(loci)),
+      endpoint_policy: this.activeEndpointPolicy
     });
   }
   restoreGranularity() {
@@ -149469,10 +149547,12 @@ var ToolStatusOverlay = class {
       marginBottom: "4px"
     });
     const detail = document.createElement("div");
-    detail.textContent = `Pick ${state.remainingPicks} more atom${state.remainingPicks === 1 ? "" : "s"} (${state.pickedCount}/${state.requiredPicks})`;
+    const noun = state.endpointPolicy === "atom" ? "atom" : "endpoint";
+    detail.textContent = `Pick ${state.remainingPicks} more ${noun}${state.remainingPicks === 1 ? "" : "s"} (${state.pickedCount}/${state.requiredPicks})`;
     detail.style.opacity = "0.95";
     const hint = document.createElement("div");
-    hint.textContent = "Esc cancels";
+    const policy = state.endpointPolicy === "centroid" ? "Centers of picked atom sets" : state.endpointPolicy === "representative_atom" ? "Representative atoms" : "Individual atoms";
+    hint.textContent = `${policy} \xB7 Esc cancels`;
     Object.assign(hint.style, {
       marginTop: "6px",
       opacity: "0.72",
@@ -155196,6 +155276,7 @@ var SystemPanel = class {
     this.host = null;
     this.stripsRow = null;
     this.loading = null;
+    this.inspector = null;
     /** Hierarchy relayed from a host, used only when this endpoint has none. */
     this.relayedItems = null;
     this.strips = /* @__PURE__ */ new Map();
@@ -155243,6 +155324,10 @@ var SystemPanel = class {
       gap: "6px"
     });
     host.appendChild(this.makeSystemHeader());
+    this.inspector = document.createElement("div");
+    this.inspector.setAttribute("data-molsysviewer-context-inspector", "true");
+    this.inspector.style.display = "none";
+    host.appendChild(this.inspector);
     if (this.hasAuthority) {
       this.loading = new SystemLoadControls(this.ctx);
       host.appendChild(this.loading.root);
@@ -155303,6 +155388,42 @@ var SystemPanel = class {
     this.currentContextTarget = target;
     for (const strip of this.strips.values()) {
       strip.updateContextTarget(target);
+    }
+  }
+  /** A read-only target snapshot, independent from the active selection. */
+  inspectTarget(target, frame) {
+    if (!this.inspector || target.kind !== "structure") return;
+    this.inspector.replaceChildren();
+    Object.assign(this.inspector.style, { display: "block", padding: "8px", borderRadius: "8px", background: "rgba(0,0,0,0.18)", fontSize: "12px" });
+    const heading = document.createElement("strong");
+    heading.textContent = "Context target";
+    this.inspector.appendChild(heading);
+    const entries3 = [
+      ["Residue", target.group_name ?? target.metadata?.group_name],
+      ["Residue ID", target.metadata?.group_id],
+      ["Chain", target.chain_name ?? target.metadata?.chain_id],
+      ["Pointed atom", target.atom_index === void 0 ? void 0 : target.metadata?.atom_name],
+      ["Atom index", target.atom_index],
+      ["Source", target.source_label],
+      ["Target atoms", target.atom_indices.length],
+      ["Structure index", frame]
+    ];
+    for (const [label2, value] of entries3) {
+      if (value === void 0) continue;
+      const row3 = document.createElement("div");
+      row3.textContent = `${label2}: ${value}`;
+      this.inspector.appendChild(row3);
+    }
+    const close = document.createElement("button");
+    close.type = "button";
+    close.textContent = "Close inspection";
+    close.addEventListener("click", () => this.clearInspection());
+    this.inspector.appendChild(close);
+  }
+  clearInspection() {
+    if (this.inspector) {
+      this.inspector.replaceChildren();
+      this.inspector.style.display = "none";
     }
   }
   addLabelOverlay(msg) {
@@ -158317,6 +158438,23 @@ var InteractionsPanel = class extends BasePanel {
     this.selection = selection;
     this.scheduleRender();
   }
+  /** Stage target A; calculation and display still require explicit submission. */
+  stageContextAtoms(atoms2, calculate) {
+    this.a = [...atoms2];
+    this.b = null;
+    this.slot = "a";
+    this.mode = "involving_selection";
+    this.exclusive = false;
+    this.filtersOpen = true;
+    this.editing = null;
+    this.source = calculate ? "calculate" : "stored";
+    if (calculate) {
+      this.calcAtomScope = "a";
+      this.calcStructures = "current";
+      this.name = "";
+    }
+    this.scheduleRender();
+  }
   setSavedSelections(items) {
     this.saved = items;
     this.scheduleRender();
@@ -158922,6 +159060,7 @@ var ShapesPanel = class extends BasePanel {
     this.customTag = "";
     this.anchorType = "selection";
     this.stagedAnchor1 = null;
+    this.stagedAnchorLabel = "selection";
     this.stagedAnchor2 = null;
     this.coord1 = [0, 0, 0];
     this.coord2 = [0, 0, 0];
@@ -158949,6 +159088,15 @@ var ShapesPanel = class extends BasePanel {
   }
   setCurrentSelection(selection) {
     this.selection = selection;
+    this.scheduleRender();
+  }
+  /** Stage a contextual anchor without replacing the user's active selection. */
+  stageContextAtoms(atoms2) {
+    this.selectedOp = "add_sphere";
+    this.anchorType = "selection";
+    this.stagedAnchor1 = [...atoms2];
+    this.stagedAnchor2 = null;
+    this.stagedAnchorLabel = "context target";
     this.scheduleRender();
   }
   paint() {
@@ -159170,6 +159318,7 @@ var ShapesPanel = class extends BasePanel {
         });
         const anchorBtn = makeButton("Anchor", () => {
           this.stagedAnchor1 = [...this.selection.atom_indices];
+          this.stagedAnchorLabel = "selection";
           this.scheduleRender();
         });
         anchorBtn.style.padding = "3px 8px";
@@ -159182,7 +159331,7 @@ var ShapesPanel = class extends BasePanel {
           hint.style.color = "rgba(244,244,245,0.45)";
         } else {
           const cnt = this.stagedAnchor1.length;
-          hint.textContent = `Anchored to selection (${cnt} atom${cnt === 1 ? "" : "s"})`;
+          hint.textContent = `Anchored to ${this.stagedAnchorLabel} (${cnt} atom${cnt === 1 ? "" : "s"})`;
         }
         anchorBox.appendChild(anchorBtn);
         anchorBox.appendChild(hint);
@@ -161546,6 +161695,18 @@ var GroupPanel = class {
   updateContextTarget(target) {
     this.systemPanel.updateContextTarget(target);
   }
+  inspectContextTarget(target, frame) {
+    this.systemPanel.inspectTarget(target, frame);
+  }
+  clearContextInspection() {
+    this.systemPanel.clearInspection();
+  }
+  stageShapeContext(atoms2) {
+    this.shapesPanel.stageContextAtoms(atoms2);
+  }
+  stageInteractionContext(atoms2, calculate) {
+    this.interactionsPanel.stageContextAtoms(atoms2, calculate);
+  }
   addLabelOverlay(msg) {
     this.systemPanel.addLabelOverlay(msg);
   }
@@ -162982,6 +163143,7 @@ function normalizeContextPayloadFromLoci(loci, page_x, page_y) {
   const groupItems = lociToGroupItems(loci);
   const atomIndices = lociToAtomIndices2(loci);
   const meta = extractAtomMetadata(loci);
+  if (meta && atomIndices.length !== 1) delete meta.atom_index;
   if (groupItems.length === 0) {
     if (atomIndices.length > 0) {
       return { event: "interaction_context_menu", kind: "structure", atom_indices: atomIndices, page_x, page_y, ...meta || {} };
@@ -163265,7 +163427,8 @@ var MolSysViewerController = class _MolSysViewerController {
             action: msg.action,
             pickedCount: msg.picked_count,
             requiredPicks: msg.required_picks,
-            remainingPicks: msg.remaining_picks
+            remainingPicks: msg.remaining_picks,
+            endpointPolicy: msg.endpoint_policy
           });
         } else {
           this.toolStatusOverlay.update({ action: null });
@@ -163489,6 +163652,26 @@ var MolSysViewerController = class _MolSysViewerController {
       return [dx / len, dy / len, dz / len];
     };
     this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, target, details) => {
+      if (action === "inspect_target" || action === "open_shapes_for_target" || action === "open_interactions_for_target") {
+        if (target.kind !== "structure" || !target.atom_indices.length) return true;
+        if (this.currentWorkspace !== "core") this.selectWorkspace("core");
+        this.setPanelMode("navigate", true);
+        if (action === "inspect_target") {
+          this.groupPanel.inspectContextTarget(target, this.isPanelOnly ? void 0 : this.interactions.currentFrame);
+          this.groupPanel.openSection("system");
+        } else if (action === "open_shapes_for_target") {
+          this.groupPanel.stageShapeContext(target.atom_indices);
+          this.groupPanel.openSection("shapes");
+        } else {
+          this.groupPanel.stageInteractionContext(target.atom_indices, details?.workflow === "calculate");
+          this.groupPanel.openSection("interactions");
+        }
+        return true;
+      }
+      if (action === "select_context_target" || action === "create_region_from_target" || action === "create_annotation_from_target") {
+        if (details && !this.isPanelOnly) details.structure_index = this.interactions.currentFrame;
+        return;
+      }
       if (action === "focus_target") {
         this.focusTarget(target);
         return;
@@ -163571,12 +163754,14 @@ var MolSysViewerController = class _MolSysViewerController {
         return;
       }
       this.startMeasurementTool(action, details?.endpoint_policy);
+      return true;
     }, () => {
       this.addonsContext = null;
       this.refreshAddonsPanel();
     }, getCameraDirection, this.initOptions?.hasAuthority === false ? {
       allowedActions: /* @__PURE__ */ new Set([
         "focus_target",
+        "inspect_target",
         "focus_region",
         "focus_selection",
         "clear_selection",
@@ -163664,6 +163849,7 @@ var MolSysViewerController = class _MolSysViewerController {
           this.addonContextItems,
           {
             isSpinActive: this.scene.isSpinActive,
+            canMeasure: !this.isPanelOnly && this.lastContextLoci !== null,
             ...this.contextHistoryState,
             isSwingActive: this.scene.isSwingActive,
             isDarkMode: this.scene.isDarkMode,
@@ -163843,6 +164029,8 @@ var MolSysViewerController = class _MolSysViewerController {
     });
     this.trajectory.onTrajectoryState(
       (state) => {
+        this.contextMenu.close();
+        this.groupPanel.clearContextInspection();
         this.triggerLocalAddonEvent("frame-changed", state.currentFrame);
         this.trajectoryPlotOverlay.setFrame(state.currentFrame);
         this.interactions.onFrame(state.currentFrame);
@@ -164224,6 +164412,8 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   startMeasurementTool(action, endpointPolicy) {
     if (!this.lastContextLoci) return;
+    const atoms2 = endpointPolicy === "atom" ? lociToAtomIndices2(this.lastContextLoci) : [];
+    if (endpointPolicy === "atom" && atoms2.length !== 1) return;
     this.measurementTools.start(action, this.lastContextLoci, endpointPolicy);
   }
   installGlobalEscapeHandler() {
@@ -164485,8 +164675,8 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   openContextMenuForItem(item2, pageX, pageY, emitInteractionEvent) {
     const loci = this.groupPanel.focusItem(item2);
-    if (!loci) return;
-    this.lastContextLoci = loci;
+    if (!loci && !this.isPanelOnly) return;
+    this.lastContextLoci = loci ?? null;
     const payload = {
       event: "interaction_context_menu",
       kind: "structure",
@@ -164512,6 +164702,7 @@ var MolSysViewerController = class _MolSysViewerController {
       this.addonContextItems,
       {
         isSpinActive: this.scene.isSpinActive,
+        canMeasure: !this.isPanelOnly && this.lastContextLoci !== null,
         ...this.contextHistoryState,
         isSwingActive: this.scene.isSwingActive,
         isDarkMode: this.scene.isDarkMode,
@@ -164710,6 +164901,10 @@ var MolSysViewerController = class _MolSysViewerController {
     if (!("op" in msg)) {
       console.warn("[MolSysViewer] message missing 'op'", msg);
       return;
+    }
+    if (typeof msg.op === "string" && msg.op.startsWith("load_") || msg.op === "clear_all" || msg.op === "set_trajectory_frame") {
+      this.contextMenu.close();
+      this.groupPanel.clearContextInspection();
     }
     this.state?.ensureCameraInputTracking?.();
     const isLoaderOp = msg.op === "load_structure_from_string" || msg.op === "load_pdb_string" || msg.op === "load_molsys_payload" || msg.op === "load_molsys_payload_ref" || msg.op === "load_molsys_array_payload_ref" || msg.op === "load_structure_from_url" || msg.op === "load_pdb_id";

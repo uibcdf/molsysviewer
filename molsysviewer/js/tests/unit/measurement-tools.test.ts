@@ -74,6 +74,7 @@ test("MeasurementToolController creates a distance measurement from seeded conte
             picked_count: 1,
             remaining_picks: 1,
             picks_atom_indices: [[10]],
+            endpoint_policy: "centroid",
         },
         {
             event: "interaction_measurement_created",
@@ -95,6 +96,7 @@ test("MeasurementToolController creates a distance measurement from seeded conte
             picked_count: 2,
             remaining_picks: 0,
             picks_atom_indices: [[10], [25]],
+            endpoint_policy: "centroid",
         },
     ]);
 });
@@ -142,6 +144,7 @@ test("MeasurementToolController cancels active tool state and restores granulari
             picked_count: 1,
             remaining_picks: 2,
             picks_atom_indices: [[10]],
+            endpoint_policy: "centroid",
         },
         {
             event: "interaction_tool_state",
@@ -151,6 +154,7 @@ test("MeasurementToolController cancels active tool state and restores granulari
             picked_count: 0,
             remaining_picks: 3,
             picks_atom_indices: [],
+            endpoint_policy: "centroid",
         },
     ]);
 });

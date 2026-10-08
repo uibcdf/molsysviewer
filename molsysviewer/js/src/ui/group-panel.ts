@@ -950,6 +950,11 @@ export class GroupPanel {
         this.systemPanel.updateContextTarget(target);
     }
 
+    inspectContextTarget(target: ContextMenuTarget, frame?: number): void { this.systemPanel.inspectTarget(target, frame); }
+    clearContextInspection(): void { this.systemPanel.clearInspection(); }
+    stageShapeContext(atoms: number[]): void { this.shapesPanel.stageContextAtoms(atoms); }
+    stageInteractionContext(atoms: number[], calculate: boolean): void { this.interactionsPanel.stageContextAtoms(atoms, calculate); }
+
     addLabelOverlay(msg: AddLabelMessage): void {
         this.systemPanel.addLabelOverlay(msg);
     }

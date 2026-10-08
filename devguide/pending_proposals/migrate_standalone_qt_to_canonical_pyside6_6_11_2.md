@@ -23,6 +23,21 @@ remaining observations are outside the core release gate.
 
 ## What
 
+### Local probe observation — 2026-10-08
+
+During #179 development in `molsyssuite@uibcdf_3.14`, one full Python campaign
+hit eight Qt probe failures under the restricted execution sandbox. Its native
+child diagnostics include `shutdown: Operation not permitted`, failed Qt
+OpenGL/RHI creation and unavailable Vulkan. Rechecking outside that sandbox with
+`tests/test_standalone.py::test_qt_event_transport_smoke_real_qt` still fails
+before `TRANSPORT_READY:yes`: no temporary OpenGL context/RHI, no platform Vulkan,
+and a D-Bus address connection error. The targeted command stopped at this first
+failure; it does not constitute eight independently reproduced native failures.
+No binding/environment workaround was introduced. This is a new local observation,
+not a correction to the earlier exact-environment/hosted certificates or evidence
+of a menu defect. Visible-window/GPU and native host qualification remain separate;
+the optional Qt host is experimental.
+
 The standalone Qt host should prefer official PySide6 6.11.2 and retain the
 UIBCDF namespaced family as a fallback during the suite-wide observation
 in `uibcdf/molsyssuite#57` is open. The platform-support contract remains in

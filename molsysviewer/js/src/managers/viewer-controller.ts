@@ -339,6 +339,8 @@ function normalizeContextPayloadFromLoci(loci: any, page_x?: number, page_y?: nu
     const groupItems = lociToGroupItems(loci);
     const atomIndices = lociToAtomIndices(loci);
     const meta = extractAtomMetadata(loci);
+    // A bond/group can have useful residue metadata without a unique atom pick.
+    if (meta && atomIndices.length !== 1) delete (meta as any).atom_index;
     if (groupItems.length === 0) {
         if (atomIndices.length > 0) {
             return { event: "interaction_context_menu", kind: "structure", atom_indices: atomIndices, page_x, page_y, ...(meta || {}) };
@@ -1027,6 +1029,7 @@ export class MolSysViewerController {
                         pickedCount: msg.picked_count,
                         requiredPicks: msg.required_picks,
                         remainingPicks: msg.remaining_picks,
+                        endpointPolicy: msg.endpoint_policy,
                     });
                 } else {
                     this.toolStatusOverlay.update({ action: null });
@@ -1262,6 +1265,29 @@ export class MolSysViewerController {
             return [dx / len, dy / len, dz / len];
         };
         this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, target, details) => {
+            if (action === "inspect_target" || action === "open_shapes_for_target" || action === "open_interactions_for_target") {
+                if (target.kind !== "structure" || !target.atom_indices.length) return true;
+                if (this.currentWorkspace !== "core") this.selectWorkspace("core");
+                this.setPanelMode("navigate", true);
+                if (action === "inspect_target") {
+                    this.groupPanel.inspectContextTarget(target, this.isPanelOnly ? undefined : this.interactions.currentFrame);
+                    this.groupPanel.openSection("system");
+                } else if (action === "open_shapes_for_target") {
+                    this.groupPanel.stageShapeContext(target.atom_indices);
+                    this.groupPanel.openSection("shapes");
+                } else {
+                    this.groupPanel.stageInteractionContext(target.atom_indices, details?.workflow === "calculate");
+                    this.groupPanel.openSection("interactions");
+                }
+                return true;
+            }
+            if (action === "select_context_target" || action === "create_region_from_target" || action === "create_annotation_from_target") {
+                // The one backend dispatcher resolves canonical atom/residue/chain scope.
+                // A popped-out Studio has no local trajectory geometry; its
+                // topology actions do not claim the host's frame is zero.
+                if (details && !this.isPanelOnly) details.structure_index = this.interactions.currentFrame;
+                return;
+            }
             if (action === "focus_target") {
                 this.focusTarget(target);
                 return;
@@ -1359,11 +1385,12 @@ export class MolSysViewerController {
                 return;
             }
             this.startMeasurementTool(action, details?.endpoint_policy);
+            return true; // Tool launch is local; completion persists its managed object.
         }, () => {
             this.addonsContext = null;
             this.refreshAddonsPanel();
         }, getCameraDirection, this.initOptions?.hasAuthority === false ? {
-            allowedActions: new Set(["focus_target", "focus_region", "focus_selection", "clear_selection",
+            allowedActions: new Set(["focus_target", "inspect_target", "focus_region", "focus_selection", "clear_selection",
                 "reset_view", "toggle_background", "toggle_spin", "toggle_swing", "set_viewer_mode", "open_navigate"]),
         } : {});
         this.releaseContextMenuSuppression = suppressCanvasContextMenu(host, this.canvasHost);
@@ -1450,6 +1477,7 @@ export class MolSysViewerController {
                     this.addonContextItems,
                     {
                         isSpinActive: this.scene.isSpinActive,
+                        canMeasure: !this.isPanelOnly && this.lastContextLoci !== null,
                         ...this.contextHistoryState,
                         isSwingActive: this.scene.isSwingActive,
                         isDarkMode: this.scene.isDarkMode,
@@ -1643,6 +1671,8 @@ export class MolSysViewerController {
         // Subscriptions to local event bus
         this.trajectory.onTrajectoryState(
             (state) => {
+                this.contextMenu.close();
+                this.groupPanel.clearContextInspection();
                 this.triggerLocalAddonEvent("frame-changed", state.currentFrame);
                 this.trajectoryPlotOverlay.setFrame(state.currentFrame);
                 this.interactions.onFrame(state.currentFrame);
@@ -1723,6 +1753,8 @@ export class MolSysViewerController {
 
     private startMeasurementTool(action: MeasurementToolAction, endpointPolicy?: MeasurementEndpointPolicy): void {
         if (!this.lastContextLoci) return;
+        const atoms = endpointPolicy === "atom" ? lociToAtomIndices(this.lastContextLoci) : [];
+        if (endpointPolicy === "atom" && atoms.length !== 1) return;
         this.measurementTools.start(action, this.lastContextLoci, endpointPolicy);
     }
 
@@ -2036,8 +2068,8 @@ export class MolSysViewerController {
         emitInteractionEvent: (msg: any) => void,
     ): void {
         const loci = this.groupPanel.focusItem(item);
-        if (!loci) return;
-        this.lastContextLoci = loci;
+        if (!loci && !this.isPanelOnly) return;
+        this.lastContextLoci = loci ?? null;
         const payload = {
             event: "interaction_context_menu" as const,
             kind: "structure" as const,
@@ -2063,6 +2095,7 @@ export class MolSysViewerController {
             this.addonContextItems,
             {
                 isSpinActive: this.scene.isSpinActive,
+                canMeasure: !this.isPanelOnly && this.lastContextLoci !== null,
                 ...this.contextHistoryState,
                 isSwingActive: this.scene.isSwingActive,
                 isDarkMode: this.scene.isDarkMode,
@@ -2290,6 +2323,10 @@ export class MolSysViewerController {
         if (!("op" in msg)) {
             console.warn("[MolSysViewer] message missing 'op'", msg);
             return;
+        }
+        if ((typeof msg.op === "string" && msg.op.startsWith("load_")) || msg.op === "clear_all" || msg.op === "set_trajectory_frame") {
+            this.contextMenu.close();
+            this.groupPanel.clearContextInspection();
         }
 
         // Start watching camera input as early as possible. Establishing it lazily

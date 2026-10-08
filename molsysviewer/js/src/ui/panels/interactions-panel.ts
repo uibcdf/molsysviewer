@@ -120,6 +120,15 @@ export class InteractionsPanel extends BasePanel {
     }
     setFrame(items: InteractionSummary[], frame: number) { this.setSummary({ op: "set_interaction_summaries", interactions: items, analyses: this.analyses, system_loaded: this.loaded, frame }); }
     setSelection(selection: ActiveSelectionPayload) { this.selection = selection; this.scheduleRender(); }
+    /** Stage target A; calculation and display still require explicit submission. */
+    stageContextAtoms(atoms: number[], calculate: boolean): void {
+        this.a = [...atoms]; this.b = null; this.slot = "a";
+        this.mode = "involving_selection"; this.exclusive = false; this.filtersOpen = true;
+        this.editing = null;
+        this.source = calculate ? "calculate" : "stored";
+        if (calculate) { this.calcAtomScope = "a"; this.calcStructures = "current"; this.name = ""; }
+        this.scheduleRender();
+    }
     setSavedSelections(items: SavedSelectionSummary[]) { this.saved = items; this.scheduleRender(); }
     updateQuery(preview: SelectionQueryPreview) {
         const updated = this.composer.updatePreview(preview);

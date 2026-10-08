@@ -84,15 +84,24 @@ Inline composers retain input ownership. Closing restores focus to the previous
 viewer element when focus was inside the menu. Opening and dismissal preserve
 the scene and active selection.
 
-Current target operations still include Focus Target and the existing
-measurement policies; atomless targets cannot advertise executable atom focus.
+Molecular targets support read-only inspection in System, explicit selection
+replace/add/remove by atom/residue/chain, and direct region/annotation composers
+with declared atom scope. These composers preserve active selection. Shapes
+navigation stages a target anchor; Interactions navigation stages target A and
+opens an existing-data or calculation workflow without computing or applying a
+filter. Calculation starts at current structure and requires an explicit name
+and submission. Target/frame snapshots are dismissed on load/clear/frame change.
+Only uniquely identified atom picks enable the individual-atom measurement
+policy; ambiguous subsequent picks do not satisfy that policy. The three
+measurement actions share an explicit endpoint-policy selector and policy-aware
+pick progress. Atomless targets cannot advertise executable atom focus.
 The active-selection submenu exposes focus, save, region/section creation,
 label creation, expand and clear. Atom-dependent actions are disabled for
 selections containing only scene objects. Region/label composers use the
 existing replayable Python owners. Interactive measurements already create
 managed objects; there is no redundant Persist Last Measurement menu action.
 
-The remaining accepted target-selection/creation and object/occurrence actions
+The remaining accepted object/occurrence actions
 are tracked in [the implementation plan](canvas_context_menu_pre_1_0_plan.md).
 They are not implemented by this foundation. Global picking preferences remain
 post-1.0; region hide/disable and Whole ownership remain unchanged.

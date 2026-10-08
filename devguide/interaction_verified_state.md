@@ -121,6 +121,18 @@ Studio are no longer restricted to empty canvas. Interactive measurements are
 already managed objects; the former Persist Last Measurement entry is absent.
 [The accepted plan](canvas_context_menu_pre_1_0_plan.md) records outstanding work.
 
+### Automated molecular workflows — 2026-10-08
+
+The extended real-demo guard verifies target inspection, target-based
+region/annotation creation while preserving a different working selection,
+distinct add/remove/replace actions, contextual Shapes staging and Interactions
+calculation preparation without executing it. Browser-generated requests are
+replayed through the real Python owners. A panel-only Studio opens the menu from
+its relayed hierarchy, omits canvas measurement picking and does not send a
+fictitious frame-zero identity. Measure has three actions and a separate explicit
+endpoint-policy selector; its progress label names the policy. Human acceptance
+of this slice remains pending together with the remaining object/occurrence work.
+
 ## Python Interaction Callbacks
 
 ### Verified (2026-06-25)

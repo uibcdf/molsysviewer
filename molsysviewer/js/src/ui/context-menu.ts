@@ -25,6 +25,12 @@ export type ContextMenuAction =
     | "angle"
     | "dihedral"
     | "focus_target"
+    | "inspect_target"
+    | "select_context_target"
+    | "create_region_from_target"
+    | "create_annotation_from_target"
+    | "open_shapes_for_target"
+    | "open_interactions_for_target"
     | "focus_region"
     | "toggle_region_visibility"
     | "toggle_region_enabled"
@@ -69,6 +75,10 @@ export type ContextActionDetails = {
     studio_section?: "system" | "selection" | "regions" | "measures" | "interactions" | "annotations" | "shapes";
     enabled?: boolean;
     mode?: "light" | "dark";
+    scope?: "target" | "atom" | "group" | "chain";
+    op?: "replace" | "add" | "subtract";
+    workflow?: "inspect" | "calculate";
+    structure_index?: number;
 };
 
 export type ContextMenuSceneState = {
@@ -81,6 +91,7 @@ export type ContextMenuSceneState = {
     currentViewerMode?: string;
     canUndo?: boolean;
     canRedo?: boolean;
+    canMeasure?: boolean;
 };
 
 export type LastMeasurementSummary = {
@@ -299,7 +310,7 @@ export class ViewerContextMenu {
     /** Dismiss one menu level before global Escape affects selection or Studio. */
     handleEscape(event: KeyboardEvent): boolean {
         if (!this.isOpen() || event.key !== "Escape") return false;
-        if ((event.target as HTMLElement)?.closest?.("input, textarea, select, [contenteditable]")) return false;
+        if ((event.target as HTMLElement)?.closest?.("input, textarea, [contenteditable]")) return false;
         if (!this.navigation.containsCurrentPage()) this.reopen();
         else if (!this.navigation.back()) this.close();
         event.preventDefault();
@@ -349,7 +360,7 @@ export class ViewerContextMenu {
         header.textContent = targetTitle(target);
         Object.assign(header.style, { padding: "6px 8px 8px", fontWeight: "600", borderBottom: "1px solid rgba(255,255,255,0.10)", marginBottom: "6px" });
         main.appendChild(header);
-        if (target.kind === "structure" && target.metadata?.atom_name) {
+        if (target.kind === "structure" && target.atom_index !== undefined && target.metadata?.atom_name) {
             const atom = document.createElement("div");
             atom.textContent = `Pointed atom: ${target.metadata.atom_name}`;
             Object.assign(atom.style, { padding: "0 8px 6px", opacity: "0.75", fontSize: "12px" });
@@ -358,15 +369,53 @@ export class ViewerContextMenu {
 
         if (target.kind === "structure") {
             main.appendChild(this.makeActionButton("Focus Target", "focus_target"));
-            this.navigation.addSubmenu(main, "Measure", view => {
-                const policy = document.createElement("div");
-                policy.textContent = "Default endpoints: centers of picked atom sets";
-                Object.assign(policy.style, { padding: "4px 10px", fontSize: "12px", opacity: "0.75" });
-                view.appendChild(policy);
-                for (const [label, action] of [["Distance", "distance"], ["Angle", "angle"], ["Dihedral", "dihedral"]] as const) {
-                    view.appendChild(this.makeActionButton(label, action, { endpoint_policy: "centroid" }));
-                    view.appendChild(this.makeActionButton(`${label} (Representative Atom)`, action, { endpoint_policy: "representative_atom" }));
+            main.appendChild(this.makeActionButton("Inspect Target…", "inspect_target"));
+            this.navigation.addSubmenu(main, "Select", view => {
+                for (const [scope, label] of [["atom", "Pointed atom"], ["group", "Residue"], ["chain", "Chain"]] as const) {
+                    const heading = document.createElement("div");
+                    heading.textContent = label;
+                    Object.assign(heading.style, { padding: "6px 10px", fontWeight: "600" });
+                    view.appendChild(heading);
+                    for (const [op, name] of [["replace", "Replace selection"], ["add", "Add to selection"], ["subtract", "Remove from selection"]] as const) {
+                        const button = this.makeActionButton(`${name} · ${label.toLowerCase()}`, "select_context_target", { scope, op });
+                        if (scope === "atom" && target.atom_index === undefined) {
+                            button.disabled = true;
+                            button.setAttribute("aria-disabled", "true");
+                            button.title = "This target does not identify one pointed atom";
+                            button.style.opacity = "0.45";
+                        }
+                        view.appendChild(button);
+                    }
                 }
+            });
+            this.navigation.addSubmenu(main, "Create", view => {
+                view.appendChild(this.makeActionButton("Region from Target…", "create_region_from_target"));
+                view.appendChild(this.makeActionButton("Annotation from Target…", "create_annotation_from_target"));
+                view.appendChild(this.makeActionButton("Shape from Target in Studio…", "open_shapes_for_target"));
+            });
+            this.navigation.addSubmenu(main, "Measure", view => {
+                const policyLabel = document.createElement("label");
+                policyLabel.textContent = "Endpoints";
+                const policy = document.createElement("select");
+                policy.setAttribute("data-molsysviewer-measure-endpoint-policy", "true");
+                policy.setAttribute("aria-label", "Measurement endpoint policy");
+                for (const [value, label] of [["centroid", "Centers of picked atom sets"], ["atom", "Individual atoms"], ["representative_atom", "Representative atoms (explicit)"]] as const) {
+                    const option = document.createElement("option"); option.value = value; option.textContent = label;
+                    option.disabled = value === "atom" && target.atom_index === undefined;
+                    policy.appendChild(option);
+                }
+                policy.value = "centroid";
+                Object.assign(policy.style, { display: "block", width: "100%", margin: "6px 0", color: "inherit", background: "#27272a" });
+                policyLabel.appendChild(policy); view.appendChild(policyLabel);
+                for (const [label, action] of [["Distance", "distance"], ["Angle", "angle"], ["Dihedral", "dihedral"]] as const) {
+                    const details: ContextActionDetails = { endpoint_policy: "centroid" };
+                    policy.addEventListener("change", () => { details.endpoint_policy = policy.value as ContextActionDetails["endpoint_policy"]; });
+                    view.appendChild(this.makeActionButton(label, action, details));
+                }
+            });
+            this.navigation.addSubmenu(main, "Interactions", view => {
+                view.appendChild(this.makeActionButton("Inspect and Display Existing…", "open_interactions_for_target", { workflow: "inspect" }));
+                view.appendChild(this.makeActionButton("Calculate for Target…", "open_interactions_for_target", { workflow: "calculate" }));
             });
         } else if (target.kind === "interaction") {
             if (target.tag?.trim()) this.navigation.addSubmenu(main, "Interaction set", view => {
@@ -498,6 +547,12 @@ export class ViewerContextMenu {
             }
         }
         const needsSelectionAtoms = ["focus_selection", "save_selection", "create_region_from_selection", "create_section_from_selection", "add_label_from_selection", "expand_selection"].includes(action);
+        if (["distance", "angle", "dihedral"].includes(action) && this.currentSceneState?.canMeasure === false) {
+            button.disabled = true;
+            button.setAttribute("aria-disabled", "true");
+            button.title = "Measurement picking requires the canvas";
+            button.style.opacity = "0.45";
+        }
         if ((action === "focus_target" && this.currentTarget?.kind !== "empty" && !this.currentTarget?.atom_indices?.length)
             || (needsSelectionAtoms && !this.currentSelection?.atom_indices?.length)) {
             button.disabled = true;
@@ -525,16 +580,16 @@ export class ViewerContextMenu {
         });
         button.addEventListener("click", () => {
             if (!this.currentTarget || button.disabled || !this.isActionAllowed(action)) return;
-            if (action === "add_label_from_selection") {
-                this.renderLabelComposer();
+            if (action === "add_label_from_selection" || action === "create_annotation_from_target") {
+                this.renderLabelComposer(action === "create_annotation_from_target");
                 return;
             }
             if (action === "save_selection") {
                 this.renderSelectionComposer();
                 return;
             }
-            if (action === "create_region_from_selection") {
-                this.renderRegionComposer();
+            if (action === "create_region_from_selection" || action === "create_region_from_target") {
+                this.renderRegionComposer(action === "create_region_from_target");
                 return;
             }
             if (action === "activate_selection") {
@@ -732,12 +787,12 @@ export class ViewerContextMenu {
         return row;
     }
 
-    private renderRegionComposer(): void {
+    private renderRegionComposer(fromTarget = false): void {
         if (!this.currentTarget) return;
         this.scrollEl.replaceChildren();
 
         const title = document.createElement("div");
-        title.textContent = "New Region from Selection";
+        title.textContent = fromTarget ? "New Region from Target" : "New Region from Selection";
         Object.assign(title.style, {
             padding: "6px 8px 8px 8px",
             fontWeight: "600",
@@ -747,13 +802,14 @@ export class ViewerContextMenu {
         this.scrollEl.appendChild(title);
 
         const subtitle = document.createElement("div");
-        subtitle.textContent = selectionSummary(this.currentSelection);
+        subtitle.textContent = fromTarget ? targetTitle(this.currentTarget) : selectionSummary(this.currentSelection);
         Object.assign(subtitle.style, {
             padding: "0 8px 8px 8px",
             opacity: "0.82",
             fontSize: "12px",
         });
         this.scrollEl.appendChild(subtitle);
+        const scope = fromTarget ? this.appendTargetScope() : null;
 
         const input = document.createElement("input");
         input.type = "text";
@@ -805,11 +861,12 @@ export class ViewerContextMenu {
         const submit = () => {
             if (!this.currentTarget) return;
             const tag = String(input.value ?? "").trim();
-            const details = tag.length > 0 ? { tag } : {};
-            this.onAction?.("create_region_from_selection", this.currentTarget, details);
+            const action = fromTarget ? "create_region_from_target" : "create_region_from_selection";
+            const details: ContextActionDetails = { ...(tag.length > 0 ? { tag } : {}), ...(scope ? { scope: scope.value as ContextActionDetails["scope"] } : {}) };
+            this.onAction?.(action, this.currentTarget, details);
             this.notify?.({
                 event: "interaction_context_action",
-                action: "create_region_from_selection",
+                action,
                 context: this.currentTarget,
                 ...details,
             });
@@ -1068,12 +1125,28 @@ export class ViewerContextMenu {
         input.select?.();
     }
 
-    private renderLabelComposer(): void {
+    private appendTargetScope(): HTMLSelectElement {
+        const label = document.createElement("label"); label.textContent = "Atom scope";
+        const select = document.createElement("select");
+        select.setAttribute("data-molsysviewer-context-target-scope", "true");
+        select.setAttribute("aria-label", "Target atom scope");
+        for (const [value, name] of [["target", "Target atoms"], ["atom", "Pointed atom"], ["group", "Residue"], ["chain", "Chain"]] as const) {
+            const option = document.createElement("option"); option.value = value; option.textContent = name;
+            option.disabled = value === "atom" && (this.currentTarget?.kind !== "structure" || this.currentTarget.atom_index === undefined);
+            select.appendChild(option);
+        }
+        select.value = "target";
+        Object.assign(select.style, { display: "block", width: "100%", margin: "6px 0 10px", color: "inherit", background: "#27272a" });
+        label.appendChild(select); this.scrollEl.appendChild(label);
+        return select;
+    }
+
+    private renderLabelComposer(fromTarget = false): void {
         if (!this.currentTarget) return;
         this.scrollEl.replaceChildren();
 
         const title = document.createElement("div");
-        title.textContent = "Label from selection";
+        title.textContent = fromTarget ? "Annotation from target" : "Label from selection";
         Object.assign(title.style, {
             padding: "6px 8px 8px 8px",
             fontWeight: "600",
@@ -1081,6 +1154,7 @@ export class ViewerContextMenu {
             marginBottom: "8px",
         });
         this.scrollEl.appendChild(title);
+        const scope = fromTarget ? this.appendTargetScope() : null;
 
         const input = document.createElement("input");
         input.type = "text";
@@ -1181,11 +1255,12 @@ export class ViewerContextMenu {
                 color: colorInput.value,
                 size_em: parseFloat(sizeInput.value),
             };
-            const details: ContextActionDetails = { text, label_style };
-            this.onAction?.("add_label_from_selection", this.currentTarget, details);
+            const action = fromTarget ? "create_annotation_from_target" : "add_label_from_selection";
+            const details: ContextActionDetails = { text, label_style, ...(scope ? { scope: scope.value as ContextActionDetails["scope"] } : {}) };
+            this.onAction?.(action, this.currentTarget, details);
             this.notify?.({
                 event: "interaction_context_action",
-                action: "add_label_from_selection",
+                action,
                 context: this.currentTarget,
                 ...details,
             });

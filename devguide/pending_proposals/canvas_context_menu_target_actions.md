@@ -16,8 +16,8 @@ supersedes: []
 
 **Reported:** 2026-10-08, during the principal maintainer's pre-1.0 design
 review. The maintainer approves the proposed redesign as a pre-1.0 requirement.
-The menu foundation is implemented and has new real-browser coverage. Molecular
-target workflows, object/occurrence workflows and human review remain pending.
+The menu foundation and molecular-target workflows are implemented with new
+real-browser coverage. Object/occurrence workflows and human review remain pending.
 
 ## What
 
@@ -37,8 +37,9 @@ The inspected baseline in `molsysviewer/js/src/ui/context-menu.ts` rendered repe
 variants, active-selection expanders, every saved selection and rows of relevant
 regions in a scrolling flat menu. The foundation replaces this with bounded
 submenus and Studio collection navigation, uses the available residue identifier
-and exposes shared view controls on all target families. Explicit molecular
-selection and direct target creation are still pending.
+and exposes shared view controls on all target families. Molecular selection and
+direct target creation now use canonical scope resolution without replacing a
+working selection until an explicit selection action.
 
 `molsysviewer/js/src/managers/viewer-controller.ts` resolves picked interactions
 to participant atoms and an entity reference with analysis name/revision, frame
@@ -104,6 +105,45 @@ campaign. The extended menu guard separately verifies the final dispatch fixes.
 Runtime regeneration, 181 reporting-protocol checks and generated-index checks
 pass; the board state label is synchronized to partial.
 This is development evidence, not installed-package or human acceptance.
+
+## Molecular workflows — 2026-10-08
+
+`select_context_target`, `create_region_from_target` and
+`create_annotation_from_target` share canonical target-scope resolution and call
+existing selection/region/annotation owners. The hierarchy expansion helper is
+also reused by the previous active-selection operation. Invalid indices, scopes,
+operations and supplied stale frames fail before mutation. Atom scope requires
+one identified atom; a group or bond does not silently choose its first atom.
+Studio owners expose read-only target inspection and contextual anchor/A staging
+without changing active selection. Calculation still needs explicit submission.
+The existing centroid/representative policies are explicit in one selector;
+individual-atom mode rejects ambiguous picks. Progress labels name the policy.
+
+50 focused Python cases, 20 focused JS cases, TypeScript and the full JS lane
+pass. The extended real-browser guard sends its actual menu-generated requests
+to a real dialanine Python owner: region/annotation preserve selection A while
+using target B, and add/remove/replace produce distinct results. It also checks
+read-only inspection and Shapes/Interactions staging with no calculation.
+Full Python regression evidence follows separately.
+
+The full Python campaign executed 2,924 cases: 2,872 passed, 23 skipped and 29
+failed. One failure was the test inventory's old 42-suite count; it now records
+43 including this guard and its seven focused checks pass. Twenty failures were
+server/browser startup denied by the sandbox; outside it, the affected five
+modules pass 53 cases with one explicit GPU-environment skip. Eight Qt probe
+failures remain separate: the outside-sandbox first-case repro still cannot
+create a Qt OpenGL/Vulkan context and reports a D-Bus connection error. No Qt
+workaround or visible-window certification is inferred; this retains the
+experimental host boundary tracked by #109/#113. The full suite was not repeated.
+
+The extended guard also found that the relayed Studio hierarchy's context
+opening required local loci. A panel-only Studio has none; topology menu opening
+now accepts its real relayed hierarchy and does not claim a local frame zero.
+Measurement launch is consumed locally, and is absent on the panel-only surface.
+The corrected main/panel-only guard and final TypeScript check pass.
+The final context-owner check passes 18 cases, including refusal to route an
+interaction occurrence through the unversioned molecular-target atom path.
+Its occurrence actions will use the guarded inspection/identity seam in stage 3.
 
 ## Resolution
 

@@ -181,6 +181,7 @@ export class ShapesPanel extends BasePanel {
     private customTag = "";
     private anchorType: "selection" | "coordinates" = "selection";
     private stagedAnchor1: number[] | null = null;
+    private stagedAnchorLabel = "selection";
     private stagedAnchor2: number[] | null = null;
     private coord1: [number, number, number] = [0.0, 0.0, 0.0];
     private coord2: [number, number, number] = [0.0, 0.0, 0.0];
@@ -213,6 +214,16 @@ export class ShapesPanel extends BasePanel {
 
     setCurrentSelection(selection: ActiveSelectionPayload): void {
         this.selection = selection;
+        this.scheduleRender();
+    }
+
+    /** Stage a contextual anchor without replacing the user's active selection. */
+    stageContextAtoms(atoms: number[]): void {
+        this.selectedOp = "add_sphere";
+        this.anchorType = "selection";
+        this.stagedAnchor1 = [...atoms];
+        this.stagedAnchor2 = null;
+        this.stagedAnchorLabel = "context target";
         this.scheduleRender();
     }
 
@@ -471,6 +482,7 @@ export class ShapesPanel extends BasePanel {
 
                 const anchorBtn = makeButton("Anchor", () => {
                     this.stagedAnchor1 = [...this.selection.atom_indices];
+                    this.stagedAnchorLabel = "selection";
                     this.scheduleRender();
                 });
                 anchorBtn.style.padding = "3px 8px";
@@ -484,7 +496,7 @@ export class ShapesPanel extends BasePanel {
                     hint.style.color = "rgba(244,244,245,0.45)";
                 } else {
                     const cnt = this.stagedAnchor1.length;
-                    hint.textContent = `Anchored to selection (${cnt} atom${cnt === 1 ? "" : "s"})`;
+                    hint.textContent = `Anchored to ${this.stagedAnchorLabel} (${cnt} atom${cnt === 1 ? "" : "s"})`;
                 }
 
                 anchorBox.appendChild(anchorBtn);

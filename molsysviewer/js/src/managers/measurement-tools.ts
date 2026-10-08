@@ -15,6 +15,7 @@ type MeasurementToolStatePayload = {
     picked_count: number;
     remaining_picks: number;
     picks_atom_indices: number[][];
+    endpoint_policy: MeasurementEndpointPolicy;
 };
 
 type MeasurementCreatedPayload = {
@@ -118,6 +119,7 @@ export class MeasurementToolController {
     start(action: MeasurementToolAction, rawLoci: any, endpointPolicy: MeasurementEndpointPolicy = "centroid"): void {
         const loci = normalizeToElementLoci(rawLoci);
         if (!loci) return;
+        if (endpointPolicy === "atom" && lociToAtomIndices(loci).length !== 1) return;
         if (this.activeAction) this.cancel(false);
         this.previousGranularity = this.plugin?.managers?.interactivity?.props?.granularity ?? null;
         this.plugin?.managers?.interactivity?.setProps?.({ granularity: "element" });
@@ -132,6 +134,7 @@ export class MeasurementToolController {
         if (!this.activeAction) return;
         const loci = normalizeToElementLoci(rawLoci);
         if (!loci) return;
+        if (this.activeEndpointPolicy === "atom" && lociToAtomIndices(loci).length !== 1) return;
         this.picks = [...this.picks, loci];
         void this.plugin?.managers?.structure?.measurement?.addOrderLabels?.(this.picks);
         const action = this.activeAction;
@@ -146,6 +149,7 @@ export class MeasurementToolController {
     cancel(notify = true): void {
         if (!this.activeAction) return;
         const action = this.activeAction;
+        const endpointPolicy = this.activeEndpointPolicy;
         void this.plugin?.managers?.structure?.measurement?.addOrderLabels?.([]);
         this.restoreGranularity();
         this.activeAction = null;
@@ -160,6 +164,7 @@ export class MeasurementToolController {
                 picked_count: 0,
                 remaining_picks: requiredPicks(action),
                 picks_atom_indices: [],
+                endpoint_policy: endpointPolicy,
             } satisfies MeasurementToolStatePayload);
         }
     }
@@ -209,6 +214,7 @@ export class MeasurementToolController {
             picked_count: picks.length,
             remaining_picks: 0,
             picks_atom_indices: picks.map((loci) => lociToAtomIndices(loci)),
+            endpoint_policy: this.activeEndpointPolicy,
         } satisfies MeasurementToolStatePayload);
         this.restoreGranularity();
         this.activeAction = null;
@@ -226,6 +232,7 @@ export class MeasurementToolController {
             picked_count: this.picks.length,
             remaining_picks: Math.max(0, required - this.picks.length),
             picks_atom_indices: this.picks.map((loci) => lociToAtomIndices(loci)),
+            endpoint_policy: this.activeEndpointPolicy,
         } satisfies MeasurementToolStatePayload);
     }
 
