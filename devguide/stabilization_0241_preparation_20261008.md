@@ -136,13 +136,25 @@ route, which privately tags the exact workflow SHA during installation, to
 qualify the canonical source without publishing a tag.
 
 Canonical CI `37760422583` selects Viewer 0.24.1 and staged MolSysMT 1.0.0.
-At this checkpoint four of six scientific cells succeed; macOS/Python 3.12 is
-queued and 3.13 is running. Qt fails in its separate experimental scope under
+At this checkpoint five of six scientific cells succeed; macOS/Python 3.12
+is running. Qt fails in its separate experimental scope under
 `uibcdf/molsysviewer#109`: `test_qt_live_model_smoke_real_window` reports no
 WebGL canvas, with failure to create a WebGL context in stderr, repeating the
 existing observation. Do not report the whole workflow green. Provider
 native campaign `37759580359` succeeds, while source campaign `37759578359`
 remains in progress against this replacement Viewer.
+
+Independent inspection downloads and SHA-256-verifies all eight original
+provider scientific ZIPs from `37759578359`. Each certificate identifies clean
+producer `6dc80725`, matches the same 47 registered nodes and passes 54/54
+cases with zero failures/errors/skips on Linux/macOS and Python 3.11–3.14.
+These are the same cases repeated across environments, not 432 distinct cases
+or an Interactions stability declaration. The two available full-suite JUnit
+ZIPs, Linux/Python 3.11 and 3.13, contain 13,327 cases each: 13,301 passed,
+26 skipped, zero failures/errors. Their exact skip reasons are preserved in
+[the independent source review](stabilization_0241_provider_source_review_20261008.json).
+The whole eight-cell source campaign is still incomplete; certificates and
+partial JUnit inspection do not clear it or the sixteen installed Conda cells.
 
 Both owners have the fixed artifact identities. MolSysMT owns the single
 coordinated sixteen-cell installed dispatch after prerequisite review. No

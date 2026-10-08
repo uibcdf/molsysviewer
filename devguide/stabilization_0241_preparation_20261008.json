@@ -281,11 +281,10 @@
       "molsysmt_version": "1.0.0",
       "use_staging": true,
       "status": "pending",
-      "scientific_cells_success": 4,
+      "scientific_cells_success": 5,
       "scientific_cells_total": 6,
       "pending": [
-        "macos-15 Python 3.12 queued",
-        "macos-15 Python 3.13 in_progress"
+        "macos-15 Python 3.12 in_progress"
       ],
       "qt": {
         "conclusion": "failure",
@@ -310,7 +309,19 @@
     },
     "provider_source_campaign": {
       "run": 37759578359,
-      "status": "in_progress"
+      "status": "in_progress",
+      "scientific_certificates_verified": 8,
+      "scientific_cases_per_cell": 54,
+      "scientific_nodes": 47,
+      "scientific_failures": 0,
+      "scientific_errors": 0,
+      "scientific_skips": 0,
+      "full_suite_junit_verified": 2,
+      "full_suite_cases_per_completed_cell": 13327,
+      "full_suite_passed_per_completed_cell": 13301,
+      "full_suite_skips_per_completed_cell": 26,
+      "review": "devguide/stabilization_0241_provider_source_review_20261008.json",
+      "scope": "provider_source_not_canonical_conda_installed_pair_full_campaign_incomplete"
     }
   },
   "superseded_build_0": {

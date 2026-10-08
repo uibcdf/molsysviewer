@@ -1,0 +1,226 @@
+{
+  "run": 37759578359,
+  "producer_commit": "6dc80725ea506f977fb5e52dfd701c2227875fa5",
+  "viewer_commit": "ae1fb995d6a38f2df6df206d2af26fbde1531f24",
+  "scope": "provider_source_campaign_not_canonical_conda_pair",
+  "scientific_certificates_verified": 8,
+  "distinct_nodes": 47,
+  "distinct_cases_repeated_per_cell": 54,
+  "full_suite_campaign_complete": false,
+  "artifacts": [
+    {
+      "artifact_id": 11543275282,
+      "name": "full-suite-results-ubuntu-latest-py3.13",
+      "zip_sha256": "b9821bb71be00c4afc0c7e39348c67e72f9856c3c9e923bde0947520401f28ee",
+      "github_digest_verified": true,
+      "junit": {
+        "tests": 13327,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 26,
+        "passed": 13301,
+        "member": "junit.xml",
+        "sha256": "f1df1a763ce021bb14c3c0cc6fe05f7abf0eecead95ff2370a119fc6113bc59a",
+        "skip_reasons": {
+          "could not import 'ackredit': No module named 'ackredit'": 17,
+          "could not import 'vina': No module named 'vina'": 5,
+          "with rdkit CCO is recognized as valid SMILES": 1,
+          "CuPy is not available.": 1,
+          "Optional unyt quantity backend": 1,
+          "Optional astropy quantity backend": 1
+        }
+      }
+    },
+    {
+      "artifact_id": 11542578269,
+      "name": "full-suite-results-ubuntu-latest-py3.11",
+      "zip_sha256": "ba187372e81db2372aea73fc61127a69cc96c777f107d3697e60ab8863b25841",
+      "github_digest_verified": true,
+      "junit": {
+        "tests": 13327,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 26,
+        "passed": 13301,
+        "member": "junit.xml",
+        "sha256": "a1227d7521b5d8ec44d1edf0fcbd227b2542d07eaa41bc5f0af0c877001e32ad",
+        "skip_reasons": {
+          "could not import 'ackredit': No module named 'ackredit'": 17,
+          "could not import 'vina': No module named 'vina'": 5,
+          "with rdkit CCO is recognized as valid SMILES": 1,
+          "CuPy is not available.": 1,
+          "Optional unyt quantity backend": 1,
+          "Optional astropy quantity backend": 1
+        }
+      }
+    },
+    {
+      "artifact_id": 11542296439,
+      "name": "scientific-evidence-macos-15-py3.13",
+      "zip_sha256": "8fe02c70b70076e8e64875f642928227c05d6b3a95f3dd12f08846f1d5369ac3",
+      "github_digest_verified": true,
+      "certificate": {
+        "commit": "6dc80725ea506f977fb5e52dfd701c2227875fa5",
+        "python": "3.13.16",
+        "platform": "macOS-15.7.9-arm64-arm-64bit-Mach-O",
+        "registered_nodes": 47,
+        "collected_cases": 54,
+        "passed": 54,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "tracked_source_dirty": false,
+        "verdict": "pass"
+      },
+      "nodes_match_reference": true
+    },
+    {
+      "artifact_id": 11542206212,
+      "name": "scientific-evidence-macos-15-py3.11",
+      "zip_sha256": "5f0c1f3632545f5404bde846d348b52e95d10c96fa3d338f4a5a2d20f7474535",
+      "github_digest_verified": true,
+      "certificate": {
+        "commit": "6dc80725ea506f977fb5e52dfd701c2227875fa5",
+        "python": "3.11.17",
+        "platform": "macOS-15.7.9-arm64-arm-64bit",
+        "registered_nodes": 47,
+        "collected_cases": 54,
+        "passed": 54,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "tracked_source_dirty": false,
+        "verdict": "pass"
+      },
+      "nodes_match_reference": true
+    },
+    {
+      "artifact_id": 11541977573,
+      "name": "scientific-evidence-macos-15-py3.12",
+      "zip_sha256": "aad52b6321975a3573ac9655d56bf3e54d1298d21f3058a40addc3530fe589d4",
+      "github_digest_verified": true,
+      "certificate": {
+        "commit": "6dc80725ea506f977fb5e52dfd701c2227875fa5",
+        "python": "3.12.15",
+        "platform": "macOS-15.7.9-arm64-arm-64bit",
+        "registered_nodes": 47,
+        "collected_cases": 54,
+        "passed": 54,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "tracked_source_dirty": false,
+        "verdict": "pass"
+      },
+      "nodes_match_reference": true
+    },
+    {
+      "artifact_id": 11541891349,
+      "name": "scientific-evidence-ubuntu-latest-py3.13",
+      "zip_sha256": "b1aafe8dd58d43c9f02c6dbed083d7d0537f6e25d13475456ef638668432b2df",
+      "github_digest_verified": true,
+      "certificate": {
+        "commit": "6dc80725ea506f977fb5e52dfd701c2227875fa5",
+        "python": "3.13.16",
+        "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+        "registered_nodes": 47,
+        "collected_cases": 54,
+        "passed": 54,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "tracked_source_dirty": false,
+        "verdict": "pass"
+      },
+      "nodes_match_reference": true
+    },
+    {
+      "artifact_id": 11541757151,
+      "name": "scientific-evidence-ubuntu-latest-py3.14",
+      "zip_sha256": "63f6a8659c8d83f68aafbd86f192b0294220dbad4dac38a2595781035280465f",
+      "github_digest_verified": true,
+      "certificate": {
+        "commit": "6dc80725ea506f977fb5e52dfd701c2227875fa5",
+        "python": "3.14.8",
+        "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+        "registered_nodes": 47,
+        "collected_cases": 54,
+        "passed": 54,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "tracked_source_dirty": false,
+        "verdict": "pass"
+      },
+      "nodes_match_reference": true
+    },
+    {
+      "artifact_id": 11541583435,
+      "name": "scientific-evidence-macos-15-py3.14",
+      "zip_sha256": "6f555b39666076fd3106210786c82dda68750f1d79d2bcca530d0c51c9c00f91",
+      "github_digest_verified": true,
+      "certificate": {
+        "commit": "6dc80725ea506f977fb5e52dfd701c2227875fa5",
+        "python": "3.14.8",
+        "platform": "macOS-15.7.9-arm64-arm-64bit-Mach-O",
+        "registered_nodes": 47,
+        "collected_cases": 54,
+        "passed": 54,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "tracked_source_dirty": false,
+        "verdict": "pass"
+      },
+      "nodes_match_reference": true
+    },
+    {
+      "artifact_id": 11541538494,
+      "name": "scientific-evidence-ubuntu-latest-py3.11",
+      "zip_sha256": "57d77cc8cdc1f519920f5694517512b6ff2384f3125b9d70a22c716039f192ec",
+      "github_digest_verified": true,
+      "certificate": {
+        "commit": "6dc80725ea506f977fb5e52dfd701c2227875fa5",
+        "python": "3.11.17",
+        "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+        "registered_nodes": 47,
+        "collected_cases": 54,
+        "passed": 54,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "tracked_source_dirty": false,
+        "verdict": "pass"
+      },
+      "nodes_match_reference": true
+    },
+    {
+      "artifact_id": 11540889899,
+      "name": "scientific-evidence-ubuntu-latest-py3.12",
+      "zip_sha256": "f0152120d54af367642434c9560751688b5a667defa15d9fbbe1773849dbf088",
+      "github_digest_verified": true,
+      "certificate": {
+        "commit": "6dc80725ea506f977fb5e52dfd701c2227875fa5",
+        "python": "3.12.15",
+        "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+        "registered_nodes": 47,
+        "collected_cases": 54,
+        "passed": 54,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "tracked_source_dirty": false,
+        "verdict": "pass"
+      },
+      "nodes_match_reference": true
+    }
+  ],
+  "role": "independent_consumer_review_of_original_provider_source_evidence_not_installed_pair_clearance",
+  "controlled_viewer_source": {
+    "job_id": 113252451261,
+    "conclusion": "success",
+    "commit": "ae1fb995d6a38f2df6df206d2af26fbde1531f24",
+    "actual_job_environment_and_git_resolution_verified": true,
+    "log_sha256": "5bf5befda6f2fd68f5fc7897f7354b52980c3ce2fda2832fbe4de2c35da58ad8"
+  }
+}
