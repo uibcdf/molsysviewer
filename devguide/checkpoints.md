@@ -1,6 +1,15 @@
 # Development checkpoint
 
-**Next candidate preparation — 2026-10-08:**
+**Current priority and publication pause — 2026-10-08:** the maintainer accepts
+the [canvas context-menu redesign](canvas_context_menu_pre_1_0_plan.md)
+(`uibcdf/molsysviewer#179`) as required before 1.0. Implementation has not
+started. Both Viewer and MolSysMT 1.0 publication remain paused. The menu changes
+require a new Viewer candidate/version, not yet chosen. Keep 0.24.1 build 1,
+its fixed reference and qualification evidence unchanged; they do not certify
+the future menu. Resume with #179, then human review, replacement-candidate
+qualification and public documentation/installed first contact.
+
+**Prior candidate preparation — 2026-10-08 (retained scope):**
 the [experimental Interactions consumer contract](interactions_compatibility_contract.md)
 is agreed with the provider. [0.24.1 noarch build 1](stabilization_0241_preparation_20261008.md)
 from `ae1fb995` is received in staging with #149/#177. Windows/core checks and
@@ -9,7 +18,10 @@ six canonical scientific source cells passed; MolSysMT's eight source cells
 and native campaign pass, with all original certificates/JUnit verified.
 The unique sixteen-cell installed matrix is dispatched in
 [37783010701](https://github.com/uibcdf/molsysmt/actions/runs/37783010701);
-its results remain pending. Fixed files and scope are in the
+the provider now reports success in all sixteen cells; this session's independent
+review of all original environment archives remains incomplete and is paused.
+Do not present that report as completed Viewer-side archive verification.
+Fixed files and scope are in the
 [receipt](stabilization_0241_preparation_20261008.json).
 Public versions remain 0.24.0/0.23.0; no new publication is authorized.
 
@@ -1520,15 +1532,17 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current session priority (2026-10-08):** first qualify 0.24.1 with #149/#177
-and the [agreed experimental Interactions contract](interactions_compatibility_contract.md),
-then complete documentation/installed first contact and the independent final
-Viewer 1.0 gates. Build 0 retains its failed preparation guard; build 1 repairs
-the workflow version defaults. Both sets of exact files and terminal source/core
-prerequisites are reviewed. Viewer has communicated readiness for MolSysMT's
-single sixteen-cell staged installed dispatch, now running as `37783010701`.
-Its outcome and original installed evidence remain pending. See
-[the active preparation](stabilization_0241_preparation_20261008.md).
+**Current session priority (2026-10-08):** implement and review
+[the accepted contextual menu](canvas_context_menu_pre_1_0_plan.md) (#179).
+Keep target/active-selection separation, region ownership and the
+[experimental Interactions contract](interactions_compatibility_contract.md).
+The next Viewer candidate will supersede 0.24.1; choose its identity after
+review, then qualify the changed source/bytes and complete documentation/installed
+first contact. Both 1.0 publications remain paused. The prior 0.24.1 installed
+run `37783010701` is reported successful by the provider; independent Viewer
+review of all original environment archives is incomplete and paused. Preserve
+[that preparation and receipt](stabilization_0241_preparation_20261008.md)
+without transferring its evidence to the new menu.
 
 **Delivered baseline (2026-10-07):** the immutable stabilization pair
 and its staging/core/provider-source gates are verified in the current handoff above. The

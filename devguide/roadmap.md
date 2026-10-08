@@ -1,19 +1,17 @@
 # Development roadmap
 
-**Current execution order — 2026-10-08:** the [experimental Interactions consumer
-agreement](interactions_compatibility_contract.md) is recorded. First qualify
-[Viewer 0.24.1 build 1](stabilization_0241_preparation_20261008.md), containing
-#149/#177, with the proposed exact MolSysMT 1.0.0 artifacts. Build 0 is preserved
-with its failed workflow-version preparation guard; build 1 repairs the defaults.
-Both sets of staging files are independently verified; 322 local installed
-guards and Viewer core/Windows checks pass. Viewer canonical source passes 6/6
-scientific cells; MolSysMT source passes 8/8 and its native campaign passes.
-Original provider scientific/JUnit ZIPs are independently verified. The next
-gate is the single coordinated sixteen-cell staged installed matrix,
-dispatched as `37783010701`; its result is pending.
-Complete broader documentation/installed first contact afterward, then qualify
-the independent final Viewer 1.0 producer. Public packages remain 0.24.0/0.23.0;
-preparation is not publication authorization.
+**Current execution order — 2026-10-08:** implement the accepted
+[canvas context-menu redesign](canvas_context_menu_pre_1_0_plan.md) (#179):
+menu/context foundation, molecular actions and Studio navigation, object and
+interaction-occurrence actions, common scene utilities, browser and human review.
+Then choose and qualify a new pre-1.0 candidate, complete public documentation
+and installed first contact, and independently qualify the eventual 1.0 producer.
+Viewer/MolSysMT 1.0 publication is paused by the maintainer. Keep the
+[0.24.1 build-1 preparation](stabilization_0241_preparation_20261008.md) and its
+exact files/evidence fixed; they do not qualify the changed menu. The next
+version/build is not chosen. Public packages remain 0.24.0/0.23.0 and the
+[experimental Interactions contract](interactions_compatibility_contract.md)
+remains unchanged.
 
 **Complete board review — 2026-10-07:** [all 34 open issues are reconciled](open_issue_reconciliation_20261007.md).
 #95/#97 public installation/host promises are corrected; #78 retains developer-only

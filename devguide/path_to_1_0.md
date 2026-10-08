@@ -1,11 +1,15 @@
 # Path to 1.0.0 (Unified Release Plan)
 
-**Next artifact — 2026-10-08:** the [Interactions consumer agreement](interactions_compatibility_contract.md)
-is recorded without promoting experimental scientific APIs. Prepare 0.24.1
-noarch with #149/#177, freeze its source and qualify the installed pair
-with the provider candidate before completing the public documentation review.
-Neither artifact preparation nor that pre-1.0 qualification clears Viewer 1.0
-or authorizes public publication.
+**Current priority — 2026-10-08:** the maintainer accepts the
+[canvas context-menu redesign](canvas_context_menu_pre_1_0_plan.md)
+(`uibcdf/molsysviewer#179`) as required before 1.0. Implement and review it
+before choosing the next pre-1.0 candidate, completing documentation/installed
+first contact and qualifying the final exact artifacts. Publication of both
+Viewer and MolSysMT 1.0 is paused. Viewer 0.24.1 build 1 is retained as staging
+evidence and will be superseded by a new candidate containing the menu changes;
+its qualification does not cover that replacement. The
+[Interactions consumer agreement](interactions_compatibility_contract.md)
+continues to preserve the experimental scientific boundary.
 
 **Complete board review — 2026-10-07:** [all 34 open issues are reconciled](open_issue_reconciliation_20261007.md).
 #95/#97 public installation/host promises are corrected; #78 retains developer-only

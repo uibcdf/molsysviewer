@@ -1,6 +1,16 @@
 # Preparing Viewer 0.24.1 — 2026-10-08
 
-**Unique installed-pair matrix dispatched; result pending:** run
+**Publication paused; replacement required — 2026-10-08:** the maintainer
+requires the [accepted canvas-menu redesign](canvas_context_menu_pre_1_0_plan.md)
+(#179) before 1.0 and a new Viewer candidate after review. Neither Viewer nor
+MolSysMT 1.0 publication is authorized. Keep this staging producer, reference,
+files and evidence fixed. The provider reports installed run `37783010701`
+successful in all sixteen cells; Viewer-side independent review of every
+original environment archive is incomplete and paused. The preparation receipt
+and dated observations below retain their earlier observation times; they do
+not qualify the changed menu or select its next version.
+
+**Prior observation — unique installed-pair matrix dispatched; result pending:** run
 [37783010701](https://github.com/uibcdf/molsysmt/actions/runs/37783010701)
 uses MT 1.0.0 build 0 and Viewer 0.24.1 build 1 on four platforms and
 Python 3.11–3.14 from staging. Exact 0.24.1 noarch build 1
