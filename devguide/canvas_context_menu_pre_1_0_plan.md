@@ -201,6 +201,12 @@ maintainer's notebook/popout acceptance remains a separate gate.
 
 ## Acceptance scenarios
 
+The first human review (2026-10-08) finds two failures: missing boundary peptide
+half-links after contextual region creation and an unpickable translucent sphere.
+The corrections pass the expanded real-pointer/geometry guard; repeat these two
+scenarios in the maintainer's notebook before accepting #179. Details and
+validation scope remain in its owning report.
+
 - Right-click residue B while a working selection contains residue A: opening,
   dismissing, inspecting and creating from B preserve A until an explicit
   selection operation. Replace/add/remove have distinct observable results.

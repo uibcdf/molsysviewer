@@ -288,7 +288,7 @@ test("state handler styles a newly-created bare region without rebuilding its co
                         assert.strictEqual(_componentRef, "component-ref");
                         assert.deepStrictEqual(spec, {
                             type: "line",
-                            typeParams: {},
+                            typeParams: { includeParent: true },
                             color: "uniform",
                             colorParams: { value: 16711680 },
                         });

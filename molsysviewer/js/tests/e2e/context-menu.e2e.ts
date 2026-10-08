@@ -47,7 +47,7 @@ async function run() {
 import json
 import molsysviewer as msv
 from molsysviewer.interactions import _to_plain
-view = msv.demo["dialanine"]
+view = msv.new_view(msv.demo["pentalanine"].molsys, structure_indices=[0, 8, 3])
 view.whole.set_representation("ball-and-stick")
 snapshot = view._build_embedded_runtime_snapshot()
 view._ready = True
@@ -177,7 +177,7 @@ import molsysviewer as msv
 from molsysviewer.interactions import _to_plain
 from molsysviewer.viewer.panel_actions import dispatch_panel_action
 payload = json.load(sys.stdin)
-view = msv.demo["dialanine"]
+view = msv.new_view(msv.demo["pentalanine"].molsys, structure_indices=[0, 8, 3])
 view.active_selection.set(payload["selection"])
 view._ready = True
 sent = []
@@ -205,6 +205,26 @@ view.close()
             for (const state of batches) for (const message of state.messages) await (window as any).__controller.handleMessage(message, { throwOnError: true });
         }, result.states);
         assert.deepEqual(await page.evaluate(() => (window as any).__controller.currentActiveSelection.atom_indices), pointed);
+        // The two peptide links crossing the contextual residue must retain
+        // their region-owned halves; atom spheres must stay inside the region.
+        const assertBoundaryLinks = async () => {
+            const geometry = await page.evaluate(() => (window as any).Harness.inspectRegionBoundaryGeometry((window as any).__controller, "context-residue"));
+            assert.ok(geometry.length > 0);
+            for (const representation of geometry) {
+                assert.equal(representation.boundaryHalves, 2);
+                assert.equal(representation.drawnBoundaryHalves, 2);
+                assert.equal(representation.foreignSpheres, 0);
+            }
+        };
+        await assertBoundaryLinks();
+        for (const frame of [1, 2, 0]) {
+            await page.evaluate(async index => (window as any).__controller.handleMessage({ op: "set_trajectory_frame", index }), frame);
+            await assertBoundaryLinks();
+        }
+        for (const representation of ["line", "ball-and-stick", "inherit"]) {
+            await page.evaluate(async representation => (window as any).__controller.handleMessage({ op: "set_region_representation", tag: "context-residue", representation }), representation);
+            await assertBoundaryLinks();
+        }
 
         // View controls exist on molecular targets; root size is independent of
         // the saved collection, and the collection route selects its Studio tab.
@@ -386,6 +406,32 @@ view.close()
         assert.equal(await objectMenu.getByRole("menuitem", { name: "Focus Target", exact: true }).isEnabled(), true);
         await objectMenu.getByRole("menuitem", { name: "Focus Target", exact: true }).click();
         await page.waitForFunction(() => (window as any).__controller.plugin.canvas3d.camera.state.target.every((v: number) => Math.abs(v - 30) < 0.01));
+        // Actual screen input: a direct loci injection would miss the alpha
+        // threshold regression reported during the human review.
+        await page.evaluate(() => (window as any).__controller.groupPanel.setExpanded(false));
+        await page.locator("#objects canvas").scrollIntoViewIfNeeded();
+        await page.waitForFunction(() => {
+            const w = window as any;
+            if (w.__controller.plugin.canvas3d.camera.transition.inTransition) return false;
+            const { target } = w.Harness.pickScenePosition(w.__controller, [30, 30, 30]);
+            return target.kind === "shape" && target.tag === "menu-sphere";
+        });
+        const spherePoint = await page.evaluate(() => (window as any).Harness.projectScenePosition((window as any).__controller, [30, 30, 30]));
+        await page.mouse.move(spherePoint.x, spherePoint.y, { steps: 3 });
+        await page.waitForFunction(() => {
+            const hover = (window as any).__controller.lastHoverPayload;
+            return hover?.kind === "shape" && hover.tag === "menu-sphere";
+        });
+        await page.mouse.click(spherePoint.x, spherePoint.y);
+        await page.waitForFunction(() => (window as any).__controller.currentActiveSelection.items.some((item: any) => item.source_kind === "shape" && item.tag === "menu-sphere"));
+        await page.waitForFunction(() => {
+            const c = (window as any).__controller;
+            const ref = (window as any).Harness.inspectTaggedRefs(c, "shape", "menu-sphere")[0].ref;
+            return c.plugin.state.data.cells.get(ref).obj.data.repr.renderObjects.some((ro: any) => ro.values.tMarker.ref.value.array.some((value: number) => (value & 2) !== 0));
+        }); // Mol* applies queued selection marks on its next render tick.
+        await page.mouse.click(spherePoint.x, spherePoint.y, { button: "right" });
+        assert.equal(await objectMenu.getByRole("menuitem", { name: "Edit Appearance in Studio…", exact: true }).isVisible(), true);
+        await page.keyboard.press("Escape");
         await page.evaluate(() => (window as any).Harness.openSceneObjectContext((window as any).__controller, "shape", "menu-sphere"));
         await objectMenu.getByRole("menuitem", { name: "Edit Appearance in Studio…", exact: true }).click();
         assert.equal(await page.locator('#objects [data-molsysviewer-shape-style="menu-sphere"]').count(), 1);

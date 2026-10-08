@@ -773,6 +773,9 @@ export class MolSysViewerController {
             notify?.({ event: "viewer_init_failed", reason: "webgl", message });
         }
         MolSysViewerController.takeCameraAuthority(plugin);
+        // Visible translucent geometry must remain addressable. Keep a positive
+        // threshold so ownership masks (zero opacity) are still excluded.
+        plugin.canvas3d?.setProps({ renderer: { pickingAlphaThreshold: 0.01 } });
 
         return new MolSysViewerController(plugin, target, notify, canvasHost, options);
     }
@@ -1569,7 +1572,9 @@ export class MolSysViewerController {
 
         registerInteractionObservers(plugin, emitInteractionEvent, undefined, (ev) => {
             if (!this.measurementTools.isActive()) {
-                this.activeSelection.handlePrimaryClick(ev);
+                const target = this.normalizeManagedInteractionPayload(normalizeInteractionEvent("click", ev), ev.current?.loci);
+                this.activeSelection.handlePrimaryClick(ev,
+                    target.kind !== "empty" && target.kind !== "structure" ? target : undefined);
                 this.handlePotentialDoubleClickFocus(ev);
             }
             this.measurementTools.handlePrimaryClick(ev?.current?.loci);
@@ -1595,20 +1600,20 @@ export class MolSysViewerController {
                     measurement_name: spec?.kind,
                 };
             } else {
-                this.lastHoverPayload = this.normalizeManagedInteractionPayload(normalizeInteractionEvent("hover", ev));
+                this.lastHoverPayload = this.normalizeManagedInteractionPayload(normalizeInteractionEvent("hover", ev), ev.current?.loci);
             }
         }, (ev) => {
             const resolved = resolveTooltipPayload("hover", ev, this.annotations, this.measurements);
             const payload = resolved
                 ? resolved
-                : this.normalizeManagedInteractionPayload(normalizeInteractionEvent("hover", ev));
+                : this.normalizeManagedInteractionPayload(normalizeInteractionEvent("hover", ev), ev.current?.loci);
             emitInteractionEvent(payload);
         }, (ev) => {
             const resolved = resolveTooltipPayload("click", ev, this.annotations, this.measurements);
             if (resolved) {
                 emitInteractionEvent(resolved);
             } else {
-                emitInteractionEvent(this.normalizeManagedInteractionPayload(normalizeInteractionEvent("click", ev)));
+                emitInteractionEvent(this.normalizeManagedInteractionPayload(normalizeInteractionEvent("click", ev), ev.current?.loci));
             }
         });
 
@@ -2230,16 +2235,11 @@ export class MolSysViewerController {
         this.refreshAddonsPanel();
     }
 
-    private normalizeManagedInteractionPayload(payload: InteractionPayload): InteractionPayload {
-        if (payload.kind !== "shape" || typeof payload.tag !== "string") return payload;
-        if (!this.measurements.hasTag(payload.tag)) return payload;
-        return {
-            event: payload.event,
-            kind: "measurement",
-            atom_indices: payload.atom_indices,
-            tag: payload.tag,
-            measurement_name: payload.shape_name,
-        };
+    private normalizeManagedInteractionPayload(payload: InteractionPayload, loci?: any): InteractionPayload {
+        // Hover, click and context use the same current scene owner, including
+        // source data with no embedded tag and shapes renamed after creation.
+        const normalized = this.normalizeManagedContextPayload({ ...payload, event: "interaction_context_menu" }, loci);
+        return { ...normalized, event: payload.event } as InteractionPayload;
     }
 
     private normalizeManagedContextPayload(payload: ContextInteractionPayload, loci?: any): ContextInteractionPayload {

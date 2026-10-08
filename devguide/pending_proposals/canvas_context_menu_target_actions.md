@@ -204,6 +204,52 @@ Its public setup cells execute successfully: three pentalanine structures and
 Buch evaluated on all three, with three occurrences. This validates preparation,
 not human interaction or package qualification.
 
+## Human review findings — 2026-10-08
+
+The maintainer reports the reviewed workflows working except for two defects:
+peptide bond halves disappear next to a represented residue, and the free sphere
+does not highlight/select or open its object menu. These keep #179 partial.
+
+A real pentalanine/Mol*/Chromium diagnostic reproduces both causes. Mol*'s
+default picking opacity threshold `0.5` rejects the sphere's default `0.4`;
+the same screen click resolves its shape at `0.01`. A region without parent
+bond context draws zero of its two expected peptide boundary half-links;
+`includeParent` draws both, with zero neighbor atom spheres. Whole's mask
+and the region's missing external bonds explain the observed half-link gaps;
+annotations do not modify the molecular bond topology.
+
+The region representation owner enables parent bond context for ball-and-stick
+and line by default, including Inherit and representations produced by presets.
+An explicit region opt-out remains available. Hover, click and context share
+the registered scene-owner resolver; shape selections retain real loci and
+receive the current tag/associated atoms. The canvas threshold stays positive,
+so zero-opacity Whole masks remain excluded. Parent context may expand Mol*
+group/marker indexing; no trajectory-memory or many-region performance guarantee
+is inferred from this fix.
+
+The expanded guard uses pentalanine with structures `[0, 8, 3]` for molecular
+creation, checks generated half-link groups and neighbor sphere exclusion across
+frames and own/inherited styles, and sends real pointer input to the translucent
+sphere. Earlier object checks injected real loci; they did not test the pick
+buffer and therefore missed this defect. Test corrections separately respect
+disabled Python hover telemetry, queued render-tick selection marks, and the
+existing unit assertion's changed `includeParent` default. The expanded guard
+passes; the marker checks wait for real GPU picking/camera readiness and Mol*'s
+queued render tick. All 323 JS cases pass after updating that prior unit
+expectation, and the focused StateHandlers/ActiveSelection cases pass 30/6.
+The first ordinary JS runner invocation obscured the unit assertion behind a
+bundled-file failure; direct execution preserves the addressable case output.
+Human reconfirmation of these fixes remains outstanding.
+
+The final affected-browser campaign passes **6/6** suites in one shared
+Chromium: context-menu, measurements-interaction, region-hide, region-subpanel,
+shapes-subpanel and scene-contracts. Visibility, overlap, style changes, dynamic
+membership and Whole/region separation retain their guards. TypeScript, runtime
+regeneration, 181 reporting-protocol checks and generated-index checks pass.
+This is a targeted regression campaign, not a rerun of all 40 core suites or an
+installed artifact qualification. The maintainer's executed notebook and other
+unrelated sandbox files are preserved.
+
 ## Resolution
 
 Pending the principal maintainer's remote-Jupyter/popout acceptance. Current interaction guidance records the delivered workflows;

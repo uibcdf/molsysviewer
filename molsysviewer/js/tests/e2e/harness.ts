@@ -29,6 +29,71 @@ import { HelpOverlay } from "../../src/ui/help-overlay";
 
 export { RemoteInputAdapter };
 
+/** Screen coordinates for real pointer tests (Mol* projection is bottom-up). */
+export function projectScenePosition(controller: MolSysViewerController, position: [number, number, number]) {
+    const canvas3d = controller.plugin.canvas3d!;
+    const projected = cameraProject(Vec4(), Vec3.create(...position), canvas3d.camera.viewport, canvas3d.camera.projectionView);
+    const canvas = controller.plugin.canvas3dContext!.canvas;
+    const rect = canvas.getBoundingClientRect();
+    return { x: rect.left + projected[0] * rect.width / canvas.width,
+        y: rect.top + (canvas.height - projected[1]) * rect.height / canvas.height };
+}
+
+/** Waitable GPU pick, without creating loci or opening a menu artificially. */
+export function pickScenePosition(controller: MolSysViewerController, position: [number, number, number]) {
+    const point = projectScenePosition(controller, position);
+    const rect = controller.plugin.canvas3dContext!.canvas.getBoundingClientRect();
+    const canvas = controller.plugin.canvas3d!;
+    const hit = canvas.getLoci(canvas.identify(Vec2.create(point.x - rect.left, point.y - rect.top))?.id);
+    const target = (controller as any).normalizeManagedContextPayload(normalizeContextInteractionEvent({ current: hit }), hit.loci);
+    return { point, target };
+}
+
+/** Read generated link groups for the single-unit peptide guard. */
+export function inspectRegionBoundaryGeometry(controller: MolSysViewerController, tag: string) {
+    if (controller.getStructureData()!.units.length !== 1) throw new Error("Boundary geometry guard requires one molecular unit");
+    const entry = (controller.state as any).regionIndex.get(tag);
+    const selected = new Set<number>(entry.atomIndices);
+    const result: Array<{ type: string; boundaryHalves: number; drawnBoundaryHalves: number; foreignSpheres: number }> = [];
+    for (const ref of entry.representations) {
+        const cell = controller.plugin.state.data.cells.get(ref)!;
+        const repr = cell.obj!.data.repr;
+        const child = repr.getAllLoci()[0].structure as Structure;
+        const structure = repr.props.includeParent ? child.asParent() : child;
+        const expected = new Set<string>();
+        for (const unit of controller.getStructureData()!.units) {
+            if (!Unit.isAtomic(unit)) continue;
+            for (let edge = 0; edge < unit.bonds.a.length; edge++) {
+                const a = unit.elements[unit.bonds.a[edge]], b = unit.elements[unit.bonds.b[edge]];
+                if (selected.has(a) && !selected.has(b)) expected.add(`${a}:${b}`);
+            }
+        }
+        const boundaryHalves = expected.size;
+        let drawnBoundaryHalves = 0, foreignSpheres = 0;
+        for (const unit of structure.units) {
+            if (!Unit.isAtomic(unit)) continue;
+            const groups = new Set<number>();
+            for (const ro of repr.renderObjects) {
+                if (!ro.values.aStart) continue; // cylinder/line link geometry
+                const drawn = ro.values.aGroup.ref.value.subarray(0, ro.values.uVertexCount.ref.value);
+                for (const group of drawn as Float32Array) groups.add(group);
+            }
+            for (let edge = 0; edge < unit.bonds.a.length; edge++) {
+                const a = unit.elements[unit.bonds.a[edge]], b = unit.elements[unit.bonds.b[edge]];
+                if (!selected.has(a) || selected.has(b)) continue;
+                if (expected.has(`${a}:${b}`) && groups.has(edge)) drawnBoundaryHalves++;
+            }
+            for (const ro of repr.renderObjects) {
+                if (ro.type !== "spheres") continue;
+                const sphereGroups = new Set<number>(ro.values.groupBuffer.ref.value.subarray(0, ro.values.uVertexCount.ref.value / 6));
+                for (const group of sphereGroups) if (!selected.has(unit.elements[group])) foreignSpheres++;
+            }
+        }
+        result.push({ type: (cell.transform.params as any).type.name, boundaryHalves, drawnBoundaryHalves, foreignSpheres });
+    }
+    return result;
+}
+
 /** Resolve a real rendered mesh group through the production picking path. */
 export function openInteractionContext(controller: MolSysViewerController, tag: string, groupIndex = 0) {
     const ref = inspectTaggedRefs(controller, "interaction", tag)[0].ref;

@@ -10,6 +10,10 @@ Implementation note:
 - click handling must distinguish true click from drag/navigation
 - in particular, empty-canvas click-to-clear must not trigger after camera manipulation
 - hover highlight and persistent selection should remain visually distinct
+- the canvas picking threshold is positive (`0.01`): default translucent shapes
+  are addressable; fully transparent Whole ownership masks stay excluded
+- hover, click and context resolve a shape's current registered owner and tag;
+  atomless shapes remain selectable and visually marked as objects
 - left-button drag and right-button drag already participate in canvas navigation and must remain compatible with interaction semantics
 
 | Gesture | Target | Default effect | Selection effect | Context effect | Notes |

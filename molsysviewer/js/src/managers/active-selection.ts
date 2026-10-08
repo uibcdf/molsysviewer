@@ -443,13 +443,19 @@ export class ActiveSelectionController {
         return this.allAvailableItems;
     }
 
-    handlePrimaryClick(ev: any): void {
+    handlePrimaryClick(ev: any, shapeTarget?: { tag?: string; atom_indices: number[]; entity_ref?: unknown }): void {
         const shift = !!ev?.modifiers?.shift;
         const alt = !!ev?.modifiers?.alt;
         const pickedItems: ActiveSelectionItem[] = [
             ...lociToGroupItems(ev?.current?.loci),
             ...lociToShapeItems(ev?.current?.loci),
         ];
+        for (const item of pickedItems) {
+            if (item.source_kind !== "shape" || !shapeTarget) continue;
+            item.tag = shapeTarget.tag;
+            item.atom_indices = shapeTarget.atom_indices;
+            if (shapeTarget.entity_ref !== undefined) item.entity_ref = shapeTarget.entity_ref;
+        }
         
         if (pickedItems.length === 0) {
             if (!shift) {

@@ -342,6 +342,20 @@ with each other until `order` lands.
 **R-O4 — `pickingAlphaThreshold` is not lowered to 0** by the viewer. At 0, a masked whole becomes
 pickable again and ownership silently breaks.
 
+The canvas uses a positive threshold of `0.01`: ordinary translucent shapes
+(including the sphere's default opacity `0.4`) remain pickable, while fully
+transparent ownership masks remain excluded. Hover, click and context resolve
+the current scene owner; a free shape selects the shape, not invented atoms.
+
+**R-O5 — Visible bond regions preserve boundary half-links.** Ball-and-stick
+and line regions use Mol*'s `includeParent` bond context by default. The region
+draws the half belonging to its selected endpoint; Whole retains the opposite
+half. Neighbor atom spheres remain outside the region. Inherit applies this
+region default even when Whole's own `includeParent` is false. Explicit region
+`includeParent=False` opts out. Ownership, Hide and Disable retain their existing
+atom semantics. Mol*'s parent context can increase representation indexing and
+marker memory; this is not a new bounded-memory guarantee for many small regions.
+
 ### Clause replacements (now in force)
 
 The clauses written in Contracts A and B below describe the *previous* model. Where this table

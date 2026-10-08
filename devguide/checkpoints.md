@@ -4,7 +4,11 @@
 the [canvas context-menu redesign](canvas_context_menu_pre_1_0_plan.md)
 (`uibcdf/molsysviewer#179`) as required before 1.0. The menu foundation, shared
 scene/Studio access and molecular/object/occurrence workflows are implemented.
-Focused owner and extended real-browser checks pass; human acceptance remains pending.
+The first human review confirms the reviewed workflows except for boundary
+peptide half-links and translucent-sphere picking. Both corrections pass the
+expanded real-pointer/rendered-geometry guard, 323 JS cases and six affected
+browser suites; human
+reconfirmation remains pending.
 Both Viewer and MolSysMT 1.0 publication remain paused. The menu changes
 require a new Viewer candidate/version, not yet chosen. Keep 0.24.1 build 1,
 its fixed reference and qualification evidence unchanged; they do not certify

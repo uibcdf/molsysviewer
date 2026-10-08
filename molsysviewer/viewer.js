@@ -146260,6 +146260,9 @@ var StateHandlers = class {
   async addTypedRegionRepresentation(componentRef, tag, reprType, params) {
     const structuralColor = this.getStructuralColorThemeFromParams(reprType, params);
     const cleanParams = this.omitStructuralColorKeys(params);
+    if ((reprType === "ball-and-stick" || reprType === "line") && cleanParams.includeParent === void 0) {
+      cleanParams.includeParent = true;
+    }
     const repr = await this.plugin.builders.structure.representation.addRepresentation(
       componentRef,
       {
@@ -146292,7 +146295,9 @@ var StateHandlers = class {
             ...structuralColor.theme ? { theme: structuralColor.theme } : {}
           }
         );
-        refs.push(...this.collectRefsFromPreset(applied));
+        const presetRefs = this.collectRefsFromPreset(applied);
+        await this.includeRegionBoundaryBonds(presetRefs, cleanParams);
+        refs.push(...presetRefs);
       }
       if (Array.isArray(rules)) {
         for (const rule of rules) {
@@ -146316,13 +146321,27 @@ var StateHandlers = class {
           ...structuralColor.theme ? { theme: structuralColor.theme } : {}
         }
       );
-      refs.push(...this.collectRefsFromPreset(applied));
+      const presetRefs = this.collectRefsFromPreset(applied);
+      await this.includeRegionBoundaryBonds(presetRefs, cleanParams);
+      refs.push(...presetRefs);
       return refs;
     }
     if (typeof msg.representation === "string" && msg.representation !== "inherit") {
       refs.push(...await this.addTypedRegionRepresentation(componentRef, tag, msg.representation, params));
     }
     return refs;
+  }
+  async includeRegionBoundaryBonds(refs, params) {
+    const update10 = this.plugin.state.data.build();
+    let changed = false;
+    for (const ref of refs) {
+      const cell = this.plugin.state.data.cells.get(ref);
+      const type3 = cell?.transform.params?.type;
+      if (type3?.name !== "ball-and-stick" && type3?.name !== "line") continue;
+      update10.to(ref).update({ type: { ...type3, params: { ...type3.params, includeParent: params.includeParent ?? true } } });
+      changed = true;
+    }
+    if (changed) await update10.commit({ doNotUpdateCurrent: true });
   }
   /**
    * The concrete representation types the whole is actually drawing, deduped by
@@ -146364,7 +146383,11 @@ var StateHandlers = class {
         componentRef,
         tag,
         name,
-        { ...typeParams, ...params ?? {} }
+        {
+          ...typeParams,
+          ...name === "ball-and-stick" || name === "line" ? { includeParent: true } : {},
+          ...params ?? {}
+        }
       ));
     }
     return refs;
@@ -150740,13 +150763,19 @@ var ActiveSelectionController = class {
   getAllAvailableItems() {
     return this.allAvailableItems;
   }
-  handlePrimaryClick(ev) {
+  handlePrimaryClick(ev, shapeTarget) {
     const shift2 = !!ev?.modifiers?.shift;
     const alt = !!ev?.modifiers?.alt;
     const pickedItems = [
       ...lociToGroupItems(ev?.current?.loci),
       ...lociToShapeItems(ev?.current?.loci)
     ];
+    for (const item2 of pickedItems) {
+      if (item2.source_kind !== "shape" || !shapeTarget) continue;
+      item2.tag = shapeTarget.tag;
+      item2.atom_indices = shapeTarget.atom_indices;
+      if (shapeTarget.entity_ref !== void 0) item2.entity_ref = shapeTarget.entity_ref;
+    }
     if (pickedItems.length === 0) {
       if (!shift2) {
         this.clear();
@@ -164050,7 +164079,11 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     registerInteractionObservers(plugin, emitInteractionEvent, void 0, (ev) => {
       if (!this.measurementTools.isActive()) {
-        this.activeSelection.handlePrimaryClick(ev);
+        const target = this.normalizeManagedInteractionPayload(normalizeInteractionEvent("click", ev), ev.current?.loci);
+        this.activeSelection.handlePrimaryClick(
+          ev,
+          target.kind !== "empty" && target.kind !== "structure" ? target : void 0
+        );
         this.handlePotentialDoubleClickFocus(ev);
       }
       this.measurementTools.handlePrimaryClick(ev?.current?.loci);
@@ -164076,18 +164109,18 @@ var MolSysViewerController = class _MolSysViewerController {
           measurement_name: spec?.kind
         };
       } else {
-        this.lastHoverPayload = this.normalizeManagedInteractionPayload(normalizeInteractionEvent("hover", ev));
+        this.lastHoverPayload = this.normalizeManagedInteractionPayload(normalizeInteractionEvent("hover", ev), ev.current?.loci);
       }
     }, (ev) => {
       const resolved = resolveTooltipPayload("hover", ev, this.annotations, this.measurements);
-      const payload = resolved ? resolved : this.normalizeManagedInteractionPayload(normalizeInteractionEvent("hover", ev));
+      const payload = resolved ? resolved : this.normalizeManagedInteractionPayload(normalizeInteractionEvent("hover", ev), ev.current?.loci);
       emitInteractionEvent(payload);
     }, (ev) => {
       const resolved = resolveTooltipPayload("click", ev, this.annotations, this.measurements);
       if (resolved) {
         emitInteractionEvent(resolved);
       } else {
-        emitInteractionEvent(this.normalizeManagedInteractionPayload(normalizeInteractionEvent("click", ev)));
+        emitInteractionEvent(this.normalizeManagedInteractionPayload(normalizeInteractionEvent("click", ev), ev.current?.loci));
       }
     });
     this.state = new StateHandlers(plugin, {
@@ -164339,6 +164372,7 @@ var MolSysViewerController = class _MolSysViewerController {
       notify?.({ event: "viewer_init_failed", reason: "webgl", message });
     }
     _MolSysViewerController.takeCameraAuthority(plugin);
+    plugin.canvas3d?.setProps({ renderer: { pickingAlphaThreshold: 0.01 } });
     return new _MolSysViewerController(plugin, target, notify, canvasHost, options);
   }
   /**
@@ -164946,16 +164980,9 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     this.refreshAddonsPanel();
   }
-  normalizeManagedInteractionPayload(payload) {
-    if (payload.kind !== "shape" || typeof payload.tag !== "string") return payload;
-    if (!this.measurements.hasTag(payload.tag)) return payload;
-    return {
-      event: payload.event,
-      kind: "measurement",
-      atom_indices: payload.atom_indices,
-      tag: payload.tag,
-      measurement_name: payload.shape_name
-    };
+  normalizeManagedInteractionPayload(payload, loci) {
+    const normalized2 = this.normalizeManagedContextPayload({ ...payload, event: "interaction_context_menu" }, loci);
+    return { ...normalized2, event: payload.event };
   }
   normalizeManagedContextPayload(payload, loci) {
     const shape = loci && (ShapeGroup.isLoci(loci) || Shape.isLoci(loci)) ? loci.shape : null;

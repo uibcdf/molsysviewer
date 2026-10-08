@@ -152,8 +152,36 @@ and same-tag kind separation, shared Help and stale-context dismissal.
 The prepared human notebook is
 [`../sandbox/revision_context_menu_pre_1_0.ipynb`](../sandbox/revision_context_menu_pre_1_0.ipynb).
 Its public setup executes successfully (three structures evaluated for Buch,
-three occurrences); its interactive review is pending. These are development
+three occurrences). The maintainer's first interactive review confirms the
+reviewed workflows except for the two findings below. These are development
 checks, not replacement-package or manual acceptance. #179 stays partial.
+
+### First human review: boundary bonds and translucent picking — 2026-10-08
+
+The maintainer observed missing peptide half-links after contextual residue
+creation and an unpickable free sphere. A real-browser diagnostic reproduces
+zero/two boundary halves without/with Mol* parent context, and empty/shape picks
+at opacity thresholds `0.5`/`0.01`. The corrections preserve neighbor atom
+exclusion and fully transparent Whole ownership masks. All three pointer paths
+and active shape selection use current registered tags; free geometry does not
+invent atom associations.
+
+The expanded context-menu guard passes with real pentalanine structures
+`[0, 8, 3]`, generated peptide boundary half-links through frame and style
+changes, real screen hover/click/right-click on the translucent sphere, and its
+persistent selection marker. The former loci-injection checks did not cover
+GPU picking. Python hover telemetry is disabled in this snapshot; hover is
+checked locally, and marker checks await Mol*'s render tick. The owner unit cases
+pass (30 StateHandlers and six ActiveSelection); all 323 JS cases pass after
+updating the existing line-default expectation. Human rechecking of the two
+reported defects remains pending; no package or publication qualification is
+inferred.
+
+The affected shared-Chromium campaign passes 6/6 suites: context-menu,
+measurements-interaction, region-hide, region-subpanel, shapes-subpanel and
+scene-contracts. Runtime regeneration, TypeScript, 181 reporting guards and
+generated-index checks pass. This campaign has targeted scope; the previous
+40-suite evidence remains recorded with its original source and recovery limits.
 
 ## Python Interaction Callbacks
 

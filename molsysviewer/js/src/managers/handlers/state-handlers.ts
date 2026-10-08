@@ -666,6 +666,12 @@ export class StateHandlers {
     ): Promise<StateTransform.Ref[]> {
         const structuralColor = this.getStructuralColorThemeFromParams(reprType, params);
         const cleanParams = this.omitStructuralColorKeys(params);
+        // Mol* draws each endpoint's half-link. A component must have parent
+        // bond context to replace the halves that its ownership mask hides in
+        // Whole; includeParent filters atom visuals to the component itself.
+        if ((reprType === "ball-and-stick" || reprType === "line") && cleanParams.includeParent === undefined) {
+            cleanParams.includeParent = true;
+        }
         const repr = await this.plugin.builders.structure.representation.addRepresentation(
             componentRef as any,
             {
@@ -704,7 +710,9 @@ export class StateHandlers {
                         ...(structuralColor.theme ? { theme: structuralColor.theme } : {}),
                     } as any
                 );
-                refs.push(...this.collectRefsFromPreset(applied as any));
+                const presetRefs = this.collectRefsFromPreset(applied as any);
+                await this.includeRegionBoundaryBonds(presetRefs, cleanParams);
+                refs.push(...presetRefs);
             }
             if (Array.isArray(rules)) {
                 for (const rule of rules) {
@@ -729,7 +737,9 @@ export class StateHandlers {
                     ...(structuralColor.theme ? { theme: structuralColor.theme } : {}),
                 } as any
             );
-            refs.push(...this.collectRefsFromPreset(applied as any));
+            const presetRefs = this.collectRefsFromPreset(applied as any);
+            await this.includeRegionBoundaryBonds(presetRefs, cleanParams);
+            refs.push(...presetRefs);
             return refs;
         }
 
@@ -737,6 +747,19 @@ export class StateHandlers {
             refs.push(...await this.addTypedRegionRepresentation(componentRef, tag, msg.representation, params));
         }
         return refs;
+    }
+
+    private async includeRegionBoundaryBonds(refs: StateTransform.Ref[], params: Record<string, unknown>) {
+        const update = this.plugin.state.data.build();
+        let changed = false;
+        for (const ref of refs) {
+            const cell = this.plugin.state.data.cells.get(ref);
+            const type = (cell?.transform.params as any)?.type;
+            if (type?.name !== "ball-and-stick" && type?.name !== "line") continue;
+            update.to(ref).update({ type: { ...type, params: { ...type.params, includeParent: params.includeParent ?? true } } });
+            changed = true;
+        }
+        if (changed) await update.commit({ doNotUpdateCurrent: true });
     }
 
     /**
@@ -792,7 +815,9 @@ export class StateHandlers {
                 componentRef,
                 tag,
                 name,
-                { ...typeParams, ...(params ?? {}) },
+                { ...typeParams,
+                    ...((name === "ball-and-stick" || name === "line") ? { includeParent: true } : {}),
+                    ...(params ?? {}) },
             ));
         }
         return refs;
