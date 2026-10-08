@@ -2,10 +2,10 @@
 
 **Current priority and publication pause — 2026-10-08:** the maintainer accepts
 the [canvas context-menu redesign](canvas_context_menu_pre_1_0_plan.md)
-(`uibcdf/molsysviewer#179`) as required before 1.0. The menu foundation and shared
-scene/Studio access and molecular-target workflows are implemented with focused
-real-browser evidence; object/occurrence workflows and human acceptance remain pending. Both Viewer
-and MolSysMT 1.0 publication remain paused. The menu changes
+(`uibcdf/molsysviewer#179`) as required before 1.0. The menu foundation, shared
+scene/Studio access and molecular/object/occurrence workflows are implemented.
+Focused owner and extended real-browser checks pass; human acceptance remains pending.
+Both Viewer and MolSysMT 1.0 publication remain paused. The menu changes
 require a new Viewer candidate/version, not yet chosen. Keep 0.24.1 build 1,
 its fixed reference and qualification evidence unchanged; they do not certify
 the future menu. Resume with #179, then human review, replacement-candidate

@@ -84,6 +84,11 @@ export class RegionsPanel extends BasePanel {
         this.scheduleExternalRender();
     }
 
+    openObject(tag: string): void {
+        if (!this.regions.some(item => item.tag === tag)) return;
+        this.regionInspectOpen.add(tag); this.requestRegionDetails(tag); this.scheduleRender();
+    }
+
     setStyleOptions(options: { representations: string[]; presets: string[]; wholeHidden?: boolean }): void {
         this.regionStyleRepresentations = [...options.representations];
         this.regionStylePresets = [...options.presets];

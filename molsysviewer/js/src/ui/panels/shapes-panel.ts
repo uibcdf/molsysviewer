@@ -207,6 +207,11 @@ export class ShapesPanel extends BasePanel {
         this.scheduleRender();
     }
 
+    openObject(tag: string): void {
+        if (!this.shapes.some(item => item.tag === tag)) return;
+        this.detailsTag = tag; this.scheduleRender();
+    }
+
     setSavedSelections(items: SavedSelectionSummary[]): void {
         this.savedSelections = [...items];
         this.scheduleRender();

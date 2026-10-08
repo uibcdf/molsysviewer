@@ -1483,6 +1483,9 @@ class InteractionsManager(ScientificInteractionsManager):
                         continue
                     observation = {
                         "occurrence_index": int(occurrence),
+                        # Position in this filtered frame query, not in the
+                        # rendered links (unsupported geometry may be skipped).
+                        "query_offset": int(local),
                         "interaction_type": kind,
                         "participants": [
                             {"role": p["role"], "atom_indices": p["atom_indices"].tolist()} for p in participants
@@ -1681,6 +1684,41 @@ class InteractionsManager(ScientificInteractionsManager):
             # its scientific identity rather than copying a full-frame column.
             obj._inspected_page = deepcopy(reply)
         return reply
+
+    def _inspect_picked_occurrence(self, tag, identity):
+        """Resolve a graphical pick through one bounded, identity-checked page.
+
+        The offset is a lookup hint within the current filtered frame. It never
+        substitutes for the occurrence ID and both analysis/query revisions.
+        """
+        from collections.abc import Mapping
+
+        if not isinstance(identity, Mapping):
+            raise ArgumentError("occurrence_index", message="The pick needs an occurrence identity.")
+        obj = self[tag]
+        self._revision(obj)
+        record = next(item for item in self.records(skip_digestion=True) if item["tag"] == tag)
+        for key in ("frame", "occurrence_index", "query_offset"):
+            value = identity.get(key)
+            if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value < 0:
+                raise ArgumentError(key, value=value)
+        if (
+            identity["frame"] != self._view.player.index
+            or identity.get("analysis_name") != obj.analysis_name
+            or identity.get("analysis_revision") != record["analysis_revision"]
+            or identity.get("query_revision") != record["query_revision"]
+            or obj.broken
+        ):
+            raise ArgumentError("occurrence_index", message="The pick is stale; point at the current interaction again.")
+        page = self.inspect(
+            tag, structure_index=int(identity["frame"]), offset=int(identity["query_offset"]), limit=1,
+            skip_digestion=True,
+        )
+        if len(page["observations"]) != 1 or page["observations"][0]["occurrence_index"] != identity["occurrence_index"]:
+            obj._inspected_page = None
+            raise ArgumentError("occurrence_index", message="The picked occurrence is absent from this query position.")
+        self._observation_atoms(tag, identity["occurrence_index"], page["frame"], page["analysis_revision"], page["query_revision"])
+        return page
 
     def _observation_atoms(self, tag, occurrence_index, structure_index, analysis_revision, query_revision):
         obj = self[tag]

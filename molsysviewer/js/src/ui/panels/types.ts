@@ -101,7 +101,7 @@ export type PanelAction =
     | "request_measurement_series"
     | "focus_measurement"
     | "delete_shape"
-    | "create_interaction" | "edit_interaction" | "inspect_interaction"
+    | "create_interaction" | "edit_interaction" | "inspect_interaction" | "inspect_interaction_occurrence"
     | "select_interaction_observation" | "focus_interaction_observation"
     | "toggle_interaction_visibility" | "delete_interaction" | "focus_interaction"
     | "show_all_interactions" | "hide_all_interactions" | "delete_interaction_analysis"

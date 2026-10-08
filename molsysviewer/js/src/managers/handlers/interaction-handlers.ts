@@ -6,6 +6,7 @@ import { setSubtreeVisibility } from "molstar/lib/mol-plugin/behavior/static/sta
 export type InteractionParticipant = { role: string; atom_indices: number[] };
 export type InteractionObservation = {
     occurrence_index: number; interaction_type: string; participants: InteractionParticipant[];
+    query_offset?: number;
     measurements: Record<string, number | null>; measure_units?: Record<string, string>;
     start?: number[]; end?: number[]; image_vectors?: number[][] | null; evidence?: string;
     segment_index?: number; geometry?: "atom_pair" | "participant_centroids";
@@ -100,7 +101,7 @@ export class InteractionHandlers {
                 const ref = await addNetworkLinksFromPython(this.plugin, {
                     mode: "coordinates", tag: message.tag, dashed: true,
                     interaction: { analysis_name: message.analysis_name, analysis_revision: message.analysis_revision,
-                                   frame: message.frame, observations: message.links },
+                                   query_revision: message.query_revision, frame: message.frame, observations: message.links },
                     coordinate_pairs: message.links.map(link => [link.start!.map(v => v * 10), link.end!.map(v => v * 10)] as [[number, number, number], [number, number, number]]),
                     radii: message.style.radius_nm * 10, colors: message.style.color, alpha: message.style.alpha,
                     labels: message.links.map(link => escapeLabel(`${link.interaction_type} · occurrence ${link.occurrence_index}${link.geometry === "participant_centroids" ? " · participant-centroid guide" : ""} · ${link.participants.map(p => `${p.role}: ${p.atom_indices.join(",")}`).join(" → ")}`)),

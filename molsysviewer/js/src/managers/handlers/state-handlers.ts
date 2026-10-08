@@ -281,6 +281,23 @@ export class StateHandlers {
         this.registerTaggedRef(ref, tag, "shape");
     }
 
+    /** Resolve the current owner without relying on stale/absent shape tags.
+     * Scans registered scene refs on demand; never reads molecular trajectories.
+     */
+    findShapeOwner(sourceData: unknown): { kind: string; tag: string } | null {
+        if (sourceData === undefined || sourceData === null) return null;
+        for (const [key, refs] of this.tagIndex) {
+            for (const ref of refs) {
+                const cells = this.plugin.state.data.select(StateSelection.Generators.byRef(ref).subtree());
+                if (cells.some(cell => cell.obj?.data?.sourceData === sourceData)) {
+                    const separator = key.indexOf("\u0000");
+                    return { kind: key.slice(0, separator), tag: key.slice(separator + 1) };
+                }
+            }
+        }
+        return null;
+    }
+
     getRegionSummaries(): RegionSummary[] {
         if (this.backendRegionSummaries !== null) {
             return this.backendRegionSummaries.map(item => ({

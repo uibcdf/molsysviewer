@@ -94,17 +94,37 @@ and submission. Target/frame snapshots are dismissed on load/clear/frame change.
 Only uniquely identified atom picks enable the individual-atom measurement
 policy; ambiguous subsequent picks do not satisfy that policy. The three
 measurement actions share an explicit endpoint-policy selector and policy-aware
-pick progress. Atomless targets cannot advertise executable atom focus.
+pick progress. Atomless targets cannot advertise executable atom selection.
+Focus uses real geometry bounds where available; otherwise it is disabled.
 The active-selection submenu exposes focus, save, region/section creation,
 label creation, expand and clear. Atom-dependent actions are disabled for
 selections containing only scene objects. Region/label composers use the
 existing replayable Python owners. Interactive measurements already create
 managed objects; there is no redundant Persist Last Measurement menu action.
 
-The remaining accepted object/occurrence actions
-are tracked in [the implementation plan](canvas_context_menu_pre_1_0_plan.md).
-They are not implemented by this foundation. Global picking preferences remain
-post-1.0; region hide/disable and Whole ownership remain unchanged.
+Object menus route annotation text/appearance, shape appearance and measurement
+inspection/editing to their existing Studio owners. Selecting associated atoms
+is explicit and disabled without an atom anchor. Contextual Hide carries an
+explicit hidden state and is idempotent; Studio Show/Hide retains its toggle.
+Related regions offer bounded access to their existing Studio inspector.
+
+An interaction pick carries its analysis name/revision, filtered-query revision,
+frame, occurrence ID and position in that frame query. The position is a hint:
+Python validates revisions/current frame, requests one bounded inspector page,
+and verifies the exact occurrence ID before inspecting/selecting/focusing.
+Skipped geometry and multiple rendered segments do not redefine query positions.
+Participant actions use canonical provider atoms, never client-supplied atom lists.
+Graphical-set focus/hide/edit/delete is separately labelled; removing a
+representation does not delete its stored analysis. Accepted interaction
+summary/frame updates dismiss an open occurrence menu. Legacy projections without
+the full identity disable occurrence actions instead of falling back to atom lists.
+
+Empty canvas adds Focus All through the existing Mol* camera owner, preserving
+orientation. Help reuses the overlay owned by the canvas controls and is disabled
+in a host with no help owner. Host authority still limits supported operations.
+[The implementation plan](canvas_context_menu_pre_1_0_plan.md) tracks automated
+and human acceptance. Global picking preferences remain post-1.0; region
+hide/disable and Whole ownership remain unchanged.
 
 ## Tool / Measurement Modes
 

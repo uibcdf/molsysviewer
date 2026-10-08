@@ -954,6 +954,15 @@ export class GroupPanel {
     clearContextInspection(): void { this.systemPanel.clearInspection(); }
     stageShapeContext(atoms: number[]): void { this.shapesPanel.stageContextAtoms(atoms); }
     stageInteractionContext(atoms: number[], calculate: boolean): void { this.interactionsPanel.stageContextAtoms(atoms, calculate); }
+    inspectInteractionOccurrence(tag: string, identity: unknown): void { this.interactionsPanel.inspectOccurrence(tag, identity); }
+    openInteractionObject(tag: string): void { this.interactionsPanel.openObject(tag); }
+    openRegionObject(tag: string): void { this.regionsPanel.openObject(tag); this.openSection("regions"); }
+    openContextObject(kind: "annotation" | "shape" | "measurement", tag: string, editText = false): void {
+        if (kind === "annotation") this.annotationsPanel.openObject(tag, editText);
+        else if (kind === "shape") this.shapesPanel.openObject(tag);
+        else this.measuresPanel.openObject(tag);
+        this.openSection(kind === "annotation" ? "annotations" : kind === "shape" ? "shapes" : "measures");
+    }
 
     addLabelOverlay(msg: AddLabelMessage): void {
         this.systemPanel.addLabelOverlay(msg);

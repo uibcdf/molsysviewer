@@ -66,6 +66,8 @@ CONTEXT_ONLY_ACTIONS = frozenset(
         "select_context_target",
         "create_region_from_target",
         "create_annotation_from_target",
+        "select_picked_interaction",
+        "focus_picked_interaction",
         "preview_selection_query",
         "remove_selection",
         "set_trajectory_frame",

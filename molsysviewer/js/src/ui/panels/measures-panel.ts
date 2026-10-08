@@ -175,6 +175,11 @@ export class MeasuresPanel extends BasePanel {
         this.scheduleRender();
     }
 
+    openObject(tag: string): void {
+        if (!this.measurements.some(item => item.tag === tag)) return;
+        this.editTag = tag; this.scheduleRender();
+    }
+
     setCurrentSelection(selection: ActiveSelectionPayload): void {
         this.selection = selection;
         if (this.activeSlotExpansion !== null && selection.atom_indices && selection.atom_indices.length > 0) {

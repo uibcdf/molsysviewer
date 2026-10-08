@@ -53636,12 +53636,12 @@ function getAtomicResidueCount(structure) {
   }
   return atomicResidueCount;
 }
-(function(Structure6) {
-  Structure6.Empty = create3([]);
+(function(Structure5) {
+  Structure5.Empty = create3([]);
   function Loci3(structure) {
     return { kind: "structure-loci", structure };
   }
-  Structure6.Loci = Loci3;
+  Structure5.Loci = Loci3;
   function toStructureElementLoci(structure) {
     const elements = [];
     for (const unit2 of structure.units) {
@@ -53649,29 +53649,29 @@ function getAtomicResidueCount(structure) {
     }
     return element_exports.Loci(structure, elements);
   }
-  Structure6.toStructureElementLoci = toStructureElementLoci;
+  Structure5.toStructureElementLoci = toStructureElementLoci;
   function toSubStructureElementLoci(parent, structure) {
     return StructureSelection.toLociWithSourceUnits(StructureSelection.Singletons(parent, structure));
   }
-  Structure6.toSubStructureElementLoci = toSubStructureElementLoci;
+  Structure5.toSubStructureElementLoci = toSubStructureElementLoci;
   function isLoci(x) {
     return !!x && x.kind === "structure-loci";
   }
-  Structure6.isLoci = isLoci;
+  Structure5.isLoci = isLoci;
   function areLociEqual(a8, b8) {
     return a8.structure === b8.structure;
   }
-  Structure6.areLociEqual = areLociEqual;
+  Structure5.areLociEqual = areLociEqual;
   function isLociEmpty(loci) {
     return loci.structure.isEmpty;
   }
-  Structure6.isLociEmpty = isLociEmpty;
+  Structure5.isLociEmpty = isLociEmpty;
   function remapLoci(loci, structure) {
     if (structure === loci.structure)
       return loci;
     return Loci3(structure);
   }
-  Structure6.remapLoci = remapLoci;
+  Structure5.remapLoci = remapLoci;
   function create3(units, props = {}) {
     const unitMap = IntMap.Mutable();
     const unitIndexMap = IntMap.Mutable();
@@ -53737,12 +53737,12 @@ function getAtomicResidueCount(structure) {
       state.representativeModel = props.representativeModel;
     else if (props.parent)
       state.representativeModel = props.parent.representativeModel;
-    return new Structure6(units, unitMap, unitIndexMap, state);
+    return new Structure5(units, unitMap, unitIndexMap, state);
   }
-  Structure6.create = create3;
+  Structure5.create = create3;
   async function ofTrajectory(trajectory, ctx) {
     if (trajectory.frameCount === 0)
-      return Structure6.Empty;
+      return Structure5.Empty;
     const units = [];
     let first4 = void 0;
     let count3 = 0;
@@ -53762,7 +53762,7 @@ function getAtomicResidueCount(structure) {
     }
     return create3(units, { representativeModel: first4, label: first4.label });
   }
-  Structure6.ofTrajectory = ofTrajectory;
+  Structure5.ofTrajectory = ofTrajectory;
   function ofModel(model, props = {}) {
     const chains2 = model.atomicHierarchy.chainAtomSegments;
     const { index } = model.atomicHierarchy;
@@ -53823,7 +53823,7 @@ function getAtomicResidueCount(structure) {
     }
     return builder.getStructure();
   }
-  Structure6.ofModel = ofModel;
+  Structure5.ofModel = ofModel;
   function isWaterChain(model, chainIndex2) {
     const e = model.atomicHierarchy.index.getEntityFromChain(chainIndex2);
     return model.entities.data.type.value(e) === "water";
@@ -53850,7 +53850,7 @@ function getAtomicResidueCount(structure) {
     const newCS = SymmetryOperator.compose(SymmetryOperator.create(cs.name, transform3, cs), cs);
     return create3(units, { parent: s, coordinateSystem: newCS });
   }
-  Structure6.transform = transform2;
+  Structure5.transform = transform2;
   function instances(s, transforms) {
     for (const t5 of transforms) {
       if (!Mat4.isRotationAndTranslation(t5, SymmetryOperator.RotationTranslationEpsilon)) {
@@ -53872,7 +53872,7 @@ function getAtomicResidueCount(structure) {
     }
     return create3(units, { parent: s });
   }
-  Structure6.instances = instances;
+  Structure5.instances = instances;
   class StructureBuilder2 {
     beginChainGroup() {
       this.chainGroupId++;
@@ -53928,19 +53928,19 @@ function getAtomicResidueCount(structure) {
       this.singleElementUnits = /* @__PURE__ */ new Map();
     }
   }
-  Structure6.StructureBuilder = StructureBuilder2;
+  Structure5.StructureBuilder = StructureBuilder2;
   function Builder(props = {}) {
     return new StructureBuilder2(props);
   }
-  Structure6.Builder = Builder;
+  Structure5.Builder = Builder;
   function hashCode6(s) {
     return s.hashCode;
   }
-  Structure6.hashCode = hashCode6;
+  Structure5.hashCode = hashCode6;
   function conformationHash(s) {
     return hashString2(s.units.map((u2) => Unit.conformationId(u2)).join("|"));
   }
-  Structure6.conformationHash = conformationHash;
+  Structure5.conformationHash = conformationHash;
   function areUnitIdsEqual(a8, b8) {
     if (a8 === b8)
       return true;
@@ -53955,7 +53955,7 @@ function getAtomicResidueCount(structure) {
     }
     return true;
   }
-  Structure6.areUnitIdsEqual = areUnitIdsEqual;
+  Structure5.areUnitIdsEqual = areUnitIdsEqual;
   function areUnitIdsAndIndicesEqual(a8, b8) {
     if (a8 === b8)
       return true;
@@ -53967,7 +53967,7 @@ function getAtomicResidueCount(structure) {
     }
     return true;
   }
-  Structure6.areUnitIdsAndIndicesEqual = areUnitIdsAndIndicesEqual;
+  Structure5.areUnitIdsAndIndicesEqual = areUnitIdsAndIndicesEqual;
   function areHierarchiesEqual(a8, b8) {
     if (a8.hashCode !== b8.hashCode)
       return false;
@@ -53980,19 +53980,19 @@ function getAtomicResidueCount(structure) {
     }
     return true;
   }
-  Structure6.areHierarchiesEqual = areHierarchiesEqual;
+  Structure5.areHierarchiesEqual = areHierarchiesEqual;
   function areEquivalent(a8, b8) {
     return a8 === b8 || a8.hashCode === b8.hashCode && StructureSymmetry.areTransformGroupsEquivalent(a8.unitSymmetryGroups, b8.unitSymmetryGroups);
   }
-  Structure6.areEquivalent = areEquivalent;
+  Structure5.areEquivalent = areEquivalent;
   function areRootsEquivalent(a8, b8) {
     return areEquivalent(a8.root, b8.root);
   }
-  Structure6.areRootsEquivalent = areRootsEquivalent;
+  Structure5.areRootsEquivalent = areRootsEquivalent;
   function areRootsEqual(a8, b8) {
     return a8.root === b8.root;
   }
-  Structure6.areRootsEqual = areRootsEqual;
+  Structure5.areRootsEqual = areRootsEqual;
   class ElementLocationIterator {
     move() {
       this.advance();
@@ -54033,7 +54033,7 @@ function getAtomicResidueCount(structure) {
       }
     }
   }
-  Structure6.ElementLocationIterator = ElementLocationIterator;
+  Structure5.ElementLocationIterator = ElementLocationIterator;
   const distVec = Vec3();
   function unitElementMinDistance(unit2, p6, eRadius) {
     const { elements, conformation: c8 } = unit2, dV = distVec;
@@ -54057,7 +54057,7 @@ function getAtomicResidueCount(structure) {
     }
     return minD;
   }
-  Structure6.minDistanceToPoint = minDistanceToPoint;
+  Structure5.minDistanceToPoint = minDistanceToPoint;
   const distPivot = Vec3();
   function distance2(a8, b8) {
     if (a8.elementCount === 0 || b8.elementCount === 0)
@@ -54076,15 +54076,15 @@ function getAtomicResidueCount(structure) {
     }
     return minD;
   }
-  Structure6.distance = distance2;
+  Structure5.distance = distance2;
   function elementDescription(s) {
     return s.elementCount === 1 ? "1 element" : `${s.elementCount} elements`;
   }
-  Structure6.elementDescription = elementDescription;
+  Structure5.elementDescription = elementDescription;
   function validUnitPair(s, a8, b8) {
     return s.masterModel ? a8.model === b8.model || a8.model === s.masterModel || b8.model === s.masterModel : a8.model === b8.model;
   }
-  Structure6.validUnitPair = validUnitPair;
+  Structure5.validUnitPair = validUnitPair;
   function eachUnitPair(structure, callback, props) {
     const { maxRadius, validUnit, validUnitPair: validUnitPair2 } = props;
     if (!structure.units.some((u2) => validUnit(u2)))
@@ -54110,7 +54110,7 @@ function getAtomicResidueCount(structure) {
       }
     }
   }
-  Structure6.eachUnitPair = eachUnitPair;
+  Structure5.eachUnitPair = eachUnitPair;
   ;
   function eachAtomicHierarchyElement(structure, { chain: chain2, residue: residue2, atom: atom2 }) {
     const l = element_exports.Location.create(structure);
@@ -54146,8 +54146,8 @@ function getAtomicResidueCount(structure) {
       }
     }
   }
-  Structure6.eachAtomicHierarchyElement = eachAtomicHierarchyElement;
-  Structure6.DefaultSizeThresholds = {
+  Structure5.eachAtomicHierarchyElement = eachAtomicHierarchyElement;
+  Structure5.DefaultSizeThresholds = {
     /** Must be lower to be small */
     smallResidueCount: 10,
     /** Must be lower to be medium */
@@ -54180,9 +54180,9 @@ function getAtomicResidueCount(structure) {
     Size2[Size2["Large"] = 2] = "Large";
     Size2[Size2["Huge"] = 3] = "Huge";
     Size2[Size2["Gigantic"] = 4] = "Gigantic";
-  })(Size = Structure6.Size || (Structure6.Size = {}));
+  })(Size = Structure5.Size || (Structure5.Size = {}));
   function getSize(structure, thresholds = {}, residueCountFactor = 1) {
-    const t5 = { ...Structure6.DefaultSizeThresholds, ...thresholds };
+    const t5 = { ...Structure5.DefaultSizeThresholds, ...thresholds };
     if (structure.polymerResidueCount >= t5.largeResidueCount * residueCountFactor) {
       if (hasHighSymmetry(structure, t5)) {
         return Size.Huge;
@@ -54199,18 +54199,18 @@ function getAtomicResidueCount(structure) {
       return Size.Large;
     }
   }
-  Structure6.getSize = getSize;
-  Structure6.Index = CustomStructureProperty.createSimple("index", "root");
-  Structure6.MaxIndex = CustomStructureProperty.createSimple("max_index", "root");
+  Structure5.getSize = getSize;
+  Structure5.Index = CustomStructureProperty.createSimple("index", "root");
+  Structure5.MaxIndex = CustomStructureProperty.createSimple("max_index", "root");
   const PrincipalAxesProp = "__PrincipalAxes__";
   function getPrincipalAxes2(structure) {
     if (structure.currentPropertyData[PrincipalAxesProp])
       return structure.currentPropertyData[PrincipalAxesProp];
-    const principalAxes = element_exports.Loci.getPrincipalAxes(Structure6.toStructureElementLoci(structure));
+    const principalAxes = element_exports.Loci.getPrincipalAxes(Structure5.toStructureElementLoci(structure));
     structure.currentPropertyData[PrincipalAxesProp] = principalAxes;
     return principalAxes;
   }
-  Structure6.getPrincipalAxes = getPrincipalAxes2;
+  Structure5.getPrincipalAxes = getPrincipalAxes2;
 })(Structure || (Structure = {}));
 
 // node_modules/molstar/lib/mol-script/runtime/query/base.js
@@ -74001,20 +74001,20 @@ var PluginStateObject;
     class Trajectory extends PluginStateObject2.Create({ name: "Trajectory", typeClass: "Object" }) {
     }
     Molecule2.Trajectory = Trajectory;
-    class Structure6 extends PluginStateObject2.Create({ name: "Structure", typeClass: "Object" }) {
+    class Structure5 extends PluginStateObject2.Create({ name: "Structure", typeClass: "Object" }) {
     }
-    Molecule2.Structure = Structure6;
-    (function(Structure7) {
+    Molecule2.Structure = Structure5;
+    (function(Structure6) {
       class Representation3D extends CreateRepresentation3D({ name: "Structure 3D" }) {
       }
-      Structure7.Representation3D = Representation3D;
+      Structure6.Representation3D = Representation3D;
       class Representation3DState extends PluginStateObject2.Create({ name: "Structure 3D State", typeClass: "Object" }) {
       }
-      Structure7.Representation3DState = Representation3DState;
+      Structure6.Representation3DState = Representation3DState;
       class Selections extends PluginStateObject2.Create({ name: "Selections", typeClass: "Object" }) {
       }
-      Structure7.Selections = Selections;
-    })(Structure6 = Molecule2.Structure || (Molecule2.Structure = {}));
+      Structure6.Selections = Selections;
+    })(Structure5 = Molecule2.Structure || (Molecule2.Structure = {}));
   })(Molecule = PluginStateObject2.Molecule || (PluginStateObject2.Molecule = {}));
   let Volume2;
   (function(Volume3) {
@@ -144186,6 +144186,7 @@ var InteractionHandlers = class {
           interaction: {
             analysis_name: message.analysis_name,
             analysis_revision: message.analysis_revision,
+            query_revision: message.query_revision,
             frame: message.frame,
             observations: message.links
           },
@@ -145962,6 +145963,22 @@ var StateHandlers = class {
   }
   registerShapeRef(ref, tag) {
     this.registerTaggedRef(ref, tag, "shape");
+  }
+  /** Resolve the current owner without relying on stale/absent shape tags.
+   * Scans registered scene refs on demand; never reads molecular trajectories.
+   */
+  findShapeOwner(sourceData) {
+    if (sourceData === void 0 || sourceData === null) return null;
+    for (const [key2, refs] of this.tagIndex) {
+      for (const ref of refs) {
+        const cells = this.plugin.state.data.select(StateSelection.Generators.byRef(ref).subtree());
+        if (cells.some((cell) => cell.obj?.data?.sourceData === sourceData)) {
+          const separator = key2.indexOf("\0");
+          return { kind: key2.slice(0, separator), tag: key2.slice(separator + 1) };
+        }
+      }
+    }
+    return null;
   }
   getRegionSummaries() {
     if (this.backendRegionSummaries !== null) {
@@ -148113,7 +148130,14 @@ var MenuNavigation = class {
 function targetTitle(target) {
   if (target.kind === "empty") return "Canvas";
   if (target.kind === "shape") return target.shape_name?.trim() || target.tag?.trim() || "Shape";
-  if (target.kind === "interaction") return target.shape_name?.trim() || target.tag?.trim() || "Interaction";
+  if (target.kind === "interaction") {
+    const identity3 = target.entity_ref;
+    return [
+      identity3?.interaction_type || "Interaction",
+      target.tag?.trim(),
+      Number.isInteger(identity3?.frame) ? `structure ${identity3.frame}` : ""
+    ].filter(Boolean).join(" \xB7 ");
+  }
   if (target.kind === "measurement") return target.measurement_name?.trim() || target.tag?.trim() || "Measurement";
   if (target.kind === "annotation") return target.text?.trim() || target.tag?.trim() || "Annotation";
   if (target.group_name?.trim() || target.metadata?.group_name?.trim()) {
@@ -148366,23 +148390,40 @@ var ViewerContextMenu = class {
         view2.appendChild(this.makeActionButton("Calculate for Target\u2026", "open_interactions_for_target", { workflow: "calculate" }));
       });
     } else if (target.kind === "interaction") {
+      main.appendChild(this.makeActionButton("Inspect This Interaction\u2026", "inspect_picked_interaction"));
+      main.appendChild(this.makeActionButton("Select Participants", "select_picked_interaction"));
+      main.appendChild(this.makeActionButton("Focus Participants", "focus_picked_interaction"));
       if (target.tag?.trim()) this.navigation.addSubmenu(main, "Interaction set", (view2) => {
         view2.appendChild(this.makeActionButton("Focus Interaction Set", "focus_interaction"));
+        view2.appendChild(this.makeActionButton("Hide Interaction Representation", "toggle_interaction_visibility"));
+        view2.appendChild(this.makeActionButton("Edit Interaction Set in Studio\u2026", "edit_interaction_in_studio"));
         view2.appendChild(this.makeActionButton("Delete Interaction Representation", "delete_interaction"));
       });
     } else if (target.kind !== "empty") {
       main.appendChild(this.makeActionButton("Focus Target", "focus_target"));
+      main.appendChild(this.makeActionButton("Select Associated Atoms", "select_context_target", { scope: "target", op: "replace" }));
       if (target.tag?.trim()) {
+        main.appendChild(this.makeActionButton(target.kind === "measurement" ? "Inspect and Edit Measurement\u2026" : "Edit Appearance in Studio\u2026", "edit_object_in_studio"));
         if (target.kind === "measurement") {
           main.appendChild(this.makeActionButton("Hide Measurement", "hide_measurement"));
           main.appendChild(this.makeActionButton("Delete Measurement", "delete_measurement"));
-        } else if (target.kind === "annotation") main.appendChild(this.makeActionButton("Delete Annotation", "delete_annotation"));
-        else main.appendChild(this.makeActionButton("Delete Shape", "delete_shape"));
+        } else if (target.kind === "annotation") {
+          main.appendChild(this.makeActionButton("Edit Annotation Text\u2026", "edit_annotation_text"));
+          main.appendChild(this.makeActionButton("Hide Annotation", "toggle_annotation_visibility"));
+          main.appendChild(this.makeActionButton("Delete Annotation", "delete_annotation"));
+        } else {
+          main.appendChild(this.makeActionButton("Hide Shape", "toggle_shape_visibility"));
+          main.appendChild(this.makeActionButton("Delete Shape", "delete_shape"));
+        }
       }
-    } else main.appendChild(this.makeActionButton("Reset View", "reset_view"));
+    } else {
+      main.appendChild(this.makeActionButton("Reset View", "reset_view"));
+      main.appendChild(this.makeActionButton("Focus All", "focus_all"));
+    }
     if (this.currentSelection && this.currentSelection.source_kind !== "empty") {
       this.navigation.addSubmenu(main, selectionTitle(this.currentSelection), (view2) => {
         view2.appendChild(this.makeActionButton("Focus Selection", "focus_selection"));
+        view2.appendChild(this.makeActionButton("Inspect Selection in Studio\u2026", "open_navigate", { studio_section: "selection" }));
         view2.appendChild(this.makeActionButton("Save Selection\u2026", "save_selection"));
         view2.appendChild(this.makeActionButton("Create Region from Selection\u2026", "create_region_from_selection"));
         view2.appendChild(this.makeActionButton("Create Section from Selection", "create_section_from_selection"));
@@ -148446,6 +148487,7 @@ var ViewerContextMenu = class {
     main.appendChild(this.makeActionButton("Redo", "redo_scene"));
     const section = target.kind === "structure" ? "system" : target.kind === "interaction" ? "interactions" : target.kind === "measurement" ? "measures" : target.kind === "annotation" ? "annotations" : target.kind === "shape" ? "shapes" : void 0;
     main.appendChild(this.makeActionButton("Open Studio\u2026", "open_navigate", section ? { studio_section: section } : void 0));
+    main.appendChild(this.makeActionButton("Help", "show_help"));
     this.navigation.decorate();
   }
   close() {
@@ -148465,6 +148507,9 @@ var ViewerContextMenu = class {
     if (restoreFocus) this.returnFocus?.focus?.();
     this.returnFocus = void 0;
     if (wasOpen) this.onClose?.();
+  }
+  invalidateInteractionContext() {
+    if (this.currentTarget?.kind === "interaction") this.close();
   }
   dispose() {
     this.close();
@@ -148486,16 +148531,27 @@ var ViewerContextMenu = class {
       }
     }
     const needsSelectionAtoms = ["focus_selection", "save_selection", "create_region_from_selection", "create_section_from_selection", "add_label_from_selection", "expand_selection"].includes(action);
+    if (["inspect_picked_interaction", "select_picked_interaction", "focus_picked_interaction"].includes(action)) {
+      const target = this.currentTarget;
+      const identity3 = target?.kind === "interaction" ? target.entity_ref : void 0;
+      const valid = !!identity3 && ["frame", "query_offset", "occurrence_index"].every((key2) => Number.isSafeInteger(identity3[key2]) && Number(identity3[key2]) >= 0) && ["analysis_name", "analysis_revision", "query_revision"].every((key2) => typeof identity3[key2] === "string" && !!identity3[key2]);
+      if (!valid) {
+        button2.disabled = true;
+        button2.setAttribute("aria-disabled", "true");
+        button2.title = "This representation has no current query identity for occurrence actions";
+        button2.style.opacity = "0.45";
+      }
+    }
     if (["distance", "angle", "dihedral"].includes(action) && this.currentSceneState?.canMeasure === false) {
       button2.disabled = true;
       button2.setAttribute("aria-disabled", "true");
       button2.title = "Measurement picking requires the canvas";
       button2.style.opacity = "0.45";
     }
-    if (action === "focus_target" && this.currentTarget?.kind !== "empty" && !this.currentTarget?.atom_indices?.length || needsSelectionAtoms && !this.currentSelection?.atom_indices?.length) {
+    if (action === "focus_target" && this.currentTarget?.kind !== "empty" && !this.currentTarget?.atom_indices?.length && !this.currentTarget?.focusable || action === "select_context_target" && this.currentTarget?.kind !== "empty" && !this.currentTarget?.atom_indices?.length || action === "focus_all" && this.currentSceneState?.canFocusAll !== true || action === "show_help" && this.currentSceneState?.canHelp !== true || needsSelectionAtoms && !this.currentSelection?.atom_indices?.length) {
       button2.disabled = true;
       button2.setAttribute("aria-disabled", "true");
-      button2.title = action === "focus_target" ? "This object has no atom anchor to focus" : "This action requires selected atoms";
+      button2.title = action === "focus_target" ? "This object has no available anchor or geometry bounds to focus" : action === "show_help" ? "Help is unavailable in this host" : action === "focus_all" ? "No molecular geometry is loaded in this canvas" : action === "select_context_target" ? "This object has no associated atoms" : "This action requires selected atoms";
       button2.style.opacity = "0.45";
     }
     Object.assign(button2.style, {
@@ -148665,10 +148721,17 @@ var ViewerContextMenu = class {
       this.notify?.({ event: "interaction_context_action", action: "focus_region", context: this.currentTarget, ...details });
       this.close();
     });
+    const open = this.makeActionButton("Open in Studio\u2026", "open_region_in_studio", { tag: region.tag });
+    open.textContent = "\u2197";
+    open.title = `Open region ${region.tag} in Studio`;
+    open.setAttribute("aria-label", `Open region ${region.tag} in Studio`);
+    open.style.width = "auto";
+    row3.appendChild(open);
     const mkIconBtn = (svgPath, title, onClick) => {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.title = title;
+      btn.setAttribute("aria-label", title);
       btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${svgPath}</svg>`;
       Object.assign(btn.style, {
         flexShrink: "0",
@@ -148834,14 +148897,14 @@ var ViewerContextMenu = class {
     input.focus?.();
   }
   resolveActionDetails(action) {
-    if (action === "delete_interaction" || action === "focus_interaction") {
+    if (["delete_interaction", "focus_interaction", "inspect_picked_interaction", "select_picked_interaction", "focus_picked_interaction", "toggle_interaction_visibility", "edit_interaction_in_studio"].includes(action)) {
       if (this.currentTarget?.kind !== "interaction" || !this.currentTarget.tag?.trim()) return null;
-      return { tag: this.currentTarget.tag };
+      return { tag: this.currentTarget.tag, ...action === "toggle_interaction_visibility" ? { hidden: true } : {} };
     }
-    if (action === "delete_annotation" || action === "delete_shape" || action === "delete_measurement" || action === "hide_measurement") {
+    if (["delete_annotation", "delete_shape", "delete_measurement", "hide_measurement", "edit_object_in_studio", "edit_annotation_text", "toggle_annotation_visibility", "toggle_shape_visibility"].includes(action)) {
       const tag = this.currentTarget?.kind === "annotation" || this.currentTarget?.kind === "shape" || this.currentTarget?.kind === "measurement" ? this.currentTarget.tag : void 0;
       if (!tag || tag.trim() === "") return null;
-      return { tag };
+      return { tag, ...["toggle_annotation_visibility", "toggle_shape_visibility"].includes(action) ? { hidden: true } : {} };
     }
     if (action === "create_section_from_selection") {
       const camera_forward = this.getCameraDirection?.() ?? [0, 0, -1];
@@ -152604,6 +152667,12 @@ var RegionsPanel = class extends BasePanel {
     this.ctx.setBadge(String(items.length));
     this.scheduleExternalRender();
   }
+  openObject(tag) {
+    if (!this.regions.some((item2) => item2.tag === tag)) return;
+    this.regionInspectOpen.add(tag);
+    this.requestRegionDetails(tag);
+    this.scheduleRender();
+  }
   setStyleOptions(options) {
     this.regionStyleRepresentations = [...options.representations];
     this.regionStylePresets = [...options.presets];
@@ -156092,6 +156161,11 @@ var MeasuresPanel = class extends BasePanel {
     this.ctx.setBadge(String(measurements.length));
     this.scheduleRender();
   }
+  openObject(tag) {
+    if (!this.measurements.some((item2) => item2.tag === tag)) return;
+    this.editTag = tag;
+    this.scheduleRender();
+  }
   setCurrentSelection(selection) {
     this.selection = selection;
     if (this.activeSlotExpansion !== null && selection.atom_indices && selection.atom_indices.length > 0) {
@@ -157100,6 +157174,13 @@ var AnnotationsPanel = class extends BasePanel {
       this.selectedTag = null;
     }
     this.ctx.setBadge(String(items.length));
+    this.scheduleRender();
+  }
+  openObject(tag, text = false) {
+    if (!this.annotations.some((item2) => item2.tag === tag)) return;
+    this.selectedTag = tag;
+    if (text) this.editTextTag = tag;
+    else this.editDetailsTag = tag;
     this.scheduleRender();
   }
   setSavedSelections(items) {
@@ -158455,6 +158536,29 @@ var InteractionsPanel = class extends BasePanel {
     }
     this.scheduleRender();
   }
+  inspectOccurrence(tag, identity3) {
+    if (!this.backendAvailable || !this.items.some((item2) => item2.tag === tag)) return;
+    this.inspecting = tag;
+    this.inspection = null;
+    this.emit("inspect_interaction_occurrence", { tag, identity: identity3, request_id: ++this.requestId });
+  }
+  openObject(tag) {
+    const item2 = this.items.find((item3) => item3.tag === tag);
+    if (!item2) return;
+    this.editing = item2.tag;
+    this.tag = item2.tag;
+    this.layer = item2.layer_tag;
+    this.a = item2.filter.selection === "all" ? null : [...item2.filter.selection];
+    this.b = Array.isArray(item2.filter.selection_2) ? [...item2.filter.selection_2] : null;
+    this.mode = item2.filter.mode;
+    this.displayStructures = item2.filter.structure_indices === "all" ? "all" : item2.filter.structure_indices.join(",");
+    this.types = item2.filter.interaction_types?.join(",") ?? "";
+    this.exclusive = item2.filter.exclusive;
+    this.color = `#${item2.style.color.toString(16).padStart(6, "0")}`;
+    this.radius = String(item2.style.radius_nm);
+    this.alpha = String(item2.style.alpha);
+    this.scheduleRender();
+  }
   setSavedSelections(items) {
     this.saved = items;
     this.scheduleRender();
@@ -158841,21 +158945,7 @@ var InteractionsPanel = class extends BasePanel {
         if (action === "focus_interaction") button2.disabled = !item2.n_supported;
         actions.appendChild(button2);
       }
-      actions.appendChild(makeButton("Edit", () => {
-        this.editing = item2.tag;
-        this.tag = item2.tag;
-        this.layer = item2.layer_tag;
-        this.a = item2.filter.selection === "all" ? null : [...item2.filter.selection];
-        this.b = Array.isArray(item2.filter.selection_2) ? [...item2.filter.selection_2] : null;
-        this.mode = item2.filter.mode;
-        this.displayStructures = item2.filter.structure_indices === "all" ? "all" : item2.filter.structure_indices.join(",");
-        this.types = item2.filter.interaction_types?.join(",") ?? "";
-        this.exclusive = item2.filter.exclusive;
-        this.color = `#${item2.style.color.toString(16).padStart(6, "0")}`;
-        this.radius = String(item2.style.radius_nm);
-        this.alpha = String(item2.style.alpha);
-        this.scheduleRender();
-      }));
+      actions.appendChild(makeButton("Edit", () => this.openObject(item2.tag)));
       actions.appendChild(makeButton("Inspect", () => this.inspect(item2.tag)));
       card8.appendChild(actions);
       if (this.inspecting === item2.tag) {
@@ -159080,6 +159170,11 @@ var ShapesPanel = class extends BasePanel {
   }
   updateRenderStatus(status) {
     this.renderStatuses.set(status.tag, status);
+    this.scheduleRender();
+  }
+  openObject(tag) {
+    if (!this.shapes.some((item2) => item2.tag === tag)) return;
+    this.detailsTag = tag;
     this.scheduleRender();
   }
   setSavedSelections(items) {
@@ -161707,6 +161802,22 @@ var GroupPanel = class {
   stageInteractionContext(atoms2, calculate) {
     this.interactionsPanel.stageContextAtoms(atoms2, calculate);
   }
+  inspectInteractionOccurrence(tag, identity3) {
+    this.interactionsPanel.inspectOccurrence(tag, identity3);
+  }
+  openInteractionObject(tag) {
+    this.interactionsPanel.openObject(tag);
+  }
+  openRegionObject(tag) {
+    this.regionsPanel.openObject(tag);
+    this.openSection("regions");
+  }
+  openContextObject(kind, tag, editText = false) {
+    if (kind === "annotation") this.annotationsPanel.openObject(tag, editText);
+    else if (kind === "shape") this.shapesPanel.openObject(tag);
+    else this.measuresPanel.openObject(tag);
+    this.openSection(kind === "annotation" ? "annotations" : kind === "shape" ? "shapes" : "measures");
+  }
   addLabelOverlay(msg) {
     this.systemPanel.addLabelOverlay(msg);
   }
@@ -163077,7 +163188,16 @@ function shapeTargetFromLoci(loci) {
       const observation = interaction?.observations?.[groupIdx];
       if (observation) {
         groupAtoms = [...new Set(observation.participants.flatMap((p6) => p6.atom_indices))];
-        entityRef = { kind: "interaction", analysis_name: interaction.analysis_name, analysis_revision: interaction.analysis_revision, frame: interaction.frame, occurrence_index: observation.occurrence_index };
+        entityRef = {
+          kind: "interaction",
+          analysis_name: interaction.analysis_name,
+          analysis_revision: interaction.analysis_revision,
+          query_revision: interaction.query_revision,
+          frame: interaction.frame,
+          occurrence_index: observation.occurrence_index,
+          query_offset: observation.query_offset,
+          interaction_type: observation.interaction_type
+        };
       }
       const perGroup = sourceData.__groupAtoms;
       if (Array.isArray(perGroup) && Array.isArray(perGroup[groupIdx])) {
@@ -163652,6 +163772,38 @@ var MolSysViewerController = class _MolSysViewerController {
       return [dx / len, dy / len, dz / len];
     };
     this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, target, details) => {
+      if (action === "show_help") {
+        this.helpOpener?.();
+        return true;
+      }
+      if (action === "focus_all") {
+        const structure = this.getStructureData();
+        if (structure) this.plugin.managers.camera.focusLoci(Structure.Loci(structure));
+        return true;
+      }
+      if (action === "open_region_in_studio") {
+        if (!details?.tag) return true;
+        if (this.currentWorkspace !== "core") this.selectWorkspace("core");
+        this.setPanelMode("navigate", true);
+        this.groupPanel.openRegionObject(details.tag);
+        return true;
+      }
+      if (action === "edit_object_in_studio" || action === "edit_annotation_text") {
+        if (!["annotation", "shape", "measurement"].includes(target.kind) || !("tag" in target) || !target.tag) return true;
+        if (this.currentWorkspace !== "core") this.selectWorkspace("core");
+        this.setPanelMode("navigate", true);
+        this.groupPanel.openContextObject(target.kind, target.tag, action === "edit_annotation_text");
+        return true;
+      }
+      if (action === "inspect_picked_interaction" || action === "edit_interaction_in_studio") {
+        if (target.kind !== "interaction" || !target.tag) return true;
+        if (this.currentWorkspace !== "core") this.selectWorkspace("core");
+        this.setPanelMode("navigate", true);
+        this.groupPanel.openSection("interactions");
+        if (action === "inspect_picked_interaction") this.groupPanel.inspectInteractionOccurrence(target.tag, target.entity_ref);
+        else this.groupPanel.openInteractionObject(target.tag);
+        return true;
+      }
       if (action === "inspect_target" || action === "open_shapes_for_target" || action === "open_interactions_for_target") {
         if (target.kind !== "structure" || !target.atom_indices.length) return true;
         if (this.currentWorkspace !== "core") this.selectWorkspace("core");
@@ -163673,6 +163825,10 @@ var MolSysViewerController = class _MolSysViewerController {
         return;
       }
       if (action === "focus_target") {
+        if (target.kind !== "empty" && !target.atom_indices.length && target.focusable && this.lastContextLoci) {
+          this.plugin.managers.camera.focusLoci(this.lastContextLoci);
+          return true;
+        }
         this.focusTarget(target);
         return;
       }
@@ -163750,7 +163906,7 @@ var MolSysViewerController = class _MolSysViewerController {
       if (action === "rename_region") {
         return;
       }
-      if (action === "delete_annotation" || action === "delete_shape" || action === "delete_interaction" || action === "focus_interaction" || action === "save_selection" || action === "remove_selection" || action === "create_region_from_selection" || action === "create_section_from_selection" || action === "add_label_from_selection" || action === "expand_selection" || action === "addon_context_action" || action === "undo_scene" || action === "redo_scene") {
+      if (action === "delete_annotation" || action === "delete_shape" || action === "delete_interaction" || action === "focus_interaction" || action === "select_picked_interaction" || action === "focus_picked_interaction" || action === "toggle_interaction_visibility" || action === "toggle_annotation_visibility" || action === "toggle_shape_visibility" || action === "save_selection" || action === "remove_selection" || action === "create_region_from_selection" || action === "create_section_from_selection" || action === "add_label_from_selection" || action === "expand_selection" || action === "addon_context_action" || action === "undo_scene" || action === "redo_scene") {
         return;
       }
       this.startMeasurementTool(action, details?.endpoint_policy);
@@ -163766,6 +163922,8 @@ var MolSysViewerController = class _MolSysViewerController {
         "focus_selection",
         "clear_selection",
         "reset_view",
+        "focus_all",
+        "show_help",
         "toggle_background",
         "toggle_spin",
         "toggle_swing",
@@ -163817,9 +163975,11 @@ var MolSysViewerController = class _MolSysViewerController {
             };
           } else {
             payload = normalizeContextPayloadFromLoci(current2.loci, event.clientX, event.clientY);
-            payload = this.normalizeManagedContextPayload(payload);
+            payload = this.normalizeManagedContextPayload(payload, current2.loci);
           }
           this.lastContextLoci = current2.loci;
+          const bounds = Loci2.getBoundingSphere(current2.loci);
+          payload.focusable = !!bounds && Number.isFinite(bounds.radius) && bounds.radius >= 0 && bounds.center.every(Number.isFinite);
         } else {
           payload = {
             event: "interaction_context_menu",
@@ -163850,6 +164010,8 @@ var MolSysViewerController = class _MolSysViewerController {
           {
             isSpinActive: this.scene.isSpinActive,
             canMeasure: !this.isPanelOnly && this.lastContextLoci !== null,
+            canFocusAll: !!this.getStructureData(),
+            canHelp: !!this.helpOpener,
             ...this.contextHistoryState,
             isSwingActive: this.scene.isSwingActive,
             isDarkMode: this.scene.isDarkMode,
@@ -164395,6 +164557,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.notify?.({ event: "webgl_context_restored" });
   }
   dispose() {
+    this.helpOpener = void 0;
     this.annotations.dispose();
     this.interactions.clear();
     this.measurementTools.dispose();
@@ -164703,6 +164866,8 @@ var MolSysViewerController = class _MolSysViewerController {
       {
         isSpinActive: this.scene.isSpinActive,
         canMeasure: !this.isPanelOnly && this.lastContextLoci !== null,
+        canFocusAll: !!this.getStructureData(),
+        canHelp: !!this.helpOpener,
         ...this.contextHistoryState,
         isSwingActive: this.scene.isSwingActive,
         isDarkMode: this.scene.isDarkMode,
@@ -164713,6 +164878,7 @@ var MolSysViewerController = class _MolSysViewerController {
     );
   }
   openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent) {
+    this.lastContextLoci = null;
     const payload = {
       ...target,
       page_x: pageX,
@@ -164734,6 +164900,8 @@ var MolSysViewerController = class _MolSysViewerController {
       this.addonContextItems,
       {
         isSpinActive: this.scene.isSpinActive,
+        canFocusAll: !!this.getStructureData(),
+        canHelp: !!this.helpOpener,
         ...this.contextHistoryState,
         isSwingActive: this.scene.isSwingActive,
         isDarkMode: this.scene.isDarkMode,
@@ -164749,6 +164917,10 @@ var MolSysViewerController = class _MolSysViewerController {
     const loci = this.atomIndicesToLoci(selection.atom_indices);
     if (!loci) return;
     this.plugin.managers.camera.focusLoci(loci);
+  }
+  /** Controls owns the help overlay; the context menu reuses that owner. */
+  setHelpOpener(open) {
+    this.helpOpener = open;
   }
   focusTarget(target) {
     const atomIndices = "atom_indices" in target && Array.isArray(target.atom_indices) ? target.atom_indices : [];
@@ -164785,7 +164957,42 @@ var MolSysViewerController = class _MolSysViewerController {
       measurement_name: payload.shape_name
     };
   }
-  normalizeManagedContextPayload(payload) {
+  normalizeManagedContextPayload(payload, loci) {
+    const shape = loci && (ShapeGroup.isLoci(loci) || Shape.isLoci(loci)) ? loci.shape : null;
+    const owner = shape ? this.state.findShapeOwner(shape.sourceData) : null;
+    if (owner && payload.kind !== "empty" && payload.kind !== "structure") {
+      if (owner.kind === "interaction") return { ...payload, kind: "interaction", tag: owner.tag };
+      if (owner.kind === "shape") return {
+        ...payload,
+        kind: "shape",
+        tag: owner.tag,
+        atom_indices: payload.atom_indices.length ? payload.atom_indices : this.shapeSummaries.find((item2) => item2.tag === owner.tag)?.atomIndices ?? []
+      };
+      if (owner.kind === "measurement") {
+        const spec = this.measurements.getSpec(owner.tag);
+        return {
+          event: payload.event,
+          kind: "measurement",
+          tag: owner.tag,
+          atom_indices: spec?.atom_indices ?? payload.atom_indices,
+          measurement_name: spec?.kind,
+          page_x: payload.page_x,
+          page_y: payload.page_y
+        };
+      }
+      if (owner.kind === "annotation") {
+        const spec = this.annotations.getSpec(owner.tag);
+        return {
+          event: payload.event,
+          kind: "annotation",
+          tag: owner.tag,
+          text: spec?.text,
+          atom_indices: spec?.atom_indices ?? payload.atom_indices,
+          page_x: payload.page_x,
+          page_y: payload.page_y
+        };
+      }
+    }
     if (payload.kind !== "shape" || typeof payload.tag !== "string") return payload;
     if (!this.measurements.hasTag(payload.tag)) return payload;
     return {
@@ -164983,16 +165190,19 @@ var MolSysViewerController = class _MolSysViewerController {
           await this.shapes.addPharmacophore(msg);
           break;
         case "set_interaction_frame":
+          this.contextMenu.invalidateInteractionContext();
           await this.interactions.apply(msg);
           break;
         case "interaction_frame_complete":
           this.interactions.finishResponse(msg.request_id);
           break;
         case "set_interaction_series":
+          this.contextMenu.invalidateInteractionContext();
           await this.interactions.setSeries(msg);
           break;
         case "set_interaction_summaries":
           if (!this.interactions.setSummaries(msg.interactions, msg.projection_revision)) break;
+          this.contextMenu.invalidateInteractionContext();
           this.interactionSummaries = msg.interactions;
           this.groupPanel.setInteractions({ ...msg, frame: this.interactions.currentFrame, interactions: msg.interactions.map((item2) => item2.frame === this.interactions.currentFrame ? item2 : { ...item2, frame: this.interactions.currentFrame, status: "pending", n_observations: 0, n_supported: 0, n_skipped: 0 }) });
           this.refreshAddonsPanel(false);
@@ -169151,6 +169361,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
   const isCinema = controlsMode === "cinema";
   const isMinimal = controlsMode === "minimal" || isCinema;
   const helpOverlay = new HelpOverlay(container);
+  c8.setHelpOpener(() => helpOverlay.show());
   const onHelpKey = (ev) => {
     if (ev.target?.closest?.("input, textarea, [contenteditable]")) return;
     if (!container.contains(ev.target)) return;

@@ -123,6 +123,14 @@ export class AnnotationsPanel extends BasePanel {
         this.scheduleRender();
     }
 
+    openObject(tag: string, text = false): void {
+        if (!this.annotations.some(item => item.tag === tag)) return;
+        this.selectedTag = tag;
+        if (text) this.editTextTag = tag;
+        else this.editDetailsTag = tag;
+        this.scheduleRender();
+    }
+
     setSavedSelections(items: SavedSelectionSummary[]): void {
         this.savedSelections = [...items];
         this.scheduleRender();

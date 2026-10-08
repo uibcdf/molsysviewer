@@ -17,6 +17,14 @@ def _tag(content: Mapping[str, Any], action: str) -> str:
     return tag.strip()
 
 
+def _requested_hidden(content: Mapping[str, Any], visible: bool) -> bool:
+    """Explicit contextual Hide is idempotent; Studio retains its toggle."""
+    hidden = content.get("hidden", visible)
+    if not isinstance(hidden, bool):
+        raise ValueError("hidden must be a boolean.")
+    return hidden
+
+
 def add_label_from_selection(view: Any, content: Mapping[str, Any]) -> None:
     text = content.get("text")
     if not isinstance(text, str) or not text.strip():
@@ -74,7 +82,7 @@ def toggle_annotation_visibility(view: Any, content: Mapping[str, Any]) -> None:
     annotation = view.annotations.get(tag, skip_digestion=True)
     if annotation is None:
         raise ValueError(f"No annotation found with tag {tag!r}.")
-    if view.annotations.info(tag, skip_digestion=True)["visible"]:
+    if _requested_hidden(content, view.annotations.info(tag, skip_digestion=True)["visible"]):
         annotation.hide(skip_digestion=True)
     else:
         annotation.show(skip_digestion=True)
@@ -143,7 +151,7 @@ def toggle_shape_visibility(view: Any, content: Mapping[str, Any]) -> None:
     shape = view.shapes.get(tag, skip_digestion=True)
     if shape is None:
         raise ValueError(f"No shape found with tag {tag!r}.")
-    if view.shapes.info(tag, skip_digestion=True)["visible"]:
+    if _requested_hidden(content, view.shapes.info(tag, skip_digestion=True)["visible"]):
         view.shapes.hide(tag, skip_digestion=True)
     else:
         view.shapes.show(tag, skip_digestion=True)

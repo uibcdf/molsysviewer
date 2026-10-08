@@ -1959,7 +1959,7 @@ type CoordinatePair = [number, number, number, number, number, number] | [[numbe
 export interface NetworkLinkOptions {
     dashed?: boolean;
     labels?: string[];
-    interaction?: { analysis_name: string; analysis_revision: string; frame: number; observations: unknown[] };
+    interaction?: { analysis_name: string; analysis_revision: string; query_revision?: string; frame: number; observations: unknown[] };
     mode?: NetworkLinkMode;
     coordinate_pairs?: CoordinatePair[];
     atom_pairs?: [number, number][];

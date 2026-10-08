@@ -374,6 +374,7 @@ export const buildControls = (
     const isMinimal = controlsMode === "minimal" || isCinema;
 
     const helpOverlay = new HelpOverlay(container);
+    c.setHelpOpener(() => helpOverlay.show());
 
     const onHelpKey = (ev: KeyboardEvent) => {
         if ((ev.target as HTMLElement)?.closest?.("input, textarea, [contenteditable]")) return;

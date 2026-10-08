@@ -1,13 +1,13 @@
 # Canvas context menu: accepted pre-1.0 redesign
 
 **Decision — 2026-10-08:** the principal maintainer accepts this redesign as
-required before 1.0 (`uibcdf/molsysviewer#179`). **Partially implemented:** the
-menu shell, shared scene/Studio navigation and molecular-target workflows are
-delivered; object/occurrence workflows and human acceptance remain pending.
+required before 1.0 (`uibcdf/molsysviewer#179`). **Implementation delivered; human acceptance pending:** the
+menu shell, shared scene/Studio navigation, molecular-target and object/occurrence
+workflows are delivered; human acceptance remains pending.
 The [owning report](pending_proposals/canvas_context_menu_target_actions.md)
-records the inspected findings. Current executable contracts remain in
+records the inspected findings. Current executable contracts are maintained in
 [`interaction_gestures_and_menus.md`](interaction_gestures_and_menus.md) and
-[`scene_contracts.md`](scene_contracts.md) until delivery updates them.
+[`scene_contracts.md`](scene_contracts.md) alongside this implementation.
 
 ## Release boundary
 
@@ -170,6 +170,15 @@ target A and current-structure calculation scope, and asks for a name. Measure
 has three actions and an explicit endpoint selector; progress names the policy,
 and individual-atom mode refuses ambiguous multi-atom picks. Load/clear/frame
 changes dismiss the menu and its read-only target snapshot.
+
+Stages 3–4 now connect clicked occurrences through one bounded, identity-checked
+inspector page, and reuse participant selection/focus and graphical-set owners.
+Object menus open the existing annotation/shape/measurement editors; free
+geometry can focus its real Mol* bounds without claiming associated atoms.
+Contextual Hide requests an explicit hidden state. Related regions open their
+Studio inspector; empty canvas offers orientation-preserving Focus All and the
+existing Help overlay where its owner is available. The final extended browser guard passes; the
+maintainer's notebook/popout acceptance remains a separate gate.
 
 1. **Menu shell and context contract.** Extract reusable target/action
    applicability, add bounded submenus and meaningful headings, implement

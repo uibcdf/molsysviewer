@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from ...scene_history import records_scene_history
-from .scene_objects import _tag
+from .scene_objects import _tag, _requested_hidden
 
 
 def create_interaction(view, content):
@@ -167,7 +167,44 @@ def inspect_interaction(view, content):
 
 def toggle_interaction_visibility(view, content):
     obj = view.interactions[_tag(content, "toggle_interaction_visibility")]
-    (obj.show if obj._hidden else obj.hide)()
+    (obj.hide if _requested_hidden(content, not obj._hidden) else obj.show)()
+
+
+def _picked_page(view, content):
+    from collections.abc import Mapping
+
+    context = content.get("context")
+    identity = content.get("identity")
+    if isinstance(context, Mapping):
+        if context.get("kind") != "interaction":
+            raise ValueError("This action requires a picked interaction.")
+        identity = context.get("entity_ref")
+    return view.interactions._inspect_picked_occurrence(_tag(content, "picked interaction"), identity)
+
+
+def inspect_interaction_occurrence(view, content):
+    from ...interactions import _to_plain
+
+    page = _picked_page(view, content)
+    view._send_runtime_only(
+        {"op": "interaction_inspection", "request_id": content.get("request_id"), "result": _to_plain(page)}
+    )
+
+
+def _act_on_picked_occurrence(view, content, method):
+    page = _picked_page(view, content)
+    getattr(view.interactions, method)(
+        page["tag"], page["observations"][0]["occurrence_index"], structure_index=page["frame"],
+        analysis_revision=page["analysis_revision"], query_revision=page["query_revision"],
+    )
+
+
+def select_picked_interaction(view, content):
+    _act_on_picked_occurrence(view, content, "select_observation")
+
+
+def focus_picked_interaction(view, content):
+    _act_on_picked_occurrence(view, content, "focus_observation")
 
 
 def delete_interaction(view, content):
@@ -216,6 +253,9 @@ HANDLERS = {
         "create_interaction",
         "edit_interaction",
         "inspect_interaction",
+        "inspect_interaction_occurrence",
+        "select_picked_interaction",
+        "focus_picked_interaction",
         "toggle_interaction_visibility",
         "delete_interaction",
         "focus_interaction",

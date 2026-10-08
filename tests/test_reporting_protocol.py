@@ -42,6 +42,7 @@ PYTEST_ROOTS = (PurePosixPath("tests"), PurePosixPath("devtools/tests"))
 INTERACTIONS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/interactions-calculation.e2e.ts"
 COMPOSITE_LOAD_BROWSER_GUARD = "molsysviewer/js/tests/e2e/composite-load.e2e.ts"
 MOVIE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/movie-playback.e2e.ts"
+CONTEXT_MENU_BROWSER_GUARD = "molsysviewer/js/tests/e2e/context-menu.e2e.ts"
 GROUP_PANEL_UNIT_GUARD = "molsysviewer/js/tests/unit/group-panel.test.ts"
 
 
@@ -65,7 +66,7 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             "node --test tests/unit/dist-index.js" in scripts.get("test:js", ""),
         )
         return [] if all(requirements) else [f"guard {selector!r} does not resolve to its documented unit lane"]
-    if selector not in (INTERACTIONS_BROWSER_GUARD, COMPOSITE_LOAD_BROWSER_GUARD, MOVIE_BROWSER_GUARD):
+    if selector not in (INTERACTIONS_BROWSER_GUARD, COMPOSITE_LOAD_BROWSER_GUARD, MOVIE_BROWSER_GUARD, CONTEXT_MENU_BROWSER_GUARD):
         return validate_pytest_guard(root, selector)
     js_root = root / "molsysviewer/js"
     try:
@@ -97,6 +98,13 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             "await checkProgressiveWelcome(page, fixture);" in entry,
             "run().catch(" in entry,
             (js_root / "tests/e2e/composite-load-bridge.py").is_file(),
+        )
+    elif selector == CONTEXT_MENU_BROWSER_GUARD:
+        requirements += (
+            "function objectBridge(" in entry,
+            "select_picked_interaction" in entry,
+            "Inspect This Interaction…" in entry,
+            "run().catch(" in entry,
         )
     else:
         requirements += (
@@ -428,6 +436,7 @@ def test_browser_guard_resolves_its_build_entrypoint_and_core_lane() -> None:
     assert validate_guard(ROOT, INTERACTIONS_BROWSER_GUARD) == []
     assert validate_guard(ROOT, COMPOSITE_LOAD_BROWSER_GUARD) == []
     assert validate_guard(ROOT, MOVIE_BROWSER_GUARD) == []
+    assert validate_guard(ROOT, CONTEXT_MENU_BROWSER_GUARD) == []
 
 
 def test_group_panel_unit_guard_is_bounded_and_registered() -> None:

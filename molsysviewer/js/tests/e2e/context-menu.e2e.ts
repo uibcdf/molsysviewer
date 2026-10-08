@@ -6,6 +6,41 @@ import { chromium } from "./e2e-browser";
 
 const dir = dirname(fileURLToPath(import.meta.url));
 
+function objectBridge(events: unknown[] = []) {
+    const result = spawnSync(process.env.PYTHON || "python", ["-c", `
+import json, sys
+import molsysmt as msm
+import molsysviewer as msv
+from molsysviewer.interactions import _to_plain
+view = msv.demo["dialanine"]
+records = [{"structure_index": 0, "interaction_type": "a_unsupported", "participants": [
+    {"role": "ring", "atom_indices": [3, 4]}, {"role": "ring", "atom_indices": [5, 6]}]}]
+records.extend({"structure_index": 0, "interaction_type": "hbond", "participants": [
+    {"role": role, "atom_indices": [atom]} for role, atom in zip(["donor", "hydrogen", "acceptor"], [0, 1, 2])],
+    "measurements": {"distance": 0.2 + index / 1000}} for index in range(61))
+analysis = msm.Interactions.from_records(records, n_atoms=view.molsys.get_n_atoms(), n_structures=1,
+    evaluated_structure_indices=[0], method="synthetic_menu_identity", measure_units={"distance": "nm"})
+view.interactions.attach(analysis, name="parallel", assume_aligned=True)
+view.interactions.add("parallel", tag="parallel-set")
+view.annotations.add(text="Menu annotation", atom_indices=[3, 4], tag="menu-note")
+view.shapes.add_sphere(center=msv.pyunitwizard.quantity([3, 3, 3], "nm"), radius="0.3 nm", tag="menu-sphere")
+view.measurements.add_distance([0], [1], tag="menu-distance")
+view.measurements.add_distance([1], [2], tag="menu-sphere")
+view.active_selection.set([9])
+initial = view._build_embedded_runtime_snapshot()
+view._ready = True
+sent = []
+view.widget.send = sent.append
+for event in json.load(sys.stdin):
+    view._handle_frontend_event(event)
+print(json.dumps(_to_plain({"initial": initial, "messages": sent, "selection": view.active_selection.atom_indices,
+    "analyses": view.interactions.analyses(), "sets": view.interactions.records()})))
+view.close()
+`], { cwd: resolve(dir, "../../../.."), input: JSON.stringify(events), encoding: "utf8" });
+    assert.equal(result.status, 0, result.stderr || String(result.error));
+    return JSON.parse(result.stdout);
+}
+
 async function run() {
     // Real demo and Python scene snapshot: no fabricated molecular topology.
     const fixture = spawnSync(process.env.PYTHON || "python", ["-c", `
@@ -283,8 +318,108 @@ view.close()
         assert.equal(panelRequest.structure_index, undefined);
         assert.ok(panelRequest.context.atom_indices.length > 0);
 
+        // Real rendered objects and a parallel occurrence beyond the first
+        // inspector page; skipped geometry makes link index != query offset.
+        const objects = objectBridge();
+        await page.evaluate(async wire => {
+            const w = window as any;
+            const host = document.createElement("div"); host.id = "objects";
+            Object.assign(host.style, { position: "relative", width: "700px", height: "520px" });
+            document.body.appendChild(host);
+            const c = await w.Harness.createController("objects");
+            w.Harness.attachContextHelp(c, host);
+            for (const message of wire) await c.handleMessage(message, { throwOnError: true });
+        }, objects.initial);
+        const objectMenu = page.locator('#objects [data-molsysviewer-context-menu="true"]');
+        const picked = await page.evaluate(() => (window as any).Harness.openInteractionContext((window as any).__controller, "parallel-set", 60));
+        assert.equal(picked.context.entity_ref.query_offset, 61);
+        assert.equal(picked.context.entity_ref.occurrence_index, 61);
+        assert.match(await objectMenu.locator('[data-molsysviewer-context-menu-title]').innerText(), /hbond.*parallel-set.*structure 0/);
+        await objectMenu.getByRole("menuitem", { name: "Inspect This Interaction…", exact: true }).click();
+        const inspectEvent = await page.evaluate(() => [...(window as any).__messages].reverse().find((m: any) => m.action === "inspect_interaction_occurrence"));
+        assert.ok(inspectEvent);
+        assert.equal(await page.evaluate(() => (window as any).__messages.filter((m: any) => m.action === "inspect_interaction_occurrence").length), 1);
+        let replay = objectBridge([inspectEvent]);
+        assert.deepEqual(replay.selection, [9], "inspection must preserve the working selection");
+        await page.evaluate(async wire => { for (const message of wire) await (window as any).__controller.handleMessage(message, { throwOnError: true }); }, replay.messages);
+        assert.equal(await page.locator('#objects [data-molsysviewer-interaction-observation="61"]').count(), 1);
+        assert.equal(await page.locator('#objects [data-molsysviewer-interaction-observation]').count(), 1);
+        assert.match(await page.locator('#objects [data-molsysviewer-interaction-observation="61"]').innerText(), /distance: 0\.26 nm/);
+
+        const requests: any[] = [inspectEvent];
+        for (const [label, action] of [["Select Participants", "select_picked_interaction"], ["Focus Participants", "focus_picked_interaction"]]) {
+            await page.evaluate(() => (window as any).Harness.openInteractionContext((window as any).__controller, "parallel-set", 60));
+            await objectMenu.getByRole("menuitem", { name: label, exact: true }).click();
+            const event = await page.evaluate(action => [...(window as any).__messages].reverse().find((m: any) => m.action === action), action);
+            assert.ok(event); requests.push(event);
+        }
+        replay = objectBridge(requests);
+        assert.deepEqual(replay.selection, [0, 1, 2]);
+        await page.evaluate(async wire => { for (const message of wire) await (window as any).__controller.handleMessage(message, { throwOnError: true }); }, replay.messages);
+        await page.evaluate(() => (window as any).Harness.openInteractionContext((window as any).__controller, "parallel-set", 60));
+        await objectMenu.locator('[data-molsysviewer-context-submenu="Interaction set"]').click();
+        await objectMenu.getByRole("menuitem", { name: "Edit Interaction Set in Studio…", exact: true }).click();
+        assert.equal(await page.locator('#objects [data-molsysviewer-interaction-field="tag"]').inputValue(), "parallel-set");
+        await page.evaluate(() => (window as any).Harness.openInteractionContext((window as any).__controller, "parallel-set", 60));
+        await objectMenu.locator('[data-molsysviewer-context-submenu="Interaction set"]').click();
+        await objectMenu.getByRole("menuitem", { name: "Hide Interaction Representation", exact: true }).click();
+        const hide = await page.evaluate(() => [...(window as any).__messages].reverse().find((m: any) => m.action === "toggle_interaction_visibility"));
+        assert.equal(hide.hidden, true);
+        requests.push(hide); replay = objectBridge(requests);
+        assert.deepEqual(replay.analyses.map((analysis: any) => analysis.name), ["parallel"]);
+        assert.equal(replay.sets[0].hidden, true);
+        await page.evaluate(async wire => { for (const message of wire) await (window as any).__controller.handleMessage(message, { throwOnError: true }); }, replay.messages);
+        await page.evaluate(() => (window as any).Harness.openInteractionContext((window as any).__controller, "parallel-set", 60));
+        const summary = replay.messages.findLast((message: any) => message.op === "set_interaction_summaries");
+        assert.ok(summary);
+        await page.evaluate(async summary => {
+            const c = (window as any).__controller;
+            await c.handleMessage(summary);
+        }, summary);
+        assert.equal(await objectMenu.isVisible(), false, "updated analyses/filters invalidate an open occurrence menu");
+
+        await page.evaluate(() => (window as any).Harness.openSceneObjectContext((window as any).__controller, "annotation", "menu-note"));
+        await objectMenu.getByRole("menuitem", { name: "Edit Annotation Text…", exact: true }).click();
+        assert.equal(await page.locator('#objects [data-molsysviewer-annotation-text-input="menu-note"]').inputValue(), "Menu annotation");
+        await page.evaluate(() => (window as any).Harness.openSceneObjectContext((window as any).__controller, "shape", "menu-sphere"));
+        assert.equal(await objectMenu.getByRole("menuitem", { name: "Select Associated Atoms", exact: true }).isDisabled(), true);
+        assert.equal(await objectMenu.getByRole("menuitem", { name: "Focus Target", exact: true }).isEnabled(), true);
+        await objectMenu.getByRole("menuitem", { name: "Focus Target", exact: true }).click();
+        await page.waitForFunction(() => (window as any).__controller.plugin.canvas3d.camera.state.target.every((v: number) => Math.abs(v - 30) < 0.01));
+        await page.evaluate(() => (window as any).Harness.openSceneObjectContext((window as any).__controller, "shape", "menu-sphere"));
+        await objectMenu.getByRole("menuitem", { name: "Edit Appearance in Studio…", exact: true }).click();
+        assert.equal(await page.locator('#objects [data-molsysviewer-shape-style="menu-sphere"]').count(), 1);
+        await page.locator('#objects [data-molsysviewer-shape-rename="menu-sphere"]').fill("renamed-sphere");
+        await page.locator('#objects [data-molsysviewer-shape-rename-confirm="menu-sphere"]').click();
+        const rename = await page.evaluate(() => [...(window as any).__messages].reverse().find((m: any) => m.action === "rename_shape"));
+        requests.push(rename); replay = objectBridge(requests);
+        await page.evaluate(async wire => { for (const message of wire) await (window as any).__controller.handleMessage(message, { throwOnError: true }); }, replay.messages);
+        const renamed = await page.evaluate(() => (window as any).Harness.openSceneObjectContext((window as any).__controller, "shape", "renamed-sphere"));
+        assert.equal(renamed.tag, "renamed-sphere");
+        assert.equal(renamed.kind, "shape", "same-tag measurements must not change a shape's domain");
+        await objectMenu.getByRole("menuitem", { name: "Edit Appearance in Studio…", exact: true }).click();
+        assert.equal(await page.locator('#objects [data-molsysviewer-shape-style="renamed-sphere"]').count(), 1);
+        await page.evaluate(() => (window as any).Harness.openSceneObjectContext((window as any).__controller, "measurement", "menu-distance"));
+        await objectMenu.getByRole("menuitem", { name: "Inspect and Edit Measurement…", exact: true }).click();
+        assert.equal(await page.locator('#objects [data-molsysviewer-measurement-rename-input="menu-distance"]').count(), 1);
+
+        // Common scene actions call their existing local owner exactly once.
+        await page.evaluate(() => {
+            const c = (window as any).__controller;
+            c.contextMenu.open({ event: "interaction_context_menu", kind: "empty" }, 80, 80, null, null, [], [], [], [], { canFocusAll: true, canHelp: true });
+        });
+        await objectMenu.getByRole("menuitem", { name: "Focus All", exact: true }).click();
+        await page.waitForFunction(() => (window as any).__controller.plugin.canvas3d.camera.state.target.some((v: number) => Math.abs(v - 30) > 0.1));
+        assert.equal(await page.evaluate(() => (window as any).__messages.some((m: any) => m.action === "focus_all")), false);
+        await page.evaluate(() => {
+            const c = (window as any).__controller;
+            c.contextMenu.open({ event: "interaction_context_menu", kind: "empty" }, 80, 80, null, null, [], [], [], [], { canFocusAll: true, canHelp: true });
+        });
+        await objectMenu.getByRole("menuitem", { name: "Help", exact: true }).click();
+        assert.equal(await page.locator('#objects .molsysviewer-help-card').isVisible(), true);
+
         assert.deepEqual(errors, []);
-        console.log("[E2E context menu] real dialanine rendering; compact submenus, keys/Escape, selection preservation, Studio, history, scope guards and single dispatch pass");
+        console.log("[E2E context menu] real molecular/object rendering; occurrence #61 bounded inspection, participant/set scope, object editors, geometry focus, shared Help, keys/Escape and single dispatch pass");
     } finally { await browser.close(); }
 }
 

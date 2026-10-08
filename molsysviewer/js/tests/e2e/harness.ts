@@ -24,18 +24,47 @@ import {
 } from "../../src/messages/array-native-transport";
 import { PopupHostManager } from "../../src/managers/popup-host";
 import { RemoteInputAdapter } from "../../src/messages/remote-input-adapter";
+import { Loci } from "molstar/lib/mol-model/loci";
+import { HelpOverlay } from "../../src/ui/help-overlay";
 
 export { RemoteInputAdapter };
 
 /** Resolve a real rendered mesh group through the production picking path. */
-export function openInteractionContext(controller: MolSysViewerController, tag: string) {
+export function openInteractionContext(controller: MolSysViewerController, tag: string, groupIndex = 0) {
     const ref = inspectTaggedRefs(controller, "interaction", tag)[0].ref;
     const shape = controller.plugin.state.data.cells.get(ref)!.obj!.data.repr.getAllLoci()[0].shape;
-    const loci = ShapeGroup.Loci(shape, [{ ids: OrderedSet.ofSingleton(0), instance: 0 }]);
-    const context = (controller as any).normalizeManagedContextPayload(normalizeContextInteractionEvent({ current: { loci } }));
+    const loci = ShapeGroup.Loci(shape, [{ ids: OrderedSet.ofSingleton(groupIndex), instance: 0 }]);
+    const context = (controller as any).normalizeManagedContextPayload(normalizeContextInteractionEvent({ current: { loci } }), loci);
     const click = (controller as any).normalizeManagedInteractionPayload(normalizeInteractionEvent("click", { current: { loci } }));
     (controller as any).contextMenu.open(context, 80, 80);
     return { context, click };
+}
+
+export function openSceneObjectContext(controller: MolSysViewerController, kind: string, tag: string) {
+    if (kind === "annotation") {
+        // Default labels are HTML overlays, not necessarily Mol* meshes.
+        // Exercise the production annotation opening path with its real spec.
+        const spec = (controller as any).annotations.getSpec(tag);
+        const target = { event: "interaction_context_menu", kind, tag, text: spec.text, atom_indices: spec.atom_indices ?? [] };
+        (controller as any).openContextMenuForAnnotation(target, 80, 80, (controller as any).notify);
+        return target;
+    }
+    const ref = inspectTaggedRefs(controller, kind, tag)[0].ref;
+    const cells = controller.plugin.state.data.select(StateSelection.Generators.byRef(ref).subtree());
+    const repr = cells.map(cell => cell.obj?.data?.repr).find(repr => typeof repr?.getAllLoci === "function");
+    if (!repr) throw new Error(`No rendered geometry for ${kind} ${tag}`);
+    const loci = repr.getAllLoci()[0];
+    const context: any = (controller as any).normalizeManagedContextPayload(normalizeContextInteractionEvent({ current: { loci } }), loci);
+    const bounds = Loci.getBoundingSphere(loci);
+    context.focusable = !!bounds && Number.isFinite(bounds.radius) && bounds.center.every(Number.isFinite);
+    (controller as any).lastContextLoci = loci;
+    (controller as any).contextMenu.open(context, 80, 80);
+    return context;
+}
+
+export function attachContextHelp(controller: MolSysViewerController, host: HTMLElement) {
+    const help = new HelpOverlay(host);
+    controller.setHelpOpener(() => help.show());
 }
 
 declare global {

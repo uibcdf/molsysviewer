@@ -265,7 +265,9 @@ function shapeTargetFromLoci(loci: any): { kind: "shape" | "interaction"; atom_i
             const observation = interaction?.observations?.[groupIdx];
             if (observation) {
                 groupAtoms = [...new Set<number>(observation.participants.flatMap((p: {atom_indices: number[]}) => p.atom_indices))];
-                entityRef = { kind: "interaction", analysis_name: interaction.analysis_name, analysis_revision: interaction.analysis_revision, frame: interaction.frame, occurrence_index: observation.occurrence_index };
+                entityRef = { kind: "interaction", analysis_name: interaction.analysis_name, analysis_revision: interaction.analysis_revision,
+                    query_revision: interaction.query_revision, frame: interaction.frame, occurrence_index: observation.occurrence_index,
+                    query_offset: observation.query_offset, interaction_type: observation.interaction_type };
             }
             const perGroup = (sourceData as any).__groupAtoms;
             if (Array.isArray(perGroup) && Array.isArray(perGroup[groupIdx])) {
@@ -591,6 +593,7 @@ export class MolSysViewerController {
     private readonly releaseContextMenuSuppression?: () => void;
     private readonly releaseGlobalEscapeHandler?: () => void;
     private lastContextLoci: any = null;
+    private helpOpener?: () => void;
     private lastContextPayload: ContextInteractionPayload | null = null;
     private lastHoverLoci: any = null;
     private lastHoverPayload: InteractionPayload | null = null;
@@ -1265,6 +1268,33 @@ export class MolSysViewerController {
             return [dx / len, dy / len, dz / len];
         };
         this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, target, details) => {
+            if (action === "show_help") { this.helpOpener?.(); return true; }
+            if (action === "focus_all") {
+                const structure = this.getStructureData();
+                if (structure) this.plugin.managers.camera.focusLoci(Structure.Loci(structure));
+                return true;
+            }
+            if (action === "open_region_in_studio") {
+                if (!details?.tag) return true;
+                if (this.currentWorkspace !== "core") this.selectWorkspace("core");
+                this.setPanelMode("navigate", true); this.groupPanel.openRegionObject(details.tag);
+                return true;
+            }
+            if (action === "edit_object_in_studio" || action === "edit_annotation_text") {
+                if (!["annotation", "shape", "measurement"].includes(target.kind) || !("tag" in target) || !target.tag) return true;
+                if (this.currentWorkspace !== "core") this.selectWorkspace("core");
+                this.setPanelMode("navigate", true);
+                this.groupPanel.openContextObject(target.kind as "annotation" | "shape" | "measurement", target.tag, action === "edit_annotation_text");
+                return true;
+            }
+            if (action === "inspect_picked_interaction" || action === "edit_interaction_in_studio") {
+                if (target.kind !== "interaction" || !target.tag) return true;
+                if (this.currentWorkspace !== "core") this.selectWorkspace("core");
+                this.setPanelMode("navigate", true); this.groupPanel.openSection("interactions");
+                if (action === "inspect_picked_interaction") this.groupPanel.inspectInteractionOccurrence(target.tag, target.entity_ref);
+                else this.groupPanel.openInteractionObject(target.tag);
+                return true;
+            }
             if (action === "inspect_target" || action === "open_shapes_for_target" || action === "open_interactions_for_target") {
                 if (target.kind !== "structure" || !target.atom_indices.length) return true;
                 if (this.currentWorkspace !== "core") this.selectWorkspace("core");
@@ -1289,6 +1319,10 @@ export class MolSysViewerController {
                 return;
             }
             if (action === "focus_target") {
+                if (target.kind !== "empty" && !target.atom_indices.length && target.focusable && this.lastContextLoci) {
+                    this.plugin.managers.camera.focusLoci(this.lastContextLoci);
+                    return true;
+                }
                 this.focusTarget(target);
                 return;
             }
@@ -1372,6 +1406,11 @@ export class MolSysViewerController {
                 || action === "delete_shape"
                 || action === "delete_interaction"
                 || action === "focus_interaction"
+                || action === "select_picked_interaction"
+                || action === "focus_picked_interaction"
+                || action === "toggle_interaction_visibility"
+                || action === "toggle_annotation_visibility"
+                || action === "toggle_shape_visibility"
                 || action === "save_selection"
                 || action === "remove_selection"
                 || action === "create_region_from_selection"
@@ -1391,7 +1430,7 @@ export class MolSysViewerController {
             this.refreshAddonsPanel();
         }, getCameraDirection, this.initOptions?.hasAuthority === false ? {
             allowedActions: new Set(["focus_target", "inspect_target", "focus_region", "focus_selection", "clear_selection",
-                "reset_view", "toggle_background", "toggle_spin", "toggle_swing", "set_viewer_mode", "open_navigate"]),
+                "reset_view", "focus_all", "show_help", "toggle_background", "toggle_spin", "toggle_swing", "set_viewer_mode", "open_navigate"]),
         } : {});
         this.releaseContextMenuSuppression = suppressCanvasContextMenu(host, this.canvasHost);
         this.releaseGlobalEscapeHandler = this.installGlobalEscapeHandler();
@@ -1440,9 +1479,12 @@ export class MolSysViewerController {
                         };
                     } else {
                         payload = normalizeContextPayloadFromLoci(current.loci, event.clientX, event.clientY);
-                        payload = this.normalizeManagedContextPayload(payload);
+                        payload = this.normalizeManagedContextPayload(payload, current.loci);
                     }
                     this.lastContextLoci = current.loci;
+                    const bounds = Loci.getBoundingSphere(current.loci);
+                    (payload as ContextMenuTarget).focusable = !!bounds && Number.isFinite(bounds.radius) && bounds.radius >= 0
+                        && bounds.center.every(Number.isFinite);
                 } else {
                     payload = {
                         event: "interaction_context_menu",
@@ -1478,6 +1520,8 @@ export class MolSysViewerController {
                     {
                         isSpinActive: this.scene.isSpinActive,
                         canMeasure: !this.isPanelOnly && this.lastContextLoci !== null,
+                        canFocusAll: !!this.getStructureData(),
+                        canHelp: !!this.helpOpener,
                         ...this.contextHistoryState,
                         isSwingActive: this.scene.isSwingActive,
                         isDarkMode: this.scene.isDarkMode,
@@ -1735,6 +1779,7 @@ export class MolSysViewerController {
     }
 
     dispose(): void {
+        this.helpOpener = undefined;
         this.annotations.dispose();
         this.interactions.clear();
         this.measurementTools.dispose();
@@ -2096,6 +2141,8 @@ export class MolSysViewerController {
             {
                 isSpinActive: this.scene.isSpinActive,
                 canMeasure: !this.isPanelOnly && this.lastContextLoci !== null,
+                canFocusAll: !!this.getStructureData(),
+                canHelp: !!this.helpOpener,
                 ...this.contextHistoryState,
                 isSwingActive: this.scene.isSwingActive,
                 isDarkMode: this.scene.isDarkMode,
@@ -2112,6 +2159,7 @@ export class MolSysViewerController {
         pageY: number,
         emitInteractionEvent: (msg: any) => void,
     ): void {
+        this.lastContextLoci = null;
         const payload = {
             ...target,
             page_x: pageX,
@@ -2133,6 +2181,8 @@ export class MolSysViewerController {
             this.addonContextItems,
             {
                 isSpinActive: this.scene.isSpinActive,
+                canFocusAll: !!this.getStructureData(),
+                canHelp: !!this.helpOpener,
                 ...this.contextHistoryState,
                 isSwingActive: this.scene.isSwingActive,
                 isDarkMode: this.scene.isDarkMode,
@@ -2150,6 +2200,9 @@ export class MolSysViewerController {
         if (!loci) return;
         this.plugin.managers.camera.focusLoci(loci);
     }
+
+    /** Controls owns the help overlay; the context menu reuses that owner. */
+    setHelpOpener(open?: () => void): void { this.helpOpener = open; }
 
     private focusTarget(target: ContextMenuTarget | { atom_indices?: number[] }): void {
         const atomIndices = "atom_indices" in target && Array.isArray(target.atom_indices) ? target.atom_indices : [];
@@ -2189,7 +2242,27 @@ export class MolSysViewerController {
         };
     }
 
-    private normalizeManagedContextPayload(payload: ContextInteractionPayload): ContextInteractionPayload {
+    private normalizeManagedContextPayload(payload: ContextInteractionPayload, loci?: any): ContextInteractionPayload {
+        const shape = loci && (ShapeGroup.isLoci(loci) || Shape.isLoci(loci)) ? loci.shape : null;
+        const owner = shape ? this.state.findShapeOwner(shape.sourceData) : null;
+        if (owner && payload.kind !== "empty" && payload.kind !== "structure") {
+            if (owner.kind === "interaction") return { ...payload, kind: "interaction", tag: owner.tag };
+            if (owner.kind === "shape") return { ...payload, kind: "shape", tag: owner.tag,
+                atom_indices: payload.atom_indices.length ? payload.atom_indices
+                    : this.shapeSummaries.find(item => item.tag === owner.tag)?.atomIndices ?? [] };
+            if (owner.kind === "measurement") {
+                const spec = this.measurements.getSpec(owner.tag);
+                return { event: payload.event, kind: "measurement", tag: owner.tag,
+                    atom_indices: spec?.atom_indices ?? payload.atom_indices, measurement_name: spec?.kind,
+                    page_x: payload.page_x, page_y: payload.page_y };
+            }
+            if (owner.kind === "annotation") {
+                const spec = this.annotations.getSpec(owner.tag);
+                return { event: payload.event, kind: "annotation", tag: owner.tag, text: spec?.text,
+                    atom_indices: spec?.atom_indices ?? payload.atom_indices,
+                    page_x: payload.page_x, page_y: payload.page_y };
+            }
+        }
         if (payload.kind !== "shape" || typeof payload.tag !== "string") return payload;
         if (!this.measurements.hasTag(payload.tag)) return payload;
         return {
@@ -2393,11 +2466,16 @@ export class MolSysViewerController {
                 case "add_rings": await this.shapes.addRings(msg); break;
                 case "add_anisotropy_ellipsoids": await this.shapes.addAnisotropyEllipsoids(msg); break;
                 case "add_pharmacophore_features": await this.shapes.addPharmacophore(msg); break;
-                case "set_interaction_frame": await this.interactions.apply(msg); break;
+                case "set_interaction_frame":
+                    this.contextMenu.invalidateInteractionContext();
+                    await this.interactions.apply(msg); break;
                 case "interaction_frame_complete": this.interactions.finishResponse(msg.request_id); break;
-                case "set_interaction_series": await this.interactions.setSeries(msg); break;
+                case "set_interaction_series":
+                    this.contextMenu.invalidateInteractionContext();
+                    await this.interactions.setSeries(msg); break;
                 case "set_interaction_summaries":
                     if (!this.interactions.setSummaries(msg.interactions, msg.projection_revision)) break;
+                    this.contextMenu.invalidateInteractionContext();
                     this.interactionSummaries = msg.interactions;
                     this.groupPanel.setInteractions({ ...msg, frame: this.interactions.currentFrame, interactions: msg.interactions.map(item => item.frame === this.interactions.currentFrame ? item : { ...item, frame: this.interactions.currentFrame, status: "pending", n_observations: 0, n_supported: 0, n_skipped: 0 }) });
                     this.refreshAddonsPanel(false);

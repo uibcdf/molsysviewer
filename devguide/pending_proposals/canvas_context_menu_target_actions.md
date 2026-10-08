@@ -6,7 +6,7 @@ opened: 2026-10-08
 closed:
 verification: inspected
 area: [canvas, interaction, selection, studio]
-guard:
+guard: molsysviewer/js/tests/e2e/context-menu.e2e.ts
 normative:
 blocked_by: []
 supersedes: []
@@ -16,8 +16,8 @@ supersedes: []
 
 **Reported:** 2026-10-08, during the principal maintainer's pre-1.0 design
 review. The maintainer approves the proposed redesign as a pre-1.0 requirement.
-The menu foundation and molecular-target workflows are implemented with new
-real-browser coverage. Object/occurrence workflows and human review remain pending.
+The menu foundation, molecular-target and object/occurrence workflows are
+implemented. The extended real-browser guard passes; human review remains pending.
 
 ## What
 
@@ -41,13 +41,13 @@ and exposes shared view controls on all target families. Molecular selection and
 direct target creation now use canonical scope resolution without replacing a
 working selection until an explicit selection action.
 
-`molsysviewer/js/src/managers/viewer-controller.ts` resolves picked interactions
-to participant atoms and an entity reference with analysis name/revision, frame
-and occurrence index. The menu uses the set tag for focus/delete, leaving this
-occurrence context unused. Panel labels may advertise closing while controller
+At the inspected baseline, `molsysviewer/js/src/managers/viewer-controller.ts`
+resolved picked interactions to participant atoms and an entity reference with
+analysis name/revision, frame and occurrence index. The menu used only the set
+tag for focus/delete, leaving that occurrence context unused. Panel labels may advertise closing while controller
 branches opened the corresponding panel. The foundation now uses an explicit
-Open Studio action and establishes menu-first Escape. The unused occurrence
-context remains a pending seam.
+Open Studio action and establishes menu-first Escape. The delivered occurrence seam now also carries a filtered-query revision and
+query position, resolved through a bounded identity-checked inspector page.
 
 Reuse the existing scene-object, selection, history and Studio owners. Introduce
 shared applicability and target resolution rather than a second set of scene
@@ -143,10 +143,68 @@ Measurement launch is consumed locally, and is absent on the panel-only surface.
 The corrected main/panel-only guard and final TypeScript check pass.
 The final context-owner check passes 18 cases, including refusal to route an
 interaction occurrence through the unversioned molecular-target atom path.
-Its occurrence actions will use the guarded inspection/identity seam in stage 3.
+The occurrence actions below use the guarded inspection/identity seam.
+
+## Object and occurrence workflows — 2026-10-08
+
+The projection now carries `query_offset`, a Viewer lookup hint in the filtered
+current-frame query, shared by every segment of one occurrence. It is not an
+additional MolSysMT public identity. `_inspect_picked_occurrence` verifies the
+analysis name/version, filter/query revision and visible frame, reads one
+bounded page and checks the exact occurrence ID. Existing inspected-page
+participant APIs remain authoritative; client atom lists cannot replace them.
+Provider query construction can still allocate secondary indices; this does not
+promise a universal RAM limit or out-of-memory H5MSM access.
+
+Occurrence inspection opens the existing Studio inspector. Select/focus uses
+its public participant operations. Graphical-set focus/hide/edit/delete is a
+separate submenu; hiding/removing its representation preserves stored analysis.
+Accepted interaction updates dismiss an open occurrence context, and old
+projections lacking query identity disable occurrence actions.
+
+Annotation text/appearance, shape appearance and measurement inspection/editing
+open their existing owners. Associated-atom selection is explicit. Free shapes
+focus real Mol* bounds locally instead of sending an ambiguous backend object
+focus. `StateHandlers.findShapeOwner` resolves current kind/tag from registered
+scene refs on demand, including after rename and across same-tag object kinds.
+This fixes the browser-observed missing sphere tag and avoids guessing ownership
+from the presence of a measurement with the same tag. The scan reads scene refs,
+not trajectory coordinates. Contextual Hide supplies a boolean requested state;
+its shared handler is idempotent while the existing Studio toggle is retained.
+Related regions open their existing inspector. Empty canvas adds orientation-
+preserving Focus All and reuses the controls-owned Help overlay where available.
+
+53 focused Python checks pass (occurrence/persistence, closed dispatch vocabulary,
+explicit hide, and molecular-target owners). The 17 menu, four ShapesPanel,
+21 interaction-normalization and four drag-dismiss JS cases pass individually.
+TypeScript, runtime regeneration, 181 reporting checks and the generated indexes
+pass. The full Python/core-browser campaigns already recorded above are not
+repeated or upgraded to final-source qualification.
+
+The new browser guard uses a real dialanine, real provider results and actual
+rendered geometry. Its synthetic analysis deliberately includes parallel
+observations beyond the first inspector page and skipped geometry. Fixture
+corrections retain the provider's canonical relation/query ordering and the
+record-valued `analyses()` result; an obsolete summary is correctly ignored,
+so invalidation checks use the latest authoritative summary. Default annotations
+use the production HTML-overlay context path rather than an assumed mesh.
+The final extended Mol*/Chromium guard passes on the actual current source.
+It verifies occurrence #61 (query offset 61 despite skipped geometry), one-page
+inspection preserving a different working selection, participant selection/focus,
+graphical Hide preserving stored analysis, accepted-summary invalidation,
+annotation/shape/measurement editor routing, real free-sphere bounds focus,
+Focus All and the shared Help owner. Sphere rename
+and coexistence with a same-tag measurement retain the correct type/current tag.
+The preceding failing fixtures and real missing-sphere-tag finding are retained
+in local campaign logs; their results are not presented as passing executions.
+
+The maintainer's review notebook is
+[`../../sandbox/revision_context_menu_pre_1_0.ipynb`](../../sandbox/revision_context_menu_pre_1_0.ipynb).
+Its public setup cells execute successfully: three pentalanine structures and
+Buch evaluated on all three, with three occurrences. This validates preparation,
+not human interaction or package qualification.
 
 ## Resolution
 
-Pending remaining implementation and the principal maintainer's remote-Jupyter
-acceptance. Current interaction guidance records the delivered foundation;
+Pending the principal maintainer's remote-Jupyter/popout acceptance. Current interaction guidance records the delivered workflows;
 archive this report and close #179 only with addressable guards and evidence.

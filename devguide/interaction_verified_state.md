@@ -102,15 +102,16 @@ The real dialanine/Mol*/Chromium `context-menu.e2e.ts` guard verifies the #179
 foundation: target headings, bounded submenus, active-selection preservation,
 keyboard and focus return, canvas-edge positioning, authoritative history,
 section-aware Studio opening and explicit-state Python viewport echoes.
-Atomless focus and molecular creation from shape-only selections are disabled.
+Atomless targets disable atom-based focus unless real geometry bounds are
+available. Molecular creation from shape-only selections is disabled.
 Escape handles the open menu before a measurement tool. Backend actions dispatch
 once, and browser-owned Studio navigation sends no unsupported backend action.
 The targeted GroupPanel interaction guard confirms its shared menu still creates
 a label after opening the active-selection submenu.
 
 These checks are development browser evidence. The new full layout still needs
-the maintainer's notebook/popout review after the remaining target/occurrence
-workflows land. Earlier manual observations established main and popup menu
+the maintainer's notebook/popout review. Molecular/object/occurrence
+workflows are now implemented; their evidence is recorded below. Earlier manual observations established main and popup menu
 opening and host-menu suppression; they do not constitute manual acceptance of
 the redesigned layout.
 
@@ -131,7 +132,28 @@ replayed through the real Python owners. A panel-only Studio opens the menu from
 its relayed hierarchy, omits canvas measurement picking and does not send a
 fictitious frame-zero identity. Measure has three actions and a separate explicit
 endpoint-policy selector; its progress label names the policy. Human acceptance
-of this slice remains pending together with the remaining object/occurrence work.
+of this slice remains pending together with the completed object/occurrence work.
+
+### Automated object and occurrence workflows — 2026-10-08
+
+Clicked occurrences carry their actual query position, occurrence ID, visible
+frame and analysis/query revisions. One bounded inspector page resolves the
+pick before existing participant selection/focus actions. Backend tests cover
+parallel observations, compound participants, nonconsecutive structures,
+skipped geometry and stale/mismatched references. Explicit Hide is idempotent
+and preserves stored analysis. Object actions route to the existing Studio
+editors; atomless geometry focuses real Mol* bounds. Current object ownership
+comes from the registered scene, preserving type/tag across renames and collisions.
+
+53 focused Python checks, 46 focused JS owner cases, TypeScript and runtime
+regeneration pass. The final extended real-Mol*/Chromium guard passes: one-page occurrence #61
+inspection, participant/set scope, object editors, free-geometry focus, rename
+and same-tag kind separation, shared Help and stale-context dismissal.
+The prepared human notebook is
+[`../sandbox/revision_context_menu_pre_1_0.ipynb`](../sandbox/revision_context_menu_pre_1_0.ipynb).
+Its public setup executes successfully (three structures evaluated for Buch,
+three occurrences); its interactive review is pending. These are development
+checks, not replacement-package or manual acceptance. #179 stays partial.
 
 ## Python Interaction Callbacks
 

@@ -18,13 +18,19 @@ type BaseTarget =
     | { event: "interaction_context_menu"; kind: "measurement"; atom_indices: number[]; tag?: string; measurement_name?: string }
     | { event: "interaction_context_menu"; kind: "annotation"; atom_indices: number[]; tag?: string; text?: string };
 
-export type ContextMenuTarget = BaseTarget;
+export type ContextMenuTarget = BaseTarget & { focusable?: boolean };
 
 export type ContextMenuAction =
     | "distance"
     | "angle"
     | "dihedral"
     | "focus_target"
+    | "focus_all"
+    | "show_help"
+    | "edit_object_in_studio"
+    | "edit_annotation_text"
+    | "toggle_annotation_visibility"
+    | "toggle_shape_visibility"
     | "inspect_target"
     | "select_context_target"
     | "create_region_from_target"
@@ -32,6 +38,7 @@ export type ContextMenuAction =
     | "open_shapes_for_target"
     | "open_interactions_for_target"
     | "focus_region"
+    | "open_region_in_studio"
     | "toggle_region_visibility"
     | "toggle_region_enabled"
     | "delete_region"
@@ -41,6 +48,11 @@ export type ContextMenuAction =
     | "delete_shape"
     | "delete_interaction"
     | "focus_interaction"
+    | "inspect_picked_interaction"
+    | "select_picked_interaction"
+    | "focus_picked_interaction"
+    | "toggle_interaction_visibility"
+    | "edit_interaction_in_studio"
     | "delete_measurement"
     | "focus_selection"
     | "activate_selection"
@@ -74,6 +86,7 @@ export type ContextActionDetails = {
     label_style?: { color?: string; size_em?: number };
     studio_section?: "system" | "selection" | "regions" | "measures" | "interactions" | "annotations" | "shapes";
     enabled?: boolean;
+    hidden?: boolean;
     mode?: "light" | "dark";
     scope?: "target" | "atom" | "group" | "chain";
     op?: "replace" | "add" | "subtract";
@@ -92,6 +105,8 @@ export type ContextMenuSceneState = {
     canUndo?: boolean;
     canRedo?: boolean;
     canMeasure?: boolean;
+    canFocusAll?: boolean;
+    canHelp?: boolean;
 };
 
 export type LastMeasurementSummary = {
@@ -146,7 +161,11 @@ export type ContextMenuOptions = {
 function targetTitle(target: ContextMenuTarget): string {
     if (target.kind === "empty") return "Canvas";
     if (target.kind === "shape") return target.shape_name?.trim() || target.tag?.trim() || "Shape";
-    if (target.kind === "interaction") return target.shape_name?.trim() || target.tag?.trim() || "Interaction";
+    if (target.kind === "interaction") {
+        const identity = target.entity_ref as { interaction_type?: string; frame?: number } | undefined;
+        return [identity?.interaction_type || "Interaction", target.tag?.trim(),
+            Number.isInteger(identity?.frame) ? `structure ${identity!.frame}` : ""].filter(Boolean).join(" · ");
+    }
     if (target.kind === "measurement") return target.measurement_name?.trim() || target.tag?.trim() || "Measurement";
     if (target.kind === "annotation") return target.text?.trim() || target.tag?.trim() || "Annotation";
     if (target.group_name?.trim() || target.metadata?.group_name?.trim()) {
@@ -418,24 +437,41 @@ export class ViewerContextMenu {
                 view.appendChild(this.makeActionButton("Calculate for Target…", "open_interactions_for_target", { workflow: "calculate" }));
             });
         } else if (target.kind === "interaction") {
+            main.appendChild(this.makeActionButton("Inspect This Interaction…", "inspect_picked_interaction"));
+            main.appendChild(this.makeActionButton("Select Participants", "select_picked_interaction"));
+            main.appendChild(this.makeActionButton("Focus Participants", "focus_picked_interaction"));
             if (target.tag?.trim()) this.navigation.addSubmenu(main, "Interaction set", view => {
                 view.appendChild(this.makeActionButton("Focus Interaction Set", "focus_interaction"));
+                view.appendChild(this.makeActionButton("Hide Interaction Representation", "toggle_interaction_visibility"));
+                view.appendChild(this.makeActionButton("Edit Interaction Set in Studio…", "edit_interaction_in_studio"));
                 view.appendChild(this.makeActionButton("Delete Interaction Representation", "delete_interaction"));
             });
         } else if (target.kind !== "empty") {
             main.appendChild(this.makeActionButton("Focus Target", "focus_target"));
+            main.appendChild(this.makeActionButton("Select Associated Atoms", "select_context_target", { scope: "target", op: "replace" }));
             if (target.tag?.trim()) {
+                main.appendChild(this.makeActionButton(target.kind === "measurement" ? "Inspect and Edit Measurement…" : "Edit Appearance in Studio…", "edit_object_in_studio"));
                 if (target.kind === "measurement") {
                     main.appendChild(this.makeActionButton("Hide Measurement", "hide_measurement"));
                     main.appendChild(this.makeActionButton("Delete Measurement", "delete_measurement"));
-                } else if (target.kind === "annotation") main.appendChild(this.makeActionButton("Delete Annotation", "delete_annotation"));
-                else main.appendChild(this.makeActionButton("Delete Shape", "delete_shape"));
+                } else if (target.kind === "annotation") {
+                    main.appendChild(this.makeActionButton("Edit Annotation Text…", "edit_annotation_text"));
+                    main.appendChild(this.makeActionButton("Hide Annotation", "toggle_annotation_visibility"));
+                    main.appendChild(this.makeActionButton("Delete Annotation", "delete_annotation"));
+                } else {
+                    main.appendChild(this.makeActionButton("Hide Shape", "toggle_shape_visibility"));
+                    main.appendChild(this.makeActionButton("Delete Shape", "delete_shape"));
+                }
             }
-        } else main.appendChild(this.makeActionButton("Reset View", "reset_view"));
+        } else {
+            main.appendChild(this.makeActionButton("Reset View", "reset_view"));
+            main.appendChild(this.makeActionButton("Focus All", "focus_all"));
+        }
 
         if (this.currentSelection && this.currentSelection.source_kind !== "empty") {
             this.navigation.addSubmenu(main, selectionTitle(this.currentSelection), view => {
                 view.appendChild(this.makeActionButton("Focus Selection", "focus_selection"));
+                view.appendChild(this.makeActionButton("Inspect Selection in Studio…", "open_navigate", { studio_section: "selection" }));
                 view.appendChild(this.makeActionButton("Save Selection…", "save_selection"));
                 view.appendChild(this.makeActionButton("Create Region from Selection…", "create_region_from_selection"));
                 view.appendChild(this.makeActionButton("Create Section from Selection", "create_section_from_selection"));
@@ -504,6 +540,7 @@ export class ViewerContextMenu {
         const section = target.kind === "structure" ? "system" : target.kind === "interaction" ? "interactions"
             : target.kind === "measurement" ? "measures" : target.kind === "annotation" ? "annotations" : target.kind === "shape" ? "shapes" : undefined;
         main.appendChild(this.makeActionButton("Open Studio…", "open_navigate", section ? { studio_section: section } : undefined));
+        main.appendChild(this.makeActionButton("Help", "show_help"));
         this.navigation.decorate();
     }
 
@@ -524,6 +561,10 @@ export class ViewerContextMenu {
         if (restoreFocus) this.returnFocus?.focus?.();
         this.returnFocus = undefined;
         if (wasOpen) this.onClose?.();
+    }
+
+    invalidateInteractionContext(): void {
+        if (this.currentTarget?.kind === "interaction") this.close();
     }
 
     dispose(): void {
@@ -547,17 +588,33 @@ export class ViewerContextMenu {
             }
         }
         const needsSelectionAtoms = ["focus_selection", "save_selection", "create_region_from_selection", "create_section_from_selection", "add_label_from_selection", "expand_selection"].includes(action);
+        if (["inspect_picked_interaction", "select_picked_interaction", "focus_picked_interaction"].includes(action)) {
+            const target = this.currentTarget;
+            const identity = target?.kind === "interaction" ? target.entity_ref as Record<string, unknown> | undefined : undefined;
+            const valid = !!identity && ["frame", "query_offset", "occurrence_index"].every(key => Number.isSafeInteger(identity[key]) && Number(identity[key]) >= 0)
+                && ["analysis_name", "analysis_revision", "query_revision"].every(key => typeof identity[key] === "string" && !!identity[key]);
+            if (!valid) {
+                button.disabled = true; button.setAttribute("aria-disabled", "true");
+                button.title = "This representation has no current query identity for occurrence actions";
+                button.style.opacity = "0.45";
+            }
+        }
         if (["distance", "angle", "dihedral"].includes(action) && this.currentSceneState?.canMeasure === false) {
             button.disabled = true;
             button.setAttribute("aria-disabled", "true");
             button.title = "Measurement picking requires the canvas";
             button.style.opacity = "0.45";
         }
-        if ((action === "focus_target" && this.currentTarget?.kind !== "empty" && !this.currentTarget?.atom_indices?.length)
+        if ((action === "focus_target" && this.currentTarget?.kind !== "empty" && !this.currentTarget?.atom_indices?.length && !this.currentTarget?.focusable)
+            || (action === "select_context_target" && this.currentTarget?.kind !== "empty" && !this.currentTarget?.atom_indices?.length)
+            || (action === "focus_all" && this.currentSceneState?.canFocusAll !== true)
+            || (action === "show_help" && this.currentSceneState?.canHelp !== true)
             || (needsSelectionAtoms && !this.currentSelection?.atom_indices?.length)) {
             button.disabled = true;
             button.setAttribute("aria-disabled", "true");
-            button.title = action === "focus_target" ? "This object has no atom anchor to focus" : "This action requires selected atoms";
+            button.title = action === "focus_target" ? "This object has no available anchor or geometry bounds to focus"
+                : action === "show_help" ? "Help is unavailable in this host" : action === "focus_all" ? "No molecular geometry is loaded in this canvas"
+                : action === "select_context_target" ? "This object has no associated atoms" : "This action requires selected atoms";
             button.style.opacity = "0.45";
         }
         Object.assign(button.style, {
@@ -731,11 +788,18 @@ export class ViewerContextMenu {
             this.notify?.({ event: "interaction_context_action", action: "focus_region", context: this.currentTarget, ...details });
             this.close();
         });
+        const open = this.makeActionButton("Open in Studio…", "open_region_in_studio", { tag: region.tag });
+        open.textContent = "↗";
+        open.title = `Open region ${region.tag} in Studio`;
+        open.setAttribute("aria-label", `Open region ${region.tag} in Studio`);
+        open.style.width = "auto";
+        row.appendChild(open);
 
         const mkIconBtn = (svgPath: string, title: string, onClick: () => void): HTMLButtonElement => {
             const btn = document.createElement("button");
             btn.type = "button";
             btn.title = title;
+            btn.setAttribute("aria-label", title);
             btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${svgPath}</svg>`;
             Object.assign(btn.style, {
                 flexShrink: "0",
@@ -904,17 +968,17 @@ export class ViewerContextMenu {
     }
 
     private resolveActionDetails(action: ContextMenuAction): ContextActionDetails | null {
-        if (action === "delete_interaction" || action === "focus_interaction") {
+        if (["delete_interaction", "focus_interaction", "inspect_picked_interaction", "select_picked_interaction", "focus_picked_interaction", "toggle_interaction_visibility", "edit_interaction_in_studio"].includes(action)) {
             if (this.currentTarget?.kind !== "interaction" || !this.currentTarget.tag?.trim()) return null;
-            return { tag: this.currentTarget.tag };
+            return { tag: this.currentTarget.tag, ...(action === "toggle_interaction_visibility" ? { hidden: true } : {}) };
         }
-        if (action === "delete_annotation" || action === "delete_shape" || action === "delete_measurement" || action === "hide_measurement") {
+        if (["delete_annotation", "delete_shape", "delete_measurement", "hide_measurement", "edit_object_in_studio", "edit_annotation_text", "toggle_annotation_visibility", "toggle_shape_visibility"].includes(action)) {
             const tag =
                 this.currentTarget?.kind === "annotation" || this.currentTarget?.kind === "shape" || this.currentTarget?.kind === "measurement"
                     ? this.currentTarget.tag
                     : undefined;
             if (!tag || tag.trim() === "") return null;
-            return { tag };
+            return { tag, ...(["toggle_annotation_visibility", "toggle_shape_visibility"].includes(action) ? { hidden: true } : {}) };
         }
         if (action === "create_section_from_selection") {
             const camera_forward = this.getCameraDirection?.() ?? [0, 0, -1] as [number, number, number];

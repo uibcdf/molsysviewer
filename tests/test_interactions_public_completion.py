@@ -173,3 +173,91 @@ def test_mutating_inspection_reply_cannot_change_action_participants(view):
         query_revision=page["query_revision"],
     )
     assert view.interactions.select_observation("rings", 0, **key) == [0, 1, 2, 3, 4, 5]
+
+
+def picked_event(view, action="select_picked_interaction", segment=1):
+    message = next(item for item in view.interactions._messages() if item.get("tag") == "rings")
+    link = message["links"][segment]
+    return {
+        "action": action, "tag": "rings",
+        "context": {"kind": "interaction", "atom_indices": [99], "entity_ref": {
+            "analysis_name": message["analysis_name"], "analysis_revision": message["analysis_revision"],
+            "query_revision": message["query_revision"], "frame": message["frame"],
+            "occurrence_index": link["occurrence_index"], "query_offset": link["query_offset"],
+        }},
+    }
+
+
+def test_clicked_parallel_occurrence_uses_one_page_and_provider_participants(view):
+    event = picked_event(view)
+    view.active_selection.set([8])
+    dispatch_panel_action(view, {**event, "action": "inspect_interaction_occurrence", "request_id": 42})
+    page = view.interactions["rings"]._inspected_page
+    assert page["offset"] == 1 and len(page["observations"]) == 1
+    assert page["observations"][0]["measurements"]["distance"] == 0.41
+    assert view.active_selection.atom_indices == [8]
+    dispatch_panel_action(view, event)
+    assert view.active_selection.atom_indices == [0, 1, 2, 3, 4, 5]
+    dispatch_panel_action(view, {**event, "action": "focus_picked_interaction"})
+
+
+@pytest.mark.parametrize("change", ["frame", "filter", "analysis", "offset", "occurrence", "boolean", "name"])
+def test_old_or_mismatched_graphical_pick_refuses_before_selection(view, change):
+    event = picked_event(view)
+    key = event["context"]["entity_ref"]
+    if change == "frame":
+        view.player.go_to_structure(2)
+    elif change == "filter":
+        view.interactions["rings"].set_filter(selection=[8])
+    elif change == "analysis":
+        key["analysis_revision"] = "stale"
+    elif change == "offset":
+        key["query_offset"] = 0
+    elif change == "occurrence":
+        key["occurrence_index"] = 99
+    elif change == "boolean":
+        key["query_offset"] = True
+    else:
+        key["analysis_name"] = "other"
+    view.active_selection.set([8])
+    with pytest.raises(ArgumentError):
+        dispatch_panel_action(view, event)
+    assert view.active_selection.atom_indices == [8]
+
+
+def test_graphical_query_offsets_survive_skipped_geometry_and_nonconsecutive_frames(view):
+    records = [
+        {"structure_index": 2, "interaction_type": "a_unsupported",
+         "participants": [{"role": "ring", "atom_indices": [9, 10]}, {"role": "ring", "atom_indices": [11, 12]}]},
+        {"structure_index": 2, "interaction_type": "pi_pi",
+         "participants": [{"role": "ring_a", "atom_indices": [0, 1, 2]}, {"role": "ring_b", "atom_indices": [3, 4, 5]}]},
+    ]
+    result = msm.Interactions.from_records(records, n_atoms=view.molsys.get_n_atoms(), n_structures=3,
+                                          evaluated_structure_indices=[2], method="synthetic_offset_guard")
+    view.interactions.attach(result, name="offsets", assume_aligned=True)
+    view.interactions.add("offsets", tag="offsets")
+    view.player.go_to_structure(2)
+    message = next(item for item in view.interactions._messages() if item.get("tag") == "offsets")
+    assert message["n_skipped"] == 1 and len(message["links"]) == 1
+    link = message["links"][0]
+    assert link["query_offset"] == 1
+    dispatch_panel_action(view, {"action": "select_picked_interaction", "tag": "offsets", "context": {
+        "kind": "interaction", "entity_ref": {key: message[key] for key in (
+            "analysis_name", "analysis_revision", "query_revision", "frame") } | {
+                "query_offset": link["query_offset"], "occurrence_index": link["occurrence_index"]}}})
+    assert view.active_selection.atom_indices == [0, 1, 2, 3, 4, 5]
+
+
+def test_explicit_context_hide_is_idempotent_and_studio_toggle_remains_available(view):
+    view.annotations.add(text="Context note", atom_indices=[0], tag="note")
+    view.shapes.add_sphere(center=puw.quantity([0, 0, 0], "nm"), radius="0.1 nm", tag="sphere")
+    for family, tag in (("annotation", "note"), ("shape", "sphere"), ("interaction", "rings")):
+        action = f"toggle_{family}_visibility"
+        dispatch_panel_action(view, {"action": action, "tag": tag, "hidden": True})
+        dispatch_panel_action(view, {"action": action, "tag": tag, "hidden": True})
+        collection = getattr(view, {"annotation": "annotations", "shape": "shapes", "interaction": "interactions"}[family])
+        hidden = collection.info(tag)["hidden"] if family == "interaction" else not collection.info(tag)["visible"]
+        assert hidden
+        dispatch_panel_action(view, {"action": action, "tag": tag})
+        hidden = collection.info(tag)["hidden"] if family == "interaction" else not collection.info(tag)["visible"]
+        assert not hidden

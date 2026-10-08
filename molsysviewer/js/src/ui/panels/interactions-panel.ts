@@ -129,6 +129,24 @@ export class InteractionsPanel extends BasePanel {
         if (calculate) { this.calcAtomScope = "a"; this.calcStructures = "current"; this.name = ""; }
         this.scheduleRender();
     }
+    inspectOccurrence(tag: string, identity: unknown): void {
+        if (!this.backendAvailable || !this.items.some(item => item.tag === tag)) return;
+        this.inspecting = tag; this.inspection = null;
+        this.emit("inspect_interaction_occurrence", { tag, identity, request_id: ++this.requestId });
+    }
+    openObject(tag: string): void {
+        const item = this.items.find(item => item.tag === tag);
+        if (!item) return;
+        this.editing = item.tag; this.tag = item.tag; this.layer = item.layer_tag;
+        this.a = item.filter.selection === "all" ? null : [...item.filter.selection];
+        this.b = Array.isArray(item.filter.selection_2) ? [...item.filter.selection_2] : null;
+        this.mode = item.filter.mode;
+        this.displayStructures = item.filter.structure_indices === "all" ? "all" : item.filter.structure_indices.join(",");
+        this.types = item.filter.interaction_types?.join(",") ?? ""; this.exclusive = item.filter.exclusive;
+        this.color = `#${item.style.color.toString(16).padStart(6, "0")}`;
+        this.radius = String(item.style.radius_nm); this.alpha = String(item.style.alpha);
+        this.scheduleRender();
+    }
     setSavedSelections(items: SavedSelectionSummary[]) { this.saved = items; this.scheduleRender(); }
     updateQuery(preview: SelectionQueryPreview) {
         const updated = this.composer.updatePreview(preview);
@@ -323,9 +341,7 @@ export class InteractionsPanel extends BasePanel {
             append(card, note(`${item.tag} · ${item.analysis_name}`), note(statusText(item)), note(`${item.hidden ? "Hidden" : item.layer_hidden ? "Hidden by layer" : "Enabled"} · layer ${item.layer_tag}`));
             const actions = row();
             for (const [text, action] of [["Focus", "focus_interaction"], [item.hidden ? "Show" : "Hide", "toggle_interaction_visibility"], ["Delete", "delete_interaction"]] as const) { const button = makeButton(text, () => this.emit(action, { tag: item.tag })); if (action === "focus_interaction") button.disabled = !item.n_supported; actions.appendChild(button); }
-            actions.appendChild(makeButton("Edit", () => { this.editing = item.tag; this.tag = item.tag; this.layer = item.layer_tag; this.a = item.filter.selection === "all" ? null : [...item.filter.selection]; this.b = Array.isArray(item.filter.selection_2) ? [...item.filter.selection_2] : null;
-                this.mode = item.filter.mode; this.displayStructures = item.filter.structure_indices === "all" ? "all" : item.filter.structure_indices.join(","); this.types = item.filter.interaction_types?.join(",") ?? ""; this.exclusive = item.filter.exclusive;
-                this.color = `#${item.style.color.toString(16).padStart(6, "0")}`; this.radius = String(item.style.radius_nm); this.alpha = String(item.style.alpha); this.scheduleRender(); }));
+            actions.appendChild(makeButton("Edit", () => this.openObject(item.tag)));
             actions.appendChild(makeButton("Inspect", () => this.inspect(item.tag))); card.appendChild(actions);
             if (this.inspecting === item.tag) {
                 if (!this.inspection) card.appendChild(note("Requesting current structure observations…"));
