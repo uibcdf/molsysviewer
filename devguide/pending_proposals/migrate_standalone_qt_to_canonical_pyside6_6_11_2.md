@@ -198,3 +198,21 @@ override, environment edit, opt-out or repeat full run is made. Separately,
 122 bounded tests with the exact public support archives in a fresh non-Qt
 installed environment pass. The exact receipts and full-source distinction
 are retained in [the receiving record](../support_library_receiving_20261006.json).
+
+### Canonical 0.24.1 candidate observation — 2026-10-08
+
+Manual staged CI `37760422583` at exact Viewer
+`ae1fb995d6a38f2df6df206d2af26fbde1531f24`, with canonical Viewer 0.24.1
+and staged MolSysMT 1.0.0, fails Qt job `113255218995` in
+`test_qt_live_model_smoke_real_window`, `tests/test_standalone.py:1937`.
+The bridge again reports `Exported scene has no WebGL canvas`; stderr reports
+`Could not create a WebGL rendering context` and Mol* initialization failure.
+D-Bus/Vulkan diagnostics and a subsequent CDN import failure are preserved,
+without attributing the initial context failure to them. The downstream
+structure-loading step is skipped. No frame or visual certificate is obtained.
+
+This repeats the existing experimental-host observation. Core browser and
+Windows launcher checks for the same Viewer pass in their separate scopes;
+they do not close #109. The [candidate receipt](../stabilization_0241_preparation_20261008.json)
+retains the exact pair and pending source/installed qualification. No Qt
+workaround, opt-out or test rerun is introduced.

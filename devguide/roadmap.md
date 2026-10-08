@@ -5,6 +5,9 @@ agreement](interactions_compatibility_contract.md) is recorded. First qualify
 [Viewer 0.24.1 build 1](stabilization_0241_preparation_20261008.md), containing
 #149/#177, with the proposed exact MolSysMT 1.0.0 artifacts. Build 0 is preserved
 with its failed workflow-version preparation guard; build 1 repairs the defaults.
+Both sets of staging files are independently verified; 322 local installed
+guards and Viewer core/Windows checks pass. Source prerequisites and the single
+coordinated sixteen-cell installed matrix remain pending.
 Complete broader documentation/installed first contact afterward, then qualify
 the independent final Viewer 1.0 producer. Public packages remain 0.24.0/0.23.0;
 preparation is not publication authorization.

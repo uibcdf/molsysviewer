@@ -1,7 +1,11 @@
 # Preparing Viewer 0.24.1 — 2026-10-08
 
-**In progress:** prepare an exact 0.24.1 noarch build 1 candidate from the
-integrated source. Public Viewer remains 0.24.0 build 1. The principal maintainer
+**In progress:** exact 0.24.1 noarch build 1 is available in staging; 322 local
+installed guards, Windows launchers and core browser checks pass. Canonical
+source and coordinated installed-pair qualification remain pending. The
+[machine-readable receipt](stabilization_0241_preparation_20261008.json) records
+the fixed identities and distinct validation scopes. Public Viewer remains
+0.24.0 build 1. The principal maintainer
 authorizes preparation and qualification; public tags, Releases, npm publication
 and Conda promotion require separate final authorization.
 
@@ -22,10 +26,11 @@ ignored development `_version.py` in the main checkout.
 
 ## Pair and gate order
 
-MolSysMT's proposed counterpart is 1.0.0 ABI3 build 0 under
-`uibcdf/molsysmt#334`; its reported qualified source is
-`eab7aeb79cc397f92a08081766f5c25792503ae8`. Final producer identity and four
-files/hashes remain pending from the provider. Keep the supported dependency
+MolSysMT's frozen counterpart is 1.0.0 ABI3 build 0 under
+`uibcdf/molsysmt#334`, source `6dc80725ea506f977fb5e52dfd701c2227875fa5`,
+fixed reference `candidate/1.0.0-build0`. Producer `37757683710` succeeds on
+all four native platforms. Independent downloads verify all four registry
+SHA-256 values and staging-only labels, retained in the receipt. Keep the supported dependency
 floor `molsysmt>=0.23.0`; an installed check against the older public baseline
 and the new candidate are separate claims.
 
@@ -54,8 +59,8 @@ core gates. Experimental Qt and post-1.0 remotes retain their separate scopes.
   MolSysMT 1.0.0 counterpart independently before claiming that pair.
 
 No new detector or scientific stability guarantee is introduced by this patch.
-Candidate file identities and executed gate receipts will be recorded after
-building; a proposed filename or successful source check is not a file digest.
+Candidate file identities and executed gate receipts are recorded below;
+these observations do not clear pending qualification or authorize publication.
 
 ## Preparation checks
 
@@ -93,3 +98,54 @@ reference. Validate the affected workflow module and inspect the new hosted
 exact-source full/core outcomes. The molecular code and runtime remain unchanged
 by this repair. Old build-0 Windows and core runs retain their original scope;
 the new installed candidate requires its own gates and counterpart file hashes.
+
+## Build 1 received; final pair qualification pending
+
+The repair is delivered at `ae1fb995d6a38f2df6df206d2af26fbde1531f24`, fixed
+reference `candidate/0.24.1-build1`. All five affected source-workflow guards
+pass. Producer `37758700492` succeeds and emits
+`molsysviewer-0.24.1-py_1.tar.bz2`, 1,518,815 bytes, SHA-256
+`ab2d6c2a7f8c165c7dc626e277724dcddf06b211f34149de685d0839c1bfde94`.
+Producer receipt, independent downloaded bytes, registry and staging index
+agree. The ordinary canonical wheel also passes runtime validation. These
+files and frozen references are not rebuilt when evidence advances on main.
+
+Core browser run `37758593628` and Windows launcher run `37759393730` succeed
+on the exact replacement source. Core execution actually runs; remote preview
+exclusion is not a remote pass. Policy `37758594381` and Conda governance
+`37758594530` succeed. Automatic Python 3.14 checks `37758593555` succeed on
+three hosts using the previous provider source, not the proposed 1.0 pair.
+
+Local Linux/Python 3.14.8 qualification checks the installed Conda files in
+an existing qualified environment cloned and updated from independently
+verified originals. Imports resolve only to its own site-packages, all 620
+Viewer archive members match installed bytes and `pip check` passes. This is
+an artifact receiving check, not a fresh solver installation. With supported
+MolSysMT 0.23.0, thirteen design guards, 178 Interactions guards and the real
+Chromium matching-pair guard pass. After replacing the provider with the exact
+1.0.0 file, **322 distinct guards pass with zero failures/errors/skips**:
+191 design/Interactions/H5MSM/session checks and 131 loading/source/box/Studio
+checks. Existing diagnostics and warnings remain in the local logs; the receipt
+preserves their digests and actual Conda prefix URLs, including local-file URLs.
+
+Automatic source CI `37758593618` fails: an untagged development Python
+version differs from the committed canonical 0.24.1 runtime, and the
+experimental Qt transport also fails. Preserve that verdict. The installed
+canonical Chromium guard above passes. Use the existing manual staged CI
+route, which privately tags the exact workflow SHA during installation, to
+qualify the canonical source without publishing a tag.
+
+Canonical CI `37760422583` selects Viewer 0.24.1 and staged MolSysMT 1.0.0.
+At this checkpoint four of six scientific cells succeed; macOS/Python 3.12 is
+queued and 3.13 is running. Qt fails in its separate experimental scope under
+`uibcdf/molsysviewer#109`: `test_qt_live_model_smoke_real_window` reports no
+WebGL canvas, with failure to create a WebGL context in stderr, repeating the
+existing observation. Do not report the whole workflow green. Provider
+native campaign `37759580359` succeeds, while source campaign `37759578359`
+remains in progress against this replacement Viewer.
+
+Both owners have the fixed artifact identities. MolSysMT owns the single
+coordinated sixteen-cell installed dispatch after prerequisite review. No
+duplicate dispatch, public tag, Release, npm publication or promotion occurs
+at this checkpoint. Broader documentation and the independent final Viewer
+1.0 gates follow the qualified patch pair.

@@ -1,0 +1,374 @@
+{
+  "schema": "molsysviewer.stabilization_preparation@1",
+  "date": "2026-10-08",
+  "status": "exact_staging_files_verified_local_checks_pass_hosted_and_installed_pair_qualification_pending",
+  "viewer": {
+    "version": "0.24.1",
+    "build_number": 1,
+    "build": "py_1",
+    "route": "staged",
+    "commit": "ae1fb995d6a38f2df6df206d2af26fbde1531f24",
+    "ref": "candidate/0.24.1-build1",
+    "file": {
+      "filename": "molsysviewer-0.24.1-py_1.tar.bz2",
+      "url": "https://conda.anaconda.org/uibcdf/label/staging/noarch/molsysviewer-0.24.1-py_1.tar.bz2",
+      "sha256": "ab2d6c2a7f8c165c7dc626e277724dcddf06b211f34149de685d0839c1bfde94",
+      "md5": "5c2e3b0245f10ba7a970a7c8e9beec85",
+      "bytes": 1518815,
+      "labels": [
+        "staging"
+      ]
+    },
+    "file_checks": [
+      "producer_receipt",
+      "independent_download",
+      "registry_api",
+      "staging_index"
+    ],
+    "producer_run": 37758700492,
+    "producer_zip": {
+      "artifact_id": 11541910073,
+      "name": "gh-run-receptor-events-v1-37758700492-1-conda_deployment_with_new_tag-0",
+      "sha256": "9e873e7c91c4d760392d509bcff27e6d2199745fd5a5f10f755569ff95792295"
+    },
+    "canonical_wheel": {
+      "sha256": "b7460486c1a41a37e27870818f91f9601835e5ce5716b6cd9ea6d42111bac1bf",
+      "bytes": 1981428,
+      "runtime_validation": "pass",
+      "scope": "ordinary_private_canonical_wheel_not_conda_artifact"
+    }
+  },
+  "molsysmt": {
+    "version": "1.0.0",
+    "build_number": 0,
+    "abi": "ABI3",
+    "commit": "6dc80725ea506f977fb5e52dfd701c2227875fa5",
+    "ref": "candidate/1.0.0-build0",
+    "producer_run": 37757683710,
+    "files": [
+      {
+        "subdir": "linux-64",
+        "filename": "molsysmt-1.0.0-pyabi3h03bb3b7_0.conda",
+        "build_number": 0,
+        "sha256": "f3354b2d34ed9152d41c71119b46b13f064b40e076af20e97771891e032640dd",
+        "md5": "df21392146a76a8dcb4b57579a2028df",
+        "bytes": 55853839,
+        "labels": [
+          "staging"
+        ],
+        "download_url": "https://conda.anaconda.org/uibcdf/label/staging/linux-64/molsysmt-1.0.0-pyabi3h03bb3b7_0.conda",
+        "download_sha256_verified": true
+      },
+      {
+        "subdir": "linux-aarch64",
+        "filename": "molsysmt-1.0.0-pyabi3hecc93d8_0.conda",
+        "build_number": 0,
+        "sha256": "f90ef186b72e4433d1946068c5cbde4fe17cc6d10dc8bb80d00c8de25b4572aa",
+        "md5": "2d278cca5a3946ab1ab9b2bb988102d7",
+        "bytes": 55581603,
+        "labels": [
+          "staging"
+        ],
+        "download_url": "https://conda.anaconda.org/uibcdf/label/staging/linux-aarch64/molsysmt-1.0.0-pyabi3hecc93d8_0.conda",
+        "download_sha256_verified": true
+      },
+      {
+        "subdir": "osx-arm64",
+        "filename": "molsysmt-1.0.0-pyabi3ha0bc463_0.conda",
+        "build_number": 0,
+        "sha256": "dcc711e5c93049d2ddd33176b37b8f847651d386c21ad5ad1e507db48e4212b9",
+        "md5": "367ffade74f3a9f8aeb207791fc0086d",
+        "bytes": 55346266,
+        "labels": [
+          "staging"
+        ],
+        "download_url": "https://conda.anaconda.org/uibcdf/label/staging/osx-arm64/molsysmt-1.0.0-pyabi3ha0bc463_0.conda",
+        "download_sha256_verified": true
+      },
+      {
+        "subdir": "win-64",
+        "filename": "molsysmt-1.0.0-pyabi3h2d2bc06_0.conda",
+        "build_number": 0,
+        "sha256": "4a0bbbc974c463edd610f5eb701f44c7be77e9b4368f3d631224afb5128da518",
+        "md5": "621e620671b36ae758cb3feba63935f2",
+        "bytes": 55872762,
+        "labels": [
+          "staging"
+        ],
+        "download_url": "https://conda.anaconda.org/uibcdf/label/staging/win-64/molsysmt-1.0.0-pyabi3h2d2bc06_0.conda",
+        "download_sha256_verified": true
+      }
+    ]
+  },
+  "dependency_floor": "molsysmt>=0.23.0",
+  "experimental_contract": "devguide/interactions_compatibility_contract.md",
+  "local_receiving": {
+    "environment": "/tmp/msv-0241-receiver-20261008",
+    "platform": "linux-64",
+    "python": "3.14.8",
+    "method": "clone_previous_qualified_environment_replace_only_verified_viewer_and_provider_files_offline_no_deps",
+    "fresh_solver_installation": false,
+    "sixteen_cell_matrix": false,
+    "imports": "own_site_packages_only_no_checkout_shadowing",
+    "pip_check": "pass",
+    "viewer_archive_members_matching_installed_bytes": 620,
+    "prefix_records": {
+      "libgcc": {
+        "version": "16.2.0",
+        "build": "ha9f2e26_7",
+        "build_number": 7,
+        "url": "https://conda.anaconda.org/conda-forge/linux-64/libgcc-16.2.0-ha9f2e26_7.conda",
+        "sha256": "e031634c3a928f9594eba868bc46ef5230d6571a364a0c63215b06c4563bfcea",
+        "md5": "735629b400b70eeab21a2ba8f5b1c2ce"
+      },
+      "molsysmt": {
+        "version": "1.0.0",
+        "build": "pyabi3h03bb3b7_0",
+        "build_number": 0,
+        "url": "file:///tmp/msv-0241-staging-20261008/molsysmt-1.0.0-pyabi3h03bb3b7_0.conda",
+        "sha256": "f3354b2d34ed9152d41c71119b46b13f064b40e076af20e97771891e032640dd",
+        "md5": "df21392146a76a8dcb4b57579a2028df"
+      },
+      "python": {
+        "version": "3.14.8",
+        "build": "hcd007b5_100_cp314",
+        "build_number": 100,
+        "url": "https://conda.anaconda.org/conda-forge/linux-64/python-3.14.8-hcd007b5_100_cp314.conda",
+        "sha256": "c47b0695966c0f5c61dbad05b4d8964fdfbe91943be5c1a7e97d728e921f5f8e",
+        "md5": "e1996ea70f368bc7a82c2826da54cf0a"
+      },
+      "molsysviewer": {
+        "version": "0.24.1",
+        "build": "py_1",
+        "build_number": 1,
+        "url": "file:///tmp/msv-0241-staging-20261008/molsysviewer-0.24.1-py_1.tar.bz2",
+        "sha256": "ab2d6c2a7f8c165c7dc626e277724dcddf06b211f34149de685d0839c1bfde94",
+        "md5": "5c2e3b0245f10ba7a970a7c8e9beec85"
+      },
+      "_python_abi3_support": {
+        "version": "1.0",
+        "build": "hd8ed1ab_3",
+        "build_number": 3,
+        "url": "https://conda.anaconda.org/conda-forge/noarch/_python_abi3_support-1.0-hd8ed1ab_3.conda",
+        "sha256": "2a7204314663eeda5dec482a956f0e2eaf289bd5b9953eaaaad0e81aa64638f2",
+        "md5": "3845f3d75991bae0fb90884662f4327c"
+      }
+    },
+    "checks_with_molsysmt_1_0_0": [
+      {
+        "tests": 191,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "passed": 191,
+        "seconds": 81.355,
+        "modules": [
+          "test_design_review_closure.py",
+          "test_interactions_api.py",
+          "test_interaction_families.py",
+          "test_interactions_scene.py",
+          "test_interactions_public_completion.py",
+          "test_interactions_qualification.py",
+          "test_interactions_projection_batching.py",
+          "test_interactions_residency_benchmark.py",
+          "test_session_bundle.py",
+          "test_state_structure_identity.py"
+        ],
+        "junit": {
+          "local_path": "/tmp/msv-0241-installed-mt100-20261008.xml",
+          "sha256": "ce9f8739268fded412b90a4759dd2706a080e66a1e00f672877070fb33f9aadc"
+        },
+        "log": {
+          "local_path": "/tmp/msv-0241-installed-mt100-20261008.log",
+          "sha256": "eb53fe3856d52a26d8526eac1a684798303170feb4be41c6b0358af68c2077ad"
+        }
+      },
+      {
+        "tests": 131,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "passed": 131,
+        "seconds": 55.295,
+        "modules": [
+          "test_composite_load.py",
+          "test_source_records.py",
+          "test_box_assignment.py",
+          "test_studio_loading.py"
+        ],
+        "junit": {
+          "local_path": "/tmp/msv-0241-installed-loading-mt100-20261008.xml",
+          "sha256": "bf49933cff8586cc6403b2b09be702414decbe3bdef59edb5155f48b4f5f05fe"
+        },
+        "log": {
+          "local_path": "/tmp/msv-0241-installed-loading-mt100-20261008.log",
+          "sha256": "f00da718a0aec6672951a35c852ee10db1f947b525fdd14464a9dd8167cbe1a9"
+        }
+      }
+    ],
+    "total_distinct_passed": 322,
+    "earlier_supported_molsysmt_0_23_0": {
+      "design_guards_passed": 13,
+      "interactions_checks": {
+        "tests": 178,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "passed": 178,
+        "seconds": 79.701,
+        "modules": [
+          "test_interactions_api.py",
+          "test_interaction_families.py",
+          "test_interactions_scene.py",
+          "test_interactions_public_completion.py",
+          "test_interactions_qualification.py",
+          "test_interactions_projection_batching.py",
+          "test_interactions_residency_benchmark.py",
+          "test_session_bundle.py",
+          "test_state_structure_identity.py"
+        ],
+        "junit": {
+          "local_path": "/tmp/msv-0241-installed-baseline-20261008.xml",
+          "sha256": "f5ab2358ccd8d975ca574da23acd8f4adb18a07240ed44c63cf8816238fb61b3"
+        },
+        "log": {
+          "local_path": "/tmp/msv-0241-installed-baseline-20261008.log",
+          "sha256": "ba2adb23a82e56508977245135636e892e59374c3ef48bbc1bd637a252cfca0e"
+        }
+      },
+      "real_chromium_matching_pair_guard": {
+        "selector": "tests/test_exported_page_opens_from_disk.py::test_a_matching_pair_stays_quiet",
+        "passed": 1,
+        "seconds": 9.6
+      },
+      "scope": "same_receiver_before_provider_replacement_not_additive_new_pair_count"
+    }
+  },
+  "hosted": {
+    "core_browser": {
+      "run": 37758593628,
+      "conclusion": "success",
+      "actual_core_step": "success",
+      "remote_preview": "excluded_separate_scope"
+    },
+    "windows_launchers": {
+      "run": 37759393730,
+      "conclusion": "success"
+    },
+    "suite_policy": {
+      "run": 37758594381,
+      "conclusion": "success"
+    },
+    "conda_governance": {
+      "run": 37758594530,
+      "conclusion": "success"
+    },
+    "automatic_python314": {
+      "run": 37758593555,
+      "conclusion": "success",
+      "scope": "three_hosts_previous_provider_source_not_molsysmt_1_0_pair"
+    },
+    "automatic_source_ci": {
+      "run": 37758593618,
+      "conclusion": "failure",
+      "diagnosis": "development_python_version_and_canonical_runtime_mismatch_plus_experimental_qt_failure",
+      "scope": "not_canonical_installed_candidate"
+    },
+    "canonical_source_ci": {
+      "run": 37760422583,
+      "ref": "candidate/0.24.1-build1",
+      "viewer_version": "0.24.1",
+      "molsysmt_version": "1.0.0",
+      "use_staging": true,
+      "status": "pending",
+      "scientific_cells_success": 4,
+      "scientific_cells_total": 6,
+      "pending": [
+        "macos-15 Python 3.12 queued",
+        "macos-15 Python 3.13 in_progress"
+      ],
+      "qt": {
+        "conclusion": "failure",
+        "failed_step": "Qt transport round-trip in a real Qt process",
+        "issue": "uibcdf/molsysviewer#109",
+        "scope": "experimental_standalone_not_core_release_gate",
+        "job_id": 113255218995,
+        "selector": "tests/test_standalone.py::test_qt_live_model_smoke_real_window",
+        "location": "tests/test_standalone.py:1937",
+        "diagnosis": "Exported scene has no WebGL canvas; could not create a WebGL rendering context",
+        "log": {
+          "local_path": "/tmp/msv-0241-canonical-qt-20261008.log",
+          "sha256": "e79784db60b13251f77cf69773a0803d974ed4eba84567b2c25989a0b118d91e"
+        }
+      },
+      "scope": "exact_canonical_source_using_staged_provider_not_sixteen_conda_installs"
+    },
+    "provider_native_campaign": {
+      "run": 37759580359,
+      "conclusion": "success",
+      "scope": "provider_native_wheels_not_conda_pair"
+    },
+    "provider_source_campaign": {
+      "run": 37759578359,
+      "status": "in_progress"
+    }
+  },
+  "superseded_build_0": {
+    "commit": "66ea54e45ff3b9498e5f6f668c3d519888dca7b4",
+    "ref": "candidate/0.24.1-build0",
+    "producer_run": 37757179478,
+    "filename": "molsysviewer-0.24.1-py_0.tar.bz2",
+    "sha256": "88ad5b7497bdfa06f16a7e9a47996edd633dd5f63534d38e0b9a0a418478ee58",
+    "status": "preserved_not_final_candidate",
+    "single_local_full_suite": {
+      "tests": 2904,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 23,
+      "passed": 2880,
+      "seconds": 565.227,
+      "modules": [
+        "tests/"
+      ],
+      "junit": {
+        "local_path": "/tmp/msv-0241-full-20261008.xml",
+        "sha256": "19ed7dbb06fa291cf4df368ec08cf7a2a435880be6dd5f4e9c81ea9d4ddfaef2"
+      },
+      "log": {
+        "local_path": "/tmp/msv-0241-full-20261008.log",
+        "sha256": "f4bf7f7c06319ba7922f41f141b7267f8bc39e0efe8297cd7db28274e41c824b"
+      }
+    },
+    "failure": "tests/test_source_workflow_coverage.py::test_automatic_source_pair_uses_the_prepared_runtime_version",
+    "repair": "align_all_three_workflow_defaults_extend_existing_guard_additive_build_1_no_molecular_runtime_change",
+    "local_full_suite_repeated": false
+  },
+  "installed_pair_matrix": {
+    "status": "not_dispatched",
+    "owner": "uibcdf/molsysmt",
+    "policy": "one_agreed_dispatch_after_prerequisite_review_no_duplicates"
+  },
+  "publication": {
+    "public_tag_created": false,
+    "github_release_created": false,
+    "npm_published": false,
+    "artifacts_promoted": false,
+    "final_authorization": "pending_separate_maintainer_approval"
+  },
+  "remaining": [
+    "complete_and_review_canonical_scientific_source_cells",
+    "review_provider_source_campaign_and_preserved_certificates",
+    "coordinate_one_sixteen_cell_staged_installed_matrix",
+    "review_complete_pair_receipt_and_essential_release_notes_before_separate_publication_approval"
+  ],
+  "receipt_validation": {
+    "selectors": [
+      "tests/test_devguide_links.py",
+      "tests/test_reporting_protocol.py",
+      "tests/test_devguide_architecture_status.py"
+    ],
+    "passed": 187,
+    "failures": 0,
+    "seconds": 2.69
+  }
+}
