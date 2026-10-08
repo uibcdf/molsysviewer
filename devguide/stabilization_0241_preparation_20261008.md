@@ -1,6 +1,9 @@
 # Preparing Viewer 0.24.1 — 2026-10-08
 
-**Ready for the unique installed-pair dispatch:** exact 0.24.1 noarch build 1
+**Unique installed-pair matrix dispatched; result pending:** run
+[37783010701](https://github.com/uibcdf/molsysmt/actions/runs/37783010701)
+uses MT 1.0.0 build 0 and Viewer 0.24.1 build 1 on four platforms and
+Python 3.11–3.14 from staging. Exact 0.24.1 noarch build 1
 is available in staging; 322 local installed guards, Windows launchers, core
 browser checks and six canonical scientific source cells pass. MolSysMT's
 eight source cells and native campaign pass; original certificates and all
@@ -166,7 +169,11 @@ Both owners have the fixed artifact identities. MolSysMT owns the single
 coordinated sixteen-cell installed dispatch. Viewer has communicated its
 readiness after the required source/core review and asked the provider to
 complete its terminal review, retain expected deselections and execute the
-single staged dispatch with MT 1.0.0 build 0 and Viewer 0.24.1 build 1. No
+single staged dispatch with MT 1.0.0 build 0 and Viewer 0.24.1 build 1.
+MolSysMT has dispatched `37783010701` after its terminal review and duplicate
+preflight. GitHub confirms the frozen provider SHA/reference and staging
+workflow identity; all sixteen installed results and original receipts remain
+pending. No
 duplicate dispatch, public tag, Release, npm publication or promotion occurs
 at this checkpoint. Broader documentation and the independent final Viewer
 1.0 gates follow the qualified patch pair.

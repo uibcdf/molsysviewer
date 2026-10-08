@@ -9,7 +9,8 @@ Both sets of staging files are independently verified; 322 local installed
 guards and Viewer core/Windows checks pass. Viewer canonical source passes 6/6
 scientific cells; MolSysMT source passes 8/8 and its native campaign passes.
 Original provider scientific/JUnit ZIPs are independently verified. The next
-gate is the single coordinated sixteen-cell staged installed matrix.
+gate is the single coordinated sixteen-cell staged installed matrix,
+dispatched as `37783010701`; its result is pending.
 Complete broader documentation/installed first contact afterward, then qualify
 the independent final Viewer 1.0 producer. Public packages remain 0.24.0/0.23.0;
 preparation is not publication authorization.
