@@ -137,6 +137,8 @@ view.close()
         await secondGroup.click({ button: "right" });
         await context.locator('[data-molsysviewer-context-submenu="Create"]').click();
         await context.getByRole("menuitem", { name: "Region from Target…", exact: true }).click();
+        assert.deepEqual(await context.locator('[data-molsysviewer-context-target-scope] option').allTextContents(),
+            ["Target atoms", "Pointed atom", "Group", "Chain"]);
         await context.getByLabel("Target atom scope").selectOption("group");
         await context.getByPlaceholder("Region tag (optional)").fill("context-residue");
         await context.getByRole("button", { name: "Create Region", exact: true }).click();
@@ -164,9 +166,12 @@ view.close()
         assert.equal(await page.evaluate(() => (window as any).__messages.filter((m: any) => m.action === "create_interaction").length), calculationCount);
         assert.equal(await page.evaluate(() => JSON.stringify((window as any).__controller.currentActiveSelection)), selectionBefore);
         await page.locator('[data-molsysviewer-group-panel-tab="system"]').click();
-        for (const label of ["Add to selection · residue", "Remove from selection · residue", "Replace selection · residue"]) {
+        for (const label of ["Add to selection · group", "Remove from selection · group", "Replace selection · group"]) {
             await secondGroup.click({ button: "right" });
             await context.locator('[data-molsysviewer-context-submenu="Select"]').click();
+            assert.deepEqual(await context.locator('[data-molsysviewer-context-selection-scope="group"]').allTextContents(),
+                ["Replace selection", "Add to selection", "Remove from selection"]);
+            assert.equal((await context.innerText()).includes("Residue"), false);
             await context.getByRole("menuitem", { name: label, exact: true }).click();
             contextualRequests.push(await latestRequest());
         }
@@ -205,6 +210,19 @@ view.close()
             for (const state of batches) for (const message of state.messages) await (window as any).__controller.handleMessage(message, { throwOnError: true });
         }, result.states);
         assert.deepEqual(await page.evaluate(() => (window as any).__controller.currentActiveSelection.atom_indices), pointed);
+        // Related regions offer quick navigation and visibility; their editor
+        // stays in Studio. Opening it must preserve the working selection.
+        await secondGroup.click({ button: "right" });
+        await context.locator('[data-molsysviewer-context-submenu="Related regions"]').click();
+        assert.equal(await context.getByRole("menuitem", { name: "Focus region context-residue", exact: true }).count(), 1);
+        assert.equal(await context.getByRole("menuitem", { name: "Hide region", exact: true }).count(), 1);
+        assert.equal(await context.getByRole("menuitem", { name: "Rename region", exact: true }).count(), 0);
+        assert.equal(await context.getByRole("menuitem", { name: "Delete region", exact: true }).count(), 0);
+        await context.getByRole("menuitem", { name: "Open region context-residue in Studio", exact: true }).click();
+        assert.equal(await page.evaluate(() => (window as any).__controller.groupPanel.activeTab), "regions");
+        assert.equal(await page.locator('[data-molsysviewer-region-rename="context-residue"]').count(), 1);
+        assert.deepEqual(await page.evaluate(() => (window as any).__controller.currentActiveSelection.atom_indices), pointed);
+        await page.locator('[data-molsysviewer-group-panel-tab="system"]').click();
         // The two peptide links crossing the contextual residue must retain
         // their region-owned halves; atom spheres must stay inside the region.
         const assertBoundaryLinks = async () => {
@@ -332,7 +350,7 @@ view.close()
         await panel.locator('[data-molsysviewer-group-item="true"]').first().click({ button: "right" });
         const panelMenu = panel.locator('[data-molsysviewer-context-menu="true"]');
         await panelMenu.locator('[data-molsysviewer-context-submenu="Select"]').click();
-        await panelMenu.getByRole("menuitem", { name: "Replace selection · residue", exact: true }).click();
+        await panelMenu.getByRole("menuitem", { name: "Replace selection · group", exact: true }).click();
         const panelRequest = await latestRequest();
         assert.equal(panelRequest.action, "select_context_target");
         assert.equal(panelRequest.structure_index, undefined);
@@ -430,6 +448,7 @@ view.close()
             return c.plugin.state.data.cells.get(ref).obj.data.repr.renderObjects.some((ro: any) => ro.values.tMarker.ref.value.array.some((value: number) => (value & 2) !== 0));
         }); // Mol* applies queued selection marks on its next render tick.
         await page.mouse.click(spherePoint.x, spherePoint.y, { button: "right" });
+        assert.equal(await objectMenu.locator('[data-molsysviewer-context-menu-title]').innerText(), "menu-sphere");
         assert.equal(await objectMenu.getByRole("menuitem", { name: "Edit Appearance in Studio…", exact: true }).isVisible(), true);
         await page.keyboard.press("Escape");
         await page.evaluate(() => (window as any).Harness.openSceneObjectContext((window as any).__controller, "shape", "menu-sphere"));
@@ -443,9 +462,11 @@ view.close()
         const renamed = await page.evaluate(() => (window as any).Harness.openSceneObjectContext((window as any).__controller, "shape", "renamed-sphere"));
         assert.equal(renamed.tag, "renamed-sphere");
         assert.equal(renamed.kind, "shape", "same-tag measurements must not change a shape's domain");
+        assert.equal(await objectMenu.locator('[data-molsysviewer-context-menu-title]').innerText(), "renamed-sphere");
         await objectMenu.getByRole("menuitem", { name: "Edit Appearance in Studio…", exact: true }).click();
         assert.equal(await page.locator('#objects [data-molsysviewer-shape-style="renamed-sphere"]').count(), 1);
         await page.evaluate(() => (window as any).Harness.openSceneObjectContext((window as any).__controller, "measurement", "menu-distance"));
+        assert.equal(await objectMenu.locator('[data-molsysviewer-context-menu-title]').innerText(), "menu-distance");
         await objectMenu.getByRole("menuitem", { name: "Inspect and Edit Measurement…", exact: true }).click();
         assert.equal(await page.locator('#objects [data-molsysviewer-measurement-rename-input="menu-distance"]').count(), 1);
 

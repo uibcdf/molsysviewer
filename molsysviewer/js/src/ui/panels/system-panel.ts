@@ -187,8 +187,8 @@ export class SystemPanel implements StudioPanel {
         const heading = document.createElement("strong"); heading.textContent = "Context target";
         this.inspector.appendChild(heading);
         const entries: [string, string | number | undefined][] = [
-            ["Residue", target.group_name ?? target.metadata?.group_name],
-            ["Residue ID", target.metadata?.group_id], ["Chain", target.chain_name ?? target.metadata?.chain_id],
+            ["Group", target.group_name ?? target.metadata?.group_name],
+            ["Group ID", target.metadata?.group_id], ["Chain", target.chain_name ?? target.metadata?.chain_id],
             ["Pointed atom", target.atom_index === undefined ? undefined : target.metadata?.atom_name],
             ["Atom index", target.atom_index], ["Source", target.source_label],
             ["Target atoms", target.atom_indices.length], ["Structure index", frame],

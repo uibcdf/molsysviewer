@@ -89,10 +89,10 @@ function collectTexts(node: FakeElement): string[] {
     return out;
 }
 
-function findNodeByText(node: FakeElement, text: string): FakeElement | null {
-    if (node.textContent === text) return node;
+function findNodeByText(node: FakeElement, text: string, tag?: string): FakeElement | null {
+    if (node.textContent === text && (!tag || node.tagName === tag)) return node;
     for (const child of node.children) {
-        const found = findNodeByText(child, text);
+        const found = findNodeByText(child, text, tag);
         if (found) return found;
     }
     return null;
@@ -269,7 +269,7 @@ test("ViewerContextMenu exposes selection expanders from the context menu", () =
         assert.ok(texts.includes("Within 5 Å"));
         assert.ok(texts.includes("Within 8 Å"));
 
-        findNodeByText(root, "Group")!.dispatch("click");
+        findNodeByText(root, "Group", "BUTTON")!.dispatch("click");
         assert.deepStrictEqual(actions.at(-1), {
             action: "expand_selection",
             target,

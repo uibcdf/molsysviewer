@@ -160,13 +160,13 @@ export type ContextMenuOptions = {
 
 function targetTitle(target: ContextMenuTarget): string {
     if (target.kind === "empty") return "Canvas";
-    if (target.kind === "shape") return target.shape_name?.trim() || target.tag?.trim() || "Shape";
+    if (target.kind === "shape") return target.tag?.trim() || target.shape_name?.trim() || "Shape";
     if (target.kind === "interaction") {
         const identity = target.entity_ref as { interaction_type?: string; frame?: number } | undefined;
         return [identity?.interaction_type || "Interaction", target.tag?.trim(),
             Number.isInteger(identity?.frame) ? `structure ${identity!.frame}` : ""].filter(Boolean).join(" · ");
     }
-    if (target.kind === "measurement") return target.measurement_name?.trim() || target.tag?.trim() || "Measurement";
+    if (target.kind === "measurement") return target.tag?.trim() || target.measurement_name?.trim() || "Measurement";
     if (target.kind === "annotation") return target.text?.trim() || target.tag?.trim() || "Annotation";
     if (target.group_name?.trim() || target.metadata?.group_name?.trim()) {
         let group = target.group_name?.trim() || target.metadata!.group_name!.trim();
@@ -261,7 +261,8 @@ export class ViewerContextMenu {
                 "[data-molsysviewer-context-scroll]::-webkit-scrollbar-track { background: transparent; }",
                 "[data-molsysviewer-context-scroll]::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 3px; }",
                 "[data-molsysviewer-context-scroll]::-webkit-scrollbar-corner { background: transparent; }",
-                "[data-molsysviewer-context-menu] button:hover, [data-molsysviewer-context-menu] button:focus-visible { background: rgba(255,255,255,0.10) !important; outline: 2px solid #a5b4fc; outline-offset: -2px; }",
+                "[data-molsysviewer-context-menu] button:hover { background: rgba(255,255,255,0.10) !important; }",
+                "[data-molsysviewer-context-menu] button:focus-visible { background: rgba(255,255,255,0.10) !important; outline: 2px solid #a5b4fc; outline-offset: -2px; }",
             ].join("\n");
             document.head.appendChild(style);
         }
@@ -379,6 +380,14 @@ export class ViewerContextMenu {
         header.textContent = targetTitle(target);
         Object.assign(header.style, { padding: "6px 8px 8px", fontWeight: "600", borderBottom: "1px solid rgba(255,255,255,0.10)", marginBottom: "6px" });
         main.appendChild(header);
+        const objectDescription = target.kind === "shape" ? "Shape"
+            : target.kind === "measurement" ? target.measurement_name?.trim() || "Measurement" : null;
+        if ((target.kind === "shape" || target.kind === "measurement") && target.tag?.trim()) {
+            const description = document.createElement("div");
+            description.textContent = objectDescription!;
+            Object.assign(description.style, { padding: "0 8px 6px", opacity: "0.75", fontSize: "12px" });
+            main.appendChild(description);
+        }
         if (target.kind === "structure" && target.atom_index !== undefined && target.metadata?.atom_name) {
             const atom = document.createElement("div");
             atom.textContent = `Pointed atom: ${target.metadata.atom_name}`;
@@ -390,13 +399,15 @@ export class ViewerContextMenu {
             main.appendChild(this.makeActionButton("Focus Target", "focus_target"));
             main.appendChild(this.makeActionButton("Inspect Target…", "inspect_target"));
             this.navigation.addSubmenu(main, "Select", view => {
-                for (const [scope, label] of [["atom", "Pointed atom"], ["group", "Residue"], ["chain", "Chain"]] as const) {
+                for (const [scope, label] of [["atom", "Pointed atom"], ["group", "Group"], ["chain", "Chain"]] as const) {
                     const heading = document.createElement("div");
                     heading.textContent = label;
                     Object.assign(heading.style, { padding: "6px 10px", fontWeight: "600" });
                     view.appendChild(heading);
                     for (const [op, name] of [["replace", "Replace selection"], ["add", "Add to selection"], ["subtract", "Remove from selection"]] as const) {
-                        const button = this.makeActionButton(`${name} · ${label.toLowerCase()}`, "select_context_target", { scope, op });
+                        const button = this.makeActionButton(name, "select_context_target", { scope, op });
+                        button.setAttribute("aria-label", `${name} · ${label.toLowerCase()}`);
+                        button.setAttribute("data-molsysviewer-context-selection-scope", scope);
                         if (scope === "atom" && target.atom_index === undefined) {
                             button.disabled = true;
                             button.setAttribute("aria-disabled", "true");
@@ -766,6 +777,8 @@ export class ViewerContextMenu {
         const hiddenSuffix = region.hidden ? " · hidden" : "";
         label.textContent = `${region.tag} · ${atomLabel}${hiddenSuffix}`;
         label.setAttribute("data-molsysviewer-region", region.tag);
+        label.setAttribute("aria-label", `Focus region ${region.tag}`);
+        label.title = `Focus region ${region.tag}`;
         Object.assign(label.style, {
             flex: "1 1 auto",
             padding: "8px 10px",
@@ -793,7 +806,7 @@ export class ViewerContextMenu {
         open.title = `Open region ${region.tag} in Studio`;
         open.setAttribute("aria-label", `Open region ${region.tag} in Studio`);
         open.style.width = "auto";
-        row.appendChild(open);
+        if (this.isActionAllowed("open_region_in_studio")) row.appendChild(open);
 
         const mkIconBtn = (svgPath: string, title: string, onClick: () => void): HTMLButtonElement => {
             const btn = document.createElement("button");
@@ -821,8 +834,6 @@ export class ViewerContextMenu {
 
         const EYE_ON  = `<path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2.5"/>`;
         const EYE_OFF = `<path d="M1 8s2.5-5 7-5 5.5 3 5.5 3M14.5 11.5S12 13 8 13c-4.5 0-7-5-7-5"/><line x1="2" y1="2" x2="14" y2="14"/>`;
-        const TRASH   = `<polyline points="3,6 13,6"/><path d="M5,6V4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1V6"/><rect x="4" y="6" width="8" height="8" rx="1"/>`;
-        const PENCIL  = `<path d="M11 2l3 3-9 9H2v-3L11 2z"/>`;
 
         const toggleBtn = mkIconBtn(region.hidden ? EYE_OFF : EYE_ON, region.hidden ? "Show region" : "Hide region", () => {
             if (!this.currentTarget) return;
@@ -832,22 +843,8 @@ export class ViewerContextMenu {
             this.close();
         });
 
-        const renameBtn = mkIconBtn(PENCIL, "Rename region", () => {
-            this.renderRenameRegionComposer(region.tag);
-        });
-
-        const deleteBtn = mkIconBtn(TRASH, "Delete region", () => {
-            if (!this.currentTarget) return;
-            const details = { tag: region.tag };
-            this.onAction?.("delete_region", this.currentTarget, details);
-            this.notify?.({ event: "interaction_context_action", action: "delete_region", context: this.currentTarget, ...details });
-            this.close();
-        });
-
         if (this.isActionAllowed("focus_region")) row.appendChild(label);
         if (this.isActionAllowed("toggle_region_visibility")) row.appendChild(toggleBtn);
-        if (this.isActionAllowed("rename_region")) row.appendChild(renameBtn);
-        if (this.isActionAllowed("delete_region")) row.appendChild(deleteBtn);
         return row;
     }
 
@@ -1081,120 +1078,12 @@ export class ViewerContextMenu {
         return button;
     }
 
-    private renderRenameRegionComposer(oldTag: string): void {
-        if (!this.currentTarget) return;
-        this.scrollEl.replaceChildren();
-
-        const title = document.createElement("div");
-        title.textContent = "Rename Region";
-        Object.assign(title.style, {
-            padding: "6px 8px 8px 8px",
-            fontWeight: "600",
-            borderBottom: "1px solid rgba(255,255,255,0.10)",
-            marginBottom: "6px",
-        });
-        this.scrollEl.appendChild(title);
-
-        const subtitle = document.createElement("div");
-        subtitle.textContent = `Current tag: ${oldTag}`;
-        Object.assign(subtitle.style, {
-            padding: "0 8px 8px 8px",
-            opacity: "0.82",
-            fontSize: "12px",
-        });
-        this.scrollEl.appendChild(subtitle);
-
-        const input = document.createElement("input");
-        input.type = "text";
-        input.value = oldTag;
-        input.placeholder = "New tag";
-        Object.assign(input.style, {
-            display: "block",
-            width: "100%",
-            boxSizing: "border-box",
-            margin: "0 0 8px 0",
-            padding: "8px 10px",
-            borderRadius: "8px",
-            border: "1px solid rgba(255,255,255,0.18)",
-            background: "rgba(255,255,255,0.06)",
-            color: "#f4f4f5",
-            outline: "none",
-        });
-        this.scrollEl.appendChild(input);
-
-        const actions = document.createElement("div");
-        Object.assign(actions.style, { display: "flex", gap: "8px" });
-
-        const save = document.createElement("button");
-        save.type = "button";
-        save.textContent = "Rename";
-        Object.assign(save.style, {
-            flex: "1 1 auto",
-            padding: "8px 10px",
-            borderRadius: "8px",
-            border: "0",
-            background: "rgba(167, 243, 208, 0.18)",
-            color: "#d1fae5",
-            cursor: "pointer",
-        });
-
-        const cancel = document.createElement("button");
-        cancel.type = "button";
-        cancel.textContent = "Back";
-        Object.assign(cancel.style, {
-            flex: "0 0 auto",
-            padding: "8px 10px",
-            borderRadius: "8px",
-            border: "0",
-            background: "rgba(255,255,255,0.08)",
-            color: "#f4f4f5",
-            cursor: "pointer",
-        });
-
-        const submit = () => {
-            const newTag = String(input.value ?? "").trim();
-            if (newTag.length === 0 || newTag === oldTag || !this.currentTarget) return;
-            const details: ContextActionDetails = { tag: oldTag, new_tag: newTag };
-            this.onAction?.("rename_region", this.currentTarget, details);
-            this.notify?.({ event: "interaction_context_action", action: "rename_region", context: this.currentTarget, ...details });
-            this.close();
-        };
-
-        const goBack = () => {
-            if (!this.currentTarget) return;
-            this.open(
-                this.currentTarget,
-                this.currentPageX,
-                this.currentPageY,
-                this.currentSelection,
-                this.currentLastMeasurement,
-                this.currentSavedSelections,
-                this.currentRegions,
-                this.currentAddonActions,
-                this.currentAddonItems,
-                this.currentSceneState,
-            );
-        };
-
-        save.addEventListener("click", submit);
-        cancel.addEventListener("click", goBack);
-        input.addEventListener("keydown", (event: any) => {
-            if (event?.key === "Enter") { event.preventDefault?.(); submit(); }
-            else if (event?.key === "Escape") { event.preventDefault?.(); goBack(); }
-        });
-
-        actions.appendChild(save);
-        actions.appendChild(cancel);
-        this.scrollEl.appendChild(actions);
-        input.select?.();
-    }
-
     private appendTargetScope(): HTMLSelectElement {
         const label = document.createElement("label"); label.textContent = "Atom scope";
         const select = document.createElement("select");
         select.setAttribute("data-molsysviewer-context-target-scope", "true");
         select.setAttribute("aria-label", "Target atom scope");
-        for (const [value, name] of [["target", "Target atoms"], ["atom", "Pointed atom"], ["group", "Residue"], ["chain", "Chain"]] as const) {
+        for (const [value, name] of [["target", "Target atoms"], ["atom", "Pointed atom"], ["group", "Group"], ["chain", "Chain"]] as const) {
             const option = document.createElement("option"); option.value = value; option.textContent = name;
             option.disabled = value === "atom" && (this.currentTarget?.kind !== "structure" || this.currentTarget.atom_index === undefined);
             select.appendChild(option);

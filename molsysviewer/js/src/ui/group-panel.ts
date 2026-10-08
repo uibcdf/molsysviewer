@@ -573,7 +573,7 @@ export class GroupPanel {
         const button = document.createElement("button");
         button.setAttribute("data-molsysviewer-group-panel-tab", key);
         const tooltips: Record<string, string> = {
-            system: "Molecular hierarchy, chain sequence, and residue-level selections.",
+            system: "Molecular hierarchy, chain sequence, and group-level selections.",
             whole: "Global representation styling, visual presets, and overall system view.",
             selection: "Create, view, and modify active and saved selection queries.",
             regions: "Define and style spatial regions, boolean composition, and overlap inspection.",

@@ -2257,7 +2257,7 @@ test("GroupPanel tabs have correct tooltips and initial subtitle labels", () => 
 
         assert.ok(systemTab);
         assert.ok(wholeTab);
-        assert.strictEqual(systemTab.title, "Molecular hierarchy, chain sequence, and residue-level selections.");
+        assert.strictEqual(systemTab.title, "Molecular hierarchy, chain sequence, and group-level selections.");
         assert.strictEqual(wholeTab.title, "Global representation styling, visual presets, and overall system view.");
         panel.dispose();
     } finally {

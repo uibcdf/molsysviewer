@@ -30,7 +30,7 @@ def _context_atoms(view: Any, content: Mapping[str, Any]) -> list[int]:
     if scope == "target":
         return sorted(set(int(atom) for atom in atoms))
     if context.get("kind") != "structure":
-        raise ValueError("Only a molecular target supports atom/residue/chain scopes.")
+        raise ValueError("Only a molecular target supports atom/group/chain scopes.")
     if scope == "atom":
         atom = context.get("atom_index")
         if isinstance(atom, bool) or not isinstance(atom, Integral) or atom not in atoms:
@@ -38,7 +38,10 @@ def _context_atoms(view: Any, content: Mapping[str, Any]) -> list[int]:
         return [int(atom)]
     if scope not in {"group", "chain"}:
         raise ValueError(f"Unsupported context scope: {scope!r}.")
-    return view._atoms_for_selection_level(list(atoms), scope)
+    resolved = view._atoms_for_selection_level(list(atoms), scope)
+    if not resolved:
+        raise ValueError(f"This target has no declared {scope} membership; use target or atom scope.")
+    return resolved
 
 
 def select_context_target(view: Any, content: Mapping[str, Any]) -> None:

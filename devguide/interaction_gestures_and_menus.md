@@ -70,7 +70,7 @@ Important rule:
 
 The implemented foundation of `uibcdf/molsysviewer#179` separates the target
 heading from an explicitly named active-selection submenu. Molecular headings
-include residue and chain identifiers when available. Relevant regions are
+include group and chain identifiers when available. Relevant regions are
 bounded to eight entries, and saved selections open their Studio collection;
 collection size does not determine the menu size. In-card submenus have a Back
 action and remain inside the viewer bounds.
@@ -89,7 +89,7 @@ viewer element when focus was inside the menu. Opening and dismissal preserve
 the scene and active selection.
 
 Molecular targets support read-only inspection in System, explicit selection
-replace/add/remove by atom/residue/chain, and direct region/annotation composers
+replace/add/remove by atom/group/chain, and direct region/annotation composers
 with declared atom scope. These composers preserve active selection. Shapes
 navigation stages a target anchor; Interactions navigation stages target A and
 opens an existing-data or calculation workflow without computing or applying a
@@ -111,6 +111,21 @@ inspection/editing to their existing Studio owners. Selecting associated atoms
 is explicit and disabled without an atom anchor. Contextual Hide carries an
 explicit hidden state and is idempotent; Studio Show/Hide retains its toggle.
 Related regions offer bounded access to their existing Studio inspector.
+
+Public molecular scopes use **Atom, Group and Chain**, following MolSysMT's
+topological levels. Group covers amino acids, nucleotides, waters, ions and
+ligands; it is distinct from a user-defined Region. Select uses scope headings
+with short replace/add/remove labels; accessible action names retain the scope.
+Target composers and System inspection use the same Group terminology.
+Canonical scope resolution refuses a target with no declared group/chain
+membership before changing selection or creating objects. Target scope remains
+available; Atom scope requires a uniquely identified atom. Rendered molecular
+labels do not establish native membership.
+
+Shapes and measurements use the current user-assigned tag as the primary menu
+heading, with their object category below it. Related-region rows expose focus,
+Show/Hide and Open in Studio; rename/delete stay in the Studio region editor.
+Hover uses a soft background and keyboard focus retains a visible outline.
 
 An interaction pick carries its analysis name/revision, filtered-query revision,
 frame, occurrence ID and position in that frame query. The position is a hint:

@@ -44,7 +44,7 @@ export function calculationCriteria(kind: string): CalculationCriterion[] {
             })),
         ];
         case "disulfide_candidate": return [{ key: "default", label: "S–S geometric candidates", parameters: {}, chemistry: false,
-            controls: [length("max_bond_length", "S–S distance cutoff"), { key: "group_names", label: "Residue names (comma-separated; blank = CYS)", type: "names" }],
+            controls: [length("max_bond_length", "S–S distance cutoff"), { key: "group_names", label: "Group names (comma-separated; blank = CYS)", type: "names" }],
             help: "Geometric candidates; calculation does not declare a covalent bond or change topology." }];
         case "ionic_contact": return [{ key: "default", label: "Minimum distance between charged groups", parameters: {}, chemistry: true,
             controls: [length("distance_threshold", "Minimum-atom distance cutoff", true)],

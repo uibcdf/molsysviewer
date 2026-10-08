@@ -1,9 +1,11 @@
 # Canvas context menu: accepted pre-1.0 redesign
 
 **Decision — 2026-10-08:** the principal maintainer accepts this redesign as
-required before 1.0 (`uibcdf/molsysviewer#179`). **Implementation delivered; human acceptance pending:** the
+required before 1.0 (`uibcdf/molsysviewer#179`). **Implementation delivered; final polish under review:** the
 menu shell, shared scene/Studio navigation, molecular-target and object/occurrence
-workflows are delivered; human acceptance remains pending.
+workflows are delivered. The maintainer confirms both reported defects are
+corrected and the reviewed workflows function; the accepted final vocabulary
+and visual refinements await a refreshed runtime review.
 The [owning report](pending_proposals/canvas_context_menu_target_actions.md)
 records the inspected findings. Current executable contracts are maintained in
 [`interaction_gestures_and_menus.md`](interaction_gestures_and_menus.md) and
@@ -61,8 +63,8 @@ Rehacer
 Abrir Studio…
 ```
 
-Include residue identifier, chain and source when available, plus the identified
-atom. Selection supports explicit replace/add/remove and one-shot atom, residue
+Include group identifier, chain and source when available, plus the identified
+atom. Selection supports explicit replace/add/remove and one-shot atom, group
 or chain actions according to target information. Global picking preferences
 remain deferred under #45.
 
@@ -146,10 +148,20 @@ existing owning surface.
 | Annotation | Edit text, focus anchor, explicitly select associated atoms, hide, delete annotation. |
 | Shape | Edit appearance, focus meaningful geometry bounds/anchors, explicitly select associated atoms when available, hide, delete shape. |
 | Measurement | Inspect value/units, focus endpoints, select endpoint atoms, edit appearance, hide, delete measurement. |
-| Related region | Open its Studio context, focus, and explicitly scoped visibility/activation actions. |
+| Related region | Focus, Show/Hide and Open in Studio. Rename/delete and activation remain in Studio. |
 
 Unsupported focus must not silently do nothing. Core and addon contributions
 share applicability rules; addon entries remain context-specific and grouped.
+
+### Final UX refinement — 2026-10-08
+
+Use Group throughout the public molecular workflow, consistent with MolSysMT
+and the selection contract. Retain scope headings with short selection verbs
+and scope-qualified accessible names. Give named shapes/measurements their
+current tag as the primary heading. Keep related-region rows to focus,
+visibility and Studio access; reserve rename/delete for Studio. Soften pointer
+hover while retaining the keyboard focus outline. No new selection/isolation,
+calculation or collection-management workflow is introduced by this refinement.
 
 ## Implementation sequence
 
@@ -162,7 +174,7 @@ the Python echo does not toggle them again. The owning report records validation
 and outstanding work; this foundation does not close #179.
 
 Stage 2 resolves explicit replace/add/remove target selections in the canonical
-MolSys atom space, with atom/residue/chain scopes. Target region and annotation
+MolSys atom space, with atom/group/chain scopes. Target region and annotation
 composers leave the active selection intact. Read-only target inspection and
 staged Shapes/Interactions navigation reuse Studio owners; Interactions staging
 neither calculates nor silently applies a display filter. The form starts with
@@ -203,14 +215,16 @@ maintainer's notebook/popout acceptance remains a separate gate.
 
 The first human review (2026-10-08) finds two failures: missing boundary peptide
 half-links after contextual region creation and an unpickable translucent sphere.
-The corrections pass the expanded real-pointer/geometry guard; repeat these two
-scenarios in the maintainer's notebook before accepting #179. Details and
-validation scope remain in its owning report.
+The corrections pass the expanded real-pointer/geometry guard, and the
+maintainer confirms both scenarios now work in the notebook. The final visual
+review covers the accepted vocabulary, short selection labels, current object
+names and related-region simplification. Details and validation scope remain
+in the owning report.
 
-- Right-click residue B while a working selection contains residue A: opening,
+- Right-click group B while a working selection contains group A: opening,
   dismissing, inspecting and creating from B preserve A until an explicit
   selection operation. Replace/add/remove have distinct observable results.
-- Pick atom, residue and chain deliberately; molecular headings and generated
+- Pick atom, group and chain deliberately; molecular headings and generated
   regions/annotations reflect the chosen scope and source identity.
 - Measure with an explicit endpoint policy and visible remaining picks; confirm
   that the resulting managed object has the correct value and units.

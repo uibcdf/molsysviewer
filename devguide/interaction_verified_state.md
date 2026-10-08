@@ -109,11 +109,11 @@ once, and browser-owned Studio navigation sends no unsupported backend action.
 The targeted GroupPanel interaction guard confirms its shared menu still creates
 a label after opening the active-selection submenu.
 
-These checks are development browser evidence. The new full layout still needs
-the maintainer's notebook/popout review. Molecular/object/occurrence
-workflows are now implemented; their evidence is recorded below. Earlier manual observations established main and popup menu
-opening and host-menu suppression; they do not constitute manual acceptance of
-the redesigned layout.
+These checks are development browser evidence. The maintainer's subsequent
+notebook review confirms the contextual workflows and both reported defect
+corrections. The final visual refinement remains under review as recorded below.
+Molecular/object/occurrence workflows are implemented; their evidence is
+recorded below. Earlier main/popup observations retain their original scope.
 
 The implemented menu offers the existing target focus/measurement and scene
 object operations, active-selection workflows and relevant-region actions through
@@ -173,15 +173,48 @@ persistent selection marker. The former loci-injection checks did not cover
 GPU picking. Python hover telemetry is disabled in this snapshot; hover is
 checked locally, and marker checks await Mol*'s render tick. The owner unit cases
 pass (30 StateHandlers and six ActiveSelection); all 323 JS cases pass after
-updating the existing line-default expectation. Human rechecking of the two
-reported defects remains pending; no package or publication qualification is
-inferred.
+updating the existing line-default expectation. The subsequent human review
+confirms both reported defects are corrected; no package or publication
+qualification is inferred.
 
 The affected shared-Chromium campaign passes 6/6 suites: context-menu,
 measurements-interaction, region-hide, region-subpanel, shapes-subpanel and
 scene-contracts. Runtime regeneration, TypeScript, 181 reporting guards and
 generated-index checks pass. This campaign has targeted scope; the previous
 40-suite evidence remains recorded with its original source and recovery limits.
+
+### Human reconfirmation and final UX refinement — 2026-10-08
+
+The principal maintainer confirms the two reported defects are corrected and
+the reviewed contextual workflows work. The accepted vocabulary/UX pass now
+uses Group in the menu, target composers, System inspector and disulfide
+calculation input. Group is a native topological level, distinct from Region.
+Targets with no declared group/chain membership fail before changing selection
+or creating objects; 21 focused Python cases cover these contextual owners.
+
+Selection scopes retain their headings and explicit replace/add/remove
+operations with short visible labels and scope-qualified accessible names.
+Shapes/measurements prioritize current user-assigned tags, including after
+rename. Related-region rows retain focus, Show/Hide and Studio access; their
+rename/delete controls remain in Studio. Pointer hover is soft and keyboard
+focus remains outlined.
+
+The extended real pentalanine/dialanine/Mol*/Chromium guard passes on this
+runtime, including the short labels and scope values, related-region Studio
+routing without changing selection, current shape/measurement titles, and the
+earlier pointer/bond/occurrence guards. The menu owner passes 17 cases. The JS
+regression found one old Studio subtitle expectation (322/323); its corrected
+GroupPanel owner passes 35/35. This is targeted recovery, not an uninterrupted
+green full campaign. TypeScript and runtime regeneration pass. Final visual
+acceptance of these refinements and replacement-package qualification remain
+separate; #179 remains partial.
+
+The required full Python run outside the sandbox completes 2,938 cases:
+2,907 pass, 23 skip and the eight previously recorded Qt probes fail with
+OpenGL/Vulkan context creation and D-Bus errors. Native JUnit and receptor
+counts agree. The full regression is not green and is not repeated; this
+preserves the experimental Qt scope under #109/#113. Ruff and generated-index
+checks pass.
 
 ## Python Interaction Callbacks
 

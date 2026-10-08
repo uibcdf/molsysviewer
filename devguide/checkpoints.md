@@ -7,8 +7,10 @@ scene/Studio access and molecular/object/occurrence workflows are implemented.
 The first human review confirms the reviewed workflows except for boundary
 peptide half-links and translucent-sphere picking. Both corrections pass the
 expanded real-pointer/rendered-geometry guard, 323 JS cases and six affected
-browser suites; human
-reconfirmation remains pending.
+browser suites. The maintainer now confirms both corrections work. Final
+accepted refinements use Group consistently, shorten repeated selection labels,
+prioritize object tags, simplify related-region rows and soften pointer hover.
+Their real-browser guard passes; the refreshed visual review remains pending.
 Both Viewer and MolSysMT 1.0 publication remain paused. The menu changes
 require a new Viewer candidate/version, not yet chosen. Keep 0.24.1 build 1,
 its fixed reference and qualification evidence unchanged; they do not certify

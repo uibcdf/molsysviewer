@@ -17,7 +17,9 @@ supersedes: []
 **Reported:** 2026-10-08, during the principal maintainer's pre-1.0 design
 review. The maintainer approves the proposed redesign as a pre-1.0 requirement.
 The menu foundation, molecular-target and object/occurrence workflows are
-implemented. The extended real-browser guard passes; human review remains pending.
+implemented. The extended real-browser guard passes. The maintainer confirms
+the reported defects are corrected; the accepted final UX refinements await
+refreshed visual review.
 
 ## What
 
@@ -239,7 +241,7 @@ queued render tick. All 323 JS cases pass after updating that prior unit
 expectation, and the focused StateHandlers/ActiveSelection cases pass 30/6.
 The first ordinary JS runner invocation obscured the unit assertion behind a
 bundled-file failure; direct execution preserves the addressable case output.
-Human reconfirmation of these fixes remains outstanding.
+The subsequent human reconfirmation and final UX refinement are recorded below.
 
 The final affected-browser campaign passes **6/6** suites in one shared
 Chromium: context-menu, measurements-interaction, region-hide, region-subpanel,
@@ -256,7 +258,45 @@ target test. The follow-up only sorts those imports; pinned Ruff `0.16.5` then
 passes the entire `molsysviewer`/`tests` lint scope. The original failed receipt is
 retained; other hosted runs remain separate from the passing local campaign.
 
+## Final vocabulary and UX pass — 2026-10-08
+
+The maintainer confirms the boundary-bond and translucent-picking corrections
+work. The final accepted refinement follows the existing canonical Group
+contract and MolSysMT's topological group model. Public menu scopes, creation
+forms, System inspector, Studio subtitle, disulfide group-name input and scope
+errors now use Group. It is distinct from a user-defined Region. The canonical
+Python resolver rejects missing declared group/chain membership before mutation;
+the real native-demo guard covers failed selection, region and annotation
+operations without clearing selection or changing the scene. It does not infer
+native membership from a rendered Mol* group label.
+
+Selection scopes keep explicit headings and shorter action text; accessible
+names preserve scope. Named shapes/measurements prioritize their current tags.
+Related-region rows retain focus, visibility and Studio navigation, with
+rename/delete managed by Studio. The unused menu rename composer is removed.
+Pointer hover keeps a soft background and keyboard focus its visible outline.
+
+The focused context owner passes 21 Python cases; the menu owner passes 17 JS
+cases. The full JS regression found one stale Studio subtitle assertion
+(322/323); the corrected GroupPanel owner passes 35/35. The earlier bundled-file
+report obscured the addressable case; direct Node execution identified it.
+The extended real-browser guard passes, including group scopes, short labels,
+related-region routing without selection changes, live object tags after rename,
+and the previous boundary/picking/occurrence coverage. TypeScript and runtime
+regeneration pass. This is development evidence, not candidate qualification.
+
+The required full Python run in `molsyssuite@uibcdf_3.14`, outside the sandbox,
+executes 2,938 cases: 2,907 pass, 23 skip and eight fail in 567.35 seconds.
+All eight failures are the already recorded Qt transport/payload probes:
+six resource-outcome cases and two standalone cases cannot create an
+OpenGL/Vulkan context and report the same D-Bus connection error. The native
+pytest JUnit and receptor counts agree. This does not clear the experimental
+Qt-host boundary under #109/#113, and the full suite is not rerun. Chromium,
+contextual scope owners, reporting-protocol checks, generated-index checks and
+the full Python Ruff scope pass; no new functional failure is observed.
+
 ## Resolution
 
-Pending the principal maintainer's remote-Jupyter/popout acceptance. Current interaction guidance records the delivered workflows;
+Pending the principal maintainer's final visual acceptance of the UX refinement.
+The functional notebook review and defect reconfirmation are accepted. Current interaction guidance records the delivered workflows;
 archive this report and close #179 only with addressable guards and evidence.

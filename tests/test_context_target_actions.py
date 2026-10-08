@@ -47,6 +47,27 @@ def test_target_creation_preserves_selection_and_is_replayable():
         view.close()
 
 
+@pytest.mark.parametrize("action", ["select_context_target", "create_region_from_target", "create_annotation_from_target"])
+def test_missing_group_membership_refuses_without_mutating_scene(action):
+    view = demo["dialanine"]
+    try:
+        target = _target(view)
+        view.active_selection.set([0, 1])
+        # A real native topology can declare atoms without group membership,
+        # as happens with partially specified molecular sources.
+        view.molsys.topology.atoms["group_index"] = None
+        regions_before = view.regions.records()
+        annotations_before = view.annotations.records()
+        with pytest.raises(ValueError, match="no declared group membership"):
+            dispatch_panel_action(view, {"action": action, "context": target,
+                                         "scope": "group", "op": "replace", "tag": "missing-group", "text": "Missing group"})
+        assert view.active_selection.atom_indices == [0, 1]
+        assert view.regions.records() == regions_before
+        assert view.annotations.records() == annotations_before
+    finally:
+        view.close()
+
+
 @pytest.mark.parametrize("change", [
     {"scope": "nonsense"}, {"structure_index": 1},
     {"context": {"kind": "structure", "atom_indices": [-1]}},
