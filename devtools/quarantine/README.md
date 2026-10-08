@@ -88,3 +88,11 @@ whitelist.
 Two of the seven `[L]` digesters consolidated in `uibcdf/molsysviewer#33` are in this batch:
 `switch_distance` and `cutoff_distance` are MolSysMT attribute names, so they left with the
 rest. `max_bond_length`, `threshold` and `distance_threshold` are not, and stayed.
+
+## Retention decision — 2026-10-07
+
+Retain both batches for 1.0. `uibcdf/molsysviewer#78` resolves the earlier
+retain-or-delete question conservatively: no files are deleted or moved back
+into the runtime. The maintained rule is in
+[`devguide/digestion_and_dependencies.md`](../../devguide/digestion_and_dependencies.md#retained-digester-quarantine--2026-10-07).
+The dated counts above are historical inventories, not today's callable count.

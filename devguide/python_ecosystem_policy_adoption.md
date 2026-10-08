@@ -6,6 +6,22 @@ independent: support libraries are **adopted** and developer tools are
 is owned by `uibcdf/molsyssuite#56`; local dependency declarations alone do not
 establish adoption.
 
+## Portable Ackredit guide publication — 2026-10-07
+
+Done: `uibcdf/molsysviewer#152` requested publication of the synchronized portable
+attribution guide, not a new runtime integration or dependency floor. Commit
+`d0d5ea85678b6bc234ab1a46a5d1b93949871661` publishes the verified public portable
+contract and its 0.9.0 boundary. The committed consumer guide SHA-256 is
+`dab9d96a897f0e229837ffeda2a7277029a344cace6530a79ac55e5a90d3e529`.
+Keep that generated root guide read-only. The provider's current canonical guide
+has since gained later provider/evidence contracts and differs (SHA-256
+`6353892d552eab79973cecec5f8e3c8c31e146416e1cb481786e21cd3fcbf99d`).
+A future refresh belongs to the guarded central synchronization route under
+`uibcdf/molsyssuite#71`; publication of the original portable handoff does not
+claim adoption of those later APIs. Public-pair qualification is complete in
+[installed_artifact_qualification.md](installed_artifact_qualification.md);
+final 1.0 qualification remains separate.
+
 ## Published support-library receiving check — 2026-10-06
 
 **Done on Linux x86_64 / Python 3.14.8:** published SMonitor **0.19.0, build

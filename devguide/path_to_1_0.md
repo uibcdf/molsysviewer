@@ -1,5 +1,17 @@
 # Path to 1.0.0 (Unified Release Plan)
 
+**Complete board review — 2026-10-07:** [all 34 open issues are reconciled](open_issue_reconciliation_20261007.md).
+#95/#97 public installation/host promises are corrected; #78 retains developer-only
+quarantine and #152's original guide publication is complete. The maintainer
+closes #82/#89 as superseded by verified 0.24.0, without historical backfill.
+#93 still needs central Python admission despite delivered public 16/16 evidence.
+#42's published detection repair removes its historical loading bottleneck; the
+explicit source hint remains a non-gating provider improvement. Remaining 1.0
+work includes public docs/installed first contact, Interactions compatibility
+freeze and exact artifact/gates containing the source-only #149/#177 fixes.
+Experimental Qt defects and post-1.0 growth are not a core release clearance.
+
+
 This document is the authoritative release plan for the **v1.0.0** release of MolSysViewer. 
 
 **Current stabilization checkpoint (2026-10-07):** Viewer 0.24.0 noarch build 1

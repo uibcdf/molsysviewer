@@ -39,6 +39,9 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- [`open_issue_reconciliation_20261007.md`](open_issue_reconciliation_20261007.md): complete 34-issue scope review, public-promise corrections, historical publication decisions and remaining 1.0 gates.
+- [`public_distribution_contract.md`](public_distribution_contract.md): public Conda/core backend route and experimental native-host boundary.
+
 - [`human_usability_review_20261006.md`](human_usability_review_20261006.md): completed five-stage remote-Jupyter review with Diego; observations, corrected usability defects and tutorial follow-up retained.
 
 - [`scientific_usability_review_20261004.md`](scientific_usability_review_20261004.md): real widget findings, separate Interactions calculation/display scopes and successful repaired-provider SDF composition.

@@ -1,6 +1,13 @@
 # Archived implementation plans
 
 - [`qt_probe_html_ownership.md`](qt_probe_html_ownership.md) — #178: parent-owned HTML survives real Qt reads and cleans on success/failure/timeout; eight lifecycle regressions and both original probes pass.
+- [`quarantined_digesters_await_a_decision.md`](quarantined_digesters_await_a_decision.md) — #78: retain developer-only quarantine for 1.0; restoration rule adopted, no deletion.
+- [`clarify_linux_only_standalone_qt_support.md`](clarify_linux_only_standalone_qt_support.md) — #97: distinguish core installed coverage from experimental Qt and remote hosts.
+- [`public_pip_installation_promise.md`](public_pip_installation_promise.md) — #95: correct public installation/update commands and core backend claims.
+- [`ackredit_portable_guide_publication.md`](ackredit_portable_guide_publication.md) — #152: verified portable attribution guide publication; later central refresh remains separate.
+- [`historical_github_releases_superseded.md`](historical_github_releases_superseded.md) — #82: maintainer declines historical backfill; verified 0.24.0 supersedes the work.
+- [`historical_npm_runtimes_superseded.md`](historical_npm_runtimes_superseded.md) — #89: maintainer declines missing historical runtimes; preserve CDN limitations and publication checks.
+
 
 - [`noarch_conda_launchers_missing_on_windows.md`](noarch_conda_launchers_missing_on_windows.md) — #101: build 1 passes staged and public Windows installed-command checks; exact promotion and historical broken file retained.
 

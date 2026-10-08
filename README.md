@@ -135,7 +135,6 @@ before calling `load_state()`.
 - Pocket blobs, pocket surfaces, channel tubes
 - Pharmacophore glyphs (donors, acceptors, hydrophobic patches, aromatic rings)
 - Sphere and triangle-face primitives
-- All shapes are structure-aware: they follow atoms across trajectory frames
 
 ### Annotations and measurements
 - Persistent labels anchored to atom selections (`view.annotations`)
@@ -160,13 +159,13 @@ before calling `load_state()`.
 MolSysViewer has a first-class addon API that lets external packages add
 workspaces, panels, context actions, and shape providers without modifying the core:
 
-Each MolSysSuite integration is shipped **by its own toolkit**, as a package inside that
-toolkit's repository — installing the toolkit installs its add-on. There is no separate
-`molsysviewer-*` distribution to install.
+Optional MolSysSuite integrations are owned and distributed by their toolkit.
+Availability depends on the toolkit version; follow its installation instructions.
+The table below lists module names known to the host, including a legacy module.
 
 | Import as | Shipped by | What it adds | Maturity |
 |---|---|---|---|
-| `molsysviewer_molsysmt` | MolSysMT | 10-panel workspace: inspect, select, colour, H-bonds, topology, PBC, mechanics, build | alpha |
+| `molsysviewer_molsysmt` | MolSysMT | Legacy addon module name retained for explicit discovery; ordinary workflows use the core API | alpha |
 | `molsysviewer_topomt` | TopoMT | Pocket detection and topography visualisation | undeclared |
 | `molsysviewer_elastnetmt` | ElastNetMT | GNM/ANM elastic network modes and contact network overlays | skeleton |
 | `molsysviewer_pharmacophoremt` | PharmacophoresMT | Structure-based pharmacophore glyph overlays | skeleton |
@@ -177,8 +176,11 @@ grades. The shared vocabulary is two words — `experimental` and `stable` — d
 the values above predate it, and each toolkit adopts it when it re-declares. Until then,
 read both `skeleton` and `alpha` as `experimental`, and `undeclared` as exactly that.
 
-All four integrations exist and work. **None of them is production-ready today**, and only
-MolSysMT's is tested against the host and discovered on install.
+MolSysMT is a required backend of MolSysViewer. Loading, selection and interaction
+calculations use it through the core API; you do not need a MolSysMT addon. The table
+records known optional and legacy module names, not a guarantee that each toolkit
+currently distributes or qualifies its integration. **None of them is production-ready
+today.** Discover optional addons explicitly when their toolkit provides them.
 
 ### Canvas UX modes
 - `controls_mode="minimal"` — 3-icon cluster + keyboard shortcuts (N/W/H)
@@ -188,33 +190,40 @@ MolSysMT's is tested against the host and discovered on install.
 
 ## Installation
 
-Conda (recommended):
+Install the published package with Conda:
 
 ```bash
-conda install molsysviewer -c uibcdf
+conda create -n molsysviewer-env -c uibcdf -c conda-forge -c ambermd \
+    python=3.14 molsysviewer jupyterlab
+conda activate molsysviewer-env
+jupyter lab
 ```
 
-Pip:
+Conda installs the required MolSysMT backend and widget dependencies. The public
+installation route is Conda; MolSysViewer is not distributed through PyPI.
+An editable source installation is a developer workflow with its dependencies
+already provisioned, as described below.
 
-```bash
-pip install molsysviewer
-```
+| Capability | Platform and Python scope |
+| --- | --- |
+| Core Python API, Jupyter widget and interactive HTML | Linux x86_64/ARM64, macOS Apple Silicon, Windows x86_64; Python 3.11–3.14 |
+| Local standalone launchers and Qt desktop host | Experimental for 1.0; native Qt dependencies and visible rendering require separate qualification |
+| Remote sessions | Unsupported preview; supported workflows remain post-1.0 |
 
-In the published Conda `0.23.4` package on Windows, the Python library installs
-but the `molsysviewer`, `molsysviewer-qt` and `molsysviewer-server` commands are
-missing. This packaging defect is tracked in
-[#101](https://github.com/uibcdf/molsysviewer/issues/101); a corrected Conda
-build needs Windows installed-package verification before the commands can be
-claimed there.
+Viewer 0.24.0 build 1 and MolSysMT 0.23.0 build 0 passed all sixteen public
+installed platform/Python cells. The three Windows console commands are present
+and their `--help` checks pass; this repairs the missing launchers in the older
+0.23.4 package ([#101](https://github.com/uibcdf/molsysviewer/issues/101)).
+Command availability does not certify the experimental desktop or remote host.
 
-macOS support is currently limited to Apple Silicon (arm64). Intel-based macOS
-(x86_64) is not part of the supported platform matrix. Support may be
-reconsidered if there is demonstrated user demand. The optional standalone Qt
-host has a narrower [environment recipe](devguide/standalone_supported_environment.md)
-and remains **experimental for 1.0**. The local standalone launchers are also
-experimental; they are not part of the 1.0 support promise. Interactive HTML
-export remains a supported output. Remote sessions are an unsupported preview;
-supported remote workflows are planned after 1.0.
+Central Python 3.14 admission remains pending under
+[#93](https://github.com/uibcdf/molsysviewer/issues/93); the installed results
+above do not declare that administrative admission. Intel-based macOS is outside
+the current matrix. For experimental Qt work,
+see the [separate development recipe](devguide/standalone_supported_environment.md).
+That recipe preserves Linux transport evidence and Windows/macOS solver-only
+observations; neither a successful solve nor the core noarch package certifies
+native Qt rendering. Interactive HTML export remains a supported output.
 
 ---
 
@@ -226,13 +235,15 @@ the repository and ships inside the wheel/conda package so that users never need
 a Node.js toolchain.
 
 ```bash
-# Install in editable mode
-pip install -e .
+# Use the provisioned suite development environment
+conda activate molsyssuite@uibcdf_3.14
+python -m pip install --no-deps -e .
 
 # Rebuild the JS bundle (only needed when editing TypeScript sources)
 cd molsysviewer/js
 npm install
-npm run build
+npm run build:runtime
+cd ../..
 
 # Run the test suites
 pytest tests/                              # Python

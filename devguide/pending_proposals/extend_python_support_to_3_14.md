@@ -14,6 +14,15 @@ supersedes: []
 
 # Extend MolSysViewer Python support to 3.14 alongside MolSysMT
 
+**Current review — 2026-10-07:** Viewer 0.24.0 build 1 / MolSysMT 0.23.0
+build 0 passes all sixteen public installed cells and exact source Python 3.14
+integration. The central remote `suite.toml` still records Viewer and MolSysMT
+as `authorized`, not `admitted` (Git blob `893dc1a7de9c2e669f67fa08be103c1edc993d0f`).
+This issue stays active for the receiving/admission decision under
+`uibcdf/molsyssuite#29` / #51. Scientific qualification and central admission
+are separate. Optional Qt has its own #35/#109/#113 owners and does not add a
+core 1.0 gate. Do not describe #93 as missing Python 3.14 implementation.
+
 **Current follow-up — 2026-10-06:** core Python 3.11–3.14 support remains
 delivered by the earlier public pair. The later Viewer 0.24.0 build 1 /
 MolSysMT 0.23.0 ABI3 build 0 candidate additionally passes all sixteen installed

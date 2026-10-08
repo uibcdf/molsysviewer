@@ -9,15 +9,12 @@ Open your browser's developer console (`F12` → Console tab). Look for errors l
 
 - `WebGL: CONTEXT_LOST_WEBGL`
 - `Failed to create WebGL context`
-- `THREE.WebGLRenderer: Error creating WebGL context`
 
-If WebGL is unavailable:
-
-- **Chrome/Edge**: go to `chrome://flags` and enable *Override software rendering list*.
-- **Firefox**: go to `about:config` and set `webgl.force-enabled = true`.
-- **Headless servers**: WebGL is not available without a display. Use the headless
-  export path (`view.export.image()` with Qt or Playwright backend) instead of
-  trying to display the widget.
+If WebGL is unavailable, check browser hardware acceleration and your graphics
+driver. The browser that displays the notebook must support WebGL2. When Jupyter
+runs on a remote machine, rendering happens in your local browser; the Jupyter
+server itself does not need a graphical desktop. Browser-based figure export has
+its own browser/WebGL requirements; see {doc}`../cookbook/figure_export_workbench`.
 
 ## 2. Check the browser console for JS errors
 
@@ -26,14 +23,15 @@ Common patterns:
 
 - `Cannot read properties of undefined` — usually a version mismatch between
   the installed Python package and the bundled `viewer.js`. Run
-  `pip install --upgrade molsysviewer` and hard-refresh the page (`Ctrl+Shift+R`).
+  `conda update -c uibcdf -c conda-forge -c ambermd molsysviewer` and hard-refresh the page (`Ctrl+Shift+R`).
 - `Content Security Policy` violations — some JupyterHub deployments restrict
   inline scripts. Contact your hub administrator.
 
 ## 3. JupyterLab vs Classic Notebook
 
 - **JupyterLab ≥ 4**: the widget renders via anywidget. Ensure
-  `pip install anywidget` is installed in the same environment.
+  `anywidget` is installed in the kernel environment; the MolSysViewer Conda
+  package includes this dependency.
 - **Classic Notebook**: ipywidgets ≥ 7 is required.
 - **VS Code Jupyter**: supported; if the cell output is blank, try
   *Restart Kernel and Run All Cells*.
@@ -44,7 +42,9 @@ If a previously running cell's output stays frozen after a kernel restart:
 
 ```python
 # Force a fresh view — don't reuse a stale view object
-view = mv.MolSysView()
+import molsysviewer as msv
+
+view = msv.new_view()
 view
 ```
 

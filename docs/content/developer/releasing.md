@@ -70,13 +70,23 @@ would say so. Versions `0.8.0` through `0.19.0` are missing from npm and are
 staying missing by decision; if that is ever revisited, the publish needs an
 explicit dist-tag first.
 
+The maintainer also decided on 2026-10-07 not to recover GitHub Releases for
+0.22.0/0.23.0 or npm runtimes for 0.20.1/0.22.0/0.23.0. Issues #82/#89 close
+as superseded by verified 0.24.0; their historical tags stay fixed. Regenerate
+old CDN exports with a published version or use a self-contained export.
+
 **Check it, do not assume it.** After tagging:
 
 ```bash
-gh run list --workflow=npm-publish.yaml --limit 1
+gh run list --workflow=npm-publish.yaml --commit <exact-tag-commit> --limit 5
 curl -s -o /dev/null -w "%{http_code}\n" \
   "https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@X.Y.Z/dist/viewer.js"
 ```
+
+Inspect the completed workflow for that exact tag; a queued run is not a pass.
+Verify npm package integrity and matching CDN bytes, then retain the public
+Conda/installed-pair and Zenodo receipts. Keep the release checkpoint open if
+any required publication or verification failed.
 
 A `404` there means every `view.export.html(..., shared_runtime="cdn")` written
 by a user of that version points at nothing. That is a public API path failing on

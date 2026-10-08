@@ -163,3 +163,15 @@ Current local rule:
     accepts in public entry points;
   - do not pre-fill speculative add-on or standalone capability maps before the
     runtime actually needs them.
+
+## Retained digester quarantine — 2026-10-07
+
+Keep the 219 modules in `devtools/quarantine/argdigest_argument/` as developer
+history for 1.0. They remain outside the installed package and the configured
+runtime digester directory. This resolves the retain-or-delete decision in
+`uibcdf/molsysviewer#78` without deleting evidence or changing argument validation.
+Their batch counts and reachability measurements belong to their dated records;
+do not confuse them with the current live digester inventory. Restore a module
+only for a demonstrated public input, with its owning contract and regression
+coverage. A later deletion requires a separate reviewed cleanup; it is not a
+1.0 release obligation.

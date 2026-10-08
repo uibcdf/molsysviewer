@@ -1,0 +1,377 @@
+{
+  "date": "2026-10-07",
+  "reviewed_source": "484686524d4b928fddc96b98db7e01e3821edbc6",
+  "scope": "All 34 open issues at review start; classify current promises and retained growth. This is not a new whole-code, GPU or final-artifact certification.",
+  "starting_open_count": 34,
+  "decisions": [
+    {
+      "issue": 152,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/152",
+      "title_at_review": "Publish the synchronized guide for Ackredit's accepted portable contract",
+      "milestone_at_review": null,
+      "disposition": "Resolved",
+      "action_or_evidence": "Portable guide already published at d0d5ea85; later canonical-guide refresh/adoption remains separate.",
+      "record": "archive/ackredit_portable_guide_publication.md"
+    },
+    {
+      "issue": 115,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/115",
+      "title_at_review": "Update the Mol* dependency after 1.0",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0",
+      "action_or_evidence": "Mol* dependency update, imported-API review and exact core qualification; retain the current pin for 1.0.",
+      "record": "pending_proposals/post_1.0/update_molstar_dependency.md"
+    },
+    {
+      "issue": 113,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/113",
+      "title_at_review": "Evaluate aligned PySide6/Qt for a future supported standalone host",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0",
+      "action_or_evidence": "Future supported Qt candidate: exact native artifacts and visible-window workflows; no core gate.",
+      "record": "pending_proposals/post_1.0/recheck_latest_conda_forge_qt_for_standalone.md"
+    },
+    {
+      "issue": 109,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/109",
+      "title_at_review": "Migrate optional Qt host to canonical PySide6 6.11.2",
+      "milestone_at_review": null,
+      "disposition": "Experimental; outside core gate",
+      "action_or_evidence": "Canonical binding selection is implemented; current Qt/WebGL evidence still fails on some environments. Do not certify it from import/solver success.",
+      "record": "pending_proposals/migrate_standalone_qt_to_canonical_pyside6_6_11_2.md"
+    },
+    {
+      "issue": 100,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/100",
+      "title_at_review": "Define reproducible browser and render-worker E2E evidence lanes",
+      "milestone_at_review": null,
+      "disposition": "Remote growth; outside core gate",
+      "action_or_evidence": "Core/portable/render-worker lanes exist and core is qualified. Portable remote and managed GPU completion retain independent candidate requirements; exclusion is not a pass.",
+      "record": "pending_proposals/post_1.0/reproducible_browser_and_render_worker_e2e_evidence.md"
+    },
+    {
+      "issue": 97,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/97",
+      "title_at_review": "Clarify the Linux-only support boundary of the Qt standalone host",
+      "milestone_at_review": null,
+      "disposition": "Resolved",
+      "action_or_evidence": "Public core, experimental native hosts and remote preview are distinguished consistently; addressable docs guard.",
+      "record": "archive/clarify_linux_only_standalone_qt_support.md"
+    },
+    {
+      "issue": 95,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/95",
+      "title_at_review": "README offers a pip installation route that cannot succeed",
+      "milestone_at_review": null,
+      "disposition": "Resolved",
+      "action_or_evidence": "Remove unsupported public pip install/update commands; correct backend/addon and Windows claims.",
+      "record": "archive/public_pip_installation_promise.md"
+    },
+    {
+      "issue": 93,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/93",
+      "title_at_review": "Coordinate MolSysViewer Python 3.14 support with MolSysMT",
+      "milestone_at_review": null,
+      "disposition": "Pre-1.0 administrative receiving",
+      "action_or_evidence": "Public pair 16/16 and source 3.14 gates are delivered. Remote suite registry still says authorized; obtain central admission. Qt has separate owners.",
+      "record": "pending_proposals/extend_python_support_to_3_14.md"
+    },
+    {
+      "issue": 89,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/89",
+      "title_at_review": "0.20.1, 0.22.0 and 0.23.0 never reached npm: the runtime build required a file the publisher never has",
+      "milestone_at_review": null,
+      "disposition": "Superseded by maintainer",
+      "action_or_evidence": "Do not recover historical npm 0.20.1/0.22.0/0.23.0; preserve missing-runtime caveat and future publication verification.",
+      "record": "archive/historical_npm_runtimes_superseded.md"
+    },
+    {
+      "issue": 82,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/82",
+      "title_at_review": "Publish the 0.22.0 and 0.23.0 GitHub Releases once Phase 10 closes the dependency channels",
+      "milestone_at_review": null,
+      "disposition": "Superseded by maintainer",
+      "action_or_evidence": "Do not backfill Releases/Zenodo for 0.22.0/0.23.0; retain tags. Verified 0.24.0 supersedes that release work.",
+      "record": "archive/historical_github_releases_superseded.md"
+    },
+    {
+      "issue": 80,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/80",
+      "title_at_review": "Report upstream to pytest-xdist: an import in the receiver thread can end the session",
+      "milestone_at_review": null,
+      "disposition": "Upstream tooling; outside core gate",
+      "action_or_evidence": "External pytest-xdist report remains prepared, not sent. Requires explicit authorization for the third-party submission; not a reproduced current core defect.",
+      "record": null
+    },
+    {
+      "issue": 78,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/78",
+      "title_at_review": "219 quarantined digesters are in limbo: decide whether they are deleted",
+      "milestone_at_review": null,
+      "disposition": "Resolved",
+      "action_or_evidence": "Retain 219 quarantined modules outside installed/runtime package for 1.0; no deletion or restoration.",
+      "record": "archive/quarantined_digesters_await_a_decision.md"
+    },
+    {
+      "issue": 59,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/59",
+      "title_at_review": "Advanced representations for pockets, voids, channels and interfaces",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0",
+      "action_or_evidence": "Advanced pocket/void/channel/interface representations beyond shipped primitives and shape providers.",
+      "record": "pending_proposals/post_1.0/visualization_representations_roadmap.md"
+    },
+    {
+      "issue": 58,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/58",
+      "title_at_review": "View a scene as pixels in a terminal",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0",
+      "action_or_evidence": "Add a terminal pixel presentation; existing pixel/export tools are not a shipped terminal viewer.",
+      "record": "pending_proposals/post_1.0/viewing_in_the_terminal.md"
+    },
+    {
+      "issue": 57,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/57",
+      "title_at_review": "Generated typing contract for MolSysView mixins",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0",
+      "action_or_evidence": "Generated static typing for assembled mixins; do not infer that runtime validation supplies type stubs.",
+      "record": "pending_proposals/post_1.0/viewer_mixin_contract_and_caller_resolution.md"
+    },
+    {
+      "issue": 56,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/56",
+      "title_at_review": "Studio subpanel for Interactions",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0 growth; baseline delivered",
+      "action_or_evidence": "Minimal Studio Interactions is shipped and qualified. Remaining richer source modes, analytics and dynamic workflows only.",
+      "record": "pending_proposals/post_1.0/studio_interactions_subpanel_ui_design.md"
+    },
+    {
+      "issue": 55,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/55",
+      "title_at_review": "Structure windowing and lazy materialization",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0",
+      "action_or_evidence": "Lazy/windowed trajectory residence changes view.molsys semantics; 1.0 retains complete selected-structure materialization and its size guard.",
+      "record": "pending_proposals/post_1.0/structure_windowing_and_lazy_materialization.md"
+    },
+    {
+      "issue": 54,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/54",
+      "title_at_review": "Post-1.0 performance architecture",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0",
+      "action_or_evidence": "Further topology encoding/residency/Qt join performance; existing measured ceilings are not arbitrary-scale certification.",
+      "record": "pending_proposals/post_1.0/representative_scale_followups.md"
+    },
+    {
+      "issue": 53,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/53",
+      "title_at_review": "Move the structure barrier to the receiver",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0",
+      "action_or_evidence": "Receiver-owned structure barrier for endpoints beyond the current sender contract.",
+      "record": "pending_proposals/post_1.0/receiver_side_structure_barrier.md"
+    },
+    {
+      "issue": 52,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/52",
+      "title_at_review": "Automate the Qt render check on a GPU runner",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0",
+      "action_or_evidence": "Automated native Qt framebuffer/workflow check on a qualified GPU runner; prior manual evidence is not broad host support.",
+      "record": "pending_proposals/post_1.0/qt_render_check_on_a_gpu_runner.md"
+    },
+    {
+      "issue": 51,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/51",
+      "title_at_review": "Popout parity in the Qt standalone host",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0",
+      "action_or_evidence": "Qt popout parity; live Jupyter popouts do not certify the separate Qt shell.",
+      "record": "pending_proposals/post_1.0/qt_popout_parity.md"
+    },
+    {
+      "issue": 50,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/50",
+      "title_at_review": "Idea inventory from an external terminal viewer",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0 ideas",
+      "action_or_evidence": "External terminal-viewer ideas remain an inventory, not accepted 1.0 functionality.",
+      "record": "pending_proposals/post_1.0/proteinview_external_review_and_ideas.md"
+    },
+    {
+      "issue": 49,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/49",
+      "title_at_review": "Multi-view split-screen viewport synchronization",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0",
+      "action_or_evidence": "Multiple synchronized viewports; progressive multi-source loading is already delivered and is a different capability.",
+      "record": "pending_proposals/post_1.0/multiview_split_screen.md"
+    },
+    {
+      "issue": 48,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/48",
+      "title_at_review": "An Interactions domain for derived atom-atom relations",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0 growth; baseline delivered",
+      "action_or_evidence": "Native analyses, nine families, queries, geometry, H5MSM/session and minimal Studio are delivered. Additional formats, persistence/residence analytics and dynamic evaluation remain.",
+      "record": "pending_proposals/post_1.0/interactions_domain.md"
+    },
+    {
+      "issue": 47,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/47",
+      "title_at_review": "Rough edges of the 2026-08 export rework, to review cold",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0 cold review",
+      "action_or_evidence": "Export-rework design tradeoffs to revisit on evidence; not a blanket assertion that current export paths fail.",
+      "record": "pending_proposals/post_1.0/export_rework_rough_edges.md"
+    },
+    {
+      "issue": 46,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/46",
+      "title_at_review": "Preserve enriched chemical metadata from SDF and MOL2",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0 enriched metadata",
+      "action_or_evidence": "SDF/protein composition and hierarchy fixes #312/#313 are delivered. Preserve the distinct enhanced chemical metadata/schema review; successful load alone does not prove every enrichment.",
+      "record": "pending_proposals/post_1.0/chemical_metadata_loss_sdf_pdb.md"
+    },
+    {
+      "issue": 45,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/45",
+      "title_at_review": "Configurable canvas picking granularity via the context menu",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0",
+      "action_or_evidence": "User-configurable atom/group/chain picking granularity; current supported selection actions remain qualified.",
+      "record": "pending_proposals/post_1.0/canvas_picking_level.md"
+    },
+    {
+      "issue": 44,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/44",
+      "title_at_review": "Advanced annotations on Mol*'s MVS machinery",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0",
+      "action_or_evidence": "Richer MVS annotation behavior beyond the current supported anchors/lifecycle.",
+      "record": "pending_proposals/post_1.0/annotations_mvs_machinery.md"
+    },
+    {
+      "issue": 43,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/43",
+      "title_at_review": "Study the token cost of non-pytest test output for agent consumers",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0 tooling",
+      "action_or_evidence": "Measure non-pytest output token costs; no scientific/runtime capability depends on completing that study.",
+      "record": "pending_proposals/post_1.0/agent_token_cost_of_non_pytest_tests.md"
+    },
+    {
+      "issue": 42,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/42",
+      "title_at_review": "Adopt MolSysMT's explicit source-form hint once it exists",
+      "milestone_at_review": null,
+      "disposition": "Provider API improvement; outside core gate",
+      "action_or_evidence": "Published 0.23.0 repairs extension detection; measured 95k-atom detection 2.319 s. Explicit source hint still absent, provider #151 open; benchmark-only direct import remains.",
+      "record": "pending_proposals/molsysmt_known_source_form_and_large_string_detection.md"
+    },
+    {
+      "issue": 41,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/41",
+      "title_at_review": "Offer MolSysMT a read of their documentation pipeline at the scale it is reaching",
+      "milestone_at_review": null,
+      "disposition": "Advisory; outside core gate",
+      "action_or_evidence": "Historical documentation-pipeline analysis offered to MolSysMT; a provider migration is not a promised Viewer feature.",
+      "record": "pending_proposals/molsysmt_docs_pipeline_analysis.md"
+    },
+    {
+      "issue": 39,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/39",
+      "title_at_review": "Build the runtime as a classic script so exported views open from a disk",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0 on demand",
+      "action_or_evidence": "Classic-script shared runtime for opening a many-view bundle directly from disk; current served/shared and self-contained HTML remain separate supported routes.",
+      "record": "pending_proposals/classic_script_runtime_for_offline_bundles.md"
+    },
+    {
+      "issue": 36,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/36",
+      "title_at_review": "Standalone Qt movie export lacks a camera snapshot",
+      "milestone_at_review": "post-1.0",
+      "disposition": "Post-1.0 experimental defect",
+      "action_or_evidence": "Qt orbit export lacks a returned camera snapshot; retain the defect instead of treating core camera/movie tests as Qt closure.",
+      "record": "pending_bugs/post_1.0/standalone_qt_movie_camera_snapshot.md"
+    },
+    {
+      "issue": 35,
+      "url": "https://github.com/uibcdf/molsysviewer/issues/35",
+      "title_at_review": "Standalone Qt: live demo replacement does not update the scene",
+      "milestone_at_review": null,
+      "disposition": "Experimental defect; outside core gate",
+      "action_or_evidence": "Live replacement fix and automated guards exist; ten visible-window replacements and Ready/no-delivery-error confirmation remain unperformed.",
+      "record": "pending_bugs/standalone_qt_live_demo_reload.md"
+    }
+  ],
+  "form_detection_probe": {
+    "molsysmt_version": "0.23.0",
+    "provider_path": "/tmp/msv-024-staging-20261006/lib/python3.14/site-packages/molsysmt/__init__.py",
+    "convert_signature": "(molecular_system, to_form='molsysmt.MolSys', selection='all', structure_indices='all', syntax='MolSysMT', strict=False, return_report=False, skip_digestion=False, **kwargs)",
+    "scope": "form detection only; no conversion/parser/render timing",
+    "n_atoms": 95000,
+    "payload_bytes": 7505003,
+    "form": "string:pdb_text",
+    "seconds": 2.3186291493475437,
+    "peak_traced_bytes": 7505044
+  },
+  "form_detection_reproduction": "import importlib.util,json,time,tracemalloc,inspect\nimport molsysmt as msm\nspec=importlib.util.spec_from_file_location('endpoint_fixture','/home/diego/repos@uibcdf/molsysviewer/devtools/benchmarks/endpoint_isolation.py')\nmodule=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)\nresult={'molsysmt_version':msm.__version__,'provider_path':msm.__file__,'convert_signature':str(inspect.signature(msm.convert)),'scope':'form detection only; no conversion/parser/render timing'}\n# Warm imports on a small input, then measure only detection of the existing large benchmark fixture.\nmsm.get_form(module.make_pdb(10))\npayload=module.make_pdb(95000)\ntracemalloc.start(); start=time.perf_counter(); form=msm.get_form(payload)\nresult.update(n_atoms=95000,payload_bytes=len(payload),form=form,seconds=time.perf_counter()-start,peak_traced_bytes=tracemalloc.get_traced_memory()[1])\nprint(json.dumps(result,indent=2))\n",
+  "central_registry": {
+    "url": "https://github.com/uibcdf/molsyssuite/blob/main/suite.toml",
+    "git_blob": "893dc1a7de9c2e669f67fa08be103c1edc993d0f",
+    "viewer_state": "authorized",
+    "molsysmt_state": "authorized",
+    "admission_claimed": false
+  },
+  "guide_publication": {
+    "consumer_commit": "d0d5ea85678b6bc234ab1a46a5d1b93949871661",
+    "consumer_sha256": "dab9d96a897f0e229837ffeda2a7277029a344cace6530a79ac55e5a90d3e529",
+    "canonical_url": "https://github.com/uibcdf/ackredit/blob/main/standards/ACKREDIT_GUIDE.md",
+    "canonical_sha256": "6353892d552eab79973cecec5f8e3c8c31e146416e1cb481786e21cd3fcbf99d",
+    "later_sync_claimed": false
+  },
+  "validation": {
+    "focused_public_docs_reporting_links": {
+      "passed": 193,
+      "skipped": 1,
+      "reason": "molsysviewer_elastnetmt is not installed",
+      "exit_code": 0
+    },
+    "installation_contract_first_run": {
+      "passed": 5,
+      "exit_code": 0
+    },
+    "sphinx": {
+      "exit_code": 0,
+      "warnings_as_errors": true,
+      "command": "conda run --no-capture-output -n molsyssuite@uibcdf_3.14 make -C docs html SPHINXOPTS=\"-W --keep-going -j 2\"",
+      "notebooks_executed": false
+    },
+    "npm_version_and_publication_guards": {
+      "passed": 7,
+      "exit_code": 0
+    },
+    "ruff": "passed on new guard"
+  },
+  "board_closures": {
+    "status": "awaiting evidence commit publication",
+    "issues": [
+      78,
+      82,
+      89,
+      95,
+      97,
+      152
+    ],
+    "expected_open_after": 28
+  },
+  "integration_base": "7a952517",
+  "integration_note": "Remote #178 disposable Qt HTML ownership is integrated unchanged; original real offscreen probes pass in its receipt. This does not replace visible-window/GPU certification or the final source/artifact gate."
+}

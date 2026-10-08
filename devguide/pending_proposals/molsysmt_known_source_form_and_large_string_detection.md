@@ -1,5 +1,5 @@
 ---
-summary: A large in-memory molecular string enters unbounded filename extension detection.
+summary: Adopt a public source-form hint when MolSysMT provides it; historical extension detection is repaired.
 issue: uibcdf/molsysviewer#42
 status: blocked
 opened: 2026-08-05
@@ -19,6 +19,25 @@ supersedes: []
 **Owner:** MolSysMT (`get_form()` and `convert()`); MolSysViewer is the motivating consumer
 
 **Scope:** performance and API determinism; no change to MolSysViewer's scientific model
+
+## Current review — 2026-10-07
+
+The historical extension-detection bottleneck is repaired in published MolSysMT
+0.23.0. Its catalogue rejects multiline molecular content before suffix checks
+and copies extension-sized slices only. With that installed public provider,
+`get_form()` recognizes the existing 95,000-atom / 7,505,003-byte benchmark PDB
+as `string:pdb_text` in 2.319 s after a small-input warmup, with 7,505,044 peak
+traced bytes. This measures detection only, not conversion or rendering; the
+remaining detector still allocates approximately one payload, so the entire
+pipeline is not proven constant-memory. The archived original seven-minute
+observation does not describe the current published catalogue.
+
+`convert()` still has no explicit `from_form` argument. `uibcdf/molsysmt#151`
+is open. This is a non-gating provider API improvement and later benchmark
+cleanup, not an unresolved seven-minute core loading defect before 1.0.
+Keep the temporary direct converter limited to the benchmark; do not extend
+that internal import into the public runtime. The exact probe is retained in
+[the board receipt](../open_issue_reconciliation_20261007.json).
 
 ## Problem
 
@@ -47,7 +66,7 @@ convert
       -> catalogue.form_of_extension
 ```
 
-`form_of_extension()` currently lowercases and splits the complete string on `.` as if
+At the original observation, `form_of_extension()` lowercased and split the complete string on `.` as if
 it were a possible file name. Coordinate-rich PDB content contains many decimal points,
 so work and temporary allocations scale with the complete scientific payload even
 though that payload is not a path.

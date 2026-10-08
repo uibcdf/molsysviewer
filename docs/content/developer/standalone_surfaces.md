@@ -5,6 +5,13 @@ launchers and host APIs are outside the 1.0 support promise. Interactive HTML
 export remains a supported output format. Remote sessions are an unsupported
 preview whose supported workflow is planned after 1.0.
 
+The core public pair is qualified on Linux x86_64/ARM64, macOS Apple Silicon
+and Windows x86_64 with Python 3.11–3.14. Those installed notebook/browser gates
+and the Windows launcher `--help` gate do not certify Qt. The separate Qt
+[development recipe](https://github.com/uibcdf/molsysviewer/blob/main/devguide/standalone_supported_environment.md)
+records Linux transport observations and Windows/macOS solver-only evidence;
+visible-window rendering and live replacement remain unqualified for 1.0.
+
 MolSysViewer renders the same viewer bundle through **four distinct surfaces**.
 They differ in *transport* (how Python and the JS runtime exchange messages) and
 in *lifecycle*. Do not conflate them — especially, do not use the exported HTML

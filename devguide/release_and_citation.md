@@ -80,20 +80,25 @@ commits and staging artifacts.
 Run the complete release gate described in the developer release guide. A
 candidate commit must not use `[skip ci]`.
 
-## Historical tag without a Release — 0.22.0
+## Historical publications not being recovered — 2026-10-07
 
-`0.22.0` is tagged and has no GitHub Release, on purpose. Publishing the Release starts
-Zenodo ingestion and the Conda route check. A direct route builds and uploads;
-a staged route requires a separate exact-file promotion after the Release.
-Conda is the gate deferred to 1.0 — the
-UIBCDF dependency channels are not frozen, so the artefacts would be built against
-versions nobody has closed, and Zenodo would mint a DOI that does not come back.
+The principal maintainer closes `uibcdf/molsysviewer#82` and
+`uibcdf/molsysviewer#89` as superseded by the verified 0.24.0 release. Preserve
+all historical tags. Do not backfill GitHub Releases/Zenodo for 0.22.0 or
+0.23.0, or npm runtimes for 0.20.1, 0.22.0 or 0.23.0, under this decision.
+Those historical artifacts remain absent; this is not a retroactive delivery
+claim. Old CDN exports require regeneration with a published matching runtime,
+or a self-contained export from an available installation.
 
-The tag and Release were separated for that historical checkpoint. It is not
-authority to create new development-checkpoint tags: current policy requires
-exact-candidate evidence before tagging or publication. Tracked in
-`uibcdf/molsysviewer#82`, so a tag with no Release is never a mystery someone has to
-reconstruct.
+For each future release, the operator must review the exact tag's completed
+npm workflow, verify package identity and matching CDN bytes, verify the
+public Conda files and installed pair, then verify GitHub Release/Zenodo.
+A pushed tag, successful build or queued workflow is not publication completion.
+Record failed or pending steps and keep the publication checkpoint open until
+independent public verification passes. Never silently move npm `latest` to
+an older version, retag a release or duplicate a promotion to obtain green CI.
+Existing version-resolution and npm injection guards protect the failures
+behind the historical gaps; they do not replace this operator verification.
 
 ## Publishing and verifying
 

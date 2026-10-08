@@ -1,13 +1,13 @@
 ---
 summary: Clarify the Linux-only support boundary of the Qt standalone host.
 issue: uibcdf/molsysviewer#97
-status: open
+status: resolved
 opened: 2026-09-24
-closed:
+closed: 2026-10-07
 verification: inspected
 area: [documentation, packaging, standalone]
-guard:
-normative:
+guard: tests/test_public_installation_contract.py::test_core_support_does_not_certify_native_hosts
+normative: devguide/public_distribution_contract.md
 blocked_by: []
 supersedes: []
 ---
@@ -88,3 +88,7 @@ and an addressable guard protects the distinction from regression.
 ## Resolution
 
 Pending.
+
+## Resolution — 2026-10-07
+
+The README, installation notebook, troubleshooting and standalone developer page now distinguish the public core pair from experimental native hosts. The detailed Qt recipe remains Linux transport evidence and Windows/macOS solver-only observations. The public distribution contract absorbs this rule, and the addressable guard rejects a core/noarch statement being promoted into Qt or remote support. No new Qt runtime certification is claimed.

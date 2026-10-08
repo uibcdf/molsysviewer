@@ -1,13 +1,13 @@
 ---
 summary: 219 quarantined digesters are outside the package and undecided; deleting them is the open question.
 issue: uibcdf/molsysviewer#78
-status: open
+status: resolved
 opened: 2026-09-04
-closed:
+closed: 2026-10-07
 verification: measured
 area: [argdigest, process]
 guard:
-normative:
+normative: devguide/digestion_and_dependencies.md
 blocked_by: []
 supersedes: []
 ---
@@ -64,3 +64,7 @@ automated suite does not, and has not been run since the second batch moved. If 
 
 `git mv` restores any of them; `devtools/quarantine/README.md` carries the per-batch
 evidence and the command.
+
+## Resolution — 2026-10-07
+
+Retain the 219 quarantined modules outside the distributed/runtime package for 1.0. No deletion, restoration or digestion change is needed. The maintained retention/restoration rule absorbs the decision; a later cleanup is a separate reviewed change. Historical reachability measurements are preserved without claiming a new complete smoke test.
