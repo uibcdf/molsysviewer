@@ -29,7 +29,7 @@ on:
       viewer_version:
         description: Intended Viewer release version for the exact source candidate
         required: true
-        default: 0.24.0
+        default: 0.24.1
         type: string
   pull_request:
     branches: [main]

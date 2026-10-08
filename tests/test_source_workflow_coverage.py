@@ -103,6 +103,9 @@ def test_automatic_source_pair_uses_the_prepared_runtime_version():
     )
     plan = tomllib.loads((ROOT / "devtools/conda-build/release_plan.toml").read_text(encoding="utf-8"))
     assert workflow["on"]["workflow_dispatch"]["inputs"]["viewer_version"]["default"] == plan["version"]
+    for name in ("CI.yaml", "CI_e2e.yaml"):
+        dispatch = yaml.load((ROOT / ".github/workflows" / name).read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
+        assert dispatch["on"]["workflow_dispatch"]["inputs"]["viewer_version"]["default"] == plan["version"], name
     steps = workflow["jobs"]["source-pair"]["steps"]
     tag = next(step for step in steps if step.get("id") == "viewer-candidate-tag")
     cleanup = next(step for step in steps if step["name"] == "Remove the temporary Viewer tag after installation")

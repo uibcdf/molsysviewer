@@ -2,7 +2,7 @@
 
 **Next candidate preparation — 2026-10-08:**
 the [experimental Interactions consumer contract](interactions_compatibility_contract.md)
-is agreed with the provider. Preparing [0.24.1 noarch build 0](stabilization_0241_preparation_20261008.md)
+is agreed with the provider. Preparing [0.24.1 noarch build 1](stabilization_0241_preparation_20261008.md)
 will package #149/#177 before the final documentation review. Its installed
 qualification with proposed MolSysMT 1.0.0 build 0 awaits frozen producer/file
 identities. Public versions remain 0.24.0/0.23.0; no new publication is authorized.
@@ -1514,7 +1514,14 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current session priority (2026-10-07):** the immutable stabilization pair
+**Current session priority (2026-10-08):** first qualify 0.24.1 with #149/#177
+and the [agreed experimental Interactions contract](interactions_compatibility_contract.md),
+then complete documentation/installed first contact and the independent final
+Viewer 1.0 gates. Build 0 retains its failed preparation guard; build 1 repairs
+the workflow version defaults. Await both exact candidate files before the new
+installed-pair matrix. See [the active preparation](stabilization_0241_preparation_20261008.md).
+
+**Delivered baseline (2026-10-07):** the immutable stabilization pair
 and its staging/core/provider-source gates are verified in the current handoff above. The
 corrected automatic-development hosted follow-up also passes on all three hosts.
 Use the fixed Viewer producer `1a4c97a58b68b69f3a836546c9e4ac6187c3efa2` and

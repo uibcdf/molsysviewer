@@ -2,7 +2,7 @@
 
 **Next artifact — 2026-10-08:** the [Interactions consumer agreement](interactions_compatibility_contract.md)
 is recorded without promoting experimental scientific APIs. Prepare 0.24.1
-noarch build 0 with #149/#177, freeze its source and qualify the installed pair
+noarch with #149/#177, freeze its source and qualify the installed pair
 with the provider candidate before completing the public documentation review.
 Neither artifact preparation nor that pre-1.0 qualification clears Viewer 1.0
 or authorizes public publication.

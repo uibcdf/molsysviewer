@@ -23,7 +23,7 @@ on:
       viewer_version:
         description: Intended Viewer release version when use_staging is true
         required: true
-        default: 0.24.0
+        default: 0.24.1
         type: string
       e2e_lane:
         description: Core 1.0 gate or post-1.0 remote diagnostics

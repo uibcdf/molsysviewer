@@ -1,5 +1,14 @@
 # Development roadmap
 
+**Current execution order — 2026-10-08:** the [experimental Interactions consumer
+agreement](interactions_compatibility_contract.md) is recorded. First qualify
+[Viewer 0.24.1 build 1](stabilization_0241_preparation_20261008.md), containing
+#149/#177, with the proposed exact MolSysMT 1.0.0 artifacts. Build 0 is preserved
+with its failed workflow-version preparation guard; build 1 repairs the defaults.
+Complete broader documentation/installed first contact afterward, then qualify
+the independent final Viewer 1.0 producer. Public packages remain 0.24.0/0.23.0;
+preparation is not publication authorization.
+
 **Complete board review — 2026-10-07:** [all 34 open issues are reconciled](open_issue_reconciliation_20261007.md).
 #95/#97 public installation/host promises are corrected; #78 retains developer-only
 quarantine and #152's original guide publication is complete. The maintainer
@@ -12,14 +21,14 @@ freeze and exact artifact/gates containing the source-only #149/#177 fixes.
 Experimental Qt defects and post-1.0 growth are not a core release clearance.
 
 
-**Updated:** 2026-10-07
+**Updated:** 2026-10-08
 
 This roadmap states current priorities. Release gating lives in
 [`path_to_1_0.md`](path_to_1_0.md), normative behavior in
 [`scene_contracts.md`](scene_contracts.md), and concrete open designs in
 [`pending_proposals/`](pending_proposals/).
 
-## Current execution order — 2026-10-07
+## Delivered stabilization baseline — 2026-10-07
 
 The fixed stabilization package is Viewer **0.24.0 noarch build 1** from
 `1a4c97a58b68b69f3a836546c9e4ac6187c3efa2`, paired with MolSysMT **0.23.0 ABI3

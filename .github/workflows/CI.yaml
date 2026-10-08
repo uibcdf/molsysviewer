@@ -39,7 +39,7 @@ on:
       viewer_version:
         description: Intended Viewer release version for a staged candidate
         required: true
-        default: 0.24.0
+        default: 0.24.1
         type: string
       probe_backlog:
         description: Check skipped-commit debt without running the suite

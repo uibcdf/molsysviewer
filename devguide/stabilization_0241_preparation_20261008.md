@@ -1,6 +1,6 @@
 # Preparing Viewer 0.24.1 — 2026-10-08
 
-**In progress:** prepare an exact 0.24.1 noarch build 0 candidate from the
+**In progress:** prepare an exact 0.24.1 noarch build 1 candidate from the
 integrated source. Public Viewer remains 0.24.0 build 1. The principal maintainer
 authorizes preparation and qualification; public tags, Releases, npm publication
 and Conda promotion require separate final authorization.
@@ -66,5 +66,30 @@ stopping at the new documents not yet being registered in Git. After registering
 them, all four devguide link checks pass; no product behavior was changed to
 silence the guard. Citation, committed runtime 0.24.1, dependency audit, queue
 indexes, scoped Ruff and TypeScript checks pass. The native Node unit entry point
-passes with zero failures/skips. Canonical ordinary-wheel, full regression,
-staged files and new installed-pair evidence remain pending.
+passes with zero failures/skips.
+
+## First candidate and additive repair
+
+Source `66ea54e45ff3b9498e5f6f668c3d519888dca7b4` and fixed reference
+`candidate/0.24.1-build0` produce build 0 in run `37757179478`. Its original
+`molsysviewer-0.24.1-py_0.tar.bz2` has SHA-256
+`88ad5b7497bdfa06f16a7e9a47996edd633dd5f63534d38e0b9a0a418478ee58`.
+Producer receipt, independent download and staging index agree; the only label
+is staging. Its ordinary canonical wheel also passes runtime validation.
+
+The single full local regression ends with **2,880 passed, one failed and 23
+skipped**, in 565.26 seconds. The failing guard is
+`tests/test_source_workflow_coverage.py::test_automatic_source_pair_uses_the_prepared_runtime_version`:
+the source-pair dispatch default still says 0.24.0 while the release plan says
+0.24.1. Preserve this failure; build 0 is not cleared as the final candidate.
+The development provider changes only workflow/report/tool metadata during this
+run, not its molecular implementation; this is not an installed MolSysMT 1.0
+qualification. The local full suite is not repeated for this preparation task.
+
+Repair all three candidate CI defaults to 0.24.1 and extend the existing guard
+to cover them. Create separate frozen reference `candidate/0.24.1-build1` and
+produce an additive build 1; do not overwrite the existing archive or move its
+reference. Validate the affected workflow module and inspect the new hosted
+exact-source full/core outcomes. The molecular code and runtime remain unchanged
+by this repair. Old build-0 Windows and core runs retain their original scope;
+the new installed candidate requires its own gates and counterpart file hashes.

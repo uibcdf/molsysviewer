@@ -58,7 +58,7 @@ automatically recalculates science. Changed parameters require a new named analy
 ## Qualification and ownership
 
 The public 0.24.0 / 0.23.0 pair remains the delivered baseline. The next planned
-Viewer artifact is 0.24.1 noarch build 0, containing #149/#177, paired with the
+Viewer artifact is 0.24.1 noarch, containing #149/#177, paired with the
 provider's proposed 1.0.0 ABI3 build 0. Source checkpoints are not package
 identities. Freeze exact producer commits and obtain immutable file hashes before
 dispatching the new installed-pair matrix. Publication needs separate final
