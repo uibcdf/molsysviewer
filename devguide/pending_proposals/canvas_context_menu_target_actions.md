@@ -84,7 +84,8 @@ qualification retain their original identities and scope.
 
 ## Implementation evidence — 2026-10-08
 
-`MenuNavigation` owns compact in-card pages, keyboard navigation, Back and focus;
+`MenuNavigation` owns adaptive adjacent cards, keyboard navigation, narrow-canvas
+Back and focus;
 `ViewerContextMenu` owns applicability, headings and bounded collection access.
 Studio section navigation reuses `GroupPanel.openSection`. Browser-owned layout
 actions are consumed locally, and the menu emits a single event for mutations.
@@ -294,6 +295,37 @@ pytest JUnit and receptor counts agree. This does not clear the experimental
 Qt-host boundary under #109/#113, and the full suite is not rerun. Chromium,
 contextual scope owners, reporting-protocol checks, generated-index checks and
 the full Python Ruff scope pass; no new functional failure is observed.
+
+## Adaptive parallel submenus — 2026-10-08
+
+The maintainer accepts a click-driven secondary card alongside the root. The
+implementation keeps one secondary open, toggles it on a second trigger click,
+switches categories without a third column, prefers right and flips left at
+the canvas edge. Narrow canvases keep the single-card Back layout. Secondary
+forms retain their drafts while resizing and Cancel/Escape restores their
+originating submenu. Soft separators distinguish target, selection, global
+and destructive operations. Unavailable menu items remain keyboard-reachable,
+declare `aria-disabled`, explain their availability on focus and reject
+Enter/Space/click; native form controls keep native semantics.
+
+The first expanded browser run exposed a geometry/focus defect: hiding a
+disabled item's explanatory footer on pointer focus changed the card height
+and moved the intended selection action during its click. The reason now uses
+a zero-height sticky anchor and a pointer-transparent overlay, preserving action
+positions. The final extended real-demo guard passes, including selection
+dispatch after disabled focus, edge/corner bounds, category toggles without
+hover opening, form-draft preservation, narrow Back and an actual secondary
+browser window with wide-to-narrow resize. No scene/selection mutation is
+emitted by layout changes, cancellation or unavailable actions.
+
+The 17 focused menu cases and TypeScript pass after that correction. The full
+JS regression passes 323/323 before the browser-discovered footer correction;
+that final change is covered by the focused owner and real browser guard.
+Runtime regeneration, 181 reporting-protocol checks and generated-index checks
+pass. Five affected suites pass in one shared Chromium: popup-channel,
+group-panel-interaction, measurements-interaction, selection-subpanel and
+scene-contracts. This is source development evidence,
+not an installed artifact qualification or final human visual acceptance.
 
 ## Resolution
 

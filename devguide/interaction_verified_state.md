@@ -373,6 +373,25 @@ checks pass.
 - `measurements` no longer emit `DigestNotDigestedWarning` for the explicit
   atom-pick arguments used by the reproducible API surface
 
+## Adaptive context navigation — 2026-10-08
+
+The final real-demo context guard verifies a persistent root plus one adjacent
+secondary card, click-to-toggle/switch without hover opening, left flipping and
+canvas-edge bounds. Narrow resizing uses Back and preserves an unsent form;
+Cancel/Escape restores the originating submenu without changing selection.
+An actual secondary browser window renders Mol* and switches from two cards
+to one within its own resized bounds. Disabled history actions accept focus,
+show their reason and reject Enter/Space activation. The explanatory overlay
+does not reflow action positions during pointer focus.
+
+The final focused menu owner passes 17 cases, and TypeScript/runtime build pass.
+The full JS campaign passed 323 cases before that explanatory-overlay correction.
+Five affected suites also pass in one shared Chromium: popup-channel,
+group-panel-interaction, measurements-interaction, selection-subpanel and
+scene-contracts. The 181 reporting-protocol checks and generated indexes pass.
+These are development checks; the refreshed notebook visual review is pending
+under `uibcdf/molsysviewer#179` and does not qualify a replacement package.
+
 ## Known Open Points
 
 - future discussion of a distinct `bond` target policy

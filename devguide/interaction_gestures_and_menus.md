@@ -72,8 +72,15 @@ The implemented foundation of `uibcdf/molsysviewer#179` separates the target
 heading from an explicitly named active-selection submenu. Molecular headings
 include group and chain identifiers when available. Relevant regions are
 bounded to eight entries, and saved selections open their Studio collection;
-collection size does not determine the menu size. In-card submenus have a Back
-action and remain inside the viewer bounds.
+collection size does not determine the menu size. A click opens one secondary
+card beside the root; another click on its trigger closes it, and selecting
+another category replaces it. Hover never opens a category. Prefer the right
+side, flip left near the canvas edge, and keep both cards inside the hosting
+canvas. Two columns are the maximum. The active trigger stays softly highlighted.
+When the canvas cannot fit both cards, the secondary replaces the root and
+offers Back. Resizing switches layouts without discarding a form draft.
+Each card scrolls independently; soft separators distinguish target actions,
+active selection, global controls and destructive operations.
 
 View controls, Undo/Redo and Open Studio are available across target families.
 History buttons follow authoritative can-undo/can-redo state. Studio opening
@@ -84,7 +91,13 @@ Viewport toggles carry the requested state so a backend echo is idempotent.
 
 Keyboard navigation uses arrows, Home/End and Enter/Space. Escape returns from a
 submenu or closes the root menu before cancelling a tool or clearing selection.
-Inline composers retain input ownership. Closing restores focus to the previous
+Composers occupy the secondary card, retain native input ownership, and keep
+the root visible when space permits. Cancel/Escape restores their originating
+submenu; another Escape returns to the root. Escape on a native select belongs
+to its dropdown. Unavailable menu actions remain reachable by arrow keys,
+expose `aria-disabled` and a visible explanation on focus, and reject activation
+by Enter, Space or click. Native disabled form controls retain native semantics.
+Closing restores focus to the previous
 viewer element when focus was inside the menu. Opening and dismissal preserve
 the scene and active selection.
 

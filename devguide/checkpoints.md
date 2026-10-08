@@ -10,7 +10,14 @@ expanded real-pointer/rendered-geometry guard, 323 JS cases and six affected
 browser suites. The maintainer now confirms both corrections work. Final
 accepted refinements use Group consistently, shorten repeated selection labels,
 prioritize object tags, simplify related-region rows and soften pointer hover.
-Their real-browser guard passes; the refreshed visual review remains pending.
+Their real-browser guard passes. The final accepted navigation adds one
+click-driven adjacent secondary card, edge flipping, a narrow-canvas Back
+fallback, secondary forms, soft separators and focusable unavailable actions
+with explanations. Its refreshed visual review remains pending.
+The final extended real-browser guard passes, including an actual secondary
+window; five affected suites pass in shared Chromium. The 17 focused menu cases,
+TypeScript/runtime build and 181 reporting/index checks pass; the full JS run
+passed 323 cases before the final browser-discovered explanation reflow fix.
 Both Viewer and MolSysMT 1.0 publication remain paused. The menu changes
 require a new Viewer candidate/version, not yet chosen. Keep 0.24.1 build 1,
 its fixed reference and qualification evidence unchanged; they do not certify

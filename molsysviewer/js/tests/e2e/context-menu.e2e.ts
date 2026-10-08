@@ -108,7 +108,7 @@ view.close()
         await page.keyboard.press("End");
         assert.equal(await page.evaluate(() => document.activeElement?.textContent), "Dihedral");
         await page.keyboard.press("Home");
-        assert.equal(await page.evaluate(() => document.activeElement?.textContent), "‹ Back");
+        assert.equal(await page.evaluate(() => document.activeElement?.textContent), "Distance");
         await page.keyboard.press("Escape");
         assert.equal(await context.getByRole("menuitem", { name: "Focus Target", exact: true }).isVisible(), true);
         assert.equal(await page.evaluate(() => document.activeElement?.getAttribute("data-molsysviewer-context-submenu")), "Measure");
@@ -124,6 +124,66 @@ view.close()
         assert.equal(afterEscape.panel, stateBefore.panel);
         assert.equal(afterEscape.events, stateBefore.events);
         assert.equal(afterEscape.focusInViewer, true);
+
+        // Click-driven parallel cards: preserve the parent and bound both cards.
+        await firstGroup.click({ button: "right" });
+        const rootMenu = context.locator('[data-molsysviewer-menu-page]').first();
+        const measureTrigger = context.locator('[data-molsysviewer-context-submenu="Measure"]');
+        const rootBefore = await rootMenu.boundingBox();
+        await measureTrigger.hover();
+        assert.equal(await context.locator('[data-molsysviewer-menu-page]:visible').count(), 1);
+        await measureTrigger.click();
+        assert.equal(await rootMenu.isVisible(), true);
+        assert.deepEqual(await rootMenu.boundingBox(), rootBefore);
+        assert.equal(await measureTrigger.getAttribute("aria-expanded"), "true");
+        assert.equal(await context.locator('[data-molsysviewer-menu-page]:visible').count(), 2);
+        await measureTrigger.click();
+        assert.equal(await context.locator('[data-molsysviewer-menu-page]:visible').count(), 1);
+        await measureTrigger.click();
+        await context.locator('[data-molsysviewer-context-submenu="Create"]').click();
+        assert.equal(await context.getByRole("menu", { name: "Measure", exact: true }).isVisible(), false);
+        assert.equal(await context.locator('[data-molsysviewer-menu-page]:visible').count(), 2);
+        await context.getByRole("menuitem", { name: "Region from Target…", exact: true }).click();
+        assert.equal(await rootMenu.isVisible(), true);
+        assert.equal(await context.getByRole("dialog", { name: "New Region" }).isVisible(), true);
+        await context.getByPlaceholder("Region tag (optional)").fill("unsent-draft");
+        await page.locator("#root").evaluate(el => { el.style.width = "430px"; el.style.height = "360px"; });
+        await page.waitForFunction(() => document.querySelector('[data-molsysviewer-context-scroll]')?.getAttribute("data-molsysviewer-menu-layout") === "inline");
+        assert.equal(await rootMenu.isVisible(), false);
+        assert.equal(await context.getByPlaceholder("Region tag (optional)").inputValue(), "unsent-draft");
+        await page.keyboard.press("Escape");
+        assert.equal(await context.getByRole("menu", { name: "Create", exact: true }).isVisible(), true);
+        await context.getByRole("menuitem", { name: "‹ Back", exact: true }).click();
+        assert.equal(await rootMenu.isVisible(), true);
+        await page.locator("#root").evaluate(el => { el.style.width = "700px"; el.style.height = "520px"; });
+        await page.waitForFunction(() => document.querySelector('[data-molsysviewer-context-scroll]')?.getAttribute("data-molsysviewer-menu-layout") === "lateral");
+        await page.keyboard.press("Escape");
+        assert.equal(await page.evaluate(() => JSON.stringify((window as any).__controller.currentActiveSelection)), selectionBefore);
+        assert.equal(await page.evaluate(() => (window as any).__messages.filter((m: any) => m.event === "interaction_context_action").length), stateBefore.events);
+
+        // At either edge the child is adjacent, flips left, and stays in canvas.
+        for (const x of [5, 350, 695]) for (const y of [5, 515]) {
+            await page.evaluate(({ x, y }) => {
+                const c = (window as any).__controller;
+                const host = document.getElementById("root")!.getBoundingClientRect();
+                c.contextMenu.open({ event: "interaction_context_menu", kind: "empty" }, host.left + x, host.top + y,
+                    c.currentActiveSelection, null, [], [], [], [], c.contextHistoryState);
+            }, { x, y });
+            await context.locator('[data-molsysviewer-context-submenu="View"]').click();
+            const main = await rootMenu.boundingBox();
+            const child = await context.getByRole("menu", { name: "View", exact: true }).boundingBox();
+            const host = await page.locator("#root").boundingBox();
+            assert.ok(main && child && host);
+            assert.ok(Math.abs(main.x + main.width - child.x - 1) < 2 || Math.abs(child.x + child.width - main.x - 1) < 2);
+            for (const card of [main, child]) {
+                assert.ok(card.x >= host.x && card.y >= host.y);
+                assert.ok(card.x + card.width <= host.x + host.width + 1);
+                assert.ok(card.y + card.height <= host.y + host.height + 1);
+            }
+            if (x === 695) assert.ok(child.x < main.x);
+            await page.keyboard.press("Escape");
+            await page.keyboard.press("Escape");
+        }
 
         // Work on residue B while the working selection remains residue A.
         const secondGroup = page.locator('[data-molsysviewer-group-item="true"]').nth(1);
@@ -291,6 +351,12 @@ view.close()
                 c.currentActiveSelection, null, [], [], [], [], c.contextHistoryState);
         });
         assert.equal(await context.getByRole("menuitem", { name: "Undo", exact: true }).isDisabled(), true);
+        await context.getByRole("menuitem", { name: "Undo", exact: true }).focus();
+        assert.match(await context.locator('[data-molsysviewer-menu-disabled-reason]:visible').innerText(), /No scene history/);
+        await page.keyboard.press("Enter");
+        await page.keyboard.press("Space");
+        assert.equal(await context.isVisible(), true);
+        assert.equal(await page.evaluate(() => (window as any).__messages.filter((m: any) => m.event === "scene_history_undo").length), 0);
         await page.evaluate(async () => (window as any).__controller.handleMessage({ op: "set_history_state", can_undo: true, can_redo: false }));
         await context.getByRole("menuitem", { name: "Undo", exact: true }).click();
         assert.equal(await page.evaluate(() => (window as any).__messages.filter((m: any) => m.event === "scene_history_undo").length), 1);
@@ -485,8 +551,38 @@ view.close()
         await objectMenu.getByRole("menuitem", { name: "Help", exact: true }).click();
         assert.equal(await page.locator('#objects .molsysviewer-help-card').isVisible(), true);
 
+        // An actual secondary browser window uses its own canvas bounds.
+        const popupReady = page.waitForEvent("popup");
+        await page.evaluate(() => window.open("about:blank", "menu-layout-review", "width=720,height=560"));
+        const popup = await popupReady;
+        popup.on("pageerror", error => errors.push(String(error)));
+        await popup.setViewportSize({ width: 720, height: 560 });
+        await popup.setContent('<style>body{margin:0}</style><div id="popup-root" style="position:relative;width:100vw;height:100vh"></div>');
+        await popup.addScriptTag({ path: resolve(dir, "harness.bundle.js") });
+        await popup.evaluate(async wire => {
+            const w = window as any;
+            const c = await w.Harness.createController("popup-root");
+            w.__controller = c;
+            for (const message of wire) await c.handleMessage(message, { throwOnError: true });
+            c.contextMenu.open({ event: "interaction_context_menu", kind: "empty" }, 715, 555);
+        }, messages);
+        await popup.waitForFunction(() => (window as any).__controller.plugin.canvas3d?.reprCount.value > 0);
+        const popupMenu = popup.locator('[data-molsysviewer-context-menu="true"]');
+        await popupMenu.locator('[data-molsysviewer-context-submenu="View"]').click();
+        assert.equal(await popupMenu.locator('[data-molsysviewer-menu-page]:visible').count(), 2);
+        await popup.setViewportSize({ width: 420, height: 360 });
+        await popup.waitForFunction(() => document.querySelector('[data-molsysviewer-context-scroll]')?.getAttribute("data-molsysviewer-menu-layout") === "inline");
+        assert.equal(await popupMenu.locator('[data-molsysviewer-menu-page]:visible').count(), 1);
+        const popupBounds = await popupMenu.boundingBox();
+        assert.ok(popupBounds && popupBounds.x >= 0 && popupBounds.y >= 0);
+        assert.ok(popupBounds.x + popupBounds.width <= 420 && popupBounds.y + popupBounds.height <= 360);
+        await popupMenu.getByRole("menuitem", { name: "‹ Back", exact: true }).click();
+        await popup.keyboard.press("Escape");
+        assert.equal(await popupMenu.isVisible(), false);
+        await popup.close();
+
         assert.deepEqual(errors, []);
-        console.log("[E2E context menu] real molecular/object rendering; occurrence #61 bounded inspection, participant/set scope, object editors, geometry focus, shared Help, keys/Escape and single dispatch pass");
+        console.log("[E2E context menu] adaptive adjacent cards, edge flipping, narrow/form preservation, disabled keyboard reasons and actual popup; molecular/object rendering, occurrence scope, editors, keys/Escape and single dispatch pass");
     } finally { await browser.close(); }
 }
 

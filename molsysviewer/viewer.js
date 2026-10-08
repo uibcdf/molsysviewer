@@ -8310,13 +8310,13 @@ function Vec3() {
     return out;
   }
   Vec32.max = max5;
-  function clamp2(out, a8, min6, max6) {
+  function clamp3(out, a8, min6, max6) {
     out[0] = Math.max(min6[0], Math.min(max6[0], a8[0]));
     out[1] = Math.max(min6[1], Math.min(max6[1], a8[1]));
     out[2] = Math.max(min6[2], Math.min(max6[2], a8[2]));
     return out;
   }
-  Vec32.clamp = clamp2;
+  Vec32.clamp = clamp3;
   function distance2(a8, b8) {
     const x = b8[0] - a8[0], y = b8[1] - a8[1], z = b8[2] - a8[2];
     return Math.sqrt(x * x + y * y + z * z);
@@ -147997,6 +147997,18 @@ async function waitForCanvasDraw(canvas, timeoutMs = 3e4) {
 
 // src/ui/menu-navigation.ts
 var nextMenuId = 0;
+var unavailableItems = /* @__PURE__ */ new WeakSet();
+function isMenuItemDisabled(button2) {
+  return button2.disabled || unavailableItems.has(button2);
+}
+function setMenuItemDisabled(button2, disabled) {
+  button2.disabled = false;
+  if (disabled) unavailableItems.add(button2);
+  else unavailableItems.delete(button2);
+  button2.setAttribute("aria-disabled", disabled ? "true" : "false");
+  button2.style.opacity = disabled ? "0.45" : "1";
+}
+var clamp2 = (value, min5, max5) => Math.min(Math.max(value, min5), Math.max(min5, max5));
 var MenuNavigation = class {
   constructor(host, dismiss, onLayout) {
     this.host = host;
@@ -148006,10 +148018,13 @@ var MenuNavigation = class {
     this.submenuOpeners = /* @__PURE__ */ new WeakMap();
     this.id = `msv-menu-${++nextMenuId}`;
     host.addEventListener("keydown", (event) => this.handleKeyDown(event));
+    host.addEventListener("focusin", () => this.updateHint());
+    host.addEventListener("scroll", () => this.onLayout(), true);
   }
   reset(title) {
     this.host.replaceChildren();
     this.pages.length = 0;
+    this.editor = void 0;
     const page = this.createPage(title);
     this.current = page;
     page.view.style.display = "block";
@@ -148022,6 +148037,7 @@ var MenuNavigation = class {
     page.parent = parentPage;
     const back = this.button("\u2039 Back");
     back.setAttribute("data-molsysviewer-menu-back", "true");
+    page.back = back;
     back.addEventListener("click", () => this.back());
     page.view.appendChild(back);
     const heading = document.createElement("div");
@@ -148043,7 +148059,13 @@ var MenuNavigation = class {
     page.trigger = trigger;
     const open = () => this.show(page);
     this.submenuOpeners.set(trigger, open);
-    trigger.addEventListener("click", open);
+    trigger.addEventListener("click", () => {
+      if (this.current === page) {
+        this.restoreEditor();
+        this.show(parentPage);
+        trigger.focus();
+      } else open();
+    });
     parent.appendChild(trigger);
   }
   decorate() {
@@ -148051,6 +148073,32 @@ var MenuNavigation = class {
       for (const button2 of this.buttons(page.view, true)) {
         if (!button2.getAttribute?.("role")) button2.setAttribute("role", "menuitem");
         button2.tabIndex = -1;
+        if (button2.disabled) setMenuItemDisabled(button2, true);
+      }
+      if (!page.hint) {
+        const hintAnchor = document.createElement("div");
+        Object.assign(hintAnchor.style, { position: "sticky", bottom: "0", height: "0", pointerEvents: "none" });
+        page.hint = document.createElement("div");
+        page.hint.id = `${page.view.id}-reason`;
+        page.hint.setAttribute("data-molsysviewer-menu-disabled-reason", "true");
+        page.hint.setAttribute("role", "note");
+        page.hint.setAttribute("aria-live", "polite");
+        Object.assign(page.hint.style, {
+          display: "none",
+          position: "absolute",
+          bottom: "0",
+          left: "0",
+          right: "0",
+          background: "#222226",
+          padding: "8px",
+          fontSize: "12px",
+          borderTop: "1px solid rgba(255,255,255,0.12)"
+        });
+        hintAnchor.appendChild(page.hint);
+        page.view.appendChild(hintAnchor);
+      }
+      for (const button2 of this.buttons(page.view, true)) {
+        button2.setAttribute("aria-describedby", page.hint.id);
       }
     }
   }
@@ -148058,6 +148106,12 @@ var MenuNavigation = class {
     this.buttons(this.current.view)[0]?.focus();
   }
   back() {
+    if (this.editor) {
+      const page2 = this.editor.page;
+      this.restoreEditor();
+      this.show(page2.parent && !this.pages.includes(page2) ? page2.parent : page2);
+      return true;
+    }
     if (!this.current.parent) return false;
     const page = this.current;
     this.show(page.parent);
@@ -148067,6 +148121,107 @@ var MenuNavigation = class {
   containsCurrentPage() {
     return this.host.contains(this.current.view);
   }
+  /** Replace secondary contents with a nonmodal form; retain the root card. */
+  beginEditor(title) {
+    this.restoreEditor();
+    const page = this.current.parent ? this.current : this.createPage(title);
+    if (!page.parent) page.parent = this.pages[0];
+    this.editor = {
+      page,
+      contents: page === this.current ? Array.from(page.view.children) : void 0,
+      title: page.view.getAttribute?.("aria-label") || title
+    };
+    page.view.replaceChildren();
+    page.view.setAttribute("role", "dialog");
+    page.view.setAttribute("aria-modal", "false");
+    page.view.setAttribute("aria-label", title);
+    this.current = page;
+    this.onLayout();
+    return page.view;
+  }
+  /** Cards are bounded to the actual hosting canvas, including popouts. */
+  layout(width, height, anchorX, anchorY) {
+    const margin = 4;
+    const cardWidth = Math.min(260, Math.max(0, width - 2 * margin));
+    const maxHeight = Math.max(0, height - 2 * margin);
+    const lateral = width >= 2 * cardWidth + 2 * margin - 1;
+    const main = this.pages[0];
+    const child = this.current.parent ? this.current : void 0;
+    for (const page of this.pages) {
+      page.view.style.display = page === this.current || lateral && page === main ? "block" : "none";
+      page.view.style.width = `${cardWidth}px`;
+      page.view.style.maxHeight = `${maxHeight}px`;
+      if (page.back) page.back.style.display = lateral ? "none" : "block";
+      page.trigger?.setAttribute("aria-expanded", page === child ? "true" : "false");
+    }
+    let mainLeft = clamp2(anchorX, margin, width - cardWidth - margin);
+    const rightLimit = width - 2 * cardWidth - margin + 1;
+    const leftLimit = cardWidth + margin - 1;
+    if (lateral && mainLeft > rightLimit && mainLeft < leftLimit) {
+      mainLeft = mainLeft - rightLimit <= leftLimit - mainLeft ? rightLimit : leftLimit;
+    }
+    const mainHeight = (lateral || !child ? main.view : child.view).offsetHeight || 0;
+    const mainTop = clamp2(anchorY, margin, height - mainHeight - margin);
+    let childLeft = mainLeft, childTop = mainTop;
+    let childHeight = child?.view.offsetHeight || 0;
+    if (child && lateral) {
+      childLeft = mainLeft <= rightLimit ? mainLeft + cardWidth - 1 : mainLeft - cardWidth + 1;
+      childTop = clamp2(
+        mainTop + (child.trigger?.offsetTop || 0) - (main.view.scrollTop || 0),
+        margin,
+        height - childHeight - margin
+      );
+    }
+    if (!child) childHeight = 0;
+    const left = child && lateral ? Math.min(mainLeft, childLeft) : mainLeft;
+    const top = child && lateral ? Math.min(mainTop, childTop) : mainTop;
+    main.view.style.left = `${mainLeft - left}px`;
+    main.view.style.top = `${mainTop - top}px`;
+    if (child) {
+      child.view.style.left = `${childLeft - left}px`;
+      child.view.style.top = `${childTop - top}px`;
+    }
+    this.host.setAttribute("data-molsysviewer-menu-layout", lateral ? "lateral" : "inline");
+    return {
+      left,
+      top,
+      width: child && lateral ? 2 * cardWidth - 1 : cardWidth,
+      height: Math.max(mainTop + mainHeight, childTop + childHeight) - top
+    };
+  }
+  refreshAvailability() {
+    this.updateHint();
+  }
+  restoreEditor() {
+    if (!this.editor) return;
+    const { page, contents, title } = this.editor;
+    if (contents) {
+      page.view.replaceChildren(...contents);
+      page.view.setAttribute("role", "menu");
+      page.view.setAttribute("aria-label", title);
+      page.view.removeAttribute?.("aria-modal");
+    } else {
+      page.view.remove();
+      this.pages.splice(this.pages.indexOf(page), 1);
+      this.current = page.parent;
+    }
+    this.editor = void 0;
+  }
+  updateHint() {
+    if (this.editor) return;
+    const focused = document.activeElement;
+    let changed = false;
+    for (const page of this.pages) {
+      if (!page.hint) continue;
+      const reason = page.view.contains(focused) && isMenuItemDisabled(focused) ? focused.title || "This action is unavailable for the current target." : "";
+      if (page.hint.textContent !== reason) {
+        page.hint.textContent = reason;
+        changed = true;
+      }
+      page.hint.style.display = reason ? "block" : "none";
+    }
+    if (changed) this.onLayout();
+  }
   createPage(title) {
     const view2 = document.createElement("div");
     view2.id = `${this.id}-${this.pages.length}`;
@@ -148074,19 +148229,34 @@ var MenuNavigation = class {
     view2.setAttribute("aria-label", title);
     view2.setAttribute("data-molsysviewer-menu-page", title);
     view2.style.display = "none";
+    Object.assign(view2.style, {
+      position: "absolute",
+      boxSizing: "border-box",
+      padding: "6px",
+      overflowY: "auto",
+      overflowX: "hidden",
+      pointerEvents: "auto",
+      borderRadius: "10px",
+      border: "1px solid rgba(255,255,255,0.15)",
+      background: "rgba(26,26,30,0.96)",
+      boxShadow: "0 16px 40px rgba(0,0,0,0.35)",
+      scrollbarWidth: "thin",
+      scrollbarColor: "rgba(255,255,255,0.25) transparent"
+    });
     const page = { view: view2 };
     this.pages.push(page);
     this.host.appendChild(view2);
     return page;
   }
   show(page) {
+    this.restoreEditor();
     for (const item2 of this.pages) {
       const active = item2 === page;
       item2.view.style.display = active ? "block" : "none";
       item2.trigger?.setAttribute("aria-expanded", active ? "true" : "false");
     }
     this.current = page;
-    this.host.scrollTop = 0;
+    if (page.parent) page.view.scrollTop = 0;
     this.onLayout();
     this.focusFirst();
   }
@@ -148124,7 +148294,9 @@ var MenuNavigation = class {
   handleKeyDown(event) {
     if (event.target?.closest?.("input, textarea, select, [contenteditable]")) return;
     if (!this.containsCurrentPage()) return;
-    const items = this.buttons(this.current.view);
+    if (this.editor?.page.view.contains(event.target)) return;
+    const page = this.pages.find((item2) => item2.view.style.display !== "none" && item2.view.contains(event.target)) || this.current;
+    const items = this.buttons(page.view, true);
     const index = items.indexOf(document.activeElement);
     let next;
     if (event.key === "ArrowDown") next = (index + 1) % items.length;
@@ -148139,8 +148311,9 @@ var MenuNavigation = class {
     } else if (event.key === "ArrowLeft") this.back();
     else if (event.key === "Escape") {
       if (!this.back()) this.dismiss();
-    } else if (event.key === "Enter" || event.key === " ") items[index]?.click();
-    else if (event.key === "Tab") {
+    } else if (event.key === "Enter" || event.key === " ") {
+      if (items[index] && !isMenuItemDisabled(items[index])) items[index].click();
+    } else if (event.key === "Tab") {
       this.dismiss();
       return;
     } else return;
@@ -148201,21 +148374,17 @@ var ViewerContextMenu = class {
     this.currentPageX = 0;
     this.currentPageY = 0;
     this.currentSceneState = null;
+    this.onResize = () => this.positionMenu();
     this.root = document.createElement("div");
     this.root.setAttribute("data-molsysviewer-context-menu", "true");
     this.root.setAttribute("aria-hidden", "true");
     Object.assign(this.root.style, {
       position: "absolute",
       display: "none",
-      minWidth: "180px",
-      maxWidth: "240px",
-      borderRadius: "10px",
-      border: "1px solid rgba(255,255,255,0.15)",
-      background: "rgba(26, 26, 30, 0.96)",
+      pointerEvents: "none",
       color: "#f4f4f5",
-      boxShadow: "0 16px 40px rgba(0,0,0,0.35)",
       zIndex: "20",
-      overflow: "hidden",
+      overflow: "visible",
       fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
       fontSize: "13px"
     });
@@ -148225,8 +148394,7 @@ var ViewerContextMenu = class {
     this.scrollEl = document.createElement("div");
     this.scrollEl.setAttribute("data-molsysviewer-context-scroll", "true");
     Object.assign(this.scrollEl.style, {
-      overflowY: "auto",
-      padding: "6px",
+      position: "relative",
       boxSizing: "border-box",
       // Firefox scrollbar styling
       scrollbarWidth: "thin",
@@ -148235,16 +148403,22 @@ var ViewerContextMenu = class {
     this.root.appendChild(this.scrollEl);
     this.navigation = new MenuNavigation(this.scrollEl, () => this.close(), () => this.positionMenu());
     this.host.appendChild(this.root);
+    window.addEventListener("resize", this.onResize);
+    if (typeof ResizeObserver !== "undefined") {
+      this.resizeObserver = new ResizeObserver(this.onResize);
+      this.resizeObserver.observe(this.host);
+    }
     if (!document.getElementById("msv-context-menu-scrollbar-style")) {
       const style = document.createElement("style");
       style.id = "msv-context-menu-scrollbar-style";
       style.textContent = [
-        "[data-molsysviewer-context-scroll]::-webkit-scrollbar { width: 5px; }",
-        "[data-molsysviewer-context-scroll]::-webkit-scrollbar-track { background: transparent; }",
-        "[data-molsysviewer-context-scroll]::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 3px; }",
-        "[data-molsysviewer-context-scroll]::-webkit-scrollbar-corner { background: transparent; }",
+        "[data-molsysviewer-menu-page]::-webkit-scrollbar { width: 5px; }",
+        "[data-molsysviewer-menu-page]::-webkit-scrollbar-track { background: transparent; }",
+        "[data-molsysviewer-menu-page]::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 3px; }",
+        "[data-molsysviewer-menu-page]::-webkit-scrollbar-corner { background: transparent; }",
         "[data-molsysviewer-context-menu] button:hover { background: rgba(255,255,255,0.10) !important; }",
-        "[data-molsysviewer-context-menu] button:focus-visible { background: rgba(255,255,255,0.10) !important; outline: 2px solid #a5b4fc; outline-offset: -2px; }"
+        "[data-molsysviewer-context-menu] button:focus-visible { background: rgba(255,255,255,0.10) !important; outline: 2px solid #a5b4fc; outline-offset: -2px; }",
+        "[data-molsysviewer-context-submenu][aria-expanded=true] { background: rgba(165,180,252,0.14) !important; }"
       ].join("\n");
       document.head.appendChild(style);
     }
@@ -148287,17 +148461,16 @@ var ViewerContextMenu = class {
     for (const [action, enabled] of [["undo_scene", state.canUndo], ["redo_scene", state.canRedo]]) {
       const button2 = this.root.querySelector(`[data-molsysviewer-context-action="${action}"]`);
       if (button2) {
-        button2.disabled = !enabled;
-        button2.setAttribute("aria-disabled", enabled ? "false" : "true");
-        button2.style.opacity = enabled ? "1" : "0.45";
+        setMenuItemDisabled(button2, !enabled);
         button2.title = enabled ? "" : "No scene history operation is available";
       }
     }
+    this.navigation.refreshAvailability();
   }
   /** Dismiss one menu level before global Escape affects selection or Studio. */
   handleEscape(event) {
     if (!this.isOpen() || event.key !== "Escape") return false;
-    if (event.target?.closest?.("input, textarea, [contenteditable]")) return false;
+    if (event.target?.closest?.("select")) return false;
     if (!this.navigation.containsCurrentPage()) this.reopen();
     else if (!this.navigation.back()) this.close();
     event.preventDefault();
@@ -148322,26 +148495,11 @@ var ViewerContextMenu = class {
   positionMenu() {
     if (!this.isOpen()) return;
     const rect = this.host.getBoundingClientRect();
-    this.scrollEl.style.maxHeight = `${Math.max(0, rect.height - 12)}px`;
-    this.root.style.minWidth = `${Math.min(180, Math.max(0, rect.width - 8))}px`;
-    this.root.style.maxWidth = `${Math.min(280, Math.max(0, rect.width - 8))}px`;
-    this.root.style.display = "block";
-    const menuWidth = this.root.offsetWidth || 180;
-    const menuHeight = this.root.offsetHeight || 120;
-    const left = Math.min(Math.max(0, this.currentPageX - rect.left), Math.max(0, rect.width - menuWidth));
-    const rawTop = this.currentPageY - rect.top;
-    const top = Math.min(Math.max(0, rawTop), Math.max(0, rect.height - menuHeight));
-    const availableBelow = rect.height - top - 12;
-    if (menuHeight > availableBelow) {
-      this.scrollEl.style.maxHeight = `${Math.max(0, availableBelow)}px`;
-      this.scrollEl.style.borderBottomLeftRadius = "9px";
-      this.scrollEl.style.borderBottomRightRadius = "9px";
-    } else {
-      this.scrollEl.style.borderBottomLeftRadius = "";
-      this.scrollEl.style.borderBottomRightRadius = "";
-    }
-    this.root.style.left = `${left}px`;
-    this.root.style.top = `${top}px`;
+    const bounds = this.navigation.layout(rect.width, rect.height, this.currentPageX - rect.left, this.currentPageY - rect.top);
+    this.root.style.left = `${bounds.left}px`;
+    this.root.style.top = `${bounds.top}px`;
+    this.root.style.width = this.scrollEl.style.width = `${bounds.width}px`;
+    this.root.style.height = this.scrollEl.style.height = `${bounds.height}px`;
   }
   renderMenu() {
     const target = this.currentTarget;
@@ -148430,6 +148588,7 @@ var ViewerContextMenu = class {
         view2.appendChild(this.makeActionButton("Focus Interaction Set", "focus_interaction"));
         view2.appendChild(this.makeActionButton("Hide Interaction Representation", "toggle_interaction_visibility"));
         view2.appendChild(this.makeActionButton("Edit Interaction Set in Studio\u2026", "edit_interaction_in_studio"));
+        this.appendSeparator(view2);
         view2.appendChild(this.makeActionButton("Delete Interaction Representation", "delete_interaction"));
       });
     } else if (target.kind !== "empty") {
@@ -148439,13 +148598,16 @@ var ViewerContextMenu = class {
         main.appendChild(this.makeActionButton(target.kind === "measurement" ? "Inspect and Edit Measurement\u2026" : "Edit Appearance in Studio\u2026", "edit_object_in_studio"));
         if (target.kind === "measurement") {
           main.appendChild(this.makeActionButton("Hide Measurement", "hide_measurement"));
+          this.appendSeparator(main);
           main.appendChild(this.makeActionButton("Delete Measurement", "delete_measurement"));
         } else if (target.kind === "annotation") {
           main.appendChild(this.makeActionButton("Edit Annotation Text\u2026", "edit_annotation_text"));
           main.appendChild(this.makeActionButton("Hide Annotation", "toggle_annotation_visibility"));
+          this.appendSeparator(main);
           main.appendChild(this.makeActionButton("Delete Annotation", "delete_annotation"));
         } else {
           main.appendChild(this.makeActionButton("Hide Shape", "toggle_shape_visibility"));
+          this.appendSeparator(main);
           main.appendChild(this.makeActionButton("Delete Shape", "delete_shape"));
         }
       }
@@ -148454,6 +148616,7 @@ var ViewerContextMenu = class {
       main.appendChild(this.makeActionButton("Focus All", "focus_all"));
     }
     if (this.currentSelection && this.currentSelection.source_kind !== "empty") {
+      this.appendSeparator(main);
       this.navigation.addSubmenu(main, selectionTitle(this.currentSelection), (view2) => {
         view2.appendChild(this.makeActionButton("Focus Selection", "focus_selection"));
         view2.appendChild(this.makeActionButton("Inspect Selection in Studio\u2026", "open_navigate", { studio_section: "selection" }));
@@ -148505,6 +148668,7 @@ var ViewerContextMenu = class {
         }
       });
     }
+    this.appendSeparator(main);
     this.navigation.addSubmenu(main, "View", (view2) => {
       view2.appendChild(this.makeActionButton("Reset View", "reset_view"));
       const scene = this.currentSceneState;
@@ -148546,7 +148710,16 @@ var ViewerContextMenu = class {
   }
   dispose() {
     this.close();
+    this.resizeObserver?.disconnect();
+    window.removeEventListener("resize", this.onResize);
     this.root.remove();
+  }
+  appendSeparator(view2) {
+    const separator = document.createElement("div");
+    separator.setAttribute("role", "separator");
+    separator.setAttribute("aria-orientation", "horizontal");
+    Object.assign(separator.style, { margin: "6px 4px", borderTop: "1px solid rgba(255,255,255,0.12)" });
+    view2.appendChild(separator);
   }
   makeActionButton(label2, action, detailsOverride) {
     const button2 = document.createElement("button");
@@ -148606,7 +148779,7 @@ var ViewerContextMenu = class {
       button2.style.background = "transparent";
     });
     button2.addEventListener("click", () => {
-      if (!this.currentTarget || button2.disabled || !this.isActionAllowed(action)) return;
+      if (!this.currentTarget || isMenuItemDisabled(button2) || !this.isActionAllowed(action)) return;
       if (action === "add_label_from_selection" || action === "create_annotation_from_target") {
         this.renderLabelComposer(action === "create_annotation_from_target");
         return;
@@ -148809,7 +148982,7 @@ var ViewerContextMenu = class {
   }
   renderRegionComposer(fromTarget = false) {
     if (!this.currentTarget) return;
-    this.scrollEl.replaceChildren();
+    const editor = this.navigation.beginEditor("New Region");
     const title = document.createElement("div");
     title.textContent = fromTarget ? "New Region from Target" : "New Region from Selection";
     Object.assign(title.style, {
@@ -148818,7 +148991,7 @@ var ViewerContextMenu = class {
       borderBottom: "1px solid rgba(255,255,255,0.10)",
       marginBottom: "6px"
     });
-    this.scrollEl.appendChild(title);
+    editor.appendChild(title);
     const subtitle = document.createElement("div");
     subtitle.textContent = fromTarget ? targetTitle(this.currentTarget) : selectionSummary(this.currentSelection);
     Object.assign(subtitle.style, {
@@ -148826,8 +148999,8 @@ var ViewerContextMenu = class {
       opacity: "0.82",
       fontSize: "12px"
     });
-    this.scrollEl.appendChild(subtitle);
-    const scope = fromTarget ? this.appendTargetScope() : null;
+    editor.appendChild(subtitle);
+    const scope = fromTarget ? this.appendTargetScope(editor) : null;
     const input = document.createElement("input");
     input.type = "text";
     input.value = "";
@@ -148844,7 +149017,7 @@ var ViewerContextMenu = class {
       color: "#f4f4f5",
       outline: "none"
     });
-    this.scrollEl.appendChild(input);
+    editor.appendChild(input);
     const actions = document.createElement("div");
     Object.assign(actions.style, { display: "flex", gap: "8px" });
     const save = document.createElement("button");
@@ -148887,18 +149060,7 @@ var ViewerContextMenu = class {
     };
     const goBack = () => {
       if (!this.currentTarget) return;
-      this.open(
-        this.currentTarget,
-        this.currentPageX,
-        this.currentPageY,
-        this.currentSelection,
-        this.currentLastMeasurement,
-        this.currentSavedSelections,
-        this.currentRegions,
-        this.currentAddonActions,
-        this.currentAddonItems,
-        this.currentSceneState
-      );
+      this.navigation.back();
     };
     save.addEventListener("click", submit);
     cancel.addEventListener("click", goBack);
@@ -148913,7 +149075,7 @@ var ViewerContextMenu = class {
     });
     actions.appendChild(save);
     actions.appendChild(cancel);
-    this.scrollEl.appendChild(actions);
+    editor.appendChild(actions);
     this.positionMenu();
     input.focus?.();
   }
@@ -149019,7 +149181,7 @@ var ViewerContextMenu = class {
     }
     return button2;
   }
-  appendTargetScope() {
+  appendTargetScope(container) {
     const label2 = document.createElement("label");
     label2.textContent = "Atom scope";
     const select2 = document.createElement("select");
@@ -149035,12 +149197,12 @@ var ViewerContextMenu = class {
     select2.value = "target";
     Object.assign(select2.style, { display: "block", width: "100%", margin: "6px 0 10px", color: "inherit", background: "#27272a" });
     label2.appendChild(select2);
-    this.scrollEl.appendChild(label2);
+    container.appendChild(label2);
     return select2;
   }
   renderLabelComposer(fromTarget = false) {
     if (!this.currentTarget) return;
-    this.scrollEl.replaceChildren();
+    const editor = this.navigation.beginEditor("New Annotation");
     const title = document.createElement("div");
     title.textContent = fromTarget ? "Annotation from target" : "Label from selection";
     Object.assign(title.style, {
@@ -149049,8 +149211,8 @@ var ViewerContextMenu = class {
       borderBottom: "1px solid rgba(255,255,255,0.10)",
       marginBottom: "8px"
     });
-    this.scrollEl.appendChild(title);
-    const scope = fromTarget ? this.appendTargetScope() : null;
+    editor.appendChild(title);
+    const scope = fromTarget ? this.appendTargetScope(editor) : null;
     const input = document.createElement("input");
     input.type = "text";
     input.value = "";
@@ -149067,7 +149229,7 @@ var ViewerContextMenu = class {
       color: "#f4f4f5",
       outline: "none"
     });
-    this.scrollEl.appendChild(input);
+    editor.appendChild(input);
     const styleRow = document.createElement("div");
     Object.assign(styleRow.style, {
       display: "flex",
@@ -149103,7 +149265,7 @@ var ViewerContextMenu = class {
     styleRow.appendChild(colorInput);
     styleRow.appendChild(sizeLabel);
     styleRow.appendChild(sizeInput);
-    this.scrollEl.appendChild(styleRow);
+    editor.appendChild(styleRow);
     const actions = document.createElement("div");
     Object.assign(actions.style, {
       display: "flex",
@@ -149153,18 +149315,7 @@ var ViewerContextMenu = class {
     };
     const goBack = () => {
       if (!this.currentTarget) return;
-      this.open(
-        this.currentTarget,
-        this.currentPageX,
-        this.currentPageY,
-        this.currentSelection,
-        this.currentLastMeasurement,
-        this.currentSavedSelections,
-        this.currentRegions,
-        this.currentAddonActions,
-        this.currentAddonItems,
-        this.currentSceneState
-      );
+      this.navigation.back();
     };
     save.addEventListener("click", submit);
     cancel.addEventListener("click", goBack);
@@ -149179,13 +149330,13 @@ var ViewerContextMenu = class {
     });
     actions.appendChild(save);
     actions.appendChild(cancel);
-    this.scrollEl.appendChild(actions);
+    editor.appendChild(actions);
     this.positionMenu();
     input.focus?.();
   }
   renderSelectionComposer() {
     if (!this.currentTarget) return;
-    this.scrollEl.replaceChildren();
+    const editor = this.navigation.beginEditor("Save Selection");
     const title = document.createElement("div");
     title.textContent = "Save Selection";
     Object.assign(title.style, {
@@ -149194,7 +149345,7 @@ var ViewerContextMenu = class {
       borderBottom: "1px solid rgba(255,255,255,0.10)",
       marginBottom: "6px"
     });
-    this.scrollEl.appendChild(title);
+    editor.appendChild(title);
     const subtitle = document.createElement("div");
     subtitle.textContent = selectionSummary(this.currentSelection);
     Object.assign(subtitle.style, {
@@ -149202,7 +149353,7 @@ var ViewerContextMenu = class {
       opacity: "0.82",
       fontSize: "12px"
     });
-    this.scrollEl.appendChild(subtitle);
+    editor.appendChild(subtitle);
     const input = document.createElement("input");
     input.type = "text";
     input.value = "";
@@ -149219,7 +149370,7 @@ var ViewerContextMenu = class {
       color: "#f4f4f5",
       outline: "none"
     });
-    this.scrollEl.appendChild(input);
+    editor.appendChild(input);
     const actions = document.createElement("div");
     Object.assign(actions.style, {
       display: "flex",
@@ -149264,18 +149415,7 @@ var ViewerContextMenu = class {
     };
     const goBack = () => {
       if (!this.currentTarget) return;
-      this.open(
-        this.currentTarget,
-        this.currentPageX,
-        this.currentPageY,
-        this.currentSelection,
-        this.currentLastMeasurement,
-        this.currentSavedSelections,
-        this.currentRegions,
-        this.currentAddonActions,
-        this.currentAddonItems,
-        this.currentSceneState
-      );
+      this.navigation.back();
     };
     save.addEventListener("click", submit);
     cancel.addEventListener("click", goBack);
@@ -149290,7 +149430,7 @@ var ViewerContextMenu = class {
     });
     actions.appendChild(save);
     actions.appendChild(cancel);
-    this.scrollEl.appendChild(actions);
+    editor.appendChild(actions);
     this.positionMenu();
     input.focus?.();
   }

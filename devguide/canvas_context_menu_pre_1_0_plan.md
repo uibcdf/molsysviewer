@@ -5,7 +5,8 @@ required before 1.0 (`uibcdf/molsysviewer#179`). **Implementation delivered; fin
 menu shell, shared scene/Studio navigation, molecular-target and object/occurrence
 workflows are delivered. The maintainer confirms both reported defects are
 corrected and the reviewed workflows function; the accepted final vocabulary
-and visual refinements await a refreshed runtime review.
+and visual refinements, including adaptive parallel submenus, await a refreshed
+runtime review.
 The [owning report](pending_proposals/canvas_context_menu_target_actions.md)
 records the inspected findings. Current executable contracts are maintained in
 [`interaction_gestures_and_menus.md`](interaction_gestures_and_menus.md) and
@@ -34,6 +35,14 @@ saved selections or build full collection editors in the menu. Related regions
 are restricted to actual target overlaps. Ellipses indicate an editor/form;
 stateful choices show their state; action names explicitly identify their scope.
 Offer executable operations, with meaningful disabled explanations where needed.
+
+The accepted final navigation uses click-driven adjacent cards, with one
+secondary open at a time. A second click closes that category; another category
+replaces it. Prefer right, flip left near an edge, and use the single-card Back
+layout in narrow canvases. Forms share the secondary slot and retain drafts on
+resize. Preserve keyboard navigation and menu-first Escape; disabled actions
+remain focusable with a visible reason. Separators group target, selection,
+global and destructive actions. This is part of #179, not a new feature queue.
 
 The layouts below are discussion labels in Spanish. Implementation follows the
 existing application's language consistently; this work does not introduce a
