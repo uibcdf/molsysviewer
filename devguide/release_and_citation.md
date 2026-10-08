@@ -80,6 +80,28 @@ commits and staging artifacts.
 Run the complete release gate described in the developer release guide. A
 candidate commit must not use `[skip ci]`.
 
+## Source archive checkpoints
+
+Use annotated `archive/<description>` tags to preserve source without publishing
+packages. Record the exact commit, purpose and owner in the annotation. Such a
+tag is not a package version, GitHub Release, citation-preserved public release
+or authorization to build/upload/promote. Keep it fixed once pushed.
+
+The archive-capable policy caller is pinned to `policy-v1.5.7` and runs on every
+tag (`tags: ["**"]`). Versioningit excludes `archive/*`, preserving derivation
+from canonical release tags. The npm publisher excludes archive tags and
+rejects noncanonical dispatch input before package commands. Conda's existing
+release/dispatch and promotion guards also require canonical release identity.
+Do not create a GitHub Release or dispatch publication for an archive marker.
+
+The 2026-10-08 checkpoint `archive/pre-0.24.1-20261008` reserves no public
+0.24.1 identity. Its purpose and scoped evidence are in
+[the checkpoint record](archive_tag_checkpoint_20261008.md).
+`tests/test_archive_tags.py` exercises real Git/versioningit and negative Conda
+route requests; `tests/test_npm_publish_workflow.py` executes the early npm
+identity guard for canonical, archive and prerelease input. A later 0.24.1
+release still needs its own qualified exact artifacts and authorization.
+
 ## Historical publications not being recovered — 2026-10-07
 
 The principal maintainer closes `uibcdf/molsysviewer#82` and

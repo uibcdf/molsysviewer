@@ -8,6 +8,7 @@ on:
   push:
     tags:
       - "*"
+      - "!archive/**"
   workflow_dispatch:
     inputs:
       tag:
@@ -31,6 +32,13 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.inputs.tag || github.ref_name }}
+
+      - name: Validate public release identity
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: |
+          [[ "$RELEASE_TAG" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
 
       - name: Setup Node
         uses: actions/setup-node@v4
