@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from ...scene_history import records_scene_history
-from .scene_objects import _tag, _requested_hidden
+from .scene_objects import _requested_hidden, _tag
 
 
 def create_interaction(view, content):

@@ -250,6 +250,12 @@ This is a targeted regression campaign, not a rerun of all 40 core suites or an
 installed artifact qualification. The maintainer's executed notebook and other
 unrelated sandbox files are preserved.
 
+The post-push MolSysSuite policy run `37807940575` exposed two prior menu-source
+`I001` import-order violations in the interactions dispatch owner and its context
+target test. The follow-up only sorts those imports; pinned Ruff `0.16.5` then
+passes the entire `molsysviewer`/`tests` lint scope. The original failed receipt is
+retained; other hosted runs remain separate from the passing local campaign.
+
 ## Resolution
 
 Pending the principal maintainer's remote-Jupyter/popout acceptance. Current interaction guidance records the delivered workflows;

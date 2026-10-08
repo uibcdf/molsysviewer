@@ -1,6 +1,5 @@
 """Context operations preserve working selection unless selection is explicit."""
 import pytest
-
 from molsysviewer.demo import demo
 from molsysviewer.viewer.panel_actions import dispatch_panel_action
 
