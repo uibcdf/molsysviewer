@@ -445,7 +445,8 @@ export async function runInteractionsSuite(chromium: typeof import("./e2e-browse
         assert.equal(picked.context.kind, "interaction"); assert.equal(picked.click.kind, "interaction");
         assert.equal(picked.context.entity_ref.occurrence_index, 0);
         assert.equal(await page.getByRole("button", { name: "Delete Shape", exact: true }).count(), 0);
-        await page.getByRole("button", { name: "Delete Interaction Set", exact: true }).click();
+        await page.locator('[data-molsysviewer-context-submenu="Interaction set"]').click();
+        await page.getByRole("menuitem", { name: "Delete Interaction Representation", exact: true }).click();
         const deletedEvent = await page.evaluate(() => [...((window as any).__messages || [])].reverse().find((m: any) => m.action === "delete_interaction"));
         assert.equal(deletedEvent.tag, "hb");
         const deleted = await bridge([event, event, create, filterEdit, deletedEvent]); await apply(page, deleted.message_batches[4]);

@@ -839,6 +839,7 @@ export class MolSysViewerController {
     private currentStructure?: StateObjectRef; // Ref to structure root
     private loadedStructure?: LoadedStructure; // Loaded structure bundle
     private currentActiveSelection: ActiveSelectionPayload | null = null;
+    private contextHistoryState = { canUndo: false, canRedo: false };
     private lastMeasurementSummary: LastMeasurementSummary | null = null;
     private measurementTagCounter = 0;
     private welcomeCard: HTMLDivElement | null = null;
@@ -1278,15 +1279,10 @@ export class MolSysViewerController {
                 return;
             }
             if (action === "hide_measurement") {
-                const tag = typeof details?.tag === "string" ? details.tag : null;
-                if (!tag) return;
-                this.notify?.({ event: "interaction_context_action", action: "hide_measurement", tag });
+                // ViewerContextMenu owns the single backend notification.
                 return;
             }
             if (action === "delete_measurement") {
-                const tag = typeof details?.tag === "string" ? details.tag : null;
-                if (!tag) return;
-                this.notify?.({ event: "interaction_context_action", action: "delete_measurement", tag });
                 return;
             }
             if (action === "activate_selection") {
@@ -1294,62 +1290,55 @@ export class MolSysViewerController {
             }
             if (action === "clear_selection") {
                 this.activeSelection.clear();
-                return;
+                return true;
             }
             if (action === "toggle_canvas_visibility") {
                 const isHidden = this.canvasHost.style.display === "none";
                 this.setCanvasVisibility(isHidden);
-                return;
+                return true;
             }
             if (action === "reset_view") {
                 void this.resetView();
                 return;
             }
             if (action === "toggle_background") {
-                void this.toggleBackground();
+                void this.toggleBackground(details?.mode);
                 return;
             }
             if (action === "toggle_spin") {
-                void this.toggleSpin();
+                void this.toggleSpin(details?.enabled);
                 return;
             }
             if (action === "toggle_swing") {
-                void this.toggleSwing();
+                void this.toggleSwing(details?.enabled);
                 return;
             }
             if (action === "open_navigate") {
+                if (this.currentWorkspace !== "core") this.selectWorkspace("core");
                 this.setPanelMode("navigate", true);
-                return;
+                if (details?.studio_section) this.groupPanel.openSection(details.studio_section);
+                return true;
             }
             if (action === "open_workbench") {
                 this.setPanelMode("addons", true);
-                return;
+                return true;
             }
             if (action === "set_viewer_mode") {
                 const mode = details?.text;
-                if (mode && this.model) {
-                    this.model.set("viewer_mode", mode);
-                    this.model.save_changes();
+                if (mode) {
+                    this.setViewerMode(mode);
+                    this.refreshNavigatePanel();
+                    this.refreshAddonsPanel();
                 }
-                return;
+                return true;
             }
             if (action === "toggle_region_visibility" || action === "toggle_region_enabled") {
-                const tag = typeof details?.tag === "string" ? details.tag : null;
-                if (!tag) return;
-                this.notify?.({ event: "interaction_context_action", action, tag });
                 return;
             }
             if (action === "delete_region") {
-                const tag = typeof details?.tag === "string" ? details.tag : null;
-                if (!tag) return;
-                this.notify?.({ event: "interaction_context_action", action, tag });
                 return;
             }
             if (action === "rename_region") {
-                const tag = typeof details?.tag === "string" ? details.tag : null;
-                const new_tag = typeof details?.new_tag === "string" ? details.new_tag : null;
-                if (!tag || !new_tag) return;
-                this.notify?.({ event: "interaction_context_action", action, tag, new_tag });
                 return;
             }
             if (
@@ -1364,6 +1353,8 @@ export class MolSysViewerController {
                 || action === "add_label_from_selection"
                 || action === "expand_selection"
                 || action === "addon_context_action"
+                || action === "undo_scene"
+                || action === "redo_scene"
             ) {
                 return;
             }
@@ -1371,7 +1362,10 @@ export class MolSysViewerController {
         }, () => {
             this.addonsContext = null;
             this.refreshAddonsPanel();
-        }, getCameraDirection);
+        }, getCameraDirection, this.initOptions?.hasAuthority === false ? {
+            allowedActions: new Set(["focus_target", "focus_region", "focus_selection", "clear_selection",
+                "reset_view", "toggle_background", "toggle_spin", "toggle_swing", "set_viewer_mode", "open_navigate"]),
+        } : {});
         this.releaseContextMenuSuppression = suppressCanvasContextMenu(host, this.canvasHost);
         this.releaseGlobalEscapeHandler = this.installGlobalEscapeHandler();
 
@@ -1456,11 +1450,12 @@ export class MolSysViewerController {
                     this.addonContextItems,
                     {
                         isSpinActive: this.scene.isSpinActive,
+                        ...this.contextHistoryState,
                         isSwingActive: this.scene.isSwingActive,
                         isDarkMode: this.scene.isDarkMode,
                         isNavigateExpanded: this.groupPanel.isExpanded(),
                         isAddonsExpanded: this.addonsPanel.isExpanded(),
-                        currentViewerMode: this.model?.get("viewer_mode") || "integrated",
+                        currentViewerMode: this.getViewerMode(),
                         isCanvasVisible: this.canvasHost.style.display !== "none",
                     }
                 );
@@ -1733,6 +1728,8 @@ export class MolSysViewerController {
 
     private installGlobalEscapeHandler(): () => void {
         const onKeyDown = (event: KeyboardEvent) => {
+            if (this.host.contains(event.target as Node) && this.contextMenu.handleEscape(event)) return;
+            if ((event.target as HTMLElement)?.closest?.("[data-molsysviewer-context-menu]")) return;
             if ((event.target as HTMLElement)?.closest?.("input, textarea, [contenteditable]")) return;
             if (!this.host.contains(event.target as Node)) return;
 
@@ -2045,6 +2042,8 @@ export class MolSysViewerController {
             event: "interaction_context_menu" as const,
             kind: "structure" as const,
             atom_indices: item.atom_indices,
+            group_name: item.source_kind === "element" ? item.group_name : undefined,
+            chain_name: item.source_kind === "element" ? item.chain_name : undefined,
             page_x: pageX,
             page_y: pageY,
         };
@@ -2064,11 +2063,12 @@ export class MolSysViewerController {
             this.addonContextItems,
             {
                 isSpinActive: this.scene.isSpinActive,
+                ...this.contextHistoryState,
                 isSwingActive: this.scene.isSwingActive,
                 isDarkMode: this.scene.isDarkMode,
                 isNavigateExpanded: this.groupPanel.isExpanded(),
                 isAddonsExpanded: this.addonsPanel.isExpanded(),
-                currentViewerMode: this.model?.get("viewer_mode") || "integrated",
+                currentViewerMode: this.getViewerMode(),
             }
         );
     }
@@ -2100,11 +2100,12 @@ export class MolSysViewerController {
             this.addonContextItems,
             {
                 isSpinActive: this.scene.isSpinActive,
+                ...this.contextHistoryState,
                 isSwingActive: this.scene.isSwingActive,
                 isDarkMode: this.scene.isDarkMode,
                 isNavigateExpanded: this.groupPanel.isExpanded(),
                 isAddonsExpanded: this.addonsPanel.isExpanded(),
-                currentViewerMode: this.model?.get("viewer_mode") || "integrated",
+                currentViewerMode: this.getViewerMode(),
             }
         );
     }
@@ -2633,6 +2634,11 @@ export class MolSysViewerController {
                     break;
                 }
                 case "set_history_state":
+                    this.contextHistoryState = {
+                        canUndo: Boolean((msg as any).can_undo),
+                        canRedo: Boolean((msg as any).can_redo),
+                    };
+                    this.contextMenu.updateHistoryState(this.contextHistoryState);
                     this.groupPanel?.updateSelectionHistoryState({
                         canUndo: Boolean((msg as any).can_undo),
                         canRedo: Boolean((msg as any).can_redo),

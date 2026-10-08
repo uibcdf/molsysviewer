@@ -94,6 +94,8 @@ export class MeasurementToolController {
     ) {
         this.keydownHandler = (event: KeyboardEvent) => {
             if (event.key !== "Escape") return;
+            // A focused context menu owns the first Escape, even during a tool.
+            if ((event.target as HTMLElement)?.closest?.("[data-molsysviewer-context-menu]")) return;
             if (!this.activeAction) return;
             this.cancel();
         };

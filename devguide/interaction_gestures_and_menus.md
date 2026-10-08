@@ -62,91 +62,40 @@ Important rule:
 - opening or closing the context menu should not mutate scene state by itself
 - the host context menu (for example JupyterLab) should be suppressed inside the viewer canvas when the viewer adopts right-click context handling
 
-### Menu structure direction
+### Menu structure and dispatch
 
-The preferred design is:
+The implemented foundation of `uibcdf/molsysviewer#179` separates the target
+heading from an explicitly named active-selection submenu. Molecular headings
+include residue and chain identifiers when available. Relevant regions are
+bounded to eight entries, and saved selections open their Studio collection;
+collection size does not determine the menu size. In-card submenus have a Back
+action and remain inside the viewer bounds.
 
-- header or top section: target under cursor (`context_target`)
-- main action section: actions that apply to `context_target`
-- secondary section, when `active_selection` exists: actions that apply to the active selection
+View controls, Undo/Redo and Open Studio are available across target families.
+History buttons follow authoritative can-undo/can-redo state. Studio opening
+selects the appropriate existing core section, including when an addon workspace
+was active. Ordinary context menus do not offer Hide Canvas. Backend-owned
+mutations have one event; local layout/navigation actions are consumed locally.
+Viewport toggles carry the requested state so a backend echo is idempotent.
 
-Current first implemented slice:
+Keyboard navigation uses arrows, Home/End and Enter/Space. Escape returns from a
+submenu or closes the root menu before cancelling a tool or clearing selection.
+Inline composers retain input ownership. Closing restores focus to the previous
+viewer element when focus was inside the menu. Opening and dismissal preserve
+the scene and active selection.
 
-- the secondary active-selection section is now real,
-- it currently exposes:
-  - `Focus Selection`
-  - `Create Region from Selection`
-  - `Add Label from Selection` when the current selection resolves to exactly one `group`
-  - `Persist Last Measurement` when a recent interactive measurement exists
-  - `Clear Selection`
-- the target section now also exposes a first generic action:
-  - `Focus Target`
-- for `annotation` targets, this replaces the old placeholder-only menu body
-- for first-slice `shape` targets, `Focus Target` is also available when the shape exposes anchor atoms
+Current target operations still include Focus Target and the existing
+measurement policies; atomless targets cannot advertise executable atom focus.
+The active-selection submenu exposes focus, save, region/section creation,
+label creation, expand and clear. Atom-dependent actions are disabled for
+selections containing only scene objects. Region/label composers use the
+existing replayable Python owners. Interactive measurements already create
+managed objects; there is no redundant Persist Last Measurement menu action.
 
-This supports richer workflows and future submenus.
-
-These two reproducibility-oriented actions are intentionally described as
-selection actions first, not as pure frontend scene mutations:
-
-- `Create Region from Selection`
-- `Add Label from Selection`
-
-They represent the intended bridge from exploratory interaction to explicit,
-replayable viewer artifacts.
-
-The same bridge now also exists for interactive measurements:
-
-- the last interactive `distance` / `angle` / `dihedral` can be persisted as a
-  replayable viewer artifact from Python
-- the current persistence model stores the picked atom-index bundles, not an
-  opaque frontend-only representation
-- the viewer menu now also exposes that possibility explicitly through
-  `Persist Last Measurement`
-
-Current execution status:
-
-- `Create Region from Selection` now executes the Python-side bridge directly
-  from `interaction_context_action`
-- `Add Label from Selection` now executes the Python-side bridge directly from
-  `interaction_context_action` after explicit text capture
-- `Persist Last Measurement` now executes the Python-side bridge directly from
-  `interaction_context_action`
-- the current label-text capture path is intentionally minimal (an inline
-  composer inside the menu) and should be considered replaceable UX, not a
-  final design
-
-Current growth limit for target-specific context menus:
-
-- `annotation` targets should likely remain small and focused around:
-  - `Focus Target`
-  - `Delete Annotation`
-  - possibly later `Show/Hide`
-  - only much later, if justified:
-    - `Edit Text`
-    - `Reanchor`
-- `shape` targets should likely remain even narrower:
-  - `Focus Target`
-  - `Delete Shape`
-  - possibly later `Show/Hide`
-- avoid turning either target family menu into a rich editor or a per-type
-  operation browser
-
-It also implies that menu contents may depend on:
-
-- `context_target`
-- `active_selection`
-- active tool/mode state
-- and the composition of that active selection (`element`, `shape`, `annotation`, or `mixed`)
-
-If right click occurs on empty canvas, a future UX may still expose actions tied
-to `active_selection` or active mode state.
-That possibility remains open on purpose.
-
-Another useful future distinction:
-
-- menu contents may differ depending on whether the `context_target` is already part of `active_selection`
-- this can support more precise actions without forcing selection mutation
+The remaining accepted target-selection/creation and object/occurrence actions
+are tracked in [the implementation plan](canvas_context_menu_pre_1_0_plan.md).
+They are not implemented by this foundation. Global picking preferences remain
+post-1.0; region hide/disable and Whole ownership remain unchanged.
 
 ## Tool / Measurement Modes
 

@@ -1,4 +1,5 @@
 import type { ActiveSelectionPayload } from "../managers/active-selection";
+import { MenuNavigation } from "./menu-navigation";
 
 type BaseTarget =
     | { event: "interaction_context_menu"; kind: "empty" }
@@ -8,6 +9,9 @@ type BaseTarget =
         atom_indices: number[];
         group_name?: string;
         chain_name?: string;
+        atom_index?: number;
+        metadata?: { group_id?: string; group_name?: string; chain_id?: string; atom_name?: string };
+        source_label?: string;
     }
     | { event: "interaction_context_menu"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string }
     | { event: "interaction_context_menu"; kind: "interaction"; atom_indices: number[]; tag?: string; shape_name?: string; entity_ref?: unknown }
@@ -46,6 +50,8 @@ export type ContextMenuAction =
     | "toggle_background"
     | "toggle_spin"
     | "toggle_swing"
+    | "undo_scene"
+    | "redo_scene"
     | "open_navigate"
     | "open_workbench"
     | "set_viewer_mode"
@@ -60,6 +66,21 @@ export type ContextActionDetails = {
     distance_angstroms?: number;
     camera_forward?: [number, number, number];
     label_style?: { color?: string; size_em?: number };
+    studio_section?: "system" | "selection" | "regions" | "measures" | "interactions" | "annotations" | "shapes";
+    enabled?: boolean;
+    mode?: "light" | "dark";
+};
+
+export type ContextMenuSceneState = {
+    isSpinActive?: boolean;
+    isSwingActive?: boolean;
+    isDarkMode?: boolean;
+    isNavigateExpanded?: boolean;
+    isAddonsExpanded?: boolean;
+    isCanvasVisible?: boolean;
+    currentViewerMode?: string;
+    canUndo?: boolean;
+    canRedo?: boolean;
 };
 
 export type LastMeasurementSummary = {
@@ -117,26 +138,22 @@ function targetTitle(target: ContextMenuTarget): string {
     if (target.kind === "interaction") return target.shape_name?.trim() || target.tag?.trim() || "Interaction";
     if (target.kind === "measurement") return target.measurement_name?.trim() || target.tag?.trim() || "Measurement";
     if (target.kind === "annotation") return target.text?.trim() || target.tag?.trim() || "Annotation";
-    if (target.group_name?.trim()) {
-        return target.chain_name?.trim()
-            ? `${target.group_name.trim()} · chain ${target.chain_name.trim()}`
-            : target.group_name.trim();
+    if (target.group_name?.trim() || target.metadata?.group_name?.trim()) {
+        let group = target.group_name?.trim() || target.metadata!.group_name!.trim();
+        const id = target.metadata?.group_id;
+        if (id && !group.endsWith(` ${id}`)) group += ` ${id}`;
+        const chain = target.chain_name?.trim() || target.metadata?.chain_id?.trim();
+        return [group, chain ? `chain ${chain}` : "", target.source_label?.trim()].filter(Boolean).join(" · ");
     }
     const count = target.atom_indices.length;
     return count === 1 ? "Element (1 atom)" : `Element (${count} atoms)`;
 }
 
 function selectionTitle(selection: ActiveSelectionPayload): string {
-    if (selection.source_kind === "mixed") {
-        return `Active selection: mixed (${selection.items.length} items)`;
-    }
-    if (selection.source_kind === "annotation") {
-        return `Active selection: annotation (${selection.count_annotations})`;
-    }
-    if (selection.source_kind === "element") {
-        return `Active selection: ${selection.count_groups} group${selection.count_groups === 1 ? "" : "s"}`;
-    }
-    return "Active selection";
+    const parts = [`${selection.count_atoms} atom${selection.count_atoms === 1 ? "" : "s"}`];
+    if (selection.count_shapes) parts.push(`${selection.count_shapes} shape${selection.count_shapes === 1 ? "" : "s"}`);
+    if (selection.count_annotations) parts.push(`${selection.count_annotations} annotation${selection.count_annotations === 1 ? "" : "s"}`);
+    return `Active selection · ${parts.join(" · ")}`;
 }
 
 function selectionSummary(selection: ActiveSelectionPayload | null): string {
@@ -146,6 +163,8 @@ function selectionSummary(selection: ActiveSelectionPayload | null): string {
 
 export class ViewerContextMenu {
     private readonly root: HTMLDivElement;
+    private readonly navigation: MenuNavigation;
+    private returnFocus?: HTMLElement;
     private outsidePointerHandler?: (event: PointerEvent) => void;
     private scrollEl!: HTMLDivElement;
     private currentTarget: ContextMenuTarget | null = null;
@@ -157,26 +176,20 @@ export class ViewerContextMenu {
     private currentAddonItems: AddonContextItemSummary[] = [];
     private currentPageX = 0;
     private currentPageY = 0;
-    private currentSceneState: {
-        isSpinActive?: boolean;
-        isSwingActive?: boolean;
-        isDarkMode?: boolean;
-        isNavigateExpanded?: boolean;
-        isAddonsExpanded?: boolean;
-        isCanvasVisible?: boolean;
-        currentViewerMode?: string;
-    } | null = null;
+    private currentSceneState: ContextMenuSceneState | null = null;
 
     constructor(
         private readonly host: HTMLElement,
         private readonly notify?: (msg: any) => void,
-        private readonly onAction?: (action: ContextMenuAction, target: ContextMenuTarget, details?: ContextActionDetails) => void,
+        /** Return true for browser-owned actions that must not be dispatched again. */
+        private readonly onAction?: (action: ContextMenuAction, target: ContextMenuTarget, details?: ContextActionDetails) => boolean | void,
         private readonly onClose?: () => void,
         private readonly getCameraDirection?: () => [number, number, number],
         private readonly options: ContextMenuOptions = {},
     ) {
         this.root = document.createElement("div");
         this.root.setAttribute("data-molsysviewer-context-menu", "true");
+        this.root.setAttribute("aria-hidden", "true");
         Object.assign(this.root.style, {
             position: "absolute",
             display: "none",
@@ -206,6 +219,7 @@ export class ViewerContextMenu {
             scrollbarColor: "rgba(255,255,255,0.25) transparent" as any,
         });
         this.root.appendChild(this.scrollEl);
+        this.navigation = new MenuNavigation(this.scrollEl, () => this.close(), () => this.positionMenu());
         this.host.appendChild(this.root);
 
         // Inject webkit scrollbar styles once per document
@@ -217,6 +231,7 @@ export class ViewerContextMenu {
                 "[data-molsysviewer-context-scroll]::-webkit-scrollbar-track { background: transparent; }",
                 "[data-molsysviewer-context-scroll]::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 3px; }",
                 "[data-molsysviewer-context-scroll]::-webkit-scrollbar-corner { background: transparent; }",
+                "[data-molsysviewer-context-menu] button:hover, [data-molsysviewer-context-menu] button:focus-visible { background: rgba(255,255,255,0.10) !important; outline: 2px solid #a5b4fc; outline-offset: -2px; }",
             ].join("\n");
             document.head.appendChild(style);
         }
@@ -232,16 +247,14 @@ export class ViewerContextMenu {
         regions?: RegionSummary[] | null,
         addonActions?: AddonContextActionSummary[] | null,
         addonItems?: AddonContextItemSummary[] | null,
-        sceneState?: {
-            isSpinActive?: boolean;
-            isSwingActive?: boolean;
-            isDarkMode?: boolean;
-            isNavigateExpanded?: boolean;
-            isAddonsExpanded?: boolean;
-            currentViewerMode?: string;
-            isCanvasVisible?: boolean;
-        } | null,
+        sceneState?: ContextMenuSceneState | null,
     ): void {
+        if (!this.isOpen()) {
+            const active = document.activeElement as HTMLElement | null;
+            this.returnFocus = active && this.host.contains(active)
+                ? active : (this.host.querySelector?.("canvas") as HTMLElement | null) ?? this.host;
+            if (this.returnFocus.tagName === "CANVAS" && this.returnFocus.tabIndex < 0) this.returnFocus.tabIndex = 0;
+        }
         this.currentTarget = target;
         this.currentSelection = activeSelection ?? null;
         this.currentLastMeasurement = lastMeasurement ?? null;
@@ -252,292 +265,70 @@ export class ViewerContextMenu {
         this.currentPageX = pageX;
         this.currentPageY = pageY;
         this.currentSceneState = sceneState ?? null;
-        this.scrollEl.replaceChildren();
+        this.renderMenu();
+        this.root.style.display = "block";
+        this.root.setAttribute("aria-hidden", "false");
+        this.positionMenu();
+        this.navigation.focusFirst();
 
-        const header = document.createElement("div");
-        header.setAttribute("data-molsysviewer-context-menu-title", "true");
-        header.textContent = targetTitle(target);
-        Object.assign(header.style, {
-            padding: "6px 8px 8px 8px",
-            fontWeight: "600",
-            borderBottom: "1px solid rgba(255,255,255,0.10)",
-            marginBottom: "6px",
-        });
-        this.scrollEl.appendChild(header);
+        this.detachOutsidePointerHandler();
+        this.outsidePointerHandler = (event: PointerEvent) => {
+            const targetNode = event.target as Node | null;
+            if (targetNode && this.root.contains(targetNode)) return;
+            this.close();
+        };
+        window.addEventListener("pointerdown", this.outsidePointerHandler, true);
+    }
 
-        if (target.kind === "structure") {
-            this.scrollEl.appendChild(this.makeActionButton("Focus Target", "focus_target"));
-            this.scrollEl.appendChild(this.makeActionButton("Distance", "distance"));
-            this.scrollEl.appendChild(this.makeActionButton("Distance (Representative Atom)", "distance", { endpoint_policy: "representative_atom" }));
-            this.scrollEl.appendChild(this.makeActionButton("Angle", "angle"));
-            this.scrollEl.appendChild(this.makeActionButton("Angle (Representative Atom)", "angle", { endpoint_policy: "representative_atom" }));
-            this.scrollEl.appendChild(this.makeActionButton("Dihedral", "dihedral"));
-            this.scrollEl.appendChild(this.makeActionButton("Dihedral (Representative Atom)", "dihedral", { endpoint_policy: "representative_atom" }));
-        } else if (target.kind === "interaction") {
-            if (target.tag?.trim()) {
-                this.scrollEl.appendChild(this.makeActionButton("Focus Interaction Set", "focus_interaction"));
-                this.scrollEl.appendChild(this.makeActionButton("Delete Interaction Set", "delete_interaction"));
-            }
-        } else if (target.kind === "shape") {
-            this.scrollEl.appendChild(this.makeActionButton("Focus Target", "focus_target"));
-            if (target.tag?.trim()) {
-                this.scrollEl.appendChild(this.makeActionButton("Delete Shape", "delete_shape"));
-            }
-        } else if (target.kind === "measurement") {
-            this.scrollEl.appendChild(this.makeActionButton("Focus Target", "focus_target"));
-            if (target.tag?.trim()) {
-                this.scrollEl.appendChild(this.makeActionButton("Hide Measurement", "hide_measurement"));
-                this.scrollEl.appendChild(this.makeActionButton("Delete Measurement", "delete_measurement"));
-            }
-        } else if (target.kind === "annotation") {
-            this.scrollEl.appendChild(this.makeActionButton("Focus Target", "focus_target"));
-            if (target.tag?.trim()) {
-                this.scrollEl.appendChild(this.makeActionButton("Delete Annotation", "delete_annotation"));
-            }
-        } else {
-            // Empty canvas — scene-level actions
-            const isSpin = this.currentSceneState?.isSpinActive;
-            const isSwing = this.currentSceneState?.isSwingActive;
-            const isDark = this.currentSceneState?.isDarkMode;
-            const isNavOpen = this.currentSceneState?.isNavigateExpanded;
-            const isWorkOpen = this.currentSceneState?.isAddonsExpanded;
-            const activeMode = this.currentSceneState?.currentViewerMode || "classic";
+    isOpen(): boolean { return this.root.style.display !== "none"; }
 
-            this.scrollEl.appendChild(this.makeActionButton("Reset View", "reset_view"));
-            this.scrollEl.appendChild(this.makeActionButton(
-                isDark === undefined
-                    ? "Toggle Background"
-                    : isDark ? "Toggle Background (Dark)" : "Toggle Background (Light)",
-                "toggle_background"
-            ));
-            this.scrollEl.appendChild(this.makeActionButton(
-                isSpin ? "Toggle Spin (Active ✓)" : "Toggle Spin",
-                "toggle_spin"
-            ));
-            this.scrollEl.appendChild(this.makeActionButton(
-                isSwing ? "Toggle Swing (Active ✓)" : "Toggle Swing",
-                "toggle_swing"
-            ));
-
-            const isCanvasVisible = this.currentSceneState?.isCanvasVisible !== false;
-            this.scrollEl.appendChild(this.makeActionButton(
-                isCanvasVisible ? "Hide Canvas" : "Show Canvas",
-                "toggle_canvas_visibility"
-            ));
-
-            // Divider for Panels
-            const divPanels = document.createElement("div");
-            Object.assign(divPanels.style, {
-                marginTop: "6px",
-                paddingTop: "6px",
-                borderTop: "1px solid rgba(255,255,255,0.10)",
-            });
-            this.scrollEl.appendChild(divPanels);
-
-            this.scrollEl.appendChild(this.makeActionButton(
-                isNavOpen ? "Close Studio Panel" : "Open Studio Panel",
-                "open_navigate"
-            ));
-            this.scrollEl.appendChild(this.makeActionButton(
-                isWorkOpen ? "Close Workbench Panel" : "Open Workbench Panel",
-                "open_workbench"
-            ));
-
-            if (this.isActionAllowed("set_viewer_mode")) {
-                const divModes = document.createElement("div");
-                Object.assign(divModes.style, {
-                    marginTop: "6px",
-                    paddingTop: "6px",
-                    borderTop: "1px solid rgba(255,255,255,0.10)",
-                });
-                this.scrollEl.appendChild(divModes);
-
-                const modeHeader = document.createElement("div");
-                modeHeader.textContent = "Viewer Mode";
-                Object.assign(modeHeader.style, {
-                    padding: "2px 8px 4px 8px",
-                    opacity: "0.5",
-                    fontSize: "11px",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
-                    fontWeight: "600",
-                });
-                this.scrollEl.appendChild(modeHeader);
-
-                const modes = ["classic", "integrated", "cinema"];
-                for (const mode of modes) {
-                    const label = mode + (activeMode === mode ? " (Active ✓)" : "");
-                    this.scrollEl.appendChild(this.makeActionButton(label, "set_viewer_mode", { text: mode }));
-                }
+    updateHistoryState(state: { canUndo: boolean; canRedo: boolean }): void {
+        this.currentSceneState = { ...this.currentSceneState, ...state };
+        if (!this.isOpen()) return;
+        for (const [action, enabled] of [["undo_scene", state.canUndo], ["redo_scene", state.canRedo]] as const) {
+            const button = this.root.querySelector<HTMLButtonElement>(`[data-molsysviewer-context-action="${action}"]`);
+            if (button) {
+                button.disabled = !enabled;
+                button.setAttribute("aria-disabled", enabled ? "false" : "true");
+                button.style.opacity = enabled ? "1" : "0.45";
+                button.title = enabled ? "" : "No scene history operation is available";
             }
         }
+    }
 
-        if (this.currentSelection && this.currentSelection.source_kind !== "empty") {
-            const section = document.createElement("div");
-            Object.assign(section.style, {
-                marginTop: "8px",
-                paddingTop: "8px",
-                borderTop: "1px solid rgba(255,255,255,0.10)",
-            });
+    /** Dismiss one menu level before global Escape affects selection or Studio. */
+    handleEscape(event: KeyboardEvent): boolean {
+        if (!this.isOpen() || event.key !== "Escape") return false;
+        if ((event.target as HTMLElement)?.closest?.("input, textarea, select, [contenteditable]")) return false;
+        if (!this.navigation.containsCurrentPage()) this.reopen();
+        else if (!this.navigation.back()) this.close();
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        return true;
+    }
 
-            const title = document.createElement("div");
-            title.textContent = selectionTitle(this.currentSelection);
-            Object.assign(title.style, {
-                padding: "4px 8px 8px 8px",
-                opacity: "0.82",
-                fontSize: "12px",
-            });
-            section.appendChild(title);
-            section.appendChild(this.makeActionButton("Focus Selection", "focus_selection"));
-            section.appendChild(this.makeActionButton("Save Selection", "save_selection"));
-            section.appendChild(this.makeActionButton("Create Region from Selection", "create_region_from_selection"));
-            section.appendChild(this.makeActionButton("Create Section from Selection", "create_section_from_selection"));
-            section.appendChild(this.makeActionButton("Add Label from Selection", "add_label_from_selection"));
-            this.appendSelectionExpanders(section);
-            // "Remove Selected Atoms" is contributed by the MolSysMT addon as a
-            // context item (molecular editing is not a viewer-core action).
-            section.appendChild(this.makeActionButton("Clear Selection", "clear_selection"));
-            this.scrollEl.appendChild(section);
-        }
+    private reopen(): void {
+        if (!this.currentTarget) return;
+        this.open(this.currentTarget, this.currentPageX, this.currentPageY,
+            this.currentSelection, this.currentLastMeasurement, this.currentSavedSelections,
+            this.currentRegions, this.currentAddonActions, this.currentAddonItems, this.currentSceneState);
+    }
 
-        if (this.currentSavedSelections.length > 0) {
-            const section = document.createElement("div");
-            Object.assign(section.style, {
-                marginTop: "8px",
-                paddingTop: "8px",
-                borderTop: "1px solid rgba(255,255,255,0.10)",
-            });
-
-            const title = document.createElement("div");
-            title.textContent = "Saved selections";
-            Object.assign(title.style, {
-                padding: "4px 8px 8px 8px",
-                opacity: "0.82",
-                fontSize: "12px",
-            });
-            section.appendChild(title);
-
-            for (const selection of this.currentSavedSelections) {
-                section.appendChild(this.makeSavedSelectionButton(selection));
-            }
-            this.scrollEl.appendChild(section);
-        }
-
-        if (this.currentRegions.length > 0) {
-            const section = document.createElement("div");
-            Object.assign(section.style, {
-                marginTop: "8px",
-                paddingTop: "8px",
-                borderTop: "1px solid rgba(255,255,255,0.10)",
-            });
-
-            const title = document.createElement("div");
-            title.textContent = "Regions";
-            Object.assign(title.style, {
-                padding: "4px 8px 8px 8px",
-                opacity: "0.82",
-                fontSize: "12px",
-            });
-            section.appendChild(title);
-
-            for (const region of this.currentRegions) {
-                section.appendChild(this.makeRegionButton(region));
-            }
-            this.scrollEl.appendChild(section);
-        }
-
-        const matchingAddonActions = this.isActionAllowed("addon_context_action")
-            ? this.currentAddonActions.filter((item) => item.target_kinds.includes(target.kind))
-            : [];
-        if (matchingAddonActions.length > 0) {
-            const section = document.createElement("div");
-            Object.assign(section.style, {
-                marginTop: "8px",
-                paddingTop: "8px",
-                borderTop: "1px solid rgba(255,255,255,0.10)",
-            });
-
-            const title = document.createElement("div");
-            title.textContent = "Add-ons";
-            Object.assign(title.style, {
-                padding: "4px 8px 8px 8px",
-                opacity: "0.82",
-                fontSize: "12px",
-            });
-            section.appendChild(title);
-
-            for (const addonAction of matchingAddonActions) {
-                section.appendChild(this.makeAddonActionButton(addonAction));
-            }
-            this.scrollEl.appendChild(section);
-        }
-
-        // Dynamic, selection-driven add-on items: one section per add-on, with a
-        // sub-heading per `group` (e.g. "Selección actual"). Shown regardless of
-        // target.kind unless the item declares target_kinds.
-        const matchingItems = (this.isActionAllowed("addon_context_action") ? this.currentAddonItems : []).filter(
-            (it) => !it.target_kinds || it.target_kinds.length === 0 || it.target_kinds.includes(target.kind),
-        );
-        if (matchingItems.length > 0) {
-            const byAddon = new Map<string, AddonContextItemSummary[]>();
-            for (const it of matchingItems) {
-                if (!byAddon.has(it.addon)) byAddon.set(it.addon, []);
-                byAddon.get(it.addon)!.push(it);
-            }
-            for (const [addonName, addonItems] of byAddon) {
-                const section = document.createElement("div");
-                Object.assign(section.style, {
-                    marginTop: "8px",
-                    paddingTop: "8px",
-                    borderTop: "1px solid rgba(255,255,255,0.10)",
-                });
-                const header = document.createElement("div");
-                header.textContent = addonName;
-                Object.assign(header.style, {
-                    padding: "4px 8px 6px 8px",
-                    opacity: "0.82",
-                    fontSize: "12px",
-                    fontWeight: "600",
-                });
-                section.appendChild(header);
-
-                const byGroup = new Map<string, AddonContextItemSummary[]>();
-                for (const it of addonItems) {
-                    const g = it.group ?? "";
-                    if (!byGroup.has(g)) byGroup.set(g, []);
-                    byGroup.get(g)!.push(it);
-                }
-                for (const [groupName, groupItems] of byGroup) {
-                    if (groupName) {
-                        const sub = document.createElement("div");
-                        sub.textContent = groupName;
-                        Object.assign(sub.style, {
-                            padding: "2px 8px 4px 14px",
-                            opacity: "0.6",
-                            fontSize: "11px",
-                        });
-                        section.appendChild(sub);
-                    }
-                    groupItems.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-                    for (const it of groupItems) {
-                        section.appendChild(this.makeAddonItemButton(it));
-                    }
-                }
-                this.scrollEl.appendChild(section);
-            }
-        }
-
+    private positionMenu(): void {
+        if (!this.isOpen()) return;
         const rect = this.host.getBoundingClientRect();
-        this.scrollEl.style.maxHeight = "";
+        this.scrollEl.style.maxHeight = `${Math.max(0, rect.height - 12)}px`;
+        this.root.style.minWidth = `${Math.min(180, Math.max(0, rect.width - 8))}px`;
+        this.root.style.maxWidth = `${Math.min(280, Math.max(0, rect.width - 8))}px`;
         this.root.style.display = "block";
         const menuWidth = this.root.offsetWidth || 180;
         const menuHeight = this.root.offsetHeight || 120;
-        const left = Math.min(Math.max(0, pageX - rect.left), Math.max(0, rect.width - menuWidth));
-        const rawTop = pageY - rect.top;
+        const left = Math.min(Math.max(0, this.currentPageX - rect.left), Math.max(0, rect.width - menuWidth));
+        const rawTop = this.currentPageY - rect.top;
         const top = Math.min(Math.max(0, rawTop), Math.max(0, rect.height - menuHeight));
         const availableBelow = rect.height - top - 12;
         if (menuHeight > availableBelow) {
-            this.scrollEl.style.maxHeight = `${Math.max(80, availableBelow)}px`;
+            this.scrollEl.style.maxHeight = `${Math.max(0, availableBelow)}px`;
             this.scrollEl.style.borderBottomLeftRadius = "9px";
             this.scrollEl.style.borderBottomRightRadius = "9px";
         } else {
@@ -547,13 +338,124 @@ export class ViewerContextMenu {
         this.root.style.left = `${left}px`;
         this.root.style.top = `${top}px`;
 
-        this.detachOutsidePointerHandler();
-        this.outsidePointerHandler = (event: PointerEvent) => {
-            const targetNode = event.target as Node | null;
-            if (targetNode && this.root.contains(targetNode)) return;
-            this.close();
-        };
-        window.addEventListener("pointerdown", this.outsidePointerHandler, true);
+    }
+
+    private renderMenu(): void {
+        const target = this.currentTarget!;
+        const main = this.navigation.reset(targetTitle(target));
+        const header = document.createElement("div");
+        header.setAttribute("data-molsysviewer-context-menu-title", "true");
+        header.setAttribute("role", "presentation");
+        header.textContent = targetTitle(target);
+        Object.assign(header.style, { padding: "6px 8px 8px", fontWeight: "600", borderBottom: "1px solid rgba(255,255,255,0.10)", marginBottom: "6px" });
+        main.appendChild(header);
+        if (target.kind === "structure" && target.metadata?.atom_name) {
+            const atom = document.createElement("div");
+            atom.textContent = `Pointed atom: ${target.metadata.atom_name}`;
+            Object.assign(atom.style, { padding: "0 8px 6px", opacity: "0.75", fontSize: "12px" });
+            main.appendChild(atom);
+        }
+
+        if (target.kind === "structure") {
+            main.appendChild(this.makeActionButton("Focus Target", "focus_target"));
+            this.navigation.addSubmenu(main, "Measure", view => {
+                const policy = document.createElement("div");
+                policy.textContent = "Default endpoints: centers of picked atom sets";
+                Object.assign(policy.style, { padding: "4px 10px", fontSize: "12px", opacity: "0.75" });
+                view.appendChild(policy);
+                for (const [label, action] of [["Distance", "distance"], ["Angle", "angle"], ["Dihedral", "dihedral"]] as const) {
+                    view.appendChild(this.makeActionButton(label, action, { endpoint_policy: "centroid" }));
+                    view.appendChild(this.makeActionButton(`${label} (Representative Atom)`, action, { endpoint_policy: "representative_atom" }));
+                }
+            });
+        } else if (target.kind === "interaction") {
+            if (target.tag?.trim()) this.navigation.addSubmenu(main, "Interaction set", view => {
+                view.appendChild(this.makeActionButton("Focus Interaction Set", "focus_interaction"));
+                view.appendChild(this.makeActionButton("Delete Interaction Representation", "delete_interaction"));
+            });
+        } else if (target.kind !== "empty") {
+            main.appendChild(this.makeActionButton("Focus Target", "focus_target"));
+            if (target.tag?.trim()) {
+                if (target.kind === "measurement") {
+                    main.appendChild(this.makeActionButton("Hide Measurement", "hide_measurement"));
+                    main.appendChild(this.makeActionButton("Delete Measurement", "delete_measurement"));
+                } else if (target.kind === "annotation") main.appendChild(this.makeActionButton("Delete Annotation", "delete_annotation"));
+                else main.appendChild(this.makeActionButton("Delete Shape", "delete_shape"));
+            }
+        } else main.appendChild(this.makeActionButton("Reset View", "reset_view"));
+
+        if (this.currentSelection && this.currentSelection.source_kind !== "empty") {
+            this.navigation.addSubmenu(main, selectionTitle(this.currentSelection), view => {
+                view.appendChild(this.makeActionButton("Focus Selection", "focus_selection"));
+                view.appendChild(this.makeActionButton("Save Selection…", "save_selection"));
+                view.appendChild(this.makeActionButton("Create Region from Selection…", "create_region_from_selection"));
+                view.appendChild(this.makeActionButton("Create Section from Selection", "create_section_from_selection"));
+                view.appendChild(this.makeActionButton("Add Label from Selection…", "add_label_from_selection"));
+                this.appendSelectionExpanders(view);
+                view.appendChild(this.makeActionButton("Clear Selection", "clear_selection"));
+            });
+        }
+        if (this.currentRegions.length) {
+            this.navigation.addSubmenu(main, "Related regions", view => {
+                for (const region of this.currentRegions.slice(0, 8)) view.appendChild(this.makeRegionButton(region));
+                view.appendChild(this.makeActionButton("Manage regions in Studio…", "open_navigate", { studio_section: "regions" }));
+            });
+        }
+        // Collection size must not determine the size of the canvas menu.
+        if (this.currentSavedSelections.length) main.appendChild(this.makeActionButton("Saved selections in Studio…", "open_navigate", { studio_section: "selection" }));
+
+        const actions = this.isActionAllowed("addon_context_action")
+            ? this.currentAddonActions.filter(item => item.target_kinds.includes(target.kind)) : [];
+        const items = this.isActionAllowed("addon_context_action")
+            ? this.currentAddonItems.filter(item => !item.target_kinds?.length || item.target_kinds.includes(target.kind)) : [];
+        if (actions.length || items.length) {
+            this.navigation.addSubmenu(main, "Add-ons", view => {
+                for (const action of actions) view.appendChild(this.makeAddonActionButton(action));
+                const byAddon = new Map<string, AddonContextItemSummary[]>();
+                for (const item of items) {
+                    if (!byAddon.has(item.addon)) byAddon.set(item.addon, []);
+                    byAddon.get(item.addon)!.push(item);
+                }
+                for (const [addon, contributions] of byAddon) {
+                    const heading = document.createElement("div");
+                    heading.textContent = addon;
+                    Object.assign(heading.style, { padding: "6px 10px", fontWeight: "600" });
+                    view.appendChild(heading);
+                    const groups = new Map<string, AddonContextItemSummary[]>();
+                    for (const item of contributions) {
+                        const group = item.group ?? "";
+                        if (!groups.has(group)) groups.set(group, []);
+                        groups.get(group)!.push(item);
+                    }
+                    for (const [group, entries] of groups) {
+                        if (group) {
+                            const label = document.createElement("div");
+                            label.textContent = group;
+                            Object.assign(label.style, { padding: "4px 10px", opacity: "0.75" });
+                            view.appendChild(label);
+                        }
+                        for (const item of entries.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))) view.appendChild(this.makeAddonItemButton(item));
+                    }
+                }
+            });
+        }
+        this.navigation.addSubmenu(main, "View", view => {
+            view.appendChild(this.makeActionButton("Reset View", "reset_view"));
+            const scene = this.currentSceneState;
+            view.appendChild(this.makeActionButton(scene?.isDarkMode ? "Use Light Background" : "Use Dark Background", "toggle_background", { mode: scene?.isDarkMode ? "light" : "dark" }));
+            view.appendChild(this.makeActionButton(scene?.isSpinActive ? "Stop Automatic Rotation" : "Start Automatic Rotation", "toggle_spin", { enabled: !scene?.isSpinActive }));
+            view.appendChild(this.makeActionButton(scene?.isSwingActive ? "Stop Swing" : "Start Swing", "toggle_swing", { enabled: !scene?.isSwingActive }));
+            for (const mode of ["classic", "integrated", "cinema"]) {
+                const label = mode[0].toUpperCase() + mode.slice(1);
+                view.appendChild(this.makeActionButton(`${label}${scene?.currentViewerMode === mode ? " ✓" : ""}`, "set_viewer_mode", { text: mode }));
+            }
+        });
+        main.appendChild(this.makeActionButton("Undo", "undo_scene"));
+        main.appendChild(this.makeActionButton("Redo", "redo_scene"));
+        const section = target.kind === "structure" ? "system" : target.kind === "interaction" ? "interactions"
+            : target.kind === "measurement" ? "measures" : target.kind === "annotation" ? "annotations" : target.kind === "shape" ? "shapes" : undefined;
+        main.appendChild(this.makeActionButton("Open Studio…", "open_navigate", section ? { studio_section: section } : undefined));
+        this.navigation.decorate();
     }
 
     close(): void {
@@ -565,8 +467,13 @@ export class ViewerContextMenu {
         this.currentRegions = [];
         this.currentAddonActions = [];
         this.currentAddonItems = [];
+        const active = document.activeElement;
+        const restoreFocus = active && this.root.contains(active);
         this.root.style.display = "none";
+        this.root.setAttribute("aria-hidden", "true");
         this.detachOutsidePointerHandler();
+        if (restoreFocus) this.returnFocus?.focus?.();
+        this.returnFocus = undefined;
         if (wasOpen) this.onClose?.();
     }
 
@@ -579,6 +486,25 @@ export class ViewerContextMenu {
         const button = document.createElement("button");
         button.type = "button";
         button.textContent = label;
+        button.setAttribute("data-molsysviewer-context-action", action);
+        button.setAttribute("role", "menuitem");
+        if (action === "undo_scene" || action === "redo_scene") {
+            const enabled = action === "undo_scene" ? this.currentSceneState?.canUndo : this.currentSceneState?.canRedo;
+            button.disabled = enabled !== true;
+            button.setAttribute("aria-disabled", button.disabled ? "true" : "false");
+            if (button.disabled) {
+                button.title = "No scene history operation is available";
+                button.style.opacity = "0.45";
+            }
+        }
+        const needsSelectionAtoms = ["focus_selection", "save_selection", "create_region_from_selection", "create_section_from_selection", "add_label_from_selection", "expand_selection"].includes(action);
+        if ((action === "focus_target" && this.currentTarget?.kind !== "empty" && !this.currentTarget?.atom_indices?.length)
+            || (needsSelectionAtoms && !this.currentSelection?.atom_indices?.length)) {
+            button.disabled = true;
+            button.setAttribute("aria-disabled", "true");
+            button.title = action === "focus_target" ? "This object has no atom anchor to focus" : "This action requires selected atoms";
+            button.style.opacity = "0.45";
+        }
         Object.assign(button.style, {
             display: this.isActionAllowed(action) ? "block" : "none",
             width: "100%",
@@ -598,7 +524,7 @@ export class ViewerContextMenu {
             button.style.background = "transparent";
         });
         button.addEventListener("click", () => {
-            if (!this.currentTarget) return;
+            if (!this.currentTarget || button.disabled || !this.isActionAllowed(action)) return;
             if (action === "add_label_from_selection") {
                 this.renderLabelComposer();
                 return;
@@ -616,9 +542,9 @@ export class ViewerContextMenu {
             }
             const details = detailsOverride ?? this.resolveActionDetails(action);
             if (details === null) return;
-            this.onAction?.(action, this.currentTarget, details ?? undefined);
-            this.notify?.({
-                event: "interaction_context_action",
+            const handled = this.onAction?.(action, this.currentTarget, details ?? undefined) === true;
+            if (!handled) this.notify?.({
+                event: action === "undo_scene" ? "scene_history_undo" : action === "redo_scene" ? "scene_history_redo" : "interaction_context_action",
                 action,
                 context: this.currentTarget,
                 ...(details ?? {}),
@@ -799,10 +725,10 @@ export class ViewerContextMenu {
             this.close();
         });
 
-        row.appendChild(label);
-        row.appendChild(toggleBtn);
-        row.appendChild(renameBtn);
-        row.appendChild(deleteBtn);
+        if (this.isActionAllowed("focus_region")) row.appendChild(label);
+        if (this.isActionAllowed("toggle_region_visibility")) row.appendChild(toggleBtn);
+        if (this.isActionAllowed("rename_region")) row.appendChild(renameBtn);
+        if (this.isActionAllowed("delete_region")) row.appendChild(deleteBtn);
         return row;
     }
 
@@ -916,6 +842,7 @@ export class ViewerContextMenu {
         actions.appendChild(save);
         actions.appendChild(cancel);
         this.scrollEl.appendChild(actions);
+        this.positionMenu();
         input.focus?.();
     }
 
@@ -994,6 +921,8 @@ export class ViewerContextMenu {
         button.textContent = item.title;
         button.setAttribute("data-molsysviewer-addon-item", `${item.addon}:${item.id}`);
         const disabled = item.enabled === false;
+        button.disabled = disabled;
+        if (disabled) button.setAttribute("aria-disabled", "true");
         Object.assign(button.style, {
             display: "block",
             width: "100%",
@@ -1294,6 +1223,7 @@ export class ViewerContextMenu {
         actions.appendChild(save);
         actions.appendChild(cancel);
         this.scrollEl.appendChild(actions);
+        this.positionMenu();
         input.focus?.();
     }
 
@@ -1415,6 +1345,7 @@ export class ViewerContextMenu {
         actions.appendChild(save);
         actions.appendChild(cancel);
         this.scrollEl.appendChild(actions);
+        this.positionMenu();
         input.focus?.();
     }
 

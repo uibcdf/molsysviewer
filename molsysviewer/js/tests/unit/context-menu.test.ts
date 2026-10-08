@@ -168,11 +168,11 @@ test("ViewerContextMenu renders active selection section and selection actions",
         const texts = collectTexts(root);
         assert.ok(texts.includes("Catalytic"));
         assert.ok(texts.includes("Focus Target"));
-        assert.ok(texts.includes("Active selection: mixed (0 items)"));
+        assert.ok(texts.includes("Active selection · 2 atoms · 1 annotation"));
         assert.ok(texts.includes("Focus Selection"));
-        assert.ok(texts.includes("Save Selection"));
-        assert.ok(texts.includes("Create Region from Selection"));
-        assert.ok(texts.includes("Add Label from Selection"));
+        assert.ok(texts.includes("Save Selection…"));
+        assert.ok(texts.includes("Create Region from Selection…"));
+        assert.ok(texts.includes("Add Label from Selection…"));
         assert.ok(!texts.includes("Remove Selected Atoms"));
         assert.ok(texts.includes("Clear Selection"));
 
@@ -569,41 +569,20 @@ test("ViewerContextMenu renders delete action for measurement targets", () => {
     }
 });
 
-test("ViewerContextMenu renders saved selections and emits activate_selection", () => {
+test("ViewerContextMenu routes saved collections to Studio without enumerating them", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const actions: Array<{ action: string; target: any; details?: any }> = [];
         const notifications: any[] = [];
-        const menu = new ViewerContextMenu(host, (msg) => {
-            notifications.push(msg);
-        }, (action, target, details) => {
-            actions.push({ action, target, details });
-        });
-
+        const menu = new ViewerContextMenu(host, msg => notifications.push(msg));
         const target = { event: "interaction_context_menu", kind: "empty" as const };
         menu.open(target, 10, 20, null, null, [{ tag: "picked", atom_count: 10 }]);
-
         const root = (menu as any).root as FakeElement;
-        const button = findNodeByText(root, "picked · 10 atoms");
-        assert.ok(button);
-        button!.dispatch("click");
-
-        assert.deepStrictEqual(actions, [
-            { action: "activate_selection", target, details: { tag: "picked" } },
-        ]);
-        assert.deepStrictEqual(notifications, [
-            {
-                event: "interaction_context_action",
-                action: "activate_selection",
-                context: target,
-                tag: "picked",
-            },
-        ]);
+        assert.equal(findNodeByText(root, "picked · 10 atoms"), null);
+        findNodeByText(root, "Saved selections in Studio…")!.dispatch("click");
+        assert.deepEqual(notifications, [{ event: "interaction_context_action", action: "open_navigate", context: target, studio_section: "selection" }]);
         menu.dispose();
-    } finally {
-        restore();
-    }
+    } finally { restore(); }
 });
 
 test("ViewerContextMenu renders relevant regions and emits focus_region", () => {
@@ -634,7 +613,7 @@ test("ViewerContextMenu renders relevant regions and emits focus_region", () => 
 
         const root = (menu as any).root as FakeElement;
         const texts = collectTexts(root);
-        assert.ok(texts.includes("Regions"));
+        assert.ok(texts.includes("Related regions"));
         assert.ok(texts.includes("siteA · 3 atoms"));
         assert.ok(texts.includes("siteB · 2 atoms · hidden"));
 
@@ -816,7 +795,7 @@ test("ViewerContextMenu opens inline label composer before add-label action", ()
         );
 
         const root = (menu as any).root as FakeElement;
-        const button = findNodeByText(root, "Add Label from Selection");
+        const button = findNodeByText(root, "Add Label from Selection…");
         assert.ok(button);
         button!.dispatch("click");
 
@@ -886,7 +865,7 @@ test("ViewerContextMenu opens inline selection composer before save-selection ac
         );
 
         const root = (menu as any).root as FakeElement;
-        const button = findNodeByText(root, "Save Selection");
+        const button = findNodeByText(root, "Save Selection…");
         assert.ok(button);
         button!.dispatch("click");
 
@@ -953,7 +932,7 @@ test("ViewerContextMenu keeps add-label local until inline text is confirmed", (
         );
 
         const root = (menu as any).root as FakeElement;
-        const button = findNodeByText(root, "Add Label from Selection");
+        const button = findNodeByText(root, "Add Label from Selection…");
         assert.ok(button);
         button!.dispatch("click");
 
@@ -1003,11 +982,11 @@ test("ViewerContextMenu exposes reproducible-selection actions with the right gu
         );
 
         let root = (menu as any).root as FakeElement;
-        assert.ok(collectTexts(root).includes("Create Region from Selection"));
-        assert.ok(collectTexts(root).includes("Add Label from Selection"));
+        assert.ok(collectTexts(root).includes("Create Region from Selection…"));
+        assert.ok(collectTexts(root).includes("Add Label from Selection…"));
 
-        // Clicking "Create Region from Selection" opens the region composer inline
-        const regionButton = findNodeByText(root, "Create Region from Selection");
+        // Clicking "Create Region from Selection…" opens the region composer inline
+        const regionButton = findNodeByText(root, "Create Region from Selection…");
         assert.ok(regionButton);
         regionButton!.dispatch("click");
 
@@ -1042,8 +1021,8 @@ test("ViewerContextMenu exposes reproducible-selection actions with the right gu
         );
 
         root = (menu as any).root as FakeElement;
-        assert.ok(collectTexts(root).includes("Create Region from Selection"));
-        assert.ok(collectTexts(root).includes("Add Label from Selection"));
+        assert.ok(collectTexts(root).includes("Create Region from Selection…"));
+        assert.ok(collectTexts(root).includes("Add Label from Selection…"));
 
         assert.deepStrictEqual(actions, [
             {

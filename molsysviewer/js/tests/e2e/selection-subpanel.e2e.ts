@@ -130,6 +130,7 @@ async function run() {
         await page.locator('[data-molsysviewer-group-panel-tab="system"]').click();
         await page.locator('[data-molsysviewer-group-item="true"]').first().click({ button: "right" });
         await page.waitForSelector('[data-molsysviewer-context-menu="true"]');
+        await page.locator('[data-molsysviewer-context-submenu^="Active selection"]').click();
         await page.locator('[data-molsysviewer-context-menu="true"] button').filter({ hasText: "Chain" }).click();
         const expand = await latestAction(page, "expand_selection");
         assert.strictEqual(expand.level, "chain");

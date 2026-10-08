@@ -1,7 +1,9 @@
 # Canvas context menu: accepted pre-1.0 redesign
 
 **Decision — 2026-10-08:** the principal maintainer accepts this redesign as
-required before 1.0 (`uibcdf/molsysviewer#179`). **Implementation pending.**
+required before 1.0 (`uibcdf/molsysviewer#179`). **Partially implemented:** the
+menu shell and shared scene/Studio navigation are delivered; molecular-target
+and occurrence workflows and human acceptance remain pending.
 The [owning report](pending_proposals/canvas_context_menu_target_actions.md)
 records the inspected findings. Current executable contracts remain in
 [`interaction_gestures_and_menus.md`](interaction_gestures_and_menus.md) and
@@ -151,6 +153,14 @@ share applicability rules; addon entries remain context-specific and grouped.
 
 ## Implementation sequence
 
+Stage 1 now provides in-card submenus, target/active-selection headings,
+keyboard/ARIA/focus ownership and menu-first Escape. View controls, authoritative
+history availability and section-aware Studio opening have also landed ahead
+of their stages. Browser-owned navigation is consumed locally; backend-owned
+mutations have one dispatch. View toggles carry an explicit requested state so
+the Python echo does not toggle them again. The owning report records validation
+and outstanding work; this foundation does not close #179.
+
 1. **Menu shell and context contract.** Extract reusable target/action
    applicability, add bounded submenus and meaningful headings, implement
    keyboard/ARIA/focus and menu-first Escape. Preserve click-versus-drag behavior.
@@ -191,5 +201,5 @@ share applicability rules; addon entries remain context-specific and grouped.
 - Verify main canvas and supported popup paths, plus truthful availability in
   static/exported hosts. Qt remains experimental and remote remains post-1.0.
 
-Do not claim implementation, browser acceptance or replacement-package
-qualification from this planning change. Preserve separate evidence scopes.
+Completed slices do not imply human acceptance of the full redesign or
+replacement-package qualification. Preserve separate evidence scopes.

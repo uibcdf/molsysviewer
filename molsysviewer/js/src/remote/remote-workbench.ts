@@ -94,7 +94,7 @@ export class RemoteWorkbench {
             message => this.handleContextAction(message),
             (action) => {
                 if (action === "open_navigate") {
-                    this.panel.setExpanded(!this.panel.isExpanded());
+                    this.panel.setExpanded(true);
                 }
             },
             undefined,

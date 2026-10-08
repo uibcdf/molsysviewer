@@ -107,6 +107,7 @@ async function run() {
     await page.waitForSelector('[data-molsysviewer-context-menu="true"]');
     
     // 7. Verify "Add Label" action in context menu and click it
+    await page.locator('[data-molsysviewer-context-submenu^="Active selection"]').click();
     const addLabelAction = page.locator('button:has-text("Add Label")');
     await addLabelAction.click();
     

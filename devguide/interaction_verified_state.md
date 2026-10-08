@@ -47,7 +47,8 @@ interaction behavior.
   - adds another `group`
   - toggles off a previously selected `group`
 - `Esc`
-  - clears `active_selection` when no measurement tool mode is active
+  - handles an open context menu first (Back in a submenu, close at root)
+  - otherwise retains tool/panel cancellation and active-selection clearing priority
 - selection visual state
   - the current `selection` marker is visible again
   - multi-selection no longer depends on click order
@@ -95,35 +96,30 @@ interaction behavior.
 
 ## Context Menu
 
-### Verified
+### Automated foundation verification — 2026-10-08
 
-- opens on the main notebook canvas without leaking the host menu
-- opens on the popup canvas
-- shows the correct empty-canvas message
-- on structural targets, it supports:
-  - `Focus Target`
-  - `Distance`
-  - `Angle`
-  - `Dihedral`
-- on annotation targets, it now supports:
-  - `Focus Target`
-  - `Delete Annotation`
-- on shape targets with stable tags, it now supports:
-  - `Focus Target`
-  - `Delete Shape`
-- on active selection, it supports:
-  - `Focus Selection`
-  - `Save Selection`
-  - `Create Region from Selection`
-  - `Add Label from Selection`
-  - `Clear Selection`
-- for recent interactive measurements, it supports:
-  - `Persist Last Measurement`
-- for structural context targets, it now also exposes a first lightweight
-  persistent-workbench bridge for relevant `regions`:
-  - a `Regions` section appears when stored regions overlap the context target
-  - the first action is intentionally narrow:
-    - `Focus Region`
+The real dialanine/Mol*/Chromium `context-menu.e2e.ts` guard verifies the #179
+foundation: target headings, bounded submenus, active-selection preservation,
+keyboard and focus return, canvas-edge positioning, authoritative history,
+section-aware Studio opening and explicit-state Python viewport echoes.
+Atomless focus and molecular creation from shape-only selections are disabled.
+Escape handles the open menu before a measurement tool. Backend actions dispatch
+once, and browser-owned Studio navigation sends no unsupported backend action.
+The targeted GroupPanel interaction guard confirms its shared menu still creates
+a label after opening the active-selection submenu.
+
+These checks are development browser evidence. The new full layout still needs
+the maintainer's notebook/popout review after the remaining target/occurrence
+workflows land. Earlier manual observations established main and popup menu
+opening and host-menu suppression; they do not constitute manual acceptance of
+the redesigned layout.
+
+The implemented menu offers the existing target focus/measurement and scene
+object operations, active-selection workflows and relevant-region actions through
+compact pages. Saved collections open Studio. Shared View, Undo/Redo and Open
+Studio are no longer restricted to empty canvas. Interactive measurements are
+already managed objects; the former Persist Last Measurement entry is absent.
+[The accepted plan](canvas_context_menu_pre_1_0_plan.md) records outstanding work.
 
 ## Python Interaction Callbacks
 

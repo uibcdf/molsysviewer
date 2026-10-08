@@ -713,6 +713,14 @@ export class GroupPanel {
         this.tabs.set(key, { button, badge });
     }
 
+    /** Open an existing Studio section without changing scene or selection. */
+    openSection(key: string): boolean {
+        if (!this.tabs.has(key as TabKey)) return false;
+        this.switchTab(key as TabKey);
+        this.tabs.get(key as TabKey)?.button.focus();
+        return true;
+    }
+
     private switchTab(key: TabKey): void {
         this.activeTab = key;
 
