@@ -6,8 +6,127 @@
   "scientific_certificates_verified": 8,
   "distinct_nodes": 47,
   "distinct_cases_repeated_per_cell": 54,
-  "full_suite_campaign_complete": false,
+  "full_suite_campaign_complete": true,
   "artifacts": [
+    {
+      "artifact_id": 11544310223,
+      "name": "full-suite-results-macos-15-py3.12",
+      "zip_sha256": "658d460999510161a44a35442603a5bc082fc3c8a50d60e21a00ac60763e8a84",
+      "github_digest_verified": true,
+      "junit": {
+        "tests": 13327,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 27,
+        "passed": 13300,
+        "member": "junit.xml",
+        "sha256": "7c12f03d47a7a6ea2928ea5070ca8f0da666766891ea1016d8396d54d5b42489",
+        "skip_reasons": {
+          "could not import 'ackredit': No module named 'ackredit'": 17,
+          "This test can only be run in linux": 1,
+          "could not import 'vina': No module named 'vina'": 5,
+          "with rdkit CCO is recognized as valid SMILES": 1,
+          "CuPy is not available.": 1,
+          "Optional unyt quantity backend": 1,
+          "Optional astropy quantity backend": 1
+        }
+      }
+    },
+    {
+      "artifact_id": 11544200558,
+      "name": "full-suite-results-macos-15-py3.14",
+      "zip_sha256": "4e899b38936a79bb8bd5a589b881c61074cda8be89e6217b4856d09512c31009",
+      "github_digest_verified": true,
+      "junit": {
+        "tests": 13327,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 27,
+        "passed": 13300,
+        "member": "junit.xml",
+        "sha256": "b979e190864d358df1aae8d0117b2a8e426280f26e6394215e44fb2f0e07e348",
+        "skip_reasons": {
+          "could not import 'ackredit': No module named 'ackredit'": 17,
+          "This test can only be run in linux": 1,
+          "could not import 'vina': No module named 'vina'": 5,
+          "with rdkit CCO is recognized as valid SMILES": 1,
+          "CuPy is not available.": 1,
+          "Optional unyt quantity backend": 1,
+          "Optional astropy quantity backend": 1
+        }
+      }
+    },
+    {
+      "artifact_id": 11543965738,
+      "name": "full-suite-results-ubuntu-latest-py3.14",
+      "zip_sha256": "434c73f4a320738ab576842ee5c7d24b66f3cd2b1d0e7b94ce17ab167a053a83",
+      "github_digest_verified": true,
+      "junit": {
+        "tests": 13327,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 26,
+        "passed": 13301,
+        "member": "junit.xml",
+        "sha256": "172fa0a2847c1e14786bdf6dbc410daefc47ccf804bc373db630c63c9aa6f63f",
+        "skip_reasons": {
+          "could not import 'ackredit': No module named 'ackredit'": 17,
+          "could not import 'vina': No module named 'vina'": 5,
+          "with rdkit CCO is recognized as valid SMILES": 1,
+          "CuPy is not available.": 1,
+          "Optional unyt quantity backend": 1,
+          "Optional astropy quantity backend": 1
+        }
+      }
+    },
+    {
+      "artifact_id": 11543906147,
+      "name": "full-suite-results-macos-15-py3.13",
+      "zip_sha256": "98d61cf52c86136703627802c384966f3a3cc003948220b4881c2964e29f4d20",
+      "github_digest_verified": true,
+      "junit": {
+        "tests": 13327,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 27,
+        "passed": 13300,
+        "member": "junit.xml",
+        "sha256": "53d00c04ab4eef260a4ccd3e0e72541d4628c204bf4faade9928cd71d7c73e67",
+        "skip_reasons": {
+          "could not import 'ackredit': No module named 'ackredit'": 17,
+          "This test can only be run in linux": 1,
+          "could not import 'vina': No module named 'vina'": 5,
+          "with rdkit CCO is recognized as valid SMILES": 1,
+          "CuPy is not available.": 1,
+          "Optional unyt quantity backend": 1,
+          "Optional astropy quantity backend": 1
+        }
+      }
+    },
+    {
+      "artifact_id": 11543453435,
+      "name": "full-suite-results-macos-15-py3.11",
+      "zip_sha256": "6f1c5eff05cbc19f1bd042cda874d87a86f67409fd1e912d181a9409c0dff26c",
+      "github_digest_verified": true,
+      "junit": {
+        "tests": 13327,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 27,
+        "passed": 13300,
+        "member": "junit.xml",
+        "sha256": "531a6ffc6cdb333121b838ead9a0d9f84b1d231ffe7356f541285aa764649a96",
+        "skip_reasons": {
+          "could not import 'ackredit': No module named 'ackredit'": 17,
+          "This test can only be run in linux": 1,
+          "could not import 'vina': No module named 'vina'": 5,
+          "with rdkit CCO is recognized as valid SMILES": 1,
+          "CuPy is not available.": 1,
+          "Optional unyt quantity backend": 1,
+          "Optional astropy quantity backend": 1
+        }
+      }
+    },
     {
       "artifact_id": 11543275282,
       "name": "full-suite-results-ubuntu-latest-py3.13",
@@ -21,6 +140,29 @@
         "passed": 13301,
         "member": "junit.xml",
         "sha256": "f1df1a763ce021bb14c3c0cc6fe05f7abf0eecead95ff2370a119fc6113bc59a",
+        "skip_reasons": {
+          "could not import 'ackredit': No module named 'ackredit'": 17,
+          "could not import 'vina': No module named 'vina'": 5,
+          "with rdkit CCO is recognized as valid SMILES": 1,
+          "CuPy is not available.": 1,
+          "Optional unyt quantity backend": 1,
+          "Optional astropy quantity backend": 1
+        }
+      }
+    },
+    {
+      "artifact_id": 11543004386,
+      "name": "full-suite-results-ubuntu-latest-py3.12",
+      "zip_sha256": "54b78dec72a20383a1fec794d65844139a1f4a0adc67761092026735cf9d717e",
+      "github_digest_verified": true,
+      "junit": {
+        "tests": 13327,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 26,
+        "passed": 13301,
+        "member": "junit.xml",
+        "sha256": "097a6e2ca88db4793c5d124ab81754dc6433a7f3b412c7a1af44b0def054bcf7",
         "skip_reasons": {
           "could not import 'ackredit': No module named 'ackredit'": 17,
           "could not import 'vina': No module named 'vina'": 5,
@@ -215,6 +357,7 @@
       "nodes_match_reference": true
     }
   ],
+  "native_run_conclusion": "success",
   "role": "independent_consumer_review_of_original_provider_source_evidence_not_installed_pair_clearance",
   "controlled_viewer_source": {
     "job_id": 113252451261,
@@ -222,5 +365,93 @@
     "commit": "ae1fb995d6a38f2df6df206d2af26fbde1531f24",
     "actual_job_environment_and_git_resolution_verified": true,
     "log_sha256": "5bf5befda6f2fd68f5fc7897f7354b52980c3ce2fda2832fbe4de2c35da58ad8"
+  },
+  "executed_full_suite_jobs": [
+    {
+      "job_id": 113252540824,
+      "cell": "ubuntu-3.11",
+      "actual_full_suite_step": "success",
+      "summaries": [
+        "PASS exit=0 | 54 passed | 3.43s | 1 warnings",
+        "PASS exit=0 | 13301 passed, 26 skipped, 40 deselected | 1441.32s | 1708 warnings"
+      ],
+      "log_sha256": "bcdef4de1f1ad7e352fd9d8f326ed59815cf95f443381e14a8e1957925cb73ca"
+    },
+    {
+      "job_id": 113252540844,
+      "cell": "macos-3.13",
+      "actual_full_suite_step": "success",
+      "summaries": [
+        "PASS exit=0 | 54 passed | 7.24s | 1 warnings",
+        "PASS exit=0 | 13300 passed, 27 skipped, 40 deselected | 1953.79s | 2666 warnings"
+      ],
+      "log_sha256": "51107b2b66db2afdbc6ccaa103f999282c3d2877ae9f92b98d8147f28dd2c91d"
+    },
+    {
+      "job_id": 113252540845,
+      "cell": "macos-3.11",
+      "actual_full_suite_step": "success",
+      "summaries": [
+        "PASS exit=0 | 54 passed | 8.14s | 1 warnings",
+        "PASS exit=0 | 13300 passed, 27 skipped, 40 deselected | 2131.86s | 1708 warnings"
+      ],
+      "log_sha256": "e82537425f52126c1393ed28aa3274283b4e56ef50c3642c5d37fd16eb258490"
+    },
+    {
+      "job_id": 113252540864,
+      "cell": "ubuntu-3.12",
+      "actual_full_suite_step": "success",
+      "summaries": [
+        "PASS exit=0 | 54 passed | 4.57s | 1 warnings",
+        "PASS exit=0 | 13301 passed, 26 skipped, 40 deselected | 2086.61s | 2666 warnings"
+      ],
+      "log_sha256": "338eb11418a8e4433077b632df54572fade5e31f0098f6fed400216189c52dee"
+    },
+    {
+      "job_id": 113252540903,
+      "cell": "macos-3.12",
+      "actual_full_suite_step": "success",
+      "summaries": [
+        "PASS exit=0 | 54 passed | 6.52s | 1 warnings",
+        "PASS exit=0 | 13300 passed, 27 skipped, 40 deselected | 1949.04s | 2666 warnings"
+      ],
+      "log_sha256": "6dbf6d2016eb5f84b8a110cd5b254b28ecd6e3723db0a19a5cdab696bd0f0629"
+    },
+    {
+      "job_id": 113252540939,
+      "cell": "ubuntu-3.13",
+      "actual_full_suite_step": "success",
+      "summaries": [
+        "PASS exit=0 | 54 passed | 2.92s | 1 warnings",
+        "PASS exit=0 | 13301 passed, 26 skipped, 40 deselected | 1218.38s | 2666 warnings"
+      ],
+      "log_sha256": "1a792588d8f640a96e7acb00489cc82449312097fd8b202cd803d53b38661cc9"
+    },
+    {
+      "job_id": 113252540944,
+      "cell": "macos-3.14",
+      "actual_full_suite_step": "success",
+      "summaries": [
+        "PASS exit=0 | 54 passed | 7.31s | 1 warnings",
+        "PASS exit=0 | 13300 passed, 27 skipped, 40 deselected | 1952.34s | 2666 warnings"
+      ],
+      "log_sha256": "badc88de60568457ce905bb37c9d1203fc0e027b2d371cf01edcd24a2ff8a90f"
+    },
+    {
+      "job_id": 113252540976,
+      "cell": "ubuntu-3.14",
+      "actual_full_suite_step": "success",
+      "summaries": [
+        "PASS exit=0 | 54 passed | 4.92s | 1 warnings",
+        "PASS exit=0 | 13301 passed, 26 skipped, 40 deselected | 2253.53s | 2666 warnings"
+      ],
+      "log_sha256": "49b78822cc811e0881dc449913d437f5acb068f669abd3094b850b778178aad0"
+    }
+  ],
+  "selection_boundary": {
+    "deselected_per_cell": 40,
+    "source": "original_native_pytest_log",
+    "interpretation": "configured_default_peptide_parity_exclusion_not_junit_skips",
+    "recorded_separately_from_scientific_certificate_omissions": true
   }
 }

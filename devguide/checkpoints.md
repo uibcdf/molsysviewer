@@ -4,9 +4,10 @@
 the [experimental Interactions consumer contract](interactions_compatibility_contract.md)
 is agreed with the provider. [0.24.1 noarch build 1](stabilization_0241_preparation_20261008.md)
 from `ae1fb995` is received in staging with #149/#177. Windows/core checks and
-322 local installed guards with exact MolSysMT 1.0.0 build 0 pass. Both owners'
-source prerequisites and the unique sixteen-cell installed matrix remain
-pending; fixed files and scope are in the
+322 local installed guards with exact MolSysMT 1.0.0 build 0 pass. Viewer has
+six canonical scientific source cells passed; MolSysMT's eight source cells
+and native campaign pass, with all original certificates/JUnit verified.
+The unique sixteen-cell installed matrix remains pending; fixed files and scope are in the
 [receipt](stabilization_0241_preparation_20261008.json).
 Public versions remain 0.24.0/0.23.0; no new publication is authorized.
 
@@ -1521,9 +1522,10 @@ Resume toward **1.0** in this order:
 and the [agreed experimental Interactions contract](interactions_compatibility_contract.md),
 then complete documentation/installed first contact and the independent final
 Viewer 1.0 gates. Build 0 retains its failed preparation guard; build 1 repairs
-the workflow version defaults. Both sets of exact files are verified; complete
-the pending source prerequisite review before MolSysMT's single sixteen-cell
-installed dispatch. See [the active preparation](stabilization_0241_preparation_20261008.md).
+the workflow version defaults. Both sets of exact files and terminal source/core
+prerequisites are reviewed. Viewer has communicated readiness for MolSysMT's
+single sixteen-cell staged installed dispatch; provider terminal sign-off and
+that matrix remain pending. See [the active preparation](stabilization_0241_preparation_20261008.md).
 
 **Delivered baseline (2026-10-07):** the immutable stabilization pair
 and its staging/core/provider-source gates are verified in the current handoff above. The

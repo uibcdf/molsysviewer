@@ -1,8 +1,11 @@
 # Preparing Viewer 0.24.1 — 2026-10-08
 
-**In progress:** exact 0.24.1 noarch build 1 is available in staging; 322 local
-installed guards, Windows launchers and core browser checks pass. Canonical
-source and coordinated installed-pair qualification remain pending. The
+**Ready for the unique installed-pair dispatch:** exact 0.24.1 noarch build 1
+is available in staging; 322 local installed guards, Windows launchers, core
+browser checks and six canonical scientific source cells pass. MolSysMT's
+eight source cells and native campaign pass; original certificates and all
+eight JUnit ZIPs are independently verified. Installed-pair qualification
+remains pending. The
 [machine-readable receipt](stabilization_0241_preparation_20261008.json) records
 the fixed identities and distinct validation scopes. Public Viewer remains
 0.24.0 build 1. The principal maintainer
@@ -99,7 +102,7 @@ exact-source full/core outcomes. The molecular code and runtime remain unchanged
 by this repair. Old build-0 Windows and core runs retain their original scope;
 the new installed candidate requires its own gates and counterpart file hashes.
 
-## Build 1 received; final pair qualification pending
+## Build 1 prerequisites reviewed; installed pair qualification pending
 
 The repair is delivered at `ae1fb995d6a38f2df6df206d2af26fbde1531f24`, fixed
 reference `candidate/0.24.1-build1`. All five affected source-workflow guards
@@ -136,28 +139,34 @@ route, which privately tags the exact workflow SHA during installation, to
 qualify the canonical source without publishing a tag.
 
 Canonical CI `37760422583` selects Viewer 0.24.1 and staged MolSysMT 1.0.0.
-At this checkpoint five of six scientific cells succeed; macOS/Python 3.12
-is running. Qt fails in its separate experimental scope under
+All six scientific cells finish successfully and their actual `Run tests`
+steps execute. Qt fails in its separate experimental scope under
 `uibcdf/molsysviewer#109`: `test_qt_live_model_smoke_real_window` reports no
 WebGL canvas, with failure to create a WebGL context in stderr, repeating the
 existing observation. Do not report the whole workflow green. Provider
-native campaign `37759580359` succeeds, while source campaign `37759578359`
-remains in progress against this replacement Viewer.
+native campaign `37759580359` and all eight source cells in `37759578359`
+finish successfully against this replacement Viewer.
 
 Independent inspection downloads and SHA-256-verifies all eight original
 provider scientific ZIPs from `37759578359`. Each certificate identifies clean
 producer `6dc80725`, matches the same 47 registered nodes and passes 54/54
 cases with zero failures/errors/skips on Linux/macOS and Python 3.11–3.14.
 These are the same cases repeated across environments, not 432 distinct cases
-or an Interactions stability declaration. The two available full-suite JUnit
-ZIPs, Linux/Python 3.11 and 3.13, contain 13,327 cases each: 13,301 passed,
-26 skipped, zero failures/errors. Their exact skip reasons are preserved in
+or an Interactions stability declaration. All eight original full-suite JUnit
+ZIPs are independently hash-verified and contain 13,327 cases each: Linux has
+13,301 passed and 26 skipped; macOS has 13,300 passed and 27 skipped. All
+have zero failures/errors. Their exact skip reasons are preserved in
 [the independent source review](stabilization_0241_provider_source_review_20261008.json).
-The whole eight-cell source campaign is still incomplete; certificates and
-partial JUnit inspection do not clear it or the sixteen installed Conda cells.
+Original logs independently confirm all eight full-suite steps executed and
+**40 configured peptide-parity deselections per cell**, retained separately
+from JUnit skips and the scientific certificates' zero omissions. These source
+results do not clear the sixteen installed Conda cells.
 
 Both owners have the fixed artifact identities. MolSysMT owns the single
-coordinated sixteen-cell installed dispatch after prerequisite review. No
+coordinated sixteen-cell installed dispatch. Viewer has communicated its
+readiness after the required source/core review and asked the provider to
+complete its terminal review, retain expected deselections and execute the
+single staged dispatch with MT 1.0.0 build 0 and Viewer 0.24.1 build 1. No
 duplicate dispatch, public tag, Release, npm publication or promotion occurs
 at this checkpoint. Broader documentation and the independent final Viewer
 1.0 gates follow the qualified patch pair.

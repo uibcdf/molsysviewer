@@ -1,7 +1,7 @@
 {
   "schema": "molsysviewer.stabilization_preparation@1",
   "date": "2026-10-08",
-  "status": "exact_staging_files_verified_local_checks_pass_hosted_and_installed_pair_qualification_pending",
+  "status": "exact_staging_files_and_core_prerequisites_reviewed_ready_for_unique_installed_pair_dispatch",
   "viewer": {
     "version": "0.24.1",
     "build_number": 1,
@@ -280,12 +280,10 @@
       "viewer_version": "0.24.1",
       "molsysmt_version": "1.0.0",
       "use_staging": true,
-      "status": "pending",
-      "scientific_cells_success": 5,
+      "status": "completed",
+      "scientific_cells_success": 6,
       "scientific_cells_total": 6,
-      "pending": [
-        "macos-15 Python 3.12 in_progress"
-      ],
+      "pending": [],
       "qt": {
         "conclusion": "failure",
         "failed_step": "Qt transport round-trip in a real Qt process",
@@ -300,7 +298,10 @@
           "sha256": "e79784db60b13251f77cf69773a0803d974ed4eba84567b2c25989a0b118d91e"
         }
       },
-      "scope": "exact_canonical_source_using_staged_provider_not_sixteen_conda_installs"
+      "scope": "exact_canonical_source_using_staged_provider_not_sixteen_conda_installs",
+      "conclusion": "failure",
+      "actual_six_scientific_test_steps": "success",
+      "core_prerequisite_review": "accepted_existing_experimental_qt_scope_not_overall_green"
     },
     "provider_native_campaign": {
       "run": 37759580359,
@@ -309,19 +310,35 @@
     },
     "provider_source_campaign": {
       "run": 37759578359,
-      "status": "in_progress",
+      "status": "completed",
       "scientific_certificates_verified": 8,
       "scientific_cases_per_cell": 54,
       "scientific_nodes": 47,
       "scientific_failures": 0,
       "scientific_errors": 0,
       "scientific_skips": 0,
-      "full_suite_junit_verified": 2,
+      "full_suite_junit_verified": 8,
       "full_suite_cases_per_completed_cell": 13327,
-      "full_suite_passed_per_completed_cell": 13301,
-      "full_suite_skips_per_completed_cell": 26,
       "review": "devguide/stabilization_0241_provider_source_review_20261008.json",
-      "scope": "provider_source_not_canonical_conda_installed_pair_full_campaign_incomplete"
+      "scope": "provider_source_not_canonical_conda_installed_pair_full_campaign_incomplete",
+      "conclusion": "success",
+      "full_suite_campaign_complete": true,
+      "full_suite_cells": {
+        "linux": {
+          "cells": 4,
+          "tests_each": 13327,
+          "passed_each": 13301,
+          "skipped_each": 26
+        },
+        "macos": {
+          "cells": 4,
+          "tests_each": 13327,
+          "passed_each": 13300,
+          "skipped_each": 27
+        }
+      },
+      "actual_eight_full_suite_steps": "success",
+      "configured_deselected_per_cell": 40
     }
   },
   "superseded_build_0": {
@@ -355,7 +372,7 @@
     "local_full_suite_repeated": false
   },
   "installed_pair_matrix": {
-    "status": "not_dispatched",
+    "status": "ready_for_owner_signoff_and_single_molsysmt_dispatch",
     "owner": "uibcdf/molsysmt",
     "policy": "one_agreed_dispatch_after_prerequisite_review_no_duplicates"
   },
@@ -367,10 +384,10 @@
     "final_authorization": "pending_separate_maintainer_approval"
   },
   "remaining": [
-    "complete_and_review_canonical_scientific_source_cells",
-    "review_provider_source_campaign_and_preserved_certificates",
-    "coordinate_one_sixteen_cell_staged_installed_matrix",
-    "review_complete_pair_receipt_and_essential_release_notes_before_separate_publication_approval"
+    "agree_and_run_one_sixteen_cell_staged_installed_matrix",
+    "verify_original_sixteen_environment_evidence_archives",
+    "review_essential_notes_and_request_separate_publication_authorization",
+    "complete_broader_docs_first_contact_and_independent_final_viewer_1_0_gates"
   ],
   "receipt_validation": {
     "selectors": [
