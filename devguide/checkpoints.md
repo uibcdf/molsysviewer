@@ -1,5 +1,13 @@
 # Development checkpoint
 
+**Source-only archive checkpoint — 2026-10-08:**
+`archive/pre-0.24.1-20261008` preserves `0067a2c2`, with policy-v1.5.7,
+archive-excluding version derivation and guarded publishers. 204 selected checks
+and the tag's actual conformance pass. Public packages remain 0.24.0/0.23.0;
+0.24.1 is a possible later patch, not a published version. See
+[the immutable checkpoint and receipt](archive_tag_checkpoint_20261008.md).
+
+
 **Complete board review — 2026-10-07:** [all 34 open issues are reconciled](open_issue_reconciliation_20261007.md).
 #95/#97 public installation/host promises are corrected; #78 retains developer-only
 quarantine and #152's original guide publication is complete. The maintainer

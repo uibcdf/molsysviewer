@@ -39,3 +39,23 @@ The broader selected version/publisher/distribution/reporting/link check passes
 checks pass. Hosted conformance and remote tag identity are verified before
 closeout. These administrative/version checks do not certify an installed
 0.24.1 package or replace scientific/visible-GPU/final-release qualification.
+
+## Closeout — 2026-10-08
+
+Done: the annotated tag is pushed and resolves remotely to
+`0067a2c27c152a068655b8824f0d1c249a32d6b8`; its immutable tag object is
+`fd519d18bd82ff50e7ceb728a369c5a2ee78f2c7`. Package version derivation is
+`0.24.0+27.g0067a2c2` both before and after adding the archive marker.
+
+Exact-source main policy `37738693558` and Conda governance `37738693556`
+pass. The archive push activates only MolSysSuite conformance:
+[37738859118](https://github.com/uibcdf/molsysviewer/actions/runs/37738859118)
+passes both jobs, including actual conformance with archive tags present.
+No npm/Conda publisher is activated by the tag. Public npm `version`/`latest`
+and the newest public GitHub Release remain 0.24.0. No package or Release is
+published by this task. The post-tag evidence belongs to this subsequent main
+closeout; the archive tag stays fixed on its original source commit.
+
+The [receipt](archive_tag_checkpoint_20261008.json) preserves annotation,
+version checks, remote identities, executed hosted steps and public observations.
+This checkpoint does not certify a 0.24.1 or final 1.0 artifact.

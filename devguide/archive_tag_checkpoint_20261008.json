@@ -1,0 +1,186 @@
+{
+  "tag": "archive/pre-0.24.1-20261008",
+  "source_commit": "0067a2c27c152a068655b8824f0d1c249a32d6b8",
+  "owner": "Diego, principal maintainer",
+  "purpose": "Retain integrated pre-1.0 source and corrections without any package publication",
+  "derived_version_before_archive": "0.24.0+27.g0067a2c2",
+  "public_version_reserved": false,
+  "target_later_patch": "0.24.1",
+  "validation": {
+    "targeted": 11,
+    "selected": 204,
+    "local_exact_policy": "passed",
+    "dependency_metadata": "passed",
+    "scoped_ruff": "passed"
+  },
+  "tag_state": "pushed and remote source identity verified",
+  "derived_version_after_archive": "0.24.0+27.g0067a2c2",
+  "annotation": "Source-only pre-1.0 checkpoint ahead of a possible 0.24.1 patch release.\n\nPreserved commit: 0067a2c27c152a068655b8824f0d1c249a32d6b8\nPurpose: retain the integrated Movie/style corrections, public-promise review and archive-tag controls for continued 1.0 work.\nOwner: Diego, principal maintainer.\nAuthorization: accepted archive/pre-0.24.1-20261008 on 2026-10-08.\n\nThis stable archive marker preserves source only. It is not a package version, GitHub Release, public-artifact receipt or authorization to build, upload or promote packages. Future 0.24.1/1.0 publication requires its separate exact-candidate qualification and authorization.\n\nArchive controls: policy-v1.5.7, versioningit archive exclusion, npm trigger exclusion/early identity rejection and canonical Conda route refusal. 204 selected checks and exact-head hosted policy/governance pass.\n",
+  "tag_object": "fd519d18bd82ff50e7ceb728a369c5a2ee78f2c7",
+  "remote_tag_object": "fd519d18bd82ff50e7ceb728a369c5a2ee78f2c7",
+  "hosted_main": {
+    "policy_run": 37738693558,
+    "policy_conclusion": "success",
+    "conda_governance_run": 37738693556,
+    "conda_governance_conclusion": "success"
+  },
+  "hosted_tag": {
+    "run_id": 37738859118,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37738859118",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "Dependency metadata audit",
+        "conclusion": "success",
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "conclusion": "success"
+          },
+          {
+            "name": "Install metadata readers",
+            "conclusion": "success"
+          },
+          {
+            "name": "Audit dependency metadata without importing the viewer",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "name": "policy / conformance",
+        "conclusion": "success",
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success"
+          },
+          {
+            "name": "Check out member repository",
+            "conclusion": "success"
+          },
+          {
+            "name": "Set up policy Python",
+            "conclusion": "success"
+          },
+          {
+            "name": "Check out MolSysSuite policy",
+            "conclusion": "success"
+          },
+          {
+            "name": "Validate immutable admission input",
+            "conclusion": "skipped"
+          },
+          {
+            "name": "Check out central admission data",
+            "conclusion": "skipped"
+          },
+          {
+            "name": "Install the workflow parser",
+            "conclusion": "success"
+          },
+          {
+            "name": "Check repository conformance",
+            "conclusion": "success"
+          },
+          {
+            "name": "Install the policy Ruff version",
+            "conclusion": "success"
+          },
+          {
+            "name": "Check Python lint and imports",
+            "conclusion": "success"
+          },
+          {
+            "name": "Check Python formatting",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Check out MolSysSuite policy",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Set up policy Python",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Check out member repository",
+            "conclusion": "success"
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success"
+          }
+        ]
+      }
+    ]
+  },
+  "observed_tag_runs": [
+    {
+      "conclusion": "success",
+      "databaseId": 37738859118,
+      "event": "push",
+      "headBranch": "archive/pre-0.24.1-20261008",
+      "headSha": "0067a2c27c152a068655b8824f0d1c249a32d6b8",
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37738859118",
+      "workflowName": "MolSysSuite policy"
+    }
+  ],
+  "public_npm_after": {
+    "version": "0.24.0",
+    "dist-tags": {
+      "latest": "0.24.0"
+    }
+  },
+  "public_releases_after": [
+    {
+      "isDraft": false,
+      "isPrerelease": false,
+      "tagName": "0.24.0"
+    },
+    {
+      "isDraft": false,
+      "isPrerelease": false,
+      "tagName": "0.23.4"
+    },
+    {
+      "isDraft": false,
+      "isPrerelease": false,
+      "tagName": "0.7.0"
+    },
+    {
+      "isDraft": false,
+      "isPrerelease": false,
+      "tagName": "0.6.1"
+    },
+    {
+      "isDraft": false,
+      "isPrerelease": false,
+      "tagName": "0.6.0"
+    }
+  ],
+  "publication_performed": false,
+  "scientific_or_final_candidate_gate_claimed": false,
+  "public_version_metadata_modified": false
+}
