@@ -97,5 +97,26 @@ this is targeted recovery, not an uninterrupted green nine-suite campaign.
 The focused reporting/profile validator passes 184 cases and generated indexes
 are current. Native JUnit and receptor counts agree for the full Python run.
 
-Human visual acceptance of these two corrections remains pending; prior menu
-acceptance is preserved. Publication and both 1.0 versions remain paused.
+## Discovery refinement — 2026-10-09
+
+The maintainer confirms Cinema and the new reveal policy work, and requests a
+two-second initial appearance so the user can discover the controls. The shared
+visibility owner introduces its surface once, when it first becomes available;
+mode rebuilding gives the new surface its own introduction. Hover, frames,
+policy changes and Dock/fullscreen do not restart it. Explicit hide and overlay
+suppression remain authoritative. Disposal cancels the timer. Cinema's available
+trajectory scrubber follows the same rule; its helper toast is separate.
+
+The real browser guard now observes initial visibility transitions and verifies
+the duration, Cinema introduction, returning to Integrated and explicit hide
+during introduction, while retaining popup and subscription checks. Validation
+of this refinement passes in real Chromium, including the earlier popup,
+keyboard, Settings and subscription checks. Human confirmation remains pending.
+The complete JS regression now passes 324/324 cases; the 2026-10-08 failed
+campaign above retains its original scope. TypeScript/runtime regeneration,
+188 reporting/link checks and generated-index checks pass. Python implementation
+and public configuration are unchanged; the earlier native-demo checks retain
+their scope. The previous checkpoint's hosted E2E run `37847308489` is successful
+at `2b0d1ef7`, separately from this local introduction guard.
+Prior menu and functional acceptance are preserved. Publication and both 1.0
+versions remain paused.

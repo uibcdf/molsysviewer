@@ -4,6 +4,9 @@ export class ControlsVisibility {
     private keyboardFocus = false;
     private touchRevealed = false;
     private disposed = false;
+    private introductionStarted = false;
+    private introducing = false;
+    private introductionTimer?: ReturnType<typeof setTimeout>;
 
     constructor(
         private readonly host: HTMLElement,
@@ -58,10 +61,23 @@ export class ControlsVisibility {
         if (this.disposed) return;
         const { visible, autohide, scope, suppressed } = this.config();
         const available = visible && !suppressed;
+        // Start when controls first become available, including after slow loading.
+        // A new mode owns a new lifetime; hover, frame and layout updates do not
+        // restart this discovery window. Explicit visibility still wins.
+        if (available && !this.introductionStarted) {
+            this.introductionStarted = true;
+            if (autohide) {
+                this.introducing = true;
+                this.introductionTimer = setTimeout(() => {
+                    this.introducing = false;
+                    this.refresh();
+                }, 2000);
+            }
+        }
         const focused = this.surface.contains(document.activeElement) || document.activeElement === this.hotspot;
         const hovered = scope === "canvas" ? this.host.matches(":hover")
             : this.hotspot.matches(":hover") || this.surface.matches(":hover");
-        const show = available && (!autohide || hovered || (this.keyboardFocus && focused) || this.touchRevealed);
+        const show = available && (!autohide || this.introducing || hovered || (this.keyboardFocus && focused) || this.touchRevealed);
         this.surface.style.opacity = show ? "1" : "0";
         this.surface.style.visibility = show ? "visible" : "hidden";
         this.surface.style.pointerEvents = show ? "auto" : "none";
@@ -70,5 +86,9 @@ export class ControlsVisibility {
         this.hotspot.tabIndex = available && autohide ? 0 : -1;
     }
 
-    dispose(): void { this.disposed = true; for (const release of this.release) release(); }
+    dispose(): void {
+        this.disposed = true;
+        clearTimeout(this.introductionTimer);
+        for (const release of this.release) release();
+    }
 }

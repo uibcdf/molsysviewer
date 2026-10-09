@@ -95,6 +95,12 @@ uses an explicit reveal policy: `autohide_scope="controls"` by default reveals
 near the buttons; `"canvas"` reveals anywhere inside the canvas. Dock, floating
 and fullscreen retain the same policy. `autohide=False` keeps enabled controls
 visible, and `visible=False` overrides reveal. Settings offers these choices.
+When a canvas or mode first makes its controls available, show them for two
+seconds so their location is discoverable, then apply the configured reveal
+policy. Hover, frame updates and Dock/fullscreen changes do not restart this
+introduction. Explicit hide and Help/expanded floating Studio still take
+priority. Disposal cancels the introduction timer. Cinema uses the same rule
+for its available trajectory scrubber; it does not gain viewport buttons.
 Keyboard focus and touch can reveal controls; invisible controls cannot intercept
 canvas picks. Frame updates do not override visibility. Exports and popups use
 the same renderer and release subscriptions, hotspots and Cinema elements when

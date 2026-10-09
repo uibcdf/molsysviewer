@@ -140292,6 +140292,8 @@ var ControlsVisibility = class {
     this.keyboardFocus = false;
     this.touchRevealed = false;
     this.disposed = false;
+    this.introductionStarted = false;
+    this.introducing = false;
     hotspot.setAttribute("data-molsysviewer-controls-hotspot", "true");
     hotspot.setAttribute("role", "button");
     hotspot.setAttribute("aria-label", "Show canvas controls");
@@ -140341,9 +140343,19 @@ var ControlsVisibility = class {
     if (this.disposed) return;
     const { visible, autohide, scope, suppressed } = this.config();
     const available = visible && !suppressed;
+    if (available && !this.introductionStarted) {
+      this.introductionStarted = true;
+      if (autohide) {
+        this.introducing = true;
+        this.introductionTimer = setTimeout(() => {
+          this.introducing = false;
+          this.refresh();
+        }, 2e3);
+      }
+    }
     const focused = this.surface.contains(document.activeElement) || document.activeElement === this.hotspot;
     const hovered = scope === "canvas" ? this.host.matches(":hover") : this.hotspot.matches(":hover") || this.surface.matches(":hover");
-    const show = available && (!autohide || hovered || this.keyboardFocus && focused || this.touchRevealed);
+    const show = available && (!autohide || this.introducing || hovered || this.keyboardFocus && focused || this.touchRevealed);
     this.surface.style.opacity = show ? "1" : "0";
     this.surface.style.visibility = show ? "visible" : "hidden";
     this.surface.style.pointerEvents = show ? "auto" : "none";
@@ -140353,6 +140365,7 @@ var ControlsVisibility = class {
   }
   dispose() {
     this.disposed = true;
+    clearTimeout(this.introductionTimer);
     for (const release of this.release) release();
   }
 };

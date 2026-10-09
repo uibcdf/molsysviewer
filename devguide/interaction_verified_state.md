@@ -236,8 +236,23 @@ Seven focused Python configuration checks, 69 frontend owner cases, 25
 inventory/link checks, 184 reporting/profile checks, TypeScript, runtime rebuild
 and Ruff pass. The full Python/JS runs retain their initial failures and scoped
 recovery in [the #180 report](pending_proposals/cinema_and_controls_reveal_policy.md).
-Human visual confirmation of these two corrections remains pending. Publication
-and both 1.0 versions remain paused.
+The maintainer's 2026-10-09 review confirms these two corrections; the requested
+discovery refinement is recorded below. Publication and both 1.0 versions remain
+paused.
+
+### Initial controls discovery — 2026-10-09
+
+The maintainer confirms Cinema and consistent reveal work and requests an initial
+two-second appearance. The shared visibility owner now introduces controls when
+they first become available and on a mode's new lifetime, then follows the chosen
+auto-hide policy. Explicit hide and overlays retain priority; frame, hover and
+layout updates do not restart it, and disposal cancels the timer. Cinema's
+available scrubber shares this rule. The extended real export/popup browser
+guard passes initial duration, Cinema and Integrated transitions, explicit hide
+during introduction and the prior scope, keyboard and subscription checks.
+Human confirmation of this discovery refinement remains pending under #180.
+The complete JS regression passes 324/324 cases, TypeScript/runtime rebuild
+passes and 188 reporting/link guards pass; Python behavior is unchanged.
 
 ## Python Interaction Callbacks
 

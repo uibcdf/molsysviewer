@@ -22,6 +22,10 @@ controls and mode rebuilds release their previous listeners and scrubber. The
 real disk-export test also found and corrected opaque file-origin popup delivery.
 See [the owning report](pending_proposals/cinema_and_controls_reveal_policy.md)
 for current validation and pending human reconfirmation.
+On 2026-10-09 the maintainer confirms those corrections work and requests a
+two-second controls introduction at canvas initialization and mode changes.
+The shared visibility owner implements it without restarting on hover, frame or
+layout updates; only this discovery refinement still awaits human confirmation.
 The final extended real-browser guard passes, including an actual secondary
 window; five affected suites pass in shared Chromium. The 17 focused menu cases,
 TypeScript/runtime build and 181 reporting/index checks pass; the full JS run

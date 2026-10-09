@@ -27,7 +27,9 @@ These are simple Python module-level defaults.
 ### Canvas control visibility
 
 The default reveals controls near their button area, consistently in floating,
-Dock and fullscreen layouts. Changing frames does not reveal hidden controls.
+Dock and fullscreen layouts. At initialization or a mode change, controls first
+appear for two seconds to show their location, then follow auto-hide. Changing
+frames or Dock/fullscreen does not restart this introduction.
 Settings exposes the same choice as **Reveal controls near: Buttons / Entire
 canvas**. Keyboard users can focus the reveal area and press Enter or Space;
 touch users can tap it.
