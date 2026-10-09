@@ -25,7 +25,10 @@ for current validation and pending human reconfirmation.
 On 2026-10-09 the maintainer confirms those corrections work and requests a
 two-second controls introduction at canvas initialization and mode changes.
 The shared visibility owner implements it without restarting on hover, frame or
-layout updates; only this discovery refinement still awaits human confirmation.
+layout updates. The maintainer then reports fragmented disappearance; whole-group
+fading and Cinema's original downward slide are restored, with actual animation
+frames covered by the browser guard. Human confirmation of this visual correction
+remains pending under #180.
 The final extended real-browser guard passes, including an actual secondary
 window; five affected suites pass in shared Chromium. The 17 focused menu cases,
 TypeScript/runtime build and 181 reporting/index checks pass; the full JS run

@@ -254,6 +254,18 @@ Human confirmation of this discovery refinement remains pending under #180.
 The complete JS regression passes 324/324 cases, TypeScript/runtime rebuild
 passes and 188 reporting/link guards pass; Python behavior is unchanged.
 
+### Whole-controls fade restored — 2026-10-09
+
+The maintainer reports fragmented disappearance. Comparing Cinema at `21ac9209`
+shows its original whole-scrubber 200 ms opacity fade and 45 px downward slide
+over 250 ms. Immediate visibility hiding in the shared owner had cut off the
+rendered fade. Computed visibility now waits for the group transition; inert
+disables descendant input immediately. Cinema regains the original motion.
+The real browser guard samples intermediate opacity, simultaneous descendant
+visibility, hit testing and Cinema motion, and passes after fixing Enter's
+focus transfer to the next animation frame. Discovery and prior workflows also
+pass; human confirmation of this visual correction remains pending under #180.
+
 ## Python Interaction Callbacks
 
 ### Verified (2026-06-25)

@@ -140283,11 +140283,12 @@ var HelpOverlay = class {
 
 // src/ui/controls-visibility.ts
 var ControlsVisibility = class {
-  constructor(host, surface, hotspot, config2) {
+  constructor(host, surface, hotspot, config2, motion) {
     this.host = host;
     this.surface = surface;
     this.hotspot = hotspot;
     this.config = config2;
+    this.motion = motion;
     this.release = [];
     this.keyboardFocus = false;
     this.touchRevealed = false;
@@ -140334,9 +140335,17 @@ var ControlsVisibility = class {
       if (key2 !== "Enter" && key2 !== " ") return;
       event.preventDefault();
       event.stopPropagation();
-      surface.querySelector("button:not([disabled])")?.focus();
+      this.keyboardFocus = true;
+      this.refresh();
+      if (this.focusFrame !== void 0) cancelAnimationFrame(this.focusFrame);
+      this.focusFrame = requestAnimationFrame(() => {
+        if (!this.disposed && document.activeElement === hotspot && !surface.inert) {
+          surface.querySelector("button:not([disabled])")?.focus();
+        }
+      });
     });
-    surface.style.transition = "opacity 200ms ease";
+    surface.style.transition = motion ? "transform 250ms cubic-bezier(0.25, 0.8, 0.25, 1), opacity 200ms ease, visibility 0s linear" : "opacity 200ms ease, visibility 0s linear";
+    surface.style.willChange = motion ? "opacity, transform" : "opacity";
     this.refresh();
   }
   refresh() {
@@ -140356,6 +140365,9 @@ var ControlsVisibility = class {
     const focused = this.surface.contains(document.activeElement) || document.activeElement === this.hotspot;
     const hovered = scope === "canvas" ? this.host.matches(":hover") : this.hotspot.matches(":hover") || this.surface.matches(":hover");
     const show = available && (!autohide || this.introducing || hovered || this.keyboardFocus && focused || this.touchRevealed);
+    this.surface.style.transitionDelay = this.motion ? show ? "0s, 0s, 0s" : "0s, 0s, 250ms" : show ? "0s, 0s" : "0s, 200ms";
+    this.surface.inert = !show;
+    if (this.motion) this.surface.style.transform = show ? this.motion.shown : this.motion.hidden;
     this.surface.style.opacity = show ? "1" : "0";
     this.surface.style.visibility = show ? "visible" : "hidden";
     this.surface.style.pointerEvents = show ? "auto" : "none";
@@ -140366,6 +140378,7 @@ var ControlsVisibility = class {
   dispose() {
     this.disposed = true;
     clearTimeout(this.introductionTimer);
+    if (this.focusFrame !== void 0) cancelAnimationFrame(this.focusFrame);
     for (const release of this.release) release();
   }
 };
@@ -141231,7 +141244,10 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
       autohide: model.get("autohide_controls") !== false,
       scope: model.get("autohide_scope") || "controls",
       suppressed: helpOverlay.isVisible() || !!(c8.sharedShell?.isVisible() && c8.sharedShell.isExpanded && !c8.sharedShell.isSplit && !c8.sharedShell.isAmbient)
-    }));
+    }), isCinema ? {
+      shown: "translateX(-50%) translateY(0)",
+      hidden: "translateX(-50%) translateY(45px)"
+    } : void 0);
     refreshVisibility = () => {
       placeOverlay();
       visibility.refresh();

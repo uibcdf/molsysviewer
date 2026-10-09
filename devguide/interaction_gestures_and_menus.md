@@ -101,6 +101,10 @@ policy. Hover, frame updates and Dock/fullscreen changes do not restart this
 introduction. Explicit hide and Help/expanded floating Studio still take
 priority. Disposal cancels the introduction timer. Cinema uses the same rule
 for its available trajectory scrubber; it does not gain viewport buttons.
+Hide fades the entire controls surface over 200 ms, then removes it from
+painting. The fading subtree becomes inert immediately, so descendants cannot
+intercept picks or retain keyboard focus. Reveal can reverse an unfinished fade.
+Cinema additionally restores its original 45 px downward slide over 250 ms.
 Keyboard focus and touch can reveal controls; invisible controls cannot intercept
 canvas picks. Frame updates do not override visibility. Exports and popups use
 the same renderer and release subscriptions, hotspots and Cinema elements when

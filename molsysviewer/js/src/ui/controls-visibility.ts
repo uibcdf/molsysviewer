@@ -7,12 +7,14 @@ export class ControlsVisibility {
     private introductionStarted = false;
     private introducing = false;
     private introductionTimer?: ReturnType<typeof setTimeout>;
+    private focusFrame?: number;
 
     constructor(
         private readonly host: HTMLElement,
         private readonly surface: HTMLElement,
         private readonly hotspot: HTMLElement,
         private readonly config: () => { visible: boolean; autohide: boolean; scope: string; suppressed?: boolean },
+        private readonly motion?: { shown: string; hidden: string },
     ) {
         hotspot.setAttribute("data-molsysviewer-controls-hotspot", "true");
         hotspot.setAttribute("role", "button");
@@ -51,9 +53,21 @@ export class ControlsVisibility {
             if (key !== "Enter" && key !== " ") return;
             event.preventDefault();
             event.stopPropagation();
-            surface.querySelector<HTMLButtonElement>("button:not([disabled])")?.focus();
+            this.keyboardFocus = true;
+            this.refresh();
+            // Let the immediate visibility reversal reach computed styles before
+            // focusing a descendant that was inert during the fade.
+            if (this.focusFrame !== undefined) cancelAnimationFrame(this.focusFrame);
+            this.focusFrame = requestAnimationFrame(() => {
+                if (!this.disposed && document.activeElement === hotspot && !surface.inert) {
+                    surface.querySelector<HTMLButtonElement>("button:not([disabled])")?.focus();
+                }
+            });
         });
-        surface.style.transition = "opacity 200ms ease";
+        surface.style.transition = motion
+            ? "transform 250ms cubic-bezier(0.25, 0.8, 0.25, 1), opacity 200ms ease, visibility 0s linear"
+            : "opacity 200ms ease, visibility 0s linear";
+        surface.style.willChange = motion ? "opacity, transform" : "opacity";
         this.refresh();
     }
 
@@ -78,6 +92,13 @@ export class ControlsVisibility {
         const hovered = scope === "canvas" ? this.host.matches(":hover")
             : this.hotspot.matches(":hover") || this.surface.matches(":hover");
         const show = available && (!autohide || this.introducing || hovered || (this.keyboardFocus && focused) || this.touchRevealed);
+        // Fade the entire surface before removing it from painting. Disable all
+        // descendants immediately, including buttons with pointerEvents=auto.
+        this.surface.style.transitionDelay = this.motion
+            ? (show ? "0s, 0s, 0s" : "0s, 0s, 250ms")
+            : (show ? "0s, 0s" : "0s, 200ms");
+        this.surface.inert = !show;
+        if (this.motion) this.surface.style.transform = show ? this.motion.shown : this.motion.hidden;
         this.surface.style.opacity = show ? "1" : "0";
         this.surface.style.visibility = show ? "visible" : "hidden";
         this.surface.style.pointerEvents = show ? "auto" : "none";
@@ -89,6 +110,7 @@ export class ControlsVisibility {
     dispose(): void {
         this.disposed = true;
         clearTimeout(this.introductionTimer);
+        if (this.focusFrame !== undefined) cancelAnimationFrame(this.focusFrame);
         for (const release of this.release) release();
     }
 }

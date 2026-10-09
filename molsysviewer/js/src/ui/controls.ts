@@ -904,7 +904,10 @@ export const buildControls = (
             scope: model.get("autohide_scope") || "controls",
             suppressed: helpOverlay.isVisible() || !!(c.sharedShell?.isVisible()
                 && c.sharedShell.isExpanded && !c.sharedShell.isSplit && !c.sharedShell.isAmbient),
-        }));
+        }), isCinema ? {
+            shown: "translateX(-50%) translateY(0)",
+            hidden: "translateX(-50%) translateY(45px)",
+        } : undefined);
         refreshVisibility = () => { placeOverlay(); visibility.refresh(); };
         release.push(() => visibility.dispose());
         const resizeObserver = new ResizeObserver(refreshVisibility);

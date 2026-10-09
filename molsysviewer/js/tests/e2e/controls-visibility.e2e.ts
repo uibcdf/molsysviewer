@@ -28,6 +28,7 @@ view.close()
             const starts = new WeakMap<HTMLElement, number>();
             const finished = new WeakSet<HTMLElement>();
             (window as any).__controlsDiscoveries = [];
+            (window as any).__controlsFades = [];
             new MutationObserver(() => {
                 for (const element of document.querySelectorAll<HTMLElement>(
                     '.molsysviewer-controls, [data-molsysviewer-trajectory-controls="true"]',
@@ -39,6 +40,26 @@ view.close()
                             kind: element.classList.contains("molsysviewer-controls") ? "buttons" : "cinema",
                             duration: performance.now() - starts.get(element)!,
                         });
+                        const fade: any = {
+                            kind: element.classList.contains("molsysviewer-controls") ? "buttons" : "cinema",
+                            samples: [], complete: false,
+                        };
+                        (window as any).__controlsFades.push(fade);
+                        const sample = () => {
+                            if (!element.isConnected || element.style.visibility !== "hidden") return;
+                            const style = getComputedStyle(element);
+                            const bounds = element.getBoundingClientRect();
+                            const hit = document.elementFromPoint(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+                            fade.samples.push({
+                                opacity: Number(style.opacity), visible: style.visibility === "visible",
+                                inert: element.inert, intercepts: !!hit && element.contains(hit), y: bounds.y,
+                                childrenVisible: [...element.querySelectorAll("button, input, span")]
+                                    .every(child => getComputedStyle(child).visibility === "visible"),
+                            });
+                            if (style.visibility === "hidden") fade.complete = true;
+                            else requestAnimationFrame(sample);
+                        };
+                        requestAnimationFrame(sample);
                     }
                 }
             }).observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ["style"] });
@@ -64,12 +85,26 @@ view.close()
             await page.mouse.move(area.x + area.width / 2, area.y + area.height / 2);
             await page.waitForFunction(() => document.querySelector<HTMLElement>(".molsysviewer-controls")?.style.visibility === "visible");
         };
-        const hidden = () => page.waitForFunction(() => document.querySelector<HTMLElement>(".molsysviewer-controls")?.style.visibility === "hidden");
+        const hidden = () => page.waitForFunction(() => {
+            const element = document.querySelector(".molsysviewer-controls");
+            return element && getComputedStyle(element).visibility === "hidden";
+        });
+        const checkFade = async (kind: string) => {
+            await page.waitForFunction(kind => (window as any).__controlsFades.some((fade: any) => fade.kind === kind && fade.complete), kind);
+            const fade = await page.evaluate(kind => (window as any).__controlsFades.find((fade: any) => fade.kind === kind && fade.complete), kind);
+            const partial = fade.samples.filter((sample: any) => sample.opacity > 0 && sample.opacity < 1);
+            assert.ok(partial.length > 0, `${kind} must paint intermediate opacity`);
+            assert.ok(partial.every((sample: any) => sample.visible && sample.childrenVisible), `${kind} must fade as one visible group`);
+            assert.ok(fade.samples.every((sample: any) => sample.inert && !sample.intercepts), `${kind} must not intercept input while fading`);
+            assert.equal(fade.samples.at(-1).opacity, 0);
+            if (kind === "cinema") assert.ok(fade.samples.at(-1).y > partial[0].y, "Cinema must slide downward while fading");
+        };
         await away();
         await hidden();
         const initialDiscovery = await page.evaluate(() => (window as any).__controlsDiscoveries[0]);
         assert.equal(initialDiscovery?.kind, "buttons");
         assert.ok(initialDiscovery.duration >= 1800, `initial discovery lasted ${initialDiscovery.duration} ms`);
+        await checkFade("buttons");
         await reveal();
         await away();
         await hidden();
@@ -136,7 +171,7 @@ view.close()
         await page.keyboard.press("Tab");
         await page.getByRole("button", { name: "Show canvas controls", exact: true }).focus();
         await page.keyboard.press("Enter");
-        assert.equal(await controls.evaluate(el => el.contains(document.activeElement)), true);
+        await page.waitForFunction(() => document.querySelector(".molsysviewer-controls")?.contains(document.activeElement));
         await away();
         await hidden();
 
@@ -156,10 +191,14 @@ view.close()
             assert.equal(await page.locator('[data-molsysviewer-trajectory-controls="true"]').count(), 1);
             if (iteration === 0) {
                 await away();
-                await page.waitForFunction(() => document.querySelector<HTMLElement>('[data-molsysviewer-trajectory-controls="true"]')?.style.visibility === "hidden");
+                await page.waitForFunction(() => {
+                    const element = document.querySelector('[data-molsysviewer-trajectory-controls="true"]');
+                    return element && getComputedStyle(element).visibility === "hidden";
+                });
                 const discovery = await page.evaluate(() => (window as any).__controlsDiscoveries.at(-1));
                 assert.equal(discovery.kind, "cinema");
                 assert.ok(discovery.duration >= 1800, `Cinema discovery lasted ${discovery.duration} ms`);
+                await checkFade("cinema");
             }
             await page.keyboard.press("h");
             assert.equal(await page.locator(".molsysviewer-help-card").count(), 1);
@@ -221,7 +260,7 @@ view.close()
         assert.equal(await popup.locator('[data-molsysviewer-trajectory-controls="true"]').count(), 1);
         await popup.close();
         assert.deepEqual(errors, []);
-        console.log("[E2E controls] actual Python export/popup: two-second discovery, Cinema cycles, control/canvas scope, Settings, Dock/fullscreen, keyboard, hidden-frame updates and stable subscriptions pass");
+        console.log("[E2E controls] actual Python export/popup: whole-group fade, inert fading input, Cinema slide, two-second discovery, preset cycles, scopes, Settings, Dock/fullscreen, keyboard and stable subscriptions pass");
     } finally { await browser.close(); }
 }
 run().catch(error => { console.error(error); process.exit(1); });

@@ -30,6 +30,8 @@ The default reveals controls near their button area, consistently in floating,
 Dock and fullscreen layouts. At initialization or a mode change, controls first
 appear for two seconds to show their location, then follow auto-hide. Changing
 frames or Dock/fullscreen does not restart this introduction.
+Controls fade out together over 200 ms; Cinema also slides its scrubber downward.
+Fading controls stop accepting input immediately.
 Settings exposes the same choice as **Reveal controls near: Buttons / Entire
 canvas**. Keyboard users can focus the reveal area and press Enter or Space;
 touch users can tap it.

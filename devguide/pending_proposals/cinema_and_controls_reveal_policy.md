@@ -120,3 +120,31 @@ their scope. The previous checkpoint's hosted E2E run `37847308489` is successfu
 at `2b0d1ef7`, separately from this local introduction guard.
 Prior menu and functional acceptance are preserved. Publication and both 1.0
 versions remain paused.
+
+## Restore whole-surface fading — 2026-10-09
+
+The maintainer observes abrupt, fragmented disappearance after the discovery
+refinement and requests comparison with the former Cinema implementation.
+`controls.ts` at `21ac9209` animated the entire scrubber's opacity for 200 ms
+and moved it downward 45 px over 250 ms. The shared owner's immediate
+`visibility: hidden` prevented painting the intended opacity transition. The
+previous browser guard observed inline targets/duration but did not sample the
+rendered fade, so it could not catch this visual regression.
+
+The shared owner now delays computed visibility until the group fade ends and
+makes the subtree inert immediately. This preserves input safety despite
+descendants' explicit pointer-events. Cinema receives its original shown/hidden
+transforms through the shared owner; reveal reverses the transition without
+another timeout. Normal toolbar positioning remains owned by the renderer.
+The browser guard samples actual animation frames for intermediate opacity,
+uniform descendant visibility, inert hit testing and downward Cinema motion.
+Those checks pass. Its first run additionally found that Enter could try to
+focus a descendant before the visibility reversal reached computed styles.
+The reveal action now establishes keyboard intent explicitly and transfers
+focus on the next animation frame, cancelled on disposal or loss of hotspot
+focus. The corrected real-browser run passes those checks and the retained
+discovery, modes, Settings, Dock/fullscreen, popup and subscription workflows.
+The complete JS regression passes 324/324 cases, TypeScript/runtime rebuild
+passes, and 188 reporting/link guards and generated-index checks pass. Python
+and the public controls configuration are unchanged.
+Human visual confirmation remains pending.
