@@ -88,3 +88,28 @@ guard now reports bounded exported-region records when the recipe disappears;
 the Linux check passes, but the hosted root cause is not established. Review
 the next exact-source CI before deciding on a fix or closure. This observation,
 human review and later exact artifact gates remain before final 1.0 clearance.
+
+## Integration checkpoint
+
+Implementation is pushed to `main` as
+`c92c2760741aa893400fab0cf5f4407b4ca4d441`. GitHub independently reports
+#181–#188 closed and #189 open. Unrelated sandbox notebooks/design artifacts
+remain outside this integration. No tag, staging package, installed matrix
+or public release is created by this round.
+
+On initial inspection, [lint](https://github.com/uibcdf/molsysviewer/actions/runs/38000819782),
+[suite policy](https://github.com/uibcdf/molsysviewer/actions/runs/38000820302)
+and [Conda governance](https://github.com/uibcdf/molsysviewer/actions/runs/38000820405)
+pass. The remaining automatic runs are in progress:
+[scientific/Qt CI](https://github.com/uibcdf/molsysviewer/actions/runs/38000819797),
+[core browser](https://github.com/uibcdf/molsysviewer/actions/runs/38000819783),
+[Python 3.14 source pair](https://github.com/uibcdf/molsysviewer/actions/runs/38000819781)
+and [notebooks](https://github.com/uibcdf/molsysviewer/actions/runs/38000819785).
+Review their final outcomes; this checkpoint does not declare those gates green.
+The automatic source pair retains its exact public MolSysMT 0.23.0 baseline;
+it does not qualify the newer editable provider fixes above.
+
+For human review, restart the Jupyter kernel and refresh the browser before
+constructing a new view. Check wide/narrow Studio navigation, keyboard focus,
+Interactions form/scopes, floating/docked bounds and PNG/HTML downloads. The
+retired MolSysMT workspace must be absent while native Interactions remains usable.

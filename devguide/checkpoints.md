@@ -1559,7 +1559,10 @@ Resume toward **1.0** in this order:
 
 **Current session priority (2026-10-09):** the accepted context-menu and
 controls work is complete under #179/#180. Continue the maintainer's remaining
-changes before freezing the agreed 0.25.0 candidate. Preserve target/selection
+changes before freezing the agreed 0.25.0 candidate. The Studio round #181–#188
+is integrated in `c92c2760`; review its
+[human checklist and hosted runs](studio_review_20261009.md#integration-checkpoint)
+and reconcile the open macOS region diagnosis #189. Preserve target/selection
 separation, region ownership and the
 [experimental Interactions contract](interactions_compatibility_contract.md).
 The [0.25.0 plan](stabilization_025_preparation_20261009.md) defines later exact
