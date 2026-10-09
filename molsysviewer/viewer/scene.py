@@ -664,6 +664,7 @@ class SceneMixin:
             "op": "set_figure_spec",
             "figure_preset": figure_spec.preset,
             "figure_scale": float(figure_spec.scale),
+            "figure_background": figure_spec.background,
             "figure_variants": list(figure_spec.build_publication_variants().keys()),
         }
         self._current_figure_spec = dict(payload)

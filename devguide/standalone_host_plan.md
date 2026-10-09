@@ -130,7 +130,7 @@ precondition for host implementation work.
 
 The final host is an environment-recipe question, not only a packaging one,
 because it must coexist with `molsysviewer`, `molsysmt`, `pyunitwizard` and the
-MolSysSuite add-ons (`molsysviewer-molsysmt`, `molsysviewer-topomt`,
+Optional domain add-ons (`molsysviewer-topomt`,
 `molsysviewer-pharmacophoremt`). The release cannot depend on arbitrary user-side
 mixing: it needs a supported recipe, whether conda-only, a supported conda+pip
 combination, or a more curated UIBCDF stack later.

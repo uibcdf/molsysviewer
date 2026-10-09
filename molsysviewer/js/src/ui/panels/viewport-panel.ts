@@ -136,6 +136,7 @@ export class ViewportPanel extends BasePanel {
             },
         );
         projRow.appendChild(projLabel);
+        projSelect.setAttribute("aria-label", "Projection Mode");
         projRow.appendChild(projSelect);
         envCard.appendChild(projRow);
 
@@ -149,6 +150,7 @@ export class ViewportPanel extends BasePanel {
             this.ctx.onAction("toggle_background", { mode: val.toLowerCase() });
         });
         bgRow.appendChild(bgLabel);
+        bgSelect.setAttribute("aria-label", "Background Color");
         bgRow.appendChild(bgSelect);
         envCard.appendChild(bgRow);
 
@@ -180,6 +182,7 @@ export class ViewportPanel extends BasePanel {
 
         const fogSlider = document.createElement("input");
         fogSlider.type = "range";
+        fogSlider.setAttribute("aria-label", "Fog Intensity");
         fogSlider.min = "0.0";
         fogSlider.max = "1.0";
         fogSlider.step = "0.05";
@@ -314,6 +317,7 @@ export class ViewportPanel extends BasePanel {
                 ? (lengthUnit === "nanometer" || lengthUnit === "nanometers" || lengthUnit === "nm" ? "0.01" : "0.1")
                 : "0.05";
             input.value = String(Number(value.toFixed(4)));
+            input.setAttribute("aria-label", `${labelText} ${["X", "Y", "Z"][axis]}`);
             input.setAttribute(`data-molsysviewer-section-${kind}-${axis}`, item.tag);
             Object.assign(input.style, {
                 width: "100%", minWidth: "0", boxSizing: "border-box", fontSize: "10px",

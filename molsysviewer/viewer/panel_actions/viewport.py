@@ -142,6 +142,8 @@ def remove_section(view: Any, content: Mapping[str, Any]) -> None:
 def set_figure_spec(view: Any, content: Mapping[str, Any]) -> None:
     preset = str(content.get("figure_preset") or "publication-light")
     background = "dark" if "dark" in preset else "white"
+    if "transparent" in content.get("figure_variants", []):
+        background = "transparent"
     view.set_figure_spec(
         FigureSpec(
             preset=preset,
@@ -153,11 +155,20 @@ def set_figure_spec(view: Any, content: Mapping[str, Any]) -> None:
 
 
 def export_html(view: Any, content: Mapping[str, Any]) -> None:
-    del content
     if callable(getattr(view.widget, "publish_download", None)):
         view._request_remote_html_download()
     else:
-        view.export.html("molsysviewer_export.html")
+        request_id = content.get("request_id")
+        if not isinstance(request_id, str) or not request_id.strip():
+            raise ValueError("export_html requires a frontend download request_id.")
+        view._transmit_widget_message(
+            {
+                "op": "html_export_ready",
+                "request_id": request_id,
+                "filename": "molsysviewer.html",
+                "html": view._build_download_html(),
+            }
+        )
 
 
 def download_image(view: Any, content: Mapping[str, Any]) -> None:

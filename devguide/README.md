@@ -21,6 +21,8 @@ Use these documents in this order:
 
 1. [`scene_contracts.md`](scene_contracts.md) is normative for scene state,
    regions, whole, color ownership, ordering, persistence, and scene objects.
+   [`studio_interaction_contract.md`](studio_interaction_contract.md) specifies
+   Studio navigation, lifecycle, native backend ownership and export delivery.
 2. [`engineering_rules.md`](engineering_rules.md) defines implementation and
    verification rules.
 3. [`session_reproducibility.md`](session_reproducibility.md) applies whenever
@@ -43,6 +45,7 @@ The next agreed version is [0.25.0](stabilization_025_preparation_20261009.md);
 further changes remain, so its producer and staging qualification are not frozen.
 Both 1.0 publications remain paused.
 
+- [Studio integration review](studio_review_20261009.md): #181–#188 implemented with source/browser guards, native backend ownership, explicit Qt/test limits and the pending macOS region diagnosis #189.
 - [`canvas_context_menu_pre_1_0_plan.md`](canvas_context_menu_pre_1_0_plan.md): #179's contextual workflows, picking corrections and parallel menus are accepted in the notebook; Cinema and consistent controls reveal are tracked under #180. Publication remains paused and 0.24.1 needs a replacement candidate.
 - [`open_issue_reconciliation_20261007.md`](open_issue_reconciliation_20261007.md): complete 34-issue scope review, public-promise corrections, historical publication decisions and remaining 1.0 gates.
 - [`public_distribution_contract.md`](public_distribution_contract.md): public Conda/core backend route and experimental native-host boundary.

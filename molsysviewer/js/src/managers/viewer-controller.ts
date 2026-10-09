@@ -585,6 +585,8 @@ export class MolSysViewerController {
     private readonly addonsPanel: AddonsPanel;
     public readonly sharedShell?: FloatingPanelShell;
     private splitResizeObserver?: ResizeObserver;
+    private canvasResizeSubscription?: { unsubscribe(): void };
+    private pendingHtmlDownload: string | null = null;
     public readonly canvasHost: HTMLDivElement;
     private readonly isPanelOnly: boolean;
     private canvasInsetAnimFrame: ReturnType<typeof requestAnimationFrame> | null = null;
@@ -621,7 +623,7 @@ export class MolSysViewerController {
     private shapeRenderStatuses = new Map<string, ShapeRenderStatus>();
     private dynamicRegionEvaluationInFlight: number | null = null;
     private dynamicRegionEvaluationPendingFrame: number | null = null;
-    private addonsScene: { styleTag?: string; preset?: string; figurePreset?: string; figureScale?: number; figureVariants?: string[] } | null = null;
+    private addonsScene: { styleTag?: string; preset?: string; figurePreset?: string; figureScale?: number; figureVariants?: string[]; figureBackground?: string } | null = null;
     private addonsList: AddonRuntimeSummary[] = [];
     private addonWorkspaces: WorkspaceRuntime[] = [];
     private addonPanels: AddonPanelRuntime[] = [];
@@ -1201,6 +1203,10 @@ export class MolSysViewerController {
             if (!region) return;
             this.focusTarget({ atom_indices: region.atom_indices });
         }, (action, details) => {
+            if (action === "export_html") {
+                this.pendingHtmlDownload = `html-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+                details = { ...details, request_id: this.pendingHtmlDownload };
+            }
             if (action === "download_image") {
                 this.downloadViewportImage();
                 return;
@@ -1748,6 +1754,10 @@ export class MolSysViewerController {
             { immediate: false },
         );
 
+        this.canvasResizeSubscription = plugin.canvas3d?.resized.subscribe(() => {
+            const gl = plugin.canvas3d?.webgl.gl;
+            if (gl) this.groupPanel.setImageDimensions(gl.drawingBufferWidth, gl.drawingBufferHeight);
+        });
         if (plugin.canvas3d?.didDraw) {
             plugin.canvas3d.didDraw.subscribe(() => {
                 const cameraState = plugin.canvas3d!.camera.getSnapshot();
@@ -1801,6 +1811,8 @@ export class MolSysViewerController {
     }
 
     dispose(): void {
+        this.pendingHtmlDownload = null;
+        this.canvasResizeSubscription?.unsubscribe();
         disposeControls(this);
         this.helpOpener = undefined;
         this.annotations.dispose();
@@ -2451,6 +2463,18 @@ export class MolSysViewerController {
                 }
             }
             switch (msg.op) {
+                case "html_export_ready": {
+                    // Scene projections are shared with popups. Only the requesting
+                    // controller may turn this transient reply into a download.
+                    if (msg.request_id !== this.pendingHtmlDownload || typeof msg.html !== "string") break;
+                    this.pendingHtmlDownload = null;
+                    const doc = this.canvasHost.ownerDocument;
+                    const url = URL.createObjectURL(new Blob([msg.html], { type: "text/html;charset=utf-8" }));
+                    const link = doc.createElement("a"); link.href = url; link.download = "molsysviewer.html";
+                    doc.body.appendChild(link); link.click(); link.remove();
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                    break;
+                }
                 case "set_hover_telemetry":
                     this.setHoverTelemetryEnabled((msg as any).enabled === true);
                     break;
@@ -3449,6 +3473,7 @@ export class MolSysViewerController {
         }
 
         if (op === "set_figure_spec") {
+            const figureBackground = typeof (msg as any).figure_background === "string" ? (msg as any).figure_background as string : undefined;
             const figurePreset = typeof (msg as any).figure_preset === "string" ? (msg as any).figure_preset : undefined;
             const figureScale = typeof (msg as any).figure_scale === "number" ? (msg as any).figure_scale : undefined;
             const figureVariants = Array.isArray((msg as any).figure_variants) ? (msg as any).figure_variants as string[] : undefined;
@@ -3457,6 +3482,7 @@ export class MolSysViewerController {
                 ...(figurePreset !== undefined ? { figurePreset } : {}),
                 ...(figureScale !== undefined ? { figureScale } : {}),
                 ...(figureVariants !== undefined ? { figureVariants } : {}),
+                ...(figureBackground !== undefined ? { figureBackground } : {}),
             };
         }
     }
@@ -3514,6 +3540,9 @@ export class MolSysViewerController {
             figurePreset: this.addonsScene?.figurePreset,
             figureScale: this.addonsScene?.figureScale,
             figureVariants: this.addonsScene?.figureVariants,
+            figureBackground: this.addonsScene?.figureBackground,
+            imageWidth: canvas3d?.webgl.gl.drawingBufferWidth,
+            imageHeight: canvas3d?.webgl.gl.drawingBufferHeight,
             isDarkMode: this.scene.isDarkMode,
             isSpinActive: this.scene.isSpinActive,
             isSwingActive: this.scene.isSwingActive,
@@ -3910,6 +3939,11 @@ export class MolSysViewerController {
         const style = document.createElement("style");
         style.id = "molsysviewer-global-styles";
         style.textContent = `
+            [data-molsysviewer-group-panel] :is(button, input, select, textarea, summary):focus-visible,
+            [data-molsysviewer-addons-panel] :is(button, input, select, textarea, summary):focus-visible {
+                outline: 2px solid #a5b4fc !important;
+                outline-offset: 2px;
+            }
             /* Firefox Scrollbar Styling */
             [data-molsysviewer-group-panel] *,
             [data-molsysviewer-addons-panel] * {
@@ -4441,7 +4475,8 @@ export class MolSysViewerController {
         const preset = this.addonsScene?.figurePreset || "publication-light";
         const scale = this.addonsScene?.figureScale || 2.0;
         const variants = this.addonsScene?.figureVariants || ["dark", "transparent"];
-        const transparent = variants.includes("transparent");
+        const transparent = this.addonsScene?.figureBackground !== undefined
+            ? this.addonsScene.figureBackground === "transparent" : variants.includes("transparent");
 
         const dataUri = await this.getImageDataUri({
             scale,

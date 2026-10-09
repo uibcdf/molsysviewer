@@ -60,6 +60,10 @@ export class FloatingPanelShell {
     private readonly workspaceCurrentSubtitleElement: HTMLSpanElement;
     private readonly workspaceMenuElement: HTMLDivElement;
     private panelResizeObserver?: ResizeObserver;
+    private hostResizeObserver?: ResizeObserver;
+    private endDrag?: () => void;
+    private floatingInitialized = false;
+    private floatingBounds?: { left: string; top: string; width: string; height: string };
     public isSplit = false;
     public isAmbient = false;
     private lastSplitState = false;
@@ -98,8 +102,8 @@ export class FloatingPanelShell {
         let currentHeight = parseFloat(this.panel.style.height) || this.panel.offsetHeight;
 
         // Clamp dimensions to host size
-        currentWidth = Math.min(currentWidth, hostWidth - 20);
-        currentHeight = Math.min(currentHeight, hostHeight - 20);
+        currentWidth = Math.max(0, Math.min(currentWidth, hostWidth - 20));
+        currentHeight = Math.max(0, Math.min(currentHeight, hostHeight - 20));
 
         let currentLeft = parseFloat(this.panel.style.left) || 0;
         let currentTop = parseFloat(this.panel.style.top) || 0;
@@ -109,7 +113,8 @@ export class FloatingPanelShell {
         currentTop = Math.max(10, Math.min(currentTop, hostHeight - currentHeight - 10));
 
         this.panel.style.width = `${currentWidth}px`;
-        this.panel.style.height = `${currentHeight}px`;
+        if (!this.minimized) this.panel.style.height = `${currentHeight}px`;
+        else if (this.savedHeight.endsWith("px")) this.savedHeight = `${Math.max(0, Math.min(parseFloat(this.savedHeight), hostHeight - 20))}px`;
         this.panel.style.left = `${currentLeft}px`;
         this.panel.style.top = `${currentTop}px`;
     }
@@ -119,6 +124,7 @@ export class FloatingPanelShell {
         const hostWidth = this.host.clientWidth;
         const hostHeight = this.host.clientHeight;
         if (!hostWidth || !hostHeight) return;
+        this.floatingInitialized = true;
 
         const isFullscreen = !!document.fullscreenElement;
         const maxWidth = isFullscreen ? 1100 : 950;
@@ -198,6 +204,7 @@ export class FloatingPanelShell {
 
             const dragStart = (clientX: number, clientY: number) => {
                 if (this.isSplit) return false;
+                this.endDrag?.();
                 isDragging = true;
                 startLeft = this.panel.offsetLeft;
                 startTop = this.panel.offsetTop;
@@ -240,7 +247,9 @@ export class FloatingPanelShell {
                         dragEnd();
                         window.removeEventListener("mousemove", onMouseMove);
                         window.removeEventListener("mouseup", onMouseUp);
+                        this.endDrag = undefined;
                     };
+                    this.endDrag = onMouseUp;
                     window.addEventListener("mousemove", onMouseMove);
                     window.addEventListener("mouseup", onMouseUp);
                 }
@@ -259,9 +268,13 @@ export class FloatingPanelShell {
                         dragEnd();
                         window.removeEventListener("touchmove", onTouchMove);
                         window.removeEventListener("touchend", onTouchEnd);
+                        window.removeEventListener("touchcancel", onTouchEnd);
+                        this.endDrag = undefined;
                     };
+                    this.endDrag = onTouchEnd;
                     window.addEventListener("touchmove", onTouchMove, { passive: true });
                     window.addEventListener("touchend", onTouchEnd);
+                    window.addEventListener("touchcancel", onTouchEnd);
                 }
             });
         }
@@ -595,12 +608,13 @@ export class FloatingPanelShell {
             }
         });
 
-        const hostResizeObserver = new ResizeObserver(() => {
+        this.hostResizeObserver = new ResizeObserver(() => {
             if (this.visible && this.expanded) {
-                this.centerPanel();
+                if (!this.floatingInitialized) this.centerPanel();
+                else this.clampPosition();
             }
         });
-        hostResizeObserver.observe(host);
+        this.hostResizeObserver.observe(host);
 
         this.updateLayout();
 
@@ -614,10 +628,17 @@ export class FloatingPanelShell {
         let transitionedToSplit = false;
         if (isSplit !== this.lastSplitState) {
             if (isSplit) {
+                this.floatingBounds = { left: this.panel.style.left, top: this.panel.style.top,
+                    width: this.panel.style.width, height: this.minimized ? this.savedHeight : this.panel.style.height };
                 this.isAmbient = true; // Transitioning to split: always open the lock
                 transitionedToSplit = true;
             } else {
                 this.isAmbient = false; // Transitioning back to float: always close the lock
+                if (this.floatingBounds) {
+                    Object.assign(this.panel.style, this.floatingBounds);
+                    this.savedHeight = this.floatingBounds.height;
+                    if (this.minimized) this.panel.style.height = "auto";
+                }
             }
             this.lastSplitState = isSplit;
         }
@@ -691,8 +712,8 @@ export class FloatingPanelShell {
         } else {
             this.panelResizeObserver?.unobserve(this.panel);
             
-            // When returning to float, always reset to the original center position and original default dimensions
-            this.centerPanel();
+            if (!this.floatingInitialized) this.centerPanel();
+            else this.clampPosition();
             
             Object.assign(this.panel.style, {
                 borderRadius: "16px",
@@ -762,7 +783,7 @@ export class FloatingPanelShell {
             }
         } else {
             this.panel.style.height = this.savedHeight || (this.isSplit ? "calc(100% - 20px)" : "min(68%, 700px)");
-            this.panel.style.minHeight = this.savedMinHeight || (this.isSplit ? "0" : "420px");
+            this.panel.style.minHeight = this.savedMinHeight || "0";
             this.content.style.display = "flex";
             this.root.style.background = (this.isAmbient || this.isSplit) ? "transparent" : "rgba(0,0,0,0.32)";
             this.root.style.pointerEvents = (this.isAmbient || this.isSplit) ? "none" : "auto";
@@ -770,6 +791,7 @@ export class FloatingPanelShell {
                 this.minimizeButton.title = "Minimize";
                 this.minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
             }
+            this.clampPosition();
         }
     }
 
@@ -1020,6 +1042,8 @@ export class FloatingPanelShell {
     }
 
     dispose(): void {
+        this.endDrag?.();
+        this.hostResizeObserver?.disconnect();
         this.panelResizeObserver?.disconnect();
         this.root.remove();
     }

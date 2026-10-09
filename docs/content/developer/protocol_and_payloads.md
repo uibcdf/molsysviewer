@@ -114,3 +114,17 @@ Tags are the common namespace across:
 
 Tag semantics must remain stable.
 See {doc}`regions_layers` for user-visible rules.
+
+## Studio exports
+
+`set_figure_spec` carries `figure_background` for the actual recipe background;
+`figure_variants` lists the available publication variants. PNG controls and
+dimensions use the actual background and renderer drawing buffer.
+
+For browser HTML download, Studio sends `export_html` with a frontend-generated
+`request_id`. Python replies with transient `html_export_ready`, the same ID,
+`filename` and self-contained `html`. The requesting controller consumes the
+reply once. It is excluded from popup scene replay and bypasses structure
+streaming. Remote sessions retain their existing download URL delivery; Python
+`view.export.html(path)` retains file output. This reply is a browser effect,
+not persisted scene state.

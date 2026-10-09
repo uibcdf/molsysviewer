@@ -34,3 +34,33 @@ def test_export_html_namespace_delegates(monkeypatch, tmp_path):
         # resolved by the implementation, not defaulted twice.
         "background": "auto",
     }
+
+
+def test_studio_html_export_delivers_a_download_reply_without_host_file(tmp_path, monkeypatch):
+    from molsysviewer.viewer.panel_actions.viewport import export_html
+
+    from molsysviewer import demo
+
+    monkeypatch.chdir(tmp_path)
+    view = demo["dialanine"]
+    before = view.export_state()
+    transmitted = []
+    original_send = view.widget.send
+
+    def observe_send(message, buffers=None):
+        transmitted.append(message)
+        return original_send(message, buffers=buffers)
+
+    monkeypatch.setattr(view.widget, "send", observe_send)
+    export_html(view, {"request_id": "studio-html-review"})
+    reply = transmitted[-1]
+    assert reply["op"] == "html_export_ready"
+    assert reply["request_id"] == "studio-html-review"
+    assert reply["filename"] == "molsysviewer.html"
+    assert "<!doctype html>" in reply["html"].lower()
+    assert 'id="molsysviewer-messages"' in reply["html"]
+    assert not list(tmp_path.iterdir())
+    assert view.export_state() == before
+    with pytest.raises(ValueError, match="request_id"):
+        export_html(view, {})
+    view.close()

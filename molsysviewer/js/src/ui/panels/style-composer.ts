@@ -1,4 +1,4 @@
-import { makeStyledSelect } from "./ui-helpers";
+import { nameControls, makeStyledSelect } from "./ui-helpers";
 
 export const FALLBACK_REPRESENTATIONS = [
     "backbone",
@@ -55,6 +55,7 @@ export function makeStyleControlRow(label: string, control: HTMLElement): HTMLDi
         color: "rgba(244,244,245,0.7)",
     });
     row.appendChild(text);
+    nameControls(control, label);
     row.appendChild(control);
     return row;
 }

@@ -512,6 +512,11 @@ view.close()
             return target.kind === "shape" && target.tag === "menu-sphere";
         });
         const spherePoint = await page.evaluate(() => (window as any).Harness.projectScenePosition((window as any).__controller, [30, 30, 30]));
+        // Enter from a distinct point after Mol* has processed the menu/scroll
+        // transition. Reusing the prior cursor position can leave cached hover
+        // input unchanged even though the direct rendered pick already succeeds.
+        await page.mouse.move(spherePoint.x - 25, spherePoint.y, { steps: 3 });
+        await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
         await page.mouse.move(spherePoint.x, spherePoint.y, { steps: 3 });
         await page.waitForFunction(() => {
             const hover = (window as any).__controller.lastHoverPayload;

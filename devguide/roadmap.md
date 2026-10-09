@@ -1,15 +1,18 @@
 # Development roadmap
 
-**Current execution order — 2026-10-08:** implement the accepted
-[canvas context-menu redesign](canvas_context_menu_pre_1_0_plan.md) (#179):
-menu/context foundation, molecular actions and Studio navigation, object and
-interaction-occurrence actions, common scene utilities, browser and human review.
-Then choose and qualify a new pre-1.0 candidate, complete public documentation
+**Current execution order — 2026-10-09:** the
+[canvas context-menu redesign](canvas_context_menu_pre_1_0_plan.md) (#179/#180)
+is accepted. The authorized Studio round (#181–#188), including removal
+of the MolSysMT addon, is implemented. Review its
+[source/browser evidence](studio_review_20261009.md), live notebook and hosted
+results; reconcile the macOS dynamic-region diagnosis (#189).
+Then prepare and qualify the agreed 0.25.0 candidate, complete public documentation
 and installed first contact, and independently qualify the eventual 1.0 producer.
 Viewer/MolSysMT 1.0 publication is paused by the maintainer. Keep the
 [0.24.1 build-1 preparation](stabilization_0241_preparation_20261008.md) and its
 exact files/evidence fixed; they do not qualify the changed menu. The next
-version/build is not chosen. Public packages remain 0.24.0/0.23.0 and the
+version is agreed, but its producer/build qualification is not frozen.
+Public packages remain 0.24.0/0.23.0 and the
 [experimental Interactions contract](interactions_compatibility_contract.md)
 remains unchanged.
 
@@ -25,7 +28,7 @@ freeze and exact artifact/gates containing the source-only #149/#177 fixes.
 Experimental Qt defects and post-1.0 growth are not a core release clearance.
 
 
-**Updated:** 2026-10-08
+**Updated:** 2026-10-09
 
 This roadmap states current priorities. Release gating lives in
 [`path_to_1_0.md`](path_to_1_0.md), normative behavior in
@@ -206,8 +209,8 @@ These are the release gates:
    Coordinate result semantics with
    `uibcdf/molsysmt#250`; follow
    [`interactions_pre_1_0_plan.md`](interactions_pre_1_0_plan.md) and
-   `uibcdf/molsysviewer#114`. Complete MolSysMT addon retirement and Mol* dependency
-   upgrade are outside this gate.
+   `uibcdf/molsysviewer#114`. MolSysMT addon retirement belongs to the Studio round
+   (uibcdf/molsysviewer#186). The Mol* dependency upgrade remains post-1.0.
 
 The local standalone launchers and Qt host may remain distributed for
 evaluation; they carry no supported 1.0 host contract. Interactive HTML export

@@ -27,19 +27,26 @@ view.close()
         await page.addInitScript(() => {
             const starts = new WeakMap<HTMLElement, number>();
             const finished = new WeakSet<HTMLElement>();
+            const hiding = new WeakSet<HTMLElement>();
             (window as any).__controlsDiscoveries = [];
             (window as any).__controlsFades = [];
             new MutationObserver(() => {
                 for (const element of document.querySelectorAll<HTMLElement>(
                     '.molsysviewer-controls, [data-molsysviewer-trajectory-controls="true"]',
                 )) {
-                    if (element.style.visibility === "visible" && !starts.has(element)) starts.set(element, performance.now());
-                    if (element.style.visibility === "hidden" && starts.has(element) && !finished.has(element)) {
+                    if (element.style.visibility === "visible") {
+                        hiding.delete(element);
+                        if (!starts.has(element)) starts.set(element, performance.now());
+                    }
+                    if (element.style.visibility === "hidden" && starts.has(element) && !hiding.has(element)) {
+                        hiding.add(element);
+                        if (!finished.has(element)) {
                         finished.add(element);
                         (window as any).__controlsDiscoveries.push({
                             kind: element.classList.contains("molsysviewer-controls") ? "buttons" : "cinema",
                             duration: performance.now() - starts.get(element)!,
                         });
+                        }
                         const fade: any = {
                             kind: element.classList.contains("molsysviewer-controls") ? "buttons" : "cinema",
                             samples: [], complete: false,
@@ -59,7 +66,7 @@ view.close()
                             if (style.visibility === "hidden") fade.complete = true;
                             else requestAnimationFrame(sample);
                         };
-                        requestAnimationFrame(sample);
+                        sample();
                     }
                 }
             }).observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ["style"] });
@@ -70,7 +77,7 @@ view.close()
             if (["error", "warning"].includes(message.type())) console.error(`[host ${message.type()}] ${message.text()}`);
         });
         await page.goto(pathToFileURL(artifact.page).href);
-        await page.waitForFunction(() => (window as any).__molsysviewerDocsController?.plugin.canvas3d?.reprCount.value > 0);
+        await page.waitForFunction(() => { const canvas = (window as any).__molsysviewerDocsController?.plugin.canvas3d; return canvas?.reprCount.value > 0 && canvas.didDraw.value > 0; });
         await page.locator("#molsysviewer-root").evaluate(el => {
             el.style.width = "850px"; el.style.height = "560px";
         });
@@ -89,9 +96,9 @@ view.close()
             const element = document.querySelector(".molsysviewer-controls");
             return element && getComputedStyle(element).visibility === "hidden";
         });
-        const checkFade = async (kind: string) => {
-            await page.waitForFunction(kind => (window as any).__controlsFades.some((fade: any) => fade.kind === kind && fade.complete), kind);
-            const fade = await page.evaluate(kind => (window as any).__controlsFades.find((fade: any) => fade.kind === kind && fade.complete), kind);
+        const checkFade = async (kind: string, offset = 0) => {
+            await page.waitForFunction(({ kind, offset }) => (window as any).__controlsFades.slice(offset).some((fade: any) => fade.kind === kind && fade.complete), { kind, offset });
+            const fade = await page.evaluate(({ kind, offset }) => (window as any).__controlsFades.slice(offset).find((fade: any) => fade.kind === kind && fade.complete), { kind, offset });
             const partial = fade.samples.filter((sample: any) => sample.opacity > 0 && sample.opacity < 1);
             assert.ok(partial.length > 0, `${kind} must paint intermediate opacity`);
             assert.ok(partial.every((sample: any) => sample.visible && sample.childrenVisible), `${kind} must fade as one visible group`);
@@ -104,10 +111,16 @@ view.close()
         const initialDiscovery = await page.evaluate(() => (window as any).__controlsDiscoveries[0]);
         assert.equal(initialDiscovery?.kind, "buttons");
         assert.ok(initialDiscovery.duration >= 1800, `initial discovery lasted ${initialDiscovery.duration} ms`);
-        await checkFade("buttons");
+        // Initial discovery is timed above. Molecular startup can block painting
+        // beyond a full CSS transition, so measure the fade after render readiness
+        // and a committed visible frame, with the same behavioral assertions.
         await reveal();
+        await page.waitForFunction(() => getComputedStyle(document.querySelector(".molsysviewer-controls")!).opacity === "1");
+        await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+        const fadeOffset = await page.evaluate(() => (window as any).__controlsFades.length);
         await away();
         await hidden();
+        await checkFade("buttons", fadeOffset);
 
         // A frame update must not override the visibility preference.
         await page.evaluate(async () => {
@@ -118,6 +131,13 @@ view.close()
         await reveal();
         await controls.locator('[title="Panel mode (N / W)"]').click();
         await page.locator('[data-molsysviewer-group-settings-btn="true"]').click();
+        const autohideSwitch = page.getByRole("switch", { name: "Autohide Controls", exact: true });
+        await autohideSwitch.focus();
+        await page.keyboard.press("Space");
+        assert.equal(await autohideSwitch.getAttribute("aria-checked"), "false");
+        assert.ok(await autohideSwitch.evaluate(element => element === document.activeElement));
+        await page.keyboard.press("Enter");
+        assert.equal(await autohideSwitch.getAttribute("aria-checked"), "true");
         await page.getByLabel("Controls reveal area").selectOption("canvas");
         await page.getByTitle("Close (Esc)", { exact: true }).click();
         await away();

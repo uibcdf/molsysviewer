@@ -222,8 +222,8 @@ The user-facing translation table is in
   - `new_region(...)`
   - `add_label(...)` — deprecated alias for `annotations.add_label_from_active_selection(...)`
   - `save(...)`
-  - canvas context-menu removal is contributed by the MolSysMT addon as
-    `remove-selected-atoms`; core does not own molecular-editing semantics
+  - clearing a selection does not remove molecular atoms; the retired MolSysMT
+    addon removal action is rejected without changing the selection or system
 - `view.selections`
   - `add(tag, *, atom_indices, items=None)` — direct-index shortcut, no MolSysMT lookup
   - `add_selection(tag, selection, *, element, mask, syntax)` — MolSysMT-based selection

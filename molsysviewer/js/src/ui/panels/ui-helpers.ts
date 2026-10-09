@@ -61,6 +61,7 @@ export function makeSectionHeader(title: string): HTMLDivElement {
 
 export function makeButton(text: string, onClick: () => void): HTMLButtonElement {
     const btn = document.createElement("button");
+    btn.type = "button";
     btn.textContent = text;
     Object.assign(btn.style, {
         flex: "1 1 0",
@@ -124,7 +125,11 @@ export function makeRowElement(
     });
 
     // Clickable main area
-    const main = document.createElement("div");
+    const main = document.createElement(onActivate ? "button" : "div");
+    if (onActivate) {
+        (main as HTMLButtonElement).type = "button";
+        Object.assign(main.style, { border: "0", background: "transparent", color: "inherit", textAlign: "left", padding: "0" });
+    }
     Object.assign(main.style, {
         display: "flex",
         flexDirection: "column",
@@ -135,7 +140,7 @@ export function makeRowElement(
     });
     if (onActivate) {
         row.style.cursor = "pointer";
-        row.addEventListener("click", (e) => {
+        main.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
             onActivate();
@@ -183,6 +188,7 @@ export function makeRowElement(
         styleBtn.type = "button";
         styleBtn.textContent = "🎨";
         styleBtn.title = "Style & Color";
+        styleBtn.setAttribute("aria-label", `Style ${titleText}`);
         Object.assign(styleBtn.style, {
             background: "transparent",
             border: "0",
@@ -212,6 +218,7 @@ export function makeRowElement(
         eyeBtn.type = "button";
         eyeBtn.textContent = visibility.hidden ? "⦻" : "👁";
         eyeBtn.title = visibility.hidden ? "Show" : "Hide";
+        eyeBtn.setAttribute("aria-label", `${eyeBtn.title} ${titleText}`);
         Object.assign(eyeBtn.style, {
             background: "transparent",
             border: "0",
@@ -303,7 +310,6 @@ export function makeStyledSelect(
         color: "#f4f4f5",
         fontSize: "11px",
         fontWeight: "500",
-        outline: "none",
         cursor: "pointer",
     });
 
@@ -329,8 +335,8 @@ export function makeCheckboxRow(
     labelText: string,
     checked: boolean,
     onChange: (checked: boolean) => void,
-): HTMLDivElement {
-    const row = document.createElement("div");
+): HTMLLabelElement {
+    const row = document.createElement("label");
     Object.assign(row.style, {
         display: "flex",
         justifyContent: "space-between",
@@ -346,27 +352,42 @@ export function makeCheckboxRow(
 
     const cb = document.createElement("input");
     cb.type = "checkbox";
+    cb.setAttribute("aria-label", labelText);
     cb.checked = checked;
     Object.assign(cb.style, {
         cursor: "pointer",
-        outline: "none",
     });
 
-    const toggle = () => {
-        cb.checked = !cb.checked;
-        onChange(cb.checked);
-    };
-
-    row.addEventListener("click", (e) => {
-        if (e.target !== cb) {
-            e.preventDefault();
-            toggle();
-        }
-    });
     cb.addEventListener("change", () => {
         onChange(cb.checked);
     });
 
     row.appendChild(cb);
     return row;
+}
+
+/** Name a single control, or each input of a composite control, at its owning row. */
+export function nameControls(control: HTMLElement, label: string): void {
+    if (["input", "select", "textarea"].includes(control.tagName.toLowerCase())) {
+        if (!control.getAttribute("aria-label") && !control.getAttribute("aria-labelledby")) control.setAttribute("aria-label", label);
+    } else {
+        for (const child of Array.from(control.children)) nameControls(child as HTMLElement, label);
+    }
+}
+
+/** A native keyboard-operable switch with the shared Studio appearance. */
+export function makeSwitch(label: string, checked: boolean, onToggle: () => void): HTMLButtonElement {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.setAttribute("role", "switch");
+    button.setAttribute("aria-label", label);
+    button.setAttribute("aria-checked", String(checked));
+    Object.assign(button.style, { width: "30px", height: "16px", border: "0", padding: "0", borderRadius: "8px",
+        background: checked ? "#6366f1" : "rgba(255,255,255,0.12)", position: "relative", cursor: "pointer", flexShrink: "0" });
+    const thumb = document.createElement("span");
+    Object.assign(thumb.style, { width: "12px", height: "12px", borderRadius: "50%", background: "#fff", position: "absolute",
+        top: "2px", left: checked ? "16px" : "2px" });
+    button.appendChild(thumb);
+    button.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); onToggle(); });
+    return button;
 }

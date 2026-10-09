@@ -5,15 +5,15 @@ functionality arrives through optional add-ons. The direction matters most for
 future integration with `TopoMT`, `PharmacophoreMT`, `ElastNetMT` and other
 MolSysSuite packages carrying their own scientific semantics.
 
-**Direction update (2026-09-30, partially implemented):** MolSysMT is already
-a mandatory scientific dependency. Interactions calculation and H5MSM analysis
-loading are native Python and Studio workflows under `uibcdf/molsysviewer#114`,
-with provider-release qualification still open. They require no addon registration.
-Retire the separate MolSysMT addon progressively after its useful workflows
-have native replacements; do not reproduce the entire MolSysMT API in the
-viewer. The MolSysMT workspace example below describes the older extension
-direction. Optional domain packages retain the addon model. See the
-[bounded implementation plan](interactions_pre_1_0_plan.md).
+**Direction update (2026-10-09):** MolSysMT is the required native scientific
+backend. The separate MolSysMT addon is retired under uibcdf/molsysviewer#186:
+automatic discovery ignores its legacy entry point before loading, and explicit
+legacy registration is rejected. Loading, selection, interactions calculation,
+H5MSM analysis loading and index-aware scene reconciliation use native workflows.
+This does not mirror every MolSysMT function in the viewer. Optional domain
+packages retain the addon model. Consumers of `view.addons.molsysmt.basic.*`
+calculate molecular edits with MolSysMT and reload the result or reconcile it
+through `view.apply_system_edit(...)` with explicit maps.
 
 ## Core Position
 
@@ -58,8 +58,7 @@ hosts several scientific domains with several panels each.
 
 A **small** add-on normally shows up as one or a few local contributions —
 context actions, add-on sections, export helpers, shapes, tool modes. A **large**
-one may contribute a whole workspace with its own panel stack: `MolSysMT` a
-`MolSysMT` workspace with several analysis panels, `TopoMT` a `TopoMT` workspace,
+one may contribute a whole workspace with its own panel stack: `TopoMT` a `TopoMT` workspace,
 `PharmacophoreMT` its own, `ElastNetMT` an `Elastic` or `Networks` workspace,
 while `Core` keeps the native one.
 

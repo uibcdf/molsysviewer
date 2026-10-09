@@ -318,3 +318,17 @@ It holds in one direction only:
 - **Every document in the two queues has an `issue`.** Always.
 - **Not every issue has a document.** One arriving from outside has none until it is
   triaged, and one that cannot be reproduced closes with the reason and never gets one.
+
+### Studio usability browser guard profile
+
+The bounded selector is exactly `molsysviewer/js/tests/e2e/studio-usability.e2e.ts`.
+From `molsysviewer/js`, build with `npm run build:harness` and
+`npm run build:e2e:all`, then run `node tests/e2e/studio-usability.e2e.js`.
+It is registered in `npm run test:e2e:core`; browser/WebGL failures fail and
+`E2E_ALLOW_SKIP=1` is not closure evidence. No suffixes, globs or commands are
+accepted. The validator checks the build/core registration, real Python bridge,
+download assertions and failing entrypoint. The suite renders real pentalanine
+and checks PNG dimensions/alpha, requester-only HTML delivery, native labels,
+compact navigation, floating bounds, observer/drag disposal and addon retirement.
+Keyboard Settings and shared control fade assertions additionally belong to the
+existing `controls-visibility.e2e.ts` profile.

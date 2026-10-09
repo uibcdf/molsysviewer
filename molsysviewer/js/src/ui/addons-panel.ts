@@ -1,3 +1,5 @@
+import { CompactPanelNavigation } from "./compact-panel-navigation";
+import { makeSwitch } from "./panels/ui-helpers";
 import { PanelShell } from "./panel-shell";
 import { FloatingPanelShell } from "./floating-panel-shell";
 
@@ -61,6 +63,7 @@ export class AddonsPanel {
     private readonly toggleButton: HTMLButtonElement;
 
     // Two-column layout columns
+    private compactNavigation?: CompactPanelNavigation;
     private readonly leftColumn: HTMLDivElement;
     private readonly rightColumn: HTMLDivElement;
 
@@ -236,6 +239,8 @@ export class AddonsPanel {
             this.widgetObserver.observe(this.addonsWidgetHost, { childList: true, subtree: true });
         }
 
+        this.compactNavigation = new CompactPanelNavigation(this.body, this.leftColumn, this.rightColumn,
+            "Addon workspace", value => this.onSelectWorkspace?.(value));
         this.applyExpandedState();
         this.setVisible(!floating);
     }
@@ -339,6 +344,7 @@ export class AddonsPanel {
     }
 
     dispose(): void {
+        this.compactNavigation?.dispose();
         if (this.widgetObserver) {
             this.widgetObserver.disconnect();
             this.widgetObserver = null;
@@ -415,7 +421,7 @@ export class AddonsPanel {
             fontWeight: "700",
             color: "#f4f4f5",
         });
-        title.textContent = "Settings & Extensions";
+        title.textContent = "Add-ons manager";
         header.appendChild(title);
 
         const subtitle = document.createElement("div");
@@ -423,7 +429,7 @@ export class AddonsPanel {
             fontSize: "11px",
             color: "rgba(244,244,245,0.48)",
         });
-        subtitle.textContent = "Configure global viewer options, manage analytical extensions, and register custom modules.";
+        subtitle.textContent = "Enable optional extensions and register add-on modules.";
         header.appendChild(subtitle);
 
         // 2. Global Actions Row
@@ -506,7 +512,8 @@ export class AddonsPanel {
 
         const registerInput = document.createElement("input");
         registerInput.type = "text";
-        registerInput.placeholder = "Module or package name (e.g. molsysmt)";
+        registerInput.placeholder = "Add-on module (e.g. molsysviewer_topomt)";
+        registerInput.setAttribute("aria-label", "Add-on module");
         Object.assign(registerInput.style, {
             flex: "1",
             padding: "4px 8px",
@@ -697,14 +704,11 @@ export class AddonsPanel {
                     whiteSpace: "pre-wrap",
                 });
                 traceBox.textContent = failure.traceback || "No traceback detail.";
-                row.appendChild(traceBox);
+                const disclosure = document.createElement("details"), disclosureTitle = document.createElement("summary");
+                disclosureTitle.textContent = "Error details"; traceBox.style.display = "block";
+                disclosure.appendChild(disclosureTitle); disclosure.appendChild(traceBox); row.appendChild(disclosure);
 
-                row.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const isVisible = traceBox.style.display === "block";
-                    traceBox.style.display = isVisible ? "none" : "block";
-                });
+
             } else {
                 // Success card: styling standard dark-indigo
                 row.addEventListener("mouseenter", () => {
@@ -819,36 +823,10 @@ export class AddonsPanel {
                 });
                 row.appendChild(actionsContainer);
 
-                // iOS Style Toggle Switch
-                const toggleTrack = document.createElement("div");
-                Object.assign(toggleTrack.style, {
-                    width: "30px",
-                    height: "16px",
-                    borderRadius: "8px",
-                    background: addon.enabled ? "#6366f1" : "rgba(255,255,255,0.12)",
-                    position: "relative",
-                    cursor: "pointer",
-                    transition: "background 0.2s ease",
-                });
-                const toggleThumb = document.createElement("div");
-                Object.assign(toggleThumb.style, {
-                    width: "12px",
-                    height: "12px",
-                    borderRadius: "50%",
-                    background: "#ffffff",
-                    position: "absolute",
-                    top: "2px",
-                    left: addon.enabled ? "16px" : "2px",
-                    transition: "left 0.2s ease",
-                });
-                toggleTrack.appendChild(toggleThumb);
-                actionsContainer.appendChild(toggleTrack);
-
-                toggleTrack.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                const toggleTrack = makeSwitch(`Enable ${addon.name}`, !!addon.enabled, () => {
                     this.onAction?.(addon.enabled ? "addon_disable" : "addon_enable", { name: addon.name });
                 });
+                actionsContainer.appendChild(toggleTrack);
 
                 if (matchedWorkspace) {
                     const openBtn = document.createElement("button");
@@ -963,13 +941,11 @@ export class AddonsPanel {
                 whiteSpace: "pre-wrap",
             });
             traceBox.textContent = failure.traceback || "No traceback detail.";
-            card.appendChild(traceBox);
+            const disclosure = document.createElement("details"), disclosureTitle = document.createElement("summary");
+            disclosureTitle.textContent = "Error details"; traceBox.style.display = "block";
+            disclosure.appendChild(disclosureTitle); disclosure.appendChild(traceBox); card.appendChild(disclosure);
 
-            card.addEventListener("click", (e) => {
-                e.preventDefault();
-                const isVisible = traceBox.style.display === "block";
-                traceBox.style.display = isVisible ? "none" : "block";
-            });
+
 
             this.workspaceOverviewHost.appendChild(card);
         }
@@ -1036,6 +1012,7 @@ export class AddonsPanel {
             });
 
             const isActive = workspace.id === this.currentWorkspaceId;
+            btn.setAttribute("aria-current", isActive ? "page" : "false");
 
             if (isActive) {
                 Object.assign(btn.style, {
@@ -1103,6 +1080,8 @@ export class AddonsPanel {
             title: "Settings",
         };
         bottomContainer.appendChild(createWorkspaceButton(coreWorkspace));
+        this.compactNavigation?.update([...this.workspaceItems.filter(w => w.id !== "core"), coreWorkspace]
+            .map(w => ({ value: w.id, label: w.id === "core" ? "Add-ons manager" : w.title })), this.currentWorkspaceId);
     }
 
     // ── Right Column: Fixed Header with Subpanels & Sections ───────

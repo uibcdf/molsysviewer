@@ -45,34 +45,38 @@ export abstract class BasePanel implements StudioPanel {
         this.restoreActiveField(snapshot);
     }
 
-    private captureActiveField(): { selector: string; value: string; start: number | null; end: number | null } | null {
+    private captureActiveField(): { selector: string; value: string; start: number | null; end: number | null; keepValue: boolean } | null {
         try {
             const doc = this.host?.ownerDocument;
             const active = doc?.activeElement as HTMLInputElement | null;
             if (!active || !this.host || typeof this.host.contains !== "function" || !this.host.contains(active)) return null;
             const tag = active.tagName;
-            if (tag !== "INPUT" && tag !== "TEXTAREA") return null;
-            const attr = Array.from(active.attributes ?? []).find(a => a.name.startsWith("data-molsysviewer-"));
+            if (tag !== "INPUT" && tag !== "TEXTAREA" && tag !== "SELECT") return null;
+            const attributes = Array.from(active.attributes ?? []);
+            const attr = attributes.find(a => a.name.startsWith("data-molsysviewer-"))
+                ?? attributes.find(a => a.name === "aria-label");
             if (!attr) return null;
             return {
-                selector: `[${attr.name}="${attr.value}"]`,
+                selector: `[${attr.name}="${attr.value.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"]`,
                 value: active.value,
                 start: active.selectionStart ?? null,
                 end: active.selectionEnd ?? null,
+                // Canonical replies own discrete values; preserve focus only.
+                keepValue: tag !== "SELECT" && active.type !== "checkbox" && active.type !== "radio",
             };
         } catch {
             return null;
         }
     }
 
-    private restoreActiveField(snap: { selector: string; value: string; start: number | null; end: number | null } | null): void {
+    private restoreActiveField(snap: { selector: string; value: string; start: number | null; end: number | null; keepValue: boolean } | null): void {
         if (!snap || !this.host) return;
         try {
             const el = this.host.querySelector(snap.selector) as HTMLInputElement | null;
             if (!el) return;
-            el.value = snap.value;
+            if (snap.keepValue) el.value = snap.value;
             el.focus();
-            if (typeof el.setSelectionRange === "function") {
+            if (snap.keepValue && typeof el.setSelectionRange === "function") {
                 const end = snap.end ?? snap.value.length;
                 el.setSelectionRange(snap.start ?? end, end);
             }

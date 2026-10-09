@@ -2,7 +2,7 @@ import molsysmt as msm
 import molsysviewer._pyunitwizard  # noqa: F401
 import pytest
 import pyunitwizard as puw
-from molsysviewer.addons import AddonLifecycleSpec, AddonSpec, addons
+from molsysviewer.addons import addons
 
 from molsysviewer import demo
 from tests._edit_helpers import apply_remove
@@ -141,85 +141,17 @@ def test_context_action_save_selection_executes_python_bridge():
     assert records[0]["atom_indices"] == atom_indices
 
 
-def test_context_action_remove_selection_is_noop_without_molsysmt_addon():
-    # Molecular editing lives in the MolSysMT addon; without it the core bridge
-    # only clears the active selection and never mutates the molecular system.
+def test_retired_context_remove_action_preserves_system_and_selection():
     addons.clear()
     view = demo["dialanine"]
     atom_indices = _seed_group_selection(view, 0)
-    n_atoms_before = int(msm.get(view._molsys, element="system", n_atoms=True, skip_digestion=True))  # noqa: SLF001
+    n_atoms = int(msm.get(view.molsys, element="system", n_atoms=True, skip_digestion=True))
+    from molsysviewer.viewer.panel_actions import dispatch_panel_action
 
-    view._handle_frontend_event(  # noqa: SLF001
-        {
-            "event": "interaction_context_action",
-            "action": "remove_selection",
-            "context": {"event": "interaction_context_menu", "kind": "structure", "atom_indices": atom_indices},
-        }
-    )
-
-    n_atoms_after = int(msm.get(view._molsys, element="system", n_atoms=True, skip_digestion=True))  # noqa: SLF001
-    assert n_atoms_after == n_atoms_before
-    assert view.active_selection.is_empty(skip_digestion=True) is True
-    assert view._test_message_log[-1]["op"] == "clear_active_selection"  # noqa: SLF001
-
-
-def test_context_action_remove_selection_prefers_molsysmt_addon_bridge():
-    addons.clear()
-    calls: list[dict] = []
-
-    def _remove_selected_atoms(view, action_id, payload):
-        calls.append({"action_id": action_id, "payload": dict(payload)})
-        n_atoms = int(msm.get(view._molsys, element="system", n_atoms=True, skip_digestion=True))  # noqa: SLF001
-        removed = set(payload["atom_indices"])
-        kept = [ii for ii in range(n_atoms) if ii not in removed]
-        atom_index_map = {old: new for new, old in enumerate(kept)}
-        new_molsys = msm.remove(
-            view._molsys,  # noqa: SLF001
-            selection=payload["atom_indices"],
-            to_form="molsysmt.MolSys",
-            skip_digestion=True,
-        )
-        view.apply_system_edit(new_molsys, atom_index_map=atom_index_map, skip_digestion=True)
-
-    addons.register(
-        AddonSpec(name="molsysmt"),
-        lifecycle=AddonLifecycleSpec(on_context_action=_remove_selected_atoms),
-    )
-    try:
-        view = demo["dialanine"]
-        atom_indices = _seed_group_selection(view, 0)
-        n_atoms_before = int(msm.get(view._molsys, element="system", n_atoms=True, skip_digestion=True))  # noqa: SLF001
-
-        view._handle_frontend_event(  # noqa: SLF001
-            {
-                "event": "interaction_context_action",
-                "action": "remove_selection",
-                "context": {"event": "interaction_context_menu", "kind": "structure", "atom_indices": atom_indices},
-            }
-        )
-
-        n_atoms_after = int(msm.get(view._molsys, element="system", n_atoms=True, skip_digestion=True))  # noqa: SLF001
-        assert n_atoms_after == n_atoms_before - len(atom_indices)
-        assert view.active_selection.is_empty(skip_digestion=True) is True
-        assert calls == [
-            {
-                "action_id": "remove-selected-atoms",
-                "payload": {
-                    "event": "interaction_context_action",
-                    "action": "remove_selection",
-                    "addon": "molsysmt",
-                    "addon_action_id": "remove-selected-atoms",
-                    "atom_indices": atom_indices,
-                    "context": {
-                        "event": "interaction_context_menu",
-                        "kind": "structure",
-                        "atom_indices": atom_indices,
-                    },
-                },
-            }
-        ]
-    finally:
-        addons.clear()
+    with pytest.raises(ValueError, match="no longer supported"):
+        dispatch_panel_action(view, {"action": "remove_selection"})
+    assert int(msm.get(view.molsys, element="system", n_atoms=True, skip_digestion=True)) == n_atoms
+    assert list(view.active_selection.atom_indices) == atom_indices
 
 
 def test_context_action_activate_selection_executes_python_bridge():

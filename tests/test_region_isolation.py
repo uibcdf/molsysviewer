@@ -152,6 +152,7 @@ def test_empty_dynamic_isolation_survives_restore_and_rebuild_then_reappears(tmp
     assert region.atom_indices == ()
     state = view.export_state()
     view.import_state(state)
+    assert "near" in view.regions, f"Empty dynamic region was lost; exported regions: {state['regions']!r}"
     assert view.regions["near"].atom_indices == ()
     assert _isolated(view) == ["near"]
     assert _isolated(msv.tools.basic.copy(view)) == ["near"]

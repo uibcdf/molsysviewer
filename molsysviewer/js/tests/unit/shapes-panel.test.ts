@@ -4,6 +4,7 @@ import test from "node:test";
 import { ShapesPanel, SHAPE_STYLE_CONTROLS, type ShapeSummary } from "../../src/ui/panels/shapes-panel";
 
 class FakeElement {
+    constructor(public readonly tagName = "div") {}
     readonly style: Record<string, string> = {};
     readonly children: FakeElement[] = [];
     textContent = "";
@@ -34,7 +35,7 @@ class FakeElement {
 
 function installFakeDom() {
     const previousDocument = (globalThis as any).document;
-    (globalThis as any).document = { createElement: () => new FakeElement() };
+    (globalThis as any).document = { createElement: (tag: string) => new FakeElement(tag) };
     return () => { (globalThis as any).document = previousDocument; };
 }
 

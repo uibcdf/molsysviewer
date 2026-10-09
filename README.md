@@ -85,14 +85,14 @@ view.shapes.add_displacement_vectors(    # e.g. an ANM mode
 Magnitudes carry units throughout the suite: a bare array is refused rather than
 silently assumed to be in Å.
 
-### Export, and addons
+### Export and Studio
 
 ```python
 view.export.html("my_scene.html", title="TIM — chain A")
 ```
 
 ```python
-msv.addons.register_module("molsysviewer_molsysmt")   # a 10-panel MolSysMT workspace
+view.set_panel_mode("navigate", expanded=True)  # native molecular tools
 ```
 
 ### The point: exploration becomes state
@@ -161,11 +161,10 @@ workspaces, panels, context actions, and shape providers without modifying the c
 
 Optional MolSysSuite integrations are owned and distributed by their toolkit.
 Availability depends on the toolkit version; follow its installation instructions.
-The table below lists module names known to the host, including a legacy module.
+The table below lists optional module names known to the host.
 
 | Import as | Shipped by | What it adds | Maturity |
 |---|---|---|---|
-| `molsysviewer_molsysmt` | MolSysMT | Legacy addon module name retained for explicit discovery; ordinary workflows use the core API | alpha |
 | `molsysviewer_topomt` | TopoMT | Pocket detection and topography visualisation | undeclared |
 | `molsysviewer_elastnetmt` | ElastNetMT | GNM/ANM elastic network modes and contact network overlays | skeleton |
 | `molsysviewer_pharmacophoremt` | PharmacophoresMT | Structure-based pharmacophore glyph overlays | skeleton |
@@ -178,9 +177,12 @@ read both `skeleton` and `alpha` as `experimental`, and `undeclared` as exactly 
 
 MolSysMT is a required backend of MolSysViewer. Loading, selection and interaction
 calculations use it through the core API; you do not need a MolSysMT addon. The table
-records known optional and legacy module names, not a guarantee that each toolkit
+records known optional module names, not a guarantee that each toolkit
 currently distributes or qualifies its integration. **None of them is production-ready
 today.** Discover optional addons explicitly when their toolkit provides them.
+
+The former `molsysviewer_molsysmt` addon is retired. Automatic discovery ignores
+its legacy entry point, and explicit registration explains the native API route.
 
 ### Canvas UX modes
 - `controls_mode="minimal"` — 3-icon cluster + keyboard shortcuts (N/W/H)

@@ -23,27 +23,17 @@ view.whole.get(element="system", n_atoms=True)
 view.whole.info(element="system")
 ```
 
-## Edit the loaded system (MolSysMT addon)
+## Edit the loaded system
 
-Live molecular edits are provided by the MolSysMT addon. The addon mutates the
-molecular system through MolSysMT and then asks the viewer to reconcile the
-scene:
+MolSysMT is the native scientific backend. Its former addon namespace has been
+retired. Calculate a modified system with MolSysMT, then use
+`view.load(molsys, mode="replace")` to replace the scene. Replacement resets
+scene objects. For integrations that retain scene objects, use
+`view.apply_system_edit(...)` with explicit index correspondence; see the
+[developer API contract](../../developer/public_api.md).
 
-```python
-view.addons.molsysmt.basic.set(selection="group_index == 0", group_name="XXX")
-view.addons.molsysmt.basic.remove(selection="water")
-view.addons.molsysmt.basic.add(other_system)
-view.addons.molsysmt.basic.append_structures(other_system, structure_indices=0)
-```
-
-These operations are designed to preserve regions, layers, visibility, and shapes whenever possible.
-
-For loading-only add/append workflows, you can also use the viewer loader:
-
-```python
-view.load(other_system, mode="add")
-view.load(other_system, mode="append_structures")
-```
+Native loading supports adding independent sources and appending compatible
+structures through `view.load(...)`. It does not require addon registration.
 
 ## Fully reset the viewer
 

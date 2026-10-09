@@ -1,5 +1,5 @@
 import type { WholeDetails, WholeSummary } from "../group-panel";
-import { makeButton, makeSectionHeader, makeStyledSelect, scalarColorRangeFromInput } from "./ui-helpers";
+import { nameControls, makeButton, makeSectionHeader, makeStyledSelect, scalarColorRangeFromInput } from "./ui-helpers";
 import { PanelContext, StudioPanel } from "./types";
 import { FALLBACK_PRESETS, FALLBACK_REPRESENTATIONS, bindContinuousHistory, createStyleDraftControls } from "./style-composer";
 
@@ -26,6 +26,7 @@ function row(label: string, control: HTMLElement): HTMLDivElement {
         color: "rgba(244,244,245,0.7)",
     });
     item.appendChild(text);
+    nameControls(control, label);
     item.appendChild(control);
     return item;
 }

@@ -45,7 +45,6 @@ distribution:
 
 | Toolkit repository | Ships | Imported as |
 |---|---|---|
-| `molsysmt` | `molsysviewer_molsysmt/` | `molsysviewer_molsysmt` |
 | `topomt` | `molsysviewer_topomt/` | `molsysviewer_topomt` |
 | `elastnetmt` | `molsysviewer_elastnetmt/` | `molsysviewer_elastnetmt` |
 | `pharmacophoremt` | `molsysviewer_pharmacophoremt/` | `molsysviewer_pharmacophoremt` |
@@ -57,6 +56,12 @@ presents it, and MolSysViewer never has to be edited to add one.
 An external add-on is free to be its own distribution. The pattern above is what the
 MolSysSuite toolkits do, not a requirement of the host contract.
 
+MolSysMT is the required native backend, not an addon. The former
+`molsysviewer_molsysmt` entry point is ignored before loading; explicit registration
+of that module or the reserved `molsysmt` namespace is rejected. Native loading,
+selection, interactions and H5MSM workflows remain available without registration.
+Optional domain extensions keep this addon contract. See uibcdf/molsysviewer#186.
+
 ## How the host finds it
 
 Three routes, in decreasing order of preference. They are not equivalent, and the
@@ -66,10 +71,10 @@ MolSysSuite add-ons do not all use the same one:
 
    ```toml
    [project.entry-points."molsysviewer.addons"]
-   molsysmt = "molsysviewer_molsysmt"
+   topomt = "molsysviewer_topomt"
    ```
 
-2. **`KNOWN_ADDON_MODULES`** in `molsysviewer/addons.py`, which names the four MolSysSuite
+2. **`KNOWN_ADDON_MODULES`** in `molsysviewer/addons.py`, which names the optional domain
    modules explicitly. This is a courtesy for known siblings, not a mechanism external
    add-ons should rely on: it requires editing MolSysViewer.
 3. **`molsysviewer.addons.register_module("…")`**, always available, always explicit.

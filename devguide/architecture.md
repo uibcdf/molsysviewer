@@ -206,9 +206,9 @@ public reconciliation primitive,
 `view.apply_system_edit(new_molsys, atom_index_map=…, load_blocks="keep"|"collapse"|"append")`.
 Native workflows such as loading, coordinate/cell assignment and interactions
 use the provider without requiring addon registration. Optional domain addons
-and advanced callers can also drive this primitive. The older MolSysMT addon is
-being retired as its useful workflows acquire native replacements, as recorded
-in `molsyssuite_addon_direction.md`.
+and advanced callers can also drive this primitive. The separate MolSysMT addon is retired under uibcdf/molsysviewer#186.
+The native backend remains required; the viewer does not mirror every provider
+namespace. See `molsyssuite_addon_direction.md` for the boundary.
 
 When `apply_system_edit` runs:
 

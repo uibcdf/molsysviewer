@@ -57,12 +57,15 @@ automatically recalculates science. Changed parameters require a new named analy
 
 ## Qualification and ownership
 
-The public 0.24.0 / 0.23.0 pair remains the delivered baseline. The next planned
-Viewer artifact is 0.24.1 noarch, containing #149/#177, paired with the
-provider's proposed 1.0.0 ABI3 build 0. Source checkpoints are not package
-identities. Freeze exact producer commits and obtain immutable file hashes before
-dispatching the new installed-pair matrix. Publication needs separate final
-maintainer authorization. Final Viewer 1.0 qualification remains independent.
+The public 0.24.0 / 0.23.0 pair remains the delivered baseline. The original
+0.24.1/1.0.0 staged preparation keeps its files and evidence in
+[the preparation record](stabilization_0241_preparation_20261008.md).
+The maintainer has paused both 1.0 publications and agreed a future Viewer
+0.25.0 after the menu and Studio review. Follow
+[the unfrozen preparation plan](stabilization_025_preparation_20261009.md).
+Old source or package gates do not qualify these changes. Freeze exact producers
+and obtain immutable hashes before a new installed-pair dispatch. Publication
+needs separate final authorization; final 1.0 qualification remains independent.
 
 Use existing real-system guards in `tests/test_interactions_api.py`,
 `tests/test_interaction_families.py`, `tests/test_interactions_scene.py`,

@@ -11,6 +11,8 @@ snapshots while you explore.
 
 Use {doc}`context_menu` for actions on a molecular target or selection, object
 editing, measurements, interactions and the canvas control reveal policy.
+Use {doc}`studio` to organize scene objects, calculate interactions and download
+images or HTML views.
 
 If you are trying to understand the current shared workbench/runtime model,
 continue with **Panel mode and workspaces** and then the notebook recipe:
@@ -24,5 +26,6 @@ continue with **Panel mode and workspaces** and then the notebook recipe:
 ui
 camera_and_controls
 context_menu
+studio
 panel_mode
 ```

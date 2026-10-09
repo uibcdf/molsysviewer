@@ -2,9 +2,9 @@
 ``view.apply_system_edit(...)`` primitive.
 
 The former ``view.remove/add/set/append_structures`` methods were removed: the
-molecular-edit semantics now live in the MolSysMT addon
-(``view.addons.molsysmt.basic.*``), while MolSysViewer core keeps only the
-low-level reconciliation primitive ``view.apply_system_edit(...)``.
+molecular edits are calculated with MolSysMT. MolSysViewer exposes the
+reconciliation primitive ``view.apply_system_edit(...)`` with explicit index maps.
+The former MolSysMT addon is retired.
 
 These helpers compute the molecular edit with MolSysMT and then apply it through
 the primitive, so the reconciliation-focused core tests exercise

@@ -71,6 +71,9 @@ export class PopupReplayLog {
         if (!message || typeof message !== "object") return;
         const op = operation(message);
         if (!op) return;
+        // Download replies contain an entire runtime and are endpoint-local effects,
+        // never scene history. A late popup must not retain or replay those bytes.
+        if (op === "html_export_ready") return;
 
         if (op === "clear_all") {
             this.entries = [];

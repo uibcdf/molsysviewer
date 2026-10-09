@@ -49,3 +49,12 @@ test("panel popup bootstrap contains only explicit UI projections", () => {
         message("set_region_summaries", { regions: [] }),
     ]);
 });
+
+test("PopupReplayLog excludes transient HTML download bytes from every snapshot", () => {
+    const log = new PopupReplayLog();
+    log.record({ op: "set_trajectory_frame", index: 2 });
+    log.record({ op: "html_export_ready", request_id: "download", html: "<html>runtime</html>" });
+    assert.equal(log.size, 1);
+    assert.deepEqual(log.snapshot("canvas"), [{ op: "set_trajectory_frame", index: 2 }]);
+    assert.deepEqual(log.snapshot("panel"), []);
+});

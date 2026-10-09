@@ -15,18 +15,24 @@ function card(): HTMLDivElement {
 
 /**
  * Studio → Export subpanel: publication-quality output (PNG figure presets,
- * multi-scale rendering, publication variant sets, standalone HTML exports, and session data).
+ * multi-scale rendering and self-contained browser HTML views).
  */
 export class ExportPanel extends BasePanel {
     readonly key = "export";
     private state: SceneState = {};
 
-    constructor(private readonly ctx: PanelContext) {
+    constructor(private readonly ctx: PanelContext, private readonly hasAuthority = true) {
         super();
     }
 
     setScene(state: SceneState): void {
         this.state = { ...state };
+        this.scheduleRender();
+    }
+
+    setImageDimensions(width: number, height: number): void {
+        if (this.state.imageWidth === width && this.state.imageHeight === height) return;
+        this.state.imageWidth = width; this.state.imageHeight = height;
         this.scheduleRender();
     }
 
@@ -43,7 +49,7 @@ export class ExportPanel extends BasePanel {
         this.host.appendChild(this.renderFigureCard());
 
         // 3. Data & Standalone Views Section
-        this.host.appendChild(makeSectionHeader("Data & Standalone Views"));
+        this.host.appendChild(makeSectionHeader("HTML view"));
         this.host.appendChild(this.renderDataCard());
     }
 
@@ -53,8 +59,11 @@ export class ExportPanel extends BasePanel {
 
         const currentPreset = this.state.figurePreset || "publication-light";
         const currentScale = typeof this.state.figureScale === "number" ? this.state.figureScale : 2.0;
-        const estWidth = Math.round(1920 * currentScale);
-        const estHeight = Math.round(1080 * currentScale);
+        const width = this.state.imageWidth ?? 0;
+        const height = this.state.imageHeight ?? 0;
+        const dimensions = width > 0 && height > 0
+            ? `${Math.max(1, Math.round(width * currentScale))} × ${Math.max(1, Math.round(height * currentScale))} px`
+            : "Dimensions available in the canvas";
         const presetName = currentPreset.includes("dark") ? "Dark Preset" : "Light Preset";
 
         const row = document.createElement("div");
@@ -85,7 +94,9 @@ export class ExportPanel extends BasePanel {
         });
         info.appendChild(dot);
         const textSpan = document.createElement("span");
-        textSpan.textContent = `${currentScale.toFixed(1)}x Scale (${estWidth} × ${estHeight} px) · ${presetName}`;
+        textSpan.textContent = `${currentScale}× Scale · ${dimensions} · ${presetName}`;
+        textSpan.setAttribute("data-molsysviewer-export-dimensions", "true");
+        info.style.flexWrap = "wrap";
         info.appendChild(textSpan);
         row.appendChild(info);
 
@@ -100,7 +111,8 @@ export class ExportPanel extends BasePanel {
         const currentPreset = this.state.figurePreset || "publication-light";
         const currentScale = typeof this.state.figureScale === "number" ? this.state.figureScale : 2.0;
         const currentVariants = this.state.figureVariants || ["dark", "transparent"];
-        const isTransparent = currentVariants.includes("transparent");
+        const isTransparent = this.state.figureBackground !== undefined
+            ? this.state.figureBackground === "transparent" : currentVariants.includes("transparent");
 
         const updateFigureSpec = (preset: string, scale: number, trans: boolean) => {
             const variants = ["dark"];
@@ -125,6 +137,7 @@ export class ExportPanel extends BasePanel {
             },
         );
         presetRow.appendChild(presetLabel);
+        presetSelect.setAttribute("aria-label", "Style Preset");
         presetRow.appendChild(presetSelect);
         figureCard.appendChild(presetRow);
 
@@ -134,11 +147,13 @@ export class ExportPanel extends BasePanel {
         const scaleLabel = document.createElement("span");
         scaleLabel.textContent = "Resolution Scale";
         Object.assign(scaleLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-        const scaleSelect = makeStyledSelect(["1.0x (FHD)", "2.0x (2K)", "3.0x (3K)", "4.0x (4K)"], `${currentScale.toFixed(1)}x (${currentScale === 1 ? "FHD" : currentScale === 2 ? "2K" : currentScale === 3 ? "3K" : "4K"})`, (val) => {
+        const scales = [...new Set([1, 2, 3, 4, currentScale])].sort((a, b) => a - b);
+        const scaleSelect = makeStyledSelect(scales.map(scale => ({ value: String(scale), label: `${scale}×` })), String(currentScale), (val) => {
             const scaleVal = parseFloat(val);
             updateFigureSpec(currentPreset, scaleVal, isTransparent);
         });
         scaleRow.appendChild(scaleLabel);
+        scaleSelect.setAttribute("aria-label", "Resolution Scale");
         scaleRow.appendChild(scaleSelect);
         figureCard.appendChild(scaleRow);
 
@@ -172,13 +187,15 @@ export class ExportPanel extends BasePanel {
         const htmlRow = document.createElement("div");
         Object.assign(htmlRow.style, { display: "flex", flexDirection: "column", gap: "6px" });
         const htmlLabel = document.createElement("span");
-        htmlLabel.textContent = "Save standalone interactive view as HTML page";
+        htmlLabel.textContent = "Download a self-contained browser view. Scene editing requires a live Python session.";
         Object.assign(htmlLabel.style, { fontSize: "10px", color: "rgba(244,244,245,0.56)" });
 
-        const htmlButton = makeButton("Download Standalone HTML View", () => {
+        const htmlButton = makeButton("Download HTML View", () => {
             this.ctx.onAction("export_html");
         });
         htmlButton.setAttribute("data-molsysviewer-export-html", "true");
+        htmlButton.disabled = !this.hasAuthority;
+        if (!this.hasAuthority) htmlButton.title = "HTML export requires a live Python session.";
         htmlButton.style.padding = "5px 10px";
         htmlButton.style.fontSize = "11px";
 

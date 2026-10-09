@@ -290,3 +290,14 @@ Completed work, kept for the reasoning:
 ## Scientific loading follow-up — 2026-10-04
 
 - [mixed_partial_hierarchy_load_breaks_scene_state.md](mixed_partial_hierarchy_load_breaks_scene_state.md) — #157: Detached load candidates validate public scene identity before commit; rejected malformed or mixed partial-hierarchy systems preserve the existing scene, sources, history and analyses.
+
+## Studio review — 2026-10-09
+
+- [studio_export_delivery.md](studio_export_delivery.md) — #181: PNG summary now follows the actual renderer buffer and scale; figure_background carries the real recipe background.
+- [studio_keyboard_access.md](studio_keyboard_access.md) — #182: Shared controls use native buttons, labels, checkboxes and switches, with accessible names and visible focus.
+- [studio_floating_geometry.md](studio_floating_geometry.md) — #183: FloatingPanelShell retains floating bounds on dock/float and clamps them on host resize instead of recentering.
+- [studio_compact_navigation.md](studio_compact_navigation.md) — #184: The reusable CompactPanelNavigation owner replaces the sidebar below 480 px of card body width.
+- [studio_interactions_presentation.md](studio_interactions_presentation.md) — #185: Saved sets precede the collapsed new-set form; optional visual identifiers and raw metadata use disclosures.
+- [retire_molsysmt_addon.md](retire_molsysmt_addon.md) — #186: Automatic discovery skips the legacy MolSysMT entry point before import; explicit namespace/module registration refuses it with the native route.
+- [studio_truthful_copy.md](studio_truthful_copy.md) — #187: Studio descriptions now name the available Layers visibility, PNG/HTML exports and controls visibility settings.
+- [studio_browser_guards.md](studio_browser_guards.md) — #188: The controls guard waits for actual molecular drawing before sampling the startup transition and retains an intermediate-opacity assertion for the whole group.

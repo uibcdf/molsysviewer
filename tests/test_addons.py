@@ -1647,3 +1647,40 @@ def test_resolve_panel_widget_returns_instance():
     finally:
         addons.clear()
         sys.modules.pop(module.__name__, None)
+
+
+def test_molsysmt_is_native_backend_and_rejects_legacy_registration():
+    from molsysviewer import demo
+
+    with pytest.raises(ValueError, match="native MolSysViewer backend"):
+        addons.register(AddonSpec(name="molsysmt"))
+    with pytest.raises(ValueError, match="retired"):
+        addons.register_module("molsysviewer_molsysmt")
+    assert not addons.contains("molsysmt")
+    view = demo["pentalanine"]
+    result = view.interactions.hbonds.get_buch_hbonds(structure_indices=[0, 8, 3], name="native-backend")
+    assert result is not None
+    assert "native-backend" in view.molsys.interactions
+    assert len(view.molsys.interactions["native-backend"].evaluated_structure_indices) == 3
+    view.close()
+
+
+def test_automatic_discovery_skips_installed_legacy_molsysmt_entrypoint(monkeypatch):
+    # Use the actual provider entry point; no substitute discovery object.
+    from importlib.metadata import entry_points
+
+    from molsysviewer import demo
+
+    provider_entries = entry_points(group="molsysviewer.addons")
+    legacy = [entry for entry in provider_entries if entry.name == "molsysmt"]
+    if not legacy:
+        pytest.skip("Legacy MolSysMT entry point is not installed")
+    # The existing autouse registry isolation replaces this function. Restore the
+    # genuine metadata provider for this compatibility case.
+    monkeypatch.setattr(addons_module, "metadata_entry_points", entry_points)
+    addons.discover()
+    assert "molsysmt" not in addons.names()
+    assert not any("molsysmt" in failure["source"] for failure in addons.discovery_failures())
+    view = demo["dialanine"]
+    assert view.whole.get(element="system", n_atoms=True) > 0
+    view.close()

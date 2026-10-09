@@ -2,7 +2,7 @@ import { BasePanel } from "./base-panel";
 import type { ActiveSelectionPayload } from "../../managers/active-selection";
 import type { SavedSelectionSummary } from "../group-panel";
 import type { PanelContext } from "./types";
-import { makeButton, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
+import { nameControls, makeButton, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
 
 export type ShapeLength = { magnitude: number; unit: string };
 
@@ -361,6 +361,7 @@ export class ShapesPanel extends BasePanel {
         });
         select.style.flex = "1 1 auto";
         select.setAttribute("data-molsysviewer-shape-type-select", "true");
+        select.setAttribute("aria-label", "Shape type");
         typeRow.appendChild(select);
         formCard.appendChild(typeRow);
 
@@ -423,6 +424,7 @@ export class ShapesPanel extends BasePanel {
             tagRow.appendChild(tagLabel);
 
             const tagInput = document.createElement("input");
+            tagInput.setAttribute("aria-label", "Shape tag");
             tagInput.value = this.customTag;
             tagInput.placeholder = "Optional name (e.g. site_sphere)";
             Object.assign(tagInput.style, { flex: "1 1 auto", ...INPUT_STYLE });
@@ -521,6 +523,7 @@ export class ShapesPanel extends BasePanel {
                     
                     const numInput = document.createElement("input");
                     numInput.type = "number";
+                    numInput.setAttribute("aria-label", lbl);
                     numInput.step = "0.1";
                     numInput.value = String(this.coord1[idx]);
                     Object.assign(numInput.style, INPUT_STYLE);
@@ -584,6 +587,7 @@ export class ShapesPanel extends BasePanel {
             Object.assign(radLabel.style, { fontSize: "10px", color: "rgba(244,244,245,0.6)" });
             const radInput = document.createElement("input");
             radInput.type = "number";
+            radInput.setAttribute("aria-label", "Radius (nm)");
             radInput.min = "0.01";
             radInput.step = "0.05";
             radInput.value = String(this.radiusVal);
@@ -603,6 +607,7 @@ export class ShapesPanel extends BasePanel {
             Object.assign(colLabel.style, { fontSize: "10px", color: "rgba(244,244,245,0.6)" });
             const colInput = document.createElement("input");
             colInput.type = "color";
+            colInput.setAttribute("aria-label", "Colour");
             colInput.value = this.colorVal;
             colInput.setAttribute("data-molsysviewer-shape-new-color", "true");
             colInput.addEventListener("input", () => { this.colorVal = colInput.value; });
@@ -618,6 +623,7 @@ export class ShapesPanel extends BasePanel {
             Object.assign(alphaLabel.style, { fontSize: "10px", color: "rgba(244,244,245,0.6)" });
             const alphaInput = document.createElement("input");
             alphaInput.type = "range";
+            alphaInput.setAttribute("aria-label", "Opacity");
             alphaInput.min = "0";
             alphaInput.max = "1";
             alphaInput.step = "0.05";
@@ -897,7 +903,8 @@ export class ShapesPanel extends BasePanel {
         label.textContent = labelText;
         Object.assign(label.style, { fontSize: "10px", color: "rgba(244,244,245,0.66)" });
         row.appendChild(label);
-        row.appendChild(control);
+        nameControls(control, labelText);
+    row.appendChild(control);
         return row;
     }
 

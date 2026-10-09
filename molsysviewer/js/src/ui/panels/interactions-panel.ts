@@ -33,6 +33,7 @@ function field(parent: HTMLElement, label: string, value: string, key: string, c
 }
 function select(parent: HTMLElement, values: Array<[string, string]>, current: string, change: (value: string) => void) {
     const el = document.createElement("select"); Object.assign(el.style, { width: "100%", minWidth: "0", color: "#fff", background: "#272335", padding: "5px", borderRadius: "6px" });
+    if (parent.tagName === "LABEL" && parent.firstElementChild?.textContent) el.setAttribute("aria-label", parent.firstElementChild.textContent);
     for (const [value, text] of values) { const option = document.createElement("option"); option.value = value; option.textContent = text; el.appendChild(option); }
     el.value = current; el.addEventListener("change", () => change(el.value)); parent.appendChild(el); return el;
 }
@@ -95,10 +96,26 @@ export class InteractionsPanel extends BasePanel {
     private error = "";
     private creationRequest = 0;
     private busy: number | null = null;
+    private formOpen = false;
+    private formDetails: HTMLDetailsElement | null = null;
+    private visualOptionsOpen = false;
+    private visualOptionsDetails: HTMLDetailsElement | null = null;
     private filtersOpen = false;
     private analysesOpen = false;
     private filtersDetails: HTMLDetailsElement | null = null;
     private analysesDetails: HTMLDetailsElement | null = null;
+    private openForm(): void {
+        this.formOpen = true;
+        if (this.formDetails) this.formDetails.open = true;
+    }
+    private openFilters(): void {
+        this.filtersOpen = true;
+        if (this.filtersDetails) this.filtersDetails.open = true;
+    }
+    private metadata(parent: HTMLElement, text: string): void {
+        const details = document.createElement("details"), summary = document.createElement("summary");
+        summary.textContent = "Scientific metadata"; details.appendChild(summary); details.appendChild(note(text)); parent.appendChild(details);
+    }
     private color = "#34d399";
     private radius = "0.025";
     private alpha = "0.85";
@@ -122,6 +139,7 @@ export class InteractionsPanel extends BasePanel {
     setSelection(selection: ActiveSelectionPayload) { this.selection = selection; this.scheduleRender(); }
     /** Stage target A; calculation and display still require explicit submission. */
     stageContextAtoms(atoms: number[], calculate: boolean): void {
+        this.openForm(); this.openFilters();
         this.a = [...atoms]; this.b = null; this.slot = "a";
         this.mode = "involving_selection"; this.exclusive = false; this.filtersOpen = true;
         this.editing = null;
@@ -137,6 +155,7 @@ export class InteractionsPanel extends BasePanel {
     openObject(tag: string): void {
         const item = this.items.find(item => item.tag === tag);
         if (!item) return;
+        this.openForm(); this.openFilters();
         this.editing = item.tag; this.tag = item.tag; this.layer = item.layer_tag;
         this.a = item.filter.selection === "all" ? null : [...item.filter.selection];
         this.b = Array.isArray(item.filter.selection_2) ? [...item.filter.selection_2] : null;
@@ -171,6 +190,12 @@ export class InteractionsPanel extends BasePanel {
     }
     private emit(action: Parameters<PanelContext["onAction"]>[0], details?: Record<string, unknown>) {
         this.error = ""; try { this.ctx.onAction(action, details); } catch (error) { this.busy = null; this.error = String(error); } this.scheduleRender();
+    }
+    private calculationScopeText(): string {
+        const scope = this.calcStructures.trim();
+        if (scope === "current") return `Only the current structure (${this.frame}) will be evaluated. Display filters do not extend the calculation.`;
+        if (scope === "all") return "All loaded structures will be evaluated. Display filters only control what is drawn.";
+        return "Only the listed structure indices will be evaluated. Display filters only control what is drawn.";
     }
     private filter() { return { selection: this.a ?? "all", selection_2: this.mode === "between_selections" ? this.b : null,
         mode: this.mode, exclusive: this.mode === "between_selections" && this.exclusive, structure_indices: indices(this.displayStructures),
@@ -230,6 +255,8 @@ export class InteractionsPanel extends BasePanel {
     }
     protected paint() {
         if (!this.host) return;
+        if (this.formDetails) this.formOpen = this.formDetails.open;
+        if (this.visualOptionsDetails) this.visualOptionsOpen = this.visualOptionsDetails.open;
         // Native toggle events are queued: read the live state before rebuilding.
         const previousFilters = this.filtersDetails;
         if (previousFilters) this.filtersOpen = previousFilters.open;
@@ -237,18 +264,25 @@ export class InteractionsPanel extends BasePanel {
         if (previousAnalyses) this.analysesOpen = previousAnalyses.open;
         this.host.replaceChildren(); Object.assign(this.host.style, { display: "flex", flexDirection: "column", gap: "9px" });
         this.host.appendChild(makeSectionHeader("Interactions"));
+        const experimental = note("Experimental · calculation and result contracts may evolve.");
+        experimental.setAttribute("data-molsysviewer-interactions-experimental", "true"); this.host.appendChild(experimental);
         if (!this.backendAvailable) this.host.appendChild(note("Interactions requires a compatible MolSysMT backend. Other viewer tools remain available."));
         const enabled = this.items.filter(item => !item.hidden).length;
         this.host.appendChild(note(`${enabled}/${this.items.length} sets enabled · structure ${this.frame}`));
         const all = row(); append(all, makeButton("Show all", () => this.emit("show_all_interactions")), makeButton("Hide all", () => this.emit("hide_all_interactions"))); this.host.appendChild(all);
         if (this.error) this.host.appendChild(note(this.error));
-        const form = box(); form.appendChild(makeSectionHeader(this.editing ? `Edit ${this.editing}` : "New interaction set")); this.host.appendChild(form);
+        const creation = document.createElement("details"); this.formDetails = creation;
+        creation.setAttribute("data-molsysviewer-interaction-form", "true"); creation.open = !!this.editing || this.formOpen;
+        const creationTitle = document.createElement("summary"); creationTitle.textContent = this.editing ? `Edit ${this.editing}` : "New interaction set";
+        creation.appendChild(creationTitle); this.host.appendChild(creation);
+        const form = box(); creation.appendChild(form);
         if (!this.editing) {
             const tabs = row(); for (const [value, text] of [["calculate", "Calculate"], ["stored", "Stored analysis"], ["file", "H5MSM file"]]) {
                 const btn = makeButton(text, () => { this.source = value; this.scheduleRender(); }); btn.setAttribute("data-molsysviewer-interaction-source", value); if (this.source === value) btn.style.background = "rgba(139,92,246,0.25)"; tabs.appendChild(btn);
             } form.appendChild(tabs);
             if (this.source === "stored") {
-                select(form, this.analyses.map(item => [item.name, `${item.name} · ${item.n_occurrences} observations`]), this.stored, value => { this.stored = value; this.scheduleRender(); });
+                const storedLabel = document.createElement("label"); storedLabel.appendChild(note("Stored analysis")); form.appendChild(storedLabel);
+                select(storedLabel, this.analyses.map(item => [item.name, `${item.name} · ${item.n_occurrences} observations`]), this.stored, value => { this.stored = value; this.scheduleRender(); });
                 const analysis = this.analyses.find(item => item.name === this.stored);
                 if (analysis) form.appendChild(note(`${analysis.method} · ${analysis.n_evaluated_structures}/${analysis.n_structures} structures evaluated`));
             } else {
@@ -264,12 +298,16 @@ export class InteractionsPanel extends BasePanel {
                     if (["disulfide_candidate", "metal_coordination_candidate"].includes(this.kind)) form.appendChild(note("Geometric candidates; covalent topology is unchanged."));
                     const scopeLabel = document.createElement("label"); scopeLabel.appendChild(note("Calculate atoms")); form.appendChild(scopeLabel);
                     const scope = select(scopeLabel, [["all", "All atoms"], ["a", "Within staged A"], ["between", "Between staged A and B"]],
-                        this.calcAtomScope, value => { this.calcAtomScope = value; this.scheduleRender(); });
+                        this.calcAtomScope, value => { this.calcAtomScope = value; if (value !== "all") this.openFilters(); this.scheduleRender(); });
                     scope.setAttribute("data-molsysviewer-interaction-calc-scope", "true");
                     scope.querySelector<HTMLOptionElement>('option[value="between"]')!.disabled = this.kind === "disulfide_candidate";
                     form.appendChild(note(this.calcAtomScope === "all" ? "Calculation covers all atoms. A/B below filter the display only."
                         : `Calculation uses staged ${this.calcAtomScope === "a" ? "A" : "A and B"} below; atoms outside this scope are not evaluated.`));
-                    field(form, "Calculate structures: current, all, or indices", this.calcStructures, "calc-structures", value => this.calcStructures = value);
+                    const structures = field(form, "Calculate structures: current, all, or indices", this.calcStructures, "calc-structures", value => {
+                        this.calcStructures = value; coverage.textContent = this.calculationScopeText();
+                    });
+                    structures.placeholder = "current, all, or 0,2,5";
+                    const coverage = note(this.calculationScopeText()); coverage.setAttribute("data-molsysviewer-interaction-calculation-coverage", "true"); form.appendChild(coverage);
                     const pbc = document.createElement("label"); const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = this.pbc; cb.onchange = () => this.pbc = cb.checked; append(pbc, cb, " Periodic boundary conditions"); form.appendChild(pbc);
                 } else {
                     field(form, "H5MSM path in the Python session", this.filename, "filename", value => this.filename = value);
@@ -282,10 +320,15 @@ export class InteractionsPanel extends BasePanel {
                 }
             }
         }
-        field(form, "Set tag (empty = automatic)", this.tag, "tag", value => this.tag = value);
-        field(form, "Layer (empty = automatic)", this.layer, "layer", value => this.layer = value);
-        const details = document.createElement("details"); this.filtersDetails = details; details.setAttribute("data-molsysviewer-interaction-filters", "true"); details.open = !!this.editing || this.filtersOpen; details.addEventListener("toggle", () => { if (details.isConnected) this.filtersOpen = details.open; }); const title = document.createElement("summary"); title.textContent = "Display filter and selections"; details.appendChild(title); form.appendChild(details);
-        select(details, [["involving_selection", "All interactions involving the selection"], ["within_selection", "Only within the selection"], ["across_selection_boundary", "Between the selection and the rest"], ["between_selections", "Between selections A and B"]], this.mode, value => { this.mode = value; this.scheduleRender(); });
+        const visualOptions = document.createElement("details"), visualTitle = document.createElement("summary");
+        visualTitle.textContent = "Representation name and layer (optional)"; visualOptions.appendChild(visualTitle); form.appendChild(visualOptions);
+        this.visualOptionsDetails = visualOptions;
+        visualOptions.open = !!this.editing || this.visualOptionsOpen;
+        field(visualOptions, "Set tag (empty = automatic)", this.tag, "tag", value => this.tag = value);
+        field(visualOptions, "Layer (empty = automatic)", this.layer, "layer", value => this.layer = value);
+        const details = document.createElement("details"); this.filtersDetails = details; details.setAttribute("data-molsysviewer-interaction-filters", "true"); details.open = !!this.editing || this.filtersOpen; details.addEventListener("toggle", () => { if (details.isConnected) this.filtersOpen = details.open; }); const title = document.createElement("summary"); title.textContent = this.source === "calculate" && this.calcAtomScope !== "all" ? "Calculation selections and display filter" : "Display filter and selections"; details.appendChild(title); form.appendChild(details);
+        const modeLabel = document.createElement("label"); modeLabel.appendChild(note("Display interactions")); details.appendChild(modeLabel);
+        select(modeLabel, [["involving_selection", "All interactions involving the selection"], ["within_selection", "Only within the selection"], ["across_selection_boundary", "Between the selection and the rest"], ["between_selections", "Between selections A and B"]], this.mode, value => { this.mode = value; this.scheduleRender(); });
         details.appendChild(note(`A: ${this.a ? `${this.a.length} atoms` : "all atoms"} · B: ${this.b ? `${this.b.length} atoms` : "unset"}`));
         const slots = row(); append(slots, makeButton("Stage A", () => { this.slot = "a"; this.scheduleRender(); }), makeButton("Stage B", () => { this.slot = "b"; this.scheduleRender(); }), makeButton("Reset selections", () => { this.a = this.b = null; this.scheduleRender(); })); details.appendChild(slots);
         if (this.selection) details.appendChild(renderSelectionDock({ activeSelection: this.selection, savedSelections: this.saved,
@@ -333,7 +376,7 @@ export class InteractionsPanel extends BasePanel {
         });
         submit.disabled = this.busy !== null || !this.loaded || !this.backendAvailable || (!this.editing && this.source === "calculate" && (!this.families.length || !this.criterion())) || (!this.editing && this.source === "file" && !this.aligned) || (!this.editing && this.source === "stored" && !this.stored);
         submit.setAttribute("data-molsysviewer-interaction-create", "true"); form.appendChild(submit);
-        if (this.editing) form.appendChild(makeButton("Done editing", () => { this.editing = null; this.tag = this.layer = ""; this.scheduleRender(); }));
+        if (this.editing) form.appendChild(makeButton("Done editing", () => { this.editing = null; this.tag = this.layer = ""; this.formOpen = false; if (this.formDetails) this.formDetails.open = false; this.scheduleRender(); }));
         this.host.appendChild(makeSectionHeader("Saved sets"));
         if (!this.items.length) this.host.appendChild(note("No interaction sets. Calculate an analysis or load one from H5MSM."));
         for (const item of this.items) {
@@ -346,7 +389,8 @@ export class InteractionsPanel extends BasePanel {
             if (this.inspecting === item.tag) {
                 if (!this.inspection) card.appendChild(note("Requesting current structure observations…"));
                 else {
-                    const data = this.inspection; card.appendChild(note(`${data.method} · ${data.total} observations · ${JSON.stringify(data.parameters)}`));
+                    const data = this.inspection; card.appendChild(note(`${data.method} · ${data.total} observations`));
+                    this.metadata(card, JSON.stringify(data.parameters));
                     card.appendChild(note(`Calculation scope: ${JSON.stringify(data.evaluation_scope)}`));
                     if (data.limit_reason) card.appendChild(note(data.limit_reason));
                     for (const observation of data.observations) {
@@ -371,8 +415,9 @@ export class InteractionsPanel extends BasePanel {
         const stored = document.createElement("details"); this.analysesDetails = stored; stored.setAttribute("data-molsysviewer-interaction-analyses", "true"); stored.open = this.analysesOpen; stored.addEventListener("toggle", () => { if (stored.isConnected) this.analysesOpen = stored.open; }); const summary = document.createElement("summary"); summary.textContent = `Stored analyses (${this.analyses.length})`; stored.appendChild(summary);
         for (const analysis of this.analyses) {
             const card = box(); card.appendChild(note(`${analysis.name} · ${analysis.n_occurrences} observations · ${analysis.n_evaluated_structures}/${analysis.n_structures} structures · ${analysis.n_references} visual references`));
-            card.appendChild(note(`${analysis.method} · ${JSON.stringify(analysis.parameters)} · ${JSON.stringify(analysis.software)}`));
-            const actions = row(); actions.appendChild(makeButton("Use", () => { this.source = "stored"; this.stored = analysis.name; this.editing = null; this.scheduleRender(); }));
+            card.appendChild(note(analysis.method));
+            this.metadata(card, `${JSON.stringify(analysis.parameters)} · ${JSON.stringify(analysis.software)}`);
+            const actions = row(); actions.appendChild(makeButton("Use", () => { this.openForm(); this.source = "stored"; this.stored = analysis.name; this.editing = null; this.scheduleRender(); }));
             const remove = makeButton("Delete analysis", () => this.emit("delete_interaction_analysis", { analysis_name: analysis.name })); remove.disabled = analysis.n_references > 0; remove.title = "Deleting an analysis clears scene undo history."; actions.appendChild(remove); card.appendChild(actions); stored.appendChild(card);
         } this.host.appendChild(stored);
     }

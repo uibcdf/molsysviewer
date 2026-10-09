@@ -15,7 +15,6 @@ first page of the project.
 
 from __future__ import annotations
 
-import importlib.util
 import re
 import socket
 import warnings
@@ -32,7 +31,6 @@ PYTHON_BLOCK = re.compile(r"^```python\n(.*?)^```", re.DOTALL | re.MULTILINE)
 # The opening snippet fetches a structure from the PDB. It is the right thing
 # for the README to show first, and the wrong thing for CI to depend on.
 NEEDS_NETWORK = 'msv.new_view("1TRS")'
-NEEDS_ADDON = "molsysviewer_molsysmt"
 
 
 def _quick_start_blocks() -> list[str]:
@@ -68,8 +66,6 @@ def test_every_quick_start_snippet_runs(tmp_path, monkeypatch):
     for number, block in enumerate(_quick_start_blocks(), start=1):
         if NEEDS_NETWORK in block and not _has_network():
             continue
-        if NEEDS_ADDON in block and importlib.util.find_spec(NEEDS_ADDON) is None:
-            continue
         with warnings.catch_warnings():
             warnings.simplefilter("error", UserWarning)
             try:
@@ -86,7 +82,7 @@ def test_the_quick_start_reproducibility_claim_holds(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     namespace: dict[str, object] = {}
     for block in _quick_start_blocks():
-        if NEEDS_NETWORK in block or NEEDS_ADDON in block:
+        if NEEDS_NETWORK in block:
             continue
         exec(compile(block, "<README quick start>", "exec"), namespace)
 

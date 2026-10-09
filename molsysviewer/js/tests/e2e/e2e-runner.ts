@@ -9,6 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const SUITES = [
     "context-menu",
     "controls-visibility",
+    "studio-usability",
     "annotations-interaction",
     "annotations-subpanel",
     "array-native-load",

@@ -173,23 +173,11 @@ def expand_selection(view: Any, content: Mapping[str, Any]) -> None:
 
 
 def remove_selection(view: Any, content: Mapping[str, Any]) -> None:
-    atom_indices = list(view.active_selection.atom_indices)
-    if not atom_indices:
-        raise ValueError("remove_selection requires a non-empty active selection.")
-    view.addons.handle_context_action(
-        "molsysmt",
-        "remove-selected-atoms",
-        {
-            "event": "interaction_context_action",
-            "action": "remove_selection",
-            "addon": "molsysmt",
-            "addon_action_id": "remove-selected-atoms",
-            "atom_indices": atom_indices,
-            "context": content.get("context", {}),
-        },
-        skip_digestion=True,
+    del view, content
+    raise ValueError(
+        "The former MolSysMT remove_selection addon action is no longer supported. "
+        "Use clear_selection to clear the selection without editing the molecular system."
     )
-    view.active_selection.clear(skip_digestion=True)
 
 
 def focus_target(view: Any, content: Mapping[str, Any]) -> None:

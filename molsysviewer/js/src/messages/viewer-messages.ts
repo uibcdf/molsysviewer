@@ -686,6 +686,7 @@ export type SetFigureSpecMessage = {
     figure_preset?: string;
     figure_scale?: number;
     figure_variants?: string[];
+    figure_background?: string;
 };
 
 export type ShowWholeMessage = {

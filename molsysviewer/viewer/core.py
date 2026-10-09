@@ -2972,7 +2972,11 @@ class MolSysView(
             "request_id": request_id,
             "scale": float(figure.get("figure_scale", 2.0)),
             "preset": str(figure.get("figure_preset", "publication-light")),
-            "transparent": isinstance(variants, list) and "transparent" in variants,
+            "transparent": (
+                figure["figure_background"] == "transparent"
+                if "figure_background" in figure
+                else isinstance(variants, list) and "transparent" in variants
+            ),
         }
         self._pending_remote_image_downloads[request_id] = client_endpoint
         try:
@@ -3060,6 +3064,17 @@ class MolSysView(
             "n_structures": int(self.player.n_structures),
         }
 
+    def _build_download_html(self) -> str:
+        return self._build_lite_html(
+            title="MolSysViewer",
+            include_controls=True,
+            include_popout=True,
+            messages=self._build_export_messages(),
+            inline_messages=True,
+            runtime_source=MolSysViewerWidget._viewer_js_source,
+            background="auto",
+        )
+
     def _request_remote_html_download(self) -> None:
         router = getattr(self.widget, "router", None)
         publish = getattr(self.widget, "publish_download", None)
@@ -3075,15 +3090,7 @@ class MolSysView(
         )
         if client_endpoint is None:
             raise RuntimeError("remote HTML download requires an attached client")
-        html = self._build_lite_html(
-            title="MolSysViewer",
-            include_controls=True,
-            include_popout=True,
-            messages=self._build_export_messages(),
-            inline_messages=True,
-            runtime_source=MolSysViewerWidget._viewer_js_source,
-            background="auto",
-        )
+        html = self._build_download_html()
         url = publish("molsysviewer.html", "text/html", html.encode("utf-8"))
         projection = {
             "op": "remote_download_ready",

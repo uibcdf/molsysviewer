@@ -10,6 +10,7 @@ import {
     makeSectionHeader,
     makeSettingsCard,
     makeStyledSelect,
+    makeSwitch,
 } from "./panels/ui-helpers";
 import { PanelContext, StudioPanel } from "./panels/types";
 import { ViewportPanel } from "./panels/viewport-panel";
@@ -25,6 +26,7 @@ import { InteractionsPanel } from "./panels/interactions-panel";
 import type { InteractionSummariesMessage, InteractionInspection, InteractionSummary } from "../managers/handlers/interaction-handlers";
 import { ShapesPanel, ShapeRenderStatus, ShapeSummary } from "./panels/shapes-panel";
 import { PanelShell } from "./panel-shell";
+import { CompactPanelNavigation } from "./compact-panel-navigation";
 import { FloatingPanelShell } from "./floating-panel-shell";
 
 const TAB_ORDER_STORAGE_KEY = "molsysviewer-studio-tab-order";
@@ -70,6 +72,9 @@ export type SceneState = {
     figurePreset?: string;
     figureScale?: number;
     figureVariants?: string[];
+    figureBackground?: string;
+    imageWidth?: number;
+    imageHeight?: number;
     isDarkMode?: boolean;
     isSpinActive?: boolean;
     isSwingActive?: boolean;
@@ -175,6 +180,7 @@ export class GroupPanel {
     // Left column: Tabs
     private readonly leftColumn: HTMLDivElement;
     private readonly tabsContainer: HTMLDivElement;
+    private compactNavigation?: CompactPanelNavigation;
     private activeTab: TabKey = "system";
     private readonly tabs: Map<TabKey, { button: HTMLButtonElement; badge: HTMLSpanElement }> = new Map();
 
@@ -336,7 +342,7 @@ export class GroupPanel {
         const settingsBtn = document.createElement("button");
         settingsBtn.type = "button";
         settingsBtn.setAttribute("data-molsysviewer-group-settings-btn", "true");
-        settingsBtn.title = "Configure viewer behavior, cache settings, and options.";
+        settingsBtn.title = "Choose whether and where canvas controls hide automatically.";
         Object.assign(settingsBtn.style, {
             display: "flex",
             flexDirection: "column",
@@ -380,7 +386,7 @@ export class GroupPanel {
             fontSize: "10px",
             color: "rgba(244,244,245,0.48)",
         });
-        settingsBadge.textContent = "Viewer config";
+        settingsBadge.textContent = "Canvas controls";
         settingsBtn.appendChild(settingsBadge);
 
         bottomContainer.appendChild(settingsBtn);
@@ -432,7 +438,7 @@ export class GroupPanel {
         this.viewportSection = this.createSection("viewport");
         this.viewportPanel = new ViewportPanel(this.makePanelContext("viewport"));
         this.exportSection = this.createSection("export");
-        this.exportPanel = new ExportPanel(this.makePanelContext("export"));
+        this.exportPanel = new ExportPanel(this.makePanelContext("export"), this.hasAuthority);
         this.settingsSection = this.createSection("settings");
 
         this.systemPanel = new SystemPanel(this.makePanelContext("system"), {
@@ -512,6 +518,9 @@ export class GroupPanel {
         }
 
         // Show the default tab.
+        this.compactNavigation = new CompactPanelNavigation(this.body, this.leftColumn, this.rightColumn,
+            "Studio section", value => this.switchTab(value as TabKey));
+        this.updateCompactNavigation();
         this.switchTab("system");
     }
 
@@ -579,10 +588,11 @@ export class GroupPanel {
             regions: "Define and style spatial regions, boolean composition, and overlap inspection.",
             measures: "Measure distances, angles, and dihedrals between atoms.",
             annotations: "View and customize textual labels, 3D annotations, and overlays.",
+            interactions: "Calculate, load, display and inspect interaction analyses (experimental).",
             shapes: "Manage custom 3D geometric shapes and objects in the scene.",
-            layers: "Configure drawing layers, rendering order, and depth settings.",
+            layers: "Group scene objects in layers and control their visibility.",
             viewport: "Adjust background color, lighting, camera, and display parameters.",
-            export: "Export high-resolution images, coordinates, and system state files.",
+            export: "Download PNG images and self-contained HTML views.",
         };
         const tooltip = tooltips[key];
         if (tooltip) {
@@ -717,15 +727,18 @@ export class GroupPanel {
     openSection(key: string): boolean {
         if (!this.tabs.has(key as TabKey)) return false;
         this.switchTab(key as TabKey);
-        this.tabs.get(key as TabKey)?.button.focus();
+        if (this.compactNavigation?.select.style.display === "block") this.compactNavigation.select.focus();
+        else this.tabs.get(key as TabKey)?.button.focus();
         return true;
     }
 
     private switchTab(key: TabKey): void {
         this.activeTab = key;
+        if (this.compactNavigation) this.compactNavigation.select.value = key;
 
         // Reset all tabs styles
         for (const [tabKey, { button, badge }] of this.tabs.entries()) {
+            button.setAttribute("aria-current", tabKey === key ? "page" : "false");
             if (tabKey === key) {
                 Object.assign(button.style, {
                     background: "rgba(255,255,255,0.08)",
@@ -942,6 +955,10 @@ export class GroupPanel {
         this.exportPanel.setScene(state);
     }
 
+    setImageDimensions(width: number, height: number): void {
+        this.exportPanel.setImageDimensions(width, height);
+    }
+
     setSections(items: SectionSummary[], settings: SectionSettings): void {
         this.viewportPanel.setSections(items, settings);
     }
@@ -990,6 +1007,7 @@ export class GroupPanel {
     }
 
     dispose(): void {
+        this.compactNavigation?.dispose();
         this.systemPanel.dispose();
         if (!this.sharedShell) {
             this.shell.dispose();
@@ -1057,7 +1075,7 @@ export class GroupPanel {
         return makeSettingsCard(titleText);
     }
 
-    private makeCheckboxRow(labelText: string, checked: boolean, onChange: (checked: boolean) => void): HTMLDivElement {
+    private makeCheckboxRow(labelText: string, checked: boolean, onChange: (checked: boolean) => void): HTMLLabelElement {
         return makeCheckboxRow(labelText, checked, onChange);
     }
 
@@ -1107,42 +1125,17 @@ export class GroupPanel {
 
         const autohideEnabled = this.model ? !!this.model.get("autohide_controls") : true;
 
-        // Custom iOS toggle switch for Autohide Controls
-        const autohideToggleTrack = document.createElement("div");
-        Object.assign(autohideToggleTrack.style, {
-            width: "30px",
-            height: "16px",
-            borderRadius: "8px",
-            background: autohideEnabled ? "#6366f1" : "rgba(255,255,255,0.12)",
-            position: "relative",
-            cursor: "pointer",
-            transition: "background 0.2s ease",
-            flexShrink: "0",
-        });
-        const autohideToggleThumb = document.createElement("div");
-        Object.assign(autohideToggleThumb.style, {
-            width: "12px",
-            height: "12px",
-            borderRadius: "50%",
-            background: "#ffffff",
-            position: "absolute",
-            top: "2px",
-            left: autohideEnabled ? "16px" : "2px",
-            transition: "left 0.2s ease",
-        });
-        autohideToggleTrack.appendChild(autohideToggleThumb);
-        autohideRow.appendChild(autohideToggleTrack);
-
-        autohideToggleTrack.addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
+        const autohideToggleTrack = makeSwitch("Autohide Controls", autohideEnabled, () => {
             if (this.model) {
-                const newVal = !this.model.get("autohide_controls");
-                this.model.set("autohide_controls", newVal);
+                const hadFocus = autohideToggleTrack === this.body.ownerDocument.activeElement;
+                this.model.set("autohide_controls", !this.model.get("autohide_controls"));
                 this.model.save_changes();
                 this.renderSettingsSection();
+                if (hadFocus) this.settingsSection.querySelector<HTMLButtonElement>('[role="switch"]')?.focus();
             }
         });
+        autohideToggleTrack.disabled = !this.model;
+        autohideRow.appendChild(autohideToggleTrack);
         const scopeLabel = document.createElement("label");
         scopeLabel.textContent = "Reveal controls near";
         Object.assign(scopeLabel.style, { display: "block", fontSize: "11px", marginTop: "10px" });
@@ -1178,5 +1171,11 @@ export class GroupPanel {
                 this.tabsContainer.appendChild(tab.button);
             }
         }
+        this.updateCompactNavigation();
+    }
+
+    private updateCompactNavigation(): void {
+        this.compactNavigation?.update([...this.getTabOrder(), "settings" as TabKey].map(value => ({ value,
+            label: this.tabs.get(value)?.button.querySelector("div")?.textContent?.replace("⚙ ", "") || value })), this.activeTab);
     }
 }

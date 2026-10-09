@@ -349,10 +349,10 @@ test("ViewerContextMenu hides legacy remove action when MolSysMT addon item is a
             null,
             [
                 {
-                    addon: "molsysmt",
-                    id: "remove-selected-atoms",
-                    title: "MolSysMT: remove selected atoms",
-                    group: "molsysmt",
+                    addon: "topomt",
+                    id: "inspect-selected-atoms",
+                    title: "TopoMT: inspect selected atoms",
+                    group: "topomt",
                     order: 5,
                     enabled: true,
                     target_kinds: ["structure"],
@@ -363,7 +363,7 @@ test("ViewerContextMenu hides legacy remove action when MolSysMT addon item is a
 
         const root = (menu as any).root as FakeElement;
         assert.equal(findNodeByText(root, "Remove Selected Atoms"), null);
-        const addonButton = findNodeByText(root, "MolSysMT: remove selected atoms");
+        const addonButton = findNodeByText(root, "TopoMT: inspect selected atoms");
         assert.ok(addonButton);
         addonButton!.dispatch("click");
 
@@ -372,9 +372,9 @@ test("ViewerContextMenu hides legacy remove action when MolSysMT addon item is a
                 event: "interaction_context_action",
                 action: "addon_context_action",
                 context: target,
-                addon: "molsysmt",
-                addon_action_id: "remove-selected-atoms",
-                addon_action_title: "MolSysMT: remove selected atoms",
+                addon: "topomt",
+                addon_action_id: "inspect-selected-atoms",
+                addon_action_title: "TopoMT: inspect selected atoms",
                 addon_action_payload: { atom_indices: [0, 1] },
             },
         ]);

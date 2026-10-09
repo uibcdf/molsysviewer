@@ -1,5 +1,20 @@
 # Development checkpoint
 
+**Studio integration — 2026-10-09:** the authorized #181–#188 round is
+implemented and locally verified: actual PNG/background and browser HTML
+delivery, native keyboard controls, compact navigation, preserved geometry,
+clearer Interactions and retirement of the MolSysMT addon. MolSysMT remains
+the required native backend; domain addons remain. See the
+[source review and explicit validation limits](studio_review_20261009.md)
+and [maintained contract](studio_interaction_contract.md).
+JS passes 325/325; all 42 core browser cases pass across the retained campaign
+and scoped repairs. Full Python is not globally green: eight experimental Qt
+failures remain; two bookkeeping failures are repaired in focused verification.
+The prior macOS dynamic-region restoration failure is tracked under
+`uibcdf/molsysviewer#189`, with diagnosis pending. Human notebook confirmation
+and the next hosted source results remain separate. 0.25.0 stays unfrozen;
+both 1.0 publications remain paused and old candidate evidence stays fixed.
+
 **Current priority and publication pause — 2026-10-09:** the maintainer accepts
 the [canvas context menu](canvas_context_menu_pre_1_0_plan.md), Cinema,
 control-area reveal, two-second discovery and restored whole-controls fade.

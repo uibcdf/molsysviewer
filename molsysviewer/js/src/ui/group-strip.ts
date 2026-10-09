@@ -296,7 +296,10 @@ export class GroupStrip {
             });
             molBox.title = `Molecule: ${moleculeNames.get(molId) ?? molId}`;
 
-            const molCaption = document.createElement("div");
+            const molCaption = document.createElement("button");
+            molCaption.type = "button";
+            molCaption.setAttribute("aria-expanded", String(!moleculeCollapsed));
+            molCaption.style.border = "0";
             molCaption.setAttribute("data-molsysviewer-group-strip-molecule-caption", String(molId));
             molCaption.textContent = `${moleculeCollapsed ? "▶" : "▼"} ${buildHierarchyCaption("molecule", molId, moleculeNames.get(molId))}`;
             Object.assign(molCaption.style, {
@@ -376,7 +379,10 @@ export class GroupStrip {
                 });
                 compBox.title = `Component: ${componentNames.get(compId) ?? compId}`;
 
-                const compCaption = document.createElement("div");
+                const compCaption = document.createElement("button");
+                compCaption.type = "button";
+                compCaption.setAttribute("aria-expanded", String(!componentCollapsed));
+                compCaption.style.border = "0";
                 compCaption.setAttribute("data-molsysviewer-group-strip-component-caption", String(compId));
                 compCaption.textContent = `${componentCollapsed ? "▶" : "▼"} ${buildHierarchyCaption("component", compId, componentNames.get(compId))}`;
                 Object.assign(compCaption.style, {

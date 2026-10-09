@@ -106,13 +106,13 @@ async function run() {
     await itemA.click({ button: "right" });
     await page.waitForSelector('[data-molsysviewer-context-menu="true"]');
     
-    // 7. Verify "Add Label" action in context menu and click it
+    // 7. Verify "Annotation from Selection…" action in context menu and click it
     await page.locator('[data-molsysviewer-context-submenu^="Active selection"]').click();
-    const addLabelAction = page.locator('button:has-text("Add Label")');
+    const addLabelAction = page.locator('button:has-text("Annotation from Selection…")');
     await addLabelAction.click();
     
     // 8. Fill the label composer
-    const labelInput = page.locator('input[placeholder="Label text"]');
+    const labelInput = page.locator('input[placeholder="Annotation text"]');
     await labelInput.fill("My Test Label");
     await page.keyboard.press("Enter");
     

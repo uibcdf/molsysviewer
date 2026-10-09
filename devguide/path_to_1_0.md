@@ -12,6 +12,16 @@ Viewer 0.24.1 build 1 retains its original staging scope; it does not qualify
 the replacement. The [Interactions consumer agreement](interactions_compatibility_contract.md)
 preserves the experimental scientific boundary.
 
+The authorized Studio review (#181–#188) is implemented under the
+[Studio contract](studio_interaction_contract.md), including native backend
+ownership and retirement of the MolSysMT addon. Provider cleanup is
+`uibcdf/molsysmt#354`; the separately reproduced empty bonded-to query in
+hydrogen-free hbonds identification is `uibcdf/molsysmt#355`. Both provider
+issues are fixed in source, without new package qualification. See the
+[Studio review](studio_review_20261009.md) for scoped source results;
+`uibcdf/molsysviewer#189` retains the macOS dynamic-region restoration diagnosis.
+Human confirmation and applicable hosted evidence remain before candidate freeze.
+
 **Complete board review — 2026-10-07:** [all 34 open issues are reconciled](open_issue_reconciliation_20261007.md).
 #95/#97 public installation/host promises are corrected; #78 retains developer-only
 quarantine and #152's original guide publication is complete. The maintainer
@@ -139,7 +149,8 @@ with `uibcdf/molsysmt#250`. Existing-data display, native calculation and
 declared independent H5MSM import share `view.molsys.interactions`, without
 addon registration. The implementation sequence and acceptance gate
 are in [`interactions_pre_1_0_plan.md`](interactions_pre_1_0_plan.md). The
-complete MolSysMT addon retirement and Mol* dependency update are later work.
+MolSysMT addon retirement is part of the current Studio round
+(uibcdf/molsysviewer#186); the Mol* dependency update remains post-1.0.
 Scientific Python queries, import, calculation and session persistence are
 implemented, including tagged displays, browser projection and Studio.
 Review corrections and six synthetic joint residency/query measurements are

@@ -152252,6 +152252,7 @@ function makeSectionHeader(title) {
 }
 function makeButton2(text, onClick) {
   const btn = document.createElement("button");
+  btn.type = "button";
   btn.textContent = text;
   Object.assign(btn.style, {
     flex: "1 1 0",
@@ -152303,7 +152304,11 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
   row3.addEventListener("mouseleave", () => {
     row3.style.background = "rgba(255,255,255,0.05)";
   });
-  const main = document.createElement("div");
+  const main = document.createElement(onActivate ? "button" : "div");
+  if (onActivate) {
+    main.type = "button";
+    Object.assign(main.style, { border: "0", background: "transparent", color: "inherit", textAlign: "left", padding: "0" });
+  }
   Object.assign(main.style, {
     display: "flex",
     flexDirection: "column",
@@ -152314,7 +152319,7 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
   });
   if (onActivate) {
     row3.style.cursor = "pointer";
-    row3.addEventListener("click", (e) => {
+    main.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
       onActivate();
@@ -152355,6 +152360,7 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
     styleBtn.type = "button";
     styleBtn.textContent = "\u{1F3A8}";
     styleBtn.title = "Style & Color";
+    styleBtn.setAttribute("aria-label", `Style ${titleText}`);
     Object.assign(styleBtn.style, {
       background: "transparent",
       border: "0",
@@ -152382,6 +152388,7 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
     eyeBtn.type = "button";
     eyeBtn.textContent = visibility.hidden ? "\u29BB" : "\u{1F441}";
     eyeBtn.title = visibility.hidden ? "Show" : "Hide";
+    eyeBtn.setAttribute("aria-label", `${eyeBtn.title} ${titleText}`);
     Object.assign(eyeBtn.style, {
       background: "transparent",
       border: "0",
@@ -152463,7 +152470,6 @@ function makeStyledSelect(options, selectedValue, onChange) {
     color: "#f4f4f5",
     fontSize: "11px",
     fontWeight: "500",
-    outline: "none",
     cursor: "pointer"
   });
   for (const opt of options) {
@@ -152482,7 +152488,7 @@ function makeStyledSelect(options, selectedValue, onChange) {
   return select2;
 }
 function makeCheckboxRow(labelText, checked, onChange) {
-  const row3 = document.createElement("div");
+  const row3 = document.createElement("label");
   Object.assign(row3.style, {
     display: "flex",
     justifyContent: "space-between",
@@ -152496,26 +152502,58 @@ function makeCheckboxRow(labelText, checked, onChange) {
   row3.appendChild(label2);
   const cb2 = document.createElement("input");
   cb2.type = "checkbox";
+  cb2.setAttribute("aria-label", labelText);
   cb2.checked = checked;
   Object.assign(cb2.style, {
-    cursor: "pointer",
-    outline: "none"
-  });
-  const toggle = () => {
-    cb2.checked = !cb2.checked;
-    onChange(cb2.checked);
-  };
-  row3.addEventListener("click", (e) => {
-    if (e.target !== cb2) {
-      e.preventDefault();
-      toggle();
-    }
+    cursor: "pointer"
   });
   cb2.addEventListener("change", () => {
     onChange(cb2.checked);
   });
   row3.appendChild(cb2);
   return row3;
+}
+function nameControls(control, label2) {
+  if (["input", "select", "textarea"].includes(control.tagName.toLowerCase())) {
+    if (!control.getAttribute("aria-label") && !control.getAttribute("aria-labelledby")) control.setAttribute("aria-label", label2);
+  } else {
+    for (const child of Array.from(control.children)) nameControls(child, label2);
+  }
+}
+function makeSwitch(label2, checked, onToggle) {
+  const button2 = document.createElement("button");
+  button2.type = "button";
+  button2.setAttribute("role", "switch");
+  button2.setAttribute("aria-label", label2);
+  button2.setAttribute("aria-checked", String(checked));
+  Object.assign(button2.style, {
+    width: "30px",
+    height: "16px",
+    border: "0",
+    padding: "0",
+    borderRadius: "8px",
+    background: checked ? "#6366f1" : "rgba(255,255,255,0.12)",
+    position: "relative",
+    cursor: "pointer",
+    flexShrink: "0"
+  });
+  const thumb = document.createElement("span");
+  Object.assign(thumb.style, {
+    width: "12px",
+    height: "12px",
+    borderRadius: "50%",
+    background: "#fff",
+    position: "absolute",
+    top: "2px",
+    left: checked ? "16px" : "2px"
+  });
+  button2.appendChild(thumb);
+  button2.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    onToggle();
+  });
+  return button2;
 }
 
 // src/ui/panels/base-panel.ts
@@ -152553,14 +152591,17 @@ var BasePanel = class {
       const active = doc?.activeElement;
       if (!active || !this.host || typeof this.host.contains !== "function" || !this.host.contains(active)) return null;
       const tag = active.tagName;
-      if (tag !== "INPUT" && tag !== "TEXTAREA") return null;
-      const attr = Array.from(active.attributes ?? []).find((a8) => a8.name.startsWith("data-molsysviewer-"));
+      if (tag !== "INPUT" && tag !== "TEXTAREA" && tag !== "SELECT") return null;
+      const attributes = Array.from(active.attributes ?? []);
+      const attr = attributes.find((a8) => a8.name.startsWith("data-molsysviewer-")) ?? attributes.find((a8) => a8.name === "aria-label");
       if (!attr) return null;
       return {
-        selector: `[${attr.name}="${attr.value}"]`,
+        selector: `[${attr.name}="${attr.value.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"]`,
         value: active.value,
         start: active.selectionStart ?? null,
-        end: active.selectionEnd ?? null
+        end: active.selectionEnd ?? null,
+        // Canonical replies own discrete values; preserve focus only.
+        keepValue: tag !== "SELECT" && active.type !== "checkbox" && active.type !== "radio"
       };
     } catch {
       return null;
@@ -152571,9 +152612,9 @@ var BasePanel = class {
     try {
       const el = this.host.querySelector(snap.selector);
       if (!el) return;
-      el.value = snap.value;
+      if (snap.keepValue) el.value = snap.value;
       el.focus();
-      if (typeof el.setSelectionRange === "function") {
+      if (snap.keepValue && typeof el.setSelectionRange === "function") {
         const end4 = snap.end ?? snap.value.length;
         el.setSelectionRange(snap.start ?? end4, end4);
       }
@@ -152700,6 +152741,7 @@ var ViewportPanel = class extends BasePanel {
       }
     );
     projRow.appendChild(projLabel);
+    projSelect.setAttribute("aria-label", "Projection Mode");
     projRow.appendChild(projSelect);
     envCard.appendChild(projRow);
     const bgRow = document.createElement("div");
@@ -152711,6 +152753,7 @@ var ViewportPanel = class extends BasePanel {
       this.ctx.onAction("toggle_background", { mode: val.toLowerCase() });
     });
     bgRow.appendChild(bgLabel);
+    bgSelect.setAttribute("aria-label", "Background Color");
     bgRow.appendChild(bgSelect);
     envCard.appendChild(bgRow);
     const animRow = document.createElement("div");
@@ -152735,6 +152778,7 @@ var ViewportPanel = class extends BasePanel {
     fogSliderLabel.innerHTML = `<span>Fog Intensity</span><span>${Math.round(fogIntensity * 100)}%</span>`;
     const fogSlider = document.createElement("input");
     fogSlider.type = "range";
+    fogSlider.setAttribute("aria-label", "Fog Intensity");
     fogSlider.min = "0.0";
     fogSlider.max = "1.0";
     fogSlider.step = "0.05";
@@ -152849,6 +152893,7 @@ var ViewportPanel = class extends BasePanel {
       const lengthUnit = item2.unit.trim().toLowerCase();
       input.step = kind === "point" ? lengthUnit === "nanometer" || lengthUnit === "nanometers" || lengthUnit === "nm" ? "0.01" : "0.1" : "0.05";
       input.value = String(Number(value.toFixed(4)));
+      input.setAttribute("aria-label", `${labelText} ${["X", "Y", "Z"][axis]}`);
       input.setAttribute(`data-molsysviewer-section-${kind}-${axis}`, item2.tag);
       Object.assign(input.style, {
         width: "100%",
@@ -152905,14 +152950,21 @@ function card2() {
   return element;
 }
 var ExportPanel = class extends BasePanel {
-  constructor(ctx) {
+  constructor(ctx, hasAuthority = true) {
     super();
     this.ctx = ctx;
+    this.hasAuthority = hasAuthority;
     this.key = "export";
     this.state = {};
   }
   setScene(state) {
     this.state = { ...state };
+    this.scheduleRender();
+  }
+  setImageDimensions(width, height) {
+    if (this.state.imageWidth === width && this.state.imageHeight === height) return;
+    this.state.imageWidth = width;
+    this.state.imageHeight = height;
     this.scheduleRender();
   }
   paint() {
@@ -152922,7 +152974,7 @@ var ExportPanel = class extends BasePanel {
     this.host.appendChild(this.renderGlobalStatusCard());
     this.host.appendChild(makeSectionHeader("Publication Figures & Images"));
     this.host.appendChild(this.renderFigureCard());
-    this.host.appendChild(makeSectionHeader("Data & Standalone Views"));
+    this.host.appendChild(makeSectionHeader("HTML view"));
     this.host.appendChild(this.renderDataCard());
   }
   renderGlobalStatusCard() {
@@ -152930,8 +152982,9 @@ var ExportPanel = class extends BasePanel {
     Object.assign(globalCard.style, { marginBottom: "10px" });
     const currentPreset = this.state.figurePreset || "publication-light";
     const currentScale = typeof this.state.figureScale === "number" ? this.state.figureScale : 2;
-    const estWidth = Math.round(1920 * currentScale);
-    const estHeight = Math.round(1080 * currentScale);
+    const width = this.state.imageWidth ?? 0;
+    const height = this.state.imageHeight ?? 0;
+    const dimensions = width > 0 && height > 0 ? `${Math.max(1, Math.round(width * currentScale))} \xD7 ${Math.max(1, Math.round(height * currentScale))} px` : "Dimensions available in the canvas";
     const presetName = currentPreset.includes("dark") ? "Dark Preset" : "Light Preset";
     const row3 = document.createElement("div");
     Object.assign(row3.style, {
@@ -152959,7 +153012,9 @@ var ExportPanel = class extends BasePanel {
     });
     info.appendChild(dot);
     const textSpan = document.createElement("span");
-    textSpan.textContent = `${currentScale.toFixed(1)}x Scale (${estWidth} \xD7 ${estHeight} px) \xB7 ${presetName}`;
+    textSpan.textContent = `${currentScale}\xD7 Scale \xB7 ${dimensions} \xB7 ${presetName}`;
+    textSpan.setAttribute("data-molsysviewer-export-dimensions", "true");
+    info.style.flexWrap = "wrap";
     info.appendChild(textSpan);
     row3.appendChild(info);
     globalCard.appendChild(row3);
@@ -152971,7 +153026,7 @@ var ExportPanel = class extends BasePanel {
     const currentPreset = this.state.figurePreset || "publication-light";
     const currentScale = typeof this.state.figureScale === "number" ? this.state.figureScale : 2;
     const currentVariants = this.state.figureVariants || ["dark", "transparent"];
-    const isTransparent = currentVariants.includes("transparent");
+    const isTransparent = this.state.figureBackground !== void 0 ? this.state.figureBackground === "transparent" : currentVariants.includes("transparent");
     const updateFigureSpec = (preset, scale, trans) => {
       const variants = ["dark"];
       if (trans) variants.push("transparent");
@@ -152995,6 +153050,7 @@ var ExportPanel = class extends BasePanel {
       }
     );
     presetRow.appendChild(presetLabel);
+    presetSelect.setAttribute("aria-label", "Style Preset");
     presetRow.appendChild(presetSelect);
     figureCard.appendChild(presetRow);
     const scaleRow = document.createElement("div");
@@ -153002,11 +153058,13 @@ var ExportPanel = class extends BasePanel {
     const scaleLabel = document.createElement("span");
     scaleLabel.textContent = "Resolution Scale";
     Object.assign(scaleLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-    const scaleSelect = makeStyledSelect(["1.0x (FHD)", "2.0x (2K)", "3.0x (3K)", "4.0x (4K)"], `${currentScale.toFixed(1)}x (${currentScale === 1 ? "FHD" : currentScale === 2 ? "2K" : currentScale === 3 ? "3K" : "4K"})`, (val) => {
+    const scales = [.../* @__PURE__ */ new Set([1, 2, 3, 4, currentScale])].sort((a8, b8) => a8 - b8);
+    const scaleSelect = makeStyledSelect(scales.map((scale) => ({ value: String(scale), label: `${scale}\xD7` })), String(currentScale), (val) => {
       const scaleVal = parseFloat(val);
       updateFigureSpec(currentPreset, scaleVal, isTransparent);
     });
     scaleRow.appendChild(scaleLabel);
+    scaleSelect.setAttribute("aria-label", "Resolution Scale");
     scaleRow.appendChild(scaleSelect);
     figureCard.appendChild(scaleRow);
     figureCard.appendChild(makeCheckboxRow("Transparent Background", isTransparent, (checked) => {
@@ -153031,12 +153089,14 @@ var ExportPanel = class extends BasePanel {
     const htmlRow = document.createElement("div");
     Object.assign(htmlRow.style, { display: "flex", flexDirection: "column", gap: "6px" });
     const htmlLabel = document.createElement("span");
-    htmlLabel.textContent = "Save standalone interactive view as HTML page";
+    htmlLabel.textContent = "Download a self-contained browser view. Scene editing requires a live Python session.";
     Object.assign(htmlLabel.style, { fontSize: "10px", color: "rgba(244,244,245,0.56)" });
-    const htmlButton = makeButton2("Download Standalone HTML View", () => {
+    const htmlButton = makeButton2("Download HTML View", () => {
       this.ctx.onAction("export_html");
     });
     htmlButton.setAttribute("data-molsysviewer-export-html", "true");
+    htmlButton.disabled = !this.hasAuthority;
+    if (!this.hasAuthority) htmlButton.title = "HTML export requires a live Python session.";
     htmlButton.style.padding = "5px 10px";
     htmlButton.style.fontSize = "11px";
     htmlRow.appendChild(htmlLabel);
@@ -153577,6 +153637,7 @@ function makeStyleControlRow(label2, control) {
     color: "rgba(244,244,245,0.7)"
   });
   row3.appendChild(text);
+  nameControls(control, label2);
   row3.appendChild(control);
   return row3;
 }
@@ -156204,7 +156265,10 @@ var GroupStrip = class {
         position: "relative"
       });
       molBox.title = `Molecule: ${moleculeNames.get(molId) ?? molId}`;
-      const molCaption = document.createElement("div");
+      const molCaption = document.createElement("button");
+      molCaption.type = "button";
+      molCaption.setAttribute("aria-expanded", String(!moleculeCollapsed));
+      molCaption.style.border = "0";
       molCaption.setAttribute("data-molsysviewer-group-strip-molecule-caption", String(molId));
       molCaption.textContent = `${moleculeCollapsed ? "\u25B6" : "\u25BC"} ${buildHierarchyCaption("molecule", molId, moleculeNames.get(molId))}`;
       Object.assign(molCaption.style, {
@@ -156279,7 +156343,10 @@ var GroupStrip = class {
           position: "relative"
         });
         compBox.title = `Component: ${componentNames.get(compId3) ?? compId3}`;
-        const compCaption = document.createElement("div");
+        const compCaption = document.createElement("button");
+        compCaption.type = "button";
+        compCaption.setAttribute("aria-expanded", String(!componentCollapsed));
+        compCaption.style.border = "0";
         compCaption.setAttribute("data-molsysviewer-group-strip-component-caption", String(compId3));
         compCaption.textContent = `${componentCollapsed ? "\u25B6" : "\u25BC"} ${buildHierarchyCaption("component", compId3, componentNames.get(compId3))}`;
         Object.assign(compCaption.style, {
@@ -157004,6 +157071,7 @@ function row(label2, control) {
     color: "rgba(244,244,245,0.7)"
   });
   item2.appendChild(text);
+  nameControls(control, label2);
   item2.appendChild(control);
   return item2;
 }
@@ -159731,6 +159799,7 @@ function field(parent, label2, value, key2, change, type3 = "text", identity3) {
 function select(parent, values2, current2, change) {
   const el = document.createElement("select");
   Object.assign(el.style, { width: "100%", minWidth: "0", color: "#fff", background: "#272335", padding: "5px", borderRadius: "6px" });
+  if (parent.tagName === "LABEL" && parent.firstElementChild?.textContent) el.setAttribute("aria-label", parent.firstElementChild.textContent);
   for (const [value, text] of values2) {
     const option = document.createElement("option");
     option.value = value;
@@ -159803,6 +159872,10 @@ var InteractionsPanel = class extends BasePanel {
     this.error = "";
     this.creationRequest = 0;
     this.busy = null;
+    this.formOpen = false;
+    this.formDetails = null;
+    this.visualOptionsOpen = false;
+    this.visualOptionsDetails = null;
     this.filtersOpen = false;
     this.analysesOpen = false;
     this.filtersDetails = null;
@@ -159811,6 +159884,21 @@ var InteractionsPanel = class extends BasePanel {
     this.radius = "0.025";
     this.alpha = "0.85";
     this.composer = new ManualQueryComposer("interactions", (details) => ctx.onAction("selection_query_preview_request", details), void 0, { buttonLabel: "Select" });
+  }
+  openForm() {
+    this.formOpen = true;
+    if (this.formDetails) this.formDetails.open = true;
+  }
+  openFilters() {
+    this.filtersOpen = true;
+    if (this.filtersDetails) this.filtersDetails.open = true;
+  }
+  metadata(parent, text) {
+    const details = document.createElement("details"), summary = document.createElement("summary");
+    summary.textContent = "Scientific metadata";
+    details.appendChild(summary);
+    details.appendChild(note2(text));
+    parent.appendChild(details);
   }
   setSummary(message) {
     const previous = this.items.find((item2) => item2.tag === this.inspecting);
@@ -159840,6 +159928,8 @@ var InteractionsPanel = class extends BasePanel {
   }
   /** Stage target A; calculation and display still require explicit submission. */
   stageContextAtoms(atoms2, calculate) {
+    this.openForm();
+    this.openFilters();
     this.a = [...atoms2];
     this.b = null;
     this.slot = "a";
@@ -159864,6 +159954,8 @@ var InteractionsPanel = class extends BasePanel {
   openObject(tag) {
     const item2 = this.items.find((item3) => item3.tag === tag);
     if (!item2) return;
+    this.openForm();
+    this.openFilters();
     this.editing = item2.tag;
     this.tag = item2.tag;
     this.layer = item2.layer_tag;
@@ -159917,6 +160009,12 @@ var InteractionsPanel = class extends BasePanel {
       this.error = String(error2);
     }
     this.scheduleRender();
+  }
+  calculationScopeText() {
+    const scope = this.calcStructures.trim();
+    if (scope === "current") return `Only the current structure (${this.frame}) will be evaluated. Display filters do not extend the calculation.`;
+    if (scope === "all") return "All loaded structures will be evaluated. Display filters only control what is drawn.";
+    return "Only the listed structure indices will be evaluated. Display filters only control what is drawn.";
   }
   filter() {
     return {
@@ -160032,6 +160130,8 @@ var InteractionsPanel = class extends BasePanel {
   }
   paint() {
     if (!this.host) return;
+    if (this.formDetails) this.formOpen = this.formDetails.open;
+    if (this.visualOptionsDetails) this.visualOptionsOpen = this.visualOptionsDetails.open;
     const previousFilters = this.filtersDetails;
     if (previousFilters) this.filtersOpen = previousFilters.open;
     const previousAnalyses = this.analysesDetails;
@@ -160039,6 +160139,9 @@ var InteractionsPanel = class extends BasePanel {
     this.host.replaceChildren();
     Object.assign(this.host.style, { display: "flex", flexDirection: "column", gap: "9px" });
     this.host.appendChild(makeSectionHeader("Interactions"));
+    const experimental = note2("Experimental \xB7 calculation and result contracts may evolve.");
+    experimental.setAttribute("data-molsysviewer-interactions-experimental", "true");
+    this.host.appendChild(experimental);
     if (!this.backendAvailable) this.host.appendChild(note2("Interactions requires a compatible MolSysMT backend. Other viewer tools remain available."));
     const enabled = this.items.filter((item2) => !item2.hidden).length;
     this.host.appendChild(note2(`${enabled}/${this.items.length} sets enabled \xB7 structure ${this.frame}`));
@@ -160046,9 +160149,16 @@ var InteractionsPanel = class extends BasePanel {
     append(all3, makeButton2("Show all", () => this.emit("show_all_interactions")), makeButton2("Hide all", () => this.emit("hide_all_interactions")));
     this.host.appendChild(all3);
     if (this.error) this.host.appendChild(note2(this.error));
+    const creation = document.createElement("details");
+    this.formDetails = creation;
+    creation.setAttribute("data-molsysviewer-interaction-form", "true");
+    creation.open = !!this.editing || this.formOpen;
+    const creationTitle = document.createElement("summary");
+    creationTitle.textContent = this.editing ? `Edit ${this.editing}` : "New interaction set";
+    creation.appendChild(creationTitle);
+    this.host.appendChild(creation);
     const form = box4();
-    form.appendChild(makeSectionHeader(this.editing ? `Edit ${this.editing}` : "New interaction set"));
-    this.host.appendChild(form);
+    creation.appendChild(form);
     if (!this.editing) {
       const tabs = row2();
       for (const [value, text] of [["calculate", "Calculate"], ["stored", "Stored analysis"], ["file", "H5MSM file"]]) {
@@ -160062,7 +160172,10 @@ var InteractionsPanel = class extends BasePanel {
       }
       form.appendChild(tabs);
       if (this.source === "stored") {
-        select(form, this.analyses.map((item2) => [item2.name, `${item2.name} \xB7 ${item2.n_occurrences} observations`]), this.stored, (value) => {
+        const storedLabel = document.createElement("label");
+        storedLabel.appendChild(note2("Stored analysis"));
+        form.appendChild(storedLabel);
+        select(storedLabel, this.analyses.map((item2) => [item2.name, `${item2.name} \xB7 ${item2.n_occurrences} observations`]), this.stored, (value) => {
           this.stored = value;
           this.scheduleRender();
         });
@@ -160091,13 +160204,21 @@ var InteractionsPanel = class extends BasePanel {
             this.calcAtomScope,
             (value) => {
               this.calcAtomScope = value;
+              if (value !== "all") this.openFilters();
               this.scheduleRender();
             }
           );
           scope.setAttribute("data-molsysviewer-interaction-calc-scope", "true");
           scope.querySelector('option[value="between"]').disabled = this.kind === "disulfide_candidate";
           form.appendChild(note2(this.calcAtomScope === "all" ? "Calculation covers all atoms. A/B below filter the display only." : `Calculation uses staged ${this.calcAtomScope === "a" ? "A" : "A and B"} below; atoms outside this scope are not evaluated.`));
-          field(form, "Calculate structures: current, all, or indices", this.calcStructures, "calc-structures", (value) => this.calcStructures = value);
+          const structures = field(form, "Calculate structures: current, all, or indices", this.calcStructures, "calc-structures", (value) => {
+            this.calcStructures = value;
+            coverage.textContent = this.calculationScopeText();
+          });
+          structures.placeholder = "current, all, or 0,2,5";
+          const coverage = note2(this.calculationScopeText());
+          coverage.setAttribute("data-molsysviewer-interaction-calculation-coverage", "true");
+          form.appendChild(coverage);
           const pbc = document.createElement("label");
           const cb2 = document.createElement("input");
           cb2.type = "checkbox";
@@ -160124,8 +160245,14 @@ var InteractionsPanel = class extends BasePanel {
         }
       }
     }
-    field(form, "Set tag (empty = automatic)", this.tag, "tag", (value) => this.tag = value);
-    field(form, "Layer (empty = automatic)", this.layer, "layer", (value) => this.layer = value);
+    const visualOptions = document.createElement("details"), visualTitle = document.createElement("summary");
+    visualTitle.textContent = "Representation name and layer (optional)";
+    visualOptions.appendChild(visualTitle);
+    form.appendChild(visualOptions);
+    this.visualOptionsDetails = visualOptions;
+    visualOptions.open = !!this.editing || this.visualOptionsOpen;
+    field(visualOptions, "Set tag (empty = automatic)", this.tag, "tag", (value) => this.tag = value);
+    field(visualOptions, "Layer (empty = automatic)", this.layer, "layer", (value) => this.layer = value);
     const details = document.createElement("details");
     this.filtersDetails = details;
     details.setAttribute("data-molsysviewer-interaction-filters", "true");
@@ -160134,10 +160261,13 @@ var InteractionsPanel = class extends BasePanel {
       if (details.isConnected) this.filtersOpen = details.open;
     });
     const title = document.createElement("summary");
-    title.textContent = "Display filter and selections";
+    title.textContent = this.source === "calculate" && this.calcAtomScope !== "all" ? "Calculation selections and display filter" : "Display filter and selections";
     details.appendChild(title);
     form.appendChild(details);
-    select(details, [["involving_selection", "All interactions involving the selection"], ["within_selection", "Only within the selection"], ["across_selection_boundary", "Between the selection and the rest"], ["between_selections", "Between selections A and B"]], this.mode, (value) => {
+    const modeLabel = document.createElement("label");
+    modeLabel.appendChild(note2("Display interactions"));
+    details.appendChild(modeLabel);
+    select(modeLabel, [["involving_selection", "All interactions involving the selection"], ["within_selection", "Only within the selection"], ["across_selection_boundary", "Between the selection and the rest"], ["between_selections", "Between selections A and B"]], this.mode, (value) => {
       this.mode = value;
       this.scheduleRender();
     });
@@ -160250,6 +160380,8 @@ var InteractionsPanel = class extends BasePanel {
     if (this.editing) form.appendChild(makeButton2("Done editing", () => {
       this.editing = null;
       this.tag = this.layer = "";
+      this.formOpen = false;
+      if (this.formDetails) this.formDetails.open = false;
       this.scheduleRender();
     }));
     this.host.appendChild(makeSectionHeader("Saved sets"));
@@ -160271,7 +160403,8 @@ var InteractionsPanel = class extends BasePanel {
         if (!this.inspection) card8.appendChild(note2("Requesting current structure observations\u2026"));
         else {
           const data = this.inspection;
-          card8.appendChild(note2(`${data.method} \xB7 ${data.total} observations \xB7 ${JSON.stringify(data.parameters)}`));
+          card8.appendChild(note2(`${data.method} \xB7 ${data.total} observations`));
+          this.metadata(card8, JSON.stringify(data.parameters));
           card8.appendChild(note2(`Calculation scope: ${JSON.stringify(data.evaluation_scope)}`));
           if (data.limit_reason) card8.appendChild(note2(data.limit_reason));
           for (const observation of data.observations) {
@@ -160315,9 +160448,11 @@ var InteractionsPanel = class extends BasePanel {
     for (const analysis of this.analyses) {
       const card8 = box4();
       card8.appendChild(note2(`${analysis.name} \xB7 ${analysis.n_occurrences} observations \xB7 ${analysis.n_evaluated_structures}/${analysis.n_structures} structures \xB7 ${analysis.n_references} visual references`));
-      card8.appendChild(note2(`${analysis.method} \xB7 ${JSON.stringify(analysis.parameters)} \xB7 ${JSON.stringify(analysis.software)}`));
+      card8.appendChild(note2(analysis.method));
+      this.metadata(card8, `${JSON.stringify(analysis.parameters)} \xB7 ${JSON.stringify(analysis.software)}`);
       const actions = row2();
       actions.appendChild(makeButton2("Use", () => {
+        this.openForm();
         this.source = "stored";
         this.stored = analysis.name;
         this.editing = null;
@@ -160624,6 +160759,7 @@ var ShapesPanel = class extends BasePanel {
     });
     select2.style.flex = "1 1 auto";
     select2.setAttribute("data-molsysviewer-shape-type-select", "true");
+    select2.setAttribute("aria-label", "Shape type");
     typeRow.appendChild(select2);
     formCard.appendChild(typeRow);
     const currentCatalogItem = ALL_SHAPE_TYPES.find((i) => i.op === this.selectedOp) || ALL_SHAPE_TYPES[0];
@@ -160675,6 +160811,7 @@ var ShapesPanel = class extends BasePanel {
       Object.assign(tagLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.7)", width: "50px" });
       tagRow.appendChild(tagLabel);
       const tagInput = document.createElement("input");
+      tagInput.setAttribute("aria-label", "Shape tag");
       tagInput.value = this.customTag;
       tagInput.placeholder = "Optional name (e.g. site_sphere)";
       Object.assign(tagInput.style, { flex: "1 1 auto", ...INPUT_STYLE3 });
@@ -160761,6 +160898,7 @@ var ShapesPanel = class extends BasePanel {
           Object.assign(span.style, { fontSize: "10px", color: "rgba(244,244,245,0.6)" });
           const numInput = document.createElement("input");
           numInput.type = "number";
+          numInput.setAttribute("aria-label", lbl);
           numInput.step = "0.1";
           numInput.value = String(this.coord1[idx]);
           Object.assign(numInput.style, INPUT_STYLE3);
@@ -160814,6 +160952,7 @@ var ShapesPanel = class extends BasePanel {
       Object.assign(radLabel.style, { fontSize: "10px", color: "rgba(244,244,245,0.6)" });
       const radInput = document.createElement("input");
       radInput.type = "number";
+      radInput.setAttribute("aria-label", "Radius (nm)");
       radInput.min = "0.01";
       radInput.step = "0.05";
       radInput.value = String(this.radiusVal);
@@ -160833,6 +160972,7 @@ var ShapesPanel = class extends BasePanel {
       Object.assign(colLabel.style, { fontSize: "10px", color: "rgba(244,244,245,0.6)" });
       const colInput = document.createElement("input");
       colInput.type = "color";
+      colInput.setAttribute("aria-label", "Colour");
       colInput.value = this.colorVal;
       colInput.setAttribute("data-molsysviewer-shape-new-color", "true");
       colInput.addEventListener("input", () => {
@@ -160848,6 +160988,7 @@ var ShapesPanel = class extends BasePanel {
       Object.assign(alphaLabel.style, { fontSize: "10px", color: "rgba(244,244,245,0.6)" });
       const alphaInput = document.createElement("input");
       alphaInput.type = "range";
+      alphaInput.setAttribute("aria-label", "Opacity");
       alphaInput.min = "0";
       alphaInput.max = "1";
       alphaInput.step = "0.05";
@@ -161104,6 +161245,7 @@ var ShapesPanel = class extends BasePanel {
     label2.textContent = labelText;
     Object.assign(label2.style, { fontSize: "10px", color: "rgba(244,244,245,0.66)" });
     row3.appendChild(label2);
+    nameControls(control, labelText);
     row3.appendChild(control);
     return row3;
   }
@@ -161565,6 +161707,49 @@ var PanelShell = class {
   }
 };
 
+// src/ui/compact-panel-navigation.ts
+var CompactPanelNavigation = class {
+  constructor(body, sidebar, content, label2, onSelect) {
+    this.body = body;
+    this.sidebar = sidebar;
+    this.content = content;
+    this.select = makeStyledSelect([], "", onSelect);
+    this.select.setAttribute("aria-label", label2);
+    this.select.setAttribute("data-molsysviewer-compact-navigation", "true");
+    Object.assign(this.select.style, { display: "none", width: "100%", flexShrink: "0", marginBottom: "8px", boxSizing: "border-box" });
+    body.prepend(this.select);
+    if (typeof ResizeObserver !== "undefined") {
+      this.observer = new ResizeObserver(() => this.refresh());
+      this.observer.observe(body);
+    }
+  }
+  update(items, current2) {
+    this.select.replaceChildren();
+    for (const item2 of items) {
+      const option = document.createElement("option");
+      option.value = item2.value;
+      option.textContent = item2.label;
+      this.select.appendChild(option);
+    }
+    this.select.value = current2;
+    this.refresh();
+  }
+  refresh() {
+    const width = this.body.clientWidth;
+    if (!width) return;
+    const compact = width < 480;
+    this.body.style.flexDirection = compact ? "column" : "row";
+    this.sidebar.style.display = compact ? "none" : "flex";
+    this.content.style.paddingLeft = compact ? "0" : "12px";
+    this.select.style.display = compact ? "block" : "none";
+    if (compact && this.sidebar.contains(this.body.ownerDocument.activeElement)) this.select.focus();
+  }
+  dispose() {
+    this.observer?.disconnect();
+    this.select.remove();
+  }
+};
+
 // src/ui/floating-panel-shell.ts
 var FloatingPanelShell = class {
   constructor(host, options) {
@@ -161576,6 +161761,7 @@ var FloatingPanelShell = class {
     this.savedHeight = "";
     this.savedMinHeight = "";
     this.workspaceMenuOpen = false;
+    this.floatingInitialized = false;
     this.isSplit = false;
     this.isAmbient = false;
     this.lastSplitState = false;
@@ -161628,6 +161814,7 @@ var FloatingPanelShell = class {
       let startTop = 0;
       const dragStart = (clientX, clientY) => {
         if (this.isSplit) return false;
+        this.endDrag?.();
         isDragging = true;
         startLeft = this.panel.offsetLeft;
         startTop = this.panel.offsetTop;
@@ -161662,7 +161849,9 @@ var FloatingPanelShell = class {
             dragEnd();
             window.removeEventListener("mousemove", onMouseMove);
             window.removeEventListener("mouseup", onMouseUp);
+            this.endDrag = void 0;
           };
+          this.endDrag = onMouseUp;
           window.addEventListener("mousemove", onMouseMove);
           window.addEventListener("mouseup", onMouseUp);
         }
@@ -161679,9 +161868,13 @@ var FloatingPanelShell = class {
             dragEnd();
             window.removeEventListener("touchmove", onTouchMove);
             window.removeEventListener("touchend", onTouchEnd);
+            window.removeEventListener("touchcancel", onTouchEnd);
+            this.endDrag = void 0;
           };
+          this.endDrag = onTouchEnd;
           window.addEventListener("touchmove", onTouchMove, { passive: true });
           window.addEventListener("touchend", onTouchEnd);
+          window.addEventListener("touchcancel", onTouchEnd);
         }
       });
     }
@@ -162016,12 +162209,13 @@ var FloatingPanelShell = class {
         this.onResize?.(this.panel.offsetWidth);
       }
     });
-    const hostResizeObserver = new ResizeObserver(() => {
+    this.hostResizeObserver = new ResizeObserver(() => {
       if (this.visible && this.expanded) {
-        this.centerPanel();
+        if (!this.floatingInitialized) this.centerPanel();
+        else this.clampPosition();
       }
     });
-    hostResizeObserver.observe(host);
+    this.hostResizeObserver.observe(host);
     this.updateLayout();
     host.appendChild(this.root);
   }
@@ -162056,14 +162250,15 @@ var FloatingPanelShell = class {
     if (!hostWidth || !hostHeight) return;
     let currentWidth = parseFloat(this.panel.style.width) || this.panel.offsetWidth;
     let currentHeight = parseFloat(this.panel.style.height) || this.panel.offsetHeight;
-    currentWidth = Math.min(currentWidth, hostWidth - 20);
-    currentHeight = Math.min(currentHeight, hostHeight - 20);
+    currentWidth = Math.max(0, Math.min(currentWidth, hostWidth - 20));
+    currentHeight = Math.max(0, Math.min(currentHeight, hostHeight - 20));
     let currentLeft = parseFloat(this.panel.style.left) || 0;
     let currentTop = parseFloat(this.panel.style.top) || 0;
     currentLeft = Math.max(10, Math.min(currentLeft, hostWidth - currentWidth - 10));
     currentTop = Math.max(10, Math.min(currentTop, hostHeight - currentHeight - 10));
     this.panel.style.width = `${currentWidth}px`;
-    this.panel.style.height = `${currentHeight}px`;
+    if (!this.minimized) this.panel.style.height = `${currentHeight}px`;
+    else if (this.savedHeight.endsWith("px")) this.savedHeight = `${Math.max(0, Math.min(parseFloat(this.savedHeight), hostHeight - 20))}px`;
     this.panel.style.left = `${currentLeft}px`;
     this.panel.style.top = `${currentTop}px`;
   }
@@ -162072,6 +162267,7 @@ var FloatingPanelShell = class {
     const hostWidth = this.host.clientWidth;
     const hostHeight = this.host.clientHeight;
     if (!hostWidth || !hostHeight) return;
+    this.floatingInitialized = true;
     const isFullscreen = !!document.fullscreenElement;
     const maxWidth = isFullscreen ? 1100 : 950;
     const maxHeight = isFullscreen ? 850 : 780;
@@ -162095,10 +162291,21 @@ var FloatingPanelShell = class {
     let transitionedToSplit = false;
     if (isSplit !== this.lastSplitState) {
       if (isSplit) {
+        this.floatingBounds = {
+          left: this.panel.style.left,
+          top: this.panel.style.top,
+          width: this.panel.style.width,
+          height: this.minimized ? this.savedHeight : this.panel.style.height
+        };
         this.isAmbient = true;
         transitionedToSplit = true;
       } else {
         this.isAmbient = false;
+        if (this.floatingBounds) {
+          Object.assign(this.panel.style, this.floatingBounds);
+          this.savedHeight = this.floatingBounds.height;
+          if (this.minimized) this.panel.style.height = "auto";
+        }
       }
       this.lastSplitState = isSplit;
     }
@@ -162158,7 +162365,8 @@ var FloatingPanelShell = class {
       this.panelResizeObserver?.observe(this.panel);
     } else {
       this.panelResizeObserver?.unobserve(this.panel);
-      this.centerPanel();
+      if (!this.floatingInitialized) this.centerPanel();
+      else this.clampPosition();
       Object.assign(this.panel.style, {
         borderRadius: "16px",
         border: "1px solid rgba(255,255,255,0.12)",
@@ -162215,7 +162423,7 @@ var FloatingPanelShell = class {
       }
     } else {
       this.panel.style.height = this.savedHeight || (this.isSplit ? "calc(100% - 20px)" : "min(68%, 700px)");
-      this.panel.style.minHeight = this.savedMinHeight || (this.isSplit ? "0" : "420px");
+      this.panel.style.minHeight = this.savedMinHeight || "0";
       this.content.style.display = "flex";
       this.root.style.background = this.isAmbient || this.isSplit ? "transparent" : "rgba(0,0,0,0.32)";
       this.root.style.pointerEvents = this.isAmbient || this.isSplit ? "none" : "auto";
@@ -162223,6 +162431,7 @@ var FloatingPanelShell = class {
         this.minimizeButton.title = "Minimize";
         this.minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
       }
+      this.clampPosition();
     }
   }
   applyDisplay() {
@@ -162454,6 +162663,8 @@ var FloatingPanelShell = class {
     this.workspaceGroupElement.setAttribute("data-molsysviewer-panel-workspace-launcher-open", this.workspaceMenuOpen ? "true" : "false");
   }
   dispose() {
+    this.endDrag?.();
+    this.hostResizeObserver?.disconnect();
     this.panelResizeObserver?.disconnect();
     this.root.remove();
   }
@@ -162584,7 +162795,7 @@ var GroupPanel = class {
     const settingsBtn = document.createElement("button");
     settingsBtn.type = "button";
     settingsBtn.setAttribute("data-molsysviewer-group-settings-btn", "true");
-    settingsBtn.title = "Configure viewer behavior, cache settings, and options.";
+    settingsBtn.title = "Choose whether and where canvas controls hide automatically.";
     Object.assign(settingsBtn.style, {
       display: "flex",
       flexDirection: "column",
@@ -162626,7 +162837,7 @@ var GroupPanel = class {
       fontSize: "10px",
       color: "rgba(244,244,245,0.48)"
     });
-    settingsBadge.textContent = "Viewer config";
+    settingsBadge.textContent = "Canvas controls";
     settingsBtn.appendChild(settingsBadge);
     bottomContainer.appendChild(settingsBtn);
     this.tabs.set("settings", { button: settingsBtn, badge: settingsBadge });
@@ -162672,7 +162883,7 @@ var GroupPanel = class {
     this.viewportSection = this.createSection("viewport");
     this.viewportPanel = new ViewportPanel(this.makePanelContext("viewport"));
     this.exportSection = this.createSection("export");
-    this.exportPanel = new ExportPanel(this.makePanelContext("export"));
+    this.exportPanel = new ExportPanel(this.makePanelContext("export"), this.hasAuthority);
     this.settingsSection = this.createSection("settings");
     this.systemPanel = new SystemPanel(this.makePanelContext("system"), {
       onSelect: this.onSelect,
@@ -162734,6 +162945,14 @@ var GroupPanel = class {
         this.panels.set(key2, { section, panel });
       }
     }
+    this.compactNavigation = new CompactPanelNavigation(
+      this.body,
+      this.leftColumn,
+      this.rightColumn,
+      "Studio section",
+      (value) => this.switchTab(value)
+    );
+    this.updateCompactNavigation();
     this.switchTab("system");
   }
   /**
@@ -162799,10 +163018,11 @@ var GroupPanel = class {
       regions: "Define and style spatial regions, boolean composition, and overlap inspection.",
       measures: "Measure distances, angles, and dihedrals between atoms.",
       annotations: "View and customize textual labels, 3D annotations, and overlays.",
+      interactions: "Calculate, load, display and inspect interaction analyses (experimental).",
       shapes: "Manage custom 3D geometric shapes and objects in the scene.",
-      layers: "Configure drawing layers, rendering order, and depth settings.",
+      layers: "Group scene objects in layers and control their visibility.",
       viewport: "Adjust background color, lighting, camera, and display parameters.",
-      export: "Export high-resolution images, coordinates, and system state files."
+      export: "Download PNG images and self-contained HTML views."
     };
     const tooltip = tooltips[key2];
     if (tooltip) {
@@ -162918,12 +163138,15 @@ var GroupPanel = class {
   openSection(key2) {
     if (!this.tabs.has(key2)) return false;
     this.switchTab(key2);
-    this.tabs.get(key2)?.button.focus();
+    if (this.compactNavigation?.select.style.display === "block") this.compactNavigation.select.focus();
+    else this.tabs.get(key2)?.button.focus();
     return true;
   }
   switchTab(key2) {
     this.activeTab = key2;
+    if (this.compactNavigation) this.compactNavigation.select.value = key2;
     for (const [tabKey, { button: button2, badge }] of this.tabs.entries()) {
+      button2.setAttribute("aria-current", tabKey === key2 ? "page" : "false");
       if (tabKey === key2) {
         Object.assign(button2.style, {
           background: "rgba(255,255,255,0.08)",
@@ -163103,6 +163326,9 @@ var GroupPanel = class {
     this.viewportPanel.setScene(state);
     this.exportPanel.setScene(state);
   }
+  setImageDimensions(width, height) {
+    this.exportPanel.setImageDimensions(width, height);
+  }
   setSections(items, settings) {
     this.viewportPanel.setSections(items, settings);
   }
@@ -163157,6 +163383,7 @@ var GroupPanel = class {
     this.systemPanel.setHierarchyItems(items);
   }
   dispose() {
+    this.compactNavigation?.dispose();
     this.systemPanel.dispose();
     if (!this.sharedShell) {
       this.shell.dispose();
@@ -163236,40 +163463,17 @@ var GroupPanel = class {
     });
     autohideRow.appendChild(autohideLabel);
     const autohideEnabled = this.model ? !!this.model.get("autohide_controls") : true;
-    const autohideToggleTrack = document.createElement("div");
-    Object.assign(autohideToggleTrack.style, {
-      width: "30px",
-      height: "16px",
-      borderRadius: "8px",
-      background: autohideEnabled ? "#6366f1" : "rgba(255,255,255,0.12)",
-      position: "relative",
-      cursor: "pointer",
-      transition: "background 0.2s ease",
-      flexShrink: "0"
-    });
-    const autohideToggleThumb = document.createElement("div");
-    Object.assign(autohideToggleThumb.style, {
-      width: "12px",
-      height: "12px",
-      borderRadius: "50%",
-      background: "#ffffff",
-      position: "absolute",
-      top: "2px",
-      left: autohideEnabled ? "16px" : "2px",
-      transition: "left 0.2s ease"
-    });
-    autohideToggleTrack.appendChild(autohideToggleThumb);
-    autohideRow.appendChild(autohideToggleTrack);
-    autohideToggleTrack.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+    const autohideToggleTrack = makeSwitch("Autohide Controls", autohideEnabled, () => {
       if (this.model) {
-        const newVal = !this.model.get("autohide_controls");
-        this.model.set("autohide_controls", newVal);
+        const hadFocus = autohideToggleTrack === this.body.ownerDocument.activeElement;
+        this.model.set("autohide_controls", !this.model.get("autohide_controls"));
         this.model.save_changes();
         this.renderSettingsSection();
+        if (hadFocus) this.settingsSection.querySelector('[role="switch"]')?.focus();
       }
     });
+    autohideToggleTrack.disabled = !this.model;
+    autohideRow.appendChild(autohideToggleTrack);
     const scopeLabel = document.createElement("label");
     scopeLabel.textContent = "Reveal controls near";
     Object.assign(scopeLabel.style, { display: "block", fontSize: "11px", marginTop: "10px" });
@@ -163304,6 +163508,13 @@ var GroupPanel = class {
         this.tabsContainer.appendChild(tab.button);
       }
     }
+    this.updateCompactNavigation();
+  }
+  updateCompactNavigation() {
+    this.compactNavigation?.update([...this.getTabOrder(), "settings"].map((value) => ({
+      value,
+      label: this.tabs.get(value)?.button.querySelector("div")?.textContent?.replace("\u2699 ", "") || value
+    })), this.activeTab);
   }
 };
 
@@ -163446,6 +163657,13 @@ var AddonsPanel = class {
       });
       this.widgetObserver.observe(this.addonsWidgetHost, { childList: true, subtree: true });
     }
+    this.compactNavigation = new CompactPanelNavigation(
+      this.body,
+      this.leftColumn,
+      this.rightColumn,
+      "Addon workspace",
+      (value) => this.onSelectWorkspace?.(value)
+    );
     this.applyExpandedState();
     this.setVisible(!floating);
   }
@@ -163537,6 +163755,7 @@ var AddonsPanel = class {
     this.addonsWidgetHost.replaceChildren();
   }
   dispose() {
+    this.compactNavigation?.dispose();
     if (this.widgetObserver) {
       this.widgetObserver.disconnect();
       this.widgetObserver = null;
@@ -163604,14 +163823,14 @@ var AddonsPanel = class {
       fontWeight: "700",
       color: "#f4f4f5"
     });
-    title.textContent = "Settings & Extensions";
+    title.textContent = "Add-ons manager";
     header2.appendChild(title);
     const subtitle = document.createElement("div");
     Object.assign(subtitle.style, {
       fontSize: "11px",
       color: "rgba(244,244,245,0.48)"
     });
-    subtitle.textContent = "Configure global viewer options, manage analytical extensions, and register custom modules.";
+    subtitle.textContent = "Enable optional extensions and register add-on modules.";
     header2.appendChild(subtitle);
     const actionsRow = document.createElement("div");
     Object.assign(actionsRow.style, {
@@ -163687,7 +163906,8 @@ var AddonsPanel = class {
     this.workspaceOverviewHost.appendChild(registerForm);
     const registerInput = document.createElement("input");
     registerInput.type = "text";
-    registerInput.placeholder = "Module or package name (e.g. molsysmt)";
+    registerInput.placeholder = "Add-on module (e.g. molsysviewer_topomt)";
+    registerInput.setAttribute("aria-label", "Add-on module");
     Object.assign(registerInput.style, {
       flex: "1",
       padding: "4px 8px",
@@ -163857,13 +164077,12 @@ var AddonsPanel = class {
           whiteSpace: "pre-wrap"
         });
         traceBox.textContent = failure.traceback || "No traceback detail.";
-        row3.appendChild(traceBox);
-        row3.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const isVisible = traceBox.style.display === "block";
-          traceBox.style.display = isVisible ? "none" : "block";
-        });
+        const disclosure = document.createElement("details"), disclosureTitle = document.createElement("summary");
+        disclosureTitle.textContent = "Error details";
+        traceBox.style.display = "block";
+        disclosure.appendChild(disclosureTitle);
+        disclosure.appendChild(traceBox);
+        row3.appendChild(disclosure);
       } else {
         row3.addEventListener("mouseenter", () => {
           if (addon.enabled) {
@@ -163960,34 +164179,10 @@ var AddonsPanel = class {
           gap: "8px"
         });
         row3.appendChild(actionsContainer);
-        const toggleTrack = document.createElement("div");
-        Object.assign(toggleTrack.style, {
-          width: "30px",
-          height: "16px",
-          borderRadius: "8px",
-          background: addon.enabled ? "#6366f1" : "rgba(255,255,255,0.12)",
-          position: "relative",
-          cursor: "pointer",
-          transition: "background 0.2s ease"
-        });
-        const toggleThumb = document.createElement("div");
-        Object.assign(toggleThumb.style, {
-          width: "12px",
-          height: "12px",
-          borderRadius: "50%",
-          background: "#ffffff",
-          position: "absolute",
-          top: "2px",
-          left: addon.enabled ? "16px" : "2px",
-          transition: "left 0.2s ease"
-        });
-        toggleTrack.appendChild(toggleThumb);
-        actionsContainer.appendChild(toggleTrack);
-        toggleTrack.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
+        const toggleTrack = makeSwitch(`Enable ${addon.name}`, !!addon.enabled, () => {
           this.onAction?.(addon.enabled ? "addon_disable" : "addon_enable", { name: addon.name });
         });
+        actionsContainer.appendChild(toggleTrack);
         if (matchedWorkspace) {
           const openBtn = document.createElement("button");
           openBtn.type = "button";
@@ -164092,12 +164287,12 @@ var AddonsPanel = class {
         whiteSpace: "pre-wrap"
       });
       traceBox.textContent = failure.traceback || "No traceback detail.";
-      card8.appendChild(traceBox);
-      card8.addEventListener("click", (e) => {
-        e.preventDefault();
-        const isVisible = traceBox.style.display === "block";
-        traceBox.style.display = isVisible ? "none" : "block";
-      });
+      const disclosure = document.createElement("details"), disclosureTitle = document.createElement("summary");
+      disclosureTitle.textContent = "Error details";
+      traceBox.style.display = "block";
+      disclosure.appendChild(disclosureTitle);
+      disclosure.appendChild(traceBox);
+      card8.appendChild(disclosure);
       this.workspaceOverviewHost.appendChild(card8);
     }
   }
@@ -164154,6 +164349,7 @@ var AddonsPanel = class {
         transition: "all 0.15s ease-in-out"
       });
       const isActive = workspace.id === this.currentWorkspaceId;
+      btn.setAttribute("aria-current", isActive ? "page" : "false");
       if (isActive) {
         Object.assign(btn.style, {
           background: "rgba(255,255,255,0.08)",
@@ -164211,6 +164407,7 @@ var AddonsPanel = class {
       title: "Settings"
     };
     bottomContainer.appendChild(createWorkspaceButton(coreWorkspace));
+    this.compactNavigation?.update([...this.workspaceItems.filter((w) => w.id !== "core"), coreWorkspace].map((w) => ({ value: w.id, label: w.id === "core" ? "Add-ons manager" : w.title })), this.currentWorkspaceId);
   }
   // ── Right Column: Fixed Header with Subpanels & Sections ───────
   renderAddonHeader(activeWorkspace) {
@@ -164783,6 +164980,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.notify = notify;
     this.initOptions = initOptions;
     this.webglContextLost = false;
+    this.pendingHtmlDownload = null;
     this.canvasInsetAnimFrame = null;
     this.canvasInsetFrom = { left: 0, right: 0 };
     this.canvasInsetTo = { left: 0, right: 0 };
@@ -165026,6 +165224,10 @@ var MolSysViewerController = class _MolSysViewerController {
       if (!region) return;
       this.focusTarget({ atom_indices: region.atom_indices });
     }, (action, details) => {
+      if (action === "export_html") {
+        this.pendingHtmlDownload = `html-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        details = { ...details, request_id: this.pendingHtmlDownload };
+      }
       if (action === "download_image") {
         this.downloadViewportImage();
         return;
@@ -165544,6 +165746,10 @@ var MolSysViewerController = class _MolSysViewerController {
       },
       { immediate: false }
     );
+    this.canvasResizeSubscription = plugin.canvas3d?.resized.subscribe(() => {
+      const gl = plugin.canvas3d?.webgl.gl;
+      if (gl) this.groupPanel.setImageDimensions(gl.drawingBufferWidth, gl.drawingBufferHeight);
+    });
     if (plugin.canvas3d?.didDraw) {
       plugin.canvas3d.didDraw.subscribe(() => {
         const cameraState = plugin.canvas3d.camera.getSnapshot();
@@ -165913,6 +166119,8 @@ var MolSysViewerController = class _MolSysViewerController {
     this.notify?.({ event: "webgl_context_restored" });
   }
   dispose() {
+    this.pendingHtmlDownload = null;
+    this.canvasResizeSubscription?.unsubscribe();
     disposeControls(this);
     this.helpOpener = void 0;
     this.annotations.dispose();
@@ -166481,6 +166689,20 @@ var MolSysViewerController = class _MolSysViewerController {
         }
       }
       switch (msg.op) {
+        case "html_export_ready": {
+          if (msg.request_id !== this.pendingHtmlDownload || typeof msg.html !== "string") break;
+          this.pendingHtmlDownload = null;
+          const doc = this.canvasHost.ownerDocument;
+          const url = URL.createObjectURL(new Blob([msg.html], { type: "text/html;charset=utf-8" }));
+          const link = doc.createElement("a");
+          link.href = url;
+          link.download = "molsysviewer.html";
+          doc.body.appendChild(link);
+          link.click();
+          link.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 1e3);
+          break;
+        }
         case "set_hover_telemetry":
           this.setHoverTelemetryEnabled(msg.enabled === true);
           break;
@@ -167499,6 +167721,7 @@ var MolSysViewerController = class _MolSysViewerController {
       };
     }
     if (op4 === "set_figure_spec") {
+      const figureBackground = typeof msg.figure_background === "string" ? msg.figure_background : void 0;
       const figurePreset = typeof msg.figure_preset === "string" ? msg.figure_preset : void 0;
       const figureScale = typeof msg.figure_scale === "number" ? msg.figure_scale : void 0;
       const figureVariants = Array.isArray(msg.figure_variants) ? msg.figure_variants : void 0;
@@ -167506,7 +167729,8 @@ var MolSysViewerController = class _MolSysViewerController {
         ...this.addonsScene,
         ...figurePreset !== void 0 ? { figurePreset } : {},
         ...figureScale !== void 0 ? { figureScale } : {},
-        ...figureVariants !== void 0 ? { figureVariants } : {}
+        ...figureVariants !== void 0 ? { figureVariants } : {},
+        ...figureBackground !== void 0 ? { figureBackground } : {}
       };
     }
   }
@@ -167562,6 +167786,9 @@ var MolSysViewerController = class _MolSysViewerController {
       figurePreset: this.addonsScene?.figurePreset,
       figureScale: this.addonsScene?.figureScale,
       figureVariants: this.addonsScene?.figureVariants,
+      figureBackground: this.addonsScene?.figureBackground,
+      imageWidth: canvas3d?.webgl.gl.drawingBufferWidth,
+      imageHeight: canvas3d?.webgl.gl.drawingBufferHeight,
       isDarkMode: this.scene.isDarkMode,
       isSpinActive: this.scene.isSpinActive,
       isSwingActive: this.scene.isSwingActive,
@@ -167878,6 +168105,11 @@ var MolSysViewerController = class _MolSysViewerController {
     const style = document.createElement("style");
     style.id = "molsysviewer-global-styles";
     style.textContent = `
+            [data-molsysviewer-group-panel] :is(button, input, select, textarea, summary):focus-visible,
+            [data-molsysviewer-addons-panel] :is(button, input, select, textarea, summary):focus-visible {
+                outline: 2px solid #a5b4fc !important;
+                outline-offset: 2px;
+            }
             /* Firefox Scrollbar Styling */
             [data-molsysviewer-group-panel] *,
             [data-molsysviewer-addons-panel] * {
@@ -168359,7 +168591,7 @@ var MolSysViewerController = class _MolSysViewerController {
     const preset = this.addonsScene?.figurePreset || "publication-light";
     const scale = this.addonsScene?.figureScale || 2;
     const variants = this.addonsScene?.figureVariants || ["dark", "transparent"];
-    const transparent = variants.includes("transparent");
+    const transparent = this.addonsScene?.figureBackground !== void 0 ? this.addonsScene.figureBackground === "transparent" : variants.includes("transparent");
     const dataUri = await this.getImageDataUri({
       scale,
       transparent,
@@ -170068,6 +170300,7 @@ var PopupReplayLog = class {
     if (!message || typeof message !== "object") return;
     const op4 = operation(message);
     if (!op4) return;
+    if (op4 === "html_export_ready") return;
     if (op4 === "clear_all") {
       this.entries = [];
       return;

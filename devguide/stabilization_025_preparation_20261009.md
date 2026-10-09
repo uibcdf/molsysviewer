@@ -17,6 +17,18 @@ membership is preserved before rendering defaults so unavailable Group/Chain
 actions explain their limitation. The public `autohide_scope` configuration
 is an additive API change, supporting the minor-version choice.
 
+The authorized Studio round (#181–#188) adds actual PNG dimensions/background,
+browser HTML delivery, native keyboard controls, compact navigation and preserved
+floating geometry, with clearer Interactions scopes and descriptions. MolSysMT's
+former addon is retired while its required native backend remains. Provider
+cleanup is tracked by `uibcdf/molsysmt#354`; a separate empty bonded-to selector
+failure observed with the hydrogen-free 1TCD demo is `uibcdf/molsysmt#355`.
+Review the [Studio contract](studio_interaction_contract.md) and its source
+evidence in [the Studio review](studio_review_20261009.md) before freezing a
+producer. Both provider issues are fixed in source, without authorizing provider
+publication or qualifying new packages. The separate macOS dynamic-region
+restoration diagnosis is `uibcdf/molsysviewer#189`.
+
 The user guide is [Using the canvas context menu](../docs/content/user/viewer/context_menu.md).
 Normative behavior remains in [gestures and menus](interaction_gestures_and_menus.md)
 and the [payload contract](../docs/content/developer/protocol_and_payloads.md).

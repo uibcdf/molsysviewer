@@ -19,6 +19,11 @@ class FakeElement {
         return child;
     }
 
+    prepend(child: FakeElement) {
+        child.parent = this;
+        this.children.unshift(child);
+    }
+
     replaceChildren(...children: FakeElement[]) {
         this.children.length = 0;
         for (const child of children) child.parent = this;
@@ -173,13 +178,12 @@ test("AddonsPanel renders diagnostics for discovery/load failures", () => {
         assert.strictEqual(errorBadge.textContent, "Discovery Error");
         assert.strictEqual(failureCard.children[1]?.textContent, "failed to import module");
 
-        // Collapsible traceback is initially hidden
-        const traceBox = failureCard.children[2];
+        // Native details keeps the traceback out of the default reading path.
+        const disclosure = failureCard.children[2];
+        assert.ok(disclosure);
+        assert.strictEqual(disclosure.children[0]?.textContent, "Error details");
+        const traceBox = disclosure.children[1];
         assert.ok(traceBox);
-        assert.strictEqual(traceBox.style.display, "none");
-
-        // Toggles display on click
-        failureCard.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         assert.strictEqual(traceBox.style.display, "block");
         assert.strictEqual(traceBox.textContent, "Traceback: ImportError in topomt");
 

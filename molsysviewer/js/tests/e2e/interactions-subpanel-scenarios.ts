@@ -14,6 +14,7 @@ async function checkCalculationAndDisplayScopes(page: any) {
     await apply(page, fixture.initial_messages);
     await page.locator('[data-molsysviewer-group-panel-toggle="true"]').click();
     await page.locator('[data-molsysviewer-group-panel-tab="interactions"]').click();
+    await openCreationForm(page);
     const latest = (action: string) => page.evaluate(action => [...((window as any).__messages || [])].reverse()
         .find((message: any) => message.action === action || message.event === action), action);
     const actionCount = (action: string) => page.evaluate(action => ((window as any).__messages || [])
@@ -25,7 +26,8 @@ async function checkCalculationAndDisplayScopes(page: any) {
     await create.click();
     assert.equal(await actionCount("create_interaction"), 0, "an unset calculation A must stop dispatch");
     await scope.selectOption("all");
-    await page.locator('[data-molsysviewer-interaction-filters] > summary').click();
+    if (!await page.locator("[data-molsysviewer-interaction-filters]").evaluate((element: HTMLDetailsElement) => element.open))
+        await page.locator('[data-molsysviewer-interaction-filters] > summary').click();
     const stagedEvents: any[] = [];
     async function stageQuery(atom: number, slot: "A" | "B") {
         await page.locator('[data-molsysviewer-interaction-filters] button').filter({ hasText: `Stage ${slot}` }).click();
@@ -59,6 +61,7 @@ async function checkCalculationAndDisplayScopes(page: any) {
     await scope.selectOption("all");
     await page.locator('[data-molsysviewer-interaction-field="parameter-distance_threshold"]').fill("0.4");
     await page.locator('[data-molsysviewer-interaction-field="name"]').fill("whole");
+    await openCreationForm(page);
     await page.locator('[data-molsysviewer-interaction-field="tag"]').fill("filtered");
     await create.click();
     const wholeEvent = await latest("create_interaction");
@@ -76,6 +79,7 @@ async function checkCalculationAndDisplayScopes(page: any) {
     assert.deepEqual(await displayMode.locator("option").evaluateAll(options => options.map(option => (option as HTMLOptionElement).value)), modes);
     for (const mode of modes) {
         await displayMode.selectOption(mode);
+        await openCreationForm(page);
         await page.locator('[data-molsysviewer-interaction-field="tag"]').fill(`mode-${mode}`);
         await create.click();
         const request = await latest("create_interaction");
@@ -94,6 +98,7 @@ async function checkCalculationAndDisplayScopes(page: any) {
     await page.locator('[data-molsysviewer-interaction-source="calculate"]').click();
     await scope.selectOption("a");
     await page.locator('[data-molsysviewer-interaction-field="name"]').fill("limited");
+    await openCreationForm(page);
     await page.locator('[data-molsysviewer-interaction-field="tag"]').fill("limited");
     await create.click();
     const limitedEvent = await latest("create_interaction");
@@ -107,6 +112,7 @@ async function checkCalculationAndDisplayScopes(page: any) {
     await page.locator('[data-molsysviewer-interaction-source="calculate"]').click();
     await scope.selectOption("between");
     await page.locator('[data-molsysviewer-interaction-field="name"]').fill("between");
+    await openCreationForm(page);
     await page.locator('[data-molsysviewer-interaction-field="tag"]').fill("between");
     await create.click();
     const betweenEvent = await latest("create_interaction");
@@ -158,6 +164,7 @@ async function checkCalculationForms(page: any) {
         console.log(`[E2E interaction calculation] ${caseLabel}: controls`);
         await page.locator('[data-molsysviewer-group-panel-toggle="true"]').click();
         await page.locator('[data-molsysviewer-group-panel-tab="interactions"]').click();
+        await openCreationForm(page);
         await page.locator('[data-molsysviewer-interaction-kind="true"]').selectOption(item.kind ?? item.system);
         if (item.criterion) await page.locator('[data-molsysviewer-interaction-criterion="true"]').selectOption(item.criterion);
         assert.equal(await page.locator('[data-molsysviewer-interaction-field="parameters"]').count(), 0);
@@ -183,6 +190,7 @@ async function checkCalculationForms(page: any) {
             assert.equal(await page.locator('[data-molsysviewer-interaction-field="parameter-distance_threshold"]').inputValue(), "4");
         }
         await page.locator('[data-molsysviewer-interaction-field="name"]').fill("form-analysis");
+        await openCreationForm(page);
         await page.locator('[data-molsysviewer-interaction-field="tag"]').fill("form-set");
         if (item.system === "halogen_bond") await page.screenshot({ path: "/tmp/molsysviewer-interactions-calculation-controls.png" });
         await page.locator('[data-molsysviewer-interaction-create="true"]').click();
@@ -249,6 +257,7 @@ async function checkFamilyGeometry(page: any) {
             });
             await page.locator('[data-molsysviewer-group-panel-toggle="true"]').click();
             await page.locator('[data-molsysviewer-group-panel-tab="interactions"]').click();
+        await openCreationForm(page);
             const card = page.locator('[data-molsysviewer-interaction-set="family"]');
             assert.match(await card.textContent() || "", new RegExp(`${item.expected.n_supported} drawn / ${item.expected.n_observations} observations.*${item.expected.n_segments} segments`));
             const kinds = await page.locator('[data-molsysviewer-interaction-kind="true"] option').evaluateAll(options => options.map(option => (option as HTMLOptionElement).value));
@@ -318,6 +327,12 @@ async function freshController(page: any) {
         (window as any).__controller = await (window as any).Harness.createController("root");
     });
 }
+async function openCreationForm(page: any) {
+    const form = page.locator("[data-molsysviewer-interaction-form]");
+    if (!await form.evaluate((element: HTMLDetailsElement) => element.open)) await form.locator(":scope > summary").click();
+    const options = form.locator("details").filter({ has: page.getByText("Representation name and layer (optional)", { exact: true }) }).first();
+    if (!await options.evaluate((element: HTMLDetailsElement) => element.open)) await options.locator(":scope > summary").click();
+}
 async function apply(page: any, messages: unknown[]) {
     await page.evaluate(async list => { for (const msg of list) await (window as any).__controller.handleMessage(msg); }, messages);
 }
@@ -371,6 +386,7 @@ export async function runInteractionsSuite(chromium: typeof import("./e2e-browse
         assert.equal((await inspect(page))[0].links[0].radius, fixture.series[0].style.radius_nm * 10);
         await page.locator('[data-molsysviewer-group-panel-toggle="true"]').click();
         await page.locator('[data-molsysviewer-group-panel-tab="interactions"]').click();
+        await openCreationForm(page);
         const card = page.locator('[data-molsysviewer-interaction-set="hb"]');
         assert.match(await card.textContent() || "", /2 drawn \/ 3 observations.*1 unsupported/);
         await card.getByRole("button", { name: "Inspect", exact: true }).click();
@@ -423,6 +439,7 @@ export async function runInteractionsSuite(chromium: typeof import("./e2e-browse
         await page.locator('[data-molsysviewer-interaction-create="true"]').click();
         assert.ok(await page.locator('[data-molsysviewer-interaction-create="true"]').isEnabled(), "validation error stranded the form as busy");
         await page.locator('[data-molsysviewer-interaction-source="stored"]').click();
+        await openCreationForm(page);
         await page.locator('[data-molsysviewer-interaction-field="tag"]').fill("hb-copy");
         await page.locator('[data-molsysviewer-interaction-create="true"]').click();
         assert.ok(await page.locator('[data-molsysviewer-interaction-create="true"]').isDisabled(), "duplicate submission was enabled");
@@ -473,6 +490,7 @@ export async function runInteractionsSuite(chromium: typeof import("./e2e-browse
         await page.locator('[data-molsysviewer-interaction-field="name"]').fill("browser-buch");
         await page.locator('[data-molsysviewer-interaction-field="parameter-distance_threshold"]').fill("0.4");
         await page.locator('[data-molsysviewer-interaction-field="calc-structures"]').fill("current");
+        await openCreationForm(page);
         await page.locator('[data-molsysviewer-interaction-field="tag"]').fill("browser-buch");
         await page.locator('[data-molsysviewer-interaction-create="true"]').click();
         const calculationEvent = await page.evaluate(() => [...((window as any).__messages || [])].reverse().find((m: any) => m.action === "create_interaction"));
@@ -485,6 +503,7 @@ export async function runInteractionsSuite(chromium: typeof import("./e2e-browse
         await page.locator('[data-molsysviewer-interaction-field="filename"]').fill(fixture.fixture_file);
         await page.locator('[data-molsysviewer-interaction-field="file-analysis"]').fill("contacts");
         await page.locator('[data-molsysviewer-interaction-field="atom-map"]').fill("");
+        await openCreationForm(page);
         await page.locator('[data-molsysviewer-interaction-field="tag"]').fill("browser-file");
         await page.locator('[data-molsysviewer-interaction-create="true"]').click();
         const fileEvent = await page.evaluate(() => [...((window as any).__messages || [])].reverse().find((m: any) => m.action === "create_interaction"));
@@ -492,11 +511,12 @@ export async function runInteractionsSuite(chromium: typeof import("./e2e-browse
         const imported = await bridge(history); await apply(page, imported.message_batches.at(-1));
         assert.equal(imported.summary.analyses.find((item: any) => item.name === "browser-file").n_occurrences, 3);
         assert.equal(await page.locator('[data-molsysviewer-interaction-set="browser-file"]').count(), 1);
-        const filters = page.locator("details").filter({ has: page.getByText("Display filter and selections", { exact: true }) }).first();
-        await filters.locator("summary").click();
+        const filters = page.locator('[data-molsysviewer-interaction-filters="true"]');
+        if (!await filters.evaluate((element: HTMLDetailsElement) => element.open)) await filters.locator(":scope > summary").click();
         await filters.locator("select").selectOption("between_selections");
         await filters.locator('input[type="checkbox"]').check();
         await filters.locator("select").selectOption("involving_selection");
+        await openCreationForm(page);
         await page.locator('[data-molsysviewer-interaction-field="tag"]').fill("mode-reset");
         await page.locator('[data-molsysviewer-interaction-create="true"]').click();
         const resetModeEvent = await page.evaluate(() => [...((window as any).__messages || [])].reverse().find((m: any) => m.action === "create_interaction"));

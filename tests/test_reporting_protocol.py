@@ -44,6 +44,7 @@ COMPOSITE_LOAD_BROWSER_GUARD = "molsysviewer/js/tests/e2e/composite-load.e2e.ts"
 MOVIE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/movie-playback.e2e.ts"
 CONTEXT_MENU_BROWSER_GUARD = "molsysviewer/js/tests/e2e/context-menu.e2e.ts"
 CONTROLS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/controls-visibility.e2e.ts"
+STUDIO_BROWSER_GUARD = "molsysviewer/js/tests/e2e/studio-usability.e2e.ts"
 GROUP_PANEL_UNIT_GUARD = "molsysviewer/js/tests/unit/group-panel.test.ts"
 
 
@@ -73,6 +74,7 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         MOVIE_BROWSER_GUARD,
         CONTEXT_MENU_BROWSER_GUARD,
         CONTROLS_BROWSER_GUARD,
+        STUDIO_BROWSER_GUARD,
     ):
         return validate_pytest_guard(root, selector)
     js_root = root / "molsysviewer/js"
@@ -112,6 +114,15 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             "select_picked_interaction" in entry,
             "Inspect This Interaction…" in entry,
             "run().catch(" in entry,
+        )
+    elif selector == STUDIO_BROWSER_GUARD:
+        requirements += (
+            'import { PythonFixtureBridge } from "./python-fixture-bridge";' in entry,
+            "await page.waitForEvent" in entry or 'page.waitForEvent("download")' in entry,
+            "bytes.readUInt32BE(16)" in entry,
+            "assert.equal(downloads, 1)" in entry,
+            "run().catch(" in entry,
+            (js_root / "tests/e2e/studio-usability-bridge.py").is_file(),
         )
     elif selector == CONTROLS_BROWSER_GUARD:
         requirements += (
@@ -454,6 +465,7 @@ def test_browser_guard_resolves_its_build_entrypoint_and_core_lane() -> None:
     assert validate_guard(ROOT, MOVIE_BROWSER_GUARD) == []
     assert validate_guard(ROOT, CONTEXT_MENU_BROWSER_GUARD) == []
     assert validate_guard(ROOT, CONTROLS_BROWSER_GUARD) == []
+    assert validate_guard(ROOT, STUDIO_BROWSER_GUARD) == []
 
 
 def test_group_panel_unit_guard_is_bounded_and_registered() -> None:
@@ -468,6 +480,8 @@ def test_browser_guard_rejects_missing_or_unadopted_targets(tmp_path: Path) -> N
     assert validate_guard(tmp_path, COMPOSITE_LOAD_BROWSER_GUARD)
     assert validate_guard(tmp_path, MOVIE_BROWSER_GUARD)
     assert validate_guard(tmp_path, CONTROLS_BROWSER_GUARD)
+    assert validate_guard(tmp_path, STUDIO_BROWSER_GUARD)
+    assert validate_guard(ROOT, STUDIO_BROWSER_GUARD + "::run")
     assert validate_guard(ROOT, CONTROLS_BROWSER_GUARD + "::run")
     assert validate_guard(ROOT, MOVIE_BROWSER_GUARD + "::run")
     assert validate_guard(ROOT, COMPOSITE_LOAD_BROWSER_GUARD + "::checkProgressiveWelcome")
