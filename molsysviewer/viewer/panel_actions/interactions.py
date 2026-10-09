@@ -194,8 +194,11 @@ def inspect_interaction_occurrence(view, content):
 def _act_on_picked_occurrence(view, content, method):
     page = _picked_page(view, content)
     getattr(view.interactions, method)(
-        page["tag"], page["observations"][0]["occurrence_index"], structure_index=page["frame"],
-        analysis_revision=page["analysis_revision"], query_revision=page["query_revision"],
+        page["tag"],
+        page["observations"][0]["occurrence_index"],
+        structure_index=page["frame"],
+        analysis_revision=page["analysis_revision"],
+        query_revision=page["query_revision"],
     )
 
 

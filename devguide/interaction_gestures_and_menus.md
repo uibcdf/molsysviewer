@@ -157,6 +157,14 @@ membership before changing selection or creating objects. Target scope remains
 available; Atom scope requires a uniquely identified atom. Rendered molecular
 labels do not establish native membership.
 
+Native loads preserve missing group/chain membership before geometry defaults.
+Select disables an unavailable scope with a focus explanation; region and
+annotation composers disable the corresponding option with an explanatory
+label. Available target/atom scopes remain usable. Hierarchy projections retain
+this availability in a popped-out Studio. Old payloads with unknown availability
+still use canonical backend validation. Menu creation consistently says
+Annotation; the rendered label remains an annotation kind.
+
 Shapes and measurements use the current user-assigned tag as the primary menu
 heading, with their object category below it. Related-region rows expose focus,
 Show/Hide and Open in Studio; rename/delete stay in the Studio region editor.

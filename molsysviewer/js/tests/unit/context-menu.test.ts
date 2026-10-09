@@ -172,7 +172,7 @@ test("ViewerContextMenu renders active selection section and selection actions",
         assert.ok(texts.includes("Focus Selection"));
         assert.ok(texts.includes("Save Selection…"));
         assert.ok(texts.includes("Create Region from Selection…"));
-        assert.ok(texts.includes("Add Label from Selection…"));
+        assert.ok(texts.includes("Annotation from Selection…"));
         assert.ok(!texts.includes("Remove Selected Atoms"));
         assert.ok(texts.includes("Clear Selection"));
 
@@ -797,14 +797,14 @@ test("ViewerContextMenu opens inline label composer before add-label action", ()
         );
 
         const root = (menu as any).root as FakeElement;
-        const button = findNodeByText(root, "Add Label from Selection…");
+        const button = findNodeByText(root, "Annotation from Selection…");
         assert.ok(button);
         button!.dispatch("click");
 
         const input = findNodeByTag(root, "input");
         assert.ok(input);
         input!.value = "Catalytic group";
-        const confirm = findNodeByText(root, "Create Label");
+        const confirm = findNodeByText(root, "Create Annotation");
         assert.ok(confirm);
         confirm!.dispatch("click");
 
@@ -934,11 +934,11 @@ test("ViewerContextMenu keeps add-label local until inline text is confirmed", (
         );
 
         const root = (menu as any).root as FakeElement;
-        const button = findNodeByText(root, "Add Label from Selection…");
+        const button = findNodeByText(root, "Annotation from Selection…");
         assert.ok(button);
         button!.dispatch("click");
 
-        const confirm = findNodeByText(root, "Create Label");
+        const confirm = findNodeByText(root, "Create Annotation");
         assert.ok(confirm);
         confirm!.dispatch("click");
 
@@ -985,7 +985,7 @@ test("ViewerContextMenu exposes reproducible-selection actions with the right gu
 
         let root = (menu as any).root as FakeElement;
         assert.ok(collectTexts(root).includes("Create Region from Selection…"));
-        assert.ok(collectTexts(root).includes("Add Label from Selection…"));
+        assert.ok(collectTexts(root).includes("Annotation from Selection…"));
 
         // Clicking "Create Region from Selection…" opens the region composer inline
         const regionButton = findNodeByText(root, "Create Region from Selection…");
@@ -1024,7 +1024,7 @@ test("ViewerContextMenu exposes reproducible-selection actions with the right gu
 
         root = (menu as any).root as FakeElement;
         assert.ok(collectTexts(root).includes("Create Region from Selection…"));
-        assert.ok(collectTexts(root).includes("Add Label from Selection…"));
+        assert.ok(collectTexts(root).includes("Annotation from Selection…"));
 
         assert.deepStrictEqual(actions, [
             {

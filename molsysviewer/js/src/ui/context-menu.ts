@@ -1,4 +1,4 @@
-import type { ActiveSelectionPayload } from "../managers/active-selection";
+import type { ActiveSelectionPayload, ContextScopeAvailability } from "../managers/active-selection";
 import { MenuNavigation, isMenuItemDisabled, setMenuItemDisabled } from "./menu-navigation";
 
 type BaseTarget =
@@ -6,6 +6,7 @@ type BaseTarget =
     | {
         event: "interaction_context_menu";
         kind: "structure";
+        available_scopes?: ContextScopeAvailability;
         atom_indices: number[];
         group_name?: string;
         chain_name?: string;
@@ -399,6 +400,10 @@ export class ViewerContextMenu {
                             button.title = "This target does not identify one pointed atom";
                             button.style.opacity = "0.45";
                         }
+                        if (scope !== "atom" && target.available_scopes?.[scope] === false) {
+                            button.disabled = true;
+                            button.title = `This target has no declared ${scope} membership; use pointed atom or target atoms`;
+                        }
                         view.appendChild(button);
                     }
                 }
@@ -476,7 +481,7 @@ export class ViewerContextMenu {
                 view.appendChild(this.makeActionButton("Save Selection…", "save_selection"));
                 view.appendChild(this.makeActionButton("Create Region from Selection…", "create_region_from_selection"));
                 view.appendChild(this.makeActionButton("Create Section from Selection", "create_section_from_selection"));
-                view.appendChild(this.makeActionButton("Add Label from Selection…", "add_label_from_selection"));
+                view.appendChild(this.makeActionButton("Annotation from Selection…", "add_label_from_selection"));
                 this.appendSelectionExpanders(view);
                 view.appendChild(this.makeActionButton("Clear Selection", "clear_selection"));
             });
@@ -1076,6 +1081,11 @@ export class ViewerContextMenu {
         for (const [value, name] of [["target", "Target atoms"], ["atom", "Pointed atom"], ["group", "Group"], ["chain", "Chain"]] as const) {
             const option = document.createElement("option"); option.value = value; option.textContent = name;
             option.disabled = value === "atom" && (this.currentTarget?.kind !== "structure" || this.currentTarget.atom_index === undefined);
+            if ((value === "group" || value === "chain") && this.currentTarget?.kind === "structure"
+                && this.currentTarget.available_scopes?.[value] === false) {
+                option.disabled = true;
+                option.textContent = `${name} (no declared membership)`;
+            }
             select.appendChild(option);
         }
         select.value = "target";
@@ -1089,7 +1099,7 @@ export class ViewerContextMenu {
         const editor = this.navigation.beginEditor("New Annotation");
 
         const title = document.createElement("div");
-        title.textContent = fromTarget ? "Annotation from target" : "Label from selection";
+        title.textContent = fromTarget ? "Annotation from Target" : "Annotation from Selection";
         Object.assign(title.style, {
             padding: "6px 8px 8px 8px",
             fontWeight: "600",
@@ -1102,7 +1112,7 @@ export class ViewerContextMenu {
         const input = document.createElement("input");
         input.type = "text";
         input.value = "";
-        input.placeholder = "Label text";
+        input.placeholder = "Annotation text";
         Object.assign(input.style, {
             display: "block",
             width: "100%",
@@ -1129,7 +1139,7 @@ export class ViewerContextMenu {
         const colorInput = document.createElement("input");
         colorInput.type = "color";
         colorInput.value = "#4080e0";
-        colorInput.title = "Label color";
+        colorInput.title = "Annotation color";
         Object.assign(colorInput.style, {
             width: "28px",
             height: "28px",
@@ -1151,7 +1161,7 @@ export class ViewerContextMenu {
         sizeInput.max = "2.0";
         sizeInput.step = "0.1";
         sizeInput.value = "1.0";
-        sizeInput.title = "Label size (em)";
+        sizeInput.title = "Annotation size (em)";
         Object.assign(sizeInput.style, { flex: "1 1 auto", cursor: "pointer" });
 
         styleRow.appendChild(colorInput);
@@ -1167,7 +1177,7 @@ export class ViewerContextMenu {
 
         const save = document.createElement("button");
         save.type = "button";
-        save.textContent = "Create Label";
+        save.textContent = "Create Annotation";
         Object.assign(save.style, {
             flex: "1 1 auto",
             padding: "8px 10px",

@@ -131,8 +131,8 @@ calculation preparation without executing it. Browser-generated requests are
 replayed through the real Python owners. A panel-only Studio opens the menu from
 its relayed hierarchy, omits canvas measurement picking and does not send a
 fictitious frame-zero identity. Measure has three actions and a separate explicit
-endpoint-policy selector; its progress label names the policy. Human acceptance
-of this slice remains pending together with the completed object/occurrence work.
+endpoint-policy selector; its progress label names the policy. Human acceptance was pending at this checkpoint; the final acceptance below
+supersedes that state.
 
 ### Automated object and occurrence workflows — 2026-10-08
 
@@ -154,7 +154,7 @@ The prepared human notebook is
 Its public setup executes successfully (three structures evaluated for Buch,
 three occurrences). The maintainer's first interactive review confirms the
 reviewed workflows except for the two findings below. These are development
-checks, not replacement-package or manual acceptance. #179 stays partial.
+checks, not replacement-package qualification; #179 was partial at this checkpoint.
 
 ### First human review: boundary bonds and translucent picking — 2026-10-08
 
@@ -205,9 +205,8 @@ routing without changing selection, current shape/measurement titles, and the
 earlier pointer/bond/occurrence guards. The menu owner passes 17 cases. The JS
 regression found one old Studio subtitle expectation (322/323); its corrected
 GroupPanel owner passes 35/35. This is targeted recovery, not an uninterrupted
-green full campaign. TypeScript and runtime regeneration pass. Final visual
-acceptance of these refinements and replacement-package qualification remain
-separate; #179 remains partial.
+green full campaign. TypeScript and runtime regeneration pass. Final visual acceptance was pending at this checkpoint and is recorded below;
+replacement-package qualification remains separate.
 
 The required full Python run outside the sandbox completes 2,938 cases:
 2,907 pass, 23 skip and the eight previously recorded Qt probes fail with
@@ -235,7 +234,7 @@ selected owners pass across those campaigns; this is targeted evidence.
 Seven focused Python configuration checks, 69 frontend owner cases, 25
 inventory/link checks, 184 reporting/profile checks, TypeScript, runtime rebuild
 and Ruff pass. The full Python/JS runs retain their initial failures and scoped
-recovery in [the #180 report](pending_proposals/cinema_and_controls_reveal_policy.md).
+recovery in [the #180 report](archive/cinema_and_controls_reveal_policy.md).
 The maintainer's 2026-10-09 review confirms these two corrections; the requested
 discovery refinement is recorded below. Publication and both 1.0 versions remain
 paused.
@@ -250,7 +249,7 @@ layout updates do not restart it, and disposal cancels the timer. Cinema's
 available scrubber shares this rule. The extended real export/popup browser
 guard passes initial duration, Cinema and Integrated transitions, explicit hide
 during introduction and the prior scope, keyboard and subscription checks.
-Human confirmation of this discovery refinement remains pending under #180.
+Human confirmation was pending here; final acceptance is recorded below.
 The complete JS regression passes 324/324 cases, TypeScript/runtime rebuild
 passes and 188 reporting/link guards pass; Python behavior is unchanged.
 
@@ -264,7 +263,7 @@ disables descendant input immediately. Cinema regains the original motion.
 The real browser guard samples intermediate opacity, simultaneous descendant
 visibility, hit testing and Cinema motion, and passes after fixing Enter's
 focus transfer to the next animation frame. Discovery and prior workflows also
-pass; human confirmation of this visual correction remains pending under #180.
+pass; the maintainer subsequently confirms the visual correction works.
 
 ## Python Interaction Callbacks
 
@@ -439,8 +438,48 @@ The full JS campaign passed 323 cases before that explanatory-overlay correction
 Five affected suites also pass in one shared Chromium: popup-channel,
 group-panel-interaction, measurements-interaction, selection-subpanel and
 scene-contracts. The 181 reporting-protocol checks and generated indexes pass.
-These are development checks; the refreshed notebook visual review is pending
-under `uibcdf/molsysviewer#179` and does not qualify a replacement package.
+These are development checks. The maintainer subsequently accepts the refreshed
+notebook visual review; it does not qualify a replacement package.
+
+## Final menu and controls acceptance — 2026-10-09
+
+The maintainer accepts the reviewed menu and corrected whole-controls fade.
+#179/#180 are resolved; their archived reports preserve the prior campaigns and
+human findings. The final menu uses Annotation consistently and explains missing
+native Group/Chain membership before backend submission, without treating Mol*
+rendering labels as declared topology. JSON and array-native encoders preserve
+the same compact availability declaration, including partial membership.
+
+The final focused menu owner passes 17/17 cases; the complete JS regression
+passes 324/324, with no omissions. TypeScript and runtime/harness builds pass.
+The extended real Mol*/Chromium context-menu guard passes the previous
+molecular/object/occurrence and popup workflows plus absent Group, absent Chain
+and partially assigned Group membership. Unavailable actions refuse keyboard
+and pointer activation; valid scopes remain available. Eight loader cases pass
+for matching JSON/array-native declarations. Ruff formatting/lint and the new
+Sphinx context-menu guide build pass.
+
+The required full Python run executes 2,952 cases: 2,901 pass, 23 skip and 28
+fail. Twenty socket/Chromium failures are sandbox startup restrictions; the
+five affected modules pass outside the sandbox (53 passed, one explicit
+GPU-environment skip). The eight Qt probe failures retain their experimental
+scope. A single outside-sandbox Qt transport repro still cannot create an
+OpenGL/Vulkan context and reports a D-Bus connection error. No workaround or
+visible-window certification is inferred. The full suite is not repeated and
+is not presented as green.
+
+The previous commit `804e1b50` has successful hosted core E2E, documentation
+notebooks, Python 3.14 source pair and Conda governance runs. Its six required
+scientific CI cells pass; the experimental Qt lane fails separately. Its policy
+failure is eight Ruff formatting violations, corrected in this closure and
+checked across the complete local Python scope. New-commit hosted results must
+be inspected separately; old CI does not qualify changed source or files.
+
+The agreed next version is 0.25.0, but further changes remain. The
+[preparation plan](stabilization_025_preparation_20261009.md) holds producer
+freezing, staging construction and installed dispatch until final review.
+Human acceptance, source development evidence and later installed artifact
+qualification remain distinct. Both 1.0 publications remain paused.
 
 ## Known Open Points
 

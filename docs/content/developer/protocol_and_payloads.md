@@ -55,6 +55,17 @@ changing the Mol* atom_site construction contract.
 
 Do not reintroduce legacy names such as `positions` or `frames`.
 
+The additive `atoms.unassigned_scope_atoms` declaration preserves native group
+and chain membership before rendering defaults. Each level is `"all"` when no
+atom has membership, an empty list when all do, or a list of unassigned atom
+indices for a partial topology. JSON and array-native encoders share this
+declaration. Mol* model source data retains it, and hierarchy projections carry
+the derived `available_scopes` to panel-only hosts. Group/Chain menu actions and
+composer options are disabled when none of the target atoms has membership.
+Legacy payloads without this declaration retain backend validation; missing
+metadata is unknown, not proof of membership. The declaration is a UI hint,
+never authority to bypass Python scope resolution.
+
 ## Partial coordinate edits
 
 `partial_coordinates_update` contains explicit `atom_indices` and

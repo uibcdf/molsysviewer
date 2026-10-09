@@ -1,9 +1,9 @@
 ---
 summary: Apply Cinema preset and expose consistent control-area autohide
 issue: uibcdf/molsysviewer#180
-status: partial
+status: resolved
 opened: 2026-10-08
-closed:
+closed: 2026-10-09
 verification: reproduced
 area: [canvas, configuration, interaction, export]
 guard: molsysviewer/js/tests/e2e/controls-visibility.e2e.ts
@@ -148,3 +148,44 @@ The complete JS regression passes 324/324 cases, TypeScript/runtime rebuild
 passes, and 188 reporting/link guards and generated-index checks pass. Python
 and the public controls configuration are unchanged.
 Human visual confirmation remains pending.
+
+## Resolution — 2026-10-09
+
+The principal maintainer confirms Cinema and the reveal policy work, then
+confirms the restored disappearance looks correct. The two-second introduction,
+whole-group fade and Cinema slide are accepted. The retained real-browser guard
+samples rendered intermediate frames, inert input safety, discovery duration,
+keyboard access, modes, Settings, Dock/fullscreen, popup synchronization and
+subscription disposal. Its passing final-source execution is recorded above;
+controls implementation is unchanged during this final menu closure.
+
+The final focused menu owner passes 17/17 cases; the complete JS regression
+passes 324/324, with no omissions. TypeScript and runtime/harness builds pass.
+The extended real Mol*/Chromium context-menu guard passes the previous
+molecular/object/occurrence and popup workflows plus absent Group, absent Chain
+and partially assigned Group membership. Unavailable actions refuse keyboard
+and pointer activation; valid scopes remain available. Eight loader cases pass
+for matching JSON/array-native declarations. Ruff formatting/lint and the new
+Sphinx context-menu guide build pass.
+
+The required full Python run executes 2,952 cases: 2,901 pass, 23 skip and 28
+fail. Twenty socket/Chromium failures are sandbox startup restrictions; the
+five affected modules pass outside the sandbox (53 passed, one explicit
+GPU-environment skip). The eight Qt probe failures retain their experimental
+scope. A single outside-sandbox Qt transport repro still cannot create an
+OpenGL/Vulkan context and reports a D-Bus connection error. No workaround or
+visible-window certification is inferred. The full suite is not repeated and
+is not presented as green.
+
+The previous commit `804e1b50` has successful hosted core E2E, documentation
+notebooks, Python 3.14 source pair and Conda governance runs. Its six required
+scientific CI cells pass; the experimental Qt lane fails separately. Its policy
+failure is eight Ruff formatting violations, corrected in this closure and
+checked across the complete local Python scope. New-commit hosted results must
+be inspected separately; old CI does not qualify changed source or files.
+
+Close #180 and archive this report. The normative contract and new user guide
+absorb the reveal/discovery rules. The next agreed version is 0.25.0, with
+further changes still pending: no producer freeze, tag, staging build or
+installed-pair dispatch occurs at this closure. Both 1.0 publications remain
+paused. Existing 0.24.1 evidence retains its original scope.

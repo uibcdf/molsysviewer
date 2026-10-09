@@ -67,7 +67,13 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             "node --test tests/unit/dist-index.js" in scripts.get("test:js", ""),
         )
         return [] if all(requirements) else [f"guard {selector!r} does not resolve to its documented unit lane"]
-    if selector not in (INTERACTIONS_BROWSER_GUARD, COMPOSITE_LOAD_BROWSER_GUARD, MOVIE_BROWSER_GUARD, CONTEXT_MENU_BROWSER_GUARD, CONTROLS_BROWSER_GUARD):
+    if selector not in (
+        INTERACTIONS_BROWSER_GUARD,
+        COMPOSITE_LOAD_BROWSER_GUARD,
+        MOVIE_BROWSER_GUARD,
+        CONTEXT_MENU_BROWSER_GUARD,
+        CONTROLS_BROWSER_GUARD,
+    ):
         return validate_pytest_guard(root, selector)
     js_root = root / "molsysviewer/js"
     try:

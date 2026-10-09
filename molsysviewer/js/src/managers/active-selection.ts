@@ -20,6 +20,7 @@ export type ActiveSelectionItem = {
     chain_name?: string;
     molecule_name?: string;
     entity_name?: string;
+    available_scopes?: ContextScopeAvailability;
 } | {
     source_kind: "annotation";
     annotation_kind: "label";
@@ -51,6 +52,34 @@ export type ActiveSelectionItem = {
  * legitimately accessible on their results.
  */
 export type GroupSelectionItem = Extract<ActiveSelectionItem, { source_kind: "element" }>;
+
+export type ContextScopeAvailability = { group?: boolean; chain?: boolean };
+const scopeMembershipCache = new WeakMap<object, { group?: "all" | Set<number>; chain?: "all" | Set<number> }>();
+
+/** Resolve native scope availability without treating Mol* labels as membership. */
+export function getContextScopeAvailability(structure: Structure, atomIndices: number[]): ContextScopeAvailability {
+    const model = structure.units.find(unit => unit.kind === 0)?.model;
+    if (model?.sourceData?.kind !== "mol-viewer:molsysmt") return {};
+    const data = model.sourceData.data as any;
+    const declared = data?.unassigned_scope_atoms;
+    if (!declared) return {};
+    let missing = scopeMembershipCache.get(data);
+    if (!missing) {
+        missing = {};
+        for (const level of ["group", "chain"] as const) {
+            const values = declared[level];
+            if (values === "all") missing[level] = "all";
+            else if (Array.isArray(values)) missing[level] = new Set(values);
+        }
+        scopeMembershipCache.set(data, missing);
+    }
+    const available: ContextScopeAvailability = {};
+    for (const level of ["group", "chain"] as const) {
+        const unassigned = missing[level];
+        if (unassigned !== undefined) available[level] = unassigned !== "all" && atomIndices.some(atom => !unassigned.has(atom));
+    }
+    return available;
+}
 
 export type ActiveSelectionPayload = {
     event: "interaction_active_selection_changed";
@@ -154,6 +183,7 @@ export function buildGroupItemsFromStructure(structure: Structure): GroupSelecti
             group_id: authSeqId,
             chain_name: chainName,
             entity_name: entityName,
+            available_scopes: getContextScopeAvailability(structure, atomIndices),
         };
         if (typeof compIndex === "number" && Number.isFinite(compIndex)) item.component_indices = [compIndex];
         if (typeof compName === "string" && compName.trim()) item.component_name = compName;

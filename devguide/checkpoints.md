@@ -1,43 +1,23 @@
 # Development checkpoint
 
-**Current priority and publication pause — 2026-10-08:** the maintainer accepts
-the [canvas context-menu redesign](canvas_context_menu_pre_1_0_plan.md)
-(`uibcdf/molsysviewer#179`) as required before 1.0. The menu foundation, shared
-scene/Studio access and molecular/object/occurrence workflows are implemented.
-The first human review confirms the reviewed workflows except for boundary
-peptide half-links and translucent-sphere picking. Both corrections pass the
-expanded real-pointer/rendered-geometry guard, 323 JS cases and six affected
-browser suites. The maintainer now confirms both corrections work. Final
-accepted refinements use Group consistently, shorten repeated selection labels,
-prioritize object tags, simplify related-region rows and soften pointer hover.
-Their real-browser guard passes. The final accepted navigation adds one
-click-driven adjacent secondary card, edge flipping, a narrow-canvas Back
-fallback, secondary forms, soft separators and focusable unavailable actions
-with explanations. The maintainer accepts that refreshed visual review and
-reports two viewport corrections under `uibcdf/molsysviewer#180`: apply Cinema
-and retain button-area auto-hide after leaving Dock. The delivered correction
-adds `autohide_scope="controls"` (default) or `"canvas"`, Settings parity and
-shared controls in widget/exports/popups. Frame updates cannot reveal hidden
-controls and mode rebuilds release their previous listeners and scrubber. The
-real disk-export test also found and corrected opaque file-origin popup delivery.
-See [the owning report](pending_proposals/cinema_and_controls_reveal_policy.md)
-for current validation and pending human reconfirmation.
-On 2026-10-09 the maintainer confirms those corrections work and requests a
-two-second controls introduction at canvas initialization and mode changes.
-The shared visibility owner implements it without restarting on hover, frame or
-layout updates. The maintainer then reports fragmented disappearance; whole-group
-fading and Cinema's original downward slide are restored, with actual animation
-frames covered by the browser guard. Human confirmation of this visual correction
-remains pending under #180.
-The final extended real-browser guard passes, including an actual secondary
-window; five affected suites pass in shared Chromium. The 17 focused menu cases,
-TypeScript/runtime build and 181 reporting/index checks pass; the full JS run
-passed 323 cases before the final browser-discovered explanation reflow fix.
-Both Viewer and MolSysMT 1.0 publication remain paused. The menu changes
-require a new Viewer candidate/version, not yet chosen. Keep 0.24.1 build 1,
-its fixed reference and qualification evidence unchanged; they do not certify
-the future menu. Resume with #180/#179 acceptance, then replacement-candidate
-qualification and public documentation/installed first contact.
+**Current priority and publication pause — 2026-10-09:** the maintainer accepts
+the [canvas context menu](canvas_context_menu_pre_1_0_plan.md), Cinema,
+control-area reveal, two-second discovery and restored whole-controls fade.
+The final closure of `uibcdf/molsysviewer#179` / `uibcdf/molsysviewer#180`
+adds consistent Annotation terminology and explained unavailable native
+Group/Chain scopes. Their real-browser guard passes, including partial native
+membership, keyboard/pointer refusal, peptide boundary links and sphere picking.
+The complete JS regression passes 324/324; TypeScript, runtime regeneration,
+Ruff and the new [user guide](../docs/content/user/viewer/context_menu.md) build pass.
+[Verified interaction state](interaction_verified_state.md) records the Python
+regression and scoped environment recovery without claiming a green Qt host.
+
+The next version is **0.25.0**, agreed by the maintainer, who explicitly says
+further changes remain. Follow the [preparation plan](stabilization_025_preparation_20261009.md);
+do not freeze a producer/ref, tag, build/upload staging files or dispatch an
+installed pair until that work is finished and reviewed. Both Viewer and
+MolSysMT 1.0 publication remain paused. Keep the prior 0.24.1 files, references
+and evidence unchanged; they do not qualify the changed menu.
 
 **Prior candidate preparation — 2026-10-08 (retained scope):**
 the [experimental Interactions consumer contract](interactions_compatibility_contract.md)
@@ -1562,15 +1542,16 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current session priority (2026-10-08):** implement and review
-[the accepted contextual menu](canvas_context_menu_pre_1_0_plan.md) (#179).
-Keep target/active-selection separation, region ownership and the
+**Current session priority (2026-10-09):** the accepted context-menu and
+controls work is complete under #179/#180. Continue the maintainer's remaining
+changes before freezing the agreed 0.25.0 candidate. Preserve target/selection
+separation, region ownership and the
 [experimental Interactions contract](interactions_compatibility_contract.md).
-The next Viewer candidate will supersede 0.24.1; choose its identity after
-review, then qualify the changed source/bytes and complete documentation/installed
-first contact. Both 1.0 publications remain paused. The prior 0.24.1 installed
-run `37783010701` is reported successful by the provider; independent Viewer
-review of all original environment archives is incomplete and paused. Preserve
+The [0.25.0 plan](stabilization_025_preparation_20261009.md) defines later exact
+source/byte qualification and documentation/installed first contact.
+Both 1.0 publications remain paused. The prior 0.24.1 installed run
+`37783010701` is reported successful by the provider; independent Viewer review
+of all original environment archives is incomplete and paused. Preserve
 [that preparation and receipt](stabilization_0241_preparation_20261008.md)
 without transferring its evidence to the new menu.
 

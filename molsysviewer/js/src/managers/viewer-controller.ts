@@ -33,7 +33,7 @@ import { ToolStatusOverlay } from "../ui/tool-status";
 import { LegendOverlay } from "../ui/legend-overlay";
 import { TrajectoryPlotOverlay } from "../ui/trajectory-plot-overlay";
 import { WebGLStatusOverlay } from "../ui/webgl-status-overlay";
-import { ActiveSelectionController, ActiveSelectionItem, buildGroupItemsFromStructure, type GroupSelectionItem, lociToGroupItems } from "./active-selection";
+import { ActiveSelectionController, ActiveSelectionItem, buildGroupItemsFromStructure, getContextScopeAvailability, type ContextScopeAvailability, type GroupSelectionItem, lociToGroupItems } from "./active-selection";
 import type { ActiveSelectionPayload } from "./active-selection";
 import {
     decodeArrayNativeMolSys,
@@ -182,6 +182,7 @@ type ContextInteractionPayload =
     | {
         event: "interaction_context_menu";
         kind: "structure";
+        available_scopes?: ContextScopeAvailability;
         atom_indices: number[];
         group_indices?: number[];
         chain_indices?: number[];
@@ -1327,7 +1328,7 @@ export class MolSysViewerController {
                 return true;
             }
             if (action === "select_context_target" || action === "create_region_from_target" || action === "create_annotation_from_target") {
-                // The one backend dispatcher resolves canonical atom/residue/chain scope.
+                // The one backend dispatcher resolves canonical atom/group/chain scope.
                 // A popped-out Studio has no local trajectory geometry; its
                 // topology actions do not claim the host's frame is zero.
                 if (details && !this.isPanelOnly) details.structure_index = this.interactions.currentFrame;
@@ -1517,6 +1518,10 @@ export class MolSysViewerController {
                     (payload as ContextInteractionPayload & { request_id?: string }).request_id = remoteRequestId;
                 }
 
+                if (payload.kind === "structure") {
+                    const structure = this.getStructureData();
+                    if (structure) payload.available_scopes = getContextScopeAvailability(structure, payload.atom_indices);
+                }
                 this.lastContextPayload = payload;
                 this.groupPanel.updateContextTarget(payload);
                 this.syncWorkbenchContextFromPayload(payload);
@@ -2139,6 +2144,7 @@ export class MolSysViewerController {
             atom_indices: item.atom_indices,
             group_name: item.source_kind === "element" ? item.group_name : undefined,
             chain_name: item.source_kind === "element" ? item.chain_name : undefined,
+            available_scopes: item.source_kind === "element" ? item.available_scopes : undefined,
             page_x: pageX,
             page_y: pageY,
         };

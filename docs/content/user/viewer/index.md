@@ -9,6 +9,9 @@ structures bar, and popout). Then continue with **Camera and controls** to
 learn how to focus the view, reset the camera, and save/restore camera
 snapshots while you explore.
 
+Use {doc}`context_menu` for actions on a molecular target or selection, object
+editing, measurements, interactions and the canvas control reveal policy.
+
 If you are trying to understand the current shared workbench/runtime model,
 continue with **Panel mode and workspaces** and then the notebook recipe:
 
@@ -20,5 +23,6 @@ continue with **Panel mode and workspaces** and then the notebook recipe:
 
 ui
 camera_and_controls
+context_menu
 panel_mode
 ```

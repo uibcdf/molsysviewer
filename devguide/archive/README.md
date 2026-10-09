@@ -1,5 +1,8 @@
 # Archived implementation plans
 
+- [`canvas_context_menu_target_actions.md`](canvas_context_menu_target_actions.md) — #179: contextual molecular/object/occurrence workflows and adaptive adjacent menus accepted; native scope availability and Annotation naming guarded.
+- [`cinema_and_controls_reveal_policy.md`](cinema_and_controls_reveal_policy.md) — #180: Cinema, configurable reveal area, two-second discovery and smooth whole-controls fade accepted and guarded.
+
 - [`qt_probe_html_ownership.md`](qt_probe_html_ownership.md) — #178: parent-owned HTML survives real Qt reads and cleans on success/failure/timeout; eight lifecycle regressions and both original probes pass.
 - [`quarantined_digesters_await_a_decision.md`](quarantined_digesters_await_a_decision.md) — #78: retain developer-only quarantine for 1.0; restoration rule adopted, no deletion.
 - [`clarify_linux_only_standalone_qt_support.md`](clarify_linux_only_standalone_qt_support.md) — #97: distinguish core installed coverage from experimental Qt and remote hosts.

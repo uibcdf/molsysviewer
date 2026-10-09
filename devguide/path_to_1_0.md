@@ -1,15 +1,16 @@
 # Path to 1.0.0 (Unified Release Plan)
 
-**Current priority — 2026-10-08:** the maintainer accepts the
-[canvas context-menu redesign](canvas_context_menu_pre_1_0_plan.md)
-(`uibcdf/molsysviewer#179`) as required before 1.0. Implement and review it
-before choosing the next pre-1.0 candidate, completing documentation/installed
-first contact and qualifying the final exact artifacts. Publication of both
-Viewer and MolSysMT 1.0 is paused. Viewer 0.24.1 build 1 is retained as staging
-evidence and will be superseded by a new candidate containing the menu changes;
-its qualification does not cover that replacement. The
-[Interactions consumer agreement](interactions_compatibility_contract.md)
-continues to preserve the experimental scientific boundary.
+**Current priority — 2026-10-09:** the maintainer accepts the
+[canvas context-menu redesign](canvas_context_menu_pre_1_0_plan.md) (#179) and
+Cinema/control visibility refinements (#180). The agreed next version is
+**0.25.0**, but further changes remain: its producer, files and qualification
+are not frozen or dispatched. Follow the
+[preparation plan](stabilization_025_preparation_20261009.md) after completing
+those changes. Documentation/installed first contact and exact artifact gates
+remain before 1.0. Both Viewer and MolSysMT 1.0 publication remain paused.
+Viewer 0.24.1 build 1 retains its original staging scope; it does not qualify
+the replacement. The [Interactions consumer agreement](interactions_compatibility_contract.md)
+preserves the experimental scientific boundary.
 
 **Complete board review — 2026-10-07:** [all 34 open issues are reconciled](open_issue_reconciliation_20261007.md).
 #95/#97 public installation/host promises are corrected; #78 retains developer-only

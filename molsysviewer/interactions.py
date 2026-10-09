@@ -1709,15 +1709,25 @@ class InteractionsManager(ScientificInteractionsManager):
             or identity.get("query_revision") != record["query_revision"]
             or obj.broken
         ):
-            raise ArgumentError("occurrence_index", message="The pick is stale; point at the current interaction again.")
+            raise ArgumentError(
+                "occurrence_index", message="The pick is stale; point at the current interaction again."
+            )
         page = self.inspect(
-            tag, structure_index=int(identity["frame"]), offset=int(identity["query_offset"]), limit=1,
+            tag,
+            structure_index=int(identity["frame"]),
+            offset=int(identity["query_offset"]),
+            limit=1,
             skip_digestion=True,
         )
-        if len(page["observations"]) != 1 or page["observations"][0]["occurrence_index"] != identity["occurrence_index"]:
+        if (
+            len(page["observations"]) != 1
+            or page["observations"][0]["occurrence_index"] != identity["occurrence_index"]
+        ):
             obj._inspected_page = None
             raise ArgumentError("occurrence_index", message="The picked occurrence is absent from this query position.")
-        self._observation_atoms(tag, identity["occurrence_index"], page["frame"], page["analysis_revision"], page["query_revision"])
+        self._observation_atoms(
+            tag, identity["occurrence_index"], page["frame"], page["analysis_revision"], page["query_revision"]
+        )
         return page
 
     def _observation_atoms(self, tag, occurrence_index, structure_index, analysis_revision, query_revision):

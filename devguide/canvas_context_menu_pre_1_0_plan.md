@@ -1,15 +1,15 @@
 # Canvas context menu: accepted pre-1.0 redesign
 
 **Decision — 2026-10-08:** the principal maintainer accepts this redesign as
-required before 1.0 (`uibcdf/molsysviewer#179`). **Implementation delivered; final polish under review:** the
+required before 1.0 (`uibcdf/molsysviewer#179`). **Implementation delivered and accepted — 2026-10-09:** the
 menu shell, shared scene/Studio navigation, molecular-target and object/occurrence
 workflows are delivered. The maintainer confirms both reported defects are
 corrected and the reviewed workflows function; the accepted final vocabulary
 and visual refinements, including adaptive parallel submenus, are accepted in
 the refreshed notebook review. Two resulting viewport corrections—Cinema and
 consistent controls reveal—are tracked under `uibcdf/molsysviewer#180` in
-[their owning report](pending_proposals/cinema_and_controls_reveal_policy.md).
-The [owning report](pending_proposals/canvas_context_menu_target_actions.md)
+[their owning report](archive/cinema_and_controls_reveal_policy.md).
+The [owning report](archive/canvas_context_menu_target_actions.md)
 records the inspected findings. Current executable contracts are maintained in
 [`interaction_gestures_and_menus.md`](interaction_gestures_and_menus.md) and
 [`scene_contracts.md`](scene_contracts.md) alongside this implementation.
@@ -19,7 +19,9 @@ records the inspected findings. Current executable contracts are maintained in
 Publication is paused for both Viewer and MolSysMT: neither 1.0 is requested or
 authorized. Viewer 0.24.1 build 1 / `ae1fb995` remains an immutable staging
 checkpoint and will be superseded as the next candidate by the menu changes.
-Choose the next pre-1.0 version/build/source after implementation and review.
+The maintainer agrees 0.25.0 but explicitly says further changes remain.
+Do not freeze/build the candidate until those changes are finished and reviewed;
+follow [the preparation plan](stabilization_025_preparation_20261009.md).
 Preserve old tags, branches, files, hashes and gate verdicts; do not transfer
 their qualification to new code. Public baseline remains Viewer 0.24.0 build 1
 and MolSysMT 0.23.0 ABI3 build 0.

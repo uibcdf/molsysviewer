@@ -52,3 +52,29 @@ def test_json_payload_rejects_nonfinite_coordinates():
 
     with pytest.raises(ValueError, match="coordinates must contain only finite"):
         serialize_json_molsys(molsys)
+
+
+@pytest.mark.parametrize("level", ["group", "chain"])
+@pytest.mark.parametrize("partial", [False, True])
+def test_rendering_fallbacks_do_not_declare_native_scope_membership(level, partial):
+    from molsysviewer.loaders.array_native_molsys import serialize_array_native_molsys
+
+    view = demo["dialanine"]
+    try:
+        molsys = view.molsys.copy()
+        column = f"{level}_index"
+        if partial:
+            molsys.topology.atoms[column] = molsys.topology.atoms[column].astype(object)
+            molsys.topology.atoms.loc[0, column] = None
+        else:
+            molsys.topology.atoms[column] = None
+        payload = serialize_json_molsys(molsys)
+        binary = serialize_array_native_molsys(molsys)
+        scopes = payload["atoms"]["unassigned_scope_atoms"]
+        assert scopes[level] == ([0] if partial else "all")
+        assert scopes["chain" if level == "group" else "group"] == []
+        assert scopes == binary.metadata["atoms"]["unassigned_scope_atoms"]
+        # These remain usable geometry defaults, not proof of native membership.
+        assert payload["atoms"]["residue_index" if level == "group" else "chain_index"][0] == 0
+    finally:
+        view.close()

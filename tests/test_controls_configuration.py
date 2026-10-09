@@ -1,4 +1,5 @@
 """Public control-area preferences survive validation, copy and HTML export."""
+
 import json
 import re
 import warnings

@@ -9,6 +9,8 @@ def digest_autohide_scope(autohide_scope, caller=None):
         if value in ("controls", "canvas"):
             return value
     raise ArgumentError(
-        "autohide_scope", value=autohide_scope, caller=caller,
+        "autohide_scope",
+        value=autohide_scope,
+        caller=caller,
         message='Use "controls" or "canvas".',
     )

@@ -141366,6 +141366,7 @@ async function loadStructureFromMolSysPayload(plugin, payload, label2, options) 
       name: label2 ?? "MolSysMT",
       data: {
         ...payload.meta ?? {},
+        unassigned_scope_atoms: payload.atoms.unassigned_scope_atoms,
         molecule_id: payload.atoms.molecule_id,
         molecule_name: payload.atoms.molecule_name,
         component_id: payload.atoms.component_id,
@@ -141429,6 +141430,7 @@ async function loadStructureFromArrayNativeMolSys(plugin, payload, label2, optio
       name: label2 ?? "MolSysMT",
       data: {
         ...payload.meta ?? {},
+        unassigned_scope_atoms: payload.atoms.unassigned_scope_atoms,
         molecule_id: payload.atoms.molecule_id,
         molecule_name: payload.atoms.molecule_name,
         component_id: payload.atoms.component_id,
@@ -149761,6 +149763,10 @@ var ViewerContextMenu = class {
               button2.title = "This target does not identify one pointed atom";
               button2.style.opacity = "0.45";
             }
+            if (scope !== "atom" && target.available_scopes?.[scope] === false) {
+              button2.disabled = true;
+              button2.title = `This target has no declared ${scope} membership; use pointed atom or target atoms`;
+            }
             view2.appendChild(button2);
           }
         }
@@ -149842,7 +149848,7 @@ var ViewerContextMenu = class {
         view2.appendChild(this.makeActionButton("Save Selection\u2026", "save_selection"));
         view2.appendChild(this.makeActionButton("Create Region from Selection\u2026", "create_region_from_selection"));
         view2.appendChild(this.makeActionButton("Create Section from Selection", "create_section_from_selection"));
-        view2.appendChild(this.makeActionButton("Add Label from Selection\u2026", "add_label_from_selection"));
+        view2.appendChild(this.makeActionButton("Annotation from Selection\u2026", "add_label_from_selection"));
         this.appendSelectionExpanders(view2);
         view2.appendChild(this.makeActionButton("Clear Selection", "clear_selection"));
       });
@@ -150411,6 +150417,10 @@ var ViewerContextMenu = class {
       option.value = value;
       option.textContent = name;
       option.disabled = value === "atom" && (this.currentTarget?.kind !== "structure" || this.currentTarget.atom_index === void 0);
+      if ((value === "group" || value === "chain") && this.currentTarget?.kind === "structure" && this.currentTarget.available_scopes?.[value] === false) {
+        option.disabled = true;
+        option.textContent = `${name} (no declared membership)`;
+      }
       select2.appendChild(option);
     }
     select2.value = "target";
@@ -150423,7 +150433,7 @@ var ViewerContextMenu = class {
     if (!this.currentTarget) return;
     const editor = this.navigation.beginEditor("New Annotation");
     const title = document.createElement("div");
-    title.textContent = fromTarget ? "Annotation from target" : "Label from selection";
+    title.textContent = fromTarget ? "Annotation from Target" : "Annotation from Selection";
     Object.assign(title.style, {
       padding: "6px 8px 8px 8px",
       fontWeight: "600",
@@ -150435,7 +150445,7 @@ var ViewerContextMenu = class {
     const input = document.createElement("input");
     input.type = "text";
     input.value = "";
-    input.placeholder = "Label text";
+    input.placeholder = "Annotation text";
     Object.assign(input.style, {
       display: "block",
       width: "100%",
@@ -150459,7 +150469,7 @@ var ViewerContextMenu = class {
     const colorInput = document.createElement("input");
     colorInput.type = "color";
     colorInput.value = "#4080e0";
-    colorInput.title = "Label color";
+    colorInput.title = "Annotation color";
     Object.assign(colorInput.style, {
       width: "28px",
       height: "28px",
@@ -150479,7 +150489,7 @@ var ViewerContextMenu = class {
     sizeInput.max = "2.0";
     sizeInput.step = "0.1";
     sizeInput.value = "1.0";
-    sizeInput.title = "Label size (em)";
+    sizeInput.title = "Annotation size (em)";
     Object.assign(sizeInput.style, { flex: "1 1 auto", cursor: "pointer" });
     styleRow.appendChild(colorInput);
     styleRow.appendChild(sizeLabel);
@@ -150492,7 +150502,7 @@ var ViewerContextMenu = class {
     });
     const save = document.createElement("button");
     save.type = "button";
-    save.textContent = "Create Label";
+    save.textContent = "Create Annotation";
     Object.assign(save.style, {
       flex: "1 1 auto",
       padding: "8px 10px",
@@ -151711,6 +151721,30 @@ var WebGLStatusOverlay = class {
 };
 
 // src/managers/active-selection.ts
+var scopeMembershipCache = /* @__PURE__ */ new WeakMap();
+function getContextScopeAvailability(structure, atomIndices) {
+  const model = structure.units.find((unit2) => unit2.kind === 0)?.model;
+  if (model?.sourceData?.kind !== "mol-viewer:molsysmt") return {};
+  const data = model.sourceData.data;
+  const declared = data?.unassigned_scope_atoms;
+  if (!declared) return {};
+  let missing = scopeMembershipCache.get(data);
+  if (!missing) {
+    missing = {};
+    for (const level of ["group", "chain"]) {
+      const values2 = declared[level];
+      if (values2 === "all") missing[level] = "all";
+      else if (Array.isArray(values2)) missing[level] = new Set(values2);
+    }
+    scopeMembershipCache.set(data, missing);
+  }
+  const available = {};
+  for (const level of ["group", "chain"]) {
+    const unassigned = missing[level];
+    if (unassigned !== void 0) available[level] = unassigned !== "all" && atomIndices.some((atom2) => !unassigned.has(atom2));
+  }
+  return available;
+}
 function buildGroupItemsFromStructure(structure) {
   const firstAtomicUnit = structure.units.find((unit2) => unit2.kind === 0);
   if (!firstAtomicUnit) return [];
@@ -151776,7 +151810,8 @@ function buildGroupItemsFromStructure(structure) {
       group_name: `${compId3} ${authSeqId}`,
       group_id: authSeqId,
       chain_name: chainName,
-      entity_name: entityName
+      entity_name: entityName,
+      available_scopes: getContextScopeAvailability(structure, atomIndices)
     };
     if (typeof compIndex === "number" && Number.isFinite(compIndex)) item2.component_indices = [compIndex];
     if (typeof compName === "string" && compName.trim()) item2.component_name = compName;
@@ -165293,6 +165328,10 @@ var MolSysViewerController = class _MolSysViewerController {
         if (typeof remoteRequestId === "string") {
           payload.request_id = remoteRequestId;
         }
+        if (payload.kind === "structure") {
+          const structure = this.getStructureData();
+          if (structure) payload.available_scopes = getContextScopeAvailability(structure, payload.atom_indices);
+        }
         this.lastContextPayload = payload;
         this.groupPanel.updateContextTarget(payload);
         this.syncWorkbenchContextFromPayload(payload);
@@ -166164,6 +166203,7 @@ var MolSysViewerController = class _MolSysViewerController {
       atom_indices: item2.atom_indices,
       group_name: item2.source_kind === "element" ? item2.group_name : void 0,
       chain_name: item2.source_kind === "element" ? item2.chain_name : void 0,
+      available_scopes: item2.source_kind === "element" ? item2.available_scopes : void 0,
       page_x: pageX,
       page_y: pageY
     };

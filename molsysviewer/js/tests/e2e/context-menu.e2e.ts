@@ -63,11 +63,22 @@ for name, action, parameters in [
     sent.clear()
     view._handle_frontend_event({"event": "interaction_context_action", "action": action, **parameters})
     echoes[name] = list(sent)
-print(json.dumps(_to_plain({"messages": snapshot, "echoes": echoes})))
+scope_fixtures = {}
+for level in ("group", "chain", "partial_group"):
+    scope_view = msv.demo["dialanine"]
+    if level == "partial_group":
+        atoms = scope_view.molsys.topology.atoms
+        atoms["group_index"] = atoms["group_index"].astype(object)
+        atoms.loc[atoms["group_index"] == 0, "group_index"] = None
+    else:
+        scope_view.molsys.topology.atoms[level + "_index"] = None
+    scope_fixtures[level] = scope_view._build_embedded_runtime_snapshot()
+    scope_view.close()
+print(json.dumps(_to_plain({"messages": snapshot, "echoes": echoes, "scope_fixtures": scope_fixtures})))
 view.close()
 `], { cwd: resolve(dir, "../../../.."), encoding: "utf8" });
     assert.equal(fixture.status, 0, fixture.stderr || String(fixture.error));
-    const { messages, echoes } = JSON.parse(fixture.stdout);
+    const { messages, echoes, scope_fixtures } = JSON.parse(fixture.stdout);
     const browser = await chromium.launch({ headless: true });
     try {
         const page = await browser.newPage();
@@ -206,8 +217,8 @@ view.close()
         await secondGroup.click({ button: "right" });
         await context.locator('[data-molsysviewer-context-submenu="Create"]').click();
         await context.getByRole("menuitem", { name: "Annotation from Target…", exact: true }).click();
-        await context.getByPlaceholder("Label text").fill("Residue B");
-        await context.getByRole("button", { name: "Create Label", exact: true }).click();
+        await context.getByPlaceholder("Annotation text").fill("Group B");
+        await context.getByRole("button", { name: "Create Annotation", exact: true }).click();
         contextualRequests.push(await latestRequest());
         assert.equal(await page.evaluate(() => JSON.stringify((window as any).__controller.currentActiveSelection)), selectionBefore);
         await secondGroup.click({ button: "right" });
@@ -550,6 +561,8 @@ view.close()
         });
         await objectMenu.getByRole("menuitem", { name: "Help", exact: true }).click();
         assert.equal(await page.locator('#objects .molsysviewer-help-card').isVisible(), true);
+        await page.keyboard.press("Escape");
+        assert.equal(await page.locator('#objects .molsysviewer-help-card').isVisible(), false);
 
         // An actual secondary browser window uses its own canvas bounds.
         const popupReady = page.waitForEvent("popup");
@@ -580,6 +593,53 @@ view.close()
         await popup.keyboard.press("Escape");
         assert.equal(await popupMenu.isVisible(), false);
         await popup.close();
+
+        // Native topology, not Mol*'s fallback labels, controls availability.
+        // These real Python fixtures travel through the regular load path.
+        const scopeMenu = objectMenu;
+        for (const [name, wire] of Object.entries(scope_fixtures)) {
+            console.log("[E2E context menu] native membership scenario:", name);
+            await page.evaluate(async messages => {
+                const c = (window as any).__controller;
+                for (const message of messages as any[]) await c.handleMessage(message, { throwOnError: true });
+                c.setPanelMode("navigate", true);
+                c.groupPanel.openSection("system");
+            }, wire);
+            const missing = name === "chain" ? "chain" : "group";
+            const groups = page.locator('#objects [data-molsysviewer-group-item="true"]');
+            await groups.first().click({ button: "right" });
+            await scopeMenu.locator('[data-molsysviewer-context-submenu="Select"]').click();
+            const actions = scopeMenu.locator(`[data-molsysviewer-context-selection-scope="${missing}"]`);
+            assert.equal(await actions.count(), 3);
+            for (const action of await actions.all()) assert.equal(await action.getAttribute("aria-disabled"), "true");
+            const before = await page.evaluate(() => (window as any).__messages.length);
+            await actions.first().focus();
+            assert.match(await scopeMenu.locator('[data-molsysviewer-menu-disabled-reason]:visible').innerText(), new RegExp(`no declared ${missing} membership`));
+            await page.keyboard.press("Enter");
+            await page.keyboard.press("Space");
+            // Playwright's locator.click refuses aria-disabled elements;
+            // exercise a real pointer click to verify our activation guard.
+            const unavailableBox = await actions.first().boundingBox();
+            assert.ok(unavailableBox);
+            await page.mouse.click(unavailableBox.x + unavailableBox.width / 2, unavailableBox.y + unavailableBox.height / 2);
+            assert.equal(await page.evaluate(() => (window as any).__messages.length), before);
+            await scopeMenu.locator('[data-molsysviewer-context-submenu="Create"]').click();
+            await scopeMenu.getByRole("menuitem", { name: "Annotation from Target…", exact: true }).click();
+            // isDisabled follows the enclosing label to its enabled select;
+            // inspect the option's own native disabled state instead.
+            assert.equal(await scopeMenu.locator(`[data-molsysviewer-context-target-scope] option[value="${missing}"]`).evaluate(option => (option as HTMLOptionElement).disabled), true);
+            assert.equal(await scopeMenu.locator('[data-molsysviewer-context-target-scope] option[value="target"]').evaluate(option => (option as HTMLOptionElement).disabled), false);
+            await page.keyboard.press("Escape");
+            await page.keyboard.press("Escape");
+            await page.keyboard.press("Escape");
+            if (name === "partial_group") {
+                await groups.nth(1).click({ button: "right" });
+                await scopeMenu.locator('[data-molsysviewer-context-submenu="Select"]').click();
+                assert.equal(await scopeMenu.locator('[data-molsysviewer-context-selection-scope="group"]').first().getAttribute("aria-disabled"), null);
+                await page.keyboard.press("Escape");
+                await page.keyboard.press("Escape");
+            }
+        }
 
         assert.deepEqual(errors, []);
         console.log("[E2E context menu] adaptive adjacent cards, edge flipping, narrow/form preservation, disabled keyboard reasons and actual popup; molecular/object rendering, occurrence scope, editors, keys/Escape and single dispatch pass");

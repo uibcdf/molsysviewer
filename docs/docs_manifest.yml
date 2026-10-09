@@ -27,6 +27,11 @@ sections:
       - name: "viewer"
         path: "docs/content/user/viewer"
         index_file: "docs/content/user/viewer/index.md"
+        pages:
+          - path: "docs/content/user/viewer/context_menu.md"
+            agents_file: "docs/content/user/AGENTS.md"
+            status: "complete"
+            description: "Contextual target/selection actions, adjacent menus and canvas control discovery."
       - name: "scene_management"
         path: "docs/content/user/scene_management"
         index_file: "docs/content/user/scene_management/index.md"

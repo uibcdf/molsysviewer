@@ -72,6 +72,18 @@ def _atom_attribute(molsys: Any, attribute: str) -> Any:
 
 def serialize_static_molsys_payload(molsys: Any, n_atoms: int) -> dict[str, Any]:
     """Return the canonical JSON-compatible topology shared by both encoders."""
+    group_indices = _atom_attribute(molsys, "group_index")
+    chain_indices = _atom_attribute(molsys, "chain_index")
+
+    def unassigned_atoms(values):
+        if values is None:
+            return "all"
+        array = np.asarray(values, dtype=object).reshape(-1)
+        if len(array) != n_atoms:
+            return "all"
+        missing = [index for index, value in enumerate(array) if value is None]
+        return "all" if len(missing) == n_atoms else missing
+
     atoms = {
         "atom_id": _column(_atom_attribute(molsys, "atom_id"), n_atoms, default=lambda i: i + 1, cast=int),
         "atom_name": _column(_atom_attribute(molsys, "atom_name"), n_atoms, default=lambda i: f"A{i + 1}", cast=str),
@@ -88,8 +100,15 @@ def serialize_static_molsys_payload(molsys: Any, n_atoms: int) -> dict[str, Any]
         # These two indices are the internal identity mmCIF keeps separate from the author
         # label for exactly this reason. They feed `label_asym_id` and `label_seq_id`; the
         # labels above still feed `auth_*`, which is what a user sees and selects by.
-        "chain_index": _column(_atom_attribute(molsys, "chain_index"), n_atoms, default=lambda i: 0, cast=int),
-        "residue_index": _column(_atom_attribute(molsys, "group_index"), n_atoms, default=lambda i: 0, cast=int),
+        "chain_index": _column(chain_indices, n_atoms, default=lambda i: 0, cast=int),
+        "residue_index": _column(group_indices, n_atoms, default=lambda i: 0, cast=int),
+        # Rendering defaults do not declare native molecular membership.
+        # Empty lists mean complete membership; "all" avoids an atom-sized
+        # list when an entire level is absent. Partial lists remain sparse.
+        "unassigned_scope_atoms": {
+            "group": unassigned_atoms(group_indices),
+            "chain": unassigned_atoms(chain_indices),
+        },
         "entity_id": _column(_atom_attribute(molsys, "entity_id"), n_atoms, default="1", cast=str),
         "element_symbol": _column(_atom_attribute(molsys, "atom_type"), n_atoms, default="C", cast=str),
         "formal_charge": _column(_atom_attribute(molsys, "formal_charge"), n_atoms, default=0, cast=int),

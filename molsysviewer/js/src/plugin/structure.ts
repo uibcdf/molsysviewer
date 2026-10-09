@@ -41,6 +41,8 @@ export interface MolSysAtomPayload {
     chain_id?: string[];
     chain_index?: number[];
     residue_index?: number[];
+    /** Native membership before rendering defaults; absent means unknown. */
+    unassigned_scope_atoms?: { group: "all" | number[]; chain: "all" | number[] };
     entity_id?: string[];
     formal_charge?: number[];
     molecule_id?: number[];
@@ -211,6 +213,7 @@ export async function loadStructureFromMolSysPayload(
             name: label ?? "MolSysMT",
             data: {
                 ...(payload.meta ?? {}),
+                unassigned_scope_atoms: payload.atoms.unassigned_scope_atoms,
                 molecule_id: payload.atoms.molecule_id,
                 molecule_name: payload.atoms.molecule_name,
                 component_id: payload.atoms.component_id,
@@ -294,6 +297,7 @@ export async function loadStructureFromArrayNativeMolSys(
             name: label ?? "MolSysMT",
             data: {
                 ...(payload.meta ?? {}),
+                unassigned_scope_atoms: payload.atoms.unassigned_scope_atoms,
                 molecule_id: payload.atoms.molecule_id,
                 molecule_name: payload.atoms.molecule_name,
                 component_id: payload.atoms.component_id,

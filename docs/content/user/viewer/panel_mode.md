@@ -168,7 +168,8 @@ view = mv.MolSysView(
 
 - `"classic"` — six text buttons at the bottom of the canvas.
 - `"minimal"` — three SVG icons (panel / fullscreen / popup) plus a `?` help button.
-  Scene actions (reset view, background, spin, swing) move to the empty-canvas context menu.
+  Scene actions (reset view, background, spin, swing) are available under **View**
+  in the context menu, including when you right-click an object.
   Keyboard shortcuts: `H` help overlay, `N` Navigate, `W` Workbench.
 - `"cinema"` — the canvas alone, with the controls out of the way.
 

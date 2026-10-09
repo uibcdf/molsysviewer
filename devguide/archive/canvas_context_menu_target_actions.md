@@ -1,13 +1,13 @@
 ---
 summary: Redesign the canvas context menu for contextual core workflows before 1.0
 issue: uibcdf/molsysviewer#179
-status: partial
+status: resolved
 opened: 2026-10-08
-closed:
-verification: inspected
+closed: 2026-10-09
+verification: reproduced
 area: [canvas, interaction, selection, studio]
 guard: molsysviewer/js/tests/e2e/context-menu.e2e.ts
-normative:
+normative: devguide/interaction_gestures_and_menus.md
 blocked_by: []
 supersedes: []
 ---
@@ -18,8 +18,8 @@ supersedes: []
 review. The maintainer approves the proposed redesign as a pre-1.0 requirement.
 The menu foundation, molecular-target and object/occurrence workflows are
 implemented. The extended real-browser guard passes. The maintainer confirms
-the reported defects are corrected; the accepted final UX refinements await
-refreshed visual review.
+the reported defects are corrected and accepts the refreshed visual review.
+The final closure and source validation are recorded below.
 
 ## What
 
@@ -327,10 +327,52 @@ group-panel-interaction, measurements-interaction, selection-subpanel and
 scene-contracts. This is source development evidence,
 not an installed artifact qualification or final human visual acceptance.
 
+## Final closure — 2026-10-09
+
+Annotation naming is consistent across target/selection creation and its form.
+The shared native topology serializer preserves missing Group/Chain membership
+before Mol* rendering defaults: a compact all-absent marker or sparse missing
+atom list. Context projections use that declaration, including relayed Studio
+hierarchy. Known-unavailable scopes explain the limitation and cannot execute;
+legacy payloads without the declaration remain unknown and retain authoritative
+backend validation. Native form options remain disabled. No trajectory scan or
+new global selection policy is introduced.
+
+The final focused menu owner passes 17/17 cases; the complete JS regression
+passes 324/324, with no omissions. TypeScript and runtime/harness builds pass.
+The extended real Mol*/Chromium context-menu guard passes the previous
+molecular/object/occurrence and popup workflows plus absent Group, absent Chain
+and partially assigned Group membership. Unavailable actions refuse keyboard
+and pointer activation; valid scopes remain available. Eight loader cases pass
+for matching JSON/array-native declarations. Ruff formatting/lint and the new
+Sphinx context-menu guide build pass.
+
+The required full Python run executes 2,952 cases: 2,901 pass, 23 skip and 28
+fail. Twenty socket/Chromium failures are sandbox startup restrictions; the
+five affected modules pass outside the sandbox (53 passed, one explicit
+GPU-environment skip). The eight Qt probe failures retain their experimental
+scope. A single outside-sandbox Qt transport repro still cannot create an
+OpenGL/Vulkan context and reports a D-Bus connection error. No workaround or
+visible-window certification is inferred. The full suite is not repeated and
+is not presented as green.
+
+The previous commit `804e1b50` has successful hosted core E2E, documentation
+notebooks, Python 3.14 source pair and Conda governance runs. Its six required
+scientific CI cells pass; the experimental Qt lane fails separately. Its policy
+failure is eight Ruff formatting violations, corrected in this closure and
+checked across the complete local Python scope. New-commit hosted results must
+be inspected separately; old CI does not qualify changed source or files.
+
 ## Resolution
 
-The principal maintainer accepts the parallel-menu UX in the refreshed notebook
-review. Cinema and the inconsistent reveal area are followed under
-`uibcdf/molsysviewer#180`; their corrected runtime still needs human confirmation.
-The functional notebook review and defect reconfirmation are accepted. Current interaction guidance records the delivered workflows;
-archive this report and close #179 only with addressable guards and evidence.
+The principal maintainer accepts the menu, the corrected peptide boundary
+half-links and translucent picking, and the parallel submenu UX. Cinema and
+controls corrections under `uibcdf/molsysviewer#180` also receive human
+confirmation, including the restored smooth whole-controls disappearance.
+The final naming and scope-availability refinements have addressable automated
+guards; no additional human acceptance is inferred for those last refinements.
+The durable behavior is in `devguide/interaction_gestures_and_menus.md`, with
+user guidance in `docs/content/user/viewer/context_menu.md`. Close #179 and
+archive this report. The agreed next version is 0.25.0, but the maintainer says
+further changes remain: no producer freeze, tag, staging file or installed-pair
+dispatch is authorized yet. Both 1.0 publications remain paused.

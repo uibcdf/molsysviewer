@@ -27,11 +27,6 @@ list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 - [`extend_python_support_to_3_14.md`](extend_python_support_to_3_14.md) — [#93](https://github.com/uibcdf/molsysviewer/issues/93) — Extend MolSysViewer Python support to 3.14 alongside MolSysMT. *(measured)*
 - [`migrate_standalone_qt_to_canonical_pyside6_6_11_2.md`](migrate_standalone_qt_to_canonical_pyside6_6_11_2.md) — [#109](https://github.com/uibcdf/molsysviewer/issues/109) — Migrate the optional standalone Qt host to canonical PySide6 6.11.2. *(measured)*
 
-### Partially done (2)
-
-- [`canvas_context_menu_target_actions.md`](canvas_context_menu_target_actions.md) — [#179](https://github.com/uibcdf/molsysviewer/issues/179) — Redesign the canvas context menu for contextual core workflows before 1.0 *(inspected)*
-- [`cinema_and_controls_reveal_policy.md`](cinema_and_controls_reveal_policy.md) — [#180](https://github.com/uibcdf/molsysviewer/issues/180) — Apply Cinema preset and expose consistent control-area autohide *(reproduced)*
-
 ### Blocked (1)
 
 - [`molsysmt_known_source_form_and_large_string_detection.md`](molsysmt_known_source_form_and_large_string_detection.md) — [#42](https://github.com/uibcdf/molsysviewer/issues/42) — Adopt a public source-form hint when MolSysMT provides it; historical extension detection is repaired. *(measured)* — waiting on uibcdf/molsysmt#151
