@@ -353,3 +353,24 @@ fixture. Successful checks were not repeated. Reporting protocol, current
 links/architecture/API inventory, repository Ruff/format checks and TypeScript
 validation pass. Source-only counts, original failed diagnostics and log digests
 are retained in the [closure receipt](studio_closure_20261010.json).
+
+## Diagnosing the remaining hosted failures — 2026-10-10
+
+Native evidence from #189's original macOS failure identifies a 32.50 ms dynamic
+query crossing the normative 25 ms freeze budget. The resulting empty static
+region was then rejected by the importer. The correction preserves empty
+re-evaluable recipe snapshots in either saved mode, while retaining static
+membership. The dynamic-reappearance guard controls its own budget, and a new
+real-coordinate guard forces the fallback and protects state/copy/session
+isolation and the absence of automatic reactivation. All 16 isolation tests
+pass. One complete Python regression is still running at this source checkpoint.
+
+#198's current core run 38037909757 fails after connected pointer-down/up/click:
+the button is still Rendering PNG… at the original 30-second deadline. This
+narrows the observation to the Mol* screenshot path, after input and before
+actual download. The guard now records bounded task progress, background/
+illumination, context loss and image-pass/encoding sizes on failure. The original
+wait and PNG dimensions/alpha assertions remain unchanged. The exact first three
+core suites (context menu, controls visibility, Studio) pass locally through
+shared Chromium. This does not diagnose or certify the hosted render wait.
+Both reports remain open until their respective closure evidence is complete.

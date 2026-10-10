@@ -757,7 +757,9 @@ The evaluation contract:
 5. If the per-frame evaluation exceeds its budget
    (25 ms; `viewer/core.py:_dynamic_region_evaluation_budget_ms`), the viewer **warns and
    freezes** the region to `static` and reports it through SMonitor. It never silently drops
-   frames.
+   frames. Empty evaluated membership is a valid frozen snapshot: state/session
+   restoration retains its recipe, identity and isolation with `mode="static"`,
+   rather than dropping the region or reactivating dynamic evaluation.
 
 **Hard prerequisite.** One message per frame is viable at microseconds and absurd at three
 seconds. Master-plan **Phase 0** (the `handleMessage` toll) must land before dynamic evaluation

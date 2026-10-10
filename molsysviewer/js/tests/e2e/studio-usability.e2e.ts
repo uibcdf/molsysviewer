@@ -79,6 +79,14 @@ async function run() {
         // Retain bounded input/render evidence for the unresolved hosted timeout.
         await page.evaluate(() => {
             (window as any).__studioPngInput = [];
+            (window as any).__studioPngTasks = [];
+            (window as any).__controller.plugin.managers.task.events.progress.subscribe((event: any) => {
+                const p = event.progress.root.progress;
+                if (p.taskName !== "Generate Image") return;
+                const tasks = (window as any).__studioPngTasks;
+                tasks.push({ message: p.message, current: p.current, max: p.max });
+                if (tasks.length > 8) tasks.shift();
+            });
             for (const type of ["pointerdown", "pointerup", "click"]) document.addEventListener(type, event => {
                 const target = event.target as HTMLElement | null;
                 if (target?.closest('[data-molsysviewer-export-image]')) (window as any).__studioPngInput.push({ type, connected: target.isConnected });
@@ -89,6 +97,15 @@ async function run() {
                 input: (window as any).__studioPngInput,
                 status: document.querySelector('[data-molsysviewer-export-image-status]')?.textContent,
                 disabled: document.querySelector<HTMLButtonElement>('[data-molsysviewer-export-image]')?.disabled,
+                tasks: (window as any).__studioPngTasks,
+                contextLost: (window as any).__controller.plugin.canvas3d.webgl.gl.isContextLost(),
+                background: (window as any).__controller.plugin.canvas3d.props.postprocessing.background.variant.name,
+                illumination: (window as any).__controller.plugin.canvas3d.props.illumination.enabled,
+                imageCanvas: [(window as any).__controller.plugin.helpers.viewportScreenshot.canvas.width,
+                    (window as any).__controller.plugin.helpers.viewportScreenshot.canvas.height],
+                imagePassSize: (window as any).__controller.plugin.helpers.viewportScreenshot._imagePass
+                    ? [(window as any).__controller.plugin.helpers.viewportScreenshot._imagePass._width,
+                        (window as any).__controller.plugin.helpers.viewportScreenshot._imagePass._height] : null,
                 drawingBuffer: [(window as any).__controller.plugin.canvas3d.webgl.gl.drawingBufferWidth,
                     (window as any).__controller.plugin.canvas3d.webgl.gl.drawingBufferHeight],
             }));

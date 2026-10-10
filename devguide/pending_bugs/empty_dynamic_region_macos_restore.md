@@ -5,9 +5,9 @@ status: active
 opened: 2026-10-09
 closed:
 severity: medium
-verification: upstream
+verification: reproduced
 area: [regions, state, tests]
-guard:
+guard: tests/test_region_isolation.py::test_empty_over_budget_region_preserves_static_snapshot_and_isolation
 normative:
 blocked_by: []
 supersedes: []
@@ -67,3 +67,24 @@ successfully, including macOS/Python 3.12. Its separate experimental Qt job
 fails. The later macOS success is recorded without attributing a cause to the
 historical disappearing-region failure; no guard was skipped or replaced.
 Diagnosis remains open.
+
+## Diagnosis and correction — 2026-10-10
+
+The native failed log from 37993286215 contains the missing causal evidence:
+`Dynamic region 'near' took 32.50 ms to evaluate structure 0, exceeding its
+25.00 ms budget. It was switched to static mode.` The default budget fallback
+is the explicit R.4 contract, not a macOS importer branch. It leaves an empty
+static snapshot. `_restore_region_v2` retained empty recipes only when their
+saved mode was dynamic, so it dropped that legitimate snapshot on import.
+Later green runs did not encounter the timing boundary.
+
+The importer now retains empty re-evaluable recipes in either mode, preserving
+identity and isolation while respecting static frozen membership. Empty opaque
+records retain their existing treatment. The original dynamic/reappearance guard
+sets its own timing budget to infinity because it tests membership semantics.
+A separate real-dialanine guard forces the actual fallback using the existing
+budget setting, without mocking queries or the clock, and verifies static mode,
+empty membership and isolation across state, copy and session restoration. It
+also verifies restoring coordinates does not spontaneously reactivate a frozen
+region. All 16 region-isolation tests pass locally. Full regression and the
+corrected exact-source hosted gate are pending at this checkpoint.

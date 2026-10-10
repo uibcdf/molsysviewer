@@ -1380,11 +1380,10 @@ class StateMixin:
                 atom_indices = self._evaluate_region_provenance(probe) or []
             else:
                 return
-        # An empty frame does not invalidate a dynamic recipe. Keep it so
-        # isolation can mask all of whole until the recipe finds atoms again.
-        if len(atom_indices) == 0 and not (
-            record.get("mode") == "dynamic" and Region._is_reevaluable_provenance(provenance)
-        ):
+        # Empty membership does not invalidate a recipe or its isolation. An
+        # over-budget evaluation can freeze it to static while it is empty;
+        # restore that snapshot without dropping its identity or changing mode.
+        if len(atom_indices) == 0 and not Region._is_reevaluable_provenance(provenance):
             return
         with self._state_owner_context(record):
             region = Region(

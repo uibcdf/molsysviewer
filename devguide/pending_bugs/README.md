@@ -21,7 +21,7 @@ list.
 
 ### Being worked on (1)
 
-- [`empty_dynamic_region_macos_restore.md`](empty_dynamic_region_macos_restore.md) — [#189](https://github.com/uibcdf/molsysviewer/issues/189) — Empty dynamic region disappears during state restoration on macOS Python 3.12 *(medium, upstream)*
+- [`empty_dynamic_region_macos_restore.md`](empty_dynamic_region_macos_restore.md) — [#189](https://github.com/uibcdf/molsysviewer/issues/189) — Empty dynamic region disappears during state restoration on macOS Python 3.12 *(medium, reproduced)*
 
 ### Partially done (2)
 

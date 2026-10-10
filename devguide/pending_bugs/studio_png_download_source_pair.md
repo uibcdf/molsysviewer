@@ -57,3 +57,19 @@ The browser guard now retains pointer-down/up/click, current inline status,
 disabled state and drawing-buffer dimensions if its download wait fails.
 The wait and image byte/alpha assertions remain unchanged. Inspect the next
 source's bounded evidence before claiming a hosted repair or closing #198.
+
+## Render-stage evidence — 2026-10-10
+
+Core run 38037909757 on 0e7b6593 fails with all three input events present:
+pointer-down, pointer-up and click, each on a connected element. The status is
+`Rendering PNG…`, the button is disabled, and the drawing buffer is 1050×760.
+The historical input-replacement correction is therefore insufficient to explain
+this current render-stage wait. Download initiation has not been reached.
+
+Mol* 5.4.1's screenshot helper awaits task progress, background update, image-pass
+rendering and image encoding. Local source review uses the installed dependency
+and the available upstream checkout, without changing Mol*. The browser guard now
+retains the last eight Generate Image task updates, background variant,
+illumination flag, context-lost flag and encoding-canvas dimensions. These are
+read-only observations; no timeout, GPU quality or success assertion changes.
+Root cause and next exact-source hosted render evidence remain pending.

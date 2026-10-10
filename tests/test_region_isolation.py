@@ -137,6 +137,9 @@ def test_isolated_member_of_hidden_layer_remains_visible_on_restore():
 
 def test_empty_dynamic_isolation_survives_restore_and_rebuild_then_reappears(tmp_path):
     view = _view()
+    # This guard tests dynamic membership, not the hardware-dependent budget.
+    # Budget fallback has its own deterministic real-coordinate guard below.
+    view._dynamic_region_evaluation_budget_ms = float("inf")  # noqa: SLF001
     original = view.get_coordinates(selection=[1], structure_indices=[0])
     region = view.regions.add(
         selection="atom_index==1 within 1 nm without pbc of atom_index==0",
@@ -167,3 +170,41 @@ def test_empty_dynamic_isolation_survives_restore_and_rebuild_then_reappears(tmp
     view.partial_coordinates_update(original, selection=[1], structure_indices=[0])
     assert view.regions["near"].atom_indices == (1,)
     assert _isolated(view) == ["near"]
+
+
+def test_empty_over_budget_region_preserves_static_snapshot_and_isolation(tmp_path):
+    view = _view()
+    original = view.get_coordinates(selection=[1], structure_indices=[0])
+    region = view.regions.add(
+        selection="atom_index==1 within 1 nm without pbc of atom_index==0",
+        tag="near",
+    )
+    region.mode = "dynamic"
+    region.show_only()
+    view._dynamic_region_evaluation_budget_ms = -1.0  # noqa: SLF001
+    view.partial_coordinates_update(
+        msv.pyunitwizard.quantity([[[100.0, 100.0, 100.0]]], "nm"),
+        selection=[1],
+        structure_indices=[0],
+    )
+    assert region.mode == "static" and region.atom_indices == ()
+    state = view.export_state()
+    record = next(r for r in state["regions"] if r["tag"] == "near")
+    assert record["mode"] == "static" and record["atom_indices"] == []
+    uid = region.uid
+    view.import_state(state)
+    assert view.regions["near"].uid == uid
+    assert view.regions["near"].mode == "static"
+    assert view.regions["near"].atom_indices == ()
+    assert _isolated(view) == ["near"]
+    copied = msv.tools.basic.copy(view)
+    assert copied.regions["near"].mode == "static"
+    assert copied.regions["near"].atom_indices == () and _isolated(copied) == ["near"]
+    path = tmp_path / "empty-static-isolation.msv"
+    view.save_session(path)
+    restored = msv.load_session(path)
+    assert restored.regions["near"].mode == "static"
+    assert restored.regions["near"].atom_indices == () and _isolated(restored) == ["near"]
+    view.partial_coordinates_update(original, selection=[1], structure_indices=[0])
+    assert view.regions["near"].atom_indices == ()
+    assert view.regions["near"].mode == "static" and _isolated(view) == ["near"]
