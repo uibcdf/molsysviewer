@@ -3,7 +3,10 @@
 **Cross-surface coverage round — 2026-10-10:** #223–#225 and #227 implement
 coordinate-annotation focus, truthful interaction visibility, Studio state/session
 files, folded examples and persisted workbench PNG settings. The expanded real
-Studio smoke and full 43/43 core browser regression pass. Hosted source CI remains in review;
+Studio smoke and full 43/43 core browser regression pass. Source `33e73587`
+is integrated directly in `main`; #223–#225/#227 are closed and the board matches.
+Hosted source campaigns 38055953874/38055953998/38055953588 remain active or queued;
+their results are not declared green. The hosted Qt job cannot create WebGL;
 eight local experimental Qt context failures stay separate. The public API
 #210–#222 source round already has all applicable scientific/Python 3.14 cells
 complete on 792fd5f6; those results do not qualify this changed worktree.

@@ -1,6 +1,6 @@
 # Completing Studio coverage — 2026-10-10
 
-**Implemented and locally guarded; hosted source CI remains to be reviewed.** The principal maintainer
+**Implemented in `33e73587` and locally guarded; hosted source CI remains pending.** The principal maintainer
 accepts the cross-surface improvements before 1.0, retaining only Copy Python
 as a future evaluation. Issues #223–#225 and #227 close this work with archived guards; #226 stays post-1.0.
 
@@ -46,6 +46,30 @@ docstring bookkeeping mismatch is corrected and passes its focused guard.
 All state/session/history modules and the expanded file guards are exercised.
 This is not a globally green Qt run. Hosted evidence
 for the previous 792fd5f6 source does not qualify this changed source or a package.
+
+## Integrated source and hosted inspection
+
+Source `33e735876aa337f1fded86670f0b48d0e1fc0fda` is reviewed and pushed
+directly to `main`. #223–#225 and #227 are closed; #226 retains its post-1.0
+milestone. The board synchronization check confirms 28 matching reports/issues.
+
+Inspection at 2026-10-10 13:42 UTC finds publication governance, suite policy,
+Ruff and notebook-routing checks green. These three source campaigns remain
+active or queued, without another dispatch:
+
+| Campaign | Observed state |
+| --- | --- |
+| [Scientific CI 38055953874](https://github.com/uibcdf/molsysviewer/actions/runs/38055953874) | Four required cells running, two macOS cells queued; separate experimental Qt job failed. |
+| [Python 3.14 source pair 38055953998](https://github.com/uibcdf/molsysviewer/actions/runs/38055953998) | Linux has passed Python tests and is running core browser checks; Windows runs Python tests; macOS is queued. |
+| [Core browser 38055953588](https://github.com/uibcdf/molsysviewer/actions/runs/38055953588) | Core browser step running. |
+
+GH Run Receptor preserves the pending aggregate and the failed Qt step. The
+completed Qt job log identifies `Could not create a WebGL rendering context`
+and `Exported scene has no WebGL canvas` under hosted Xvfb/software GPU.
+This remains experimental standalone evidence under #109, not a passed Qt
+result or an observation of a visible-window GPU host. The applicable source
+campaigns have not yet completed, so this inspection does not declare them green.
+The machine-readable receipt preserves run identities, job states and log digests.
 
 ## Temporary workspace
 

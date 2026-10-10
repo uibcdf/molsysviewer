@@ -45,7 +45,166 @@
   "final_governance": {
     "passed": 30
   },
-  "hosted_source_ci": "pending dispatch by direct push",
+  "hosted_source_ci": {
+    "source_commit": "33e735876aa337f1fded86670f0b48d0e1fc0fda",
+    "inspected_at": "2026-10-10T13:42:38.147452+00:00",
+    "runs": [
+      {
+        "conclusion": "success",
+        "databaseId": 38055954491,
+        "name": "Conda publication governance",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38055954491"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38055954597,
+        "name": "MolSysSuite policy",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38055954597"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38055953998,
+        "name": "Python 3.14 source pair",
+        "status": "queued",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38055953998",
+        "jobs": [
+          {
+            "name": "Source pair on ubuntu-latest, Python 3.14",
+            "status": "in_progress",
+            "conclusion": "",
+            "active_steps": [
+              "Run all core browser suites against the exact source pair"
+            ]
+          },
+          {
+            "name": "Source pair on macos-15, Python 3.14",
+            "status": "queued",
+            "conclusion": "",
+            "active_steps": []
+          },
+          {
+            "name": "Source pair on windows-2025, Python 3.14",
+            "status": "in_progress",
+            "conclusion": "",
+            "active_steps": [
+              "Run MolSysViewer Python tests"
+            ]
+          }
+        ]
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38055953874,
+        "name": "CI",
+        "status": "queued",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38055953874",
+        "jobs": [
+          {
+            "name": "Qt pipeline completes (Xvfb, software WebGL)",
+            "status": "completed",
+            "conclusion": "failure",
+            "active_steps": []
+          },
+          {
+            "name": "Test on macos-15, Python 3.12",
+            "status": "queued",
+            "conclusion": "",
+            "active_steps": []
+          },
+          {
+            "name": "Test on macos-15, Python 3.11",
+            "status": "in_progress",
+            "conclusion": "",
+            "active_steps": [
+              "Run tests"
+            ]
+          },
+          {
+            "name": "Test on ubuntu-latest, Python 3.13",
+            "status": "in_progress",
+            "conclusion": "",
+            "active_steps": [
+              "Run tests"
+            ]
+          },
+          {
+            "name": "Test on ubuntu-latest, Python 3.11",
+            "status": "in_progress",
+            "conclusion": "",
+            "active_steps": [
+              "Run tests"
+            ]
+          },
+          {
+            "name": "Test on ubuntu-latest, Python 3.12",
+            "status": "in_progress",
+            "conclusion": "",
+            "active_steps": [
+              "Run tests"
+            ]
+          },
+          {
+            "name": "Test on macos-15, Python 3.13",
+            "status": "queued",
+            "conclusion": "",
+            "active_steps": []
+          },
+          {
+            "name": "Check skipped-commit backlog",
+            "status": "completed",
+            "conclusion": "skipped",
+            "active_steps": []
+          }
+        ]
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38055953588,
+        "name": "CI_e2e",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38055953588",
+        "jobs": [
+          {
+            "name": "Core E2E",
+            "status": "in_progress",
+            "conclusion": "",
+            "active_steps": [
+              "Run core E2E tests"
+            ]
+          },
+          {
+            "name": "Check skipped-commit backlog",
+            "status": "completed",
+            "conclusion": "skipped",
+            "active_steps": []
+          }
+        ]
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38055953729,
+        "name": "Ruff Lint",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38055953729"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38055953720,
+        "name": "Documentation notebooks",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38055953720"
+      }
+    ],
+    "review_status": "pending; applicable source jobs still active or queued",
+    "experimental_qt": {
+      "run": 38055953874,
+      "job": 114224435413,
+      "status": "failure",
+      "diagnosis": "Qt cannot create a WebGL rendering context under the hosted Xvfb/software GPU job; frontend has no WebGL canvas. Experimental standalone remains separate (#109)."
+    }
+  },
   "publication": {
     "version_agreed": "0.25.0",
     "producer_frozen": false,
@@ -97,6 +256,19 @@
     "governance-final.log": {
       "sha256": "37f1bea0a3555ff6fbbb37f0403599f4c46576f1034d7740247d4aa660f761f1",
       "bytes": 920
+    },
+    "hosted-scientific-diagnostic.txt": {
+      "sha256": "f0199b563e07ea49f413e8118e55bda17a105f67b34f28c7d187531542b4ef45",
+      "bytes": 489
+    },
+    "hosted-qt.log": {
+      "sha256": "98b9010ff23ed962d135176b6cb73712ba5c6df0941632eac50cc567bb1290e2",
+      "bytes": 129745
+    },
+    "hosted-source-snapshot.json": {
+      "sha256": "7698bb66d31e3fc726dfbe1069a0a332dd66f35470f43c83aa7015fb879cab98",
+      "bytes": 4564
     }
-  }
+  },
+  "source_commit": "33e735876aa337f1fded86670f0b48d0e1fc0fda"
 }
