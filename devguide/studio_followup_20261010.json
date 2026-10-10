@@ -18,7 +18,14 @@
     "guard": "tests/test_region_isolation.py::test_empty_over_budget_region_preserves_static_snapshot_and_isolation",
     "guard_scope": "Real dialanine coordinates force the actual budget fallback; state/copy/session identity, empty membership, static mode and isolation survive; coordinate recovery does not reactivate dynamic mode.",
     "focused": "16 passed",
-    "closure": "resolved in source; hosted qualification remains pending"
+    "closure": "resolved in source; hosted qualification remains pending",
+    "hosted": {
+      "run": 38038849075,
+      "source": "00716efb2e0f3f1f3ed24c6716b69f0a6d64e826",
+      "scientific_cells": "6/6 success",
+      "run_conclusion": "failure",
+      "separate_failure": "Qt pipeline completes (Xvfb, software WebGL)"
+    }
   },
   "issue_198": {
     "run": 38037909757,
@@ -66,7 +73,25 @@
       "page_errors": [],
       "interpretation": "Software render exceeds the generic 30-second event wait before encoding. The guard aborts a legitimate render, not an indefinitely stalled encoding promise.",
       "fix": "Capture events from before input, wait for managed render completion within the existing suite deadline and keep the 30-second post-render delivery wait. Original full-quality dimensions/alpha assertions retained.",
-      "local_corrected_guard": "Shared Chromium studio-usability passed; new exact-source hosted confirmation pending."
+      "local_corrected_guard": "Shared Chromium studio-usability passed; new exact-source hosted confirmation pending.",
+      "implementation": "32565b6d24a915d126d2dc25c856388265337af9",
+      "independent_source_pair": {
+        "run": 38039674975,
+        "source": "ff8e52d5350b0b7ec9f3742519f5269809c9d2b3",
+        "render_ms": 32994,
+        "page_errors": [],
+        "context_lost": false,
+        "linux_job_conclusion": "failure",
+        "run_conclusion": "cancelled after preserving completed Linux failure"
+      }
+    },
+    "corrected_hosted_core": {
+      "run": 38040586615,
+      "source": "32565b6d24a915d126d2dc25c856388265337af9",
+      "conclusion": "failure",
+      "failed_suite": "controls-visibility",
+      "png_suite": "not reached",
+      "new_issue": "uibcdf/molsysviewer#209"
     }
   },
   "validation": {
@@ -104,6 +129,13 @@
     "hosted_source_pair": {
       "run": 38038849070,
       "state": "queued at observation"
+    },
+    "corrected_hosted": {
+      "source": "32565b6d24a915d126d2dc25c856388265337af9",
+      "core": 38040586615,
+      "scientific": 38040586638,
+      "source_pair": 38040586601,
+      "state": "running/queued at observation; no installed artifact claim"
     }
   },
   "superseded_ci": {
@@ -191,6 +223,113 @@
     "corrected_guard_local": {
       "bytes": 233,
       "sha256": "c1db4a02e73833a6012347ce5f46ffb24128f37ca6093dc8565ba6d844bbdcdd"
+    },
+    "independent_source_pair_phase": {
+      "bytes": 15323,
+      "sha256": "6b22f8be22033f82721192c3d0ba2e3d5670dbb1d0d090cb52f517ff211bae1d"
+    },
+    "corrected_core_keyboard_failure": {
+      "bytes": 8674,
+      "sha256": "2e7c4ec52fd69fd36f98f588a58f22f35336a0cb87ca2067ef860950e88ffb75"
+    },
+    "keyboard_first_attempt": {
+      "bytes": 2362,
+      "sha256": "93a706d3833a972596f5cc4fa714da066e844b5e7eb1eebf78c539ab6738f8b8"
+    },
+    "keyboard_final": {
+      "bytes": 3863,
+      "sha256": "081d1c2863d7f71215daafa10ef7bc6febcdb28f2c3f2d083585428fcd3ff772"
+    },
+    "keyboard_typescript": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "keyboard_runtime_build": {
+      "bytes": 79,
+      "sha256": "3da60630321ff7befa87a95b27da7720bb6e45997523bfcdc6588216953ff699"
     }
+  },
+  "superseded_campaigns": [
+    {
+      "run": 38039674917,
+      "source": "ff8e52d5350b0b7ec9f3742519f5269809c9d2b3",
+      "cancel_requested": true,
+      "reason": "Replaced by 32565b6d exact-source guard qualification; previous observations retained.",
+      "observed_jobs_before_cancellation": [
+        {
+          "name": "Qt pipeline completes (Xvfb, software WebGL)",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Test on macos-15, Python 3.13",
+          "status": "queued",
+          "conclusion": ""
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.13",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.12",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.11",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on macos-15, Python 3.12",
+          "status": "queued",
+          "conclusion": ""
+        },
+        {
+          "name": "Test on macos-15, Python 3.11",
+          "status": "queued",
+          "conclusion": ""
+        },
+        {
+          "name": "Check skipped-commit backlog",
+          "status": "completed",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "run": 38039674975,
+      "source": "ff8e52d5350b0b7ec9f3742519f5269809c9d2b3",
+      "cancel_requested": true,
+      "reason": "Replaced by 32565b6d exact-source guard qualification; previous observations retained.",
+      "observed_jobs_before_cancellation": [
+        {
+          "name": "Source pair on windows-2025, Python 3.14",
+          "status": "in_progress",
+          "conclusion": ""
+        },
+        {
+          "name": "Source pair on ubuntu-latest, Python 3.14",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Source pair on macos-15, Python 3.14",
+          "status": "queued",
+          "conclusion": ""
+        }
+      ]
+    }
+  ],
+  "issue_209": {
+    "issue": "uibcdf/molsysviewer#209",
+    "diagnosis": "Single frame focus callback can precede CSS visibility reversal; first enabled DOM button can also be in a hidden trajectory group.",
+    "reproduction": "First cycle on real exported pentalanine: visible, non-inert surface/button after two frames, focus remains on hotspot.",
+    "guard": "molsysviewer/js/tests/e2e/controls-visibility.e2e.ts",
+    "scope": "Enter and Space reversal; fullscreen; actual static scene skips hidden trajectory buttons; Cinema/popup/disposal assertions retained.",
+    "state": "resolved in source; expanded real-browser guard passed; hosted integration pending",
+    "archive": "archive/hidden_controls_keyboard_focus.md",
+    "remaining_first_guard_failure": "First correction passed trajectory/fullscreen/popup; new static-scene guard exposed focus rejection at CSS commit. Final owner confirms active-element transfer and retries only while hotspot owns focus."
   }
 }

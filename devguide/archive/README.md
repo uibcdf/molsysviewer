@@ -326,3 +326,5 @@ Completed work, kept for the reasoning:
 - [studio_export_backend_state.md](studio_export_backend_state.md) — #208: Exported Studio projects truthful loaded state and exits unsupported creation with a retained draft and explicit backend feedback.
 
 - [empty_dynamic_region_macos_restore.md](empty_dynamic_region_macos_restore.md) — #189: The 25 ms fallback froze empty membership; restoration now retains that static recipe snapshot and isolation, with deterministic real-coordinate guards.
+
+- [Hidden controls keyboard focus](hidden_controls_keyboard_focus.md) — #209 confirms focus after CSS reversal and skips hidden trajectory buttons; Enter/Space, fullscreen, static scene and popup guards pass.

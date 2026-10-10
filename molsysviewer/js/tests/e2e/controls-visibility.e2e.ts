@@ -16,8 +16,13 @@ view = msv.new_view(msv.demo["pentalanine"].molsys, structure_indices=[0, 8, 3])
 view.set_controls_visible(True, autohide=True)
 output = Path(tempfile.mkdtemp(prefix="msv-controls-review-")) / "controls.html"
 view.export.html(str(output), include_popout=True)
-print(json.dumps({"page": str(output)}))
 view.close()
+single = output.with_name("single-structure.html")
+view = msv.new_view(msv.demo["pentalanine"].molsys, structure_indices=0)
+view.set_controls_visible(True, autohide=True)
+view.export.html(str(single))
+view.close()
+print(json.dumps({"page": str(output), "single": str(single)}))
 `], { cwd: resolve(dir, "../../../.."), encoding: "utf8" });
     assert.equal(fixture.status, 0, fixture.stderr || fixture.stdout);
     const artifact = JSON.parse(fixture.stdout);
@@ -96,6 +101,26 @@ view.close()
             const element = document.querySelector(".molsysviewer-controls");
             return element && getComputedStyle(element).visibility === "hidden";
         });
+        const revealByKey = async (key: "Enter" | "Space") => {
+            await page.getByRole("button", { name: "Show canvas controls", exact: true }).focus();
+            await page.keyboard.press(key);
+            try {
+                await page.waitForFunction(() => document.querySelector(".molsysviewer-controls")?.contains(document.activeElement));
+            } catch (error) {
+                const state = await page.evaluate(() => {
+                    const surface = document.querySelector<HTMLElement>(".molsysviewer-controls")!;
+                    const button = surface.querySelector<HTMLButtonElement>("button:not([disabled])");
+                    return {
+                        active: document.activeElement?.getAttribute("aria-label") || document.activeElement?.tagName,
+                        visibility: surface.style.visibility,
+                        computedVisibility: getComputedStyle(surface).visibility,
+                        inert: surface.inert,
+                        buttonVisibility: button && getComputedStyle(button).visibility,
+                    };
+                });
+                throw new Error(`Keyboard controls reveal failed (${key}): ${JSON.stringify(state)}; ${String(error)}`);
+            }
+        };
         const checkFade = async (kind: string, offset = 0) => {
             await page.waitForFunction(({ kind, offset }) => (window as any).__controlsFades.slice(offset).some((fade: any) => fade.kind === kind && fade.complete), { kind, offset });
             const fade = await page.evaluate(({ kind, offset }) => (window as any).__controlsFades.slice(offset).find((fade: any) => fade.kind === kind && fade.complete), { kind, offset });
@@ -121,6 +146,15 @@ view.close()
         await away();
         await hidden();
         await checkFade("buttons", fadeOffset);
+
+        // Reverse a fully hidden surface with both activation keys. Focus must
+        // survive the delayed CSS visibility commit and reach a real button.
+        for (const key of ["Enter", "Space"] as const) {
+            await revealByKey(key);
+            assert.equal(await controls.evaluate(el => (el as HTMLElement).inert), false);
+            await away();
+            await hidden();
+        }
 
         // A frame update must not override the visibility preference.
         await page.evaluate(async () => {
@@ -189,9 +223,7 @@ view.close()
         await away();
         await hidden();
         await page.keyboard.press("Tab");
-        await page.getByRole("button", { name: "Show canvas controls", exact: true }).focus();
-        await page.keyboard.press("Enter");
-        await page.waitForFunction(() => document.querySelector(".molsysviewer-controls")?.contains(document.activeElement));
+        await revealByKey("Enter");
         await away();
         await hidden();
 
@@ -279,6 +311,16 @@ view.close()
         await popup.waitForFunction(() => !document.querySelector(".molsysviewer-controls"));
         assert.equal(await popup.locator('[data-molsysviewer-trajectory-controls="true"]').count(), 1);
         await popup.close();
+
+        // Single structures retain hidden trajectory buttons in the DOM. They
+        // must be skipped when choosing the first keyboard-accessible control.
+        await page.goto(pathToFileURL(artifact.single).href);
+        await page.waitForFunction(() => (window as any).__molsysviewerDocsController?.plugin.canvas3d?.didDraw.value > 0);
+        await page.mouse.move(500, 300);
+        await hidden();
+        assert.equal(await page.locator('[data-molsysviewer-trajectory-controls="true"]').isVisible(), false);
+        await revealByKey("Enter");
+        assert.ok(await controls.getByTitle("Panel mode (N / W)", { exact: true }).evaluate(element => element === document.activeElement));
         assert.deepEqual(errors, []);
         console.log("[E2E controls] actual Python export/popup: whole-group fade, inert fading input, Cinema slide, two-second discovery, preset cycles, scopes, Settings, Dock/fullscreen, keyboard and stable subscriptions pass");
     } finally { await browser.close(); }

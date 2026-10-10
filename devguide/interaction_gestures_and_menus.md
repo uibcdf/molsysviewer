@@ -106,7 +106,11 @@ painting. The fading subtree becomes inert immediately, so descendants cannot
 intercept picks or retain keyboard focus. Reveal can reverse an unfinished fade.
 Cinema additionally restores its original 45 px downward slide over 250 ms.
 Keyboard focus and touch can reveal controls; invisible controls cannot intercept
-canvas picks. Frame updates do not override visibility. Exports and popups use
+canvas picks. Enter or Space on the reveal hotspot transfers focus to an enabled,
+rendered control after the visibility reversal permits it; hidden trajectory
+buttons are skipped for a single structure. Pending transfer stops on disposal,
+suppression or focus leaving the hotspot. Frame updates do not override visibility.
+Exports and popups use
 the same renderer and release subscriptions, hotspots and Cinema elements when
 switching modes or disposing the controller. A popup announces readiness after
 its controller and controls are mounted.

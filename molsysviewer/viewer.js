@@ -140338,11 +140338,20 @@ var ControlsVisibility = class {
       this.keyboardFocus = true;
       this.refresh();
       if (this.focusFrame !== void 0) cancelAnimationFrame(this.focusFrame);
-      this.focusFrame = requestAnimationFrame(() => {
-        if (!this.disposed && document.activeElement === hotspot && !surface.inert) {
-          surface.querySelector("button:not([disabled])")?.focus();
+      const focusControls = () => {
+        this.focusFrame = void 0;
+        if (this.disposed || document.activeElement !== hotspot || surface.inert) return;
+        if (getComputedStyle(surface).visibility !== "visible") {
+          this.focusFrame = requestAnimationFrame(focusControls);
+          return;
         }
-      });
+        const button2 = [...surface.querySelectorAll("button:not([disabled])")].find((candidate) => candidate.getClientRects().length > 0 && getComputedStyle(candidate).visibility === "visible");
+        button2?.focus();
+        if (document.activeElement === hotspot) {
+          this.focusFrame = requestAnimationFrame(focusControls);
+        }
+      };
+      this.focusFrame = requestAnimationFrame(focusControls);
     });
     surface.style.transition = motion ? "transform 250ms cubic-bezier(0.25, 0.8, 0.25, 1), opacity 200ms ease, visibility 0s linear" : "opacity 200ms ease, visibility 0s linear";
     surface.style.willChange = motion ? "opacity, transform" : "opacity";

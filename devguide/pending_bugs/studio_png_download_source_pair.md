@@ -5,7 +5,7 @@ status: partial
 opened: 2026-10-09
 closed:
 severity: medium
-verification: upstream
+verification: measured
 area: [studio]
 guard: molsysviewer/js/tests/e2e/studio-usability.e2e.ts
 normative:
@@ -114,3 +114,15 @@ The corrected guard passes locally through the core shared-Chromium runner,
 including the actual PNG filename, dimensions/alpha and downloaded standalone
 HTML checks. TypeScript and the E2E build pass. Exact-source hosted core/source-pair
 confirmation is pending; the report remains partial until that evidence exists.
+
+Independent source-pair evidence on ff8e52d5 confirms the same measured cause:
+Linux 38039674975 reaches Encoding image… at **32994 ms**, with intact context
+and no page errors, before the old 30-second event wait aborts it. Its completed
+Linux failure and notebook artifact remain available after cancellation of the
+superseded pending jobs. This is source-pair phase evidence, not qualification
+of the corrected 32565b6d guard.
+
+Corrected-source core 38040586615 fails in `controls-visibility`, before reaching
+`studio-usability`; it provides no PNG result. That distinct keyboard focus
+transfer is tracked as `uibcdf/molsysviewer#209`, not attributed to PNG.
+Source-pair 38040586601 remains active at observation.

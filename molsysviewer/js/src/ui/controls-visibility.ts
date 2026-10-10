@@ -55,14 +55,28 @@ export class ControlsVisibility {
             event.stopPropagation();
             this.keyboardFocus = true;
             this.refresh();
-            // Let the immediate visibility reversal reach computed styles before
-            // focusing a descendant that was inert during the fade.
+            // A visibility transition reversal can commit after the first frame.
+            // Transfer focus only when the actual surface permits it, and stop
+            // if the user leaves the hotspot or the controls become unavailable.
             if (this.focusFrame !== undefined) cancelAnimationFrame(this.focusFrame);
-            this.focusFrame = requestAnimationFrame(() => {
-                if (!this.disposed && document.activeElement === hotspot && !surface.inert) {
-                    surface.querySelector<HTMLButtonElement>("button:not([disabled])")?.focus();
+            const focusControls = () => {
+                this.focusFrame = undefined;
+                if (this.disposed || document.activeElement !== hotspot || surface.inert) return;
+                if (getComputedStyle(surface).visibility !== "visible") {
+                    this.focusFrame = requestAnimationFrame(focusControls);
+                    return;
                 }
-            });
+                const button = [...surface.querySelectorAll<HTMLButtonElement>("button:not([disabled])")]
+                    .find(candidate => candidate.getClientRects().length > 0
+                        && getComputedStyle(candidate).visibility === "visible");
+                button?.focus();
+                // Chromium can still reject focus in the frame committing the
+                // reversal. Confirm the transfer rather than assuming focus().
+                if (document.activeElement === hotspot) {
+                    this.focusFrame = requestAnimationFrame(focusControls);
+                }
+            };
+            this.focusFrame = requestAnimationFrame(focusControls);
         });
         surface.style.transition = motion
             ? "transform 250ms cubic-bezier(0.25, 0.8, 0.25, 1), opacity 200ms ease, visibility 0s linear"

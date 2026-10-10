@@ -404,3 +404,30 @@ resolution, resize/click assertion and actual PNG dimensions/alpha. The correcte
 Studio guard passes under shared Chromium locally. New hosted confirmation is
 pending before #198 closure; the original uninstrumented failures are retained
 without claiming their unobserved phases were identical.
+
+Corrected source `32565b6d` is published to main. Core 38040586615, source pair
+38040586601 and scientific CI 38040586638 are active/queued at observation.
+Superseded ff8e52d5 scientific/source-pair runs 38039674917/38039674975 were
+cancelled after retaining their completed job states; their observations and
+artifacts are not reinterpreted as corrected-source success. Scientific
+00716efb run 38038849075 continues its last macOS test to preserve direct
+evidence of the region restoration correction. No duplicated dispatch,
+candidate freeze, package build or publication is performed.
+
+## Keyboard reveal follow-up — 2026-10-10
+
+Core 38040586615 stops in controls-visibility before PNG. #209 is reproduced
+on an actual exported pentalanine scene: the single-frame focus attempt can
+precede CSS visibility commit. Source inspection also identifies the hidden
+trajectory buttons preceding visible canvas controls in single-structure
+scenes. The shared owner now chooses a rendered, visible enabled button and
+confirms actual focus transfer across frames, cancelling on suppression,
+disposal or focus leaving the hotspot. The first corrected guard exposes a
+remaining CSS-commit rejection in its new static-scene case; the final
+confirmed-transfer correction passes the expanded Enter/Space, fullscreen,
+static-scene, Cinema/popup and disposal guard. Both diagnostics remain in the
+receipt and the [archived record](archive/hidden_controls_keyboard_focus.md).
+No arbitrary sleep, larger guard deadline or skipped accessibility assertion
+is introduced. Scientific 38038849075 now passes all six source cells on
+00716efb; the separate experimental Qt job fails, preserving the overall
+failure conclusion. This does not qualify the forthcoming candidate artifact.

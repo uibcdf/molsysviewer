@@ -50,8 +50,14 @@ preserves complete saved-selection state in Undo/Redo, completes the remaining
 creation/registration feedback and corrects exported Studio backend state.
 Its guards and the local Qt limitations are recorded in the same Studio review.
 #189 is resolved through its captured budget warning and forced-fallback guard.
-#198 remains open: a connected click reaches Rendering PNG… but the hosted render
-wait still needs a cause and correction; local browser success does not establish it.
+#198 is diagnosed and corrected in the guard: the measured software render
+exceeds the old 30-second event deadline. Source `32565b6d` waits for managed
+render completion within the existing suite budget, then limits file delivery.
+Full-quality PNG dimensions/alpha and held-click assertions remain. The scoped
+local guard passes; exact-source hosted confirmation is still required for closure.
+The subsequent core stopped before PNG on keyboard focus transfer (#209). Its
+shared-owner correction and expanded Enter/Space/fullscreen/static-scene/popup
+guard pass locally; inspect the next complete core for integration.
 
 The user guide is [Using the canvas context menu](../docs/content/user/viewer/context_menu.md).
 Normative behavior remains in [gestures and menus](interaction_gestures_and_menus.md)
