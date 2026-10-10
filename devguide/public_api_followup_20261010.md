@@ -49,7 +49,7 @@ The [receipt](public_api_followup_receipt_20261010.json) records results and log
 digests. Reporting, link, architecture, capability and inventory guards pass
 **452/452** after correcting receipt creation and staging the archived reports.
 Two preceding scoped checks stopped on those bookkeeping errors; both logs are
-retained in the receipt. Source integration is complete; applicable hosted CI remains pending.
+retained in the receipt. Source integration is complete; hosted CI closure is recorded below.
 
 
 ## Integration checkpoint
@@ -97,7 +97,7 @@ core observations. No run is duplicated or cancelled, no provider reference
 moves, and no release or candidate freeze is authorized by this review.
 
 
-The applicable review remains **partial** solely because the three scientific
+At that checkpoint, the applicable review remained **partial** because the three scientific
 macOS/Python 3.11–3.13 cells still have `runner_id=0` and no assigned runner at
 the recorded inspection. No currently running Viewer scientific cell remains
 outside those queued jobs. Those cells are preserved in the original run,
@@ -105,3 +105,24 @@ without cancellation or rerun. Finishing their observations requires GitHub
 runner assignment; the green Python 3.14 macOS cell does not replace them.
 
 The updated reporting, link and architecture checks pass **230/230** locally.
+
+### macOS completion
+
+In the original run and attempt, macOS/Python 3.11 job `114197659939`
+completes successfully: **3010 passed, 62 skipped, zero failures**, with its
+original log retained and digested in the receipt. Its runner was assigned at
+11:39:42 UTC and the job completed at 11:50:53 UTC on 2026-10-10.
+Python 3.12 job `114197659937` and Python 3.13 job `114197659960` also complete
+successfully in that original run and attempt. Each reports **3010 passed,
+62 skipped, zero failures**. Their original logs and final run metadata are
+retained with digests in the receipt. There is no duplicate execution, rerun
+or change to the tested source.
+
+The applicable scientific review is now **complete: 6/6 cells pass**, alongside
+the successful Python 3.14 source pair, browser, JS, notebook and governance
+gates described above. No macOS observation remains pending. GitHub's overall
+workflow conclusion is still `failure` because of the experimental Qt job;
+the six passing scientific cells do not turn that workflow green. Its two
+control/PR jobs are skipped as expected for this push. This closes source CI
+review, not canonical installed-artifact qualification, candidate freezing or
+publication. Both 1.0 publications remain paused.

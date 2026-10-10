@@ -372,10 +372,10 @@
         "databaseId": 38046730917,
         "name": "CI",
         "headSha": "792fd5f6baea34dd11016854ace78d76d5d087c6",
-        "status": "queued",
-        "conclusion": "",
+        "status": "completed",
+        "conclusion": "failure",
         "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38046730917",
-        "metadata_sha256": "472e09155e6b2df2945ad601e40025f14e8f4544909f1ffe0beea2c4fe5bdfdf",
+        "metadata_sha256": "ac27d8f62d768ffe4d24b6f0eb83ed236c07ee2a7fb9f8ba15f95f251b9d23fd",
         "jobs": [
           {
             "id": 114197659796,
@@ -390,16 +390,24 @@
           {
             "id": 114197659937,
             "name": "Test on macos-15, Python 3.12",
-            "status": "queued",
-            "conclusion": "",
-            "observed_steps": {}
+            "status": "completed",
+            "conclusion": "success",
+            "observed_steps": {
+              "Resolve documented Python API calls": "skipped",
+              "Run tests": "success",
+              "JS unit tests (Node)": "skipped"
+            }
           },
           {
             "id": 114197659939,
             "name": "Test on macos-15, Python 3.11",
-            "status": "queued",
-            "conclusion": "",
-            "observed_steps": {}
+            "status": "completed",
+            "conclusion": "success",
+            "observed_steps": {
+              "Resolve documented Python API calls": "skipped",
+              "Run tests": "success",
+              "JS unit tests (Node)": "skipped"
+            }
           },
           {
             "id": 114197659941,
@@ -407,6 +415,7 @@
             "status": "completed",
             "conclusion": "success",
             "observed_steps": {
+              "Resolve documented Python API calls": "skipped",
               "Run tests": "success",
               "JS unit tests (Node)": "skipped"
             }
@@ -417,6 +426,7 @@
             "status": "completed",
             "conclusion": "success",
             "observed_steps": {
+              "Resolve documented Python API calls": "skipped",
               "Run tests": "success",
               "JS unit tests (Node)": "skipped"
             }
@@ -424,9 +434,13 @@
           {
             "id": 114197659960,
             "name": "Test on macos-15, Python 3.13",
-            "status": "queued",
-            "conclusion": "",
-            "observed_steps": {}
+            "status": "completed",
+            "conclusion": "success",
+            "observed_steps": {
+              "Resolve documented Python API calls": "skipped",
+              "Run tests": "success",
+              "JS unit tests (Node)": "skipped"
+            }
           },
           {
             "id": 114197659970,
@@ -434,6 +448,7 @@
             "status": "completed",
             "conclusion": "success",
             "observed_steps": {
+              "Resolve documented Python API calls": "success",
               "Run tests": "success",
               "JS unit tests (Node)": "success"
             }
@@ -444,9 +459,17 @@
             "status": "completed",
             "conclusion": "skipped",
             "observed_steps": {}
+          },
+          {
+            "id": 114211914837,
+            "name": "PR full suite",
+            "status": "completed",
+            "conclusion": "skipped",
+            "observed_steps": {}
           }
         ],
-        "observed_at": "2026-10-10T11:20:34.747278+00:00"
+        "observed_at": "2026-10-10T12:22:57.822378+00:00",
+        "metadata_file": "run-38046730917-final-metadata.json"
       }
     ],
     "logs": {
@@ -489,9 +512,24 @@
         "sha256": "e4f110eaa00826a1bbcd930d0d678fb5e41147d6447dd3540a2ddf3ab650ebe2",
         "bytes": 197464,
         "local_directory": "/tmp/msv-api-ci-20261010"
+      },
+      "macos311.log": {
+        "sha256": "9c705e1ae9a20897fb2d300f213b7202b7336ac51d27d584016bdcc01f23b0cc",
+        "bytes": 1712962,
+        "local_directory": "/tmp/msv-api-ci-20261010"
+      },
+      "macos312.log": {
+        "sha256": "6632e31bb0a715eaccfaf606804a3d353c0da17b4d1b3c26cd2afbf5e0f02c8f",
+        "bytes": 1712144,
+        "local_directory": "/tmp/msv-api-ci-20261010"
+      },
+      "macos313.log": {
+        "sha256": "8a3709623281ab1004df4773814a17b980e48c7da149eb7563a6e4dcea39f3ea",
+        "bytes": 1712166,
+        "local_directory": "/tmp/msv-api-ci-20261010"
       }
     },
-    "applicable_complete": false,
+    "applicable_complete": true,
     "source_pair_molsysmt_sha": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
     "core_browser": {
       "passed_suites": 43,
@@ -534,13 +572,24 @@
         "passed": 3037,
         "skipped": 35,
         "failed": 0
+      },
+      "macos_py311": {
+        "passed": 3010,
+        "skipped": 62,
+        "failed": 0
+      },
+      "macos_py312": {
+        "passed": 3010,
+        "skipped": 62,
+        "failed": 0
+      },
+      "macos_py313": {
+        "passed": 3010,
+        "skipped": 62,
+        "failed": 0
       }
     },
-    "pending": [
-      "macos-15 Python 3.11 scientific cell",
-      "macos-15 Python 3.12 scientific cell",
-      "macos-15 Python 3.13 scientific cell"
-    ],
+    "pending": [],
     "experimental_qt": {
       "job": 114197659796,
       "conclusion": "failure",
@@ -566,38 +615,7 @@
       "failed": 0,
       "run": 38046731092
     },
-    "scientific_pending_runners": [
-      {
-        "id": 114197659937,
-        "name": "Test on macos-15, Python 3.12",
-        "status": "queued",
-        "runner_id": 0,
-        "runner_name": "",
-        "labels": [
-          "macos-15"
-        ]
-      },
-      {
-        "id": 114197659939,
-        "name": "Test on macos-15, Python 3.11",
-        "status": "queued",
-        "runner_id": 0,
-        "runner_name": "",
-        "labels": [
-          "macos-15"
-        ]
-      },
-      {
-        "id": 114197659960,
-        "name": "Test on macos-15, Python 3.13",
-        "status": "queued",
-        "runner_id": 0,
-        "runner_name": "",
-        "labels": [
-          "macos-15"
-        ]
-      }
-    ],
+    "scientific_pending_runners": [],
     "scientific_runner_snapshot_sha256": "d2577c423a9755db1a26c0f5627006a7b15527eef1e44d4373d9dfd89ead09d5",
     "source_pair_observed_at": "2026-10-10T11:30:15.488959+00:00",
     "guidance_validation": {
@@ -608,6 +626,59 @@
       "log_sha256": "f365cf1bddf833bc072efaa6c671b5f9bf1061b0c224d99ad4d0b28385845e38",
       "local_directory": "/tmp/msv-api-ci-20261010"
     },
-    "pending_reconfirmed_at": "2026-10-10T11:31:28.396801+00:00"
+    "pending_reconfirmed_at": "2026-10-10T11:31:28.396801+00:00",
+    "macos_followup": {
+      "observed_at": "2026-10-10T12:07:41.580186+00:00",
+      "job_snapshot_sha256": "1554297521445ce3fc7563b46623e5903d2f9d1e565fc902eeb731e1d66945ad",
+      "snapshot_file": "scientific-macos-followup.json",
+      "completed_jobs": [
+        114197659939
+      ],
+      "pending_jobs": [
+        114197659937,
+        114197659960
+      ]
+    },
+    "scientific_complete": true,
+    "macos_completion": {
+      "observed_at": "2026-10-10T12:22:57.822378+00:00",
+      "results": {
+        "311": {
+          "job": 114197659939,
+          "passed": 3010,
+          "skipped": 62,
+          "failed": 0
+        },
+        "312": {
+          "job": 114197659937,
+          "passed": 3010,
+          "skipped": 62,
+          "failed": 0
+        },
+        "313": {
+          "job": 114197659960,
+          "passed": 3010,
+          "skipped": 62,
+          "failed": 0
+        }
+      },
+      "all_three_success": true,
+      "original_run": 38046730917,
+      "attempt": 1,
+      "source_commit": "792fd5f6baea34dd11016854ace78d76d5d087c6",
+      "scientific_cells_passed": 6,
+      "scientific_cells_required": 6,
+      "overall_workflow_conclusion": "failure",
+      "experimental_qt_core_gate": false,
+      "reruns": 0,
+      "duplicate_dispatches": 0,
+      "guidance_validation": {
+        "passed": 230,
+        "failed": 0,
+        "log_sha256": "d16774d86d8ad5009d3ed933382f4f31d946c96fabe44960bf3d8ea340ba6f5c",
+        "local_directory": "/tmp/msv-api-ci-20261010",
+        "scope": "Reporting, links and architecture checks after adding the macOS result receipt; final update adds result counts and prose without new links."
+      }
+    }
   }
 }
