@@ -7,8 +7,10 @@ core browser 43/43; final policy/link/architecture 241/241. The single global
 Python run has 3,093 passed, 14 failed, 23 skipped: six integration bookkeeping
 failures are repaired; eight known experimental Qt context failures remain.
 Global CI is not described as green. See [the review](integrated_review_20261010.md)
-and [resource contract](temporary_resource_lifecycle.md). Fresh hosted source CI
-is separate; no candidate freeze or publication is authorized. Broad docs and
+and [resource contract](temporary_resource_lifecycle.md). Source is integrated in `f272e384`; all four issues are closed and the board
+agrees. Scientific 38062650438, Python 3.14 pair 38062650331, core 38062650521
+and notebooks 38062650323 are pending; lint/policy/governance pass. No candidate
+freeze or publication is authorized. Broad docs and
 final human installed first contact remain next, with both 1.0 publications paused.
 
 **Cross-surface coverage round — 2026-10-10:** #223–#225 and #227 implement

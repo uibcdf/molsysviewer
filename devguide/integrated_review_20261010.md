@@ -70,3 +70,15 @@ workspaces are absent after completion. Four explicit obsolete task-owned
 drafts/encoded-policy paths are removed; logs/JUnit and decoded snapshots remain
 for applicable CI comparison. No human notebook, shared environment or provider
 worktree is removed. Broad documentation work is the next product phase.
+
+## Integration checkpoint
+
+Reviewed source is pushed directly to `main` in `f272e3845737568392aefb9397776c6e34675118`. #200/#228/#229/#230
+are closed with the fix, guard/normative record and final disposition. All 28
+active queue reports agree with the board. The central #104 timeline exposes
+the closed Viewer owner issue through its existing cross-reference; central
+coordination is not closed or rewritten mid-investigation. Unrelated sandbox
+work is preserved. Fresh automatic source CI retains exact `f272e384`: scientific
+`38062650438`, Python 3.14 pair `38062650331`, core browser `38062650521` and
+notebooks `38062650323` are pending. Lint, suite policy and publication governance
+already pass. These are source gates, without tag/build/promotion authority.

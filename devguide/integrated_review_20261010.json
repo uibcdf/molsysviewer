@@ -1,8 +1,8 @@
 {
   "date": "2026-10-10",
-  "state": "local_review_complete",
+  "state": "integrated_and_issues_closed",
   "viewer_base": "783a1e879ab3d3f59805cc01ff4c6ec859fedf6c",
-  "viewer_worktree": "authorized resource corrections, not yet committed",
+  "viewer_worktree": "Local executed working tree integrated in the source commit; provider worktree limitations are recorded separately",
   "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
   "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
   "provider": {
@@ -48,7 +48,6 @@
     }
   },
   "pending": [
-    "reviewed integration and issue-board closeout",
     "fresh applicable hosted CI",
     "documentation and human installed first contact",
     "later authorized frozen candidate and installed-byte qualification"
@@ -139,9 +138,39 @@
   },
   "log_evidence": [
     {
+      "path": "/tmp/msv-integrated-review-20261010/board-check.log",
+      "sha256": "ff09051a7d3df455b7dbc1f2a563e97f722bdd602c58530a8a4c77dfc6c3b943",
+      "bytes": 34
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/central-cross-reference.json",
+      "sha256": "0ec1add4ce97a57c726a00784f870063d6ff673065a81a9146b66dba61540eff",
+      "bytes": 154
+    },
+    {
       "path": "/tmp/msv-integrated-review-20261010/central-feedback.md",
       "sha256": "3320daf9dcf04dcc73e035aed4708d3b72fc4a5fbf4febcdc424029de64591ce",
       "bytes": 8307
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/close-200.md",
+      "sha256": "5970d0717367da62d1a1a2f2ccfecd886baa9b83e0be0b19a0c3cda4f593fe85",
+      "bytes": 2187
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/close-228.md",
+      "sha256": "0f13c9de1fe00b8ddb17a769911035d8ed095e5a41aed64341cb4a5ee8a8792b",
+      "bytes": 787
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/close-229.md",
+      "sha256": "192d1214a0fd4c4baaef86ee1ef540c2e4fbd55e0b6554b26c3f89e5d11881e3",
+      "bytes": 990
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/close-230.md",
+      "sha256": "3c1c058b7abd958392d62fae0bbd014c1c361d776152257b959e6dc1ddae91a1",
+      "bytes": 686
     },
     {
       "path": "/tmp/msv-integrated-review-20261010/core-browser.log",
@@ -167,6 +196,11 @@
       "path": "/tmp/msv-integrated-review-20261010/harness-build.log",
       "sha256": "6ea1e5395d0a20b6ecf1095c524168661d55eec4d95f86d15ddd09a57bb64873",
       "bytes": 228
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/hosted-runs.json",
+      "sha256": "5e8fdf75dc2da1ce888cc720e0ba2ac8a61ffe744c88d8a5c21457961acf82ae",
+      "bytes": 1523
     },
     {
       "path": "/tmp/msv-integrated-review-20261010/integrated-science.log",
@@ -245,5 +279,96 @@
     228,
     229,
     230
-  ]
+  ],
+  "source_integration": {
+    "commit": "f272e3845737568392aefb9397776c6e34675118",
+    "branch": "main",
+    "direct_push": true,
+    "unrelated_sandbox_preserved": true
+  },
+  "board_check": {
+    "exit_code": 0,
+    "message": "28 documents agree with the board",
+    "issues_closed": [
+      200,
+      228,
+      229,
+      230
+    ]
+  },
+  "central_handoff": {
+    "owner_issue": "uibcdf/molsysviewer#200",
+    "central_issue": "uibcdf/molsyssuite#104",
+    "method": "local owner issue closing disposition, through its existing central cross-reference; no intermediate central issue write",
+    "verified_cross_reference": {
+      "created_at": "2026-10-10T06:31:38Z",
+      "event": "cross-referenced",
+      "source_state": "closed",
+      "source_url": "https://github.com/uibcdf/molsysviewer/issues/200"
+    },
+    "central_not_closed": true
+  },
+  "hosted_source_ci": {
+    "source_commit": "f272e3845737568392aefb9397776c6e34675118",
+    "inspected_at": "2026-10-10T15:15:05.401022+00:00",
+    "runs": [
+      {
+        "conclusion": "success",
+        "databaseId": 38062652204,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "Conda publication governance",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062652204"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38062651941,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "MolSysSuite policy",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062651941"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38062650331,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "Python 3.14 source pair",
+        "status": "queued",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062650331"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38062650438,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "CI",
+        "status": "queued",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062650438"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38062650303,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "Ruff Lint",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062650303"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38062650521,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "CI_e2e",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062650521"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38062650323,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "Documentation notebooks",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062650323"
+      }
+    ],
+    "note": "Scientific/Python3.14/core/notebooks still pending; no terminal passing result is inferred"
+  }
 }

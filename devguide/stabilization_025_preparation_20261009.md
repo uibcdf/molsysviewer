@@ -128,3 +128,13 @@ Experimental Qt still fails to create WebGL, so the scientific workflow is
 not globally green. The coverage receipt preserves the final run/job identities,
 local provider source and log digests. This source evidence does not freeze
 0.25.0 or qualify its future installed package.
+
+## Integrated scientific/resource closeout — 2026-10-10
+
+Source `f272e384` closes #200/#228–#230 under
+[the integrated review](integrated_review_20261010.md). It passes 13 resource,
+137 scientific, 241 final policy and 43/43 core-browser checks. The single
+complete Python run retains eight experimental Qt context failures after six
+bookkeeping repairs. Fresh applicable hosted CI remains pending. Include these
+fixes in the future producer after documentation and final installed first
+contact; this does not freeze a SHA/ref or authorize staging/publication.
