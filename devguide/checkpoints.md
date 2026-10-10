@@ -1,5 +1,16 @@
 # Development checkpoint
 
+**Studio hosted follow-up — 2026-10-10:** #189's native macOS log identifies the
+25 ms dynamic-evaluation fallback freezing an empty region. Source `00716efb`
+preserves that static snapshot and isolation on restore; 16 real isolation tests
+pass. The complete local Python run has 3006 passed, 23 skipped and eight Qt
+context initialization failures. #198 remains partial: connected input reaches
+Rendering PNG… in core 38037909757, with no download by the unchanged deadline.
+New bounded task/background/image-pass diagnostics are in the next source.
+The first three core browser suites pass locally using shared Chromium.
+Exact-source CI is pending; 0.25.0 remains unfrozen and both 1.0 publications
+remain paused. See the [follow-up receipt](studio_followup_20261010.json).
+
 **Studio integration — 2026-10-09:** the authorized #181–#188 round is
 implemented and locally verified: actual PNG/background and browser HTML
 delivery, native keyboard controls, compact navigation, preserved geometry,

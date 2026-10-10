@@ -1,9 +1,9 @@
 ---
 summary: Empty dynamic region disappears during state restoration on macOS Python 3.12
 issue: uibcdf/molsysviewer#189
-status: active
+status: resolved
 opened: 2026-10-09
-closed:
+closed: 2026-10-10
 severity: medium
 verification: reproduced
 area: [regions, state, tests]
@@ -37,11 +37,12 @@ subsequent reappearance.
 
 ## How
 
-The root cause is not established. State restoration already has an explicit
+The first inspection did not establish the root cause. State restoration already has an explicit
 empty dynamic-recipe path. The old compact CI diagnostic does not expose the
 serialized mode/provenance; the existing guard now reports the bounded region
 records if the region disappears. Inspect the next exact-source macOS result
 before deciding whether importer, provider or test isolation needs correction.
+The native-log diagnosis and deterministic correction are recorded below.
 
 ## Why
 
@@ -57,7 +58,14 @@ or substitute the unrelated Qt/WebGL result.
 
 ## Resolution
 
-Diagnosis and exact-source macOS verification pending. Original failure remains
+Corrected in 00716efb2e0f3f1f3ed24c6716b69f0a6d64e826. The forced-budget
+real-coordinate guard reproduces the causal path without hardware-dependent
+timing. It verifies frozen mode, identity, empty membership and isolation through
+state/copy/session restoration and confirms coordinates do not reactivate it.
+The single full regression has 3006 passed, 23 skipped and eight Qt context
+initialization failures. The original disappearing-region diagnosis is resolved;
+new exact-source hosted/installed qualification remains separate and pending.
+Original failure remains
 at https://github.com/uibcdf/molsysviewer/actions/runs/37993286215.
 
 ## Follow-up — 2026-10-10
@@ -66,7 +74,8 @@ Base-source a699f5b5 run 38034284564 completes all six scientific cells
 successfully, including macOS/Python 3.12. Its separate experimental Qt job
 fails. The later macOS success is recorded without attributing a cause to the
 historical disappearing-region failure; no guard was skipped or replaced.
-Diagnosis remains open.
+At that follow-up, diagnosis remained open; the subsequent native-log analysis
+below identifies the original mode transition.
 
 ## Diagnosis and correction — 2026-10-10
 
@@ -86,5 +95,6 @@ A separate real-dialanine guard forces the actual fallback using the existing
 budget setting, without mocking queries or the clock, and verifies static mode,
 empty membership and isolation across state, copy and session restoration. It
 also verifies restoring coordinates does not spontaneously reactivate a frozen
-region. All 16 region-isolation tests pass locally. Full regression and the
-corrected exact-source hosted gate are pending at this checkpoint.
+region. All 16 region-isolation tests pass locally. The full regression completed as recorded above. The corrected exact-source
+hosted gate remains pending at closure, with no platform-specific code path or
+timing assumption used by the new guard.

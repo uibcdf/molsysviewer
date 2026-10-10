@@ -324,3 +324,5 @@ Completed work, kept for the reasoning:
 - [studio_atomic_replacement.md](studio_atomic_replacement.md) — #206: Region/selection replacement uses one request and one history boundary, restoring complete scene metadata on rollback and Undo/Redo.
 - [studio_remaining_creation_feedback.md](studio_remaining_creation_feedback.md) — #207: Region/selection and addon registration drafts remain pending until their own reply; failures retain retryable values.
 - [studio_export_backend_state.md](studio_export_backend_state.md) — #208: Exported Studio projects truthful loaded state and exits unsupported creation with a retained draft and explicit backend feedback.
+
+- [empty_dynamic_region_macos_restore.md](empty_dynamic_region_macos_restore.md) — #189: The 25 ms fallback froze empty membership; restoration now retains that static recipe snapshot and isolation, with deterministic real-coordinate guards.

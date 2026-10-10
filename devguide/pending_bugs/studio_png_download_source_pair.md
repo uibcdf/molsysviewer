@@ -73,3 +73,16 @@ retains the last eight Generate Image task updates, background variant,
 illumination flag, context-lost flag and encoding-canvas dimensions. These are
 read-only observations; no timeout, GPU quality or success assertion changes.
 Root cause and next exact-source hosted render evidence remain pending.
+
+## Encoding-yield observation — 2026-10-10
+
+Core 38038849065 on 00716efb reaches task messages Rendering image… then
+Encoding image… before its unchanged download wait fails. Context loss is false,
+background is off, illumination is disabled, image-pass size is 1575×1140 and
+the encoding canvas is still at its initial 300×150. Mol* has returned image data
+and called `ctx.update('Encoding image...')`, but has not resized/filled the
+encoding canvas. The helper awaits that task update before writing pixels.
+This is stronger phase evidence than the previous Rendering PNG… button status;
+it does not yet distinguish a costly render exceeding the deadline from a stalled
+task yield. The next observation adds elapsed task times and the last four
+page errors, without altering scheduling, GPU quality or the deadline.

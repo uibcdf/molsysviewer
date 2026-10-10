@@ -84,7 +84,7 @@ async function run() {
                 const p = event.progress.root.progress;
                 if (p.taskName !== "Generate Image") return;
                 const tasks = (window as any).__studioPngTasks;
-                tasks.push({ message: p.message, current: p.current, max: p.max });
+                tasks.push({ message: p.message, elapsedMs: Math.round(performance.now() - p.startedTime), current: p.current, max: p.max });
                 if (tasks.length > 8) tasks.shift();
             });
             for (const type of ["pointerdown", "pointerup", "click"]) document.addEventListener(type, event => {
@@ -109,7 +109,7 @@ async function run() {
                 drawingBuffer: [(window as any).__controller.plugin.canvas3d.webgl.gl.drawingBufferWidth,
                     (window as any).__controller.plugin.canvas3d.webgl.gl.drawingBufferHeight],
             }));
-            throw new Error(`PNG download failed: ${JSON.stringify(diagnostic)}; ${String(error)}`);
+            throw new Error(`PNG download failed: ${JSON.stringify({ ...diagnostic, pageErrors: errors.slice(-4) })}; ${String(error)}`);
         });
         const pngButton = page.getByRole("button", { name: "Download PNG Image", exact: true });
         await pngButton.scrollIntoViewIfNeeded();

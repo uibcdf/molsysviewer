@@ -1,0 +1,179 @@
+{
+  "schema": "molsysviewer.studio_followup@1",
+  "date": "2026-10-10",
+  "implementation": "00716efb2e0f3f1f3ed24c6716b69f0a6d64e826",
+  "scope": "Source and local guards; corrected exact-source hosted campaigns pending. Not a frozen candidate or installed artifact.",
+  "environment": {
+    "name": "molsyssuite@uibcdf_3.14",
+    "python": "3.14.7",
+    "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python"
+  },
+  "issue_189": {
+    "diagnosis": "An evaluation exceeding the normative 25 ms budget froze an empty region to static; importer retained empty recipes only when saved mode was dynamic.",
+    "original_run": 37993286215,
+    "native_evidence": [
+      "      WARNING: Dynamic region 'near' took 32.50 ms to evaluate structure 0, exceeding its 25.00 ms budget. It was switched to static mode."
+    ],
+    "fix": "Retain empty re-evaluable recipe snapshots regardless of saved mode, preserving static membership and isolation.",
+    "guard": "tests/test_region_isolation.py::test_empty_over_budget_region_preserves_static_snapshot_and_isolation",
+    "guard_scope": "Real dialanine coordinates force the actual budget fallback; state/copy/session identity, empty membership, static mode and isolation survive; coordinate recovery does not reactivate dynamic mode.",
+    "focused": "16 passed",
+    "closure": "resolved in source; hosted qualification remains pending"
+  },
+  "issue_198": {
+    "run": 38037909757,
+    "source": "0e7b6593da31bcb8bd0775e417d518fff3d85641",
+    "diagnostic": {
+      "input": [
+        "pointerdown connected",
+        "pointerup connected",
+        "click connected"
+      ],
+      "status": "Rendering PNG…",
+      "disabled": true,
+      "drawing_buffer": [
+        1050,
+        760
+      ],
+      "timeout_seconds": 30
+    },
+    "interpretation": "Input delivered; helper has not returned its rendered image. Root render-stage cause still unknown.",
+    "next_probe": "Last eight task updates, background/illumination, context loss and image pass/encoding canvas dimensions; read-only, unchanged deadline and image assertions.",
+    "closure": "partial, remains open",
+    "encoding_yield_observation": {
+      "run": 38038849065,
+      "tasks": [
+        "Rendering image...",
+        "Encoding image..."
+      ],
+      "context_lost": false,
+      "background": "off",
+      "illumination": false,
+      "image_pass_size": [
+        1575,
+        1140
+      ],
+      "encoding_canvas": [
+        300,
+        150
+      ],
+      "interpretation": "Image data returned; encoding task update reached, canvas not yet resized. Elapsed phase times required to distinguish render cost from stalled yielding."
+    }
+  },
+  "validation": {
+    "python_full_once": {
+      "passed": 3006,
+      "skipped": 23,
+      "failed": 8,
+      "seconds": 614.16,
+      "failed_nodes": [
+        "FAILED tests/test_qt_probe_resources.py::test_html_removed_after_real_child_outcome[success-transport]",
+        "FAILED tests/test_qt_probe_resources.py::test_html_removed_after_real_child_outcome[success-generations]",
+        "FAILED tests/test_qt_probe_resources.py::test_html_removed_after_real_child_outcome[failure-transport]",
+        "FAILED tests/test_qt_probe_resources.py::test_html_removed_after_real_child_outcome[failure-generations]",
+        "FAILED tests/test_qt_probe_resources.py::test_html_removed_after_real_child_outcome[timeout-transport]",
+        "FAILED tests/test_qt_probe_resources.py::test_html_removed_after_real_child_outcome[timeout-generations]",
+        "FAILED tests/test_standalone.py::test_qt_event_transport_smoke_real_qt - Asse...",
+        "FAILED tests/test_standalone.py::test_qt_payload_refs_replace_across_two_real_generations"
+      ],
+      "diagnostic": "QRhiGles2: Failed to create context; Failed to create RHI for backend: OpenGL; Vulkan unavailable; probes produced no ready report."
+    },
+    "shared_chromium": [
+      "context-menu passed",
+      "controls-visibility passed",
+      "studio-usability passed"
+    ],
+    "guard_scope": "The passing browser run preceded the final imagePassSize diagnostic field; final TypeScript/build includes it. Runtime and image assertions unchanged.",
+    "hosted_e2e": {
+      "run": 38038849065,
+      "state": "queued at observation"
+    },
+    "hosted_ci": {
+      "run": 38038849075,
+      "state": "queued at observation"
+    },
+    "hosted_source_pair": {
+      "run": 38038849070,
+      "state": "queued at observation"
+    }
+  },
+  "superseded_ci": {
+    "run": 38037909747,
+    "source": "0e7b6593",
+    "cancel_requested": true,
+    "reason": "New 00716efb source supersedes the old pending macOS cells; completed jobs and artifacts preserved.",
+    "observed_jobs_before_cancellation": [
+      {
+        "name": "Qt pipeline completes (Xvfb, software WebGL)",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "name": "Test on ubuntu-latest, Python 3.11",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Test on ubuntu-latest, Python 3.13",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Test on ubuntu-latest, Python 3.12",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Test on macos-15, Python 3.11",
+        "status": "queued",
+        "conclusion": ""
+      },
+      {
+        "name": "Test on macos-15, Python 3.13",
+        "status": "queued",
+        "conclusion": ""
+      },
+      {
+        "name": "Test on macos-15, Python 3.12",
+        "status": "queued",
+        "conclusion": ""
+      },
+      {
+        "name": "Check skipped-commit backlog",
+        "status": "completed",
+        "conclusion": "skipped"
+      }
+    ]
+  },
+  "publication": "0.25.0 unfrozen; both 1.0 publications paused; no tag/package/promotion.",
+  "logs": {
+    "original_mac189": {
+      "bytes": 16508,
+      "sha256": "bfa361daf0dd42d96b198e939f30c58147faf63eda33265e757cd490c4246f40"
+    },
+    "core_png": {
+      "bytes": 9876,
+      "sha256": "c817fed186e9916151d5494f1fc903ede51e1d95a7441a2e43d21e287af64990"
+    },
+    "regions": {
+      "bytes": 622,
+      "sha256": "cb8363e5ce939c1e24a77ddcb8c49de440dc62df1d4fa91faffb997bb93b71da"
+    },
+    "full_python": {
+      "bytes": 28840,
+      "sha256": "5854c97ae7e58175776d838973aadd1a6de5bc487d398a3e47bd33603c8c6b43"
+    },
+    "first_three_browser": {
+      "bytes": 1215,
+      "sha256": "d3f82df3150a3d98877cb7f849d1ad050779d5cfca7c322bcc81954fc42d90ef"
+    },
+    "typescript": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "encoding_stage": {
+      "bytes": 10103,
+      "sha256": "550528b3d33ed6e9f1688e4493c3dfee5aff92c4c13f43e831839b851030b843"
+    }
+  }
+}

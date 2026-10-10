@@ -11,8 +11,9 @@ new-region draft persistence, annotation coordinates and confirmed analysis dele
 The closure follow-up (#206–#208) completes atomic region/selection replacement,
 remaining creation/registration feedback and exported Studio backend state. Review its
 [source/browser evidence](studio_review_20261009.md), live notebook and hosted
-results; reconcile the macOS dynamic-region diagnosis (#189) and the historical
-source-pair PNG timeout (#198, partial).
+results. The macOS dynamic-region diagnosis (#189) is corrected in source: an
+over-budget empty region keeps its frozen snapshot and isolation on restoration.
+Review its new hosted gates and resolve the source-pair PNG render wait (#198, partial).
 Then prepare and qualify the agreed 0.25.0 candidate, complete public documentation
 and installed first contact, and independently qualify the eventual 1.0 producer.
 Viewer/MolSysMT 1.0 publication is paused by the maintainer. Keep the

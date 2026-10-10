@@ -374,3 +374,22 @@ wait and PNG dimensions/alpha assertions remain unchanged. The exact first three
 core suites (context menu, controls visibility, Studio) pass locally through
 shared Chromium. This does not diagnose or certify the hosted render wait.
 Both reports remain open until their respective closure evidence is complete.
+
+The single complete regression finishes with 3006 passed, 23 skipped and eight
+Qt context initialization failures; none is a region restore failure. #189 now
+closes with the forced-budget guard and its preserved native warning. The
+[follow-up receipt](studio_followup_20261010.json) retains source identity,
+scopes, native diagnostics and log digests. New core 38038849065 and scientific
+38038849075 remain queued at observation. Old scientific run 38037909747 is
+superseded: cancellation was requested while its three macOS jobs were still
+queued, retaining all completed Linux/Qt results and emitted artifacts. Source
+pair 38037909650 continues; no duplicated dispatch or installed matrix is added.
+#198 remains partial until its render-stage cause is established and corrected.
+
+The next core run 38038849065 fails at the same unchanged deadline with
+Rendering image… / Encoding image… task updates, context intact, background off,
+illumination off, rendered size 1575×1140 and an unchanged 300×150 encoding
+canvas. The image data has returned, but the helper has not proceeded past its
+encoding task update. The next diagnostic adds phase elapsed times and bounded
+page errors to distinguish expensive rendering from a stalled task yield.
+No timeout increase or image-quality reduction is used as a repair.

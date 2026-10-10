@@ -27,7 +27,8 @@ Review the [Studio contract](studio_interaction_contract.md) and its source
 evidence in [the Studio review](studio_review_20261009.md) before freezing a
 producer. Both provider issues are fixed in source, without authorizing provider
 publication or qualifying new packages. The separate macOS dynamic-region
-restoration diagnosis is `uibcdf/molsysviewer#189`.
+restoration diagnosis `uibcdf/molsysviewer#189` is corrected in source with a
+deterministic budget-fallback guard; its next hosted qualification remains pending.
 
 The second Studio refinement (#190–#197/#199) adds corrected visible-structure
 shape geometry, correlated creation feedback, nine executable geometry guides, persistent secondary editors and named controls. Reusable local search, marked
@@ -48,8 +49,9 @@ The closure follow-up (#206–#208) makes region/selection replacement atomic,
 preserves complete saved-selection state in Undo/Redo, completes the remaining
 creation/registration feedback and corrects exported Studio backend state.
 Its guards and the local Qt limitations are recorded in the same Studio review.
-#189 and #198 remain open diagnoses; neither a later green cell nor a local
-browser success alone establishes the cause of their historical failures.
+#189 is resolved through its captured budget warning and forced-fallback guard.
+#198 remains open: a connected click reaches Rendering PNG… but the hosted render
+wait still needs a cause and correction; local browser success does not establish it.
 
 The user guide is [Using the canvas context menu](../docs/content/user/viewer/context_menu.md).
 Normative behavior remains in [gestures and menus](interaction_gestures_and_menus.md)
