@@ -5,11 +5,14 @@ coordinate-annotation focus, truthful interaction visibility, Studio state/sessi
 files, folded examples and persisted workbench PNG settings. The expanded real
 Studio smoke and full 43/43 core browser regression pass. Source `33e73587`
 is integrated directly in `main`; #223–#225/#227 are closed and the board matches.
-Hosted source campaigns 38055953874/38055953998/38055953588 remain active or queued;
-their results are not declared green. The hosted Qt job cannot create WebGL;
+Hosted source campaigns now complete: 38055953874 has six scientific cells green,
+38055953998 has all three Python 3.14 hosts green, and 38055953588 passes 43/43 core.
+Linux source-pair core also passes 43/43 and executes 25/25 notebooks; JS passes 327/327.
+The fresh Studio flow check passes. The scientific workflow itself fails on its
+separate experimental Qt job, which cannot create WebGL;
 eight local experimental Qt context failures stay separate. The public API
 #210–#222 source round already has all applicable scientific/Python 3.14 cells
-complete on 792fd5f6; those results do not qualify this changed worktree.
+complete on 792fd5f6; those earlier results retain their independent scope.
 See [the coverage review](studio_coverage_20261010.md) and
 [the API follow-up](public_api_followup_20261010.md). Copy Python from Studio is
 explicitly deferred under #226. 0.25.0 remains unfrozen; both 1.0 publications
@@ -125,8 +128,10 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-The current source task is [closing Studio/API coverage](studio_coverage_20261010.md),
-#223–#225/#227, before freezing 0.25.0; #226 stays post-1.0. Both 1.0
+The [Studio/API coverage source round](studio_coverage_20261010.md),
+#223–#225/#227, is closed with applicable hosted gates and fresh browser flows passing.
+Human final installed first contact and exact candidate gates remain before release;
+0.25.0 stays unfrozen and #226 stays post-1.0. Both 1.0
 publications remain paused. The public baseline below retains its original scope.
 
 **0.24.0 stabilization published (2026-10-07): public pair 16/16 verified.**
@@ -1615,9 +1620,10 @@ Resume toward **1.0** in this order:
 controls work is complete under #179/#180. Studio refinements and their
 follow-ups #189/#198/#209 are closed; integrated core 38041459348 passes 43/43.
 The authorized [public API follow-up](public_api_followup_20261010.md), #210–#222,
-is implemented with complete applicable source CI on 792fd5f6. Finish the
+is implemented with complete applicable source CI on 792fd5f6. The
 [accepted Studio coverage round](studio_coverage_20261010.md), #223–#225/#227,
-and review its own validation and human workflow before freezing 0.25.0.
+is also complete in 33e73587 with applicable hosted gates and fresh real-browser
+flows passing. Review the remaining human workflow before freezing 0.25.0.
 Equivalent Copy Python is explicitly post-1.0 (#226). Preserve target/selection
 separation, region ownership and the
 [experimental Interactions contract](interactions_compatibility_contract.md).

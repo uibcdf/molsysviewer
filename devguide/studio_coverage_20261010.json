@@ -47,6 +47,343 @@
   },
   "hosted_source_ci": {
     "source_commit": "33e735876aa337f1fded86670f0b48d0e1fc0fda",
+    "inspected_at": "2026-10-10T14:15:09.838206+00:00",
+    "runs": [
+      {
+        "conclusion": "success",
+        "databaseId": 38055954491,
+        "name": "Conda publication governance",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38055954491"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38055954597,
+        "name": "MolSysSuite policy",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38055954597"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38055953729,
+        "name": "Ruff Lint",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38055953729"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38055953720,
+        "name": "Documentation notebooks",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38055953720"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38055953588,
+        "name": "CI_e2e",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38055953588",
+        "head_sha": "33e735876aa337f1fded86670f0b48d0e1fc0fda",
+        "jobs": [
+          {
+            "id": 114224434623,
+            "name": "Core E2E",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 114224435507,
+            "name": "Check skipped-commit backlog",
+            "status": "completed",
+            "conclusion": "skipped"
+          }
+        ]
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38055953998,
+        "name": "Python 3.14 source pair",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38055953998",
+        "head_sha": "33e735876aa337f1fded86670f0b48d0e1fc0fda",
+        "jobs": [
+          {
+            "id": 114224435650,
+            "name": "Source pair on ubuntu-latest, Python 3.14",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 114224435755,
+            "name": "Source pair on macos-15, Python 3.14",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 114224435787,
+            "name": "Source pair on windows-2025, Python 3.14",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "conclusion": "failure",
+        "databaseId": 38055953874,
+        "name": "CI",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38055953874",
+        "head_sha": "33e735876aa337f1fded86670f0b48d0e1fc0fda",
+        "jobs": [
+          {
+            "id": 114224435413,
+            "name": "Qt pipeline completes (Xvfb, software WebGL)",
+            "status": "completed",
+            "conclusion": "failure"
+          },
+          {
+            "id": 114224435673,
+            "name": "Test on macos-15, Python 3.12",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 114224435685,
+            "name": "Test on macos-15, Python 3.11",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 114224435692,
+            "name": "Test on ubuntu-latest, Python 3.13",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 114224435698,
+            "name": "Test on ubuntu-latest, Python 3.11",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 114224435737,
+            "name": "Test on ubuntu-latest, Python 3.12",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 114224435754,
+            "name": "Test on macos-15, Python 3.13",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 114224435842,
+            "name": "Check skipped-commit backlog",
+            "status": "completed",
+            "conclusion": "skipped"
+          },
+          {
+            "id": 114232519548,
+            "name": "PR full suite",
+            "status": "completed",
+            "conclusion": "skipped"
+          }
+        ]
+      }
+    ],
+    "review_status": "applicable source jobs complete and green; scientific workflow conclusion failure from separate experimental Qt job",
+    "scientific_required": {
+      "passed": 6,
+      "failed": 0,
+      "test_results": {
+        "linux311": {
+          "passed": 3072,
+          "skipped": 35,
+          "failed": 0
+        },
+        "linux312": {
+          "passed": 3072,
+          "skipped": 35,
+          "failed": 0
+        },
+        "linux313": {
+          "passed": 3072,
+          "skipped": 35,
+          "failed": 0
+        },
+        "macos311": {
+          "passed": 3045,
+          "skipped": 62,
+          "failed": 0
+        },
+        "macos312": {
+          "passed": 3045,
+          "skipped": 62,
+          "failed": 0
+        },
+        "macos313": {
+          "passed": 3045,
+          "skipped": 62,
+          "failed": 0
+        }
+      }
+    },
+    "python_314_source_pair": {
+      "passed": 3,
+      "failed": 0,
+      "molsysmt_source": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+      "molsysmt_version": "0.23.0",
+      "core_passed": 43,
+      "notebooks_executed": 25,
+      "notebooks_failed": 0,
+      "python_results": {
+        "linux": {
+          "passed": 3072,
+          "skipped": 35
+        },
+        "macos": {
+          "passed": 3045,
+          "skipped": 62
+        },
+        "windows": {
+          "passed": 3046,
+          "skipped": 61
+        }
+      },
+      "evidence": "hosted-source-pair.log"
+    },
+    "experimental_qt": {
+      "run": 38055953874,
+      "job": 114224435413,
+      "status": "failure",
+      "diagnosis": "Qt cannot create a WebGL rendering context under hosted Xvfb/software GPU; frontend has no WebGL canvas. Experimental standalone remains separate (#109)."
+    },
+    "javascript": {
+      "passed": 327,
+      "failed": 0,
+      "evidence": "hosted-scientific-linux313.log"
+    },
+    "hosted_core": {
+      "passed": 43,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "hosted-core.log"
+    },
+    "diagnostic_note": "Receptor preserves official failure and six scientific successes, but its root-cause excerpt selects secondary DBus stderr; native completed Qt log establishes inability to create WebGL. No Qt retry or global-green claim."
+  },
+  "publication": {
+    "version_agreed": "0.25.0",
+    "producer_frozen": false,
+    "public_publication_authorized": false,
+    "viewer_1_0_paused": true,
+    "molsysmt_1_0_paused": true
+  },
+  "logs": {
+    "python-focused.log": {
+      "sha256": "b0528253c6f33d237a008caa923ed50b0e6279a50b631d6bb6e2bf79ede9282a",
+      "bytes": 678
+    },
+    "figure-final.log": {
+      "sha256": "ed411f99044b9efc7ecc1e1d599c5643cff2ba4b6b54d2041ae48e09736e5546",
+      "bytes": 628
+    },
+    "python-full.log": {
+      "sha256": "d0e8a31f10d9dac417a918bdb57e6f8035f1804369f88ebce3ea5282a7745c6c",
+      "bytes": 20968
+    },
+    "affected.log": {
+      "sha256": "b1cddf1b5989c767031d176cea7ac62ba766e29c4be04e830e91012daa1e89f8",
+      "bytes": 13454
+    },
+    "affected.xml": {
+      "sha256": "6ccc3f7ca840bb4251f7e9df133a9404ff4a320132cf47009d1a8c56d57e6cc3",
+      "bytes": 84845
+    },
+    "state-docstring.log": {
+      "sha256": "e6baad46bf76577d0a73b5a0f25d715d06a57f4a3b2acc5e4c5085348ccd651e",
+      "bytes": 669
+    },
+    "typescript.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "js-final.log": {
+      "sha256": "b914d3b3dc731600b3ae4e1c33a683e513ca47c9b979acd8cca12df7a21f8f6d",
+      "bytes": 159
+    },
+    "studio-browser.log": {
+      "sha256": "e29210bb0292cccfd6522b34f68affe09c658228c9bedd6410838f018752d1a5",
+      "bytes": 144
+    },
+    "core-browser.log": {
+      "sha256": "6c608b631dbb2ba6f674865048231c468a478b58d99c811ae2573d1c7af9823f",
+      "bytes": 17266
+    },
+    "governance-final.log": {
+      "sha256": "37f1bea0a3555ff6fbbb37f0403599f4c46576f1034d7740247d4aa660f761f1",
+      "bytes": 920
+    },
+    "hosted-scientific-diagnostic.txt": {
+      "sha256": "f0199b563e07ea49f413e8118e55bda17a105f67b34f28c7d187531542b4ef45",
+      "bytes": 489
+    },
+    "hosted-qt.log": {
+      "sha256": "98b9010ff23ed962d135176b6cb73712ba5c6df0941632eac50cc567bb1290e2",
+      "bytes": 129745
+    },
+    "hosted-source-snapshot.json": {
+      "sha256": "7698bb66d31e3fc726dfbe1069a0a332dd66f35470f43c83aa7015fb879cab98",
+      "bytes": 4564
+    },
+    "hosted-source-pair.log": {
+      "sha256": "8dc19930812fb717a55e090b0873e83c489f9d28f0e6624cb8226b71b181f31b",
+      "bytes": 930404
+    },
+    "hosted-core.log": {
+      "sha256": "fc787f1ca44d4e2ccb63e57b09d99b40efe92c8fac7a1d165701c20535bc9dcf",
+      "bytes": 192838
+    },
+    "hosted-scientific-final.txt": {
+      "sha256": "0ee6d5b826e839380ba71432fe8c2649bc2c7ad6eea0bdb816cf03c5fd985bb4",
+      "bytes": 799
+    },
+    "hosted-source-final.json": {
+      "sha256": "ef81423f0013b2989fbc9c6d937f8ddd01d74e5bd0080eb6e2e53a52e2f893bb",
+      "bytes": 4857
+    },
+    "studio-flows-review.log": {
+      "sha256": "e29210bb0292cccfd6522b34f68affe09c658228c9bedd6410838f018752d1a5",
+      "bytes": 144
+    },
+    "hosted-scientific-linux311.log": {
+      "sha256": "92997f6998fdbf9a53a77b27fbaa3cf2f603a036d0604af8a944067197ed9477",
+      "bytes": 1739890
+    },
+    "hosted-scientific-linux312.log": {
+      "sha256": "ff3167c95f5cb48326d85def16aab0e670c6c5e53fbed1784ec3fec3c7052b21",
+      "bytes": 1739435
+    },
+    "hosted-scientific-linux313.log": {
+      "sha256": "cb7d331c0eaba61baed56fb17a783fbcc6947dfebea7664caa71b48d22ce24d0",
+      "bytes": 2030738
+    },
+    "hosted-scientific-macos311.log": {
+      "sha256": "d1e7d0525179c170e84ba693db443d0dee78698913f08f63c0b2734529843e73",
+      "bytes": 1717083
+    },
+    "hosted-scientific-macos312.log": {
+      "sha256": "014adffa283f21380ba17d6b44f3967fc62255ba5ed7ddd8638032bb658cdbf8",
+      "bytes": 1716692
+    },
+    "hosted-scientific-macos313.log": {
+      "sha256": "b0ef0a223b7883d9fd8b9b0a8fd7a85d979915a3bf40af1b207e1f6c31566a59",
+      "bytes": 1716689
+    }
+  },
+  "source_commit": "33e735876aa337f1fded86670f0b48d0e1fc0fda",
+  "hosted_source_ci_initial_inspection": {
+    "source_commit": "33e735876aa337f1fded86670f0b48d0e1fc0fda",
     "inspected_at": "2026-10-10T13:42:38.147452+00:00",
     "runs": [
       {
@@ -205,70 +542,29 @@
       "diagnosis": "Qt cannot create a WebGL rendering context under the hosted Xvfb/software GPU job; frontend has no WebGL canvas. Experimental standalone remains separate (#109)."
     }
   },
-  "publication": {
-    "version_agreed": "0.25.0",
-    "producer_frozen": false,
-    "public_publication_authorized": false,
-    "viewer_1_0_paused": true,
-    "molsysmt_1_0_paused": true
-  },
-  "logs": {
-    "python-focused.log": {
-      "sha256": "b0528253c6f33d237a008caa923ed50b0e6279a50b631d6bb6e2bf79ede9282a",
-      "bytes": 678
+  "studio_flow_followup": {
+    "status": "success",
+    "source_commit": "33e735876aa337f1fded86670f0b48d0e1fc0fda",
+    "checkout_commit": "48a736ba",
+    "note": "Only maintained evidence differs from source commit; current editable provider source recorded separately from initial local run. Chromium/Mol* and real Python action owners; not human installed first contact.",
+    "environment": {
+      "python": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+      "python_version": "3.14.7",
+      "molsysmt_source": "d1ad4e3743633a4734e7a1ad1b28219f1da8f0ae",
+      "molsysmt_reported_version": "0.22.4+24.g42b487869",
+      "note": "editable development checkout; reported version is retained separately from current source; not an installed candidate"
     },
-    "figure-final.log": {
-      "sha256": "ed411f99044b9efc7ecc1e1d599c5643cff2ba4b6b54d2041ae48e09736e5546",
-      "bytes": 628
-    },
-    "python-full.log": {
-      "sha256": "d0e8a31f10d9dac417a918bdb57e6f8035f1804369f88ebce3ea5282a7745c6c",
-      "bytes": 20968
-    },
-    "affected.log": {
-      "sha256": "b1cddf1b5989c767031d176cea7ac62ba766e29c4be04e830e91012daa1e89f8",
-      "bytes": 13454
-    },
-    "affected.xml": {
-      "sha256": "6ccc3f7ca840bb4251f7e9df133a9404ff4a320132cf47009d1a8c56d57e6cc3",
-      "bytes": 84845
-    },
-    "state-docstring.log": {
-      "sha256": "e6baad46bf76577d0a73b5a0f25d715d06a57f4a3b2acc5e4c5085348ccd651e",
-      "bytes": 669
-    },
-    "typescript.log": {
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
-    },
-    "js-final.log": {
-      "sha256": "b914d3b3dc731600b3ae4e1c33a683e513ca47c9b979acd8cca12df7a21f8f6d",
-      "bytes": 159
-    },
-    "studio-browser.log": {
-      "sha256": "e29210bb0292cccfd6522b34f68affe09c658228c9bedd6410838f018752d1a5",
-      "bytes": 144
-    },
-    "core-browser.log": {
-      "sha256": "6c608b631dbb2ba6f674865048231c468a478b58d99c811ae2573d1c7af9823f",
-      "bytes": 17266
-    },
-    "governance-final.log": {
-      "sha256": "37f1bea0a3555ff6fbbb37f0403599f4c46576f1034d7740247d4aa660f761f1",
-      "bytes": 920
-    },
-    "hosted-scientific-diagnostic.txt": {
-      "sha256": "f0199b563e07ea49f413e8118e55bda17a105f67b34f28c7d187531542b4ef45",
-      "bytes": 489
-    },
-    "hosted-qt.log": {
-      "sha256": "98b9010ff23ed962d135176b6cb73712ba5c6df0941632eac50cc567bb1290e2",
-      "bytes": 129745
-    },
-    "hosted-source-snapshot.json": {
-      "sha256": "7698bb66d31e3fc726dfbe1069a0a332dd66f35470f43c83aa7015fb879cab98",
-      "bytes": 4564
-    }
-  },
-  "source_commit": "33e735876aa337f1fded86670f0b48d0e1fc0fda"
+    "command": "npm run build:harness && npx esbuild tests/e2e/studio-usability.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/studio-usability.e2e.js --external:playwright --external:chromium-bidi/* && PYTHON=/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python node tests/e2e/studio-usability.e2e.js",
+    "verified": [
+      "coordinate annotation focus",
+      "layer-aware visibility/count",
+      "JSON state save and confirmed restore",
+      "experimental MSV save and confirmed restore",
+      "invalid path/retry with preserved draft",
+      "request correlation and cancel",
+      "file draft across panel switches",
+      "persisted PNG scale/background and real PNG/HTML downloads",
+      "exported-host refusal of Python-only file operations"
+    ]
+  }
 }

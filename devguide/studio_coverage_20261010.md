@@ -1,6 +1,6 @@
 # Completing Studio coverage — 2026-10-10
 
-**Implemented in `33e73587` and locally guarded; hosted source CI remains pending.** The principal maintainer
+**Done in `33e73587`: applicable hosted source CI and the new Studio flows pass.** The principal maintainer
 accepts the cross-surface improvements before 1.0, retaining only Copy Python
 as a future evaluation. Issues #223–#225 and #227 close this work with archived guards; #226 stays post-1.0.
 
@@ -70,6 +70,40 @@ This remains experimental standalone evidence under #109, not a passed Qt
 result or an observation of a visible-window GPU host. The applicable source
 campaigns have not yet completed, so this inspection does not declare them green.
 The machine-readable receipt preserves run identities, job states and log digests.
+
+### Completed source gates and Studio flow review — 14:15 UTC
+
+The final inspection confirms all six scientific Linux/macOS Python 3.11–3.13
+cells successful. Each Linux cell reports 3072 passed/35 skipped; each macOS
+cell reports 3045 passed/62 skipped. The three Python 3.14 source-pair cells
+also pass: Linux 3072/35, macOS 3045/62 and Windows 3046/61. That campaign uses
+MolSysMT 0.23.0 source `46ef28eb`, including native/integration checks; these
+counts do not represent a new Conda package qualification.
+
+Both the standalone hosted core campaign and Linux source-pair core pass 43/43.
+The Linux source-pair campaign executes all 25 documented notebooks with zero
+failures. The scientific Linux/Python 3.13 log confirms 327/327 JS unit tests.
+Policy, governance, lint and notebook-routing checks retain their successful
+conclusions. None of these campaigns was rerun or duplicated.
+
+The scientific workflow's official conclusion is **failure**: its separate
+experimental Qt job still fails to create WebGL; required scientific cells
+are all green. GH Run Receptor preserves this conclusion and the six successful
+jobs. Its cause excerpt selects secondary DBus stderr; the native Qt log above
+is the basis for the WebGL diagnosis. No visible-window Qt qualification is claimed.
+
+The requested fresh Studio flow check passes with real Chromium/Mol* and Python
+action owners in `molsyssuite@uibcdf_3.14`: absolute-coordinate Focus, layer-aware
+visibility/counts, invalid-path feedback and retry, preserved drafts, unrelated
+reply refusal, restore cancellation/confirmation, JSON state and experimental
+MSV save/restore, retained PNG recipe, real PNG/HTML downloads and disabled
+Python-only file operations in exported hosts. No new defect was observed.
+The editable provider has advanced to `d1ad4e37`; the receipt records this separately
+from the original `edc78df0` local evidence and the exact hosted 0.23.0 baseline.
+
+This completes the automated source review. Human first contact with a final
+installed artifact and its exact package gates remain separate; 0.25.0 is still
+unfrozen and publication is paused.
 
 ## Temporary workspace
 

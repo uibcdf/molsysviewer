@@ -120,3 +120,11 @@ folded workflow examples. Validation and closure evidence belongs to
 is deliberately deferred to `uibcdf/molsysviewer#226` (post-1.0).
 These changes do not stabilize experimental session/Interactions contracts or
 freeze a producer. Both 1.0 publications and public promotion remain paused.
+
+Source `33e73587` completes #223–#225/#227 with six scientific cells and three
+Python 3.14 source-pair cells green, hosted core 43/43, JS 327/327 and 25/25
+notebooks. The requested fresh real-browser Studio flow check also passes.
+Experimental Qt still fails to create WebGL, so the scientific workflow is
+not globally green. The coverage receipt preserves the final run/job identities,
+local provider source and log digests. This source evidence does not freeze
+0.25.0 or qualify its future installed package.

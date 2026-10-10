@@ -1,9 +1,12 @@
 # Path to 1.0.0 (Unified Release Plan)
 
-**Current priority — 2026-10-10:** complete and validate the accepted
-[Studio/API coverage round](studio_coverage_20261010.md) (#223–#225/#227);
-Copy Python from Studio stays post-1.0 (#226). The prior API source round is
-qualified independently; this changed source needs its own evidence. The maintainer accepts the
+**Current priority — 2026-10-10:** the accepted
+[Studio/API coverage round](studio_coverage_20261010.md) (#223–#225/#227)
+is complete in `33e73587`, with all applicable hosted source gates and a fresh
+real-browser Studio flow review passing. Copy Python from Studio stays
+post-1.0 (#226). Human final installed first contact and exact artifact gates
+remain separate. The prior API source round retains its independent evidence.
+The maintainer accepts the
 [canvas context-menu redesign](canvas_context_menu_pre_1_0_plan.md) (#179) and
 Cinema/control visibility refinements (#180). The agreed next version is
 **0.25.0**, but further changes remain: its producer, files and qualification
