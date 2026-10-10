@@ -86,3 +86,31 @@ This is stronger phase evidence than the previous Rendering PNG… button status
 it does not yet distinguish a costly render exceeding the deadline from a stalled
 task yield. The next observation adds elapsed task times and the last four
 page errors, without altering scheduling, GPU quality or the deadline.
+
+## Measured cause and lifecycle correction — 2026-10-10
+
+Core 38039675000 on ff8e52d5 measures Rendering image… at 0 ms and Encoding
+image… at **30254 ms**. No page errors or context loss occur. The guard's
+30-second event timeout tears down a legitimate high-quality render before
+encoding can write the pixels; the latest failure is not a stalled encoding
+promise. The whole-render-under-30-seconds assumption is refuted by phase timing.
+This measurement establishes the current failure mechanism, not the uninstrumented
+phase of every historical run.
+
+The guard subscribes to downloads before input, waits for the real pending render
+to finish within the existing E2E suite budget, requires the successful PNG
+status, and retains any event arriving early. Only subsequent file delivery uses
+the existing 30-second deadline. The outer core runner's 180-second per-suite
+limit is unchanged. Errors, dropped clicks, incomplete rendering, missing
+downloads, wrong filename/dimensions or incorrect alpha still fail. No image
+resolution, multisampling, shading quality, production renderer or public API is
+changed. The previous down/resize/up click-preservation assertion remains.
+
+This is a measured lifecycle/deadline correction, not a larger unexplained
+whole-operation timeout. Local and new exact-source hosted verification of the
+corrected guard are required before closure.
+
+The corrected guard passes locally through the core shared-Chromium runner,
+including the actual PNG filename, dimensions/alpha and downloaded standalone
+HTML checks. TypeScript and the E2E build pass. Exact-source hosted core/source-pair
+confirmation is pending; the report remains partial until that evidence exists.

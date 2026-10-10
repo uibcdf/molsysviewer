@@ -58,6 +58,15 @@
         150
       ],
       "interpretation": "Image data returned; encoding task update reached, canvas not yet resized. Elapsed phase times required to distinguish render cost from stalled yielding."
+    },
+    "measured_cause": {
+      "run": 38039675000,
+      "source": "ff8e52d5350b0b7ec9f3742519f5269809c9d2b3",
+      "render_ms": 30254,
+      "page_errors": [],
+      "interpretation": "Software render exceeds the generic 30-second event wait before encoding. The guard aborts a legitimate render, not an indefinitely stalled encoding promise.",
+      "fix": "Capture events from before input, wait for managed render completion within the existing suite deadline and keep the 30-second post-render delivery wait. Original full-quality dimensions/alpha assertions retained.",
+      "local_corrected_guard": "Shared Chromium studio-usability passed; new exact-source hosted confirmation pending."
     }
   },
   "validation": {
@@ -174,6 +183,14 @@
     "encoding_stage": {
       "bytes": 10103,
       "sha256": "550528b3d33ed6e9f1688e4493c3dfee5aff92c4c13f43e831839b851030b843"
+    },
+    "phase_timing": {
+      "bytes": 10151,
+      "sha256": "26e98df274a2b465e5172ce9670c4d73b1a6ff0c05e5525450a56873df6d9f80"
+    },
+    "corrected_guard_local": {
+      "bytes": 233,
+      "sha256": "c1db4a02e73833a6012347ce5f46ffb24128f37ca6093dc8565ba6d844bbdcdd"
     }
   }
 }

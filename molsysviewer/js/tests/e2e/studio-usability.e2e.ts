@@ -5,6 +5,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { chromium } from "./e2e-browser";
 import { PythonFixtureBridge } from "./python-fixture-bridge";
+import type { Download } from "playwright";
 
 const dir = dirname(fileURLToPath(import.meta.url));
 
@@ -92,37 +93,52 @@ async function run() {
                 if (target?.closest('[data-molsysviewer-export-image]')) (window as any).__studioPngInput.push({ type, connected: target.isConnected });
             }, true);
         });
-        const pngReady = page.waitForEvent("download").catch(async error => {
-            const diagnostic = await page.evaluate(() => ({
-                input: (window as any).__studioPngInput,
-                status: document.querySelector('[data-molsysviewer-export-image-status]')?.textContent,
-                disabled: document.querySelector<HTMLButtonElement>('[data-molsysviewer-export-image]')?.disabled,
-                tasks: (window as any).__studioPngTasks,
-                contextLost: (window as any).__controller.plugin.canvas3d.webgl.gl.isContextLost(),
-                background: (window as any).__controller.plugin.canvas3d.props.postprocessing.background.variant.name,
-                illumination: (window as any).__controller.plugin.canvas3d.props.illumination.enabled,
-                imageCanvas: [(window as any).__controller.plugin.helpers.viewportScreenshot.canvas.width,
-                    (window as any).__controller.plugin.helpers.viewportScreenshot.canvas.height],
-                imagePassSize: (window as any).__controller.plugin.helpers.viewportScreenshot._imagePass
-                    ? [(window as any).__controller.plugin.helpers.viewportScreenshot._imagePass._width,
-                        (window as any).__controller.plugin.helpers.viewportScreenshot._imagePass._height] : null,
-                drawingBuffer: [(window as any).__controller.plugin.canvas3d.webgl.gl.drawingBufferWidth,
-                    (window as any).__controller.plugin.canvas3d.webgl.gl.drawingBufferHeight],
-            }));
-            throw new Error(`PNG download failed: ${JSON.stringify({ ...diagnostic, pageErrors: errors.slice(-4) })}; ${String(error)}`);
-        });
-        const pngButton = page.getByRole("button", { name: "Download PNG Image", exact: true });
-        await pngButton.scrollIntoViewIfNeeded();
-        const box = (await pngButton.boundingBox())!;
-        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down();
-        // A real resize notification must not remove the button between down and click.
-        await page.evaluate(() => {
-            const c = (window as any).__controller, gl = c.plugin.canvas3d.webgl.gl;
-            c.groupPanel.setImageDimensions(gl.drawingBufferWidth + 1, gl.drawingBufferHeight);
-            c.groupPanel.setImageDimensions(gl.drawingBufferWidth, gl.drawingBufferHeight);
-        });
-        await page.mouse.up();
-        const png = await pngReady; assert.equal(png.suggestedFilename(), "molsysviewer.png");
+        // Listen before input, but time file delivery only after rendering. The
+        // hosted software renderer needs >30s for this unchanged high-quality
+        // image; the existing suite deadline still bounds the entire operation.
+        const pngDownloads: Download[] = [];
+        const capturePng = (download: Download) => pngDownloads.push(download);
+        page.on("download", capturePng);
+        const png = await (async () => {
+            try {
+                const pngButton = page.getByRole("button", { name: "Download PNG Image", exact: true });
+                await pngButton.scrollIntoViewIfNeeded();
+                const box = (await pngButton.boundingBox())!;
+                await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down();
+                // A real resize must not remove the button between down and click.
+                await page.evaluate(() => {
+                    const c = (window as any).__controller, gl = c.plugin.canvas3d.webgl.gl;
+                    c.groupPanel.setImageDimensions(gl.drawingBufferWidth + 1, gl.drawingBufferHeight);
+                    c.groupPanel.setImageDimensions(gl.drawingBufferWidth, gl.drawingBufferHeight);
+                });
+                await page.mouse.up();
+                await page.waitForFunction(() => {
+                    const button = document.querySelector<HTMLButtonElement>('[data-molsysviewer-export-image]');
+                    return !!button && !button.disabled;
+                }, null, { timeout: Number(process.env.E2E_SUITE_TIMEOUT_MS ?? 180_000) });
+                assert.equal(await page.locator('[data-molsysviewer-export-image-status]').innerText(), "PNG download started.");
+                return pngDownloads[0] ?? await page.waitForEvent("download", { timeout: 30_000 });
+            } catch (error) {
+                const diagnostic = await page.evaluate(() => ({
+                    input: (window as any).__studioPngInput,
+                    status: document.querySelector('[data-molsysviewer-export-image-status]')?.textContent,
+                    disabled: document.querySelector<HTMLButtonElement>('[data-molsysviewer-export-image]')?.disabled,
+                    tasks: (window as any).__studioPngTasks,
+                    contextLost: (window as any).__controller.plugin.canvas3d.webgl.gl.isContextLost(),
+                    background: (window as any).__controller.plugin.canvas3d.props.postprocessing.background.variant.name,
+                    illumination: (window as any).__controller.plugin.canvas3d.props.illumination.enabled,
+                    imageCanvas: [(window as any).__controller.plugin.helpers.viewportScreenshot.canvas.width,
+                        (window as any).__controller.plugin.helpers.viewportScreenshot.canvas.height],
+                    imagePassSize: (window as any).__controller.plugin.helpers.viewportScreenshot._imagePass
+                        ? [(window as any).__controller.plugin.helpers.viewportScreenshot._imagePass._width,
+                            (window as any).__controller.plugin.helpers.viewportScreenshot._imagePass._height] : null,
+                    drawingBuffer: [(window as any).__controller.plugin.canvas3d.webgl.gl.drawingBufferWidth,
+                        (window as any).__controller.plugin.canvas3d.webgl.gl.drawingBufferHeight],
+                }));
+                throw new Error(`PNG download failed: ${JSON.stringify({ ...diagnostic, pageErrors: errors.slice(-4) })}; ${String(error)}`);
+            } finally { page.off("download", capturePng); }
+        })();
+        assert.equal(png.suggestedFilename(), "molsysviewer.png");
         const pngPath = resolve(downloadDir, "figure.png"); await png.saveAs(pngPath);
         const bytes = await readFile(pngPath);
         assert.deepEqual([bytes.readUInt32BE(16), bytes.readUInt32BE(20)], dimensions);

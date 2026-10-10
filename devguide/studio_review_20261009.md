@@ -393,3 +393,14 @@ canvas. The image data has returned, but the helper has not proceeded past its
 encoding task update. The next diagnostic adds phase elapsed times and bounded
 page errors to distinguish expensive rendering from a stalled task yield.
 No timeout increase or image-quality reduction is used as a repair.
+
+Core 38039675000 resolves the ambiguity: Rendering image… at 0 ms and Encoding
+image… at 30254 ms, with no page errors or context loss. The generic 30-second
+download-event wait aborts a legitimate software render before encoding. The
+guard now captures events before input, waits for managed render completion
+within the existing suite deadline, requires successful PNG status, and applies
+30 seconds only to subsequent file delivery. It retains the original quality,
+resolution, resize/click assertion and actual PNG dimensions/alpha. The corrected
+Studio guard passes under shared Chromium locally. New hosted confirmation is
+pending before #198 closure; the original uninstrumented failures are retained
+without claiming their unobserved phases were identical.
