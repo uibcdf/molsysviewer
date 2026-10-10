@@ -60,6 +60,16 @@ checkout; unrelated sandbox notebooks/design files remain outside integration.
 The [source receipt](public_api_closure_20261010.json) retains command identities,
 outcomes and full-log digests.
 
+## Integration checkpoint
+
+Source is reviewed and pushed directly to main in
+`33c696c754634944e8ffca891ad34454017d2111`. #210–#217 are closed with the fix,
+addressable guards and archived records; the issue board agrees with devguide.
+Ruff passes locally and unrelated sandbox work is preserved.
+Hosted scientific CI `38045100224`, source pair `38045100191` and core browser
+`38045100202` are queued at this inspection, alongside notebooks, lint,
+governance and suite policy. No terminal result is inferred from their dispatch.
+
 ## Next boundary
 
 Finish the source review and applicable CI, then continue the

@@ -61,7 +61,20 @@
     "permissions": "unsandboxed local socket and Chromium execution",
     "covers_all_twenty_sandbox_failures": true
   },
-  "hosted_ci": "pending after direct source integration",
+  "hosted_ci": {
+    "observed_at": "2026-10-10T10:32:03.657073+00:00",
+    "source_commit": "33c696c754634944e8ffca891ad34454017d2111",
+    "runs": {
+      "ruff": 38045100178,
+      "notebooks": 38045100197,
+      "source_pair": 38045100191,
+      "core_browser": 38045100202,
+      "publication_governance": 38045100532,
+      "suite_policy": 38045100550,
+      "scientific_and_experimental_qt": 38045100224
+    },
+    "observed_status": "all queued; not a passing or completed result"
+  },
   "publication": {
     "version_agreed": "0.25.0",
     "candidate_frozen": false,
@@ -90,5 +103,16 @@
     "passed": 433,
     "failed": 0,
     "exit_code": 0
-  }
+  },
+  "integration_commit": "33c696c754634944e8ffca891ad34454017d2111",
+  "issues_closed": [
+    210,
+    211,
+    212,
+    213,
+    214,
+    215,
+    216,
+    217
+  ]
 }

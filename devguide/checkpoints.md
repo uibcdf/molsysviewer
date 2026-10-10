@@ -9,6 +9,9 @@ table/index bookkeeping is corrected with 433 passing guards; sandbox network/Ch
 53 tests with one explicit GPU skip. Eight experimental Qt failures remain
 separate. Applicable hosted CI still needs review. See the
 [API review](public_api_review_20261010.md) and current scene contracts.
+Source is integrated in `33c696c7`; #210–#217 are closed with guards and archived
+records. Scientific `38045100224`, source pair `38045100191` and core browser
+`38045100202` remain queued at the closure inspection; the board sync check passes.
 No candidate is frozen; both 1.0 publications remain paused.
 
 **Studio hosted follow-up — 2026-10-10:** #189 is closed: source `00716efb`
