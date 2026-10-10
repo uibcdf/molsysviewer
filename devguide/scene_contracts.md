@@ -2681,3 +2681,35 @@ The sphere manager shortcut names its existing `structure_centers`, `selection`,
 `atom_indices` and `structures_atom_indices` parameters explicitly. Existing
 deprecated shape and annotation migration routes remain in this development
 round. Guards: `tests/test_new_view.py` and `tests/test_public_api_hardening.py`.
+
+### Public query and configuration follow-up
+
+Region molecular queries (`select`, `get`, `info`, `convert`, `get_center`)
+and overlap inspection reject retired handles, including after tag reuse and
+with digestion bypassed. Layer membership properties and `info()` also require
+the current handle. Identity metadata can still identify a retired object;
+reacquire its replacement from the manager before querying the scene.
+
+`Region.get(element="system", ...)` resolves selection and mask inside the
+region's atoms. Atom-dependent results cannot include outside atoms. Global
+structural attributes such as box and time retain MolSysMT's system semantics.
+Other element levels retain their level-specific region masks.
+
+`Region.set_mode("static" | "dynamic", skip_digestion=False)` records an
+explicit mode change in scene history. Assigning `region.mode` delegates to
+this operation. Construction, restoration and automatic recipe invalidation
+use internal transitions; they do not introduce independent undo checkpoints.
+A region without a re-evaluable recipe cannot become dynamic.
+
+Annotation and measurement managers return `Annotation` and `Measurement`
+handles, respectively; neither is a `Layer`. Layer attach/detach type hints
+resolve at runtime and include `Region` and `SceneObject`.
+
+`InteractionSet.filter` and `style` are read-only properties returning detached
+copies, including nested selection lists. Change configuration through
+`set_filter`, `set_color`, `set_alpha` and `set_radius` for validation, projection
+and undo/redo. Editing a returned copy has no scene effect. Internal frame
+queries and remapping use owned backing state, avoiding repeated defensive
+copies of large index lists. This changes visual-state ownership, not the
+experimental scientific result contract. Guards:
+`tests/test_public_api_followup.py` and `tests/test_interactions_scene.py`.

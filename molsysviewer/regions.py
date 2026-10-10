@@ -149,8 +149,14 @@ class Region:
 
     @mode.setter
     def mode(self, value: str) -> None:
-        self._assert_current()
-        self._set_mode(value)
+        self.set_mode(value)
+
+    @records_scene_history
+    @signal(tags=["region"])
+    @digest()
+    def set_mode(self, mode: str, *, skip_digestion: bool = False) -> None:
+        """Set static or dynamic evaluation, recording the change in scene history."""
+        self._set_mode(mode)
 
     @property
     def frame_dependent(self) -> bool:
@@ -265,6 +271,7 @@ class Region:
         return self.representation is not None or self.preset is not None
 
     def _scoped_indices_for_element(self, element: str):
+        self._assert_current()
         if self.atom_indices is None:
             return None
 
@@ -406,7 +413,7 @@ class Region:
             skip_digestion=True,
             **repr_params,
         )
-        region.mode = mode
+        region._set_mode(mode)
         return region
 
     def _combined_operand_indices(self, others: tuple[Any, ...]) -> list[int]:
@@ -623,6 +630,7 @@ class Region:
         Digestion is MolSysMT's; only the caller named in an error is ours. See
         `uibcdf/molsysviewer#71`.
         """
+        self._assert_current()
         molsys = self._view._molsys  # noqa: SLF001
         if molsys is None:
             raise ValueError("No molecular system loaded. Load a system before calling convert().")
@@ -671,7 +679,19 @@ class Region:
         """
         scope = self._scoped_indices_for_element(element)
 
-        if scope is None or element == "system":
+        if element == "system" and self.atom_indices is not None:
+            # MolSysMT interprets a system query's selection as atom indices.
+            # Global structural attributes remain global in the provider.
+            resolved_selection = self.select(
+                selection=selection,
+                structure_indices=structure_indices,
+                element="atom",
+                mask=mask,
+                syntax=syntax,
+                skip_digestion=True,
+            )
+            resolved_mask = None
+        elif scope is None:
             resolved_selection = selection
             resolved_mask = mask
         else:
@@ -753,6 +773,7 @@ class Region:
 
         Digested by MolSysMT; only the caller named in an error is ours.
         """
+        self._assert_current()
         atom_indices = self.atom_indices
         if atom_indices is None:
             resolved_selection = selection
@@ -798,6 +819,7 @@ class Region:
         puw.Quantity
             ``[x, y, z]`` centroid in the configured standard length unit.
         """
+        self._assert_current()
         from . import pyunitwizard as puw
 
         if self.atom_indices is None:
@@ -1070,7 +1092,7 @@ class Region:
             skip_digestion=True,
         )
         if self.mode == "dynamic":
-            duplicate.mode = "dynamic"
+            duplicate._set_mode("dynamic")
         self._view._copy_atom_color_layer(self.tag, duplicate.tag, bump=duplicate)  # noqa: SLF001
         target_representation = representation if representation is not None else self.representation
         if target_representation is not None or self.preset is not None:
@@ -1086,6 +1108,7 @@ class Region:
     @digest()
     def overlaps(self, skip_digestion: bool = False) -> list[str]:
         """Return visible represented regions that overlap this region."""
+        self._assert_current()
         if self.atom_indices is None:
             return []
         return self._view._overlapping_visual_region_tags(  # noqa: SLF001
@@ -1119,7 +1142,7 @@ class Region:
             **kwargs,
         )
         if self.mode == "dynamic":
-            region.mode = "dynamic"
+            region._set_mode("dynamic")
         return region
 
     @records_scene_history

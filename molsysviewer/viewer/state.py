@@ -582,7 +582,7 @@ class StateMixin:
                                 layer_tag=layer_tag,
                                 skip_digestion=True,
                             )
-                    obj.style = dict(record["style"])
+                    obj._style = dict(record["style"])
                     obj.broken = bool(record.get("broken", False))
                     if record.get("hidden"):
                         obj.hide(skip_digestion=True)
@@ -1417,7 +1417,7 @@ class StateMixin:
         mode = record.get("mode")
         if mode == "dynamic":
             try:
-                region.mode = "dynamic"
+                region._set_mode("dynamic")
             except ValueError:
                 pass  # a recipe that is no longer re-evaluable stays static
 

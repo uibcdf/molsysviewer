@@ -2374,13 +2374,13 @@ class MolSysView(
         for obj in self.interactions._objects():
             if atom_index_map is not None:
                 for field in ("selection", "selection_2"):
-                    values = obj.filter[field]
+                    values = obj._filter[field]
                     if isinstance(values, list):
                         remapped = [atom_index_map.get(i) for i in values]
                         if any(i is None for i in remapped):
                             obj.broken = True
                         else:
-                            obj.filter[field] = remapped
+                            obj._filter[field] = remapped
             obj._payload_key = None
 
         # A rebuild supersedes any in-flight generation before replacing its

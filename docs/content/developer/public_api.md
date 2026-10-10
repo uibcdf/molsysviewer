@@ -53,6 +53,17 @@ Shapes, annotations, measurements and visual interaction sets expose detached
 Interaction sets focus supported geometry in the visible structure and raise
 when it has no positions. Their scientific contracts remain experimental.
 
+Region molecular queries and layer membership queries reject retired handles.
+The default `Region.get(element="system", ...)` scopes atom-dependent results
+to the region; box and time keep the provider's global structural meaning.
+Use `region.set_mode("dynamic")` or `region.mode = "dynamic"` to change an
+eligible recipe's evaluation mode with undo/redo.
+
+Annotation and measurement managers return `Annotation` and `Measurement`
+handles, respectively. `Layer` groups these and other scene members.
+InteractionSet `filter` and `style` return detached copies. Edit the live set
+through `set_filter()`, `set_color()`, `set_alpha()` and `set_radius()`.
+
 ### `config.set_structure_scale_budget(budget_bytes)`
 
 MolSysViewer materializes **every** selected structure: `view.molsys` is the

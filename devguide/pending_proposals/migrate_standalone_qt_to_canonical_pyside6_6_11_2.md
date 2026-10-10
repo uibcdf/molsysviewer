@@ -38,6 +38,15 @@ not a correction to the earlier exact-environment/hosted certificates or evidenc
 of a menu defect. Visible-window/GPU and native host qualification remain separate;
 the optional Qt host is experimental.
 
+The 2026-10-10 API follow-up full execution outside the sandbox reproduces all
+eight transport/generation/HTML-probe failures in this development environment:
+temporary OpenGL context/RHI creation fails, Vulkan is unavailable and the child
+reports the D-Bus address connection error. The complete result is 3056 passed,
+9 failed, 23 skipped; the ninth failure is a superseded Region query policy test,
+corrected and checked separately. See
+[the API follow-up](../public_api_followup_20261010.md) for the source receipt.
+No Qt workaround, recertification or passing host claim was introduced.
+
 The standalone Qt host should prefer official PySide6 6.11.2 and retain the
 UIBCDF namespaced family as a fallback during the suite-wide observation
 in `uibcdf/molsyssuite#57` is open. The platform-support contract remains in

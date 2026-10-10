@@ -16,7 +16,7 @@ behaviour, delegates it, or merely hosts it.
 | Capability | Public API | Public | Digested | Provenance | Docs | Evidence | Status | Since |
 |---|---|---:|---:|---|---|---|---|---|
 | Whole | `view.whole.` | 15 | 15 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/whole.md) | contract-tested, browser-observed | stable | 0.5.0 |
-| Regions | `view.regions.`, `view.regions[…].` | 48 | 48 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/regions.md) | contract-tested, browser-observed | stable | 0.1.0 |
+| Regions | `view.regions.`, `view.regions[…].` | 49 | 49 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/regions.md) | contract-tested, browser-observed | stable | 0.1.0 |
 | Layers | `view.layers.` | 12 | 12 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/layers.md) | contract-tested, browser-observed | stable | 0.1.0 |
 | Selections and active selection | `view.selections.`, `view.active_selection.` | 21 | 21 | MolSysMT (scientific authority) | [page](../docs/content/user/scene_management/selections.md) | contract-tested, browser-observed | stable | 0.9.0 |
 | Representations, styles and presets | `view.styles.`, `view.whole.set_representation` | 35 | 35 | Mol* (rendering authority) | [page](../docs/content/user/representations/types.md) | contract-tested, browser-observed | stable | 0.18.0 |

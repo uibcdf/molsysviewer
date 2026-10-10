@@ -1,5 +1,11 @@
 # Archived implementation plans
 
+- [`region_system_query_scope.md`](region_system_query_scope.md) — #218: Resolve default system queries through the region atom scope while preserving global structural attributes.
+- [`retired_handle_queries.md`](retired_handle_queries.md) — #219: Apply the existing current-handle check to public molecular queries and layer membership reads.
+- [`region_mode_history.md`](region_mode_history.md) — #220: Add digested Region.set_mode and route assignment through it; retain private automatic transitions.
+- [`public_handle_type_annotations.md`](public_handle_type_annotations.md) — #221: Correct the owner return annotations and resolve membership type hints at runtime.
+- [`interaction_visual_state_ownership.md`](interaction_visual_state_ownership.md) — #222: Expose detached read-only properties, retain explicit setters, and use private backing state for internal frame queries and remapping.
+
 - [`canvas_context_menu_target_actions.md`](canvas_context_menu_target_actions.md) — #179: contextual molecular/object/occurrence workflows and adaptive adjacent menus accepted; native scope availability and Annotation naming guarded.
 - [`cinema_and_controls_reveal_policy.md`](cinema_and_controls_reveal_policy.md) — #180: Cinema, configurable reveal area, two-second discovery and smooth whole-controls fade accepted and guarded.
 

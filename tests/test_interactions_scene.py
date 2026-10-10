@@ -346,11 +346,10 @@ def test_invalid_visual_edits_leave_valid_configuration(view):
 
 
 def test_damaged_filter_survives_state_roundtrip_and_can_be_repaired(view):
-    obj = view.interactions.add("contacts", selection=[0], tag="hb")
-    obj.broken = True
-    obj.filter["selection"] = [view.molsys.get_n_atoms() + 10]
-    obj._payload_key = None
+    view.interactions.add("contacts", selection=[0], tag="hb")
     state = view.export_state()
+    state["interactions"][0]["broken"] = True
+    state["interactions"][0]["filter"]["selection"] = [view.molsys.get_n_atoms() + 10]
     view.import_state(state)
     restored = view.interactions["hb"]
     assert restored.broken and view.interactions.info("hb")["status"] == "broken"
@@ -517,16 +516,17 @@ def test_invalid_saved_query_vocabulary_is_refused_before_mutation(view, broken,
 
 
 def test_broken_legacy_filter_migrates_without_repairing_its_selection(view):
-    obj = view.interactions.add("contacts", tag="hb", selection=[0])
-    obj.broken = True
-    obj.filter["selection"] = [view.molsys.get_n_atoms() + 10]
+    view.interactions.add("contacts", tag="hb", selection=[0])
     state = view.export_state()
+    invalid_selection = [view.molsys.get_n_atoms() + 10]
+    state["interactions"][0]["broken"] = True
+    state["interactions"][0]["filter"]["selection"] = invalid_selection
     state["interaction_state_version"] = 1
     state["interactions"][0]["filter"]["mode"] = "incident"
     view.import_state(state)
     restored = view.interactions["hb"]
     assert restored.broken
     assert restored.filter["mode"] == "involving_selection"
-    assert restored.filter["selection"] == obj.filter["selection"]
+    assert restored.filter["selection"] == invalid_selection
     restored.set_filter(selection=[0])
     assert not restored.broken

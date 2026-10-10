@@ -1029,12 +1029,24 @@ class InteractionSet(SceneObject):
     def __init__(self, view, tag, *, analysis_name, filter, layer_tag=None):
         super().__init__(view, tag, kind="interaction", layer_tag=layer_tag)
         self.analysis_name = analysis_name
-        self.filter = filter
-        self.style = {"color": 0x34D399, "alpha": 0.85, "radius_nm": 0.025, "radius_unit": "nm"}
+        self._filter = deepcopy(filter)
+        self._style = {"color": 0x34D399, "alpha": 0.85, "radius_nm": 0.025, "radius_unit": "nm"}
         self._payload = None
         self._payload_key = None
         self._analysis_token = None
         self.analysis_revision = None
+
+    @property
+    def filter(self) -> dict:
+        """Detached filter configuration; change it with set_filter()."""
+        self._assert_current()
+        return deepcopy(self._filter)
+
+    @property
+    def style(self) -> dict:
+        """Detached visual style; change it with the explicit style setters."""
+        self._assert_current()
+        return deepcopy(self._style)
 
     def _refresh(self):
         self._view.interactions._project()
@@ -1102,7 +1114,7 @@ class InteractionSet(SceneObject):
         next_filter = self._view.interactions._filter(
             self.analysis_name, selection, selection_2, mode, exclusive, structure_indices, interaction_types, syntax
         )
-        self.filter = next_filter
+        self._filter = next_filter
         self._payload_key = None
         self.broken = False
         self._refresh()
@@ -1113,7 +1125,7 @@ class InteractionSet(SceneObject):
     def set_color(self, color, skip_digestion=False):
         if isinstance(color, bool) or not isinstance(color, (int, np.integer)):
             raise ArgumentError("color", value=color)
-        self.style["color"] = int(color)
+        self._style["color"] = int(color)
         self._refresh()
 
     @records_scene_history
@@ -1122,7 +1134,7 @@ class InteractionSet(SceneObject):
     def set_alpha(self, alpha, skip_digestion=False):
         if not np.isfinite(alpha) or not 0 <= alpha <= 1:
             raise ArgumentError("alpha", value=alpha)
-        self.style["alpha"] = float(alpha)
+        self._style["alpha"] = float(alpha)
         self._refresh()
 
     @records_scene_history
@@ -1132,7 +1144,7 @@ class InteractionSet(SceneObject):
         value = float(puw.get_value(radius, to_unit="nm"))
         if not np.isfinite(value) or value <= 0:
             raise ArgumentError("radius", value=radius)
-        self.style["radius_nm"] = value
+        self._style["radius_nm"] = value
         self._refresh()
 
     @signal(tags=["interaction", "camera"])
@@ -1248,10 +1260,10 @@ class InteractionsManager(ScientificInteractionsManager):
                     "analysis_revision": obj.analysis_revision,
                     "query_revision": "sha256:"
                     + hashlib.sha256(
-                        json.dumps([obj.analysis_revision, obj.filter], sort_keys=True).encode("utf-8")
+                        json.dumps([obj.analysis_revision, obj._filter], sort_keys=True).encode("utf-8")
                     ).hexdigest(),
-                    "filter": deepcopy(obj.filter),
-                    "style": dict(obj.style),
+                    "filter": deepcopy(obj._filter),
+                    "style": dict(obj._style),
                     "layer_tag": obj.layer_tag,
                     "hidden": obj._hidden,
                     "owner": obj.owner,
@@ -1446,10 +1458,10 @@ class InteractionsManager(ScientificInteractionsManager):
         }
         if result is None or obj.broken:
             payload["status"] = "broken"
-        elif obj.filter["structure_indices"] != "all" and frame not in obj.filter["structure_indices"]:
+        elif obj._filter["structure_indices"] != "all" and frame not in obj._filter["structure_indices"]:
             payload["status"] = "excluded"
         else:
-            scope = dict(obj.filter)
+            scope = dict(obj._filter)
             scope["structure_indices"] = [frame]
             query = self.query(obj.analysis_name, **scope, skip_digestion=True)
             if frame in result.evaluated_structure_indices:
@@ -1591,14 +1603,14 @@ class InteractionsManager(ScientificInteractionsManager):
         result = self.get_analysis(obj.analysis_name, skip_digestion=True)
         self._revision(obj)
         observations = []
-        scope = dict(obj.filter)
+        scope = dict(obj._filter)
         scope["structure_indices"] = [frame]
         status = (
             "broken"
             if obj.broken
             else (
                 "excluded"
-                if obj.filter["structure_indices"] != "all" and frame not in obj.filter["structure_indices"]
+                if obj._filter["structure_indices"] != "all" and frame not in obj._filter["structure_indices"]
                 else "evaluated"
                 if frame in result.evaluated_structure_indices
                 else "unevaluated"
@@ -1761,7 +1773,7 @@ class InteractionsManager(ScientificInteractionsManager):
                 value=occurrence_index,
                 message="Observation identity is stale; inspect the current frame again.",
             )
-        if obj.filter["structure_indices"] != "all" and frame not in obj.filter["structure_indices"]:
+        if obj._filter["structure_indices"] != "all" and frame not in obj._filter["structure_indices"]:
             raise ArgumentError("structure_index", value=structure_index)
         if (
             isinstance(occurrence_index, (bool, np.bool_))

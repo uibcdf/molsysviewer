@@ -45,8 +45,10 @@ def test_foreign_handles_cannot_change_either_scene(view, skip):
             lambda: local.set_layer(foreign_group, skip_digestion=skip),
             lambda: view.camera.focus_region(foreign, skip_digestion=skip),
         ]
-        operations += [lambda method=method: method(foreign, tag="result", skip_digestion=skip)
-                       for method in (local.union, local.intersection, local.difference)]
+        operations += [
+            lambda method=method: method(foreign, tag="result", skip_digestion=skip)
+            for method in (local.union, local.intersection, local.difference)
+        ]
         for operation in operations:
             with pytest.raises(ValueError, match="same view"):
                 operation()
@@ -102,8 +104,7 @@ def test_camera_dispatch_agrees_with_live_object_focus(view, kind, length_standa
 def length_standard(request):
     puw = msv.pyunitwizard
     original = list(puw.configure.get_standard_units())
-    standards = ["nm", "ps", "K", "mole", "amu", "e", "kJ/mol",
-                 "kJ/(mol*nm)", "kJ/(mol*nm**2)", "radians"]
+    standards = ["nm", "ps", "K", "mole", "amu", "e", "kJ/mol", "kJ/(mol*nm)", "kJ/(mol*nm**2)", "radians"]
     standards[0] = request.param
     puw.configure.set_standard_units(standards)
     try:
@@ -138,8 +139,9 @@ def test_general_measurement_constructor_preserves_explicit_bypass(view):
     style = MappingProxyType({"color": 0xFF0000})
     named = view.measurements.add_distance([0], [1], measurement_style=style, tag="named", skip_digestion=True)
     general = view.measurements.add("distance", [0], [1], measurement_style=style, tag="general", skip_digestion=True)
-    assert np.allclose(msv.pyunitwizard.get_value(named.get_coordinates()),
-                       msv.pyunitwizard.get_value(general.get_coordinates()))
+    assert np.allclose(
+        msv.pyunitwizard.get_value(named.get_coordinates()), msv.pyunitwizard.get_value(general.get_coordinates())
+    )
     records = view.measurements.records()
     assert records[0]["options"]["style"] == records[1]["options"]["style"]
 
@@ -194,8 +196,12 @@ def test_scene_handle_queries_and_annotation_edits_delegate_to_owners(view):
     assert measure.info()["tag"] == "measure"
     note = view.annotations["note"]
     note.delete()
-    for operation in (note.info, lambda: note.set_text("retired"),
-                      lambda: note.set_style({}), lambda: note.set_anchor(atom_indices=[1])):
+    for operation in (
+        note.info,
+        lambda: note.set_text("retired"),
+        lambda: note.set_style({}),
+        lambda: note.set_anchor(atom_indices=[1]),
+    ):
         with pytest.raises(ValueError, match="retired"):
             operation()
 

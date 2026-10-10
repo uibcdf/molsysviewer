@@ -3,10 +3,11 @@ from molsysviewer._private.interaction_query_modes import QUERY_MODES
 
 from ..helpers import normalize_viewer_caller
 
-# `mode` is the most overloaded argument name in this library: five unrelated closed sets,
+# `mode` is the most overloaded argument name in this library: unrelated closed sets,
 # told apart only by the caller. File access (auto/read/write), load semantics
 # (add/replace/append_structures/auto), camera projection (perspective/orthographic),
-# popup surface (canvas/panel) and playback (loop/once/ping-pong).
+# popup surface (canvas/panel), playback (loop/once/ping-pong), region evaluation
+# (static/dynamic) and interaction query semantics.
 #
 # Each branch must list the caller string ArgDigest actually builds --
 # `<owner module>.<function name>`. A class-qualified spelling alone silently disables the
@@ -25,6 +26,10 @@ def digest_mode(mode, caller=None):
         return None
 
     if isinstance(mode, str):
+        if caller in {"molsysviewer.regions.set_mode", "molsysviewer.regions.Region.set_mode"}:
+            normalized = mode.strip().lower()
+            if normalized in {"static", "dynamic"}:
+                return normalized
         if caller and caller.startswith("molsysviewer.interactions."):
             if mode in QUERY_MODES:
                 return mode

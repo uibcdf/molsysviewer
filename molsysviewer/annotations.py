@@ -8,7 +8,7 @@ from smonitor import signal
 
 from ._private.annotation_vectors import annotation_vector
 from ._private.argdigest import digest
-from .layers import Annotation, Layer
+from .layers import Annotation
 from .scene_history import records_scene_history
 
 
@@ -18,13 +18,13 @@ class AnnotationsManager:
     def __init__(self, view: Any) -> None:
         self._view = view
 
-    def __getitem__(self, tag: str) -> Layer:
+    def __getitem__(self, tag: str) -> Annotation:
         layer = self.get(tag, skip_digestion=True)
         if layer is None:
             raise KeyError(tag)
         return layer
 
-    def _ensure_layer(self, tag: str, *, layer_tag: str | None = None) -> Layer:
+    def _ensure_layer(self, tag: str, *, layer_tag: str | None = None) -> Annotation:
         tag = self._view._tag_managers["annotation"].validate(tag)  # noqa: SLF001
         resolved_layer_tag = str(layer_tag).strip() if layer_tag is not None else tag
         self._view._ensure_layer_group(  # noqa: SLF001
@@ -36,13 +36,13 @@ class AnnotationsManager:
         self._view._scene_objects[("annotation", tag)] = annotation  # noqa: SLF001
         return annotation
 
-    def _annotation_layer(self, tag: str) -> Layer | None:
+    def _annotation_layer(self, tag: str) -> Annotation | None:
         layer = self._view._scene_objects.get(("annotation", tag))  # noqa: SLF001
         if layer is None or getattr(layer, "kind", None) != "annotation":
             return None
         return layer
 
-    def _require_annotation_layer(self, tag: str) -> Layer:
+    def _require_annotation_layer(self, tag: str) -> Annotation:
         layer = self._annotation_layer(tag)
         if layer is None:
             raise ValueError(f"No annotation layer found for tag {tag!r}.")
@@ -120,8 +120,8 @@ class AnnotationsManager:
 
     @signal(tags=["annotation"])
     @digest()
-    def get(self, tag: str, skip_digestion: bool = False) -> Layer | None:
-        """Return the annotation layer for ``tag``, if present."""
+    def get(self, tag: str, skip_digestion: bool = False) -> Annotation | None:
+        """Return the Annotation handle for ``tag``, if present."""
         return self._annotation_layer(tag)
 
     @signal(tags=["annotation"])
@@ -222,7 +222,7 @@ class AnnotationsManager:
         syntax: str = "MolSysMT",
         label_style: dict[str, Any] | None = None,
         skip_digestion: bool = False,
-    ) -> Layer:
+    ) -> Annotation:
         """Add a persistent annotation anchored to a set of atoms or position.
 
         Parameters
@@ -264,7 +264,9 @@ class AnnotationsManager:
             resolved_atom_indices = []
         else:
             resolved_position = None
-            resolved_atom_indices = self._resolve_anchor_atom_indices(selection, atom_indices=atom_indices, syntax=syntax)
+            resolved_atom_indices = self._resolve_anchor_atom_indices(
+                selection, atom_indices=atom_indices, syntax=syntax
+            )
 
         offset_list = annotation_vector(offset, "offset", physical=offset_mode == "world")
         if offset_mode not in {"camera", "world"} or leader_line_style not in {"solid", "dashed", "dotted"}:
@@ -311,7 +313,7 @@ class AnnotationsManager:
         tag: str | None = None,
         layer_tag: str | None = None,
         skip_digestion: bool = False,
-    ) -> Layer:
+    ) -> Annotation:
         """Deprecated: use ``add()`` instead."""
         import warnings
 
@@ -352,7 +354,7 @@ class AnnotationsManager:
         leader_line: bool = False,
         leader_line_style: str = "dashed",
         skip_digestion: bool = False,
-    ) -> Layer:
+    ) -> Annotation:
         """Add a persistent label from the last active selection or coordinates."""
         if position is not None:
             return self.add(
@@ -392,8 +394,8 @@ class AnnotationsManager:
     @records_scene_history
     @signal(tags=["annotation", "visibility"])
     @digest()
-    def show(self, tag: str, skip_digestion: bool = False) -> Layer:
-        """Show the annotation layer for ``tag``."""
+    def show(self, tag: str, skip_digestion: bool = False) -> Annotation:
+        """Show the annotation for ``tag``."""
         layer = self._require_annotation_layer(tag)
         layer.show(skip_digestion=True)
         return layer
@@ -401,8 +403,8 @@ class AnnotationsManager:
     @records_scene_history
     @signal(tags=["annotation", "visibility"])
     @digest()
-    def hide(self, tag: str, skip_digestion: bool = False) -> Layer:
-        """Hide the annotation layer for ``tag``."""
+    def hide(self, tag: str, skip_digestion: bool = False) -> Annotation:
+        """Hide the annotation for ``tag``."""
         layer = self._require_annotation_layer(tag)
         layer.hide(skip_digestion=True)
         return layer
@@ -434,8 +436,8 @@ class AnnotationsManager:
     @records_scene_history
     @signal(tags=["annotation"])
     @digest()
-    def set_tag(self, tag: str, new_tag: str, skip_digestion: bool = False) -> Layer:
-        """Rename an annotation layer tag."""
+    def set_tag(self, tag: str, new_tag: str, skip_digestion: bool = False) -> Annotation:
+        """Rename an annotation tag."""
         layer = self._require_annotation_layer(tag)
         layer.set_tag(new_tag, skip_digestion=True)
         return layer
@@ -443,7 +445,7 @@ class AnnotationsManager:
     @records_scene_history
     @signal(tags=["annotation"])
     @digest()
-    def set_layer_tag(self, tag: str, new_layer_tag: str, skip_digestion: bool = False) -> Layer:
+    def set_layer_tag(self, tag: str, new_layer_tag: str, skip_digestion: bool = False) -> Annotation:
         """Move an annotation to a different grouping layer."""
         layer = self._require_annotation_layer(tag)
         layer.set_layer_tag(new_layer_tag, skip_digestion=True)
@@ -462,7 +464,7 @@ class AnnotationsManager:
     @records_scene_history
     @signal(tags=["annotation"])
     @digest()
-    def set_text(self, tag: str, text: str, skip_digestion: bool = False) -> Layer:
+    def set_text(self, tag: str, text: str, skip_digestion: bool = False) -> Annotation:
         """Update the text of an existing annotation label."""
         layer = self._require_annotation_layer(tag)
         if not isinstance(text, str) or text.strip() == "":
@@ -483,7 +485,7 @@ class AnnotationsManager:
     @records_scene_history
     @signal(tags=["annotation"])
     @digest()
-    def set_style(self, tag: str, style: dict[str, Any], skip_digestion: bool = False) -> Layer:
+    def set_style(self, tag: str, style: dict[str, Any], skip_digestion: bool = False) -> Annotation:
         """Update an annotation's visual style without recreating its identity."""
         layer = self._require_annotation_layer(tag)
         if not isinstance(style, dict):
@@ -518,7 +520,7 @@ class AnnotationsManager:
         position: Any = None,
         syntax: str = "MolSysMT",
         skip_digestion: bool = False,
-    ) -> Layer:
+    ) -> Annotation:
         """Reanchor an existing label to atoms or one absolute physical position.
 
         Parameters
@@ -536,7 +538,9 @@ class AnnotationsManager:
         layer = self._require_annotation_layer(tag)
         resolved_position = annotation_vector(position, "position", physical=True) if position is not None else None
         resolved_atom_indices = (
-            [] if position is not None else self._resolve_anchor_atom_indices(selection, atom_indices=atom_indices, syntax=syntax)
+            []
+            if position is not None
+            else self._resolve_anchor_atom_indices(selection, atom_indices=atom_indices, syntax=syntax)
         )
         record = self.info(tag, skip_digestion=True)
         if not isinstance(record, dict):
@@ -566,7 +570,7 @@ class AnnotationsManager:
     @records_scene_history
     @signal(tags=["annotation"])
     @digest()
-    def set_group_index(self, tag: str, group_index: Any, skip_digestion: bool = False) -> Layer:
+    def set_group_index(self, tag: str, group_index: Any, skip_digestion: bool = False) -> Annotation:
         """Deprecated: use ``set_anchor(selection='group_index==N')`` instead."""
         import warnings
 

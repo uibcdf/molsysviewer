@@ -10,7 +10,7 @@ from smonitor import signal
 from . import pyunitwizard as puw
 from ._private.argdigest import digest
 from ._private.smonitor_emit import emit_suppressed_exception
-from .layers import Layer, Measurement
+from .layers import Measurement
 from .scene_history import records_scene_history
 
 _MEASUREMENT_POLICIES = {"atom", "centroid", "representative_atom"}
@@ -32,7 +32,7 @@ class MeasurementsManager:
         self._endpoint_policy_default = "centroid"
         self._representative_atoms = dict(_REPRESENTATIVE_DEFAULTS)
 
-    def __getitem__(self, tag: str) -> Layer:
+    def __getitem__(self, tag: str) -> Measurement:
         layer = self.get(tag, skip_digestion=True)
         if layer is None:
             raise KeyError(tag)
@@ -41,7 +41,7 @@ class MeasurementsManager:
     @records_scene_history
     @signal(tags=["measurement"])
     @digest()
-    def add(self, kind: str, *selections: Any, skip_digestion: bool = False, **kwargs: Any) -> Layer:
+    def add(self, kind: str, *selections: Any, skip_digestion: bool = False, **kwargs: Any) -> Measurement:
         """Create a measurement of explicit *kind*."""
         methods = {
             "distance": self.add_distance,
@@ -54,7 +54,7 @@ class MeasurementsManager:
             raise ValueError(f"Unsupported measurement kind {kind!r}; choose from {sorted(methods)}.") from exc
         return method(*selections, skip_digestion=True, **kwargs)
 
-    def _ensure_layer(self, tag: str, *, layer_tag: str | None = None) -> Layer:
+    def _ensure_layer(self, tag: str, *, layer_tag: str | None = None) -> Measurement:
         tag = self._view._tag_managers["measurement"].validate(tag)  # noqa: SLF001
         resolved_layer_tag = str(layer_tag).strip() if layer_tag is not None else tag
         self._view._ensure_layer_group(  # noqa: SLF001
@@ -66,13 +66,13 @@ class MeasurementsManager:
         self._view._scene_objects[("measurement", tag)] = measurement  # noqa: SLF001
         return measurement
 
-    def _measurement_layer(self, tag: str) -> Layer | None:
+    def _measurement_layer(self, tag: str) -> Measurement | None:
         layer = self._view._scene_objects.get(("measurement", tag))  # noqa: SLF001
         if layer is None or getattr(layer, "kind", None) != "measurement":
             return None
         return layer
 
-    def _require_measurement_layer(self, tag: str) -> Layer:
+    def _require_measurement_layer(self, tag: str) -> Measurement:
         layer = self._measurement_layer(tag)
         if layer is None:
             raise ValueError(f"No measurement layer found for tag {tag!r}.")
@@ -263,7 +263,7 @@ class MeasurementsManager:
         value: float | None = None,
         value_series: list[float] | None = None,
         style: dict | None = None,
-    ) -> Layer:
+    ) -> Measurement:
         layer = self._ensure_layer(tag, layer_tag=layer_tag)
         msg = self._build_measurement_message(
             op,
@@ -421,7 +421,7 @@ class MeasurementsManager:
         value: float | None = None,
         value_series: list[float] | None = None,
         style: dict | None = None,
-    ) -> Layer:
+    ) -> Measurement:
         if value is None and value_series is None:
             policy = self._normalize_endpoint_policy(endpoint_policy)
             _, _, ea_indices = self._resolve_endpoint_metadata(picks_atom_indices, policy)
@@ -465,7 +465,7 @@ class MeasurementsManager:
         )
 
     @records_scene_history
-    def _register_interactive_measurement(self, event: dict, *, tag: str | None = None) -> Layer:
+    def _register_interactive_measurement(self, event: dict, *, tag: str | None = None) -> Measurement:
         action = event.get("action")
         picks = event.get("picks_atom_indices") or []
         if not isinstance(picks, list) or len(picks) == 0:
@@ -549,7 +549,7 @@ class MeasurementsManager:
 
     @signal(tags=["measurement"])
     @digest()
-    def get(self, tag: str, skip_digestion: bool = False) -> Layer | None:
+    def get(self, tag: str, skip_digestion: bool = False) -> Measurement | None:
         return self._measurement_layer(tag)
 
     @signal(tags=["measurement", "query"])
@@ -683,7 +683,7 @@ class MeasurementsManager:
     @records_scene_history
     @signal(tags=["measurement", "visibility"])
     @digest()
-    def show(self, tag: str, skip_digestion: bool = False) -> Layer:
+    def show(self, tag: str, skip_digestion: bool = False) -> Measurement:
         layer = self._require_measurement_layer(tag)
         layer.show(skip_digestion=True)
         return layer
@@ -691,7 +691,7 @@ class MeasurementsManager:
     @records_scene_history
     @signal(tags=["measurement", "visibility"])
     @digest()
-    def hide(self, tag: str, skip_digestion: bool = False) -> Layer:
+    def hide(self, tag: str, skip_digestion: bool = False) -> Measurement:
         layer = self._require_measurement_layer(tag)
         layer.hide(skip_digestion=True)
         return layer
@@ -717,7 +717,7 @@ class MeasurementsManager:
     @records_scene_history
     @signal(tags=["measurement"])
     @digest()
-    def set_tag(self, tag: str, new_tag: str, skip_digestion: bool = False) -> Layer:
+    def set_tag(self, tag: str, new_tag: str, skip_digestion: bool = False) -> Measurement:
         layer = self._require_measurement_layer(tag)
         layer.set_tag(new_tag, skip_digestion=True)
         return layer
@@ -725,7 +725,7 @@ class MeasurementsManager:
     @records_scene_history
     @signal(tags=["measurement"])
     @digest()
-    def set_layer_tag(self, tag: str, new_layer_tag: str, skip_digestion: bool = False) -> Layer:
+    def set_layer_tag(self, tag: str, new_layer_tag: str, skip_digestion: bool = False) -> Measurement:
         layer = self._require_measurement_layer(tag)
         layer.set_layer_tag(new_layer_tag, skip_digestion=True)
         return layer
@@ -745,7 +745,7 @@ class MeasurementsManager:
         endpoint_policy: str | None = None,
         measurement_style: dict | None = None,
         skip_digestion: bool = False,
-    ) -> Layer:
+    ) -> Measurement:
         import warnings
 
         if atom_indices_a is not None:
@@ -785,7 +785,7 @@ class MeasurementsManager:
         endpoint_policy: str | None = None,
         measurement_style: dict | None = None,
         skip_digestion: bool = False,
-    ) -> Layer:
+    ) -> Measurement:
         import warnings
 
         if atom_indices_a is not None:
@@ -835,7 +835,7 @@ class MeasurementsManager:
         endpoint_policy: str | None = None,
         measurement_style: dict | None = None,
         skip_digestion: bool = False,
-    ) -> Layer:
+    ) -> Measurement:
         import warnings
 
         if atom_indices_a is not None:

@@ -1,0 +1,146 @@
+{
+  "date": "2026-10-10",
+  "scope": "source public API follow-up; no frozen producer or installed qualification",
+  "viewer_base": "a8e0a9be4f93ba1c9a6d58702f6558c321450392",
+  "environment": "molsyssuite@uibcdf_3.14",
+  "python": "3.14.7",
+  "provider": {
+    "during_execution_observation": "3347a108a19177482dcab4bd73a02374c960cd5e",
+    "at_receipt_observation": "3347a108a19177482dcab4bd73a02374c960cd5e",
+    "frozen": false,
+    "owner_work_preserved": true
+  },
+  "tool_versions": {
+    "pytest": "9.1.1",
+    "pytest-receptor": "1.1.0+19.g6d87a24",
+    "argdigest": "0.15.0+1.g5c6711e",
+    "smonitor": "0.19.0",
+    "ruff": "0.16.5"
+  },
+  "issues": [
+    218,
+    219,
+    220,
+    221,
+    222
+  ],
+  "inventory": {
+    "totals": {
+      "public_callables": 727,
+      "digested": 727,
+      "undigested": 0,
+      "exempt": 0,
+      "declared_digesters": 442,
+      "missing_digesters": 0
+    },
+    "undigested": [],
+    "missing_skip_digestion": [],
+    "missing_digesters": []
+  },
+  "focused": {
+    "passed": 13,
+    "failed": 0,
+    "exit_code": 0,
+    "module": "tests/test_public_api_followup.py"
+  },
+  "related": {
+    "passed": 310,
+    "failed": 0,
+    "exit_code": 0
+  },
+  "full": {
+    "command": "python -m pytest --receptor=llm -n 12 tests/",
+    "permissions": "unsandboxed local socket/Chromium execution",
+    "passed": 3056,
+    "failed": 9,
+    "skipped": 23,
+    "exit_code": 1,
+    "seconds": 113.84,
+    "failures": {
+      "known_experimental_qt": 8,
+      "superseded_region_system_query_policy": 1
+    },
+    "repeated": false
+  },
+  "tools_policy_recovery": {
+    "command": "python -m pytest tests/test_tools_basic.py -x -q",
+    "passed": 14,
+    "failed": 0,
+    "exit_code": 0
+  },
+  "quality": {
+    "ruff_check": "passed repository-wide",
+    "ruff_format_check": "904 files formatted",
+    "previous_format_failure": 38045100550,
+    "previous_failure_repaired_files": [
+      "molsysviewer/annotations.py",
+      "molsysviewer/layers.py",
+      "tests/test_public_api_hardening.py"
+    ]
+  },
+  "publication": {
+    "version_agreed": "0.25.0",
+    "candidate_frozen": false,
+    "both_1_0_publications_paused": true
+  },
+  "logs": {
+    "related.log": {
+      "sha256": "5c802ec23a6bb77f73709fd496b9a916f6a2af2b8fba3dbd969f910299207edd",
+      "bytes": 2695,
+      "local_directory": "/tmp/msv-api-followup-20261010"
+    },
+    "full.log": {
+      "sha256": "b703519aa00de02ac2a2a4c6a863c7b2ac797334defd1cd57295361f691d751b",
+      "bytes": 9018,
+      "local_directory": "/tmp/msv-api-followup-20261010"
+    },
+    "full-detail.txt": {
+      "sha256": "5a120955ea6a9ca19da188654bfb856f19b8076b8fa5d1f7fa01a9dd8f9da220",
+      "bytes": 10752,
+      "local_directory": "/tmp/msv-api-followup-20261010"
+    },
+    "tools-recovery.log": {
+      "sha256": "bce86a4d5e093f01713accad355538db39a3689c79a35d0bd1f647202dd2f726",
+      "bytes": 617,
+      "local_directory": "/tmp/msv-api-followup-20261010"
+    },
+    "guidance.log": {
+      "sha256": "f98a38feb900ee09c265dbe9e139623b45649a1ed6905429d84580945f89e951",
+      "bytes": 302,
+      "local_directory": "/tmp/msv-api-followup-20261010"
+    },
+    "guidance-initial.log": {
+      "sha256": "cb2d736436392486453c20cd556b37a11bc60e48e061306efc3e59ccbec4d196",
+      "bytes": 687,
+      "local_directory": "/tmp/msv-api-followup-20261010"
+    },
+    "guidance-untracked.log": {
+      "sha256": "e4c841e10646680e87404649b2a3740eef6832a7a6296f78f62d198aaa5b4b82",
+      "bytes": 946,
+      "local_directory": "/tmp/msv-api-followup-20261010"
+    }
+  },
+  "guidance_first_attempt": {
+    "passed": 222,
+    "failed": 1,
+    "maxfail": true,
+    "cause": "receipt creation failed because receptor output is a directory bundle, leaving the new receipt link missing; repaired before the scoped rerun"
+  },
+  "previous_policy_bundle": {
+    "directory": "/tmp/msv-api-followup-20261010/previous-policy.json",
+    "manifest_sha256": "d9f7ef6efb059d8802d7cbb43ed98f7c5e912ca8a841ba2c735cb66125596289"
+  },
+  "guidance_second_attempt": {
+    "passed": 223,
+    "failed": 1,
+    "maxfail": true,
+    "cause": "five archived reports were not staged after the failed combined add; all five staged before the scoped rerun"
+  },
+  "guidance_recovery": {
+    "passed": 452,
+    "failed": 0,
+    "exit_code": 0,
+    "seconds": 18.53,
+    "command": "python -m pytest --receptor=llm tests/test_reporting_protocol.py tests/test_devguide_links.py tests/test_devguide_architecture_status.py tests/test_capability_audit.py tests/test_public_api_inventory.py -x"
+  }
+}

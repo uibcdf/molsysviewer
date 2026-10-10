@@ -77,6 +77,12 @@ delegated digestion and immutable identity. #217 completes handle inspection and
 editing parity. Its source evidence must be reviewed before freezing a producer;
 the existing public and staged packages do not contain these changes.
 
+The additional read-boundary review tracks #218–#222: scoped system queries,
+retired read handles, mode history, accurate handle annotations and detached
+InteractionSet configuration. Its evidence is maintained in
+[the API follow-up](public_api_followup_20261010.md). These changes also precede
+freezing the producer; 0.25.0 remains unfrozen and both 1.0 publications paused.
+
 1. Finish the remaining changes and inspect applicable source CI, including
    the complete core browser lane. Keep experimental Qt outcomes separate.
 2. Prepare canonical 0.25.0 citation/npm/Conda-route metadata, inspect the diff,

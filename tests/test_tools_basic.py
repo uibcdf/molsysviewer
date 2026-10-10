@@ -78,17 +78,18 @@ def test_a_callers_mask_narrows_a_region_and_cannot_widen_it():
     assert set(scoped) <= set(region.atom_indices)
 
 
-def test_a_regions_system_level_attributes_are_the_whole_systems():
-    """Surprising, pre-existing, and worth pinning so it is a decision rather than a bug.
+def test_a_regions_system_query_counts_its_own_atoms():
+    """The #218 scope decision replaces the earlier whole-system count policy.
 
-    `Region.get` scopes by element. A *system*-level attribute has no element to scope by,
-    so it answers for the system the region lives in — `n_atoms` on a three-atom region is
-    the system's 22, not 3.
+    MolSysMT accepts atom selections for system queries. Region counts therefore
+    answer for the region's atoms; Whole remains the route to the complete system.
+    Global structural quantities keep the provider's meaning.
     """
     view = demo["dialanine"]
     region = view.regions.add(atom_indices=[0, 1, 2], tag="frag2", skip_digestion=True)
 
-    assert region.get(n_atoms=True) == view.whole.get(n_atoms=True)
+    assert region.get(n_atoms=True) == 3
+    assert view.whole.get(n_atoms=True) == 22
     assert len(region.get(element="atom", index=True)) == 3
 
 

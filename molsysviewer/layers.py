@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 import warnings
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import Any, Dict, Optional
 
 from smonitor import signal
 
@@ -11,11 +11,9 @@ from . import pyunitwizard as puw
 from ._private.argdigest import digest
 from ._private.scene_references import require_current_in_view
 from ._private.scene_registry import SceneRegistry
+from .regions import Region
 from .scene_history import records_scene_history
 from .viewer.utils import quantity_value_in_unit
-
-if TYPE_CHECKING:
-    from .regions import Region
 
 _NM_TO_ANGSTROM = puw.conversion_factor("nm", "angstroms")
 
@@ -163,12 +161,14 @@ class LayerHandle:
             raise ValueError("Focus requires finite physical positions.")
         center, radius = _bounding_sphere_nm(points)
         radius = max(radius + quantity_value_in_unit(extra_radius, "nm"), 0.5)
-        self._view._send({
-            "op": "zoom_to_position",
-            "center": [value * _NM_TO_ANGSTROM for value in center],
-            "radius": radius * _NM_TO_ANGSTROM,
-            "duration_ms": int(quantity_value_in_unit(duration, "ms")),
-        })
+        self._view._send(
+            {
+                "op": "zoom_to_position",
+                "center": [value * _NM_TO_ANGSTROM for value in center],
+                "radius": radius * _NM_TO_ANGSTROM,
+                "duration_ms": int(quantity_value_in_unit(duration, "ms")),
+            }
+        )
 
     @property
     def owner(self) -> str | None:
@@ -177,6 +177,7 @@ class LayerHandle:
 
     @property
     def shapes(self) -> Dict[str, "Shape"]:
+        self._assert_current()
         return {
             item.tag: item
             for item in getattr(self._view, "_scene_objects", {}).values()  # noqa: SLF001
@@ -185,6 +186,7 @@ class LayerHandle:
 
     @property
     def annotations(self) -> Dict[str, "Annotation"]:
+        self._assert_current()
         return {
             item.tag: item
             for item in getattr(self._view, "_scene_objects", {}).values()  # noqa: SLF001
@@ -193,6 +195,7 @@ class LayerHandle:
 
     @property
     def measurements(self) -> Dict[str, "Measurement"]:
+        self._assert_current()
         return {
             item.tag: item
             for item in getattr(self._view, "_scene_objects", {}).values()  # noqa: SLF001
@@ -201,6 +204,7 @@ class LayerHandle:
 
     @property
     def interactions(self):
+        self._assert_current()
         return {
             item.tag: item
             for item in self._view._scene_objects.values()
@@ -210,6 +214,7 @@ class LayerHandle:
     @property
     def regions(self) -> Dict[str, Any]:
         """Regions that belong to this layer (Contract B3, Phase 9)."""
+        self._assert_current()
         return {
             item.tag: item
             for item in getattr(self._view, "_regions", {}).values()  # noqa: SLF001
@@ -218,6 +223,7 @@ class LayerHandle:
 
     @property
     def members(self) -> Dict[tuple[str, str], Any]:
+        self._assert_current()
         members: Dict[tuple[str, str], Any] = {}
         for kind, values in (
             ("interaction", self.interactions),
@@ -517,6 +523,7 @@ class Layer(LayerHandle):
     @digest()
     def info(self, *, skip_digestion: bool = False) -> list[dict]:
         """Return a summary of all objects in this layer."""
+        self._assert_current()
         rows = []
         for (_kind, tag), obj in self.members.items():
             kind = getattr(obj, "kind", "unknown")
@@ -1320,8 +1327,12 @@ class Annotation(SceneObject):
         """Reanchor through the canonical annotation owner."""
         self._assert_current()
         return self._view.annotations.set_anchor(
-            self.tag, selection, atom_indices=atom_indices, position=position,
-            syntax=syntax, skip_digestion=True,
+            self.tag,
+            selection,
+            atom_indices=atom_indices,
+            position=position,
+            syntax=syntax,
+            skip_digestion=True,
         )
 
     def _require_annotation_record(self) -> dict:
