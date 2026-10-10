@@ -201,3 +201,23 @@ failed shape creation retaining anchors/name, and atom-set arrows on another
 visible structure. Change tabs/frames with an unfinished secondary name and
 check keyboard focus. Stored analyses must remain after deleting a visual set.
 The current Interactions scientific/compatibility status remains experimental.
+
+### Second-round integration checkpoint
+
+The reviewed implementation is pushed directly to `main` as
+`4ca5a2480e569bc4ce3ba0ac072ac428a80cc7d3`. GitHub independently confirms
+#190–#197 and #199 closed with their guards and archived records; #189 remains
+active and #198 partial. Derived state labels are synchronized. Unrelated
+sandbox notebooks/design files remain outside this commit.
+
+On this exact source commit, initial hosted inspection reports
+[lint](https://github.com/uibcdf/molsysviewer/actions/runs/38031216852),
+[suite policy](https://github.com/uibcdf/molsysviewer/actions/runs/38031217058)
+and [Conda governance](https://github.com/uibcdf/molsysviewer/actions/runs/38031217125)
+success. [Core browser](https://github.com/uibcdf/molsysviewer/actions/runs/38031216791)
+and [notebooks](https://github.com/uibcdf/molsysviewer/actions/runs/38031216788)
+are in progress; [scientific/Qt CI](https://github.com/uibcdf/molsysviewer/actions/runs/38031216787)
+and [Python 3.14 source pair](https://github.com/uibcdf/molsysviewer/actions/runs/38031216855)
+are queued. These pending outcomes are not green gates. Review their final
+source evidence before candidate freeze, especially the source-pair PNG check.
+No tag, staging package, installed matrix or public release is created.
