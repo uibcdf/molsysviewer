@@ -13,9 +13,11 @@ remaining creation/registration feedback and exported Studio backend state. Revi
 [source/browser evidence](studio_review_20261009.md), live notebook and hosted
 results. The macOS dynamic-region diagnosis (#189) is corrected in source: an
 over-budget empty region keeps its frozen snapshot and isolation on restoration.
-Review its new hosted gates and confirm the measured PNG guard correction
-(#198, partial) in exact-source core/source-pair CI. The distinct keyboard
-focus reversal (#209) is corrected with an expanded real-browser guard.
+Its six hosted scientific cells pass (separate Qt failure retained). #198 closes
+with the measured PNG lifecycle correction and 43/43 Linux source-pair core
+guards. The distinct keyboard focus reversal (#209) is corrected with an expanded
+real-browser guard. Full cba156d8 core integration passes 43/43; remaining
+scientific/macOS/source-pair jobs are not yet declared successful.
 Then prepare and qualify the agreed 0.25.0 candidate, complete public documentation
 and installed first contact, and independently qualify the eventual 1.0 producer.
 Viewer/MolSysMT 1.0 publication is paused by the maintainer. Keep the

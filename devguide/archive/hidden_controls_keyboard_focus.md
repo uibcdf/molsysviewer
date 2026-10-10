@@ -72,3 +72,14 @@ TypeScript, runtime regeneration and harness/E2E builds pass. No deadline,
 image quality or browser-failure policy changes. This source closure does not
 claim a frozen candidate or installed-artifact qualification; the next hosted
 core must confirm integration, and #198 still awaits its hosted PNG outcome.
+
+## Hosted integration verification — 2026-10-10, 09:43 UTC
+
+Core **38041459348** completes with success on exact integrated source
+`cba156d8d09116cbe4f9563338485372a481e907`: **43/43 suites**. Original logs
+confirm controls-visibility and real Studio PNG/HTML downloads/alpha pass,
+as well as the remaining core cases. This verifies the keyboard and PNG
+corrections together. The prior 32565b6d source-pair Linux job is now also
+successful; Windows is successful and macOS remains queued. That complete
+pair and the newest scientific/source-pair campaigns remain separate from
+this completed browser integration, with no installed-artifact claim.

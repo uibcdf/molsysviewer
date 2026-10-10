@@ -328,3 +328,5 @@ Completed work, kept for the reasoning:
 - [empty_dynamic_region_macos_restore.md](empty_dynamic_region_macos_restore.md) — #189: The 25 ms fallback froze empty membership; restoration now retains that static recipe snapshot and isolation, with deterministic real-coordinate guards.
 
 - [Hidden controls keyboard focus](hidden_controls_keyboard_focus.md) — #209 confirms focus after CSS reversal and skips hidden trajectory buttons; Enter/Space, fullscreen, static scene and popup guards pass.
+
+- [Studio PNG download source pair](studio_png_download_source_pair.md) — #198 separates measured render completion from file delivery, retaining full-quality PNG/alpha and held-click guards; exact-source Linux core passes 43/43.

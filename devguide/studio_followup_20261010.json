@@ -2,7 +2,7 @@
   "schema": "molsysviewer.studio_followup@1",
   "date": "2026-10-10",
   "implementation": "00716efb2e0f3f1f3ed24c6716b69f0a6d64e826",
-  "scope": "Source and local guards; corrected exact-source hosted campaigns pending. Not a frozen candidate or installed artifact.",
+  "scope": "Source and local/hosted guards; latest full scientific/source-pair campaigns remain pending. Not a frozen candidate or installed artifact.",
   "environment": {
     "name": "molsyssuite@uibcdf_3.14",
     "python": "3.14.7",
@@ -46,7 +46,7 @@
     },
     "interpretation": "Input delivered; helper has not returned its rendered image. Root render-stage cause still unknown.",
     "next_probe": "Last eight task updates, background/illumination, context loss and image pass/encoding canvas dimensions; read-only, unchanged deadline and image assertions.",
-    "closure": "partial, remains open",
+    "closure": "resolved; corrected exact-source Linux core step succeeds with 43 suites; complete pair still pending",
     "encoding_yield_observation": {
       "run": 38038849065,
       "tasks": [
@@ -92,7 +92,26 @@
       "failed_suite": "controls-visibility",
       "png_suite": "not reached",
       "new_issue": "uibcdf/molsysviewer#209"
-    }
+    },
+    "archive": "archive/studio_png_download_source_pair.md",
+    "hosted_closure": {
+      "run": 38040586601,
+      "source": "32565b6d24a915d126d2dc25c856388265337af9",
+      "job_id": 114179864340,
+      "guard_step": {
+        "name": "Run all core browser suites against the exact source pair",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-10-10T09:23:24Z",
+        "completedAt": "2026-10-10T09:40:50Z"
+      },
+      "registered_suites": 43,
+      "workflow_status": "queued",
+      "workflow_conclusion": "",
+      "scope": "Executed Linux browser guard; remaining job/notebook/macOS observations not promoted to complete pair success"
+    },
+    "integrated_core": "43/43 success in 38041459348 on cba156d8, including PNG/HTML dimensions/alpha",
+    "source_pair_after_closure": "Linux and Windows success; macOS queued, overall workflow pending"
   },
   "validation": {
     "python_full_once": {
@@ -136,7 +155,81 @@
       "scientific": 38040586638,
       "source_pair": 38040586601,
       "state": "running/queued at observation; no installed artifact claim"
-    }
+    },
+    "latest_integration": {
+      "source": "cba156d8d09116cbe4f9563338485372a481e907",
+      "core": 38041459348,
+      "scientific": 38041459330,
+      "source_pair": 38041459422,
+      "notebooks": {
+        "run": 38041459353,
+        "conclusion": "success"
+      },
+      "suite_policy": {
+        "run": 38041459670,
+        "conclusion": "success"
+      },
+      "publication_governance": {
+        "run": 38041459693,
+        "conclusion": "success"
+      },
+      "remaining": "Latest full scientific/source-pair campaigns pending; standalone Qt failure remains separate",
+      "core_result": {
+        "run": 38041459348,
+        "source": "cba156d8d09116cbe4f9563338485372a481e907",
+        "status": "completed",
+        "conclusion": "success",
+        "suites_passed": 43
+      },
+      "scientific_observation": {
+        "source": "cba156d8d09116cbe4f9563338485372a481e907",
+        "status": "queued",
+        "conclusion": "",
+        "jobs": [
+          {
+            "name": "Qt pipeline completes (Xvfb, software WebGL)",
+            "status": "completed",
+            "conclusion": "failure"
+          },
+          {
+            "name": "Test on macos-15, Python 3.11",
+            "status": "queued",
+            "conclusion": ""
+          },
+          {
+            "name": "Test on macos-15, Python 3.12",
+            "status": "queued",
+            "conclusion": ""
+          },
+          {
+            "name": "Test on ubuntu-latest, Python 3.13",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Test on ubuntu-latest, Python 3.11",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Test on macos-15, Python 3.13",
+            "status": "queued",
+            "conclusion": ""
+          },
+          {
+            "name": "Test on ubuntu-latest, Python 3.12",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Check skipped-commit backlog",
+            "status": "completed",
+            "conclusion": "skipped"
+          }
+        ]
+      }
+    },
+    "reporting_links": "pass after archiving/indexing #198 and #209"
   },
   "superseded_ci": {
     "run": 38037909747,
@@ -247,6 +340,10 @@
     "keyboard_runtime_build": {
       "bytes": 79,
       "sha256": "3da60630321ff7befa87a95b27da7720bb6e45997523bfcdc6588216953ff699"
+    },
+    "final_core_hosted": {
+      "bytes": 192830,
+      "sha256": "3ad2cbf3171448959867d5ad652aa9353661b57df41c40082f29a1eeb3f07d60"
     }
   },
   "superseded_campaigns": [
@@ -330,6 +427,8 @@
     "scope": "Enter and Space reversal; fullscreen; actual static scene skips hidden trajectory buttons; Cinema/popup/disposal assertions retained.",
     "state": "resolved in source; expanded real-browser guard passed; hosted integration pending",
     "archive": "archive/hidden_controls_keyboard_focus.md",
-    "remaining_first_guard_failure": "First correction passed trajectory/fullscreen/popup; new static-scene guard exposed focus rejection at CSS commit. Final owner confirms active-element transfer and retries only while hotspot owns focus."
+    "remaining_first_guard_failure": "First correction passed trajectory/fullscreen/popup; new static-scene guard exposed focus rejection at CSS commit. Final owner confirms active-element transfer and retries only while hotspot owns focus.",
+    "implementation": "cba156d8d09116cbe4f9563338485372a481e907",
+    "hosted_integration": "43/43 success in 38041459348 on cba156d8, including expanded controls guard"
   }
 }

@@ -28,15 +28,17 @@ evidence in [the Studio review](studio_review_20261009.md) before freezing a
 producer. Both provider issues are fixed in source, without authorizing provider
 publication or qualifying new packages. The separate macOS dynamic-region
 restoration diagnosis `uibcdf/molsysviewer#189` is corrected in source with a
-deterministic budget-fallback guard; its next hosted qualification remains pending.
+deterministic budget-fallback guard; all six scientific cells pass in 38038849075
+(the separate experimental Qt job fails).
 
 The second Studio refinement (#190–#197/#199) adds corrected visible-structure
 shape geometry, correlated creation feedback, nine executable geometry guides, persistent secondary editors and named controls. Reusable local search, marked
 batch operations with one Undo step, and native creation/advanced disclosures
 complete the authorized optional improvements. The core inventory is now 43
-suites. The historical source-pair PNG timeout (#198) remains a separate partial
-report until exact-source hosted evidence is reviewed. This source implementation
-does not freeze the 0.25.0 producer or supersede the preserved 0.24.1 bytes.
+suites. The source-pair PNG guard correction (#198) closes after measured phase
+timing and successful Linux core 43/43 on exact source 32565b6d in 38040586601.
+This source implementation does not freeze the 0.25.0 producer or supersede
+the preserved 0.24.1 bytes.
 
 The final Studio review (#201–#204) adds creation completion for Measures,
 Annotations and Layers, atomic initial layer membership, persistent new-region
@@ -54,10 +56,13 @@ Its guards and the local Qt limitations are recorded in the same Studio review.
 exceeds the old 30-second event deadline. Source `32565b6d` waits for managed
 render completion within the existing suite budget, then limits file delivery.
 Full-quality PNG dimensions/alpha and held-click assertions remain. The scoped
-local guard passes; exact-source hosted confirmation is still required for closure.
+local guard and exact-source Linux core step pass, closing #198 without
+claiming that the full still-pending pair is green.
 The subsequent core stopped before PNG on keyboard focus transfer (#209). Its
 shared-owner correction and expanded Enter/Space/fullscreen/static-scene/popup
-guard pass locally; inspect the next complete core for integration.
+guard pass locally; integrated cba156d8 core 38041459348 passes 43/43.
+Latest scientific/source-pair campaigns still need review; experimental Qt
+failure is separate.
 
 The user guide is [Using the canvas context menu](../docs/content/user/viewer/context_menu.md).
 Normative behavior remains in [gestures and menus](interaction_gestures_and_menus.md)

@@ -1,9 +1,9 @@
 ---
 summary: Studio PNG download guard times out in the Python 3.14 exact source-pair lane
 issue: uibcdf/molsysviewer#198
-status: partial
+status: resolved
 opened: 2026-10-09
-closed:
+closed: 2026-10-10
 severity: medium
 verification: measured
 area: [studio]
@@ -126,3 +126,37 @@ Corrected-source core 38040586615 fails in `controls-visibility`, before reachin
 `studio-usability`; it provides no PNG result. That distinct keyboard focus
 transfer is tracked as `uibcdf/molsysviewer#209`, not attributed to PNG.
 Source-pair 38040586601 remains active at observation.
+
+## Hosted closure — 2026-10-10
+
+Source-pair run **38040586601** on exact source
+`32565b6d24a915d126d2dc25c856388265337af9` completes the Linux step
+“Run all core browser suites against the exact source pair” with **success**:
+all 43 registered suites, including the corrected real Studio PNG/HTML guard.
+That guard retains held down/resize/up input, the actual download filename,
+PNG dimensions and alpha, and standalone HTML assertions. Neither browser
+failure opt-out nor reduced image quality is used.
+
+This executed hosted guard, the independent 30254/32994 ms phase measurements,
+and the local corrected guard establish the closure. The earlier uninstrumented
+run remains historical evidence without a fabricated phase diagnosis. Source
+32565b6d fixes the current guard lifecycle; the earlier input-preservation fix
+remains guarded. The distinct #209 keyboard defect is resolved separately.
+
+At this observation the Linux job is still executing notebooks, Windows is
+successful, macOS is queued, and the workflow has no final conclusion. The
+complete pair is therefore not declared green. Core 38041459348 on cba156d8
+is also still running. This closure proves the PNG guard on the exact source
+pair, not installed-artifact qualification or a frozen 0.25.0 candidate.
+Both 1.0 publications remain paused.
+
+## Hosted integration verification — 2026-10-10, 09:43 UTC
+
+Core **38041459348** completes with success on exact integrated source
+`cba156d8d09116cbe4f9563338485372a481e907`: **43/43 suites**. Original logs
+confirm controls-visibility and real Studio PNG/HTML downloads/alpha pass,
+as well as the remaining core cases. This verifies the keyboard and PNG
+corrections together. The prior 32565b6d source-pair Linux job is now also
+successful; Windows is successful and macOS remains queued. That complete
+pair and the newest scientific/source-pair campaigns remain separate from
+this completed browser integration, with no installed-artifact claim.

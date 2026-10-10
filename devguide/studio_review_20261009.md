@@ -431,3 +431,27 @@ No arbitrary sleep, larger guard deadline or skipped accessibility assertion
 is introduced. Scientific 38038849075 now passes all six source cells on
 00716efb; the separate experimental Qt job fails, preserving the overall
 failure conclusion. This does not qualify the forthcoming candidate artifact.
+
+## Hosted PNG closure — 2026-10-10
+
+Linux source-pair 38040586601 on exact 32565b6d finishes all 43 core browser
+suites successfully, including the unchanged full-quality PNG dimensions/alpha,
+held down/resize/up input and real standalone HTML assertions. This confirms the
+measured guard lifecycle correction and closes #198; its
+[archived record](archive/studio_png_download_source_pair.md) distinguishes
+the completed core step from notebooks still running, Windows success and
+macOS queued. The full pair is not declared green. Core 38041459348 on the
+subsequent keyboard correction cba156d8 remains active at observation; its
+notebooks, suite policy and publication governance pass. Both 1.0 publications
+remain paused and the 0.25.0 producer is unfrozen. No installed-artifact claim
+is made from this source evidence.
+
+Core integration 38041459348 now completes **success, 43/43** on exact
+cba156d8. Its original log confirms the expanded controls guard and real
+Studio PNG/HTML/transparency assertions both pass. The 32565b6d Linux
+source-pair job also completes successfully; Windows passes, macOS remains
+queued. The receipt retains the separate newest scientific/source-pair
+observations and Qt failure. Offline reporting/index/link guards pass after
+archiving #198 and #209. This closes the authorized Studio follow-up in
+source and browser integration; future candidate/artifact qualification
+remains required and publication remains paused.

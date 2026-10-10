@@ -1,24 +1,25 @@
 # Development checkpoint
 
-**Studio hosted follow-up — 2026-10-10:** #189's native macOS log identifies the
-25 ms dynamic-evaluation fallback freezing an empty region. Source `00716efb`
-preserves that static snapshot and isolation on restore; 16 real isolation tests
-pass and its six hosted scientific cells pass in 38038849075 (the separate
-experimental Qt job fails, so the workflow is not globally green). The complete local Python run has 3006 passed, 23 skipped and eight Qt
-context initialization failures. #198 is diagnosed: core 38039675000 measures
-30.254 seconds of legitimate rendering before encoding, beyond the old generic
-30-second event wait. Source `32565b6d` separates render completion from file
-delivery within the existing suite budget, retaining full image quality and
-actual PNG/alpha assertions. Its scoped browser guard passes locally; the report
-remains partial pending exact-source hosted core/source-pair confirmation.
-Core 38040586615 stops before PNG on a keyboard focus transfer defect (#209),
-reproduced and corrected in the shared owner. The expanded real-browser guard
-passes Enter/Space, fullscreen, static-scene first-button ownership and popup;
-its [closure record](archive/hidden_controls_keyboard_focus.md) retains both
-the first failed attempt and the confirmed focus correction.
-The first three core browser suites pass locally using shared Chromium.
-Exact-source CI is pending; 0.25.0 remains unfrozen and both 1.0 publications
-remain paused. See the [follow-up receipt](studio_followup_20261010.json).
+**Studio hosted follow-up — 2026-10-10:** #189 is closed: source `00716efb`
+preserves over-budget empty static regions and isolation on restore. Its 16
+local isolation tests and six hosted scientific cells (38038849075) pass;
+the separate experimental Qt job fails, so that workflow is not globally green.
+The full local Python run has 3006 passed, 23 skipped and eight Qt context failures.
+#198 is closed after measuring legitimate renders of 30.254/32.994 seconds
+against an inappropriate 30-second event wait. Corrected source `32565b6d`
+waits for managed rendering and retains the file-delivery deadline and full-quality
+PNG/alpha assertions; its Linux source-pair core step passes 43/43 in 38040586601.
+Linux and Windows now pass; macOS remains queued, so the complete pair is
+not declared green.
+#209 is closed in `cba156d8`: keyboard reveal confirms actual focus after CSS
+reversal and skips hidden trajectory buttons. Its expanded Enter/Space,
+fullscreen, static-scene and popup guard passes locally. Full hosted core
+38041459348 passes **43/43** on cba156d8 with both corrections integrated.
+Notebooks/policy/governance pass; newest scientific/source-pair campaigns
+remain pending, with experimental Qt failure separate.
+See the [follow-up receipt](studio_followup_20261010.json) and
+[Studio review](studio_review_20261009.md). 0.25.0 remains unfrozen;
+both 1.0 publications remain paused.
 
 **Studio integration — 2026-10-09:** the authorized #181–#188 round is
 implemented and locally verified: actual PNG/background and browser HTML
