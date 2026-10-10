@@ -1,3 +1,4 @@
+import { withFixtureWorkspace, fixtureEnvironment } from "./fixture-workspace";
 import { spawn } from "node:child_process";
 import process from "node:process";
 import { dirname, resolve } from "node:path";
@@ -69,16 +70,17 @@ function suitesForLane(argument: string | undefined): readonly string[] {
     throw new Error(`unknown E2E lane ${lane}; choose --lane=all, --lane=core, --lane=portable, --lane=remote-portable or --lane=server-gpu`);
 }
 
-function runSuite(name: string, endpoint: string): Promise<void> {
+function runSuite(name: string, endpoint: string, workspace: string): Promise<void> {
     const timeoutMs = Number(process.env.E2E_SUITE_TIMEOUT_MS ?? 180_000);
     return new Promise((resolveSuite, rejectSuite) => {
         const child = spawn(process.execPath, [resolve(__dirname, `${name}.e2e.js`)], {
-            env: { ...process.env, E2E_WS_ENDPOINT: endpoint },
+            env: { ...fixtureEnvironment(workspace), E2E_WS_ENDPOINT: endpoint },
             stdio: "inherit",
         });
+        let timedOut = false;
         const timeout = setTimeout(() => {
+            timedOut = true;
             child.kill("SIGKILL");
-            rejectSuite(new Error(`${name} exceeded ${timeoutMs} ms`));
         }, timeoutMs);
         child.once("error", error => {
             clearTimeout(timeout);
@@ -86,6 +88,10 @@ function runSuite(name: string, endpoint: string): Promise<void> {
         });
         child.once("exit", (code, signal) => {
             clearTimeout(timeout);
+            if (timedOut) {
+                rejectSuite(new Error(`${name} exceeded ${timeoutMs} ms`));
+                return;
+            }
             if (code === 0) {
                 resolveSuite();
                 return;
@@ -95,7 +101,7 @@ function runSuite(name: string, endpoint: string): Promise<void> {
     });
 }
 
-async function run(): Promise<void> {
+async function run(workspace: string): Promise<void> {
     const laneSuites = suitesForLane(process.argv[2]);
     const selection = process.argv.find(argument => argument.startsWith("--suites="))?.slice("--suites=".length).split(",");
     if (selection && (selection.some(name => !laneSuites.includes(name)) || new Set(selection).size !== selection.length)) {
@@ -112,7 +118,7 @@ async function run(): Promise<void> {
     try {
         for (const [index, suite] of suites.entries()) {
             console.log(`[E2E runner:${process.argv[2] ?? "--lane=all"}] ${index + 1}/${suites.length} ${suite}`);
-            await runSuite(suite, server.wsEndpoint());
+            await runSuite(suite, server.wsEndpoint(), workspace);
         }
         console.log(`[E2E runner:${process.argv[2] ?? "--lane=all"}] ${suites.length}/${suites.length} suites passed`);
     } finally {
@@ -120,7 +126,7 @@ async function run(): Promise<void> {
     }
 }
 
-run().catch(error => {
+withFixtureWorkspace("run", run).catch(error => {
     console.error(error);
     process.exit(1);
 });

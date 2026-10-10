@@ -1,0 +1,249 @@
+{
+  "date": "2026-10-10",
+  "state": "local_review_complete",
+  "viewer_base": "783a1e879ab3d3f59805cc01ff4c6ec859fedf6c",
+  "viewer_worktree": "authorized resource corrections, not yet committed",
+  "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+  "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+  "provider": {
+    "version": "0.22.4+24.g42b487869",
+    "module": "/home/diego/repos@uibcdf/molsysmt/molsysmt/__init__.py",
+    "commit": "02f4a5dffb710a49af32ad2e3f42f4bfa15143af",
+    "final_commit": "272f7d8899139c4fd5bba794b8abd26bf00be847",
+    "final_owner_worktree_status": [],
+    "note": "Provider HEAD stays unchanged at sampled checkpoints. The owner started unrelated uncommitted hbond-site/direction API/docs work during this task; it is preserved. These local exercises do not certify a clean exact-source or installed pair."
+  },
+  "qualification": "source exercise; not installed candidate qualification",
+  "completed": {
+    "resource_guards": {
+      "passed": 13
+    },
+    "targeted_browser": {
+      "passed_suites": 3
+    },
+    "integrated_science": {
+      "exit_code": 0,
+      "passed": 137
+    },
+    "javascript_unit": {
+      "exit_code": 0,
+      "scope": "complete registered Node unit entrypoint; Node reports one bundled test file"
+    },
+    "typescript": {
+      "exit_code": 0
+    },
+    "governance": {
+      "tests": 241,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 0
+    },
+    "core_browser": {
+      "passed_suites": 43,
+      "failed_suites": 0,
+      "skipped_suites": 0,
+      "exit_code": 0,
+      "lane": "core"
+    }
+  },
+  "pending": [
+    "reviewed integration and issue-board closeout",
+    "fresh applicable hosted CI",
+    "documentation and human installed first contact",
+    "later authorized frozen candidate and installed-byte qualification"
+  ],
+  "retained_paths": [
+    {
+      "path": "/tmp/msv-integrated-review-20261010",
+      "owner": "Viewer integrated review 2026-10-10",
+      "purpose": "logs, diagnostics and JUnit for source review and comparison to applicable CI"
+    },
+    {
+      "path": "/tmp/msv-studio-coverage-20261010",
+      "owner": "Viewer previous coverage round",
+      "purpose": "verified exact-source hosted receipts"
+    }
+  ],
+  "removed_paths": [
+    {
+      "path": "/tmp/msv-resource-export-issue-20261010.md",
+      "sha256": "3694b8282fa6d7348b68f42c3f5ad66b1e569f821ed6353e0ff3602c36576745",
+      "owner": "this review",
+      "reason": "issue draft is delivered/archived, or policy snapshot retained in the review root; no remaining consumer"
+    },
+    {
+      "path": "/tmp/msv-resource-browser-issue-20261010.md",
+      "sha256": "75589cd507fcc369ae6aa8bef9cb8a15470e57578c7dc956c2f60f473209b0ad",
+      "owner": "this review",
+      "reason": "issue draft is delivered/archived, or policy snapshot retained in the review root; no remaining consumer"
+    },
+    {
+      "path": "/tmp/msv-temporary-resource-policy-20261010.md",
+      "sha256": "d1a38cd1feca561631a625e3c97651bbd4b3a49984145588c42ad13afe428cc5",
+      "owner": "this review",
+      "reason": "issue draft is delivered/archived, or policy snapshot retained in the review root; no remaining consumer"
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/central-feedback-api.txt",
+      "sha256": "a44b0e758f792b73ecff2bb85894d3d9e65a16acd343334298388141a3665969",
+      "owner": "this review",
+      "reason": "redundant encoded API payload; decoded policy source retained"
+    }
+  ],
+  "publication": "0.25.0 unfrozen; Viewer/MT 1.0 publication paused",
+  "executed_cleanup": [
+    {
+      "path": "/tmp/msv-e2e-run-5d7B9W",
+      "owner": "managed targeted browser runner for this review",
+      "exists_after_success": false,
+      "mechanism": "withFixtureWorkspace finally after browser/server verification"
+    },
+    {
+      "path": "/tmp/msv-e2e-run-Q5tJYP",
+      "owner": "core-browser.log managed runner for this review",
+      "exists_after_success": false,
+      "mechanism": "withFixtureWorkspace finally after browser/server verification"
+    }
+  ],
+  "full_python_single_run": {
+    "tests": 3130,
+    "passed": 3093,
+    "failed": 14,
+    "skipped": 23,
+    "errors": 0,
+    "exit_code": 1,
+    "seconds": 724.872,
+    "failure_groups": {
+      "experimental_qt_context": 8,
+      "controls_guard_old_entrypoint": 4,
+      "receipt_link_written_during_run": 2
+    },
+    "failed_nodes": [
+      "tests.test_devguide_links::test_every_relative_link_resolves",
+      "tests.test_devguide_links::test_relative_links_resolve_in_a_clean_checkout",
+      "tests.test_qt_probe_resources::test_html_removed_after_real_child_outcome[success-transport]",
+      "tests.test_qt_probe_resources::test_html_removed_after_real_child_outcome[success-generations]",
+      "tests.test_qt_probe_resources::test_html_removed_after_real_child_outcome[failure-transport]",
+      "tests.test_qt_probe_resources::test_html_removed_after_real_child_outcome[failure-generations]",
+      "tests.test_qt_probe_resources::test_html_removed_after_real_child_outcome[timeout-transport]",
+      "tests.test_qt_probe_resources::test_html_removed_after_real_child_outcome[timeout-generations]",
+      "tests.test_reporting_protocol::test_newly_resolved_archive_guards_are_addressable[archive/cinema_and_controls_reveal_policy.md]",
+      "tests.test_reporting_protocol::test_newly_resolved_archive_guards_are_addressable[archive/hidden_controls_keyboard_focus.md]",
+      "tests.test_reporting_protocol::test_newly_resolved_archive_guards_are_addressable[archive/studio_browser_guards.md]",
+      "tests.test_reporting_protocol::test_browser_guard_resolves_its_build_entrypoint_and_core_lane",
+      "tests.test_standalone::test_qt_event_transport_smoke_real_qt",
+      "tests.test_standalone::test_qt_payload_refs_replace_across_two_real_generations"
+    ],
+    "note": "Six integration bookkeeping failures are repaired and the final reporting/link/architecture modules pass. Eight existing Qt context failures remain separate; the global verdict remains failure. No second full run."
+  },
+  "log_evidence": [
+    {
+      "path": "/tmp/msv-integrated-review-20261010/central-feedback.md",
+      "sha256": "3320daf9dcf04dcc73e035aed4708d3b72fc4a5fbf4febcdc424029de64591ce",
+      "bytes": 8307
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/core-browser.log",
+      "sha256": "e61a0322e75ca503da8a5e45f574807ea5ed3bfd49e58eff07b7942079eb16eb",
+      "bytes": 17433
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/e2e-build.log",
+      "sha256": "00434c9aa1cb3e2f7f17cae88d78a612bc3378c4cb3d148dc82ca318509d33e6",
+      "bytes": 3017
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/governance-final.log",
+      "sha256": "9dc34330d352615ab9c0b2fc576381f3ac6790a6e211cf6b051464dabbe9a080",
+      "bytes": 320
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/governance-final.xml",
+      "sha256": "480d4537b56787eacb2efbf5fda2d7a4c3e3bc86cf09523025a090c24ffe9bbc",
+      "bytes": 41803
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/harness-build.log",
+      "sha256": "6ea1e5395d0a20b6ecf1095c524168661d55eec4d95f86d15ddd09a57bb64873",
+      "bytes": 228
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/integrated-science.log",
+      "sha256": "9a14cf5fa8ce971a121a0305972e147b08fc12f27825fbba6f58c47e635869fc",
+      "bytes": 3224
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/js-unit.log",
+      "sha256": "f52f71297e67d9728f8faef93af5094a43ac54e4cae655db18fe96d95545c9f5",
+      "bytes": 506
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/playwright-install.log",
+      "sha256": "42b51cf966e1876c01fe99847ff1ff3ec8539f8e501999cb5ad1d46f517835eb",
+      "bytes": 1233
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/png-browser-diagnosis.log",
+      "sha256": "d4e31a59260a1652852831959d6e10826ee0dce51ee5336e83f9f5de5cc81f01",
+      "bytes": 1475
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/python-full.log",
+      "sha256": "692457b2734be9ba9774f0241e2ef73525b5031b312ba54c41733459d32d5b9b",
+      "bytes": 19427
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/python-full.xml",
+      "sha256": "429cd7edbfb8fc19d156f5e672515182b2a29bb33a0f95b74f75421949e98783",
+      "bytes": 462614
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/resource-tests-final.log",
+      "sha256": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9",
+      "bytes": 80
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/resource-tests-with-playwright.log",
+      "sha256": "ce3027d4e95152710a0ed49118139cd270acc31ba85d54c5b31798b4605b1c70",
+      "bytes": 5677
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/resource-tests.log",
+      "sha256": "87c09a11858c9d917775917a54bc29dbcc32518492f1c802f2b7fe1a4e5e28e5",
+      "bytes": 3806
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/targeted-browser.log",
+      "sha256": "2ad9e763532e436af72c37abe086dabf35810cc31ffcbf450e26aacf26aaf5f2",
+      "bytes": 3704
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/temporary-resource-policy.md",
+      "sha256": "d1a38cd1feca561631a625e3c97651bbd4b3a49984145588c42ad13afe428cc5",
+      "bytes": 3216
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/typecheck-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/tmp/msv-integrated-review-20261010/typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ],
+  "central_policy_snapshot": {
+    "path": "/tmp/msv-integrated-review-20261010/temporary-resource-policy.md",
+    "sha256": "d1a38cd1feca561631a625e3c97651bbd4b3a49984145588c42ad13afe428cc5",
+    "owner": "uibcdf/molsyssuite#104",
+    "purpose": "exact policy consulted for component owner disposition"
+  },
+  "issues_resolved": [
+    200,
+    228,
+    229,
+    230
+  ]
+}

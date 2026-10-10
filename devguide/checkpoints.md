@@ -1,5 +1,16 @@
 # Development checkpoint
 
+**Integrated scientific/resource review — 2026-10-10:** #200 and #228–#230
+complete the owner disposition and correct headless PNG, browser fixture and
+preview lifetimes. Resource guards pass 13/13; real integrated science 137/137;
+core browser 43/43; final policy/link/architecture 241/241. The single global
+Python run has 3,093 passed, 14 failed, 23 skipped: six integration bookkeeping
+failures are repaired; eight known experimental Qt context failures remain.
+Global CI is not described as green. See [the review](integrated_review_20261010.md)
+and [resource contract](temporary_resource_lifecycle.md). Fresh hosted source CI
+is separate; no candidate freeze or publication is authorized. Broad docs and
+final human installed first contact remain next, with both 1.0 publications paused.
+
 **Cross-surface coverage round — 2026-10-10:** #223–#225 and #227 implement
 coordinate-annotation focus, truthful interaction visibility, Studio state/session
 files, folded examples and persisted workbench PNG settings. The expanded real
@@ -1623,7 +1634,10 @@ The authorized [public API follow-up](public_api_followup_20261010.md), #210–#
 is implemented with complete applicable source CI on 792fd5f6. The
 [accepted Studio coverage round](studio_coverage_20261010.md), #223–#225/#227,
 is also complete in 33e73587 with applicable hosted gates and fresh real-browser
-flows passing. Review the remaining human workflow before freezing 0.25.0.
+flows passing. The [integrated scientific/resource review](integrated_review_20261010.md)
+now passes local science/core gates and closes #200/#228–#230. Complete fresh
+hosted evidence, broad documentation and final human installed first contact
+before freezing/qualifying 0.25.0.
 Equivalent Copy Python is explicitly post-1.0 (#226). Preserve target/selection
 separation, region ownership and the
 [experimental Interactions contract](interactions_compatibility_contract.md).

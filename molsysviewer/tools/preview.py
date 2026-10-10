@@ -91,6 +91,7 @@ def preview(
     except KeyboardInterrupt:
         print()
     finally:
-        server.shutdown()
+        # The serving loop has already exited. shutdown() here would wait for
+        # that same thread and deadlock instead of handling Ctrl-C.
         server.server_close()
     return url

@@ -1,3 +1,4 @@
+import { withFixtureWorkspace, fixtureEnvironment } from "./fixture-workspace";
 /**
  * An embedded export takes the colour of the surface it was dropped on.
  *
@@ -39,7 +40,7 @@ import { readFile } from "node:fs/promises";
 import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
-import type { Frame, Page } from "playwright";
+import type { Browser, Frame, Page } from "playwright";
 import { chromium } from "./e2e-browser";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -185,13 +186,13 @@ async function dominantColour(page: Page, png: Buffer): Promise<{ rgb: number[];
 const hex = (colour: number | undefined) =>
     colour === undefined ? "none" : `#${colour.toString(16).padStart(6, "0")}`;
 
-async function run() {
+async function run(workspace: string) {
     console.log("[E2E exported-page-colour] Scenario: an export copies the surface it sits on");
 
     const python = spawnSync(
         process.env.PYTHON_BIN || "python",
         [resolve(__dirname, "exported-page-colour-bridge.py")],
-        { encoding: "utf8", cwd: resolve(__dirname, "../../../..") },
+        { encoding: "utf8", env: fixtureEnvironment(workspace), cwd: resolve(__dirname, "../../../..") },
     );
     assert.strictEqual(python.status, 0, python.stderr || python.stdout);
     const exported = JSON.parse(python.stdout);
@@ -202,14 +203,15 @@ async function run() {
     }
 
     const { server, port } = await serve(exported.directory);
-    const browser = await chromium.launch({ headless: true });
-    // One context per suite is the shared browser's contract, so the three
-    // scenarios are three navigations of one page rather than three pages.
-    const page = await browser.newPage({ viewport: { width: 400, height: 300 } });
-    const errors: string[] = [];
-    page.on("pageerror", error => errors.push(String(error)));
-
+    let browser: Browser | undefined;
     try {
+        browser = await chromium.launch({ headless: true });
+        // One context per suite is the shared browser's contract, so the three
+        // scenarios are three navigations of one page rather than three pages.
+        const page = await browser.newPage({ viewport: { width: 400, height: 300 } });
+        const errors: string[] = [];
+        page.on("pageerror", error => errors.push(String(error)));
+
         for (const scenario of SCENARIOS) {
             const [r, g, b] = scenario.expected;
             const wanted = (r << 16) | (g << 8) | b;
@@ -280,14 +282,17 @@ async function run() {
         assert.deepStrictEqual(errors, [], "the exported page raised errors while taking its colour");
         console.log("[E2E exported-page-colour]   all three surfaces were copied");
     } finally {
-        await browser.close();
-        await new Promise(done => server.close(() => done(null)));
+        try { await browser?.close(); }
+        finally {
+            server.closeAllConnections();
+            await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
+        }
     }
 
     console.log("[E2E exported-page-colour] passed");
 }
 
-run().catch(error => {
+withFixtureWorkspace("exported-page-colour", run).catch(error => {
     console.error(error);
     process.exit(1);
 });

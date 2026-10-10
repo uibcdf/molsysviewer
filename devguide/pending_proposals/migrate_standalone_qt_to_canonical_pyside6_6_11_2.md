@@ -255,3 +255,15 @@ Windows launcher checks for the same Viewer pass in their separate scopes;
 they do not close #109. The [candidate receipt](../stabilization_0241_preparation_20261008.json)
 retains the exact pair and pending source/installed qualification. No Qt
 workaround, opt-out or test rerun is introduced.
+
+## Resource-owner exception — 2026-10-10
+
+The component review uibcdf/molsysviewer#200 records the remaining Qt image
+export named HTML/unlink suppression and window/timer disposal paths as a
+bounded experimental implementation exception. Implicit standalone HTML can
+also remain after failed initialization. Viewer maintainers own this boundary;
+keep host observations isolated, record exact created paths, stop the host before
+reviewing/removing owned scratch, and preserve caller outputs. Review on
+2026-11-10 or before certification; remove the exception after managed file,
+window and callback cleanup with visible failures is guarded on qualified hosts.
+See `../temporary_resource_lifecycle.md`. No native-GPU pass is inferred.

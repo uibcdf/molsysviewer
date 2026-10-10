@@ -1,5 +1,13 @@
 # Path to 1.0.0 (Unified Release Plan)
 
+**Before broad documentation — 2026-10-10:** the
+[integrated scientific/resource review](integrated_review_20261010.md) closes
+#200/#228–#230 with 13 resource, 137 scientific, 241 policy and 43/43 core-browser
+checks passing. Six global-run integration bookkeeping failures are repaired;
+eight existing Qt context failures remain experimental. Fresh hosted CI retains
+its separate source scope. Documentation, human installed first contact and
+later frozen-candidate qualification remain; publication is still paused.
+
 **Current priority — 2026-10-10:** the accepted
 [Studio/API coverage round](studio_coverage_20261010.md) (#223–#225/#227)
 is complete in `33e73587`, with all applicable hosted source gates and a fresh

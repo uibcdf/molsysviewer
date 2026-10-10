@@ -1,3 +1,4 @@
+import { withFixtureWorkspace, fixtureEnvironment } from "./fixture-workspace";
 /**
  * An exported page has to frame its own scene.
  *
@@ -44,10 +45,10 @@ const __dirname = dirname(__filename);
 /** Mol*'s own default. A camera that has never framed anything reports this. */
 const MOLSTAR_DEFAULT_RADIUS_MAX = 10;
 
-async function checkActualArtifacts(page: Page) {
+async function checkActualArtifacts(page: Page, workspace: string) {
     const produced = spawnSync(process.env.PYTHON_BIN || "python",
         [resolve(__dirname, "exported-page-artifact-bridge.py")],
-        { encoding: "utf8", cwd: resolve(__dirname, "../../../..") });
+        { encoding: "utf8", env: fixtureEnvironment(workspace), cwd: resolve(__dirname, "../../../..") });
     assert.equal(produced.status, 0, produced.stderr || produced.stdout);
     const fixture = JSON.parse(produced.stdout);
     assert.ok(fixture.images > 0, "the artifact must exercise real periodic observations");
@@ -62,40 +63,40 @@ async function checkActualArtifacts(page: Page) {
         } catch { response.writeHead(404); response.end(); }
     });
     await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
-    const address = server.address();
-    assert.ok(address && typeof address !== "string");
-    const origin = `http://127.0.0.1:${address.port}`;
-    const network: string[] = [];
-    await page.route(/^https?:/, async route => {
-        const url = route.request().url();
-        if (url.startsWith(origin + "/")) await route.continue();
-        else { network.push(url); await route.abort(); }
-    });
-    // Observe the actual Mol* draw at the instant readiness is declared. The
-    // wrapper calls the real handler and only records its completed operation.
-    await page.addInitScript(() => {
-        let controller: any;
-        let draws = 0;
-        let lastMessageDraws = 0;
-        Object.defineProperty(window, "__molsysviewerDocsController", {
-            configurable: true, get: () => controller,
-            set: value => {
-                controller = value;
-                controller.plugin.canvas3d.didDraw.subscribe(() => { draws++; });
-                const handle = controller.handleMessage.bind(controller);
-                controller.handleMessage = async (...args: any[]) => {
-                    await handle(...args);
-                    lastMessageDraws = draws;
-                };
-            },
-        });
-        new MutationObserver(() => {
-            if (document.getElementById("molsysviewer-root")?.dataset.molsysviewerRendered === "true") {
-                (window as any).__drawAtReady ??= { draws, lastMessageDraws };
-            }
-        }).observe(document, { subtree: true, attributes: true, attributeFilter: ["data-molsysviewer-rendered"] });
-    });
     try {
+        const address = server.address();
+        assert.ok(address && typeof address !== "string");
+        const origin = `http://127.0.0.1:${address.port}`;
+        const network: string[] = [];
+        await page.route(/^https?:/, async route => {
+            const url = route.request().url();
+            if (url.startsWith(origin + "/")) await route.continue();
+            else { network.push(url); await route.abort(); }
+        });
+        // Observe the actual Mol* draw at the instant readiness is declared. The
+        // wrapper calls the real handler and only records its completed operation.
+        await page.addInitScript(() => {
+            let controller: any;
+            let draws = 0;
+            let lastMessageDraws = 0;
+            Object.defineProperty(window, "__molsysviewerDocsController", {
+                configurable: true, get: () => controller,
+                set: value => {
+                    controller = value;
+                    controller.plugin.canvas3d.didDraw.subscribe(() => { draws++; });
+                    const handle = controller.handleMessage.bind(controller);
+                    controller.handleMessage = async (...args: any[]) => {
+                        await handle(...args);
+                        lastMessageDraws = draws;
+                    };
+                },
+            });
+            new MutationObserver(() => {
+                if (document.getElementById("molsysviewer-root")?.dataset.molsysviewerRendered === "true") {
+                    (window as any).__drawAtReady ??= { draws, lastMessageDraws };
+                }
+            }).observe(document, { subtree: true, attributes: true, attributeFilter: ["data-molsysviewer-rendered"] });
+        });
         for (const url of [pathToFileURL(join(fixture.directory, "inline.html")).href,
                           origin + "/" + encodeURIComponent("view #1 %.html")]) {
             await page.goto(url);
@@ -194,13 +195,13 @@ async function checkActualArtifacts(page: Page) {
     }
 }
 
-async function run() {
+async function run(workspace: string) {
     console.log("[E2E exported-page-framing] Scenario: an exported page frames its scene");
 
     const python = spawnSync(
         process.env.PYTHON_BIN || "python",
         [resolve(__dirname, "exported-page-framing-bridge.py")],
-        { encoding: "utf8", cwd: resolve(__dirname, "../../../..") },
+        { encoding: "utf8", env: fixtureEnvironment(workspace), cwd: resolve(__dirname, "../../../..") },
     );
     assert.strictEqual(python.status, 0, python.stderr || python.stdout);
     const exported = JSON.parse(python.stdout);
@@ -212,11 +213,11 @@ async function run() {
         chromiumSandbox: false,
         args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--no-sandbox"],
     } as any);
-    const page = await browser.newPage({ viewport: { width: 900, height: 700 } });
-    const errors: string[] = [];
-    page.on("pageerror", err => errors.push(String(err)));
-
     try {
+        const page = await browser.newPage({ viewport: { width: 900, height: 700 } });
+        const errors: string[] = [];
+        page.on("pageerror", err => errors.push(String(err)));
+
         // Opened as a file, deliberately: that is how a reader opens it.
         await page.goto(pathToFileURL(exported.page).href);
 
@@ -335,7 +336,7 @@ async function run() {
 
         assert.deepStrictEqual(errors, [], "the exported page raised errors while framing");
         console.log("[E2E exported-page-framing]   initial and post-representation framing are usable");
-        await checkActualArtifacts(page);
+        await checkActualArtifacts(page, workspace);
     } finally {
         await browser.close();
     }
@@ -343,7 +344,7 @@ async function run() {
     console.log("[E2E exported-page-framing] passed");
 }
 
-run().catch(error => {
+withFixtureWorkspace("exported-page-framing", run).catch(error => {
     console.error(error);
     process.exit(1);
 });

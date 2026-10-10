@@ -1,5 +1,10 @@
 # Archived implementation plans
 
+- [Temporary resource owner review](temporary_resource_owner_review.md) — #200 records applicable owners, caller protection, managed cleanup, retained evidence and bounded Qt/forced-termination exceptions.
+- [Headless export resources](headless_export_resource_ownership.md) — #228 renders from read-only packages with managed HTML and explicit browser/thread/socket close.
+- [Browser fixture resources](browser_fixture_resource_ownership.md) — #229 gives exported fixtures a managed suite/runner lifetime through browser verification, preserving caller output.
+- [Preview interruption](preview_interrupt_deadlock.md) — #230 exits the actual server on Ctrl-C without same-thread shutdown deadlock.
+
 - [`studio_absolute_annotation_focus.md`](studio_absolute_annotation_focus.md) — #223: Live tagged annotation Focus uses Annotation.focus, including absolute coordinates; broken anchors and exported-host availability remain explicit.
 - [`studio_work_persistence.md`](studio_work_persistence.md) — #224: Studio saves/restores JSON state and experimental MSV through the public owners, with Python-host paths, explicit overwrite/restore declarations, persistent drafts and correlated replies.
 - [`studio_visibility_and_workflow_guidance.md`](studio_visibility_and_workflow_guidance.md) — #225: Visible/Hidden/Hidden by layer replaces interaction enablement wording; counts respect layer visibility. Folded examples explain loading, structure coverage, geometry and persistence.

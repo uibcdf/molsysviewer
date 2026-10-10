@@ -41,6 +41,9 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- [Integrated scientific/resource review](integrated_review_20261010.md): #200 records local ownership and #228–#230 correct export/fixture/preview lifecycle; 137 science checks and 43/43 core suites pass, with Qt and fresh hosted CI separate.
+- [Temporary resource lifecycle](temporary_resource_lifecycle.md): applicable owners, managed cleanup, retained evidence and bounded Qt/forced-termination exceptions.
+
 - [Studio coverage review](studio_coverage_20261010.md): #223–#225/#227 complete focus, visibility, work files, figure persistence and examples; #226 defers Copy Python.
 
 The next agreed version is [0.25.0](stabilization_025_preparation_20261009.md);

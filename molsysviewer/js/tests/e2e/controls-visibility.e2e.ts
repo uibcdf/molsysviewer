@@ -1,3 +1,4 @@
+import { withFixtureWorkspace, fixtureEnvironment } from "./fixture-workspace";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
@@ -6,7 +7,7 @@ import { chromium } from "./e2e-browser";
 
 const dir = dirname(fileURLToPath(import.meta.url));
 
-async function run() {
+async function run(workspace: string) {
     // The actual Python export, embedded runtime, real trajectory and popup boot.
     const fixture = spawnSync(process.env.PYTHON || process.env.PYTHON_BIN || "python", ["-c", `
 import json, tempfile
@@ -23,7 +24,7 @@ view.set_controls_visible(True, autohide=True)
 view.export.html(str(single))
 view.close()
 print(json.dumps({"page": str(output), "single": str(single)}))
-`], { cwd: resolve(dir, "../../../.."), encoding: "utf8" });
+`], { env: fixtureEnvironment(workspace), cwd: resolve(dir, "../../../.."), encoding: "utf8" });
     assert.equal(fixture.status, 0, fixture.stderr || fixture.stdout);
     const artifact = JSON.parse(fixture.stdout);
     const browser = await chromium.launch();
@@ -325,4 +326,4 @@ print(json.dumps({"page": str(output), "single": str(single)}))
         console.log("[E2E controls] actual Python export/popup: whole-group fade, inert fading input, Cinema slide, two-second discovery, preset cycles, scopes, Settings, Dock/fullscreen, keyboard and stable subscriptions pass");
     } finally { await browser.close(); }
 }
-run().catch(error => { console.error(error); process.exit(1); });
+withFixtureWorkspace("controls-visibility", run).catch(error => { console.error(error); process.exit(1); });

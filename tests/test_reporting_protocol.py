@@ -142,7 +142,9 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             'await selectMode("Cinema")' in entry,
             'page.waitForEvent("popup")' in entry,
             'getByLabel("Controls reveal area")' in entry,
-            "run().catch(" in entry,
+            'withFixtureWorkspace("controls-visibility", run).catch(' in entry,
+            'from "./fixture-workspace";' in entry,
+            (js_root / "tests/e2e/fixture-workspace.ts").is_file(),
         )
     else:
         requirements += (

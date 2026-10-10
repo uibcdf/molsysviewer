@@ -133,3 +133,22 @@ It must be visible in any pre-1.0 release decision rather than described as
 green CI. The later 2026-09-26 decision supersedes this paragraph's original
 assumption about the full E2E gate: 1.0 requires hosted core E2E and
 real-window Qt, while remote E2E certification is post-1.0.
+
+## Forced-termination resource exception — 2026-10-10
+
+The component review uibcdf/molsysviewer#200 records that SIGKILL/crashes cannot
+run fixture/browser-profile finalizers and descendants may outlive a killed
+suite until EOF/process shutdown. Viewer maintainers own the consumer boundary.
+Use normal bridge close; after failure inspect exact owned paths/processes,
+stop remaining active children, retain required evidence and remove obsolete
+scratch. Review on 2026-11-10 or before remote certification. Remove this bounded
+exception with process-tree shutdown/failed-start evidence on the applicable
+host; no passing remote or GPU gate is claimed. See
+`../../temporary_resource_lifecycle.md`.
+
+The same bounded compatibility-tool disposition covers direct one-shot fixture
+producer failures before returning their output directory: source inspection
+finds no finally owner there. Core runs provide managed TMPDIR/worker contexts.
+For direct use, provide an identified managed TMPDIR, retain needed outputs and
+review it after failure. Owner/review date remain Viewer maintainers/2026-11-10;
+remove this limit after failure cleanup/ownership handoff has an actual guard.

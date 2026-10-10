@@ -3338,12 +3338,9 @@ class MolSysView(
         timeout_s: float = 15.0,
     ) -> None:
         """Headless render via playwright (shared Chromium browser binary)."""
-        import http.server
-        import os
         import pathlib
-        import socket
-        import tempfile
-        import threading
+
+        from .._private.html_server import runtime_html_server
 
         try:
             from playwright.sync_api import sync_playwright
@@ -3355,70 +3352,35 @@ class MolSysView(
         viewer_js_path = pathlib.Path(__file__).parent.parent / "viewer.js"
         if not viewer_js_path.exists():
             raise RuntimeError(f"Cannot find bundled viewer.js at {viewer_js_path}")
-        pkg_dir = str(viewer_js_path.parent)
 
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as _s:
-            _s.bind(("localhost", 0))
-            port = _s.getsockname()[1]
-
-        messages = self._build_export_messages()
-        html = self._build_lite_html(
-            title="MolSysViewer Headless Export",
-            include_controls=False,
-            include_popout=False,
-            messages=messages,
-            inline_messages=True,
-            runtime_urls=[f"http://localhost:{port}/viewer.js"],
-        )
-
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".html", dir=pkg_dir, delete=False, encoding="utf-8") as _f:
-            _f.write(html)
-            html_name = os.path.basename(_f.name)
-            html_abs = _f.name
-
-        _pkg_dir_ref = pkg_dir
-
-        class _SilentHandler(http.server.SimpleHTTPRequestHandler):
-            def __init__(self, *args: Any, **kwargs: Any) -> None:
-                super().__init__(*args, directory=_pkg_dir_ref, **kwargs)
-
-            def log_message(self, *args: Any) -> None:
-                pass
-
-        httpd = http.server.HTTPServer(("localhost", port), _SilentHandler)
-        threading.Thread(target=httpd.serve_forever, kwargs={"poll_interval": 0.05}, daemon=True).start()
-
-        try:
-            w = int(width_px or 1280)
-            h = int(height_px or 720)
-            dpr = max(0.1, float(scale))
+        with runtime_html_server(viewer_js_path) as host:
+            html = self._build_lite_html(
+                title="MolSysViewer Headless Export",
+                include_controls=False,
+                include_popout=False,
+                messages=self._build_export_messages(),
+                inline_messages=True,
+                runtime_urls=[f"{host.origin}/viewer.js"],
+            )
+            (host.directory / "view.html").write_text(html, encoding="utf-8")
             with sync_playwright() as pw:
-                browser = pw.chromium.launch()
-                ctx = browser.new_context(
-                    viewport={"width": w, "height": h},
-                    device_scale_factor=dpr,
+                # A headless host may have no GPU. Allow Chromium's software
+                # WebGL renderer, as in the real-browser validation lane.
+                browser = pw.chromium.launch(
+                    args=["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"]
                 )
-                page = ctx.new_page()
-                page.goto(
-                    f"http://localhost:{port}/{html_name}",
-                    timeout=int(timeout_s * 1000),
-                )
-                page.wait_for_selector(
-                    "[data-molsysviewer-rendered]",
-                    timeout=int(timeout_s * 1000),
-                )
-                page.screenshot(
-                    path=output_filename,
-                    full_page=False,
-                    omit_background=bool(transparent),
-                )
-                browser.close()
-        finally:
-            httpd.shutdown()
-            try:
-                os.unlink(html_abs)
-            except OSError:
-                pass
+                try:
+                    page = browser.new_page(
+                        viewport={"width": int(width_px or 1280), "height": int(height_px or 720)},
+                        device_scale_factor=max(0.1, float(scale)),
+                    )
+                    if not page.evaluate("document.createElement('canvas').getContext('webgl2') !== null"):
+                        raise RuntimeError("Headless PNG export requires a working WebGL2 rendering context.")
+                    page.goto(f"{host.origin}/view.html", timeout=int(timeout_s * 1000))
+                    page.wait_for_selector("[data-molsysviewer-rendered]", timeout=int(timeout_s * 1000))
+                    page.screenshot(path=output_filename, full_page=False, omit_background=bool(transparent))
+                finally:
+                    browser.close()
 
     def _export_image_impl(
         self,
