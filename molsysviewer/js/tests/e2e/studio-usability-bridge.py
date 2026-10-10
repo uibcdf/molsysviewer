@@ -74,8 +74,7 @@ def replay(events, family=None):
                     ):
                         raise
             if family == "refinement" and event.get("action") == "set_trajectory_frame":
-                # Exercise background repaint explicitly with real live summaries;
-                # embedded snapshots intentionally omit their editing flags.
+                # Exercise background repaint explicitly with real live summaries.
                 view._sync_region_summaries_runtime()  # noqa: SLF001
                 view._sync_annotation_summaries_runtime()  # noqa: SLF001
                 view._sync_measurement_summaries_runtime()  # noqa: SLF001

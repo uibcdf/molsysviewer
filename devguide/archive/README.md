@@ -320,3 +320,7 @@ Completed work, kept for the reasoning:
 - [studio_annotation_coordinate_validation.md](studio_annotation_coordinate_validation.md) — #203: Missing/nonfinite coordinate anchors are rejected; explicit zero and nm units remain valid across session policies.
 - [studio_analysis_deletion_confirmation.md](studio_analysis_deletion_confirmation.md) — #204: Named scientific deletion asks for confirmation, preserves data on cancellation and reports history loss explicitly.
 - [studio_catalogue_utf8_decoding.md](studio_catalogue_utf8_decoding.md) — #205: Executable catalogue guards read TypeScript explicitly as UTF-8 instead of Windows cp1252; new hosted Windows qualification remains pending.
+
+- [studio_atomic_replacement.md](studio_atomic_replacement.md) — #206: Region/selection replacement uses one request and one history boundary, restoring complete scene metadata on rollback and Undo/Redo.
+- [studio_remaining_creation_feedback.md](studio_remaining_creation_feedback.md) — #207: Region/selection and addon registration drafts remain pending until their own reply; failures retain retryable values.
+- [studio_export_backend_state.md](studio_export_backend_state.md) — #208: Exported Studio projects truthful loaded state and exits unsupported creation with a retained draft and explicit backend feedback.

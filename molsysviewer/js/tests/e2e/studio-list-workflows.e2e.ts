@@ -244,6 +244,61 @@ async function run() {
         const annotationRequest = await lastAction("create_annotation"); assert.deepEqual(annotationRequest.position, [0, 0, 0]);
         await reply(annotationRequest); assert.equal(await annotationText.inputValue(), "");
 
+        // Selection and region replacements are single correlated requests. Keep
+        // drafts pending, and restore complete old memberships with one Undo.
+        await reply({ action: "apply_selection_query", expression: [7, 8], syntax: "Indices", op: "replace" });
+        await open("selection");
+        await page.locator('[data-molsysviewer-active-selection-save-toggle]').click();
+        const saveName = page.locator('[data-molsysviewer-active-selection-save-input]');
+        await saveName.fill("alpha-one");
+        page.once("dialog", dialog => dialog.accept());
+        const beforeSave = await page.evaluate(() => (window as any).__messages.length);
+        await page.locator('[data-molsysviewer-active-selection-save-confirm]').click();
+        const save = await lastAction("save_selection"); assert.equal(save.overwrite, true);
+        assert.equal(await page.evaluate(() => (window as any).__messages.length), beforeSave + 1);
+        assert.equal(await saveName.inputValue(), "alpha-one"); assert.ok(await saveName.isDisabled());
+        await reply(save); assert.equal(await saveName.count(), 0);
+        await reply({ event: "scene_history_undo" });
+        assert.match(await section("selection").locator('[data-molsysviewer-saved-selection-card="alpha-one"]').innerText(), /1 atom/);
+        await reply({ event: "scene_history_redo" });
+        assert.match(await section("selection").locator('[data-molsysviewer-saved-selection-card="alpha-one"]').innerText(), /2 atoms/);
+        await open("regions");
+        const regionCreation = creation("regions");
+        if (!await regionCreation.evaluate((element: HTMLDetailsElement) => element.open)) await regionCreation.locator(":scope > summary").click();
+        const replacementName = page.locator('[data-molsysviewer-region-create-input]');
+        if (!await replacementName.isVisible()) await page.locator('[data-molsysviewer-region-create-btn]').click();
+        await replacementName.fill("alpha-two"); page.once("dialog", dialog => dialog.accept());
+        const beforeRegion = await page.evaluate(() => (window as any).__messages.length);
+        await page.locator('[data-molsysviewer-region-create-confirm]').click();
+        const replacement = await lastAction("create_region_from_selection"); assert.equal(replacement.overwrite, true);
+        assert.equal(await page.evaluate(() => (window as any).__messages.length), beforeRegion + 1);
+        assert.equal(await replacementName.inputValue(), "alpha-two"); assert.ok(await replacementName.isDisabled());
+        await reply(replacement); assert.equal(await replacementName.count(), 0);
+        await reply({ event: "scene_history_undo" });
+        assert.match(await section("regions").locator('[data-molsysviewer-region-card="alpha-two"]').innerText(), /1 atom/);
+        await reply({ event: "scene_history_redo" });
+        assert.match(await section("regions").locator('[data-molsysviewer-region-card="alpha-two"]').innerText(), /2 atoms/);
+
+        // Real registration rejection keeps a retryable draft through summaries.
+        await page.evaluate(() => (window as any).__controller.setPanelMode("addons", true));
+        await page.getByRole("button", { name: "＋ Register Module", exact: true }).click();
+        const module = page.getByLabel("Add-on module", { exact: true });
+        await module.fill("molsysviewer_molsysmt");
+        await page.getByRole("button", { name: "Register", exact: true }).click();
+        const registration = await lastAction("addon_register_module");
+        assert.equal(await module.inputValue(), "molsysviewer_molsysmt"); assert.ok(await module.isDisabled());
+        await reply(registration);
+        assert.equal(await module.inputValue(), "molsysviewer_molsysmt"); assert.ok(await module.isEnabled());
+        assert.match(await page.locator('[data-molsysviewer-creation-status="addons"]').innerText(), /retired/);
+        await module.fill("molsysviewer.addon_templates.dummy_addon");
+        await page.getByRole("button", { name: "Register", exact: true }).click();
+        const registered = await reply(await lastAction("addon_register_module"));
+        assert.ok(registered.message_batches.at(-1).some((message: any) => message.op === "studio_action_result" && message.ok));
+        assert.ok(!await module.isVisible(), "Successful registration opens the addon workspace");
+        await apply([{ op: "set_workspace", workspace: "core" }]);
+        assert.equal(await module.inputValue(), ""); assert.ok(!await module.isVisible());
+        await page.evaluate(() => (window as any).__controller.setPanelMode("navigate", true));
+
         // Scientific deletion requires an explicit named confirmation, cancellation
         // sends no request, filtering does not retarget it, and success clears history.
         await open("interactions");

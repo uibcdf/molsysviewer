@@ -59,3 +59,11 @@ or substitute the unrelated Qt/WebGL result.
 
 Diagnosis and exact-source macOS verification pending. Original failure remains
 at https://github.com/uibcdf/molsysviewer/actions/runs/37993286215.
+
+## Follow-up — 2026-10-10
+
+Base-source a699f5b5 run 38034284564 completes all six scientific cells
+successfully, including macOS/Python 3.12. Its separate experimental Qt job
+fails. The later macOS success is recorded without attributing a cause to the
+historical disappearing-region failure; no guard was skipped or replaced.
+Diagnosis remains open.

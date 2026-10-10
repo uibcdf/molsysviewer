@@ -376,10 +376,9 @@ test("GroupPanel selection query composer emits apply actions and accepts curren
         assert.ok(saveConfirm);
         saveConfirm.dispatch("click", { preventDefault() {}, stopPropagation() {} });
 
-        assert.deepStrictEqual(actions.at(-1), {
-            action: "save_selection",
-            details: { tag: "my_query_selection" },
-        });
+        assert.equal(actions.at(-1)?.action, "save_selection");
+        assert.equal(actions.at(-1)?.details.tag, "my_query_selection");
+        assert.equal(typeof actions.at(-1)?.details.request_id, "string");
 
         panel.dispose();
     } finally {
@@ -932,12 +931,12 @@ test("GroupPanel region cards expose lifecycle actions and explicit collision ch
             "data-molsysviewer-region-rename-collision",
             "catalytic",
         ));
+        const beforeOverwrite = actions.length;
         findFirstByAttribute(root, "data-molsysviewer-region-collision-overwrite", "rename")
             ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
-        assert.deepStrictEqual(actions.slice(-2), [
-            { action: "delete_region", details: { tag: "catalytic" } },
-            { action: "rename_region", details: { tag: "binding", new_tag: "catalytic" } },
-        ]);
+        assert.deepStrictEqual(actions.at(-1),
+            { action: "rename_region", details: { tag: "binding", new_tag: "catalytic", overwrite: true } });
+        assert.equal(actions.length, beforeOverwrite + 1);
 
         panel.dispose();
     } finally {
@@ -1524,11 +1523,14 @@ test("GroupPanel saved selections card actions and inline forms", () => {
         confirm?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
 
         assert.strictEqual(lastAction, "rename_selection");
-        assert.deepEqual(lastParams, { tag: "site_a", new_tag: "site_new" });
+        assert.equal(lastParams.tag, "site_a");
+        assert.equal(lastParams.new_tag, "site_new");
+        assert.equal(typeof lastParams.request_id, "string");
 
-        // Form hides after confirm
-        assert.strictEqual(inlineForm.style.display, "none");
-        assert.strictEqual(btnRow.style.display, "flex");
+        // Pending submission retains the editor; only the correlated reply closes it.
+        assert.ok(findFirstByAttribute(root, "data-molsysviewer-saved-selection-editor", "site_a:rename"));
+        panel.updateStudioAction({ action: "rename_selection", request_id: lastParams.request_id, domain: "selections", ok: true });
+        assert.ok(!findFirstByAttribute(root, "data-molsysviewer-saved-selection-editor", "site_a:rename"));
 
         panel.dispose();
     } finally {

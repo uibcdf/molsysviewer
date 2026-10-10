@@ -17,6 +17,7 @@
  * dispatcher and the Python `core.py` handlers.
  */
 export type PanelAction =
+    | "addon_register_module"
     | "batch_scene_objects"
     | "load_systems"
     // Selection

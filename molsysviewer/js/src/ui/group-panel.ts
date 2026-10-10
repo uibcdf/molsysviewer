@@ -802,9 +802,11 @@ export class GroupPanel {
     }
 
     updateStudioAction(result: import("./panels/saved-list-tools").StudioActionResult): void {
-        const key = result.domain === "selections" ? "selection" : result.domain === "measurements" ? "measures" : result.domain;
-        const panel = this.panels.get(key as TabKey)?.panel;
-        if (panel && "updateStudioAction" in panel) (panel as import("./panels/base-panel").BasePanel).updateStudioAction(result);
+        // Saved-selection editors can create another domain's object. Only the
+        // matching request owner consumes a reply; the domain stays canonical.
+        for (const { panel } of this.panels.values()) {
+            if ("updateStudioAction" in panel) (panel as import("./panels/base-panel").BasePanel).updateStudioAction(result);
+        }
     }
 
     isExpanded(): boolean {
@@ -938,7 +940,18 @@ export class GroupPanel {
     /** Build the narrow context injected into a migrated subpanel. */
     private makePanelContext(key: TabKey): PanelContext {
         return {
-            onAction: (action, details) => this.onAction?.(action, details),
+            onAction: (action, details) => {
+                if (!this.hasAuthority && action !== "download_image" && action !== "reset_view") {
+                    this.onAction?.(action, details);
+                    if (["create_shape", "create_measurement", "create_annotation", "create_layer", "save_selection",
+                        "rename_selection", "create_region_from_selection", "create_region_from_saved_selection",
+                        "create_label_from_saved_selection", "batch_scene_objects"].includes(action)) {
+                        throw new Error("This action needs a running MolSysViewer session. The exported scene is unchanged.");
+                    }
+                    return;
+                }
+                this.onAction?.(action, details);
+            },
             setBadge: (text) => {
                 const badge = this.tabs.get(key)?.badge;
                 if (badge) badge.textContent = text;

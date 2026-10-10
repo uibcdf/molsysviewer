@@ -1,4 +1,6 @@
 import { SavedListTools } from "./saved-list-tools";
+import type { StudioActionResult } from "./saved-list-tools";
+import { CreationFeedback } from "./creation-feedback";
 import { ActiveSelectionItem, ActiveSelectionPayload, ActiveSelectionSetOperation } from "../../managers/active-selection";
 import { ManualQueryComposer } from "../query-composer";
 import type { SavedSelectionSummary, SelectionQueryPreview } from "../group-panel";
@@ -16,6 +18,16 @@ import { makeButton, makeSectionHeader } from "./ui-helpers";
  * and a regionExists bridge callback.
  */
 export class SelectionPanel extends BasePanel {
+    private readonly creation = new CreationFeedback("save_selection", "selections");
+    private editorFeedback: CreationFeedback | null = null;
+    updateStudioAction(result: StudioActionResult): void {
+        super.updateStudioAction(result);
+        const outcome = this.creation.update(result);
+        const editorOutcome = this.editorFeedback?.update(result);
+        if (outcome === "success") { this.showActiveSelectionSaveForm = false; this.activeSaveDraft = ""; }
+        if (editorOutcome === "success") { this.savedEditor = null; this.editorFeedback = null; }
+        if (outcome || editorOutcome) this.scheduleRender();
+    }
     readonly key = "selection";
     private static readonly SELECTION_STYLE_ID = "molsysviewer-selection-panel-design-system";
 
@@ -435,7 +447,11 @@ export class SelectionPanel extends BasePanel {
                 const showForm = (mode: "rename" | "region" | "label", focus = true) => {
                     btnRow.style.display = "none";
                     inlineForm.replaceChildren();
-                    if (!this.savedEditor || this.savedEditor.tag !== item.tag || this.savedEditor.mode !== mode) this.savedEditor = { tag: item.tag, mode, value: "" };
+                    if (!this.savedEditor || this.savedEditor.tag !== item.tag || this.savedEditor.mode !== mode) {
+                        this.savedEditor = { tag: item.tag, mode, value: "" };
+                        this.editorFeedback = new CreationFeedback(mode === "rename" ? "rename_selection" : mode === "region" ? "create_region_from_saved_selection" : "create_label_from_saved_selection",
+                            mode === "rename" ? "selections" : mode === "region" ? "regions" : "annotations");
+                    }
                     inlineInput.value = this.savedEditor.value;
                     inlineInput.setAttribute("data-molsysviewer-saved-selection-editor", `${item.tag}:${mode}`);
                     inlineInput.setAttribute("aria-label", mode === "rename" ? "New selection name" : mode === "region" ? "New region name" : "Annotation text");
@@ -487,33 +503,29 @@ export class SelectionPanel extends BasePanel {
                                 }
                                 const doOverwrite = typeof confirm === "function" ? confirm(`A saved selection named "${val}" already exists. Overwrite?`) : true;
                                 if (doOverwrite) {
-                                    this.ctx.onAction("delete_selection", { tag: val });
-                                    this.ctx.onAction("rename_selection", { tag: item.tag, new_tag: val });
+                                    this.editorFeedback!.submit({ tag: item.tag, new_tag: val, overwrite: true }, this.ctx.onAction);
                                 } else {
                                     return;
                                 }
                             } else {
-                                this.ctx.onAction("rename_selection", { tag: item.tag, new_tag: val });
+                                this.editorFeedback!.submit({ tag: item.tag, new_tag: val }, this.ctx.onAction);
                             }
                         } else if (mode === "region") {
                             const exists = this.regionExists(val);
                             if (exists) {
                                 const doOverwrite = typeof confirm === "function" ? confirm(`A region named "${val}" already exists. Overwrite?`) : true;
                                 if (doOverwrite) {
-                                    this.ctx.onAction("delete_region", { tag: val });
-                                    this.ctx.onAction("create_region_from_saved_selection", { selection_tag: item.tag, tag: val });
+                                    this.editorFeedback!.submit({ selection_tag: item.tag, tag: val, overwrite: true }, this.ctx.onAction);
                                 } else {
                                     return;
                                 }
                             } else {
-                                this.ctx.onAction("create_region_from_saved_selection", { selection_tag: item.tag, tag: val });
+                                this.editorFeedback!.submit({ selection_tag: item.tag, tag: val }, this.ctx.onAction);
                             }
                         } else if (mode === "label") {
-                            this.ctx.onAction("create_label_from_saved_selection", { selection_tag: item.tag, text: val });
+                            this.editorFeedback!.submit({ selection_tag: item.tag, text: val }, this.ctx.onAction);
                         }
-                        this.savedEditor = null;
-                        inlineForm.style.display = "none";
-                        btnRow.style.display = "flex";
+                        this.scheduleRender();
                     });
 
                     inlineCancel.addEventListener("click", (e) => {
@@ -538,6 +550,7 @@ export class SelectionPanel extends BasePanel {
                     inlineForm.appendChild(inlineInput);
                     inlineForm.appendChild(inlineConfirm);
                     inlineForm.appendChild(inlineCancel);
+                    this.editorFeedback?.mount(inlineForm);
 
                     inlineForm.style.display = "flex";
                     if (focus) inlineInput.focus?.();
@@ -737,15 +750,13 @@ export class SelectionPanel extends BasePanel {
                 if (exists) {
                     const doOverwrite = typeof confirm === "function" ? confirm(`A saved selection named "${tag}" already exists. Overwrite?`) : true;
                     if (doOverwrite) {
-                        this.ctx.onAction("delete_selection", { tag });
-                        this.ctx.onAction("save_selection", { tag });
+                        this.creation.submit({ tag, overwrite: true }, this.ctx.onAction);
                     } else {
                         return;
                     }
                 } else {
-                    this.ctx.onAction("save_selection", { tag });
+                    this.creation.submit({ tag }, this.ctx.onAction);
                 }
-                this.showActiveSelectionSaveForm = false; this.activeSaveDraft = "";
                 this.scheduleRender();
             };
 
@@ -766,7 +777,7 @@ export class SelectionPanel extends BasePanel {
                 }
             });
 
-            const confirmBtn = makeButton("Create", submitForm);
+            const confirmBtn = makeButton(this.creation.pending ? "Creating…" : "Create", submitForm);
             confirmBtn.setAttribute("data-molsysviewer-active-selection-save-confirm", "true");
             Object.assign(confirmBtn.style, {
                 background: "#6366f1",
@@ -781,6 +792,7 @@ export class SelectionPanel extends BasePanel {
 
             form.appendChild(input);
             form.appendChild(confirmBtn);
+            this.creation.mount(form);
             card.appendChild(form);
         }
 

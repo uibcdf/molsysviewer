@@ -313,3 +313,43 @@ layout-only correction; the original failure remains recorded. The complete
 38034071236, notebooks 38034071211 and source pair 38034071271 are active;
 scientific/Qt CI 38034071216 is queued at this inspection. These states do not
 clear the new source's hosted gates or installed qualification.
+
+## Closure follow-up — 2026-10-10 (#206–#208)
+
+The maintainer authorized correction of the final three findings. Region and
+selection overwrites now send one request and run inside one rollback/history
+boundary. Saved selections own their history, and same-system state import
+preserves atom/group levels and descriptors. The first complete-scene guard
+exposed that descriptor loss; it was corrected rather than weakening equality.
+Region/selection and addon-registration drafts now await their correlated reply,
+retaining retryable values after failure. Snapshot metadata is consistent, and
+unsupported exported-HTML creation ends with inline feedback instead of a
+permanent Creating… state. Actual downloaded HTML is checked in Chromium.
+
+Focused Python guards pass 8/8. JS unit tests, TypeScript, runtime/harness builds
+and real-Python Studio list and PNG/HTML browser guards pass. The single complete
+Python run reports **3014 passed, 23 skipped, 8 failed**. All eight failures are
+Qt transport/generation resource probes: `QRhiGles2: Failed to create context`,
+`Failed to create RHI for backend: OpenGL`, followed by unavailable Vulkan and
+missing probe output. This executor observation is not a passing Qt result;
+no display/software workaround or skip is substituted. Raw run diagnostics are
+summarized in the closure receipt. Candidate 0.25.0 remains unfrozen and both
+1.0 publications remain paused.
+
+Base-source scientific run 38034284564 completes all six scientific cells
+successfully, including macOS/Python 3.12; its separate Qt job fails. This does
+not establish the historical #189 root cause. Base core 38034284562 and Linux
+source-pair 38034284506 still fail the PNG download wait (#198); Windows/macOS
+source-pair cells pass. The PNG guard now includes bounded pointer/click, inline
+status, disabled-button and drawing-buffer evidence if the unchanged wait fails.
+Local export success is not a diagnosis or repair claim for those hosted failures.
+
+The affected shared-browser checks pass individually under the core runner:
+Studio PNG/HTML, Measures and Regions in the first selection; Selections and
+Layers in the second. The initial Selections guard lacked the now-required
+correlated completion after its rendering-only synthetic echo. Creation/rename/
+promotion now consumes actual dispatcher replies from the real pentalanine
+fixture. Successful checks were not repeated. Reporting protocol, current
+links/architecture/API inventory, repository Ruff/format checks and TypeScript
+validation pass. Source-only counts, original failed diagnostics and log digests
+are retained in the [closure receipt](studio_closure_20261010.json).

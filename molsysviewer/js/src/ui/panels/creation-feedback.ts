@@ -7,12 +7,12 @@ export class CreationFeedback {
     private request: string | null = null;
     private message = "";
     private failed = false;
-    constructor(private action: PanelAction, private domain: string) {}
+    constructor(private action: PanelAction, private domain: string, private pendingText = "Creating…") {}
     get pending(): boolean { return this.request !== null; }
     submit(details: Record<string, unknown>, emit: PanelContext["onAction"]): void {
         if (this.pending) return;
         this.request = studioRequestId(this.action);
-        this.message = "Creating…"; this.failed = false;
+        this.message = this.pendingText; this.failed = false;
         try { emit(this.action, { ...details, request_id: this.request }); }
         catch (error) { this.request = null; this.message = String(error); this.failed = true; }
     }
@@ -30,7 +30,8 @@ export class CreationFeedback {
             const status = document.createElement("div"); status.textContent = this.message;
             status.setAttribute("role", this.failed ? "alert" : "status");
             status.setAttribute("data-molsysviewer-creation-status", this.domain);
-            Object.assign(status.style, { fontSize: "11px", overflowWrap: "anywhere" });
+            parent.style.flexWrap = "wrap";
+            Object.assign(status.style, { fontSize: "11px", overflowWrap: "anywhere", width: "100%", flexBasis: "100%", gridColumn: "1 / -1" });
             parent.appendChild(status);
         }
     }

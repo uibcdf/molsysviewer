@@ -48,11 +48,14 @@ Studio asks you to confirm the named analysis: this deletion cannot be undone
 and clears all scene Undo/Redo history. Remove its visual sets first if it is
 still referenced. **Cancel** keeps the analysis and history.
 
-When creating a measurement, annotation or layer, Studio keeps the form until
+When creating or saving an object, Studio keeps the form until
 Python confirms success. If creation fails, the error appears beside the form
 and you can correct the retained draft. A new layer and its initial members
 are created together and can be undone in one step. Coordinate annotations
 require a number for each coordinate in nm; enter `0` explicitly when needed.
+Replacing a saved selection or region is one undoable operation. If replacement
+fails, the previous object is kept. Add-ons module registration also keeps its
+name on failure so you can correct it and retry.
 
 Creation sections are collapsed when saved objects already exist. Open the
 **New …** heading to create another object. Studio keeps the disclosure state,
@@ -112,5 +115,7 @@ scale. Choose the light or dark preset and whether the background is transparent
 **Download HTML View** downloads a self-contained browser view from the live
 Python session. It does not create a file on the Python host. Camera navigation
 works in the exported view; scene editing requires a live Python session. This
-HTML view is distinct from the experimental standalone Qt host. Use the Python
+requirement appears beside unavailable creation actions; their drafts remain
+available and do not get stuck waiting for Python.
+This HTML view is distinct from the experimental standalone Qt host. Use the Python
 export API when you want to save to a path in the Python environment.

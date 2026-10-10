@@ -153434,9 +153434,10 @@ var SavedListTools = class {
 
 // src/ui/panels/creation-feedback.ts
 var CreationFeedback = class {
-  constructor(action, domain) {
+  constructor(action, domain, pendingText = "Creating\u2026") {
     this.action = action;
     this.domain = domain;
+    this.pendingText = pendingText;
     this.request = null;
     this.message = "";
     this.failed = false;
@@ -153447,7 +153448,7 @@ var CreationFeedback = class {
   submit(details, emit) {
     if (this.pending) return;
     this.request = studioRequestId(this.action);
-    this.message = "Creating\u2026";
+    this.message = this.pendingText;
     this.failed = false;
     try {
       emit(this.action, { ...details, request_id: this.request });
@@ -153473,7 +153474,8 @@ var CreationFeedback = class {
       status.textContent = this.message;
       status.setAttribute("role", this.failed ? "alert" : "status");
       status.setAttribute("data-molsysviewer-creation-status", this.domain);
-      Object.assign(status.style, { fontSize: "11px", overflowWrap: "anywhere" });
+      parent.style.flexWrap = "wrap";
+      Object.assign(status.style, { fontSize: "11px", overflowWrap: "anywhere", width: "100%", flexBasis: "100%", gridColumn: "1 / -1" });
       parent.appendChild(status);
     }
   }
@@ -154383,6 +154385,7 @@ var RegionsPanel = class extends BasePanel {
     super();
     this.ctx = ctx;
     this.onFocusRegion = onFocusRegion;
+    this.creation = new CreationFeedback("create_region_from_selection", "regions");
     this.key = "regions";
     // Domain state (pushed from the controller)
     this.regions = [];
@@ -154410,6 +154413,16 @@ var RegionsPanel = class extends BasePanel {
     this.regionCreationName = "";
     this.regionCreateInput = null;
     this.savedListTools = new SavedListTools("regions", ctx, () => this.scheduleRender());
+  }
+  updateStudioAction(result2) {
+    super.updateStudioAction(result2);
+    const outcome = this.creation.update(result2);
+    if (!outcome) return;
+    if (outcome === "success") {
+      this.showRegionCreateForm = false;
+      this.regionCreationName = "";
+    }
+    this.scheduleRender();
   }
   scheduleExternalRender() {
     if (this.continuousHistoryEdit) {
@@ -154880,8 +154893,7 @@ var RegionsPanel = class extends BasePanel {
         });
         chooseRename.setAttribute("data-molsysviewer-region-collision-rename", "rename");
         const overwrite = makeButton2("Overwrite", () => {
-          this.ctx.onAction("delete_region", { tag: collisionTag });
-          this.ctx.onAction("rename_region", { tag: item2.tag, new_tag: collisionTag });
+          this.ctx.onAction("rename_region", { tag: item2.tag, new_tag: collisionTag, overwrite: true });
           this.regionRenameTag = null;
           this.regionRenameCollisionTag = null;
         });
@@ -155316,16 +155328,13 @@ var RegionsPanel = class extends BasePanel {
         if (exists) {
           const doOverwrite = typeof confirm === "function" ? confirm(`A region named "${val}" already exists. Overwrite?`) : true;
           if (doOverwrite) {
-            this.ctx.onAction("delete_region", { tag: val });
-            this.ctx.onAction("create_region_from_selection", { tag: val });
+            this.creation.submit({ tag: val, overwrite: true }, this.ctx.onAction);
           } else {
             return;
           }
         } else {
-          this.ctx.onAction("create_region_from_selection", { tag: val });
+          this.creation.submit({ tag: val }, this.ctx.onAction);
         }
-        this.showRegionCreateForm = false;
-        this.regionCreationName = "";
         this.scheduleRender();
       };
       input.addEventListener("keydown", (e) => {
@@ -155340,7 +155349,7 @@ var RegionsPanel = class extends BasePanel {
           this.scheduleRender();
         }
       });
-      const confirmBtn = makeButton2("Create", confirmCreate);
+      const confirmBtn = makeButton2(this.creation.pending ? "Creating\u2026" : "Create", confirmCreate);
       confirmBtn.setAttribute("data-molsysviewer-region-create-confirm", "true");
       Object.assign(confirmBtn.style, {
         background: "#6366f1",
@@ -155355,6 +155364,7 @@ var RegionsPanel = class extends BasePanel {
       });
       form.appendChild(input);
       form.appendChild(confirmBtn);
+      this.creation.mount(form);
       activeCard.appendChild(form);
     }
     parent.appendChild(activeCard);
@@ -155581,6 +155591,8 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     this.onSelect = onSelect;
     this.onActivateSavedSelection = onActivateSavedSelection;
     this.regionExists = regionExists;
+    this.creation = new CreationFeedback("save_selection", "selections");
+    this.editorFeedback = null;
     this.key = "selection";
     // Domain state
     this.currentSelection = { count_atoms: 0 };
@@ -155596,6 +155608,20 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     this.showActiveSelectionSaveForm = false;
     this.activeSelectionSaveInput = null;
     this.savedListTools = new SavedListTools("selections", ctx, () => this.scheduleRender());
+  }
+  updateStudioAction(result2) {
+    super.updateStudioAction(result2);
+    const outcome = this.creation.update(result2);
+    const editorOutcome = this.editorFeedback?.update(result2);
+    if (outcome === "success") {
+      this.showActiveSelectionSaveForm = false;
+      this.activeSaveDraft = "";
+    }
+    if (editorOutcome === "success") {
+      this.savedEditor = null;
+      this.editorFeedback = null;
+    }
+    if (outcome || editorOutcome) this.scheduleRender();
   }
   static {
     this.SELECTION_STYLE_ID = "molsysviewer-selection-panel-design-system";
@@ -155960,7 +155986,13 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         const showForm = (mode, focus = true) => {
           btnRow.style.display = "none";
           inlineForm.replaceChildren();
-          if (!this.savedEditor || this.savedEditor.tag !== item2.tag || this.savedEditor.mode !== mode) this.savedEditor = { tag: item2.tag, mode, value: "" };
+          if (!this.savedEditor || this.savedEditor.tag !== item2.tag || this.savedEditor.mode !== mode) {
+            this.savedEditor = { tag: item2.tag, mode, value: "" };
+            this.editorFeedback = new CreationFeedback(
+              mode === "rename" ? "rename_selection" : mode === "region" ? "create_region_from_saved_selection" : "create_label_from_saved_selection",
+              mode === "rename" ? "selections" : mode === "region" ? "regions" : "annotations"
+            );
+          }
           inlineInput.value = this.savedEditor.value;
           inlineInput.setAttribute("data-molsysviewer-saved-selection-editor", `${item2.tag}:${mode}`);
           inlineInput.setAttribute("aria-label", mode === "rename" ? "New selection name" : mode === "region" ? "New region name" : "Annotation text");
@@ -156011,33 +156043,29 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
                 }
                 const doOverwrite = typeof confirm === "function" ? confirm(`A saved selection named "${val}" already exists. Overwrite?`) : true;
                 if (doOverwrite) {
-                  this.ctx.onAction("delete_selection", { tag: val });
-                  this.ctx.onAction("rename_selection", { tag: item2.tag, new_tag: val });
+                  this.editorFeedback.submit({ tag: item2.tag, new_tag: val, overwrite: true }, this.ctx.onAction);
                 } else {
                   return;
                 }
               } else {
-                this.ctx.onAction("rename_selection", { tag: item2.tag, new_tag: val });
+                this.editorFeedback.submit({ tag: item2.tag, new_tag: val }, this.ctx.onAction);
               }
             } else if (mode === "region") {
               const exists = this.regionExists(val);
               if (exists) {
                 const doOverwrite = typeof confirm === "function" ? confirm(`A region named "${val}" already exists. Overwrite?`) : true;
                 if (doOverwrite) {
-                  this.ctx.onAction("delete_region", { tag: val });
-                  this.ctx.onAction("create_region_from_saved_selection", { selection_tag: item2.tag, tag: val });
+                  this.editorFeedback.submit({ selection_tag: item2.tag, tag: val, overwrite: true }, this.ctx.onAction);
                 } else {
                   return;
                 }
               } else {
-                this.ctx.onAction("create_region_from_saved_selection", { selection_tag: item2.tag, tag: val });
+                this.editorFeedback.submit({ selection_tag: item2.tag, tag: val }, this.ctx.onAction);
               }
             } else if (mode === "label") {
-              this.ctx.onAction("create_label_from_saved_selection", { selection_tag: item2.tag, text: val });
+              this.editorFeedback.submit({ selection_tag: item2.tag, text: val }, this.ctx.onAction);
             }
-            this.savedEditor = null;
-            inlineForm.style.display = "none";
-            btnRow.style.display = "flex";
+            this.scheduleRender();
           });
           inlineCancel.addEventListener("click", (e) => {
             e.preventDefault();
@@ -156059,6 +156087,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           inlineForm.appendChild(inlineInput);
           inlineForm.appendChild(inlineConfirm);
           inlineForm.appendChild(inlineCancel);
+          this.editorFeedback?.mount(inlineForm);
           inlineForm.style.display = "flex";
           if (focus) inlineInput.focus?.();
         };
@@ -156234,16 +156263,13 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         if (exists) {
           const doOverwrite = typeof confirm === "function" ? confirm(`A saved selection named "${tag}" already exists. Overwrite?`) : true;
           if (doOverwrite) {
-            this.ctx.onAction("delete_selection", { tag });
-            this.ctx.onAction("save_selection", { tag });
+            this.creation.submit({ tag, overwrite: true }, this.ctx.onAction);
           } else {
             return;
           }
         } else {
-          this.ctx.onAction("save_selection", { tag });
+          this.creation.submit({ tag }, this.ctx.onAction);
         }
-        this.showActiveSelectionSaveForm = false;
-        this.activeSaveDraft = "";
         this.scheduleRender();
       };
       const cancelForm = () => {
@@ -156261,7 +156287,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           cancelForm();
         }
       });
-      const confirmBtn = makeButton2("Create", submitForm);
+      const confirmBtn = makeButton2(this.creation.pending ? "Creating\u2026" : "Create", submitForm);
       confirmBtn.setAttribute("data-molsysviewer-active-selection-save-confirm", "true");
       Object.assign(confirmBtn.style, {
         background: "#6366f1",
@@ -156275,6 +156301,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       });
       form.appendChild(input);
       form.appendChild(confirmBtn);
+      this.creation.mount(form);
       card8.appendChild(form);
     }
     return card8;
@@ -163806,9 +163833,9 @@ var GroupPanel = class {
     this.systemPanel.updateLoading(requestId, ok, atoms2, structures, sources, error2);
   }
   updateStudioAction(result2) {
-    const key2 = result2.domain === "selections" ? "selection" : result2.domain === "measurements" ? "measures" : result2.domain;
-    const panel = this.panels.get(key2)?.panel;
-    if (panel && "updateStudioAction" in panel) panel.updateStudioAction(result2);
+    for (const { panel } of this.panels.values()) {
+      if ("updateStudioAction" in panel) panel.updateStudioAction(result2);
+    }
   }
   isExpanded() {
     return this.expanded;
@@ -163919,7 +163946,27 @@ var GroupPanel = class {
   /** Build the narrow context injected into a migrated subpanel. */
   makePanelContext(key2) {
     return {
-      onAction: (action, details) => this.onAction?.(action, details),
+      onAction: (action, details) => {
+        if (!this.hasAuthority && action !== "download_image" && action !== "reset_view") {
+          this.onAction?.(action, details);
+          if ([
+            "create_shape",
+            "create_measurement",
+            "create_annotation",
+            "create_layer",
+            "save_selection",
+            "rename_selection",
+            "create_region_from_selection",
+            "create_region_from_saved_selection",
+            "create_label_from_saved_selection",
+            "batch_scene_objects"
+          ].includes(action)) {
+            throw new Error("This action needs a running MolSysViewer session. The exported scene is unchanged.");
+          }
+          return;
+        }
+        this.onAction?.(action, details);
+      },
       setBadge: (text) => {
         const badge = this.tabs.get(key2)?.badge;
         if (badge) badge.textContent = text;
@@ -164138,6 +164185,9 @@ var GroupPanel = class {
 var AddonsPanel = class {
   constructor(host, options) {
     this.host = host;
+    this.registration = new CreationFeedback("addon_register_module", "addons", "Registering\u2026");
+    this.registrationOpen = false;
+    this.registrationDraft = "";
     // State
     this.workspaceItems = [];
     this.workspacePanelItems = [];
@@ -164283,6 +164333,15 @@ var AddonsPanel = class {
     );
     this.applyExpandedState();
     this.setVisible(!floating);
+  }
+  updateStudioAction(result2) {
+    const outcome = this.registration.update(result2);
+    if (!outcome) return;
+    if (outcome === "success") {
+      this.registrationDraft = "";
+      this.registrationOpen = false;
+    }
+    this.render();
   }
   setVisible(visible) {
     this.visible = visible;
@@ -164524,10 +164583,24 @@ var AddonsPanel = class {
       width: "100%"
     });
     this.workspaceOverviewHost.appendChild(registerForm);
+    registerForm.style.display = this.registrationOpen ? "flex" : "none";
     const registerInput = document.createElement("input");
     registerInput.type = "text";
+    registerInput.value = this.registrationDraft;
+    registerInput.addEventListener("input", () => {
+      this.registrationDraft = registerInput.value;
+    });
     registerInput.placeholder = "Add-on module (e.g. molsysviewer_topomt)";
     registerInput.setAttribute("aria-label", "Add-on module");
+    if (this.registrationOpen && activeSearch?.getAttribute("aria-label") === "Add-on module") {
+      const start4 = activeSearch.selectionStart, end4 = activeSearch.selectionEnd;
+      queueMicrotask(() => {
+        if (registerInput.isConnected && !registerInput.disabled) {
+          registerInput.focus();
+          registerInput.setSelectionRange(start4, end4);
+        }
+      });
+    }
     Object.assign(registerInput.style, {
       flex: "1",
       padding: "4px 8px",
@@ -164550,7 +164623,7 @@ var AddonsPanel = class {
       fontWeight: "700",
       cursor: "pointer"
     });
-    submitBtn.textContent = "Register";
+    submitBtn.textContent = this.registration.pending ? "Registering\u2026" : "Register";
     registerForm.appendChild(submitBtn);
     const cancelBtn = document.createElement("button");
     cancelBtn.type = "button";
@@ -164567,10 +164640,13 @@ var AddonsPanel = class {
     registerForm.appendChild(cancelBtn);
     registerBtn.addEventListener("click", (e) => {
       e.preventDefault();
+      this.registrationOpen = true;
       registerForm.style.display = "flex";
       registerInput.focus();
     });
     cancelBtn.addEventListener("click", () => {
+      this.registrationOpen = false;
+      this.registrationDraft = "";
       registerForm.style.display = "none";
       registerInput.value = "";
     });
@@ -164578,11 +164654,11 @@ var AddonsPanel = class {
       e.preventDefault();
       const val = registerInput.value.trim();
       if (val) {
-        this.onAction?.("addon_register_module", { name: val });
-        registerForm.style.display = "none";
-        registerInput.value = "";
+        this.registration.submit({ name: val }, (action, details) => this.onAction?.(action, details));
+        this.render();
       }
     });
+    this.registration.mount(registerForm);
     let effectiveAddons = this.addonsList;
     if (effectiveAddons.length === 0) {
       effectiveAddons = this.workspaceItems.filter((w) => w.id !== "core").map((w) => ({
@@ -165923,6 +165999,9 @@ var MolSysViewerController = class _MolSysViewerController {
         action,
         ...details
       });
+      if (this.initOptions?.hasAuthority === false && action === "addon_register_module") {
+        throw new Error("Registering an add-on needs a running MolSysViewer session.");
+      }
     };
     this.addonsPanel = new AddonsPanel(host, addonsOptions);
     if (this.isPanelOnly) {
@@ -167419,7 +167498,7 @@ var MolSysViewerController = class _MolSysViewerController {
           if (!this.interactions.setSummaries(msg.interactions, msg.projection_revision)) break;
           this.contextMenu.invalidateInteractionContext();
           this.interactionSummaries = msg.interactions;
-          this.groupPanel.setInteractions({ ...msg, frame: this.interactions.currentFrame, interactions: msg.interactions.map((item2) => item2.frame === this.interactions.currentFrame ? item2 : { ...item2, frame: this.interactions.currentFrame, status: "pending", n_observations: 0, n_supported: 0, n_skipped: 0 }) });
+          this.groupPanel.setInteractions({ ...msg, backend_available: this.initOptions?.hasAuthority === false ? false : msg.backend_available, frame: this.interactions.currentFrame, interactions: msg.interactions.map((item2) => item2.frame === this.interactions.currentFrame ? item2 : { ...item2, frame: this.interactions.currentFrame, status: "pending", n_observations: 0, n_supported: 0, n_skipped: 0 }) });
           this.refreshAddonsPanel(false);
           break;
         case "interaction_action_result":
@@ -167430,6 +167509,7 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "studio_action_result":
           this.groupPanel.updateStudioAction(msg);
+          this.addonsPanel.updateStudioAction(msg);
           break;
         case "interaction_inspection":
           this.groupPanel.updateInteractionInspection(msg.request_id, msg.result);

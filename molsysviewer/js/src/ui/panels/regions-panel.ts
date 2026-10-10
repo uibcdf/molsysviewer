@@ -1,4 +1,6 @@
 import { SavedListTools } from "./saved-list-tools";
+import type { StudioActionResult } from "./saved-list-tools";
+import { CreationFeedback } from "./creation-feedback";
 import type { ActiveSelectionPayload } from "../../managers/active-selection";
 import type { RegionDetails, RegionSummary, SavedSelectionSummary, SelectionQueryPreview } from "../group-panel";
 import { BasePanel } from "./base-panel";
@@ -16,6 +18,14 @@ import { ManualQueryComposer } from "../query-composer";
  * through the injected PanelContext plus an onFocusRegion callback.
  */
 export class RegionsPanel extends BasePanel {
+    private readonly creation = new CreationFeedback("create_region_from_selection", "regions");
+    updateStudioAction(result: StudioActionResult): void {
+        super.updateStudioAction(result);
+        const outcome = this.creation.update(result);
+        if (!outcome) return;
+        if (outcome === "success") { this.showRegionCreateForm = false; this.regionCreationName = ""; }
+        this.scheduleRender();
+    }
     readonly key = "regions";
 
     // Domain state (pushed from the controller)
@@ -589,8 +599,7 @@ export class RegionsPanel extends BasePanel {
                 });
                 chooseRename.setAttribute("data-molsysviewer-region-collision-rename", "rename");
                 const overwrite = makeButton("Overwrite", () => {
-                    this.ctx.onAction("delete_region", { tag: collisionTag });
-                    this.ctx.onAction("rename_region", { tag: item.tag, new_tag: collisionTag });
+                    this.ctx.onAction("rename_region", { tag: item.tag, new_tag: collisionTag, overwrite: true });
                     this.regionRenameTag = null;
                     this.regionRenameCollisionTag = null;
                 });
@@ -1074,16 +1083,13 @@ export class RegionsPanel extends BasePanel {
                 if (exists) {
                     const doOverwrite = typeof confirm === "function" ? confirm(`A region named "${val}" already exists. Overwrite?`) : true;
                     if (doOverwrite) {
-                        this.ctx.onAction("delete_region", { tag: val });
-                        this.ctx.onAction("create_region_from_selection", { tag: val });
+                        this.creation.submit({ tag: val, overwrite: true }, this.ctx.onAction);
                     } else {
                         return;
                     }
                 } else {
-                    this.ctx.onAction("create_region_from_selection", { tag: val });
+                    this.creation.submit({ tag: val }, this.ctx.onAction);
                 }
-                this.showRegionCreateForm = false;
-                this.regionCreationName = "";
                 this.scheduleRender();
             };
 
@@ -1100,7 +1106,7 @@ export class RegionsPanel extends BasePanel {
                 }
             });
 
-            const confirmBtn = makeButton("Create", confirmCreate);
+            const confirmBtn = makeButton(this.creation.pending ? "Creating…" : "Create", confirmCreate);
             confirmBtn.setAttribute("data-molsysviewer-region-create-confirm", "true");
             Object.assign(confirmBtn.style, {
                 background: "#6366f1",
@@ -1116,6 +1122,7 @@ export class RegionsPanel extends BasePanel {
 
             form.appendChild(input);
             form.appendChild(confirmBtn);
+            this.creation.mount(form);
             activeCard.appendChild(form);
         }
 

@@ -17,6 +17,12 @@ from .whole import HANDLERS as WHOLE_HANDLERS
 PanelActionHandler = Callable[[Any, Mapping[str, Any]], None]
 
 STUDIO_RESULT_DOMAINS = {
+    "create_region_from_selection": "regions",
+    "create_region_from_saved_selection": "regions",
+    "save_selection": "selections",
+    "rename_selection": "selections",
+    "create_label_from_saved_selection": "annotations",
+    "addon_register_module": "addons",
     "create_shape": "shapes",
     "create_measurement": "measurements",
     "create_annotation": "annotations",
@@ -66,7 +72,6 @@ CONTEXT_ONLY_ACTIONS = frozenset(
         "addon_context_action",
         "addon_disable",
         "addon_enable",
-        "addon_register_module",
         "addon_rescan",
         "hide_measurement",
         "focus_target",

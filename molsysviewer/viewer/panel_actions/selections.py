@@ -79,14 +79,17 @@ def create_region_from_selection(view: Any, content: Mapping[str, Any]) -> None:
     representation = content.get("representation")
     if representation is None:
         representation = "inherit"
-    region = view.new_region_from_active_selection(
-        tag=tag,
-        representation=representation,
-        skip_digestion=True,
-    )
-    preset = content.get("preset")
-    if isinstance(preset, str) and preset.strip():
-        region.set_representation(preset=preset.strip(), skip_digestion=True)
+    with view.history._atomic_operation(("studio", tag or "", "create_region")):
+        if content.get("overwrite") is True and tag in view.regions:
+            view.regions[tag].delete(skip_digestion=True)
+        region = view.new_region_from_active_selection(
+            tag=tag,
+            representation=representation,
+            skip_digestion=True,
+        )
+        preset = content.get("preset")
+        if isinstance(preset, str) and preset.strip():
+            region.set_representation(preset=preset.strip(), skip_digestion=True)
 
 
 def activate_selection(view: Any, content: Mapping[str, Any]) -> None:
@@ -94,7 +97,11 @@ def activate_selection(view: Any, content: Mapping[str, Any]) -> None:
 
 
 def save_selection(view: Any, content: Mapping[str, Any]) -> None:
-    view.active_selection.save(tag=_required_text(content, "tag", "save_selection"), skip_digestion=True)
+    tag = _required_text(content, "tag", "save_selection")
+    with view.history._atomic_operation(("studio", tag, "save_selection")):
+        if content.get("overwrite") is True and tag in view.selections:
+            view.selections.delete(tag, skip_digestion=True)
+        view.active_selection.save(tag=tag, skip_digestion=True)
 
 
 def delete_selection(view: Any, content: Mapping[str, Any]) -> None:
@@ -102,11 +109,12 @@ def delete_selection(view: Any, content: Mapping[str, Any]) -> None:
 
 
 def rename_selection(view: Any, content: Mapping[str, Any]) -> None:
-    view.selections.set_tag(
-        _required_text(content, "tag", "rename_selection"),
-        _required_text(content, "new_tag", "rename_selection"),
-        skip_digestion=True,
-    )
+    tag = _required_text(content, "tag", "rename_selection")
+    new_tag = _required_text(content, "new_tag", "rename_selection")
+    with view.history._atomic_operation(("studio", tag, "rename_selection")):
+        if content.get("overwrite") is True and new_tag != tag and new_tag in view.selections:
+            view.selections.delete(new_tag, skip_digestion=True)
+        view.selections.set_tag(tag, new_tag, skip_digestion=True)
 
 
 def compose_saved_selection(view: Any, content: Mapping[str, Any]) -> None:
@@ -132,14 +140,14 @@ def create_region_from_saved_selection(view: Any, content: Mapping[str, Any]) ->
     representation = content.get("representation")
     if representation is None:
         representation = "inherit"
-    region = saved.new_region(
-        tag=raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None,
-        representation=representation,
-        skip_digestion=True,
-    )
-    preset = content.get("preset")
-    if isinstance(preset, str) and preset.strip():
-        region.set_representation(preset=preset.strip(), skip_digestion=True)
+    tag = raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None
+    with view.history._atomic_operation(("studio", tag or "", "create_region")):
+        if content.get("overwrite") is True and tag in view.regions:
+            view.regions[tag].delete(skip_digestion=True)
+        region = saved.new_region(tag=tag, representation=representation, skip_digestion=True)
+        preset = content.get("preset")
+        if isinstance(preset, str) and preset.strip():
+            region.set_representation(preset=preset.strip(), skip_digestion=True)
 
 
 def create_label_from_saved_selection(view: Any, content: Mapping[str, Any]) -> None:

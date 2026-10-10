@@ -3,6 +3,7 @@ import process from "node:process";
 import { chromium } from "./e2e-browser";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
+import { PythonFixtureBridge } from "./python-fixture-bridge";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -57,12 +58,23 @@ async function setActiveSelection(page: any, atomIndices: number[]) {
 async function run() {
     const executablePath = process.env.PW_CHROMIUM_BIN || "/usr/bin/google-chrome";
     const browser = await chromium.launch({ headless: true, executablePath } as any);
+    const bridge = new PythonFixtureBridge(resolve(__dirname, "studio-usability-bridge.py"), resolve(__dirname, "../../../.."));
 
     const page = await browser.newPage();
     const errors: string[] = [];
     page.on("pageerror", error => errors.push(String(error)));
 
     try {
+        // Creation completion uses actual dispatcher replies, including request
+        // identity/domain. Rendering-only synthetic echoes cannot acknowledge it.
+        const events: any[] = [{ action: "apply_selection_query", expression: "atom_index in [0, 1, 2]", syntax: "MolSysMT", op: "replace" }];
+        const reply = async (event: any) => {
+            events.push(event);
+            const result = await bridge.request(events);
+            await page.evaluate(async messages => {
+                for (const message of messages) await (window as any).__controller.handleMessage(message, { throwOnError: true });
+            }, result.message_batches.at(-1));
+        };
         await page.setContent('<div id="root" style="width: 1000px; height: 760px;"></div>');
         await page.addScriptTag({ path: resolve(__dirname, "harness.bundle.js") });
         await page.waitForFunction(() => typeof (window as any).Harness !== "undefined");
@@ -142,14 +154,7 @@ async function run() {
         await page.locator('[data-molsysviewer-active-selection-save-confirm="true"]').click();
         const save = await latestAction(page, "save_selection");
         assert.strictEqual(save.tag, "chain_a");
-        await page.evaluate(async () => {
-            await (window as any).__controller.handleMessage({
-                op: "save_selection",
-                tag: "chain_a",
-                atom_indices: [0, 1, 2],
-                element_level: "chain",
-            });
-        });
+        await reply(save);
 
         // Rename and promote the saved selection to a region.
         await page.locator('[data-molsysviewer-saved-selection-rename="chain_a"]').click();
@@ -163,13 +168,7 @@ async function run() {
             { tag: rename.tag, new_tag: rename.new_tag },
             { tag: "chain_a", new_tag: "active_chain" },
         );
-        await page.evaluate(async () => {
-            await (window as any).__controller.handleMessage({
-                op: "set_selection_tag",
-                tag: "chain_a",
-                new_tag: "active_chain",
-            });
-        });
+        await reply(rename);
 
         await page.locator('[data-molsysviewer-saved-selection-to-region="active_chain"]').click();
         const renamedCard = page.locator('[data-molsysviewer-saved-selection-card="active_chain"]');
@@ -180,6 +179,7 @@ async function run() {
             { selection_tag: promote.selection_tag, tag: promote.tag },
             { selection_tag: "active_chain", tag: "active_chain_region" },
         );
+        await reply(promote);
 
         // Promote the saved selection directly to an annotation.
         await page.locator('[data-molsysviewer-saved-selection-to-label="active_chain"]').click();
@@ -190,6 +190,7 @@ async function run() {
             { selection_tag: label.selection_tag, text: label.text },
             { selection_tag: "active_chain", text: "Active chain" },
         );
+        await reply(label);
 
         // Undo/redo are no longer a frontend-local stack: the Selection panel's
         // keyboard shortcuts drive the single scene history in Python. Their
@@ -216,6 +217,7 @@ async function run() {
         assert.strictEqual(errors.length, 0, `Browser errors: ${errors.join("; ")}`);
         console.log("[E2E] Selection subpanel integration test passed");
     } finally {
+        await bridge.close();
         await browser.close();
     }
 }

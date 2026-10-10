@@ -1256,6 +1256,9 @@ export class MolSysViewerController {
                 action,
                 ...details,
             });
+            if (this.initOptions?.hasAuthority === false && action === "addon_register_module") {
+                throw new Error("Registering an add-on needs a running MolSysViewer session.");
+            }
         };
         this.addonsPanel = new AddonsPanel(host, addonsOptions);
         if (this.isPanelOnly) {
@@ -2520,12 +2523,12 @@ export class MolSysViewerController {
                     if (!this.interactions.setSummaries(msg.interactions, msg.projection_revision)) break;
                     this.contextMenu.invalidateInteractionContext();
                     this.interactionSummaries = msg.interactions;
-                    this.groupPanel.setInteractions({ ...msg, frame: this.interactions.currentFrame, interactions: msg.interactions.map(item => item.frame === this.interactions.currentFrame ? item : { ...item, frame: this.interactions.currentFrame, status: "pending", n_observations: 0, n_supported: 0, n_skipped: 0 }) });
+                    this.groupPanel.setInteractions({ ...msg, backend_available: this.initOptions?.hasAuthority === false ? false : msg.backend_available, frame: this.interactions.currentFrame, interactions: msg.interactions.map(item => item.frame === this.interactions.currentFrame ? item : { ...item, frame: this.interactions.currentFrame, status: "pending", n_observations: 0, n_supported: 0, n_skipped: 0 }) });
                     this.refreshAddonsPanel(false);
                     break;
                 case "interaction_action_result": this.groupPanel.updateInteractionCreation(msg.request_id, msg.ok, msg.analysis_name, msg.error_message); break;
                 case "system_load_result": this.groupPanel.updateSystemLoading(msg.request_id, msg.ok, msg.n_atoms, msg.n_structures, msg.n_sources, msg.error_message); break;
-                case "studio_action_result": this.groupPanel.updateStudioAction(msg); break;
+                case "studio_action_result": this.groupPanel.updateStudioAction(msg); this.addonsPanel.updateStudioAction(msg); break;
                 case "interaction_inspection": this.groupPanel.updateInteractionInspection(msg.request_id, msg.result); break;
                 case "add_network_links": await this.shapes.addNetworkLinks(msg); break;
                 case "add_hbonds": await this.shapes.addHbonds(msg); break;

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { chromium } from "./e2e-browser";
 import { PythonFixtureBridge } from "./python-fixture-bridge";
 
@@ -76,7 +76,24 @@ async function run() {
         const figureReply = await bridge.request([figureAction]); await apply(figureReply.message_batches[0]);
         assert.ok(await page.getByLabel("Transparent Background", { exact: true }).isChecked());
         assert.ok(await page.getByLabel("Transparent Background", { exact: true }).evaluate(element => element === element.ownerDocument.activeElement));
-        const pngReady = page.waitForEvent("download");
+        // Retain bounded input/render evidence for the unresolved hosted timeout.
+        await page.evaluate(() => {
+            (window as any).__studioPngInput = [];
+            for (const type of ["pointerdown", "pointerup", "click"]) document.addEventListener(type, event => {
+                const target = event.target as HTMLElement | null;
+                if (target?.closest('[data-molsysviewer-export-image]')) (window as any).__studioPngInput.push({ type, connected: target.isConnected });
+            }, true);
+        });
+        const pngReady = page.waitForEvent("download").catch(async error => {
+            const diagnostic = await page.evaluate(() => ({
+                input: (window as any).__studioPngInput,
+                status: document.querySelector('[data-molsysviewer-export-image-status]')?.textContent,
+                disabled: document.querySelector<HTMLButtonElement>('[data-molsysviewer-export-image]')?.disabled,
+                drawingBuffer: [(window as any).__controller.plugin.canvas3d.webgl.gl.drawingBufferWidth,
+                    (window as any).__controller.plugin.canvas3d.webgl.gl.drawingBufferHeight],
+            }));
+            throw new Error(`PNG download failed: ${JSON.stringify(diagnostic)}; ${String(error)}`);
+        });
         const pngButton = page.getByRole("button", { name: "Download PNG Image", exact: true });
         await pngButton.scrollIntoViewIfNeeded();
         const box = (await pngButton.boundingBox())!;
@@ -113,6 +130,33 @@ async function run() {
         assert.match(text, /id="molsysviewer-runtime-source"/);
         await apply(htmlReply); // Shared/replayed reply must not download twice.
         assert.equal(downloads, 1);
+
+        // Inspect the actual downloaded standalone file: scene metadata remains
+        // truthful, and missing authority must never strand a pending creation.
+        const exported = await page.context().newPage();
+        exported.on("pageerror", error => errors.push(String(error)));
+        await exported.goto(pathToFileURL(htmlPath).href);
+        await exported.waitForFunction(() => (window as any).__molsysviewerDocsController?.plugin.canvas3d?.reprCount.value > 0);
+        const openExported = (key: string) => exported.evaluate(key => {
+            const c = (window as any).__molsysviewerDocsController;
+            c.setPanelMode("navigate", true); c.groupPanel.openSection(key);
+        }, key);
+        await openExported("annotations");
+        const exportedAnnotations = exported.locator('[data-molsysviewer-group-panel-section="annotations"]');
+        assert.ok(!(await exportedAnnotations.innerText()).includes("Load a structure first."));
+        await openExported("shapes");
+        const exportedShapes = exported.locator('[data-molsysviewer-group-panel-section="shapes"]');
+        const shapeCreation = exportedShapes.locator('details[data-molsysviewer-disclosure="creation"]');
+        if (!await shapeCreation.evaluate((element: HTMLDetailsElement) => element.open)) await shapeCreation.locator(":scope > summary").click();
+        await exportedShapes.getByText("Coordinates", { exact: true }).click();
+        await exportedShapes.getByLabel("Shape tag", { exact: true }).fill("offline-draft");
+        await exportedShapes.getByRole("button", { name: "Create Shape", exact: true }).click();
+        assert.match(await exportedShapes.innerText(), /needs a running MolSysViewer session/);
+        assert.equal(await exportedShapes.getByRole("button", { name: "Creating…", exact: true }).count(), 0);
+        assert.equal(await exportedShapes.getByLabel("Shape tag", { exact: true }).inputValue(), "offline-draft");
+        await openExported("interactions");
+        assert.ok(await exported.locator('[data-molsysviewer-interaction-create]').isDisabled());
+        await exported.close();
 
         // A dragged and resized floating card retains its bounds through layout toggles.
         const header = await dragHandle();

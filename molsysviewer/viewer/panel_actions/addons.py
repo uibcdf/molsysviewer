@@ -42,13 +42,15 @@ def addon_rescan(view: Any, content: Mapping[str, Any]) -> None:
 def addon_register_module(view: Any, content: Mapping[str, Any]) -> None:
     name = content.get("name")
     if not isinstance(name, str) or not name.strip():
-        return
+        raise ValueError("addon_register_module requires a non-empty module name.")
     normalized = name.strip()
     try:
         addon = view.addons._host.register_module(normalized)
         view.addons.enable(addon.name)
     except Exception as exc:
         view.addons._host._record_discovery_failure(normalized, exc)
+        view._sync_addons_runtime()
+        raise
     view._sync_addons_runtime()
 
 

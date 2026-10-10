@@ -207,6 +207,9 @@ class PopupSnapshotMixin:
     def _build_panel_snapshot(self) -> list[dict]:
         # UI-only projections. No molecular payload, topology, coordinates, or
         # structure-dependent visual operations may appear here.
+        loaded = self._molsys is not None
+        active_atoms = len(self.active_selection.atom_indices)
+        measure_settings = self.measurements.settings(skip_digestion=True)
         messages: list[dict] = [
             {
                 "op": "set_region_summaries",
@@ -216,11 +219,29 @@ class PopupSnapshotMixin:
             },
             {"op": "set_whole_summary", **self._whole_summary_record()},
             {"op": "set_layer_summaries", "layers": self._layer_summary_records()},
-            {"op": "set_annotation_summaries", "annotations": self._annotation_summary_records()},
-            {"op": "set_measurement_summaries", "measurements": self._measurement_summary_records()},
+            {
+                "op": "set_annotation_summaries",
+                "annotations": self._annotation_summary_records(),
+                "system_loaded": loaded,
+                "active_selection_count": active_atoms,
+            },
+            {
+                "op": "set_measurement_summaries",
+                "measurements": self._measurement_summary_records(),
+                "system_loaded": loaded,
+                "active_selection_count": len(self.active_selection.group_indices),
+                "structure_index": int(self._current_structure_index),
+                "endpoint_policy_default": measure_settings["endpoint_policy_default"],
+                "representative_atoms": measure_settings["representative_atoms"],
+            },
             {"op": "set_shape_summaries", "shapes": self._shape_summary_records()},
             self.interactions._summary_message(),
-            {"op": "set_section_summaries", "sections": self._section_summary_records()},
+            {
+                "op": "set_section_summaries",
+                "sections": self._section_summary_records(),
+                "system_loaded": loaded,
+                "active_selection_count": active_atoms,
+            },
             {
                 "op": "set_measurement_settings",
                 **deepcopy(self.measurements.settings(skip_digestion=True)),

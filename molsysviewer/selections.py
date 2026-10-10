@@ -7,6 +7,7 @@ import molsysmt as msm
 from smonitor import signal
 
 from ._private.argdigest import digest
+from .scene_history import records_scene_history
 
 
 class Selection:
@@ -433,6 +434,7 @@ class SelectionsManager:
         self._view._send(msg)  # noqa: SLF001
         return self._selection(tag)
 
+    @records_scene_history
     @signal(tags=["selection"])
     @digest()
     def add(
@@ -459,6 +461,7 @@ class SelectionsManager:
             raise ValueError("Persistent selections require non-empty atom indices.")
         return self._store_selection_record(tag, resolved, items=items)
 
+    @records_scene_history
     @signal(tags=["selection"])
     @digest()
     def add_selection(
@@ -534,6 +537,7 @@ class SelectionsManager:
             recipe=recipe,
         )
 
+    @records_scene_history
     @signal(tags=["selection", "interaction"])
     @digest()
     def add_from_active_selection(self, tag: str, skip_digestion: bool = False) -> Selection:
@@ -561,6 +565,7 @@ class SelectionsManager:
             ],
         )
 
+    @records_scene_history
     @signal(tags=["selection"])
     @digest()
     def set_tag(self, tag: str, new_tag: str, skip_digestion: bool = False) -> Selection:
@@ -578,6 +583,7 @@ class SelectionsManager:
             self._view._selections[new_tag] = selection  # noqa: SLF001
         return self._selection(new_tag)
 
+    @records_scene_history
     @signal(tags=["selection"])
     @digest()
     def delete(self, tag: str, skip_digestion: bool = False) -> None:
@@ -587,6 +593,7 @@ class SelectionsManager:
         self._view._send({"op": "delete_selection", "tag": tag})  # noqa: SLF001
         self._view._selections.pop(tag, None)  # noqa: SLF001
 
+    @records_scene_history
     @signal(tags=["selection"])
     @digest()
     def clear(self, tag: str | None = None, skip_digestion: bool = False) -> None:

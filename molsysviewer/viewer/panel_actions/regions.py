@@ -278,7 +278,12 @@ def rename_region(view: Any, content: Mapping[str, Any]) -> None:
     new_tag = content.get("new_tag")
     if not isinstance(new_tag, str) or not new_tag.strip():
         raise ValueError("rename_region requires non-empty new_tag.")
-    _region(view, content, "rename_region").rename(new_tag.strip(), skip_digestion=True)
+    region = _region(view, content, "rename_region")
+    new_tag = new_tag.strip()
+    with view.history._atomic_operation(("studio", region.tag, "rename_region")):
+        if content.get("overwrite") is True and new_tag != region.tag and new_tag in view.regions:
+            view.regions[new_tag].delete(skip_digestion=True)
+        region.rename(new_tag, skip_digestion=True)
 
 
 def set_region_representation(view: Any, content: Mapping[str, Any]) -> None:

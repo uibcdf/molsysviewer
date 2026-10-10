@@ -45,3 +45,15 @@ This establishes and guards a deterministic click-preservation defect. It does
 not establish the cause of historical run 38000819781. Its raw failure is retained;
 no timeout is increased and no assertion skipped. Review the next exact-source
 hosted source-pair gate before closing this report or claiming hosted repair.
+
+## Follow-up — 2026-10-10
+
+Exact source a699f5b5 fails again in core browser run 38034284562, at
+`studio-usability`: 30 seconds waiting for the PNG download. Source pair
+38034284506 also fails on Linux; Windows and macOS pass. The eight guards
+and individual Studio PNG/HTML browser check for the #206–#208 round pass
+locally; that does not diagnose the hosted input/render/download failure.
+The browser guard now retains pointer-down/up/click, current inline status,
+disabled state and drawing-buffer dimensions if its download wait fails.
+The wait and image byte/alpha assertions remain unchanged. Inspect the next
+source's bounded evidence before claiming a hosted repair or closing #198.

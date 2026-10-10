@@ -1,4 +1,6 @@
 import { ListSearch } from "./list-search";
+import { CreationFeedback } from "./panels/creation-feedback";
+import type { StudioActionResult } from "./panels/saved-list-tools";
 import { CompactPanelNavigation } from "./compact-panel-navigation";
 import { makeSwitch } from "./panels/ui-helpers";
 import { PanelShell } from "./panel-shell";
@@ -58,6 +60,15 @@ export type ActiveWorkspacePanelSummary = {
 };
 
 export class AddonsPanel {
+    private readonly registration = new CreationFeedback("addon_register_module", "addons", "Registering…");
+    private registrationOpen = false;
+    private registrationDraft = "";
+    updateStudioAction(result: StudioActionResult): void {
+        const outcome = this.registration.update(result);
+        if (!outcome) return;
+        if (outcome === "success") { this.registrationDraft = ""; this.registrationOpen = false; }
+        this.render();
+    }
     private readonly shell: PanelShell | FloatingPanelShell;
     private readonly root: HTMLDivElement;
     private readonly body: HTMLDivElement;
@@ -514,11 +525,22 @@ export class AddonsPanel {
             width: "100%",
         });
         this.workspaceOverviewHost.appendChild(registerForm);
+        registerForm.style.display = this.registrationOpen ? "flex" : "none";
 
         const registerInput = document.createElement("input");
         registerInput.type = "text";
+        registerInput.value = this.registrationDraft;
+        registerInput.addEventListener("input", () => { this.registrationDraft = registerInput.value; });
         registerInput.placeholder = "Add-on module (e.g. molsysviewer_topomt)";
         registerInput.setAttribute("aria-label", "Add-on module");
+        if (this.registrationOpen && activeSearch?.getAttribute("aria-label") === "Add-on module") {
+            const start = activeSearch.selectionStart, end = activeSearch.selectionEnd;
+            queueMicrotask(() => {
+                if (registerInput.isConnected && !registerInput.disabled) {
+                    registerInput.focus(); registerInput.setSelectionRange(start, end);
+                }
+            });
+        }
         Object.assign(registerInput.style, {
             flex: "1",
             padding: "4px 8px",
@@ -542,7 +564,7 @@ export class AddonsPanel {
             fontWeight: "700",
             cursor: "pointer",
         });
-        submitBtn.textContent = "Register";
+        submitBtn.textContent = this.registration.pending ? "Registering…" : "Register";
         registerForm.appendChild(submitBtn);
 
         const cancelBtn = document.createElement("button");
@@ -561,10 +583,12 @@ export class AddonsPanel {
 
         registerBtn.addEventListener("click", (e) => {
             e.preventDefault();
+            this.registrationOpen = true;
             registerForm.style.display = "flex";
             registerInput.focus();
         });
         cancelBtn.addEventListener("click", () => {
+            this.registrationOpen = false; this.registrationDraft = "";
             registerForm.style.display = "none";
             registerInput.value = "";
         });
@@ -572,11 +596,12 @@ export class AddonsPanel {
             e.preventDefault();
             const val = registerInput.value.trim();
             if (val) {
-                this.onAction?.("addon_register_module", { name: val });
-                registerForm.style.display = "none";
-                registerInput.value = "";
+                this.registration.submit({ name: val }, (action, details) => this.onAction?.(action, details));
+                this.render();
             }
         });
+
+        this.registration.mount(registerForm);
 
         // 4. Fallback if addonsList is not populated yet
         let effectiveAddons = this.addonsList;

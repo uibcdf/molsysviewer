@@ -132,11 +132,29 @@ history boundary, so failure rolls back and one Undo restores the whole creation
 The consumer must not send independent membership requests after creation.
 
 Regions owns the new-region name as model state, including while unfocused or
-hidden during canonical projections. Explicit submission or Escape clears it.
+hidden during canonical projections. A successful creation reply or Escape clears it.
 Annotation coordinate anchors require three finite numeric fields in nm. Empty
 fields stay invalid across repaints; explicit zero remains valid. Python validates
 the same numeric boundary before mutating the scene; the existing nm-to-Å
 conversion is independent of the session standard unit.
+
+Regions, active-selection saving, saved-selection conversion/rename and Add-ons
+registration also retain their drafts until a matching reply. Add-on import errors
+still enter discovery diagnostics and now return a failed correlated result.
+Cross-domain saved-selection editors consume only their own request identities.
+
+Studio replacement sends one creation/rename request with an explicit overwrite
+intent. Existing owner operations run within one history boundary; failure restores
+the old complete scene and its Redo, and one Undo/Redo recovers both versions.
+Public saved-selection mutations own scene history. Same-system state restoration
+preserves selection levels, descriptors and recipes instead of defaulting to groups.
+
+Canvas/panel snapshots carry loaded-system and active-selection metadata for
+Annotations, Measures and clipping sections, together with measurement settings.
+An exported page keeps readable scene projections but has no Python authority:
+unavailable form actions report that requirement, retain drafts and leave pending
+state immediately. Its Interactions backend is unavailable for calculation or
+inspection; local camera reset and PNG downloads remain usable.
 
 Deleting a stored scientific analysis is separate from deleting a visual set.
 Studio first asks for explicit confirmation naming the analysis and stating that

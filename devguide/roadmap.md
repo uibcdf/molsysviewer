@@ -7,7 +7,9 @@ of the MolSysMT addon, is implemented. The second Studio round (#190–#197,
 #199) implements Shapes geometry/feedback, executable guides, persistent editors,
 named controls, local search, marked batches and disclosures. The final review
 (#201–#204) closes creation failure recovery, atomic initial layer membership,
-new-region draft persistence, annotation coordinates and confirmed analysis deletion. Review its
+new-region draft persistence, annotation coordinates and confirmed analysis deletion.
+The closure follow-up (#206–#208) completes atomic region/selection replacement,
+remaining creation/registration feedback and exported Studio backend state. Review its
 [source/browser evidence](studio_review_20261009.md), live notebook and hosted
 results; reconcile the macOS dynamic-region diagnosis (#189) and the historical
 source-pair PNG timeout (#198, partial).

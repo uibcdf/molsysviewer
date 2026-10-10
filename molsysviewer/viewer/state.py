@@ -1195,15 +1195,34 @@ class StateMixin:
                     # selection survived the change of system, and it did not.
                     continue
                 atom_indices = resolved
-            self.selections.add(
+            # History restores the same index space: preserve the actual saved
+            # descriptor rather than changing atom/query selections into groups.
+            metadata = {}
+            if not getattr(self, "_state_reindexing", False):
+                metadata = {
+                    key: deepcopy(record[key])
+                    for key in (
+                        "source_kind",
+                        "element_level",
+                        "target_level",
+                        "group_indices",
+                        "component_indices",
+                        "chain_indices",
+                        "molecule_indices",
+                        "entity_indices",
+                        "expression",
+                        "syntax",
+                        "element",
+                    )
+                    if key in record
+                }
+            self.selections._store_selection_record(
                 tag,
-                atom_indices=atom_indices,
+                atom_indices,
                 items=list(record.get("items") or []),
-                skip_digestion=True,
+                recipe=deepcopy(record.get("recipe") or []),
+                **metadata,
             )
-            if record.get("recipe"):
-                restored = next(r for r in self._selection_history if r.get("tag") == tag)
-                restored["recipe"] = deepcopy(record["recipe"])
 
     def _restore_sections(self, records: Any, *, on_conflict: str) -> None:
         for record in records if isinstance(records, list) else []:

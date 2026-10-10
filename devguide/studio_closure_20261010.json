@@ -1,0 +1,138 @@
+{
+  "schema": "molsysviewer.studio_source_closure@1",
+  "date": "2026-10-10",
+  "scope": "Source/worktree validation, not a frozen producer or installed-artifact qualification.",
+  "base_commit": "a699f5b52729631643759942440c2afcb82e39f6",
+  "closed_issues": [
+    206,
+    207,
+    208
+  ],
+  "environment": {
+    "name": "molsyssuite@uibcdf_3.14",
+    "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "python": "3.14.7",
+    "distribution_metadata": {
+      "molsysviewer": "0.23.0+17.g3fa27e68",
+      "molsysmt": "0.22.4+24.g42b487869",
+      "argdigest": "0.15.0+1.g5c6711e",
+      "smonitor": "0.19.0"
+    },
+    "metadata_scope": "Existing editable metadata, not newly built canonical versions.",
+    "molsysmt_checkout": "a54dd36889e90d8cd4c3a04b3a2ce01acc0f004a"
+  },
+  "checks": {
+    "focused_python": "8 passed",
+    "python_full_once": {
+      "passed": 3014,
+      "skipped": 23,
+      "failed": 8,
+      "seconds": 624.47,
+      "failed_nodes": [
+        "FAILED tests/test_qt_probe_resources.py::test_html_removed_after_real_child_outcome[success-transport]",
+        "FAILED tests/test_qt_probe_resources.py::test_html_removed_after_real_child_outcome[success-generations]",
+        "FAILED tests/test_qt_probe_resources.py::test_html_removed_after_real_child_outcome[failure-transport]",
+        "FAILED tests/test_qt_probe_resources.py::test_html_removed_after_real_child_outcome[failure-generations]",
+        "FAILED tests/test_qt_probe_resources.py::test_html_removed_after_real_child_outcome[timeout-transport]",
+        "FAILED tests/test_qt_probe_resources.py::test_html_removed_after_real_child_outcome[timeout-generations]",
+        "FAILED tests/test_standalone.py::test_qt_event_transport_smoke_real_qt - Asse...",
+        "FAILED tests/test_standalone.py::test_qt_payload_refs_replace_across_two_real_generations"
+      ],
+      "native_diagnostic": "________ test_html_removed_after_real_child_outcome[success-transport] _________\ntests/test_qt_probe_resources.py:87: in test_html_removed_after_real_child_outcome\n    probe()\ntests/test_standalone.py:1718: in test_qt_event_transport_smoke_real_qt\n    assert \"TRANSPORT_READY:yes\" in result.stdout, (\nE   AssertionError: real Qt event transport (fetch -> molsysviewer:// scheme handler -> bridge) failed.\nE     stdout=\nE     stderr=Sandboxing disabled by user.\nE     QRhiGles2: Failed to create temporary context\nE     QRhiGles2: Failed to create context\nE     Failed to create RHI for backend: OpenGL\nE     This plugin does not support createPlatformVulkanInstance\nE     QVulkanInstance: Failed to initialize Vulkan\nE     GBM is not supported with the current configuration and Vulkan is not available. Fallback to software rendering.\nE     [799142:799150:1010/021425.538804:ERROR:../../../src/3rdparty/chromium/dbus/bus.cc:408] Failed to connect to the bus: In D-Bus address, character '@' should have been escaped\nE     \nE     \nE   assert 'TRANSPORT_READY:yes' in ''\nE    +  where '' = CompletedProcess(args=['/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python', '-c', '\\nimport json, o.../chromium/dbus/bus.cc:408] Failed to connect to the bus: In D-Bus address, character '@' should have been escaped\\n\\n\").stdout",
+      "scope": "Eight Qt transport/generation/resource failures before ready reports; OpenGL/Vulkan context initialization failed. No workaround or skip substituted."
+    },
+    "js_unit": "passed",
+    "typescript": "passed",
+    "runtime_harness_e2e_build": "passed",
+    "studio_lists_browser": "passed with actual Python replies, Mol*, Chromium, replacement and Undo/Redo",
+    "studio_png_html_browser": "passed; actual image and downloaded standalone HTML inspected",
+    "shared_browser": {
+      "first": [
+        "studio-usability",
+        "measures-subpanel",
+        "region-subpanel",
+        "selection-subpanel",
+        "layers-subpanel"
+      ],
+      "first_outcome": "First three passed; Selection timed out because old synthetic rendering-only echo omitted correlated creation completion. Layers not reached.",
+      "guard_fix": "Creation/rename/promotion replies now come from actual pentalanine dispatcher.",
+      "after_fix": [
+        "selection-subpanel",
+        "layers-subpanel"
+      ],
+      "after_outcome": "2/2 passed. Successful suites not repeated."
+    },
+    "reporting_links_architecture_api_inventory": "passed",
+    "ruff_check": "passed",
+    "ruff_format": "901 files already formatted"
+  },
+  "hosted_base": {
+    "scientific_run": 38034284564,
+    "scientific": "6/6 success",
+    "qt": "failure",
+    "core_run": 38034284562,
+    "core": "PNG download timeout",
+    "source_pair_run": 38034284506,
+    "source_pair": {
+      "linux": "failure",
+      "windows": "success",
+      "macos": "success"
+    }
+  },
+  "remaining_diagnoses": [
+    189,
+    198
+  ],
+  "candidate": "0.25.0 agreed, unfrozen",
+  "publication": "Both 1.0 publications paused; no tag/package/promotion in this round.",
+  "logs": {
+    "python": {
+      "bytes": 1305,
+      "sha256": "86325f9aec5c3d7a7466a986fea50b2904e3fa08dea0aecd01324e0a80491386"
+    },
+    "full": {
+      "bytes": 28840,
+      "sha256": "c81c61b8c4ebf2f9d51d6149d805b593e757b44b20276e06e2b32b871421d00a"
+    },
+    "js": {
+      "bytes": 506,
+      "sha256": "261c38179e152f6a2174579c38ec93c38a71e980129cf4d181a313ca0dc69048"
+    },
+    "browser-export": {
+      "bytes": 144,
+      "sha256": "e29210bb0292cccfd6522b34f68affe09c658228c9bedd6410838f018752d1a5"
+    },
+    "browser-lists": {
+      "bytes": 105,
+      "sha256": "3d365593d40c7e21b55b9618663e68b8391e7bd5c861502b4f8eaf70d40caf38"
+    },
+    "shared": {
+      "bytes": 1992,
+      "sha256": "163238d71f2274415c92b932f250ac221e2bbed740ae8dbafc4fe34899d2a752"
+    },
+    "shared-selection": {
+      "bytes": 214,
+      "sha256": "7f099f3fea7791b20387a353817a55e285308dd8f6c30b1caac06f9bbf034bbd"
+    },
+    "reporting": {
+      "bytes": 240,
+      "sha256": "a2ab74ff55af0ae08903f4d3bf191a9387f853ab7a628a6f20d52c379566d6bf"
+    },
+    "docguards": {
+      "bytes": 680,
+      "sha256": "afd6f58a646183cee81987daf4b05e392c736fb084ffb23d160118b03f2e3a0f"
+    },
+    "tsc": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "ruff": {
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "format": {
+      "bytes": 28,
+      "sha256": "1ccb7dd3761e7218b878a1a595d68afc848cac3954b8275494503b87c07c5b73"
+    }
+  }
+}
