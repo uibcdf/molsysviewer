@@ -16,6 +16,14 @@ from .whole import HANDLERS as WHOLE_HANDLERS
 
 PanelActionHandler = Callable[[Any, Mapping[str, Any]], None]
 
+STUDIO_RESULT_DOMAINS = {
+    "create_shape": "shapes",
+    "create_measurement": "measurements",
+    "create_annotation": "annotations",
+    "create_layer": "layers",
+    "delete_interaction_analysis": "interactions",
+}
+
 
 def _build_handlers() -> dict[str, PanelActionHandler]:
     handlers: dict[str, PanelActionHandler] = {}
@@ -85,7 +93,10 @@ def dispatch_panel_action(view: Any, content: Mapping[str, Any]) -> None:
     handler = HANDLERS.get(action)
     if handler is None:
         raise ValueError(f"Unsupported panel action: {action!r}.")
-    if action in {"create_shape", "batch_scene_objects"} and isinstance(content.get("request_id"), str):
+    if (action in STUDIO_RESULT_DOMAINS or action == "batch_scene_objects") and isinstance(
+        content.get("request_id"), str
+    ):
+        domain = STUDIO_RESULT_DOMAINS.get(action, content.get("domain"))
         try:
             handler(view, content)
         except Exception as exc:
@@ -95,7 +106,7 @@ def dispatch_panel_action(view: Any, content: Mapping[str, Any]) -> None:
                     "action": action,
                     "request_id": content["request_id"],
                     "ok": False,
-                    "domain": content.get("domain", "shapes"),
+                    "domain": domain,
                     "error_message": str(exc),
                 }
             )
@@ -107,7 +118,7 @@ def dispatch_panel_action(view: Any, content: Mapping[str, Any]) -> None:
                     "action": action,
                     "request_id": content["request_id"],
                     "ok": True,
-                    "domain": content.get("domain", "shapes"),
+                    "domain": domain,
                 }
             )
     else:

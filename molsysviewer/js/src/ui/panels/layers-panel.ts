@@ -1,4 +1,5 @@
-import { SavedListTools } from "./saved-list-tools";
+import { SavedListTools, type StudioActionResult } from "./saved-list-tools";
+import { CreationFeedback } from "./creation-feedback";
 import type { RegionSummary } from "../group-panel";
 import { BasePanel } from "./base-panel";
 import type { PanelContext } from "./types";
@@ -52,6 +53,7 @@ function card(): HTMLDivElement {
 }
 
 export class LayersPanel extends BasePanel {
+    private creation = new CreationFeedback("create_layer", "layers");
     readonly key = "layers";
 
     private layers: LayerSummary[] = [];
@@ -63,6 +65,18 @@ export class LayersPanel extends BasePanel {
 
     constructor(private readonly ctx: PanelContext) {
         super(); this.savedListTools = new SavedListTools("layers", ctx, () => this.scheduleRender());
+    }
+
+    override updateStudioAction(result: StudioActionResult): void {
+        super.updateStudioAction(result);
+        const outcome = this.creation.update(result);
+        if (!outcome) return;
+        if (outcome === "success") {
+            this.creationName = ""; this.selectedInitialMembers = [];
+            const input = this.host?.querySelector<HTMLInputElement>('[data-molsysviewer-layer-create-input]');
+            if (input) input.value = "";
+        }
+        this.scheduleRender();
     }
 
     setLayers(items: LayerSummary[]): void {
@@ -255,16 +269,11 @@ export class LayersPanel extends BasePanel {
         input.value = this.creationName;
         input.addEventListener("input", () => { this.creationName = input.value; });
 
-        const create = makeButton("Create", () => {
+        const create = makeButton(this.creation.pending ? "Creating…" : "Create", () => {
             const tag = input.value.trim();
             if (tag) {
-                this.ctx.onAction("create_layer", { tag });
-                for (const [kind, mTag] of this.selectedInitialMembers) {
-                    this.ctx.onAction("add_member_to_layer", { layer: tag, member_kind: kind, member_tag: mTag });
-                }
-                this.selectedInitialMembers = [];
-                this.creationName = "";
-                input.value = "";
+                this.creation.submit({ tag, members: this.selectedInitialMembers.map(([kind, memberTag]) => ({ member_kind: kind, member_tag: memberTag })) }, (action, payload) => this.ctx.onAction(action, payload));
+                this.scheduleRender();
             }
         });
         create.type = "submit";
@@ -345,6 +354,7 @@ export class LayersPanel extends BasePanel {
             }
         }
 
+        this.creation.mount(createCard);
         return createCard;
     }
 

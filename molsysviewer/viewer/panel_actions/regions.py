@@ -162,7 +162,23 @@ def create_layer(view: Any, content: Mapping[str, Any]) -> None:
     tag = content.get("tag")
     if not isinstance(tag, str) or not tag.strip():
         raise ValueError("create_layer requires a non-empty tag.")
-    view.layers.add(tag.strip(), skip_digestion=True)
+    tag = tag.strip()
+    # Resolve every initial member before creating the layer or changing history.
+    view._tag_managers["layer"].validate(tag)
+    initial = content.get("members", [])
+    if not isinstance(initial, list) or any(not isinstance(item, dict) for item in initial):
+        raise ValueError("create_layer members must be a list of member records.")
+    members = [_layer_member(view, item, "create_layer") for item in initial]
+    identities = [(item.get("member_kind"), item.get("member_tag")) for item in initial]
+    if len(set(identities)) != len(identities):
+        raise ValueError("create_layer members must not repeat objects.")
+    with view.history._atomic_operation(("studio-create-layer", tag)):
+        layer = view.layers.add(tag, skip_digestion=True)
+        for kind, member in members:
+            if kind == "region":
+                member.set_layer(layer, skip_digestion=True)
+            else:
+                layer.attach(member, skip_digestion=True)
 
 
 def rename_layer(view: Any, content: Mapping[str, Any]) -> None:

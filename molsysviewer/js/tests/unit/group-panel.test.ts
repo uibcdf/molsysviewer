@@ -1399,7 +1399,8 @@ test("GroupPanel layers panel joins typed members into user layers and emits lif
         findFirstByAttribute(root, "data-molsysviewer-layer-create-form", "true")
             ?.children.at(-1)
             ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
-        assert.deepStrictEqual(actions.at(-1), { action: "create_layer", details: { tag: "site" } });
+        assert.deepStrictEqual(actions.at(-1), { action: "create_layer", details: { tag: "site", members: [], request_id: actions.at(-1)?.details.request_id } });
+        assert.ok(typeof actions.at(-1)?.details.request_id === "string");
 
         panel.dispose();
     } finally {
@@ -2051,7 +2052,7 @@ test("GroupPanel Measures renders scientific values and routes every mutation th
         findFirstByAttribute(root, "data-molsysviewer-measurement-visibility", "d1")?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         findFirstByAttribute(root, "data-molsysviewer-measurement-delete", "d1")?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         assert.deepStrictEqual(actions.slice(-3), [
-            { action: "create_measurement", details: { kind: "distance", picks: [[0], [1]], endpoint_policy: "atom" } },
+            { action: "create_measurement", details: { kind: "distance", picks: [[0], [1]], endpoint_policy: "atom", request_id: actions.at(-3)?.details.request_id } },
             { action: "toggle_measurement_visibility", details: { tag: "d1" } },
             { action: "delete_measurement", details: { tag: "d1" } },
         ]);
@@ -2235,6 +2236,7 @@ test("GroupPanel Annotations edits labels and routes every mutation through pane
         ]);
         assert.strictEqual(actions.at(-2)?.details.style.color, "#abcdef");
 
+        findFirstByAttribute(host.children[0], "data-molsysviewer-annotation-slot-set", "0")?.dispatch("click", clickEvent);
         const createText = findFirstByAttribute(host.children[0], "data-molsysviewer-annotation-create-text", "true") as any;
         createText.value = "New label";
         createText.dispatch("input");

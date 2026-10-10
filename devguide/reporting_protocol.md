@@ -351,3 +351,10 @@ marks independent of molecular selection, exact batch targets, deletion
 confirmation, one-step Undo with restored annotation cells, and drafts through
 frame/tab changes and deletion/restore. Registration establishes addressability;
 each closing report must identify its relevant behavioral assertions.
+
+The same guard also exercises real duplicate measurement/layer rejection and
+recovery, atomic initial layer membership with Undo/Redo, unfocused new-region
+names through actual runtime summaries, missing coordinate validation and
+explicit-zero recovery, and named scientific-analysis confirmation/cancellation
+with actual data deletion and history clearing. Its refinement fixture sends
+real live editing summaries rather than substituting embedded snapshot flags.

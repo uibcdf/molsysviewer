@@ -221,3 +221,77 @@ and [Python 3.14 source pair](https://github.com/uibcdf/molsysviewer/actions/run
 are queued. These pending outcomes are not green gates. Review their final
 source evidence before candidate freeze, especially the source-pair PNG check.
 No tag, staging package, installed matrix or public release is created.
+
+
+## Final Studio review — 2026-10-10
+
+**Implemented and locally guarded:** #201–#204 close creation acknowledgement,
+initial layer membership, new-region draft persistence, coordinate validation and
+scientific deletion confirmation. `CreationFeedback` is reused by Measures,
+Annotations and Layers; no new scientific detector or public Python API is added.
+Layer creation carries all initial members in one validated atomic operation.
+Stored-analysis deletion explicitly names the data and scene-history loss;
+visual-set deletion retains its existing undoable contract.
+
+The refinement fixture now projects actual live Python editing summaries and
+frame-dependent summaries. Its draft checks therefore repaint the real forms;
+embedded snapshots are not substituted for live editing flags. Browser assertions
+cover duplicate creation/recovery, pending duplicate prevention, exactly one layer
+request, whole-layer Undo/Redo, unfocused/hidden region drafts, explicit cancellation,
+missing coordinates through repaint, explicit-zero recovery, annotation completion,
+and named analysis confirmation/cancellation with actual history clearing.
+
+### Evidence and limits
+
+- `tests/test_studio_creation_feedback.py`: **14/14 pass**, using real pentalanine;
+  state/redo preservation, complete initial-member validation, mixed-member layer
+  Undo/Redo, numeric coordinate rejection and nm/Å conversion under both standard
+  unit policies, referenced-analysis protection and correlated results.
+- `studio-list-workflows.e2e.ts`: **passes** with real Mol*/Chromium and the explicit
+  development Python; no page errors. `npm run test:js`, TypeScript no-emit,
+  Ruff and the runtime/harness/E2E builds pass. Sphinx HTML builds with the
+  explicit development-environment executable; the initial default-PATH build
+  used 3.13 and is not counted as 3.14 evidence.
+- Post-archive reporting, tracked links, architecture status and E2E inventory:
+  **226/226 pass**. New report files must be staged before the clean-checkout
+  link guard; unrelated sandbox files remain excluded.
+- The one complete Python execution reports **2,968 passed, 45 failed, 23 skipped**
+  in 552 seconds. It was run inside the restricted sandbox and must not be called
+  globally green. Seventeen failures read queue documents collected before they
+  were archived; the post-archive 226-case guard above passes. Twenty failures
+  involve forbidden socket/browser capabilities: the five owning modules rerun
+  with host capabilities report **53 passed, one explicit GPU-environment skip**.
+  The remaining eight failures are the separate experimental Qt child transport/
+  payload/resource probes, with OpenGL/Vulkan and sandbox-host fatal evidence.
+  No full-suite repeat or optional Qt certification is claimed.
+
+Raw source-development logs are retained locally as
+`/tmp/msv-studio-final-fixes-{browser,unit,python-full,host-capabilities}.log`.
+These observations retain the explicit `molsyssuite@uibcdf_3.14` editable source
+provenance; they do not qualify canonical installed artifacts or another platform.
+
+### Prior checkpoint and Windows decoding
+
+On prior source `4ca5a248`, core browser 38031216791, notebooks 38031216788,
+lint 38031216852 and both governance gates 38031217058/38031217125 finish
+success. Exact source pair **38031216855 remains globally failed**: Linux and
+macOS succeed, Windows job 114152375180 fails Python collection. The receptor's
+bounded log identifies a cp1252 UnicodeDecodeError in catalogue source extraction.
+The compact log also reports two collection errors; fresh Windows collection is
+needed to exclude any remaining independent error.
+
+#205 fixes that owned guard to read TypeScript explicitly as UTF-8. Decoding the
+actual source as cp1252 reproduces the failure; **10/10 catalogue cases** pass
+locally after the fix, including all nine public digested geometry examples.
+This is a source fix, not a passing Windows campaign. The historical PNG timeout
+#198 retains its original evidence and separate partial status; no cause is
+retroactively inferred from Linux success. Scientific/Qt CI 38031216787 was
+still in progress at this inspection.
+
+### Human follow-up
+
+Restart the Jupyter kernel and refresh the browser before constructing a fresh
+view. Check a duplicate measurement name and retained anchors, layer creation
+with initial members and one Undo, an unfocused region name during frame changes,
+an empty coordinate versus explicit zero, and analysis deletion cancellation/
+confirmation. Candidate 0.25.0 remains unfrozen; both 1.0 publications stay paused.

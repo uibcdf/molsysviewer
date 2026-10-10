@@ -12,7 +12,8 @@ from molsysviewer import pyunitwizard as puw
 
 SOURCE = Path(__file__).resolve().parents[1] / "molsysviewer/js/src/ui/panels/shapes-panel.ts"
 SNIPPETS = [
-    json.loads('"' + snippet + '"') for snippet in re.findall(r'codeSnippet: "((?:[^"\\]|\\.)*)"', SOURCE.read_text())
+    json.loads('"' + snippet + '"')
+    for snippet in re.findall(r'codeSnippet: "((?:[^"\\]|\\.)*)"', SOURCE.read_text(encoding="utf-8"))
 ]
 
 

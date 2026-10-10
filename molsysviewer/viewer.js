@@ -153432,6 +153432,53 @@ var SavedListTools = class {
   }
 };
 
+// src/ui/panels/creation-feedback.ts
+var CreationFeedback = class {
+  constructor(action, domain) {
+    this.action = action;
+    this.domain = domain;
+    this.request = null;
+    this.message = "";
+    this.failed = false;
+  }
+  get pending() {
+    return this.request !== null;
+  }
+  submit(details, emit) {
+    if (this.pending) return;
+    this.request = studioRequestId(this.action);
+    this.message = "Creating\u2026";
+    this.failed = false;
+    try {
+      emit(this.action, { ...details, request_id: this.request });
+    } catch (error2) {
+      this.request = null;
+      this.message = String(error2);
+      this.failed = true;
+    }
+  }
+  update(result2) {
+    if (!this.request || result2.request_id !== this.request || result2.action !== this.action || result2.domain !== this.domain) return null;
+    this.request = null;
+    this.failed = !result2.ok;
+    this.message = result2.ok ? "Created." : result2.error_message || "Creation failed. Your draft is kept.";
+    return result2.ok ? "success" : "failure";
+  }
+  mount(parent) {
+    if (this.pending && typeof parent.querySelectorAll === "function") {
+      for (const control of parent.querySelectorAll("input, button, select, textarea")) control.disabled = true;
+    }
+    if (this.message) {
+      const status = document.createElement("div");
+      status.textContent = this.message;
+      status.setAttribute("role", this.failed ? "alert" : "status");
+      status.setAttribute("data-molsysviewer-creation-status", this.domain);
+      Object.assign(status.style, { fontSize: "11px", overflowWrap: "anywhere" });
+      parent.appendChild(status);
+    }
+  }
+};
+
 // src/ui/panels/layers-panel.ts
 function card3() {
   const element = document.createElement("div");
@@ -153450,6 +153497,7 @@ var LayersPanel = class extends BasePanel {
   constructor(ctx) {
     super();
     this.ctx = ctx;
+    this.creation = new CreationFeedback("create_layer", "layers");
     this.key = "layers";
     this.layers = [];
     this.regions = [];
@@ -153458,6 +153506,18 @@ var LayersPanel = class extends BasePanel {
     this.selectedInitialMembers = [];
     this.creationName = "";
     this.savedListTools = new SavedListTools("layers", ctx, () => this.scheduleRender());
+  }
+  updateStudioAction(result2) {
+    super.updateStudioAction(result2);
+    const outcome = this.creation.update(result2);
+    if (!outcome) return;
+    if (outcome === "success") {
+      this.creationName = "";
+      this.selectedInitialMembers = [];
+      const input = this.host?.querySelector("[data-molsysviewer-layer-create-input]");
+      if (input) input.value = "";
+    }
+    this.scheduleRender();
   }
   setLayers(items) {
     this.layers = [...items];
@@ -153619,16 +153679,11 @@ var LayersPanel = class extends BasePanel {
     input.addEventListener("input", () => {
       this.creationName = input.value;
     });
-    const create3 = makeButton2("Create", () => {
+    const create3 = makeButton2(this.creation.pending ? "Creating\u2026" : "Create", () => {
       const tag = input.value.trim();
       if (tag) {
-        this.ctx.onAction("create_layer", { tag });
-        for (const [kind, mTag] of this.selectedInitialMembers) {
-          this.ctx.onAction("add_member_to_layer", { layer: tag, member_kind: kind, member_tag: mTag });
-        }
-        this.selectedInitialMembers = [];
-        this.creationName = "";
-        input.value = "";
+        this.creation.submit({ tag, members: this.selectedInitialMembers.map(([kind, memberTag]) => ({ member_kind: kind, member_tag: memberTag })) }, (action, payload) => this.ctx.onAction(action, payload));
+        this.scheduleRender();
       }
     });
     create3.type = "submit";
@@ -153697,6 +153752,7 @@ var LayersPanel = class extends BasePanel {
         createCard.appendChild(stagedTagsBox);
       }
     }
+    this.creation.mount(createCard);
     return createCard;
   }
   renderLayerCard(layer) {
@@ -154351,6 +154407,7 @@ var RegionsPanel = class extends BasePanel {
     this.regionsQueryComposer = null;
     this.regionsCheatSheetOpen = false;
     this.showRegionCreateForm = false;
+    this.regionCreationName = "";
     this.regionCreateInput = null;
     this.savedListTools = new SavedListTools("regions", ctx, () => this.scheduleRender());
   }
@@ -155241,6 +155298,10 @@ var RegionsPanel = class extends BasePanel {
       });
       const input = document.createElement("input");
       input.type = "text";
+      input.value = this.regionCreationName;
+      input.addEventListener("input", () => {
+        this.regionCreationName = input.value;
+      });
       input.placeholder = "Region name...";
       input.setAttribute("data-molsysviewer-region-create-input", "true");
       this.regionCreateInput = input;
@@ -155264,6 +155325,7 @@ var RegionsPanel = class extends BasePanel {
           this.ctx.onAction("create_region_from_selection", { tag: val });
         }
         this.showRegionCreateForm = false;
+        this.regionCreationName = "";
         this.scheduleRender();
       };
       input.addEventListener("keydown", (e) => {
@@ -155274,6 +155336,7 @@ var RegionsPanel = class extends BasePanel {
         } else if (e.key === "Escape") {
           e.preventDefault();
           this.showRegionCreateForm = false;
+          this.regionCreationName = "";
           this.scheduleRender();
         }
       });
@@ -157884,6 +157947,7 @@ var MeasuresPanel = class extends BasePanel {
   constructor(ctx) {
     super();
     this.ctx = ctx;
+    this.creation = new CreationFeedback("create_measurement", "measurements");
     this.key = "measures";
     this.measurements = [];
     this.settings = defaultSettings();
@@ -157902,6 +157966,19 @@ var MeasuresPanel = class extends BasePanel {
     this.measuresQueryComposer = null;
     this.measuresCheatSheetOpen = false;
     this.savedListTools = new SavedListTools("measurements", ctx, () => this.scheduleRender());
+  }
+  updateStudioAction(result2) {
+    super.updateStudioAction(result2);
+    const outcome = this.creation.update(result2);
+    if (!outcome) return;
+    if (outcome === "success") {
+      this.creationName = "";
+      const input = this.host?.querySelector("[data-molsysviewer-measurement-name-input]");
+      if (input) input.value = "";
+      this.stagedSlots = [null, null, null, null];
+      this.activeSlotExpansion = null;
+    }
+    this.scheduleRender();
   }
   setMeasurements(measurements, settings) {
     this.measurements = [...measurements];
@@ -158230,7 +158307,7 @@ var MeasuresPanel = class extends BasePanel {
     formRow.appendChild(nameInput);
     const requiredSlots = this.stagedSlots.slice(0, requiredCount);
     const canCreate = this.settings.systemLoaded && requiredSlots.every((slot2) => slot2 !== null);
-    const createButton = makeButton2("Create", () => {
+    const createButton = makeButton2(this.creation.pending ? "Creating\u2026" : "Create", () => {
       const picks = requiredSlots.map((slot2) => slot2.atom_indices);
       const endpoint_policy = requiredSlots[0]?.policy;
       const details = {
@@ -158242,11 +158319,7 @@ var MeasuresPanel = class extends BasePanel {
       if (tag) {
         details.tag = tag;
       }
-      this.ctx.onAction("create_measurement", details);
-      nameInput.value = "";
-      this.creationName = "";
-      this.stagedSlots = [null, null, null, null];
-      this.activeSlotExpansion = null;
+      this.creation.submit(details, (action, payload) => this.ctx.onAction(action, payload));
       this.scheduleRender();
     });
     createButton.disabled = !canCreate;
@@ -158265,6 +158338,7 @@ var MeasuresPanel = class extends BasePanel {
     createButton.setAttribute("data-molsysviewer-measurement-create-kind", this.selectedSavedKind);
     formRow.appendChild(createButton);
     slotsCard.appendChild(formRow);
+    this.creation.mount(slotsCard);
     parent.appendChild(slotsCard);
   }
   renderSelectionMechanismInline(slotIndex, requiredCount) {
@@ -158900,6 +158974,7 @@ var AnnotationsPanel = class extends BasePanel {
     super();
     this.ctx = ctx;
     this.onFocus = onFocus;
+    this.creation = new CreationFeedback("create_annotation", "annotations");
     this.key = "annotations";
     this.annotations = [];
     this.settings = { systemLoaded: false, activeSelectionCount: 0 };
@@ -158923,6 +158998,21 @@ var AnnotationsPanel = class extends BasePanel {
     this.annotationsQueryComposer = null;
     this.annotationsCheatSheetOpen = false;
     this.savedListTools = new SavedListTools("annotations", ctx, () => this.scheduleRender());
+  }
+  updateStudioAction(result2) {
+    super.updateStudioAction(result2);
+    const outcome = this.creation.update(result2);
+    if (!outcome) return;
+    if (outcome === "success") {
+      this.newText = "";
+      this.stagedAnchor = null;
+      const input = this.host?.querySelector("[data-molsysviewer-annotation-create-text]");
+      if (input) input.value = "";
+    }
+    this.scheduleRender();
+  }
+  canCreateAnnotation() {
+    return !this.creation.pending && this.settings.systemLoaded && !!this.newText.trim() && (this.anchorType === "coordinates" ? this.customPosition.every(Number.isFinite) : this.stagedAnchor !== null);
   }
   setAnnotations(items, settings) {
     this.annotations = [...items];
@@ -159039,7 +159129,7 @@ var AnnotationsPanel = class extends BasePanel {
   renderNewAnnotationElements(parent) {
     const activeCount = this.selection.atom_indices.length;
     const hasActive = activeCount > 0;
-    const canCreate = this.anchorType === "coordinates" ? !!this.newText.trim() : this.stagedAnchor !== null && !!this.newText.trim();
+    const canCreate = this.canCreateAnnotation();
     const createCard = card6();
     createCard.setAttribute("data-molsysviewer-annotation-create-card", "true");
     Object.assign(createCard.style, {
@@ -159064,13 +159154,11 @@ var AnnotationsPanel = class extends BasePanel {
     });
     textInput.setAttribute("data-molsysviewer-annotation-create-text", "true");
     formRow.appendChild(textInput);
-    const addBtn = makeButton2("Create", () => {
+    const addBtn = makeButton2(this.creation.pending ? "Creating\u2026" : "Create", () => {
       const text = textInput.value.trim();
-      if (!text) return;
-      this.newText = "";
+      if (!text || !this.canCreateAnnotation()) return;
       const atomIndices = this.anchorType === "selection" ? this.stagedAnchor || [] : void 0;
-      this.stagedAnchor = null;
-      this.ctx.onAction("create_annotation", {
+      this.creation.submit({
         text,
         label_style: { ...this.nextStyle },
         position: this.anchorType === "coordinates" ? [...this.customPosition] : void 0,
@@ -159079,7 +159167,8 @@ var AnnotationsPanel = class extends BasePanel {
         offset: [...this.nextOffset],
         leader_line: this.nextLeaderLine,
         leader_line_style: this.nextLeaderLineStyle
-      });
+      }, (action, payload) => this.ctx.onAction(action, payload));
+      this.scheduleRender();
     });
     addBtn.setAttribute("data-molsysviewer-annotation-create-confirm", "true");
     addBtn.disabled = !this.settings.systemLoaded || !canCreate;
@@ -159099,7 +159188,7 @@ var AnnotationsPanel = class extends BasePanel {
     createCard.appendChild(formRow);
     textInput.addEventListener("input", () => {
       this.newText = textInput.value;
-      const updatedCanCreate = this.anchorType === "coordinates" ? !!this.newText.trim() : this.stagedAnchor !== null && !!this.newText.trim();
+      const updatedCanCreate = this.canCreateAnnotation();
       addBtn.disabled = !this.settings.systemLoaded || !updatedCanCreate;
       addBtn.style.opacity = addBtn.disabled ? "0.42" : "1";
     });
@@ -159371,6 +159460,13 @@ var AnnotationsPanel = class extends BasePanel {
         color: "#fff"
       });
       coordsCard.appendChild(cHeader);
+      const coordinateHint = document.createElement("div");
+      coordinateHint.textContent = "Enter a finite number for X, Y and Z (nm). Zero is valid; an empty field is not.";
+      coordinateHint.setAttribute("role", "status");
+      coordinateHint.setAttribute("data-molsysviewer-annotation-coordinate-hint", "true");
+      coordinateHint.style.fontSize = "11px";
+      coordinateHint.hidden = this.customPosition.every(Number.isFinite);
+      coordsCard.appendChild(coordinateHint);
       const inputRow = document.createElement("div");
       Object.assign(inputRow.style, {
         display: "flex",
@@ -159386,10 +159482,15 @@ var AnnotationsPanel = class extends BasePanel {
         const numInput = document.createElement("input");
         numInput.type = "number";
         numInput.step = "0.1";
-        numInput.value = String(this.customPosition[index]);
+        numInput.value = Number.isFinite(this.customPosition[index]) ? String(this.customPosition[index]) : "";
+        numInput.setAttribute("aria-label", `Annotation ${axis} (nm)`);
+        numInput.setAttribute("data-molsysviewer-annotation-coordinate", axis);
         Object.assign(numInput.style, INPUT_STYLE2);
         numInput.addEventListener("input", () => {
-          this.customPosition[index] = Number(numInput.value) || 0;
+          this.customPosition[index] = numInput.value.trim() ? Number(numInput.value) : Number.NaN;
+          coordinateHint.hidden = this.customPosition.every(Number.isFinite);
+          addBtn.disabled = !this.canCreateAnnotation();
+          addBtn.style.opacity = addBtn.disabled ? "0.42" : "1";
         });
         col.appendChild(numInput);
         inputRow.appendChild(col);
@@ -159462,6 +159563,7 @@ var AnnotationsPanel = class extends BasePanel {
       selContainer.appendChild(dockInline);
       parent.appendChild(selContainer);
     }
+    this.creation.mount(parent);
   }
   renderAnnotation(item2) {
     const row3 = card6();
@@ -160215,6 +160317,9 @@ var InteractionsPanel = class extends BasePanel {
     super();
     this.ctx = ctx;
     this.analysisSearch = new ListSearch();
+    this.deletionTarget = null;
+    this.deletionPending = null;
+    this.deletionMessage = "";
     this.key = "interactions";
     this.items = [];
     this.analyses = [];
@@ -160285,6 +160390,7 @@ var InteractionsPanel = class extends BasePanel {
     parent.appendChild(details);
   }
   setSummary(message) {
+    if (this.deletionTarget && !message.analyses.some((item2) => item2.name === this.deletionTarget && item2.n_references === 0)) this.deletionTarget = null;
     this.reconcileEditorTargets((message.interactions || []).map((item2) => item2.tag));
     const previous = this.items.find((item2) => item2.tag === this.inspecting);
     const next = message.interactions.find((item2) => item2.tag === this.inspecting);
@@ -160302,6 +160408,14 @@ var InteractionsPanel = class extends BasePanel {
     this.frame = message.frame;
     if (!this.analyses.some((item2) => item2.name === this.stored)) this.stored = this.analyses[0]?.name ?? "";
     this.ctx.setBadge(String(this.items.length));
+    this.scheduleRender();
+  }
+  updateStudioAction(result2) {
+    super.updateStudioAction(result2);
+    if (result2.action !== "delete_interaction_analysis" || result2.request_id !== this.deletionPending) return;
+    this.deletionPending = null;
+    this.deletionMessage = result2.ok ? "Analysis deleted. Scene undo/redo history was cleared." : result2.error_message || "Deletion failed.";
+    if (result2.ok) this.deletionTarget = null;
     this.scheduleRender();
   }
   setFrame(items, frame) {
@@ -160861,15 +160975,50 @@ var InteractionsPanel = class extends BasePanel {
         this.editing = null;
         this.scheduleRender();
       }));
-      const remove3 = makeButton2("Delete analysis", () => this.emit("delete_interaction_analysis", { analysis_name: analysis.name }));
-      remove3.disabled = analysis.n_references > 0;
-      remove3.title = "Deleting an analysis clears scene undo history.";
+      const remove3 = makeButton2("Delete analysis", () => {
+        this.deletionTarget = analysis.name;
+        this.deletionMessage = "";
+        this.scheduleRender();
+      });
+      remove3.disabled = analysis.n_references > 0 || this.deletionPending !== null || !this.backendAvailable;
+      remove3.title = analysis.n_references > 0 ? "Remove this analysis's visual sets first." : "Review scientific data deletion.";
       actions.appendChild(remove3);
       card8.appendChild(actions);
+      if (this.deletionTarget === analysis.name) {
+        const confirmation = box4();
+        confirmation.setAttribute("data-molsysviewer-analysis-delete-confirmation", analysis.name);
+        confirmation.appendChild(note2(`Delete scientific analysis \u201C${analysis.name}\u201D? This cannot be undone and clears all scene Undo/Redo history.`));
+        const confirm2 = makeButton2(this.deletionPending ? "Deleting\u2026" : "Confirm deletion", () => {
+          if (this.deletionPending) return;
+          this.deletionPending = studioRequestId("delete-analysis");
+          this.deletionMessage = "Deleting\u2026";
+          try {
+            this.ctx.onAction("delete_interaction_analysis", { analysis_name: analysis.name, request_id: this.deletionPending });
+          } catch (error2) {
+            this.deletionPending = null;
+            this.deletionMessage = String(error2);
+          }
+          this.scheduleRender();
+        });
+        confirm2.disabled = this.deletionPending !== null;
+        const cancel = makeButton2("Cancel", () => {
+          this.deletionTarget = null;
+          this.deletionMessage = "";
+          this.scheduleRender();
+        });
+        cancel.disabled = this.deletionPending !== null;
+        confirmation.append(confirm2, cancel);
+        card8.appendChild(confirmation);
+      }
       stored.appendChild(card8);
     }
     filter5();
     this.host.appendChild(stored);
+    if (this.deletionMessage) {
+      const status2 = note2(this.deletionMessage);
+      status2.setAttribute("role", "status");
+      this.host.appendChild(status2);
+    }
   }
 };
 

@@ -1,8 +1,8 @@
-import { SavedListTools } from "./saved-list-tools";
+import { SavedListTools, type StudioActionResult } from "./saved-list-tools";
 import { ListSearch } from "../list-search";
 import { BasePanel } from "./base-panel";
 import type { PanelContext } from "./types";
-import { makeButton, makeSectionHeader } from "./ui-helpers";
+import { makeButton, makeSectionHeader, studioRequestId } from "./ui-helpers";
 import type { InteractionSummary, InteractionAnalysisSummary, InteractionInspection, InteractionSummariesMessage, InteractionCalculationFamily } from "../../managers/handlers/interaction-handlers";
 import type { ActiveSelectionPayload } from "../../managers/active-selection";
 import type { SavedSelectionSummary, SelectionQueryPreview } from "../group-panel";
@@ -58,6 +58,9 @@ const statusText = (item: InteractionSummary) => {
 
 export class InteractionsPanel extends BasePanel {
     private analysisSearch = new ListSearch();
+    private deletionTarget: string | null = null;
+    private deletionPending: string | null = null;
+    private deletionMessage = "";
     readonly key = "interactions";
     private items: InteractionSummary[] = [];
     private analyses: InteractionAnalysisSummary[] = [];
@@ -126,6 +129,7 @@ export class InteractionsPanel extends BasePanel {
         super(); this.savedListTools = new SavedListTools("interactions", ctx, () => this.scheduleRender()); this.composer = new ManualQueryComposer("interactions", details => ctx.onAction("selection_query_preview_request", details), undefined, { buttonLabel: "Select" });
     }
     setSummary(message: InteractionSummariesMessage) {
+        if (this.deletionTarget && !message.analyses.some(item => item.name === this.deletionTarget && item.n_references === 0)) this.deletionTarget = null;
         this.reconcileEditorTargets((message.interactions || []).map(item => item.tag));
         const previous = this.items.find(item => item.tag === this.inspecting);
         const next = message.interactions.find(item => item.tag === this.inspecting);
@@ -138,6 +142,14 @@ export class InteractionsPanel extends BasePanel {
         this.items = message.interactions; this.analyses = message.analyses; this.loaded = message.system_loaded; this.frame = message.frame;
         if (!this.analyses.some(item => item.name === this.stored)) this.stored = this.analyses[0]?.name ?? "";
         this.ctx.setBadge(String(this.items.length)); this.scheduleRender();
+    }
+    override updateStudioAction(result: StudioActionResult): void {
+        super.updateStudioAction(result);
+        if (result.action !== "delete_interaction_analysis" || result.request_id !== this.deletionPending) return;
+        this.deletionPending = null;
+        this.deletionMessage = result.ok ? "Analysis deleted. Scene undo/redo history was cleared." : result.error_message || "Deletion failed.";
+        if (result.ok) this.deletionTarget = null;
+        this.scheduleRender();
     }
     setFrame(items: InteractionSummary[], frame: number) { this.setSummary({ op: "set_interaction_summaries", interactions: items, analyses: this.analyses, system_loaded: this.loaded, frame }); }
     setSelection(selection: ActiveSelectionPayload) { this.selection = selection; this.scheduleRender(); }
@@ -438,7 +450,27 @@ export class InteractionsPanel extends BasePanel {
             card.appendChild(note(analysis.method));
             this.metadata(card, `${JSON.stringify(analysis.parameters)} · ${JSON.stringify(analysis.software)}`);
             const actions = row(); actions.appendChild(makeButton("Use", () => { this.openForm(); this.source = "stored"; this.stored = analysis.name; this.editing = null; this.scheduleRender(); }));
-            const remove = makeButton("Delete analysis", () => this.emit("delete_interaction_analysis", { analysis_name: analysis.name })); remove.disabled = analysis.n_references > 0; remove.title = "Deleting an analysis clears scene undo history."; actions.appendChild(remove); card.appendChild(actions); stored.appendChild(card);
+            const remove = makeButton("Delete analysis", () => { this.deletionTarget = analysis.name; this.deletionMessage = ""; this.scheduleRender(); });
+            remove.disabled = analysis.n_references > 0 || this.deletionPending !== null || !this.backendAvailable;
+            remove.title = analysis.n_references > 0 ? "Remove this analysis's visual sets first." : "Review scientific data deletion.";
+            actions.appendChild(remove); card.appendChild(actions);
+            if (this.deletionTarget === analysis.name) {
+                const confirmation = box(); confirmation.setAttribute("data-molsysviewer-analysis-delete-confirmation", analysis.name);
+                confirmation.appendChild(note(`Delete scientific analysis “${analysis.name}”? This cannot be undone and clears all scene Undo/Redo history.`));
+                const confirm = makeButton(this.deletionPending ? "Deleting…" : "Confirm deletion", () => {
+                    if (this.deletionPending) return;
+                    this.deletionPending = studioRequestId("delete-analysis"); this.deletionMessage = "Deleting…";
+                    try { this.ctx.onAction("delete_interaction_analysis", { analysis_name: analysis.name, request_id: this.deletionPending }); }
+                    catch (error) { this.deletionPending = null; this.deletionMessage = String(error); }
+                    this.scheduleRender();
+                });
+                confirm.disabled = this.deletionPending !== null;
+                const cancel = makeButton("Cancel", () => { this.deletionTarget = null; this.deletionMessage = ""; this.scheduleRender(); });
+                cancel.disabled = this.deletionPending !== null;
+                confirmation.append(confirm, cancel); card.appendChild(confirmation);
+            }
+            stored.appendChild(card);
         } filter(); this.host.appendChild(stored);
+        if (this.deletionMessage) { const status = note(this.deletionMessage); status.setAttribute("role", "status"); this.host.appendChild(status); }
     }
 }

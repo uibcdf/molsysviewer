@@ -37,6 +37,13 @@ suites. The historical source-pair PNG timeout (#198) remains a separate partial
 report until exact-source hosted evidence is reviewed. This source implementation
 does not freeze the 0.25.0 producer or supersede the preserved 0.24.1 bytes.
 
+The final Studio review (#201–#204) adds creation completion for Measures,
+Annotations and Layers, atomic initial layer membership, persistent new-region
+names, explicit finite annotation coordinates, and confirmed scientific analysis
+deletion with history-loss disclosure. Its source and real-browser evidence
+belongs to the same [Studio review](studio_review_20261009.md). These corrections
+do not freeze the candidate or authorize publication.
+
 The user guide is [Using the canvas context menu](../docs/content/user/viewer/context_menu.md).
 Normative behavior remains in [gestures and menus](interaction_gestures_and_menus.md)
 and the [payload contract](../docs/content/developer/protocol_and_payloads.md).

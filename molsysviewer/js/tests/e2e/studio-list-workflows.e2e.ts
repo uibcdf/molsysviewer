@@ -163,6 +163,110 @@ async function run() {
             await open("whole"); await reply({ action: "set_trajectory_frame", index: 0 }); await open(key);
             assert.equal(await draft.inputValue(), "not submitted", `${key} creation draft survives tab and projection`);
         }
+        const openCreation = async (key: string) => {
+            await open(key);
+            if (!await creation(key).evaluate((element: HTMLDetailsElement) => element.open)) await creation(key).locator(":scope > summary").click();
+        };
+
+        // A new region's unfocused name survives real canonical projections too.
+        await openCreation("regions");
+        await section("regions").locator('[data-molsysviewer-region-create-btn]').click();
+        const regionDraft = section("regions").locator('[data-molsysviewer-region-create-input]');
+        await regionDraft.fill("unfinished-region");
+        await section("regions").getByLabel("Search saved regions", { exact: true }).focus();
+        await reply({ action: "set_trajectory_frame", index: 1 });
+        assert.equal(await regionDraft.inputValue(), "unfinished-region");
+        await open("whole"); await reply({ action: "set_trajectory_frame", index: 2 }); await open("regions");
+        assert.equal(await regionDraft.inputValue(), "unfinished-region");
+        await regionDraft.press("Escape");
+        await section("regions").locator('[data-molsysviewer-region-create-btn]').click();
+        assert.equal(await regionDraft.inputValue(), "", "Explicit cancellation clears the draft");
+
+        // Reject a real duplicate measurement, retaining both staged endpoints and name.
+        await openCreation("measures");
+        for (let index = 0; index < 2; index++) {
+            await section("measures").getByRole("button", { name: "Set selection ▼", exact: true }).first().click();
+            await section("measures").locator(`[data-molsysviewer-measurement-slot-set="${index}"]`).click();
+        }
+        const measureName = section("measures").locator('[data-molsysviewer-measurement-name-input]');
+        const createMeasure = section("measures").locator('[data-molsysviewer-measurement-create-kind="distance"]');
+        await measureName.fill("alpha-one"); await createMeasure.click();
+        assert.equal(await measureName.inputValue(), "alpha-one", "Submitting does not clear a draft");
+        assert.ok(await createMeasure.isDisabled());
+        const beforeDoubleSubmit = await page.evaluate(() => (window as any).__messages.length);
+        await createMeasure.evaluate((button: HTMLButtonElement) => button.click());
+        assert.equal(await page.evaluate(() => (window as any).__messages.length), beforeDoubleSubmit);
+        await reply(await lastAction("create_measurement"));
+        assert.equal(await measureName.inputValue(), "alpha-one"); assert.ok(await createMeasure.isEnabled());
+        assert.match(await section("measures").locator('[data-molsysviewer-creation-status="measurements"]').innerText(), /already exists/);
+        await measureName.fill("review-distance"); await createMeasure.click(); await reply(await lastAction("create_measurement"));
+        assert.equal(await measureName.inputValue(), ""); assert.ok(await createMeasure.isDisabled());
+
+        // Layer membership travels in the single creation request; a failed create
+        // cannot accidentally attach staged members to the pre-existing layer.
+        await openCreation("layers");
+        const layerName = section("layers").locator('[data-molsysviewer-layer-create-input]');
+        await creation("layers").locator("select").selectOption(JSON.stringify(["shape", "alpha-one"]));
+        await layerName.fill("presentation");
+        const createLayer = section("layers").locator('[data-molsysviewer-layer-create-form] button');
+        const beforeLayer = await page.evaluate(() => (window as any).__messages.length);
+        await createLayer.click();
+        const layerRequest = await lastAction("create_layer");
+        assert.deepEqual(layerRequest.members, [{ member_kind: "shape", member_tag: "alpha-one" }]);
+        const layerActions = await page.evaluate(offset => (window as any).__messages.slice(offset).filter((message: any) => message.action), beforeLayer);
+        assert.deepEqual(layerActions.map((message: any) => message.action), ["create_layer"]);
+        await reply(layerRequest);
+        assert.equal(await layerName.inputValue(), "presentation"); assert.ok(await createLayer.isEnabled());
+        assert.match(await creation("layers").innerText(), /shape:\s*alpha-one/);
+        await layerName.fill("review-layer"); await createLayer.click(); await reply(await lastAction("create_layer"));
+        assert.equal(await layerName.inputValue(), "");
+        assert.equal(await section("layers").locator('[data-molsysviewer-layer-card="review-layer"]').count(), 1);
+        await reply({ event: "scene_history_undo" });
+        assert.equal(await section("layers").locator('[data-molsysviewer-layer-card="review-layer"]').count(), 0);
+        await reply({ event: "scene_history_redo" });
+        assert.equal(await section("layers").locator('[data-molsysviewer-layer-card="review-layer"]').count(), 1);
+
+        // Missing coordinate fields stay invalid through a background repaint;
+        // explicit zero is valid and keeps the text until actual creation succeeds.
+        await openCreation("annotations");
+        await section("annotations").getByRole("radio", { name: "Coordinates", exact: true }).check();
+        const x = section("annotations").getByLabel("Annotation X (nm)", { exact: true });
+        const annotationText = section("annotations").locator('[data-molsysviewer-annotation-create-text]');
+        const createAnnotation = section("annotations").locator('[data-molsysviewer-annotation-create-confirm]');
+        await x.fill(""); await annotationText.fill("review-origin");
+        assert.ok(await createAnnotation.isDisabled());
+        assert.ok(await section("annotations").locator('[data-molsysviewer-annotation-coordinate-hint]').isVisible());
+        await reply({ action: "set_trajectory_frame", index: 0 });
+        assert.equal(await x.inputValue(), ""); assert.ok(await createAnnotation.isDisabled());
+        await x.fill("0"); assert.ok(await createAnnotation.isEnabled());
+        await createAnnotation.click();
+        assert.equal(await annotationText.inputValue(), "review-origin"); assert.ok(await createAnnotation.isDisabled());
+        const annotationRequest = await lastAction("create_annotation"); assert.deepEqual(annotationRequest.position, [0, 0, 0]);
+        await reply(annotationRequest); assert.equal(await annotationText.inputValue(), "");
+
+        // Scientific deletion requires an explicit named confirmation, cancellation
+        // sends no request, filtering does not retarget it, and success clears history.
+        await open("interactions");
+        if (!await analyses.evaluate((element: HTMLDetailsElement) => element.open)) await analyses.locator(":scope > summary").click();
+        const stored = analyses.locator('[data-molsysviewer-stored-analysis="review"]');
+        const analysisDelete = stored.getByRole("button", { name: "Delete analysis", exact: true });
+        const beforeAnalysis = await page.evaluate(() => (window as any).__messages.length);
+        await analysisDelete.click();
+        const analysisConfirmation = stored.locator('[data-molsysviewer-analysis-delete-confirmation="review"]');
+        assert.match(await analysisConfirmation.innerText(), /review.*cannot be undone.*all scene Undo\/Redo/);
+        assert.equal(await page.evaluate(() => (window as any).__messages.length), beforeAnalysis);
+        await analysisConfirmation.getByRole("button", { name: "Cancel", exact: true }).click();
+        assert.equal(await analysisConfirmation.count(), 0);
+        assert.equal(await page.evaluate(() => (window as any).__messages.length), beforeAnalysis);
+        await analysisDelete.click();
+        await analyses.getByLabel("Search stored analyses", { exact: true }).fill("no-such-analysis");
+        await analyses.getByLabel("Search stored analyses", { exact: true }).fill("review");
+        await analysisConfirmation.getByRole("button", { name: "Confirm deletion", exact: true }).click();
+        const deletion = await lastAction("delete_interaction_analysis"); assert.equal(deletion.analysis_name, "review");
+        assert.ok(await analysisConfirmation.getByRole("button", { name: "Deleting…", exact: true }).isDisabled());
+        const deletionReply = await reply(deletion);
+        assert.equal(await stored.count(), 0);
+        assert.ok(deletionReply.message_batches.at(-1).some((message: any) => message.op === "set_history_state" && !message.can_undo && !message.can_redo));
         await page.screenshot({ path: "/tmp/msv-studio-list-workflows.png" });
         assert.deepEqual(errors, []);
         await page.evaluate(() => (window as any).__controller.dispose());

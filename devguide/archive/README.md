@@ -312,3 +312,11 @@ Completed work, kept for the reasoning:
 - [studio_marked_batch_actions.md](studio_marked_batch_actions.md) — #196: Validated marked batches provide confirmation, rollback and one-step Undo while preserving analyses and ungrouped members.
 - [studio_creation_disclosures.md](studio_creation_disclosures.md) — #197: Native creation/advanced disclosures retain deliberate choices and adapt initial defaults to saved items.
 - [studio_annotation_stale_restore_refs.md](studio_annotation_stale_restore_refs.md) — #199: Annotation cleanup checks current transforms sequentially; real Undo restores annotation cells without stale-ref errors.
+
+## Studio final review — 2026-10-10
+
+- [studio_creation_acknowledgement.md](studio_creation_acknowledgement.md) — #201: Correlated creation retains drafts on failure; initial layer members share validated atomic creation and one Undo.
+- [studio_region_creation_draft.md](studio_region_creation_draft.md) — #202: The new-region name survives unfocused and hidden canonical repaints; Escape clears the draft.
+- [studio_annotation_coordinate_validation.md](studio_annotation_coordinate_validation.md) — #203: Missing/nonfinite coordinate anchors are rejected; explicit zero and nm units remain valid across session policies.
+- [studio_analysis_deletion_confirmation.md](studio_analysis_deletion_confirmation.md) — #204: Named scientific deletion asks for confirmation, preserves data on cancellation and reports history loss explicitly.
+- [studio_catalogue_utf8_decoding.md](studio_catalogue_utf8_decoding.md) — #205: Executable catalogue guards read TypeScript explicitly as UTF-8 instead of Windows cp1252; new hosted Windows qualification remains pending.

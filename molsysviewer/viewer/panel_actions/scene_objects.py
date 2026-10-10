@@ -44,6 +44,13 @@ def create_annotation(view: Any, content: Mapping[str, Any]) -> None:
         raise ValueError("create_annotation requires non-empty text.")
     raw_style = content.get("label_style")
     position = content.get("position")
+    if position is not None:
+        if (
+            not isinstance(position, (list, tuple))
+            or len(position) != 3
+            or any(isinstance(value, bool) or not isinstance(value, Real) or not isfinite(value) for value in position)
+        ):
+            raise ValueError("Annotation coordinates require three finite numbers in nm.")
     offset_mode = content.get("offset_mode", "camera")
     offset = content.get("offset", (0.0, 0.0, 0.0))
     leader_line = content.get("leader_line", False)

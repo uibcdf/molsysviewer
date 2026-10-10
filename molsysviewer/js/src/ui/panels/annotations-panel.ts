@@ -1,4 +1,5 @@
-import { SavedListTools } from "./saved-list-tools";
+import { SavedListTools, type StudioActionResult } from "./saved-list-tools";
+import { CreationFeedback } from "./creation-feedback";
 import type { ActiveSelectionPayload } from "../../managers/active-selection";
 import type { SavedSelectionSummary, SelectionQueryPreview } from "../group-panel";
 import { BasePanel } from "./base-panel";
@@ -85,6 +86,7 @@ function resolvedStyle(style: AnnotationLabelStyle): Required<AnnotationLabelSty
 }
 
 export class AnnotationsPanel extends BasePanel {
+    private creation = new CreationFeedback("create_annotation", "annotations");
     readonly key = "annotations";
     private annotations: AnnotationSummary[] = [];
     private settings: AnnotationSettings = { systemLoaded: false, activeSelectionCount: 0 };
@@ -114,6 +116,23 @@ export class AnnotationsPanel extends BasePanel {
         private readonly ctx: PanelContext,
         private readonly onFocus: (atomIndices: number[]) => void,
     ) { super(); this.savedListTools = new SavedListTools("annotations", ctx, () => this.scheduleRender()); }
+
+    override updateStudioAction(result: StudioActionResult): void {
+        super.updateStudioAction(result);
+        const outcome = this.creation.update(result);
+        if (!outcome) return;
+        if (outcome === "success") {
+            this.newText = ""; this.stagedAnchor = null;
+            const input = this.host?.querySelector<HTMLInputElement>('[data-molsysviewer-annotation-create-text]');
+            if (input) input.value = "";
+        }
+        this.scheduleRender();
+    }
+
+    private canCreateAnnotation(): boolean {
+        return !this.creation.pending && this.settings.systemLoaded && !!this.newText.trim()
+            && (this.anchorType === "coordinates" ? this.customPosition.every(Number.isFinite) : this.stagedAnchor !== null);
+    }
 
     setAnnotations(items: AnnotationSummary[], settings: AnnotationSettings): void {
         this.annotations = [...items];
@@ -242,7 +261,7 @@ export class AnnotationsPanel extends BasePanel {
     private renderNewAnnotationElements(parent: HTMLElement): void {
         const activeCount = this.selection.atom_indices.length;
         const hasActive = activeCount > 0;
-        const canCreate = this.anchorType === "coordinates" ? !!this.newText.trim() : (this.stagedAnchor !== null && !!this.newText.trim());
+        const canCreate = this.canCreateAnnotation();
 
         // 1. Creation Input Form & Style Selection (At the top of the section)
         const createCard = card();
@@ -272,13 +291,11 @@ export class AnnotationsPanel extends BasePanel {
         textInput.setAttribute("data-molsysviewer-annotation-create-text", "true");
         formRow.appendChild(textInput);
 
-        const addBtn = makeButton("Create", () => {
+        const addBtn = makeButton(this.creation.pending ? "Creating…" : "Create", () => {
             const text = textInput.value.trim();
-            if (!text) return;
-            this.newText = "";
+            if (!text || !this.canCreateAnnotation()) return;
             const atomIndices = this.anchorType === "selection" ? (this.stagedAnchor || []) : undefined;
-            this.stagedAnchor = null;
-            this.ctx.onAction("create_annotation", {
+            this.creation.submit({
                 text,
                 label_style: { ...this.nextStyle },
                 position: this.anchorType === "coordinates" ? [...this.customPosition] : undefined,
@@ -287,7 +304,8 @@ export class AnnotationsPanel extends BasePanel {
                 offset: [...this.nextOffset],
                 leader_line: this.nextLeaderLine,
                 leader_line_style: this.nextLeaderLineStyle,
-            });
+            }, (action, payload) => this.ctx.onAction(action, payload));
+            this.scheduleRender();
         });
         addBtn.setAttribute("data-molsysviewer-annotation-create-confirm", "true");
         addBtn.disabled = !this.settings.systemLoaded || !canCreate;
@@ -308,7 +326,7 @@ export class AnnotationsPanel extends BasePanel {
 
         textInput.addEventListener("input", () => {
             this.newText = textInput.value;
-            const updatedCanCreate = this.anchorType === "coordinates" ? !!this.newText.trim() : (this.stagedAnchor !== null && !!this.newText.trim());
+            const updatedCanCreate = this.canCreateAnnotation();
             addBtn.disabled = !this.settings.systemLoaded || !updatedCanCreate;
             addBtn.style.opacity = addBtn.disabled ? "0.42" : "1";
         });
@@ -614,6 +632,14 @@ export class AnnotationsPanel extends BasePanel {
             });
             coordsCard.appendChild(cHeader);
 
+            const coordinateHint = document.createElement("div");
+            coordinateHint.textContent = "Enter a finite number for X, Y and Z (nm). Zero is valid; an empty field is not.";
+            coordinateHint.setAttribute("role", "status");
+            coordinateHint.setAttribute("data-molsysviewer-annotation-coordinate-hint", "true");
+            coordinateHint.style.fontSize = "11px";
+            coordinateHint.hidden = this.customPosition.every(Number.isFinite);
+            coordsCard.appendChild(coordinateHint);
+
             const inputRow = document.createElement("div");
             Object.assign(inputRow.style, {
                 display: "flex",
@@ -632,10 +658,15 @@ export class AnnotationsPanel extends BasePanel {
                 const numInput = document.createElement("input");
                 numInput.type = "number";
                 numInput.step = "0.1";
-                numInput.value = String(this.customPosition[index]);
+                numInput.value = Number.isFinite(this.customPosition[index]) ? String(this.customPosition[index]) : "";
+                numInput.setAttribute("aria-label", `Annotation ${axis} (nm)`);
+                numInput.setAttribute("data-molsysviewer-annotation-coordinate", axis);
                 Object.assign(numInput.style, INPUT_STYLE);
                 numInput.addEventListener("input", () => {
-                    this.customPosition[index] = Number(numInput.value) || 0.0;
+                    this.customPosition[index] = numInput.value.trim() ? Number(numInput.value) : Number.NaN;
+                    coordinateHint.hidden = this.customPosition.every(Number.isFinite);
+                    addBtn.disabled = !this.canCreateAnnotation();
+                    addBtn.style.opacity = addBtn.disabled ? "0.42" : "1";
                 });
                 col.appendChild(numInput);
                 inputRow.appendChild(col);
@@ -714,6 +745,7 @@ export class AnnotationsPanel extends BasePanel {
             selContainer.appendChild(dockInline);
             parent.appendChild(selContainer);
         }
+        this.creation.mount(parent);
     }
 
     private renderAnnotation(item: AnnotationSummary): HTMLDivElement {

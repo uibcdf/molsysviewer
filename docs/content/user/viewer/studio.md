@@ -43,6 +43,17 @@ for confirmation. Use **Undo** to restore the whole batch with one action.
 Deleting interaction sets keeps their stored scientific analyses; ungrouping
 layers keeps their members.
 
+To remove stored scientific data, use **Delete analysis** under Interactions.
+Studio asks you to confirm the named analysis: this deletion cannot be undone
+and clears all scene Undo/Redo history. Remove its visual sets first if it is
+still referenced. **Cancel** keeps the analysis and history.
+
+When creating a measurement, annotation or layer, Studio keeps the form until
+Python confirms success. If creation fails, the error appears beside the form
+and you can correct the retained draft. A new layer and its initial members
+are created together and can be undone in one step. Coordinate annotations
+require a number for each coordinate in nm; enter `0` explicitly when needed.
+
 Creation sections are collapsed when saved objects already exist. Open the
 **New …** heading to create another object. Studio keeps the disclosure state,
 creation values and secondary text drafts while you change sections or navigate

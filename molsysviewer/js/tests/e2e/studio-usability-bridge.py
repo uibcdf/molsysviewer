@@ -52,6 +52,9 @@ def replay(events, family=None):
             # Embedded snapshots omit transient active selection. Use the real
             # runtime projection, as a live Python selection would do.
             view.active_selection.set([0, 1])
+            view._sync_region_summaries_runtime()  # noqa: SLF001
+            view._sync_annotation_summaries_runtime()  # noqa: SLF001
+            view._sync_measurement_summaries_runtime()  # noqa: SLF001
             selection_messages.extend(transmitted)
             transmitted.clear()
         batches = []
@@ -59,6 +62,8 @@ def replay(events, family=None):
             before = len(transmitted)
             if event.get("event") == "scene_history_undo":
                 view.history.undo()
+            elif event.get("event") == "scene_history_redo":
+                view.history.redo()
             else:
                 try:
                     dispatch_panel_action(view, event)
@@ -68,6 +73,12 @@ def replay(events, family=None):
                         for message in transmitted[before:]
                     ):
                         raise
+            if family == "refinement" and event.get("action") == "set_trajectory_frame":
+                # Exercise background repaint explicitly with real live summaries;
+                # embedded snapshots intentionally omit their editing flags.
+                view._sync_region_summaries_runtime()  # noqa: SLF001
+                view._sync_annotation_summaries_runtime()  # noqa: SLF001
+                view._sync_measurement_summaries_runtime()  # noqa: SLF001
             batches.append(transmitted[before:])
         return _to_plain(
             {"initial_messages": initial, "selection_messages": selection_messages, "message_batches": batches}

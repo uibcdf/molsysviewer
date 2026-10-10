@@ -1,4 +1,5 @@
-import { SavedListTools } from "./saved-list-tools";
+import { SavedListTools, type StudioActionResult } from "./saved-list-tools";
+import { CreationFeedback } from "./creation-feedback";
 import type { ActiveSelectionPayload } from "../../managers/active-selection";
 import type { SavedSelectionSummary, SelectionQueryPreview } from "../group-panel";
 import { BasePanel } from "./base-panel";
@@ -142,6 +143,7 @@ export function makePurplishSegmentButton(
 }
 
 export class MeasuresPanel extends BasePanel {
+    private creation = new CreationFeedback("create_measurement", "measurements");
     readonly key = "measures";
     private measurements: MeasurementSummary[] = [];
     private settings = defaultSettings();
@@ -169,6 +171,19 @@ export class MeasuresPanel extends BasePanel {
     private measuresCheatSheetOpen = false;
 
     constructor(private readonly ctx: PanelContext) { super(); this.savedListTools = new SavedListTools("measurements", ctx, () => this.scheduleRender()); }
+
+    override updateStudioAction(result: StudioActionResult): void {
+        super.updateStudioAction(result);
+        const outcome = this.creation.update(result);
+        if (!outcome) return;
+        if (outcome === "success") {
+            this.creationName = "";
+            const input = this.host?.querySelector<HTMLInputElement>('[data-molsysviewer-measurement-name-input]');
+            if (input) input.value = "";
+            this.stagedSlots = [null, null, null, null]; this.activeSlotExpansion = null;
+        }
+        this.scheduleRender();
+    }
 
     setMeasurements(measurements: MeasurementSummary[], settings: MeasurementSettings): void {
         this.measurements = [...measurements];
@@ -545,7 +560,7 @@ export class MeasuresPanel extends BasePanel {
         const requiredSlots = this.stagedSlots.slice(0, requiredCount);
         const canCreate = this.settings.systemLoaded && requiredSlots.every(slot => slot !== null);
 
-        const createButton = makeButton("Create", () => {
+        const createButton = makeButton(this.creation.pending ? "Creating…" : "Create", () => {
             const picks = requiredSlots.map(slot => slot!.atom_indices);
             const endpoint_policy = requiredSlots[0]?.policy;
             const details: Record<string, any> = {
@@ -557,11 +572,7 @@ export class MeasuresPanel extends BasePanel {
             if (tag) {
                 details.tag = tag;
             }
-            this.ctx.onAction("create_measurement", details);
-            nameInput.value = "";
-            this.creationName = "";
-            this.stagedSlots = [null, null, null, null];
-            this.activeSlotExpansion = null;
+            this.creation.submit(details, (action, payload) => this.ctx.onAction(action, payload));
             this.scheduleRender();
         });
         createButton.disabled = !canCreate;
@@ -581,6 +592,7 @@ export class MeasuresPanel extends BasePanel {
         formRow.appendChild(createButton);
 
         slotsCard.appendChild(formRow);
+        this.creation.mount(slotsCard);
         parent.appendChild(slotsCard);
     }
 

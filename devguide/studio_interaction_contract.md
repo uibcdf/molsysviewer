@@ -116,3 +116,32 @@ pentalanine, real Python replies and Mol*/Chromium for creation failure/recovery
 filter/mark independence, atomic visibility/undo, drafts and deletion semantics.
 The bounded selector profile in `tests/test_reporting_protocol.py` verifies
 registration/build routing; it does not prove scientific correctness itself.
+
+## Creation completion and scientific deletion (final review)
+
+`CreationFeedback` owns correlated creation state for Measures, Annotations and
+Layers. Submitting keeps the draft and staged participants, disables creation
+controls while pending, and clears the draft only on the matching successful
+`studio_action_result`. Failure keeps the draft and shows an inline error;
+unrelated or stale results cannot complete the request. The dispatcher assigns
+the owning domain rather than trusting a caller-supplied creation domain.
+
+`create_layer` carries initial members in the same request. Every tag and member
+is resolved before mutation. Existing owner operations run inside one scene
+history boundary, so failure rolls back and one Undo restores the whole creation.
+The consumer must not send independent membership requests after creation.
+
+Regions owns the new-region name as model state, including while unfocused or
+hidden during canonical projections. Explicit submission or Escape clears it.
+Annotation coordinate anchors require three finite numeric fields in nm. Empty
+fields stay invalid across repaints; explicit zero remains valid. Python validates
+the same numeric boundary before mutating the scene; the existing nm-to-Å
+conversion is independent of the session standard unit.
+
+Deleting a stored scientific analysis is separate from deleting a visual set.
+Studio first asks for explicit confirmation naming the analysis and stating that
+the operation cannot be undone and clears all scene Undo/Redo history. Cancel
+sends no request. Filtering does not change the captured target; analyses with
+visual references cannot be deleted. Completion/errors use a correlated result,
+and pending deletion cannot be submitted again. This does not change the public
+Python deletion contract or the experimental scientific classification.

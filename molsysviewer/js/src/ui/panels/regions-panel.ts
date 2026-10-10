@@ -43,6 +43,7 @@ export class RegionsPanel extends BasePanel {
     private regionsQueryComposer: ManualQueryComposer | null = null;
     private regionsCheatSheetOpen = false;
     private showRegionCreateForm = false;
+    private regionCreationName = "";
     private regionCreateInput: HTMLInputElement | null = null;
 
     constructor(
@@ -1056,6 +1057,8 @@ export class RegionsPanel extends BasePanel {
 
             const input = document.createElement("input");
             input.type = "text";
+            input.value = this.regionCreationName;
+            input.addEventListener("input", () => { this.regionCreationName = input.value; });
             input.placeholder = "Region name...";
             input.setAttribute("data-molsysviewer-region-create-input", "true");
             this.regionCreateInput = input;
@@ -1080,6 +1083,7 @@ export class RegionsPanel extends BasePanel {
                     this.ctx.onAction("create_region_from_selection", { tag: val });
                 }
                 this.showRegionCreateForm = false;
+                this.regionCreationName = "";
                 this.scheduleRender();
             };
 
@@ -1091,6 +1095,7 @@ export class RegionsPanel extends BasePanel {
                 } else if (e.key === "Escape") {
                     e.preventDefault();
                     this.showRegionCreateForm = false;
+                    this.regionCreationName = "";
                     this.scheduleRender();
                 }
             });
