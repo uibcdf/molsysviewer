@@ -64,3 +64,44 @@ At the recorded observation, Ruff `38046731008` and publication governance
 `38046730917`, source pair `38046731092`, core browser `38046731000` and suite
 policy `38046731297` are queued. No terminal result is inferred for active runs.
 The source candidate stays unfrozen and both 1.0 publications remain paused.
+
+## Hosted CI review
+
+The follow-up reviews the existing automatic runs for the exact source commit
+above. Ruff, suite policy (including formatting), publication governance and
+documentation notebooks pass. Core browser run `38046731000` passes **43/43**
+suites with real Mol*/Chromium; Linux/Python 3.13 also passes **325/325** JS unit
+tests and their coverage execution.
+
+In scientific run `38046730917`, Linux/Python 3.11, 3.12 and 3.13 each pass
+**3037 tests, 35 skips**, with no failures. The three macOS/Python 3.11–3.13
+jobs remain queued without assigned runners at this checkpoint. They have not
+run and cannot be counted as passed. The separate Qt job fails before obtaining
+a WebGL canvas; the later render step is skipped. This observation is retained
+in uibcdf/molsysviewer#109's maintained record. The workflow is not globally
+green, and its queued state is not a completed scientific result.
+
+Source-pair run `38046731092` uses MolSysMT
+`46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9`. Its Windows/Python 3.14 cell passes
+**3011 tests, 61 skips**, and macOS/Python 3.14 passes **3010 tests, 62 skips**,
+plus the installed-source native path and integration guards in both cells.
+Linux/Python 3.14 passes **3037 tests, 35 skips**, its native/integration
+guards, **43/43** core browser suites and **25/25** documented notebooks. The
+source-pair run completes successfully in **3/3** cells. Platform-specific, optional Qt and artifact-dependent
+skips keep their reported scope; these source runs do not qualify canonical
+staged archives.
+
+The receipt's `hosted_ci_review` preserves run/job identities, step outcomes,
+original metadata and log digests. No source fix is indicated by the completed
+core observations. No run is duplicated or cancelled, no provider reference
+moves, and no release or candidate freeze is authorized by this review.
+
+
+The applicable review remains **partial** solely because the three scientific
+macOS/Python 3.11–3.13 cells still have `runner_id=0` and no assigned runner at
+the recorded inspection. No currently running Viewer scientific cell remains
+outside those queued jobs. Those cells are preserved in the original run,
+without cancellation or rerun. Finishing their observations requires GitHub
+runner assignment; the green Python 3.14 macOS cell does not replace them.
+
+The updated reporting, link and architecture checks pass **230/230** locally.

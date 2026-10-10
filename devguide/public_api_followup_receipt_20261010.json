@@ -198,5 +198,416 @@
       222
     ],
     "board_sync": "27 documents agree with the board"
+  },
+  "hosted_ci_review": {
+    "observed_at": "2026-10-10T11:20:34.747365+00:00",
+    "source_commit": "792fd5f6baea34dd11016854ace78d76d5d087c6",
+    "installed_artifact_qualification": false,
+    "runs": [
+      {
+        "databaseId": 38046731008,
+        "name": "Ruff Lint",
+        "headSha": "792fd5f6baea34dd11016854ace78d76d5d087c6",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38046731008",
+        "metadata_sha256": "927bf44ca6995eafabe9f1d4c87a6a34f7a54a372697ddf3a6f6de99a10897fe",
+        "jobs": [
+          {
+            "id": 114197660076,
+            "name": "ruff",
+            "status": "completed",
+            "conclusion": "success",
+            "observed_steps": {}
+          }
+        ],
+        "observed_at": "2026-10-10T11:20:27.556220+00:00"
+      },
+      {
+        "databaseId": 38046731328,
+        "name": "Conda publication governance",
+        "headSha": "792fd5f6baea34dd11016854ace78d76d5d087c6",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38046731328",
+        "metadata_sha256": "c99921f096abd862b9474a11e128b5c927e83707cf0f7c2ce94a0ff947fa937c",
+        "jobs": [
+          {
+            "id": 114197661093,
+            "name": "publication / check",
+            "status": "completed",
+            "conclusion": "success",
+            "observed_steps": {}
+          }
+        ],
+        "observed_at": "2026-10-10T11:20:28.698547+00:00"
+      },
+      {
+        "databaseId": 38046731297,
+        "name": "MolSysSuite policy",
+        "headSha": "792fd5f6baea34dd11016854ace78d76d5d087c6",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38046731297",
+        "metadata_sha256": "bc1d5cb36443991abe9b9fd52847e7dd37a46590417a8f4c1b9f5d72fc5f95fe",
+        "jobs": [
+          {
+            "id": 114197661107,
+            "name": "Dependency metadata audit",
+            "status": "completed",
+            "conclusion": "success",
+            "observed_steps": {}
+          },
+          {
+            "id": 114197661258,
+            "name": "policy / conformance",
+            "status": "completed",
+            "conclusion": "success",
+            "observed_steps": {}
+          }
+        ],
+        "observed_at": "2026-10-10T11:20:29.819687+00:00"
+      },
+      {
+        "databaseId": 38046731029,
+        "name": "Documentation notebooks",
+        "headSha": "792fd5f6baea34dd11016854ace78d76d5d087c6",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38046731029",
+        "metadata_sha256": "80f3f1f25ac9fb01db2e466840b5757e9b5319a856fac43adaf4cc42867d4f2d",
+        "jobs": [
+          {
+            "id": 114197660101,
+            "name": "Execute the documented notebooks",
+            "status": "completed",
+            "conclusion": "success",
+            "observed_steps": {
+              "Execute every documented notebook": "success"
+            }
+          }
+        ],
+        "observed_at": "2026-10-10T11:20:31.028519+00:00"
+      },
+      {
+        "databaseId": 38046731000,
+        "name": "CI_e2e",
+        "headSha": "792fd5f6baea34dd11016854ace78d76d5d087c6",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38046731000",
+        "metadata_sha256": "7485dfb2cd549e173f5880c962c20784608176be81fb593ad8bf69b1f489daf4",
+        "jobs": [
+          {
+            "id": 114197660252,
+            "name": "Core E2E",
+            "status": "completed",
+            "conclusion": "success",
+            "observed_steps": {
+              "Run core E2E tests": "success"
+            }
+          },
+          {
+            "id": 114197660862,
+            "name": "Check skipped-commit backlog",
+            "status": "completed",
+            "conclusion": "skipped",
+            "observed_steps": {}
+          }
+        ],
+        "observed_at": "2026-10-10T11:20:32.218863+00:00"
+      },
+      {
+        "databaseId": 38046731092,
+        "name": "Python 3.14 source pair",
+        "headSha": "792fd5f6baea34dd11016854ace78d76d5d087c6",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38046731092",
+        "metadata_sha256": "9ca24f46b2d713f7c7d18333d7c3e2255602dca38c81065f99b064b5e3122b5d",
+        "jobs": [
+          {
+            "id": 114197660504,
+            "name": "Source pair on ubuntu-latest, Python 3.14",
+            "status": "completed",
+            "conclusion": "success",
+            "observed_steps": {
+              "Guard native MolSysMT paths in the installed pair": "success",
+              "Test MolSysMT integration against the installed pair": "success",
+              "Run MolSysViewer Python tests": "success",
+              "Run all core browser suites against the exact source pair": "success",
+              "Execute every documented notebook against the exact source pair": "success"
+            }
+          },
+          {
+            "id": 114197660603,
+            "name": "Source pair on windows-2025, Python 3.14",
+            "status": "completed",
+            "conclusion": "success",
+            "observed_steps": {
+              "Guard native MolSysMT paths in the installed pair": "success",
+              "Test MolSysMT integration against the installed pair": "success",
+              "Run MolSysViewer Python tests": "success",
+              "Run all core browser suites against the exact source pair": "skipped",
+              "Execute every documented notebook against the exact source pair": "skipped"
+            }
+          },
+          {
+            "id": 114197660665,
+            "name": "Source pair on macos-15, Python 3.14",
+            "status": "completed",
+            "conclusion": "success",
+            "observed_steps": {
+              "Guard native MolSysMT paths in the installed pair": "success",
+              "Test MolSysMT integration against the installed pair": "success",
+              "Run MolSysViewer Python tests": "success",
+              "Run all core browser suites against the exact source pair": "skipped",
+              "Execute every documented notebook against the exact source pair": "skipped"
+            }
+          }
+        ],
+        "observed_at": "2026-10-10T11:29:15.665236+00:00"
+      },
+      {
+        "databaseId": 38046730917,
+        "name": "CI",
+        "headSha": "792fd5f6baea34dd11016854ace78d76d5d087c6",
+        "status": "queued",
+        "conclusion": "",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38046730917",
+        "metadata_sha256": "472e09155e6b2df2945ad601e40025f14e8f4544909f1ffe0beea2c4fe5bdfdf",
+        "jobs": [
+          {
+            "id": 114197659796,
+            "name": "Qt pipeline completes (Xvfb, software WebGL)",
+            "status": "completed",
+            "conclusion": "failure",
+            "observed_steps": {
+              "Qt transport round-trip in a real Qt process": "failure",
+              "The structure finishes loading through WebGL": "skipped"
+            }
+          },
+          {
+            "id": 114197659937,
+            "name": "Test on macos-15, Python 3.12",
+            "status": "queued",
+            "conclusion": "",
+            "observed_steps": {}
+          },
+          {
+            "id": 114197659939,
+            "name": "Test on macos-15, Python 3.11",
+            "status": "queued",
+            "conclusion": "",
+            "observed_steps": {}
+          },
+          {
+            "id": 114197659941,
+            "name": "Test on ubuntu-latest, Python 3.11",
+            "status": "completed",
+            "conclusion": "success",
+            "observed_steps": {
+              "Run tests": "success",
+              "JS unit tests (Node)": "skipped"
+            }
+          },
+          {
+            "id": 114197659952,
+            "name": "Test on ubuntu-latest, Python 3.12",
+            "status": "completed",
+            "conclusion": "success",
+            "observed_steps": {
+              "Run tests": "success",
+              "JS unit tests (Node)": "skipped"
+            }
+          },
+          {
+            "id": 114197659960,
+            "name": "Test on macos-15, Python 3.13",
+            "status": "queued",
+            "conclusion": "",
+            "observed_steps": {}
+          },
+          {
+            "id": 114197659970,
+            "name": "Test on ubuntu-latest, Python 3.13",
+            "status": "completed",
+            "conclusion": "success",
+            "observed_steps": {
+              "Run tests": "success",
+              "JS unit tests (Node)": "success"
+            }
+          },
+          {
+            "id": 114197660533,
+            "name": "Check skipped-commit backlog",
+            "status": "completed",
+            "conclusion": "skipped",
+            "observed_steps": {}
+          }
+        ],
+        "observed_at": "2026-10-10T11:20:34.747278+00:00"
+      }
+    ],
+    "logs": {
+      "qt-failed.log": {
+        "sha256": "a812312f4809a4f7553430f58c9fb3328176c248d361df03d85d54f39d2bde16",
+        "bytes": 129745,
+        "local_directory": "/tmp/msv-api-ci-20261010"
+      },
+      "core.log": {
+        "sha256": "1dc94d5ef0e6d4037fee84b7f95a0bfdd6c42c41fa673d58bdfa7c7e2fa7ed4c",
+        "bytes": 150126,
+        "local_directory": "/tmp/msv-api-ci-20261010"
+      },
+      "linux311.log": {
+        "sha256": "9fe1ea0767727bec3db93cb21223615ac02c31b9f01ccc3e6b8a688ddf28f2ca",
+        "bytes": 1735375,
+        "local_directory": "/tmp/msv-api-ci-20261010"
+      },
+      "linux312.log": {
+        "sha256": "8c4e57f5381d0c54800e00ff60231a8f2f99f6ebb6518876cf6c509599aa2bc6",
+        "bytes": 1734915,
+        "local_directory": "/tmp/msv-api-ci-20261010"
+      },
+      "linux313.log": {
+        "sha256": "ec7e4669f4bd68350249ddc318fd351feda20b231b73acbea26e2bdb341b32c8",
+        "bytes": 2024299,
+        "local_directory": "/tmp/msv-api-ci-20261010"
+      },
+      "windows314.log": {
+        "sha256": "c6f6d0d82a5eba09f69175fb068757d839543fd2bc4c131353cb0e754c18b7fd",
+        "bytes": 146997,
+        "local_directory": "/tmp/msv-api-ci-20261010"
+      },
+      "macos314.log": {
+        "sha256": "77516c2bcddf687f6df0fbf1946d51aaa4ed423599244454659b53d2edd1d4a8",
+        "bytes": 141309,
+        "local_directory": "/tmp/msv-api-ci-20261010"
+      },
+      "linux314.log": {
+        "sha256": "e4f110eaa00826a1bbcd930d0d678fb5e41147d6447dd3540a2ddf3ab650ebe2",
+        "bytes": 197464,
+        "local_directory": "/tmp/msv-api-ci-20261010"
+      }
+    },
+    "applicable_complete": false,
+    "source_pair_molsysmt_sha": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+    "core_browser": {
+      "passed_suites": 43,
+      "total_suites": 43,
+      "run": 38046731000
+    },
+    "js_units": {
+      "passed": 325,
+      "failed": 0,
+      "run": 38046730917,
+      "job": 114197659970
+    },
+    "python_results": {
+      "linux_py311": {
+        "passed": 3037,
+        "skipped": 35,
+        "failed": 0
+      },
+      "linux_py312": {
+        "passed": 3037,
+        "skipped": 35,
+        "failed": 0
+      },
+      "linux_py313": {
+        "passed": 3037,
+        "skipped": 35,
+        "failed": 0
+      },
+      "macos_py314": {
+        "passed": 3010,
+        "skipped": 62,
+        "failed": 0
+      },
+      "windows_py314": {
+        "passed": 3011,
+        "skipped": 61,
+        "failed": 0
+      },
+      "linux_py314": {
+        "passed": 3037,
+        "skipped": 35,
+        "failed": 0
+      }
+    },
+    "pending": [
+      "macos-15 Python 3.11 scientific cell",
+      "macos-15 Python 3.12 scientific cell",
+      "macos-15 Python 3.13 scientific cell"
+    ],
+    "experimental_qt": {
+      "job": 114197659796,
+      "conclusion": "failure",
+      "test": "tests/test_standalone.py::test_qt_live_model_smoke_real_window",
+      "failure": "Exported scene has no WebGL canvas; WebGL context creation failed",
+      "later_render_step": "skipped after transport failure",
+      "tracking_issue": "uibcdf/molsysviewer#109",
+      "core_gate": false
+    },
+    "publication": {
+      "candidate_frozen": false,
+      "both_1_0_publications_paused": true
+    },
+    "metadata_directory": "/tmp/msv-api-ci-20261010",
+    "source_pair_complete": true,
+    "source_pair_browser": {
+      "passed_suites": 43,
+      "total_suites": 43,
+      "run": 38046731092
+    },
+    "source_pair_notebooks": {
+      "executed": 25,
+      "failed": 0,
+      "run": 38046731092
+    },
+    "scientific_pending_runners": [
+      {
+        "id": 114197659937,
+        "name": "Test on macos-15, Python 3.12",
+        "status": "queued",
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      },
+      {
+        "id": 114197659939,
+        "name": "Test on macos-15, Python 3.11",
+        "status": "queued",
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      },
+      {
+        "id": 114197659960,
+        "name": "Test on macos-15, Python 3.13",
+        "status": "queued",
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      }
+    ],
+    "scientific_runner_snapshot_sha256": "d2577c423a9755db1a26c0f5627006a7b15527eef1e44d4373d9dfd89ead09d5",
+    "source_pair_observed_at": "2026-10-10T11:30:15.488959+00:00",
+    "guidance_validation": {
+      "passed": 230,
+      "failed": 0,
+      "exit_code": 0,
+      "command": "python -m pytest --receptor=llm tests/test_reporting_protocol.py tests/test_devguide_links.py tests/test_devguide_architecture_status.py -x",
+      "log_sha256": "f365cf1bddf833bc072efaa6c671b5f9bf1061b0c224d99ad4d0b28385845e38",
+      "local_directory": "/tmp/msv-api-ci-20261010"
+    },
+    "pending_reconfirmed_at": "2026-10-10T11:31:28.396801+00:00"
   }
 }

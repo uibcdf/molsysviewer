@@ -16,7 +16,7 @@ supersedes: []
 
 **Reported:** 2026-09-27 during the Qt dependency simplification study.
 **Status:** Active; source, tests and development/CI recipes have been updated,
-and the hosted Linux Qt pipeline passed. Native Windows/macOS and visible-window
+and an earlier hosted Linux Qt pipeline passed. Native Windows/macOS and visible-window
 observations have not completed.
 The 2026-09-28 scope decision keeps the host experimental for 1.0, so those
 remaining observations are outside the core release gate.
@@ -46,6 +46,21 @@ reports the D-Bus address connection error. The complete result is 3056 passed,
 corrected and checked separately. See
 [the API follow-up](../public_api_followup_20261010.md) for the source receipt.
 No Qt workaround, recertification or passing host claim was introduced.
+
+### Hosted probe observation — 2026-10-10
+
+Source CI `38046730917` at Viewer
+`792fd5f6baea34dd11016854ace78d76d5d087c6` fails its Qt pipeline job
+`114197659796` in `test_qt_live_model_smoke_real_window`. The recorded status is
+`Frontend error: Exported scene has no WebGL canvas`; stderr reports failure to
+create a WebGL rendering context, unavailable Vulkan and a D-Bus socket error.
+The secondary CDN fallback also fails to fetch its module. The later full-render
+step is skipped because transport failed; it is not a passing render result.
+The job log was retrieved directly from the finished job while other matrix
+cells continued. This is a separate hosted observation, not the eight local
+probe failures or a conclusion about the core scientific/browser cells.
+The earlier exact host certificate remains historical evidence. Qt stays
+experimental and outside the 1.0 core gate; no workaround or rerun is applied.
 
 The standalone Qt host should prefer official PySide6 6.11.2 and retain the
 UIBCDF namespaced family as a fallback during the suite-wide observation
