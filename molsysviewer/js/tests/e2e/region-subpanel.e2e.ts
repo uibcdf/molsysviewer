@@ -119,6 +119,9 @@ async function run() {
         await baseToggle.click();
         assert.strictEqual((await latestAction(page, "toggle_region_visibility")).tag, "base");
 
+        const creation = page.locator('[data-molsysviewer-group-panel-section="regions"] details[data-molsysviewer-disclosure="creation"]');
+        assert.strictEqual(await creation.evaluate((element: HTMLDetailsElement) => element.open), false);
+        await creation.locator(":scope > summary").click();
         await page.locator('[data-molsysviewer-query-input="regions"]').fill("atom_index in [0, 1]");
         await page.locator('[data-molsysviewer-query-check="regions"]').click();
         const preview = await page.evaluate(() =>

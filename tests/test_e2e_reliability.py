@@ -89,7 +89,8 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
     # 43: the shared context-menu shell and its molecular/Studio workflows.
     # 44: controls reveal policy and Cinema lifetime in a real export/popup.
     # 45: native Studio usability and real browser PNG/HTML downloads.
-    assert len(expected) == 45
+    # 46: saved-list filtering, atomic marked batches and secondary drafts.
+    assert len(expected) == 46
     assert declared == expected
     build_command = package["scripts"]["build:e2e:all"]
     compiled = set(re.findall(r"tests/e2e/([^ ]+)\.e2e\.ts", build_command))

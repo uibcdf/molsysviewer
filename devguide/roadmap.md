@@ -1,11 +1,14 @@
 # Development roadmap
 
-**Current execution order — 2026-10-09:** the
+**Current execution order — 2026-10-10:** the
 [canvas context-menu redesign](canvas_context_menu_pre_1_0_plan.md) (#179/#180)
 is accepted. The authorized Studio round (#181–#188), including removal
-of the MolSysMT addon, is implemented. Review its
+of the MolSysMT addon, is implemented. The second Studio round (#190–#197,
+#199) implements Shapes geometry/feedback, executable guides, persistent editors,
+named controls, local search, marked batches and disclosures. Review its
 [source/browser evidence](studio_review_20261009.md), live notebook and hosted
-results; reconcile the macOS dynamic-region diagnosis (#189).
+results; reconcile the macOS dynamic-region diagnosis (#189) and the historical
+source-pair PNG timeout (#198, partial).
 Then prepare and qualify the agreed 0.25.0 candidate, complete public documentation
 and installed first contact, and independently qualify the eventual 1.0 producer.
 Viewer/MolSysMT 1.0 publication is paused by the maintainer. Keep the

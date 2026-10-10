@@ -44,6 +44,7 @@ COMPOSITE_LOAD_BROWSER_GUARD = "molsysviewer/js/tests/e2e/composite-load.e2e.ts"
 MOVIE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/movie-playback.e2e.ts"
 CONTEXT_MENU_BROWSER_GUARD = "molsysviewer/js/tests/e2e/context-menu.e2e.ts"
 CONTROLS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/controls-visibility.e2e.ts"
+STUDIO_LIST_BROWSER_GUARD = "molsysviewer/js/tests/e2e/studio-list-workflows.e2e.ts"
 STUDIO_BROWSER_GUARD = "molsysviewer/js/tests/e2e/studio-usability.e2e.ts"
 GROUP_PANEL_UNIT_GUARD = "molsysviewer/js/tests/unit/group-panel.test.ts"
 
@@ -75,6 +76,7 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         CONTEXT_MENU_BROWSER_GUARD,
         CONTROLS_BROWSER_GUARD,
         STUDIO_BROWSER_GUARD,
+        STUDIO_LIST_BROWSER_GUARD,
     ):
         return validate_pytest_guard(root, selector)
     js_root = root / "molsysviewer/js"
@@ -114,6 +116,15 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             "select_picked_interaction" in entry,
             "Inspect This Interaction…" in entry,
             "run().catch(" in entry,
+        )
+    elif selector == STUDIO_LIST_BROWSER_GUARD:
+        requirements += (
+            'import { PythonFixtureBridge } from "./python-fixture-bridge";' in entry,
+            '"batch_scene_objects"' in entry,
+            '"unfinished selection"' in entry,
+            '"studio_action_result"' in entry,
+            "run().catch(" in entry,
+            (js_root / "tests/e2e/studio-usability-bridge.py").is_file(),
         )
     elif selector == STUDIO_BROWSER_GUARD:
         requirements += (

@@ -1,3 +1,4 @@
+import { SavedListTools } from "./saved-list-tools";
 import type { RegionSummary } from "../group-panel";
 import { BasePanel } from "./base-panel";
 import type { PanelContext } from "./types";
@@ -58,13 +59,16 @@ export class LayersPanel extends BasePanel {
     private objects: LayerObjectSummary[] = [];
     private readonly expanded = new Set<string>();
     private selectedInitialMembers: Array<[MemberKind, string]> = [];
+    private creationName = "";
 
     constructor(private readonly ctx: PanelContext) {
-        super();
+        super(); this.savedListTools = new SavedListTools("layers", ctx, () => this.scheduleRender());
     }
 
     setLayers(items: LayerSummary[]): void {
         this.layers = [...items];
+        this.reconcileEditorTargets(items.map(item => item.tag));
+        for (const tag of this.expanded) if (!items.some(item => item.tag === tag)) this.expanded.delete(tag);
         this.updateBadge();
         this.scheduleRender();
     }
@@ -248,6 +252,8 @@ export class LayersPanel extends BasePanel {
 
         const input = this.makeInput("Layer name (e.g. active-site)");
         input.setAttribute("data-molsysviewer-layer-create-input", "true");
+        input.value = this.creationName;
+        input.addEventListener("input", () => { this.creationName = input.value; });
 
         const create = makeButton("Create", () => {
             const tag = input.value.trim();
@@ -257,6 +263,7 @@ export class LayersPanel extends BasePanel {
                     this.ctx.onAction("add_member_to_layer", { layer: tag, member_kind: kind, member_tag: mTag });
                 }
                 this.selectedInitialMembers = [];
+                this.creationName = "";
                 input.value = "";
             }
         });
@@ -344,6 +351,7 @@ export class LayersPanel extends BasePanel {
     private renderLayerCard(layer: LayerRecord): HTMLDivElement {
         const row = card();
         row.setAttribute("data-molsysviewer-layer-card", layer.tag);
+        row.setAttribute("data-molsysviewer-list-search-text", [layer.tag, layer.owner, ...layer.members.map(member => `${member.title} ${member.kind} ${member.tag}`)].filter(Boolean).join(" "));
         row.style.opacity = layer.hidden ? "0.48" : "1";
 
         const head = document.createElement("div");

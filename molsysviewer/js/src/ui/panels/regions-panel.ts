@@ -1,3 +1,4 @@
+import { SavedListTools } from "./saved-list-tools";
 import type { ActiveSelectionPayload } from "../../managers/active-selection";
 import type { RegionDetails, RegionSummary, SavedSelectionSummary, SelectionQueryPreview } from "../group-panel";
 import { BasePanel } from "./base-panel";
@@ -48,7 +49,7 @@ export class RegionsPanel extends BasePanel {
         private readonly ctx: PanelContext,
         private readonly onFocusRegion: (tag: string) => void,
     ) {
-        super();
+        super(); this.savedListTools = new SavedListTools("regions", ctx, () => this.scheduleRender());
     }
 
     private scheduleExternalRender(): void {
@@ -69,6 +70,7 @@ export class RegionsPanel extends BasePanel {
 
     setRegions(items: RegionSummary[]): void {
         this.regions = [...items];
+        this.reconcileEditorTargets(items.map(item => item.tag));
         const tags = this.regions.map(item => item.tag);
         for (const tag of [...this.regionInspectOpen]) {
             if (!tags.includes(tag)) {
@@ -329,6 +331,7 @@ export class RegionsPanel extends BasePanel {
     private renderRegionCard(item: RegionSummary): HTMLDivElement {
         const card = document.createElement("div");
         card.setAttribute("data-molsysviewer-region-card", item.tag);
+        card.setAttribute("data-molsysviewer-list-search-text", [item.tag, item.owner].filter(Boolean).join(" "));
         card.setAttribute("data-molsysviewer-region-hidden", String(item.hidden));
         const enabled = item.enabled !== false;
         card.setAttribute("data-molsysviewer-region-enabled", String(enabled));

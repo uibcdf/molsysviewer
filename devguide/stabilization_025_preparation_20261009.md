@@ -29,6 +29,14 @@ producer. Both provider issues are fixed in source, without authorizing provider
 publication or qualifying new packages. The separate macOS dynamic-region
 restoration diagnosis is `uibcdf/molsysviewer#189`.
 
+The second Studio refinement (#190–#197/#199) adds corrected visible-structure
+shape geometry, correlated creation feedback, nine executable geometry guides,+persistent secondary editors and named controls. Reusable local search, marked
+batch operations with one Undo step, and native creation/advanced disclosures
+complete the authorized optional improvements. The core inventory is now 43
+suites. The historical source-pair PNG timeout (#198) remains a separate partial
+report until exact-source hosted evidence is reviewed. This source implementation
+does not freeze the 0.25.0 producer or supersede the preserved 0.24.1 bytes.
+
 The user guide is [Using the canvas context menu](../docs/content/user/viewer/context_menu.md).
 Normative behavior remains in [gestures and menus](interaction_gestures_and_menus.md)
 and the [payload contract](../docs/content/developer/protocol_and_payloads.md).

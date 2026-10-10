@@ -234,7 +234,7 @@ test("AddonsPanel renders active workspace panels as vertical sidebar tabs", () 
         // Catalog workspace tab acts as the back button
         const catalogTab = findFirstByAttribute(root, "data-molsysviewer-addon-workspace-tab", "core");
         assert.ok(catalogTab);
-        assert.strictEqual(findFirstText(catalogTab), "⚙ Settings");
+        assert.strictEqual(findFirstText(catalogTab), "Add-ons manager");
 
         // Clicking Catalog triggers select core workspace
         catalogTab.dispatch("click", { preventDefault() {}, stopPropagation() {} });

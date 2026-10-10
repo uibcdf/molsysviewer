@@ -162,18 +162,19 @@ test("AnnotationHandlers.setVisibility hides all annotations sharing a layer_tag
                 },
             },
         },
-        state: { data: {} },
+        state: { data: { tree: { transforms: new Map<string, unknown>() } } },
     };
     const { PluginCommands } = await import("molstar/lib/mol-plugin/commands");
     const originalRemove = PluginCommands.State.RemoveObject;
     (PluginCommands.State as any).RemoveObject = async (_plugin: any, params: any) => {
         removeCalls.push(params.ref);
+        _plugin.state.data.tree.transforms.delete(params.ref);
     };
 
     try {
         const handler = new AnnotationHandlers(plugin, {
             getStructure: () => ({}) as any,
-            registerRef: () => void 0,
+            registerRef: (ref?: string) => { if (ref) plugin.state.data.tree.transforms.set(ref, { ref }); },
         });
         (handler as any).buildLociFromAtomIndices = () => ({
             structure: {},
@@ -221,18 +222,19 @@ test("AnnotationHandlers.setVisibility rebuilds labels from stored spec", async 
                 },
             },
         },
-        state: { data: {} },
+        state: { data: { tree: { transforms: new Map<string, unknown>() } } },
     };
     const { PluginCommands } = await import("molstar/lib/mol-plugin/commands");
     const originalRemove = PluginCommands.State.RemoveObject;
     (PluginCommands.State as any).RemoveObject = async (_plugin: any, params: any) => {
         removeCalls.push(params.ref);
+        _plugin.state.data.tree.transforms.delete(params.ref);
     };
 
     try {
         const handler = new AnnotationHandlers(plugin, {
             getStructure: () => ({}) as any,
-            registerRef: () => void 0,
+            registerRef: (ref?: string) => { if (ref) plugin.state.data.tree.transforms.set(ref, { ref }); },
         });
         (handler as any).buildLociFromAtomIndices = () => ({
             structure: {},
@@ -275,18 +277,19 @@ test("AnnotationHandlers.updateLabel preserves layer and style when visibility r
                 },
             },
         },
-        state: { data: {} },
+        state: { data: { tree: { transforms: new Map<string, unknown>() } } },
     };
     const { PluginCommands } = await import("molstar/lib/mol-plugin/commands");
     const originalRemove = PluginCommands.State.RemoveObject;
     (PluginCommands.State as any).RemoveObject = async (_plugin: any, params: any) => {
         removeCalls.push(params.ref);
+        _plugin.state.data.tree.transforms.delete(params.ref);
     };
 
     try {
         const handler = new AnnotationHandlers(plugin, {
             getStructure: () => ({}) as any,
-            registerRef: () => void 0,
+            registerRef: (ref?: string) => { if (ref) plugin.state.data.tree.transforms.set(ref, { ref }); },
             addLabelOverlay: msg => overlays.push({
                 layerTag: msg.options?.layer_tag,
                 color: msg.options?.style?.color,
@@ -340,12 +343,12 @@ test("AnnotationHandlers.getSpec returns stored text and atom_indices, undefined
                 },
             },
         },
-        state: { data: {} },
+        state: { data: { tree: { transforms: new Map<string, unknown>() } } },
     };
 
     const handler = new AnnotationHandlers(plugin, {
         getStructure: () => ({}) as any,
-        registerRef: () => void 0,
+        registerRef: (ref?: string) => { if (ref) plugin.state.data.tree.transforms.set(ref, { ref }); },
     });
     (handler as any).buildLociFromAtomIndices = () => ({ structure: {}, elements: [] });
 

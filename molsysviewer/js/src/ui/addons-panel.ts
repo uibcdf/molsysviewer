@@ -1,3 +1,4 @@
+import { ListSearch } from "./list-search";
 import { CompactPanelNavigation } from "./compact-panel-navigation";
 import { makeSwitch } from "./panels/ui-helpers";
 import { PanelShell } from "./panel-shell";
@@ -76,6 +77,7 @@ export class AddonsPanel {
     private workspaceItems: WorkspaceOption[] = [];
     private workspacePanelItems: WorkspacePanelOption[] = [];
     private addonsList: any[] = [];
+    private addonSearch = new ListSearch();
     private currentWorkspaceId = "core";
     private activeWorkspacePanelSummary: ActiveWorkspacePanelSummary | null = null;
     private addonDiagnostics: AddonDiagnosticSummary[] = [];
@@ -400,6 +402,9 @@ export class AddonsPanel {
 
     // ── Catalog Screen Rendering ──────────────────────────────────
     private renderCatalogView(): void {
+        const activeSearch = this.workspaceOverviewHost.ownerDocument?.activeElement as HTMLInputElement | null;
+        const keepSearchFocus = activeSearch?.getAttribute("data-molsysviewer-addon-search") === "true";
+        const caret = keepSearchFocus ? [activeSearch!.selectionStart, activeSearch!.selectionEnd] : null;
         this.workspaceOverviewHost.replaceChildren();
 
         // 1. Header with title & subtext
@@ -865,6 +870,19 @@ export class AddonsPanel {
 
             listContainer.appendChild(row);
         }
+        if (typeof listContainer.querySelectorAll === "function") {
+            const rows = Array.from(listContainer.children) as HTMLElement[];
+            const status = document.createElement("div"); status.setAttribute("role", "status");
+            const filter = () => {
+                let count = 0;
+                for (const row of rows) { const visible = this.addonSearch.matches(row.textContent || ""); row.style.display = visible ? "flex" : "none"; if (visible) count++; }
+                status.textContent = `${count}/${rows.length} add-ons match${count === 0 && rows.length ? " · No matches" : ""}`;
+            };
+            const search = this.addonSearch.field("Search add-ons", filter);
+            search.setAttribute("data-molsysviewer-addon-search", "true");
+            listContainer.before(search, status); filter();
+            if (keepSearchFocus) { search.focus(); search.setSelectionRange(caret![0], caret![1]); }
+        }
 
         // 6. Standalone diagnostics failures (errors from modules that couldn't even register as workspaces)
         let diagnosticsRendered = false;
@@ -1042,7 +1060,7 @@ export class AddonsPanel {
             });
             
             if (workspace.id === "core") {
-                title.textContent = "⚙ Settings";
+                title.textContent = "Add-ons manager";
             } else {
                 title.textContent = workspace.title;
             }

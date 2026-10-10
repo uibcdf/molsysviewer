@@ -77,7 +77,17 @@ async function run() {
         assert.ok(await page.getByLabel("Transparent Background", { exact: true }).isChecked());
         assert.ok(await page.getByLabel("Transparent Background", { exact: true }).evaluate(element => element === element.ownerDocument.activeElement));
         const pngReady = page.waitForEvent("download");
-        await page.getByRole("button", { name: "Download PNG Image", exact: true }).click();
+        const pngButton = page.getByRole("button", { name: "Download PNG Image", exact: true });
+        await pngButton.scrollIntoViewIfNeeded();
+        const box = (await pngButton.boundingBox())!;
+        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down();
+        // A real resize notification must not remove the button between down and click.
+        await page.evaluate(() => {
+            const c = (window as any).__controller, gl = c.plugin.canvas3d.webgl.gl;
+            c.groupPanel.setImageDimensions(gl.drawingBufferWidth + 1, gl.drawingBufferHeight);
+            c.groupPanel.setImageDimensions(gl.drawingBufferWidth, gl.drawingBufferHeight);
+        });
+        await page.mouse.up();
         const png = await pngReady; assert.equal(png.suggestedFilename(), "molsysviewer.png");
         const pngPath = resolve(downloadDir, "figure.png"); await png.saveAs(pngPath);
         const bytes = await readFile(pngPath);

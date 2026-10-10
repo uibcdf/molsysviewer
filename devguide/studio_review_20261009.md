@@ -97,19 +97,107 @@ Implementation is pushed to `main` as
 remain outside this integration. No tag, staging package, installed matrix
 or public release is created by this round.
 
-On initial inspection, [lint](https://github.com/uibcdf/molsysviewer/actions/runs/38000819782),
-[suite policy](https://github.com/uibcdf/molsysviewer/actions/runs/38000820302)
-and [Conda governance](https://github.com/uibcdf/molsysviewer/actions/runs/38000820405)
-pass. The remaining automatic runs are in progress:
-[scientific/Qt CI](https://github.com/uibcdf/molsysviewer/actions/runs/38000819797),
-[core browser](https://github.com/uibcdf/molsysviewer/actions/runs/38000819783),
-[Python 3.14 source pair](https://github.com/uibcdf/molsysviewer/actions/runs/38000819781)
-and [notebooks](https://github.com/uibcdf/molsysviewer/actions/runs/38000819785).
-Review their final outcomes; this checkpoint does not declare those gates green.
-The automatic source pair retains its exact public MolSysMT 0.23.0 baseline;
-it does not qualify the newer editable provider fixes above.
+The completed exact-source checks on `c92c2760` report
+[lint](https://github.com/uibcdf/molsysviewer/actions/runs/38000819782),
+[suite policy](https://github.com/uibcdf/molsysviewer/actions/runs/38000820302),
+[Conda governance](https://github.com/uibcdf/molsysviewer/actions/runs/38000820405),
+[notebooks](https://github.com/uibcdf/molsysviewer/actions/runs/38000819785)
+and [core browser](https://github.com/uibcdf/molsysviewer/actions/runs/38000819783)
+success; core passes 42/42. All six Linux/macOS scientific cells in
+[CI](https://github.com/uibcdf/molsysviewer/actions/runs/38000819797) pass,
+while experimental Qt fails, so the run is not globally green. In the
+[Python 3.14 source pair](https://github.com/uibcdf/molsysviewer/actions/runs/38000819781),
+Linux Python passes but its PNG browser download times out; macOS and Windows
+pass. This timeout is tracked separately under `uibcdf/molsysviewer#198`.
+These completed outcomes replace the earlier pending observation; they qualify
+that source checkpoint, not the second-round runtime below or a new package.
+The automatic source pair retains its exact public MolSysMT 0.23.0 baseline.
 
 For human review, restart the Jupyter kernel and refresh the browser before
 constructing a new view. Check wide/narrow Studio navigation, keyboard focus,
 Interactions form/scopes, floating/docked bounds and PNG/HTML downloads. The
 retired MolSysMT workspace must be absent while native Interactions remains usable.
+
+
+## Second Studio round — 2026-10-10
+
+**Implemented:** `uibcdf/molsysviewer#190`–`#197` and `#199` have local
+behavioral guards and archived records. #198 remains partial until the next
+exact-source hosted download gate is reviewed. #189's historical macOS
+restoration cause remains unresolved. The base of this second round is
+`01208af0`; 0.25.0 remains unfrozen and both 1.0 publications remain paused.
+
+Shapes now receives canonical active/saved selections, validates required
+anchors, and returns correlated creation results. Failure retains its draft;
+success clears it. Links/arrows use unique atom-set centers in the visible
+structure with explicit quantities; their geometry is a fixed snapshot.
+Unsupported aromaticity/field promises are removed from the supplied-geometry
+catalogue, whose nine examples execute through the actual public Python API.
+
+Reusable list search covers all native saved domains, stored scientific
+analyses and Add-ons. Collapsed marked-item management retains marks across
+filters and states the exact deletion targets. Native batches prevalidate the
+complete list, roll back on failure and produce one Undo step. Visual-set
+deletion preserves analyses; layer ungrouping preserves members. Creation and
+advanced disclosures retain deliberate choices. Secondary editor drafts,
+focus/caret and pending names survive replies, frames and tabs; missing targets
+prune stale editors even when hidden. Names consistently use Annotation and
+Add-ons manager, and native icon/field names are completed.
+
+Real browser Undo revealed an additional annotation cleanup defect: Mol* ghost
+removal received transforms already removed by a structure rebuild. Both cleanup
+paths now check current refs sequentially. The guard asserts recovered actual
+annotation state cells. PNG dimension notifications update the readout in place
+and preserve a held download button; rendering failures have bounded inline
+feedback. This deterministic click-race repair does not establish the cause of
+historical #198.
+
+### Evidence and interpretation
+
+- Specific Python creation/catalogue/batch checks pass **32/32**, including nm
+  and angstrom standardization policies, nonconsecutive structures and actual
+  rollback/Undo/Redo. The full Python run executes once: **2,999 passed,
+  23 skipped, 8 failed**. All eight failed nodes are the existing real-child
+  Qt probe/standalone transport cases. No new Studio/Python contract test fails;
+  this is not a green full-suite or a Qt qualification claim. Native pytest
+  prints progress only because the repository and invocation both use `-q`;
+  the counts above are the 3,030 terminal progress outcomes, not a rerun.
+- Final JS unit command passes; the same suite contains **325 cases**. TypeScript,
+  runtime and harness builds pass; scoped Ruff passes. The final real saved-list
+  guard passes against the runtime containing hidden-target draft pruning.
+- Reporting/index/guard addressability, tracked guide links and E2E inventory
+  closure pass **216/216** after archiving/indexing. The new core inventory is
+  **43 browser suites** (46 total, three remote previews excluded).
+- The browser campaign passes the first **30 core suites**, then stops at an old
+  Regions guard that fills the now-collapsed creation form. Its correction opens
+  the native disclosure explicitly and passes. The next Selection guard uses
+  an ambiguous `input` selector after row mark checkboxes were added; it now
+  selects each textbox by its actual accessible name and passes. Those failures
+  are retained, not described as product passes. The remaining **11/11** suites
+  pass in the scoped continuation, covering all **43 core suites** across the
+  retained campaign and two adapted guards. Runtime/harness refinements during development
+  also mean this is not one uninterrupted frozen-source campaign.
+- Three real Shapes captures inspect saved-list, creation and marked management
+  layouts; no page errors. Sphinx builds and no new broken Studio links appear.
+  Raw session evidence is local under `/tmp/msv-studio-refinement-*.log`, not
+  a preserved installed artifact.
+
+The explicit development interpreter is Python **3.14.7** in
+`molsyssuite@uibcdf_3.14`. MolSysMT source observed during review is
+`d47b528dabc0a68bf0ce90660b6c3a71701e674c`; installed metadata remains
+`0.22.4+24.g42b487869`. SMonitor reports 0.19.0, ArgDigest
+`0.15.0+1.g5c6711e`, and the local pytest-receptor reports
+`1.1.0+19.g6d87a24`. Normal pytest is authoritative; the full run does not use
+receptor rendering. Those editable identities are source-development evidence;
+they do not identify new canonical Conda bytes or a clean solver installation.
+Hosted workflows retain their pinned published tools and source provenance.
+
+### Human follow-up
+
+Restart the kernel, refresh the browser and construct a new view. In Studio,
+check default folded creation with saved objects, deliberate disclosure choices,
+search and marks without changing atom selection, deletion confirmation/Undo,
+failed shape creation retaining anchors/name, and atom-set arrows on another
+visible structure. Change tabs/frames with an unfinished secondary name and
+check keyboard focus. Stored analyses must remain after deleting a visual set.
+The current Interactions scientific/compatibility status remains experimental.

@@ -1,4 +1,8 @@
 import { StudioPanel } from "./types";
+import { SavedListTools, StudioActionResult } from "./saved-list-tools";
+import { PanelDisclosures } from "./panel-disclosures";
+import { namePanelControls } from "./ui-helpers";
+import { EditorDrafts } from "./editor-drafts";
 
 /**
  * Base class for content subpanels with render-on-show semantics.
@@ -16,6 +20,16 @@ export abstract class BasePanel implements StudioPanel {
     protected host: HTMLElement | null = null;
     private panelVisible = false;
     private dirty = true;
+    protected savedListTools?: SavedListTools;
+    protected disclosures = new PanelDisclosures();
+    private editorDrafts = new EditorDrafts();
+    protected repainting = false;
+    protected reconcileEditorTargets(tags: readonly string[]): void {
+        const current = new Set(tags);
+        this.editorDrafts.pruneTargets(current);
+        this.savedListTools?.pruneTargets(current);
+    }
+    updateStudioAction(result: StudioActionResult): void { this.savedListTools?.updateResult(result); }
 
     mount(host: HTMLElement): void {
         this.host = host;
@@ -41,7 +55,14 @@ export abstract class BasePanel implements StudioPanel {
         // Preserve the user's in-progress field (rename input, slider, query box)
         // across the repaint so a background update never steals focus/caret.
         const snapshot = this.captureActiveField();
-        this.paint();
+        this.disclosures.capture();
+        this.repainting = true;
+        try { this.paint(); } finally { this.repainting = false; }
+        this.editorDrafts.mount(this.host);
+        this.savedListTools?.mount(this.host);
+        const hasSavedRows = typeof this.host.querySelectorAll === "function" && !!this.host.querySelector('[data-molsysviewer-list-mark]');
+        this.disclosures.mount(this.host, !hasSavedRows);
+        namePanelControls(this.host, this.key);
         this.restoreActiveField(snapshot);
     }
 
@@ -51,18 +72,18 @@ export abstract class BasePanel implements StudioPanel {
             const active = doc?.activeElement as HTMLInputElement | null;
             if (!active || !this.host || typeof this.host.contains !== "function" || !this.host.contains(active)) return null;
             const tag = active.tagName;
-            if (tag !== "INPUT" && tag !== "TEXTAREA" && tag !== "SELECT") return null;
+            if (tag !== "INPUT" && tag !== "TEXTAREA" && tag !== "SELECT" && tag !== "BUTTON") return null;
             const attributes = Array.from(active.attributes ?? []);
             const attr = attributes.find(a => a.name.startsWith("data-molsysviewer-"))
                 ?? attributes.find(a => a.name === "aria-label");
             if (!attr) return null;
             return {
                 selector: `[${attr.name}="${attr.value.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"]`,
-                value: active.value,
+                value: active.value ?? "",
                 start: active.selectionStart ?? null,
                 end: active.selectionEnd ?? null,
                 // Canonical replies own discrete values; preserve focus only.
-                keepValue: tag !== "SELECT" && active.type !== "checkbox" && active.type !== "radio",
+                keepValue: tag !== "SELECT" && tag !== "BUTTON" && active.type !== "checkbox" && active.type !== "radio",
             };
         } catch {
             return null;

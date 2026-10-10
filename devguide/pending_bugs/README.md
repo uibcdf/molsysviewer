@@ -23,9 +23,10 @@ list.
 
 - [`empty_dynamic_region_macos_restore.md`](empty_dynamic_region_macos_restore.md) — [#189](https://github.com/uibcdf/molsysviewer/issues/189) — Empty dynamic region disappears during state restoration on macOS Python 3.12 *(medium, upstream)*
 
-### Partially done (1)
+### Partially done (2)
 
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*
+- [`studio_png_download_source_pair.md`](studio_png_download_source_pair.md) — [#198](https://github.com/uibcdf/molsysviewer/issues/198) — Studio PNG download guard times out in the Python 3.14 exact source-pair lane *(medium, upstream)*
 
 ### Deferred until after 1.0 (1)
 

@@ -165,6 +165,22 @@ class SceneHistory:
             }
         )
 
+    @contextmanager
+    def _atomic_operation(self, operation_key):
+        """Internal reusable boundary: one undo record, rollback on a failed batch."""
+        self._begin_operation(operation_key)
+        snapshot = self._pending
+        succeeded = False
+        try:
+            yield
+            succeeded = True
+        except Exception:
+            if snapshot is not None:
+                self._restore(snapshot)
+            raise
+        finally:
+            self._end_operation(succeeded=succeeded)
+
     # ── Public API ─────────────────────────────────────────────────────────
 
     @signal()

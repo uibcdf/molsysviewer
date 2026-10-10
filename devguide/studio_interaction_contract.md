@@ -60,3 +60,59 @@ whole-group fading retain their separate `controls-visibility.e2e.ts` guard.
 `tests/test_addons.py` guards legacy refusal and native calculations.
 Source validation does not qualify a frozen installed artifact or authorize
 publication. The next version is agreed as 0.25.0 but remains unfrozen.
+
+## Saved-list and creation tools (second review)
+
+`ListSearch` owns local search state. `SavedListTools` owns native row filtering,
+independent marks, exact-target deletion confirmation and correlated batch
+feedback. Every native saved domain uses the tool. Searching/marking sends no
+molecular action. Search changes retain marks, including filtered targets;
+projection removes marks for missing targets. The optional management disclosure
+keeps bulk controls out of the ordinary reading flow. Stored scientific analyses
+and the Add-ons manager use the same local search primitive. Search metadata
+belongs to each domain and excludes action-button captions.
+
+`batch_scene_objects` validates the complete current target list and supported
+operation before changing anything. `SceneHistory._atomic_operation` groups
+existing owner operations into one undo step and restores the scene on failure.
+Selections offer deletion; layers offer show/hide/ungroup for user layers only;
+other saved domains offer show/hide/delete. Set deletion preserves named analyses;
+layer ungroup preserves members. No new scientific computation belongs here.
+
+Shapes creation returns transient `studio_action_result` feedback to the matching
+request only. Draft/anchors clear only on Python success. Missing anchors and
+invalid geometry fail explicitly, without a scene mutation. Links/arrows use
+unique atoms' geometric centers at `view.player.index`, in nm, and explicitly
+convert to the Å wire format. These are fixed snapshots. Atom-anchored spheres
+retain their existing moving-anchor behavior. Pocket surfaces require staged
+atoms; ring geometry is a supplied-geometry guide, not an aromaticity detector.
+The nine advanced examples execute through real public digested Python APIs.
+
+`PanelDisclosures` persists deliberate creation/advanced disclosure choices;
+initial defaults adapt when canonical saved items first arrive. Contextual
+creation deliberately opens its form. `EditorDrafts` retains secondary text
+fields keyed by object/control while their canonical value is unchanged;
+cancellation, deletion and canonical replacement discard stale drafts. Target
+reconciliation runs on canonical projections even for a hidden panel; Undo must
+not resurrect a deleted object's old editor. Measurement and layer creation
+names are model state, so they survive switching tabs while unfocused.
+Saved-selection editors own their open state and value separately from DOM
+nodes. BasePanel restores focus/caret and never blurs a live annotation editor
+merely because it repaints. Icon actions and fields have accessible names.
+
+Annotation cleanup checks the current Mol* transform before each sequential
+removal. A structure rebuild can already have removed a label and its ghost
+parent. Missing references are skipped; errors removing existing references
+still propagate. History restoration must recover actual annotation cells.
+
+PNG dimension notifications update the readout in place, preserving a download
+button held between pointer-down/up. Export reports rendering, actual download
+initiation or a renderer error. The original hosted timeout remains historical
+evidence; this deterministic click-preservation guard alone does not establish
+its cause. An exact-source hosted rerun is still needed for qualification.
+
+`studio-list-workflows.e2e.ts` is registered in the normal core lane. It uses
+pentalanine, real Python replies and Mol*/Chromium for creation failure/recovery,
+filter/mark independence, atomic visibility/undo, drafts and deletion semantics.
+The bounded selector profile in `tests/test_reporting_protocol.py` verifies
+registration/build routing; it does not prove scientific correctness itself.

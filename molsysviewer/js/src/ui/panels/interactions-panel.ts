@@ -1,3 +1,5 @@
+import { SavedListTools } from "./saved-list-tools";
+import { ListSearch } from "../list-search";
 import { BasePanel } from "./base-panel";
 import type { PanelContext } from "./types";
 import { makeButton, makeSectionHeader } from "./ui-helpers";
@@ -55,6 +57,7 @@ const statusText = (item: InteractionSummary) => {
 };
 
 export class InteractionsPanel extends BasePanel {
+    private analysisSearch = new ListSearch();
     readonly key = "interactions";
     private items: InteractionSummary[] = [];
     private analyses: InteractionAnalysisSummary[] = [];
@@ -120,9 +123,10 @@ export class InteractionsPanel extends BasePanel {
     private radius = "0.025";
     private alpha = "0.85";
     constructor(private ctx: PanelContext) {
-        super(); this.composer = new ManualQueryComposer("interactions", details => ctx.onAction("selection_query_preview_request", details), undefined, { buttonLabel: "Select" });
+        super(); this.savedListTools = new SavedListTools("interactions", ctx, () => this.scheduleRender()); this.composer = new ManualQueryComposer("interactions", details => ctx.onAction("selection_query_preview_request", details), undefined, { buttonLabel: "Select" });
     }
     setSummary(message: InteractionSummariesMessage) {
+        this.reconcileEditorTargets((message.interactions || []).map(item => item.tag));
         const previous = this.items.find(item => item.tag === this.inspecting);
         const next = message.interactions.find(item => item.tag === this.inspecting);
         if (this.frame !== message.frame || (this.inspecting && previous?.query_revision !== next?.query_revision)) {
@@ -139,6 +143,7 @@ export class InteractionsPanel extends BasePanel {
     setSelection(selection: ActiveSelectionPayload) { this.selection = selection; this.scheduleRender(); }
     /** Stage target A; calculation and display still require explicit submission. */
     stageContextAtoms(atoms: number[], calculate: boolean): void {
+        this.disclosures.openCreation();
         this.openForm(); this.openFilters();
         this.a = [...atoms]; this.b = null; this.slot = "a";
         this.mode = "involving_selection"; this.exclusive = false; this.filtersOpen = true;
@@ -381,6 +386,7 @@ export class InteractionsPanel extends BasePanel {
         if (!this.items.length) this.host.appendChild(note("No interaction sets. Calculate an analysis or load one from H5MSM."));
         for (const item of this.items) {
             const card = box(); card.setAttribute("data-molsysviewer-interaction-set", item.tag);
+            card.setAttribute("data-molsysviewer-list-search-text", [item.tag, item.analysis_name, item.layer_tag].filter(Boolean).join(" "));
             append(card, note(`${item.tag} · ${item.analysis_name}`), note(statusText(item)), note(`${item.hidden ? "Hidden" : item.layer_hidden ? "Hidden by layer" : "Enabled"} · layer ${item.layer_tag}`));
             const actions = row();
             for (const [text, action] of [["Focus", "focus_interaction"], [item.hidden ? "Show" : "Hide", "toggle_interaction_visibility"], ["Delete", "delete_interaction"]] as const) { const button = makeButton(text, () => this.emit(action, { tag: item.tag })); if (action === "focus_interaction") button.disabled = !item.n_supported; actions.appendChild(button); }
@@ -413,12 +419,26 @@ export class InteractionsPanel extends BasePanel {
             } this.host.appendChild(card);
         }
         const stored = document.createElement("details"); this.analysesDetails = stored; stored.setAttribute("data-molsysviewer-interaction-analyses", "true"); stored.open = this.analysesOpen; stored.addEventListener("toggle", () => { if (stored.isConnected) this.analysesOpen = stored.open; }); const summary = document.createElement("summary"); summary.textContent = `Stored analyses (${this.analyses.length})`; stored.appendChild(summary);
+        const entries: Array<{ card: HTMLElement; text: string }> = [];
+        const status = note(""); status.setAttribute("role", "status");
+        const filter = () => {
+            let matches = 0;
+            for (const entry of entries) {
+                const visible = this.analysisSearch.matches(entry.text);
+                entry.card.style.display = visible ? "flex" : "none";
+                if (visible) matches++;
+            }
+            status.textContent = `${matches}/${entries.length} analyses match${!matches && entries.length ? " · No matches" : ""}`;
+        };
+        stored.appendChild(this.analysisSearch.field("Search stored analyses", filter)); stored.appendChild(status);
         for (const analysis of this.analyses) {
             const card = box(); card.appendChild(note(`${analysis.name} · ${analysis.n_occurrences} observations · ${analysis.n_evaluated_structures}/${analysis.n_structures} structures · ${analysis.n_references} visual references`));
+            card.setAttribute("data-molsysviewer-stored-analysis", analysis.name);
+            entries.push({ card, text: `${analysis.name} ${analysis.method}` });
             card.appendChild(note(analysis.method));
             this.metadata(card, `${JSON.stringify(analysis.parameters)} · ${JSON.stringify(analysis.software)}`);
             const actions = row(); actions.appendChild(makeButton("Use", () => { this.openForm(); this.source = "stored"; this.stored = analysis.name; this.editing = null; this.scheduleRender(); }));
             const remove = makeButton("Delete analysis", () => this.emit("delete_interaction_analysis", { analysis_name: analysis.name })); remove.disabled = analysis.n_references > 0; remove.title = "Deleting an analysis clears scene undo history."; actions.appendChild(remove); card.appendChild(actions); stored.appendChild(card);
-        } this.host.appendChild(stored);
+        } filter(); this.host.appendChild(stored);
     }
 }

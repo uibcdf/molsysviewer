@@ -801,6 +801,12 @@ export class GroupPanel {
         this.systemPanel.updateLoading(requestId, ok, atoms, structures, sources, error);
     }
 
+    updateStudioAction(result: import("./panels/saved-list-tools").StudioActionResult): void {
+        const key = result.domain === "selections" ? "selection" : result.domain === "measurements" ? "measures" : result.domain;
+        const panel = this.panels.get(key as TabKey)?.panel;
+        if (panel && "updateStudioAction" in panel) (panel as import("./panels/base-panel").BasePanel).updateStudioAction(result);
+    }
+
     isExpanded(): boolean {
         return this.expanded;
     }
@@ -856,6 +862,7 @@ export class GroupPanel {
         this.regionsPanel.setCurrentSelection(selection);
         this.measuresPanel.setCurrentSelection(selection);
         this.annotationsPanel.setCurrentSelection(selection);
+        this.shapesPanel.setCurrentSelection(selection);
         this.interactionsPanel.setSelection(selection);
     }
 
@@ -870,6 +877,7 @@ export class GroupPanel {
         this.regionsPanel.setSavedSelections(items);
         this.measuresPanel.setSavedSelections(items);
         this.annotationsPanel.setSavedSelections(items);
+        this.shapesPanel.setSavedSelections(items);
         this.interactionsPanel.setSavedSelections(items);
     }
 
@@ -958,6 +966,7 @@ export class GroupPanel {
     setImageDimensions(width: number, height: number): void {
         this.exportPanel.setImageDimensions(width, height);
     }
+    setImageResult(pending: boolean, message: string): void { this.exportPanel.setImageResult(pending, message); }
 
     setSections(items: SectionSummary[], settings: SectionSettings): void {
         this.viewportPanel.setSections(items, settings);

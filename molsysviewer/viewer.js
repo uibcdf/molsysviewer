@@ -87352,7 +87352,7 @@ function dimensionsList(buffer) {
   }
 }
 function attributesList(buffer) {
-  let attributes;
+  let attributes2;
   const gAttList = buffer.readUint32();
   if (gAttList === ZERO) {
     notNetcdf(buffer.readUint32() !== ZERO, "wrong empty tag for list of attributes");
@@ -87360,7 +87360,7 @@ function attributesList(buffer) {
   } else {
     notNetcdf(gAttList !== NC_ATTRIBUTE, "wrong tag for list of attributes");
     const attributeSize = buffer.readUint32();
-    attributes = new Array(attributeSize);
+    attributes2 = new Array(attributeSize);
     for (let gAtt = 0; gAtt < attributeSize; gAtt++) {
       const name = readName(buffer);
       const type3 = buffer.readUint32();
@@ -87368,14 +87368,14 @@ function attributesList(buffer) {
       const size4 = buffer.readUint32();
       const value = readType(buffer, type3, size4);
       padding(buffer);
-      attributes[gAtt] = {
+      attributes2[gAtt] = {
         name,
         type: num2str(type3),
         value
       };
     }
   }
-  return attributes;
+  return attributes2;
 }
 function variablesList(buffer, recordId, version) {
   const varList = buffer.readUint32();
@@ -87395,7 +87395,7 @@ function variablesList(buffer, recordId, version) {
       for (let dim = 0; dim < dimensionality; dim++) {
         dimensionsIds[dim] = buffer.readUint32();
       }
-      const attributes = attributesList(buffer);
+      const attributes2 = attributesList(buffer);
       const type3 = buffer.readUint32();
       notNetcdf(type3 < 1 && type3 > 6, "non valid type " + type3);
       const varSize = buffer.readUint32();
@@ -87410,7 +87410,7 @@ function variablesList(buffer, recordId, version) {
       variables[v4] = {
         name,
         dimensions: dimensionsIds,
-        attributes,
+        attributes: attributes2,
         type: num2str(type3),
         size: varSize,
         offset: offset4,
@@ -142155,6 +142155,14 @@ var AnnotationHandlers = class {
       }
     });
   }
+  /** Structure rebuilds may already have removed a label and its ghost parent. */
+  async removeLabelRefs(refs) {
+    for (const ref of refs) {
+      const state = this.plugin.state.data;
+      if (!state.tree.transforms.has(ref)) continue;
+      await PluginCommands.State.RemoveObject(this.plugin, { state, ref, removeParentGhosts: true });
+    }
+  }
   async clearLabels() {
     this.specsByTag.clear();
     this.hiddenTags.clear();
@@ -142164,13 +142172,7 @@ var AnnotationHandlers = class {
     const refs = Array.from(this.labelRefs);
     this.labelRefs.clear();
     this.refsByTag.clear();
-    await Promise.all(
-      refs.map((ref) => PluginCommands.State.RemoveObject(this.plugin, {
-        state: this.plugin.state.data,
-        ref,
-        removeParentGhosts: true
-      }))
-    );
+    await this.removeLabelRefs(refs);
   }
   async clearLabelByTag(tag) {
     this.callouts.delete(tag);
@@ -142181,13 +142183,7 @@ var AnnotationHandlers = class {
     for (const ref of refs) {
       this.labelRefs.delete(ref);
     }
-    await Promise.all(
-      refs.map((ref) => PluginCommands.State.RemoveObject(this.plugin, {
-        state: this.plugin.state.data,
-        ref,
-        removeParentGhosts: true
-      }))
-    );
+    await this.removeLabelRefs(refs);
   }
   hasTag(tag) {
     return this.specsByTag.has(tag) || this.refsByTag.has(tag);
@@ -152231,6 +152227,7 @@ function formatUnitLabel(unit2) {
 }
 function makeSectionHeader(title) {
   const header2 = document.createElement("div");
+  header2.setAttribute("data-molsysviewer-section-heading", title);
   Object.assign(header2.style, {
     fontSize: "13px",
     fontWeight: "700",
@@ -152520,6 +152517,25 @@ function nameControls(control, label2) {
     for (const child of Array.from(control.children)) nameControls(child, label2);
   }
 }
+function namePanelControls(host, domain) {
+  if (typeof host.querySelectorAll !== "function") return;
+  for (const input of host.querySelectorAll("input,select,textarea")) {
+    if (input.hasAttribute("aria-label") || input.hasAttribute("aria-labelledby") || input.closest("label")) continue;
+    const attr = Array.from(input.attributes).find((item2) => item2.name.startsWith("data-molsysviewer-"));
+    const label2 = input.placeholder || attr?.name.replace("data-molsysviewer-", "").replace(/-/g, " ") || input.type;
+    input.setAttribute("aria-label", `${domain}: ${label2}`);
+  }
+  for (const button2 of host.querySelectorAll("button")) {
+    if (button2.hasAttribute("aria-label")) continue;
+    const text = button2.textContent?.trim() || "";
+    if (/[A-Za-z]/.test(text)) continue;
+    const attr = Array.from(button2.attributes).find((item2) => item2.name.startsWith("data-molsysviewer-") && /delete|visibility|focus|remove/.test(item2.name));
+    const verb = attr?.name.includes("delete") || attr?.name.includes("remove") ? "Delete" : attr?.name.includes("visibility") ? "Toggle visibility" : "Action";
+    const name = button2.title || `${verb} ${domain}${attr?.value && attr.value !== "true" ? `: ${attr.value}` : ""}`;
+    button2.setAttribute("aria-label", name);
+    if (!button2.title) button2.title = name;
+  }
+}
 function makeSwitch(label2, checked, onToggle) {
   const button2 = document.createElement("button");
   button2.type = "button";
@@ -152555,6 +152571,92 @@ function makeSwitch(label2, checked, onToggle) {
   });
   return button2;
 }
+function studioRequestId(prefix2) {
+  return `${prefix2}-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`}`;
+}
+
+// src/ui/panels/panel-disclosures.ts
+var PanelDisclosures = class {
+  constructor() {
+    this.states = /* @__PURE__ */ new Map();
+    this.mounted = /* @__PURE__ */ new Map();
+  }
+  openCreation() {
+    this.states.set("creation", true);
+    const current2 = this.host?.querySelector('details[data-molsysviewer-disclosure="creation"]');
+    if (current2) current2.open = true;
+  }
+  capture() {
+    if (!this.host?.querySelectorAll) return;
+    for (const item2 of this.host.querySelectorAll("details[data-molsysviewer-disclosure]")) {
+      const key2 = item2.dataset.molsysviewerDisclosure;
+      if (this.states.has(key2) || item2.open !== this.mounted.get(key2)) this.states.set(key2, item2.open);
+    }
+  }
+  mount(host, defaultOpen) {
+    this.host = host;
+    if (typeof host.querySelectorAll !== "function") return;
+    const heading = Array.from(host.children).find((node2) => node2.getAttribute("data-molsysviewer-section-heading")?.startsWith("New "));
+    if (!heading) return;
+    const details = document.createElement("details");
+    details.setAttribute("data-molsysviewer-disclosure", "creation");
+    details.open = this.states.get("creation") ?? defaultOpen;
+    const summary = document.createElement("summary");
+    summary.textContent = heading.textContent;
+    Object.assign(summary.style, { fontSize: "13px", fontWeight: "600", padding: "6px 0", cursor: "pointer" });
+    details.appendChild(summary);
+    heading.before(details);
+    summary.addEventListener("click", () => this.states.set("creation", !details.open));
+    let node = heading.nextElementSibling;
+    while (node && !node.hasAttribute("data-molsysviewer-section-heading")) {
+      const next = node.nextElementSibling;
+      details.appendChild(node);
+      node = next;
+    }
+    heading.remove();
+    for (const item2 of host.querySelectorAll("details[data-molsysviewer-disclosure]")) {
+      const saved = this.states.get(item2.dataset.molsysviewerDisclosure);
+      if (saved !== void 0) item2.open = saved;
+      this.mounted.set(item2.dataset.molsysviewerDisclosure, item2.open);
+    }
+  }
+};
+function advancedFields(key2, ...children) {
+  const details = document.createElement("details");
+  details.setAttribute("data-molsysviewer-disclosure", key2);
+  const summary = document.createElement("summary");
+  summary.textContent = "Advanced options";
+  Object.assign(summary.style, { fontSize: "11px", cursor: "pointer", padding: "5px 0" });
+  details.append(summary, ...children);
+  return details;
+}
+
+// src/ui/panels/editor-drafts.ts
+var EditorDrafts = class {
+  constructor() {
+    this.values = /* @__PURE__ */ new Map();
+  }
+  pruneTargets(current2) {
+    for (const [key2, value] of this.values) if (!current2.has(value.tag)) this.values.delete(key2);
+  }
+  mount(host) {
+    if (typeof host.querySelectorAll !== "function") return;
+    const current2 = /* @__PURE__ */ new Set();
+    for (const field2 of host.querySelectorAll("input, textarea")) {
+      if (field2.type !== "text" && field2.tagName !== "TEXTAREA") continue;
+      const attr = Array.from(field2.attributes).find((item2) => item2.name.startsWith("data-molsysviewer-") && /-(rename(?:-input)?|layer(?:-input)?)$/.test(item2.name));
+      if (!attr) continue;
+      const key2 = `${attr.name}:${attr.value}`;
+      current2.add(key2);
+      const canonical = field2.value;
+      const saved = this.values.get(key2);
+      if (saved?.canonical === canonical) field2.value = saved.draft;
+      else this.values.delete(key2);
+      field2.addEventListener("input", () => this.values.set(key2, { tag: attr.value, canonical, draft: field2.value }));
+    }
+    for (const key2 of this.values.keys()) if (!current2.has(key2)) this.values.delete(key2);
+  }
+};
 
 // src/ui/panels/base-panel.ts
 var BasePanel = class {
@@ -152562,6 +152664,17 @@ var BasePanel = class {
     this.host = null;
     this.panelVisible = false;
     this.dirty = true;
+    this.disclosures = new PanelDisclosures();
+    this.editorDrafts = new EditorDrafts();
+    this.repainting = false;
+  }
+  reconcileEditorTargets(tags) {
+    const current2 = new Set(tags);
+    this.editorDrafts.pruneTargets(current2);
+    this.savedListTools?.pruneTargets(current2);
+  }
+  updateStudioAction(result2) {
+    this.savedListTools?.updateResult(result2);
   }
   mount(host) {
     this.host = host;
@@ -152582,7 +152695,18 @@ var BasePanel = class {
     if (!this.host || !this.dirty) return;
     this.dirty = false;
     const snapshot = this.captureActiveField();
-    this.paint();
+    this.disclosures.capture();
+    this.repainting = true;
+    try {
+      this.paint();
+    } finally {
+      this.repainting = false;
+    }
+    this.editorDrafts.mount(this.host);
+    this.savedListTools?.mount(this.host);
+    const hasSavedRows = typeof this.host.querySelectorAll === "function" && !!this.host.querySelector("[data-molsysviewer-list-mark]");
+    this.disclosures.mount(this.host, !hasSavedRows);
+    namePanelControls(this.host, this.key);
     this.restoreActiveField(snapshot);
   }
   captureActiveField() {
@@ -152591,17 +152715,17 @@ var BasePanel = class {
       const active = doc?.activeElement;
       if (!active || !this.host || typeof this.host.contains !== "function" || !this.host.contains(active)) return null;
       const tag = active.tagName;
-      if (tag !== "INPUT" && tag !== "TEXTAREA" && tag !== "SELECT") return null;
-      const attributes = Array.from(active.attributes ?? []);
-      const attr = attributes.find((a8) => a8.name.startsWith("data-molsysviewer-")) ?? attributes.find((a8) => a8.name === "aria-label");
+      if (tag !== "INPUT" && tag !== "TEXTAREA" && tag !== "SELECT" && tag !== "BUTTON") return null;
+      const attributes2 = Array.from(active.attributes ?? []);
+      const attr = attributes2.find((a8) => a8.name.startsWith("data-molsysviewer-")) ?? attributes2.find((a8) => a8.name === "aria-label");
       if (!attr) return null;
       return {
         selector: `[${attr.name}="${attr.value.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"]`,
-        value: active.value,
+        value: active.value ?? "",
         start: active.selectionStart ?? null,
         end: active.selectionEnd ?? null,
         // Canonical replies own discrete values; preserve focus only.
-        keepValue: tag !== "SELECT" && active.type !== "checkbox" && active.type !== "radio"
+        keepValue: tag !== "SELECT" && tag !== "BUTTON" && active.type !== "checkbox" && active.type !== "radio"
       };
     } catch {
       return null;
@@ -152956,6 +153080,16 @@ var ExportPanel = class extends BasePanel {
     this.hasAuthority = hasAuthority;
     this.key = "export";
     this.state = {};
+    this.imagePending = false;
+    this.imageMessage = "";
+  }
+  setImageResult(pending, message) {
+    this.imagePending = pending;
+    this.imageMessage = message;
+    const button2 = this.host?.querySelector("[data-molsysviewer-export-image]");
+    if (button2) button2.disabled = pending;
+    const status = this.host?.querySelector("[data-molsysviewer-export-image-status]");
+    if (status) status.textContent = message;
   }
   setScene(state) {
     this.state = { ...state };
@@ -152965,7 +153099,14 @@ var ExportPanel = class extends BasePanel {
     if (this.state.imageWidth === width && this.state.imageHeight === height) return;
     this.state.imageWidth = width;
     this.state.imageHeight = height;
-    this.scheduleRender();
+    const readout = this.host?.querySelector("[data-molsysviewer-export-dimensions]");
+    if (readout) readout.textContent = this.figureReadout();
+  }
+  figureReadout() {
+    const scale = this.state.figureScale ?? 2;
+    const width = this.state.imageWidth ?? 0, height = this.state.imageHeight ?? 0;
+    const dimensions = width > 0 && height > 0 ? `${Math.max(1, Math.round(width * scale))} \xD7 ${Math.max(1, Math.round(height * scale))} px` : "Dimensions available in the canvas";
+    return `${scale}\xD7 Scale \xB7 ${dimensions} \xB7 ${(this.state.figurePreset || "publication-light").includes("dark") ? "Dark Preset" : "Light Preset"}`;
   }
   paint() {
     if (!this.host) return;
@@ -152980,12 +153121,6 @@ var ExportPanel = class extends BasePanel {
   renderGlobalStatusCard() {
     const globalCard = card2();
     Object.assign(globalCard.style, { marginBottom: "10px" });
-    const currentPreset = this.state.figurePreset || "publication-light";
-    const currentScale = typeof this.state.figureScale === "number" ? this.state.figureScale : 2;
-    const width = this.state.imageWidth ?? 0;
-    const height = this.state.imageHeight ?? 0;
-    const dimensions = width > 0 && height > 0 ? `${Math.max(1, Math.round(width * currentScale))} \xD7 ${Math.max(1, Math.round(height * currentScale))} px` : "Dimensions available in the canvas";
-    const presetName = currentPreset.includes("dark") ? "Dark Preset" : "Light Preset";
     const row3 = document.createElement("div");
     Object.assign(row3.style, {
       display: "flex",
@@ -153012,7 +153147,7 @@ var ExportPanel = class extends BasePanel {
     });
     info.appendChild(dot);
     const textSpan = document.createElement("span");
-    textSpan.textContent = `${currentScale}\xD7 Scale \xB7 ${dimensions} \xB7 ${presetName}`;
+    textSpan.textContent = this.figureReadout();
     textSpan.setAttribute("data-molsysviewer-export-dimensions", "true");
     info.style.flexWrap = "wrap";
     info.appendChild(textSpan);
@@ -153076,9 +153211,16 @@ var ExportPanel = class extends BasePanel {
       this.ctx.onAction("download_image");
     });
     downloadButton.setAttribute("data-molsysviewer-export-image", "true");
+    downloadButton.disabled = this.imagePending;
     downloadButton.style.padding = "6px 10px";
     downloadButton.style.fontSize = "11px";
     downloadButton.style.fontWeight = "600";
+    const imageStatus = document.createElement("div");
+    imageStatus.setAttribute("data-molsysviewer-export-image-status", "true");
+    imageStatus.setAttribute("role", "status");
+    imageStatus.style.fontSize = "11px";
+    imageStatus.textContent = this.imageMessage;
+    downloadRow.appendChild(imageStatus);
     downloadRow.appendChild(downloadButton);
     figureCard.appendChild(downloadRow);
     return figureCard;
@@ -153106,6 +153248,190 @@ var ExportPanel = class extends BasePanel {
   }
 };
 
+// src/ui/list-search.ts
+var ListSearch = class {
+  constructor() {
+    this.query = "";
+  }
+  matches(text) {
+    return text.toLocaleLowerCase().includes(this.query.toLocaleLowerCase().trim());
+  }
+  field(label2, onInput) {
+    const input = document.createElement("input");
+    input.type = "search";
+    input.value = this.query;
+    input.placeholder = label2;
+    input.setAttribute("aria-label", label2);
+    Object.assign(input.style, { width: "100%", boxSizing: "border-box", color: "inherit", background: "rgba(0,0,0,.2)", border: "1px solid #555", borderRadius: "5px", padding: "6px" });
+    input.oninput = () => {
+      this.query = input.value;
+      onInput();
+    };
+    return input;
+  }
+};
+
+// src/ui/panels/saved-list-tools.ts
+var attributes = {
+  regions: "region-card",
+  selections: "saved-selection-card",
+  annotations: "annotation-tag",
+  measurements: "measurement-tag",
+  shapes: "shape-tag",
+  layers: "layer-card",
+  interactions: "interaction-set"
+};
+var SavedListTools = class {
+  constructor(domain, ctx, repaint) {
+    this.domain = domain;
+    this.ctx = ctx;
+    this.repaint = repaint;
+    this.search = new ListSearch();
+    this.marked = /* @__PURE__ */ new Set();
+    this.pending = null;
+    this.confirmation = null;
+    this.message = "";
+    this.batchOpen = false;
+    this.rows = [];
+  }
+  pruneTargets(current2) {
+    for (const tag of this.marked) if (!current2.has(tag)) this.marked.delete(tag);
+    if (this.confirmation) this.confirmation = this.confirmation.filter((tag) => current2.has(tag));
+  }
+  updateResult(result2) {
+    if (result2.request_id !== this.pending) return;
+    this.pending = null;
+    this.message = result2.ok ? "Completed. Use Undo to restore the previous scene." : result2.error_message || "The batch failed.";
+    if (result2.ok) this.marked.clear();
+    this.repaint();
+  }
+  mount(host) {
+    if (typeof host.querySelectorAll !== "function") return;
+    const attr = `data-molsysviewer-${attributes[this.domain]}`;
+    this.rows = Array.from(host.querySelectorAll(`[${attr}]`)).map((row3) => ({ tag: row3.getAttribute(attr), row: row3, text: row3.getAttribute("data-molsysviewer-list-search-text") || row3.textContent?.toLocaleLowerCase() || "", display: row3.style.display }));
+    const current2 = new Set(this.rows.map((row3) => row3.tag));
+    for (const tag of this.marked) if (!current2.has(tag)) this.marked.delete(tag);
+    const toolbar = document.createElement("div");
+    toolbar.setAttribute("data-molsysviewer-list-tools", this.domain);
+    Object.assign(toolbar.style, { display: "flex", flexDirection: "column", gap: "6px", padding: "8px 0" });
+    const input = this.search.field(`Search saved ${this.domain}`, () => refresh());
+    input.setAttribute("data-molsysviewer-list-search", this.domain);
+    const status = document.createElement("div");
+    status.setAttribute("role", "status");
+    status.style.fontSize = "11px";
+    const actions = document.createElement("div");
+    Object.assign(actions.style, { display: "flex", flexWrap: "wrap", gap: "5px" });
+    const management = document.createElement("details");
+    management.open = this.batchOpen;
+    management.setAttribute("data-molsysviewer-list-management", this.domain);
+    const summary = document.createElement("summary");
+    summary.textContent = "Manage marked items";
+    Object.assign(summary.style, { fontSize: "11px", cursor: "pointer" });
+    management.append(summary, actions);
+    const batchButtons = [];
+    const matches = () => this.rows.filter((item2) => this.search.matches(`${item2.tag} ${item2.text}`));
+    const refresh = () => {
+      const visible = new Set(matches());
+      for (const item2 of this.rows) {
+        item2.row.hidden = !visible.has(item2);
+        item2.row.style.display = visible.has(item2) ? item2.display : "none";
+      }
+      status.textContent = `${visible.size}/${this.rows.length} matches \xB7 ${this.marked.size} marked${visible.size === 0 && this.rows.length ? " \xB7 No matches" : ""}`;
+      for (const button2 of batchButtons) button2.disabled = !this.marked.size || this.pending !== null;
+      mark.disabled = !visible.size || this.pending !== null;
+      clear2.disabled = !this.marked.size || this.pending !== null;
+    };
+    toolbar.append(input, status, management);
+    const mark = makeButton2("Mark matches", () => {
+      for (const item2 of matches()) this.marked.add(item2.tag);
+      this.confirmation = null;
+      this.repaint();
+    });
+    const clear2 = makeButton2("Clear marks", () => {
+      this.marked.clear();
+      this.confirmation = null;
+      this.repaint();
+    });
+    mark.setAttribute("data-molsysviewer-list-mark-matches", this.domain);
+    clear2.setAttribute("data-molsysviewer-list-clear-marks", this.domain);
+    mark.disabled = clear2.disabled = this.pending !== null;
+    actions.append(mark, clear2);
+    const operations = this.domain === "selections" ? ["delete"] : this.domain === "layers" ? ["show", "hide", "ungroup"] : ["show", "hide", "delete"];
+    const submit = (operation2, tags) => {
+      this.pending = studioRequestId(`${this.domain}-batch`);
+      this.message = "Working\u2026";
+      this.confirmation = null;
+      try {
+        this.ctx.onAction("batch_scene_objects", { domain: this.domain, operation: operation2, tags, request_id: this.pending });
+      } catch (error2) {
+        this.pending = null;
+        this.message = String(error2);
+      }
+      this.repaint();
+    };
+    for (const operation2 of operations) {
+      const button2 = makeButton2(`${operation2[0].toUpperCase()}${operation2.slice(1)} marked`, () => {
+        const tags = [...this.marked];
+        if (operation2 === "delete") {
+          this.confirmation = tags;
+          this.repaint();
+        } else submit(operation2, tags);
+      });
+      button2.setAttribute("data-molsysviewer-list-batch", `${this.domain}:${operation2}`);
+      batchButtons.push(button2);
+      actions.appendChild(button2);
+    }
+    if (this.confirmation) {
+      const tags = this.confirmation.filter((tag) => current2.has(tag));
+      const confirm2 = document.createElement("div");
+      confirm2.setAttribute("data-molsysviewer-list-confirmation", this.domain);
+      confirm2.textContent = `Delete ${tags.length} marked ${this.domain}: ${tags.join(", ")}? This includes marked rows hidden by the search. ${this.domain === "interactions" ? "Stored analyses are kept. " : ""}This can be undone.`;
+      const yes = makeButton2("Confirm deletion", () => submit("delete", tags));
+      yes.disabled = !tags.length || this.pending !== null;
+      confirm2.append(yes, makeButton2("Cancel", () => {
+        this.confirmation = null;
+        this.repaint();
+      }));
+      management.appendChild(confirm2);
+    }
+    if (this.message) {
+      const note3 = document.createElement("div");
+      note3.textContent = this.message;
+      note3.setAttribute("role", "status");
+      toolbar.appendChild(note3);
+    }
+    for (const item2 of this.rows) {
+      const label2 = document.createElement("label");
+      Object.assign(label2.style, { fontSize: "11px", display: "flex", gap: "5px", alignItems: "center" });
+      label2.setAttribute("data-molsysviewer-mark-label", this.domain);
+      label2.style.display = this.batchOpen ? "flex" : "none";
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = this.marked.has(item2.tag);
+      checkbox.disabled = this.pending !== null;
+      checkbox.setAttribute("aria-label", `Mark ${this.domain}: ${item2.tag}`);
+      checkbox.setAttribute("data-molsysviewer-list-mark", `${this.domain}:${item2.tag}`);
+      label2.addEventListener("click", (event) => event.stopPropagation());
+      checkbox.onchange = () => {
+        if (checkbox.checked) this.marked.add(item2.tag);
+        else this.marked.delete(item2.tag);
+        this.confirmation = null;
+        management.querySelector("[data-molsysviewer-list-confirmation]")?.remove();
+        refresh();
+      };
+      label2.append(checkbox, "Mark");
+      item2.row.prepend(label2);
+    }
+    management.addEventListener("toggle", () => {
+      this.batchOpen = management.open;
+      for (const label2 of host.querySelectorAll("[data-molsysviewer-mark-label]")) label2.style.display = this.batchOpen ? "flex" : "none";
+    });
+    if (this.rows.length) this.rows[0].row.before(toolbar);
+    else host.appendChild(toolbar);
+    refresh();
+  }
+};
+
 // src/ui/panels/layers-panel.ts
 function card3() {
   const element = document.createElement("div");
@@ -153130,9 +153456,13 @@ var LayersPanel = class extends BasePanel {
     this.objects = [];
     this.expanded = /* @__PURE__ */ new Set();
     this.selectedInitialMembers = [];
+    this.creationName = "";
+    this.savedListTools = new SavedListTools("layers", ctx, () => this.scheduleRender());
   }
   setLayers(items) {
     this.layers = [...items];
+    this.reconcileEditorTargets(items.map((item2) => item2.tag));
+    for (const tag of this.expanded) if (!items.some((item2) => item2.tag === tag)) this.expanded.delete(tag);
     this.updateBadge();
     this.scheduleRender();
   }
@@ -153285,6 +153615,10 @@ var LayersPanel = class extends BasePanel {
     Object.assign(form.style, { display: "grid", gridTemplateColumns: "minmax(0, 1fr) auto", gap: "6px" });
     const input = this.makeInput("Layer name (e.g. active-site)");
     input.setAttribute("data-molsysviewer-layer-create-input", "true");
+    input.value = this.creationName;
+    input.addEventListener("input", () => {
+      this.creationName = input.value;
+    });
     const create3 = makeButton2("Create", () => {
       const tag = input.value.trim();
       if (tag) {
@@ -153293,6 +153627,7 @@ var LayersPanel = class extends BasePanel {
           this.ctx.onAction("add_member_to_layer", { layer: tag, member_kind: kind, member_tag: mTag });
         }
         this.selectedInitialMembers = [];
+        this.creationName = "";
         input.value = "";
       }
     });
@@ -153367,6 +153702,7 @@ var LayersPanel = class extends BasePanel {
   renderLayerCard(layer) {
     const row3 = card3();
     row3.setAttribute("data-molsysviewer-layer-card", layer.tag);
+    row3.setAttribute("data-molsysviewer-list-search-text", [layer.tag, layer.owner, ...layer.members.map((member) => `${member.title} ${member.kind} ${member.tag}`)].filter(Boolean).join(" "));
     row3.style.opacity = layer.hidden ? "0.48" : "1";
     const head = document.createElement("div");
     Object.assign(head.style, { display: "flex", alignItems: "center", gap: "6px" });
@@ -154016,6 +154352,7 @@ var RegionsPanel = class extends BasePanel {
     this.regionsCheatSheetOpen = false;
     this.showRegionCreateForm = false;
     this.regionCreateInput = null;
+    this.savedListTools = new SavedListTools("regions", ctx, () => this.scheduleRender());
   }
   scheduleExternalRender() {
     if (this.continuousHistoryEdit) {
@@ -154033,6 +154370,7 @@ var RegionsPanel = class extends BasePanel {
   }
   setRegions(items) {
     this.regions = [...items];
+    this.reconcileEditorTargets(items.map((item2) => item2.tag));
     const tags = this.regions.map((item2) => item2.tag);
     for (const tag of [...this.regionInspectOpen]) {
       if (!tags.includes(tag)) {
@@ -154253,6 +154591,7 @@ var RegionsPanel = class extends BasePanel {
   renderRegionCard(item2) {
     const card8 = document.createElement("div");
     card8.setAttribute("data-molsysviewer-region-card", item2.tag);
+    card8.setAttribute("data-molsysviewer-list-search-text", [item2.tag, item2.owner].filter(Boolean).join(" "));
     card8.setAttribute("data-molsysviewer-region-hidden", String(item2.hidden));
     const enabled = item2.enabled !== false;
     card8.setAttribute("data-molsysviewer-region-enabled", String(enabled));
@@ -155182,6 +155521,8 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     this.key = "selection";
     // Domain state
     this.currentSelection = { count_atoms: 0 };
+    this.savedEditor = null;
+    this.activeSaveDraft = "";
     this.savedSelections = [];
     // View state
     this.selectionQueryComposer = null;
@@ -155191,6 +155532,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     this.selectionCanRedo = false;
     this.showActiveSelectionSaveForm = false;
     this.activeSelectionSaveInput = null;
+    this.savedListTools = new SavedListTools("selections", ctx, () => this.scheduleRender());
   }
   static {
     this.SELECTION_STYLE_ID = "molsysviewer-selection-panel-design-system";
@@ -155222,6 +155564,8 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
   }
   setSavedSelections(items) {
     this.savedSelections = [...items];
+    this.reconcileEditorTargets(items.map((item2) => item2.tag));
+    if (this.savedEditor && !items.some((item2) => item2.tag === this.savedEditor.tag)) this.savedEditor = null;
     this.updateBadge();
     this.scheduleRender();
   }
@@ -155448,6 +155792,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         card8.setAttribute("data-molsysviewer-group-panel-row", "true");
         card8.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
         card8.setAttribute("data-molsysviewer-saved-selection-card", item2.tag);
+        card8.setAttribute("data-molsysviewer-list-search-text", [item2.tag].filter(Boolean).join(" "));
         Object.assign(card8.style, {
           display: "flex",
           flexDirection: "column",
@@ -155549,14 +155894,20 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           outline: "none"
         });
         card8.appendChild(inlineForm);
-        const showForm = (mode) => {
+        const showForm = (mode, focus = true) => {
           btnRow.style.display = "none";
           inlineForm.replaceChildren();
-          inlineInput.value = "";
-          inlineInput.placeholder = mode === "rename" ? "New name..." : mode === "region" ? "Region name..." : "Label text...";
+          if (!this.savedEditor || this.savedEditor.tag !== item2.tag || this.savedEditor.mode !== mode) this.savedEditor = { tag: item2.tag, mode, value: "" };
+          inlineInput.value = this.savedEditor.value;
+          inlineInput.setAttribute("data-molsysviewer-saved-selection-editor", `${item2.tag}:${mode}`);
+          inlineInput.setAttribute("aria-label", mode === "rename" ? "New selection name" : mode === "region" ? "New region name" : "Annotation text");
+          inlineInput.oninput = () => {
+            if (this.savedEditor) this.savedEditor.value = inlineInput.value;
+          };
+          inlineInput.placeholder = mode === "rename" ? "New name..." : mode === "region" ? "Region name..." : "Annotation text...";
           const inlineConfirm = document.createElement("button");
           inlineConfirm.type = "button";
-          inlineConfirm.textContent = mode === "rename" ? "Rename" : mode === "region" ? "Create" : "Add Label";
+          inlineConfirm.textContent = mode === "rename" ? "Rename" : mode === "region" ? "Create" : "Add Annotation";
           inlineConfirm.setAttribute("data-molsysviewer-saved-selection-confirm", item2.tag);
           inlineConfirm.setAttribute("data-molsysviewer-saved-selection-confirm-mode", mode);
           Object.assign(inlineConfirm.style, {
@@ -155590,6 +155941,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
               const exists = this.savedSelections.some((s) => s.tag === val);
               if (exists) {
                 if (val === item2.tag) {
+                  this.savedEditor = null;
                   inlineForm.style.display = "none";
                   btnRow.style.display = "flex";
                   return;
@@ -155620,12 +155972,14 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
             } else if (mode === "label") {
               this.ctx.onAction("create_label_from_saved_selection", { selection_tag: item2.tag, text: val });
             }
+            this.savedEditor = null;
             inlineForm.style.display = "none";
             btnRow.style.display = "flex";
           });
           inlineCancel.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
+            this.savedEditor = null;
             inlineForm.style.display = "none";
             btnRow.style.display = "flex";
           });
@@ -155643,7 +155997,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           inlineForm.appendChild(inlineConfirm);
           inlineForm.appendChild(inlineCancel);
           inlineForm.style.display = "flex";
-          inlineInput.focus?.();
+          if (focus) inlineInput.focus?.();
         };
         const activateBtn = makeButton2(isActive ? "Deactivate" : "Activate", () => {
           if (isActive) {
@@ -155669,6 +156023,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         }
         card8.appendChild(btnRow);
         savedList.appendChild(card8);
+        if (this.savedEditor?.tag === item2.tag) showForm(this.savedEditor.mode, false);
       }
     } else {
       const emptyLabel = document.createElement("div");
@@ -155795,6 +156150,8 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       const input = document.createElement("input");
       input.type = "text";
       input.placeholder = "Selection name...";
+      input.value = this.activeSaveDraft;
+      input.oninput = () => this.activeSaveDraft = input.value;
       input.setAttribute("data-molsysviewer-active-selection-save-input", "true");
       this.activeSelectionSaveInput = input;
       Object.assign(input.style, {
@@ -155823,10 +156180,12 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           this.ctx.onAction("save_selection", { tag });
         }
         this.showActiveSelectionSaveForm = false;
+        this.activeSaveDraft = "";
         this.scheduleRender();
       };
       const cancelForm = () => {
         this.showActiveSelectionSaveForm = false;
+        this.activeSaveDraft = "";
         this.scheduleRender();
       };
       input.addEventListener("keydown", (e) => {
@@ -157535,15 +157894,19 @@ var MeasuresPanel = class extends BasePanel {
     this.expectedSeriesRequest = /* @__PURE__ */ new Map();
     this.nextSeriesRequest = 1;
     this.editTag = null;
+    this.creationName = "";
     this.inlineTab = "active";
     this.selectedSavedKind = "distance";
     this.stagedSlots = [null, null, null, null];
     this.activeSlotExpansion = null;
     this.measuresQueryComposer = null;
     this.measuresCheatSheetOpen = false;
+    this.savedListTools = new SavedListTools("measurements", ctx, () => this.scheduleRender());
   }
   setMeasurements(measurements, settings) {
     this.measurements = [...measurements];
+    this.reconcileEditorTargets(measurements.map((item2) => item2.tag));
+    if (this.editTag && !measurements.some((item2) => item2.tag === this.editTag)) this.editTag = null;
     this.settings = settings;
     this.ctx.setBadge(String(measurements.length));
     this.scheduleRender();
@@ -157854,6 +158217,10 @@ var MeasuresPanel = class extends BasePanel {
     });
     const nameInput = document.createElement("input");
     nameInput.type = "text";
+    nameInput.value = this.creationName;
+    nameInput.addEventListener("input", () => {
+      this.creationName = nameInput.value;
+    });
     nameInput.placeholder = "Measurement name (optional)...";
     Object.assign(nameInput.style, {
       flex: "1 1 auto",
@@ -157877,6 +158244,7 @@ var MeasuresPanel = class extends BasePanel {
       }
       this.ctx.onAction("create_measurement", details);
       nameInput.value = "";
+      this.creationName = "";
       this.stagedSlots = [null, null, null, null];
       this.activeSlotExpansion = null;
       this.scheduleRender();
@@ -158115,6 +158483,7 @@ var MeasuresPanel = class extends BasePanel {
   renderMeasurement(item2) {
     const row3 = card5();
     row3.setAttribute("data-molsysviewer-measurement-tag", item2.tag);
+    row3.setAttribute("data-molsysviewer-list-search-text", [item2.tag, item2.kind, item2.owner, item2.layerTag, ...item2.endpointLabels].filter(Boolean).join(" "));
     row3.setAttribute("data-molsysviewer-measurement-broken", String(item2.broken));
     row3.style.opacity = item2.hidden ? "0.42" : "1";
     if (item2.brokenReason) row3.title = item2.brokenReason;
@@ -158553,9 +158922,16 @@ var AnnotationsPanel = class extends BasePanel {
     this.anchorSlotExpanded = true;
     this.annotationsQueryComposer = null;
     this.annotationsCheatSheetOpen = false;
+    this.savedListTools = new SavedListTools("annotations", ctx, () => this.scheduleRender());
   }
   setAnnotations(items, settings) {
     this.annotations = [...items];
+    this.reconcileEditorTargets(items.map((item2) => item2.tag));
+    if (this.editDetailsTag && !items.some((item2) => item2.tag === this.editDetailsTag)) this.editDetailsTag = null;
+    if (this.editTextTag && !items.some((item2) => item2.tag === this.editTextTag)) {
+      this.editTextTag = null;
+      this.endCoalescing();
+    }
     this.settings = settings;
     if (this.selectedTag && !items.some((item2) => item2.tag === this.selectedTag)) {
       this.selectedTag = null;
@@ -158569,6 +158945,7 @@ var AnnotationsPanel = class extends BasePanel {
     if (text) this.editTextTag = tag;
     else this.editDetailsTag = tag;
     this.scheduleRender();
+    if (text) this.focusTextEditor();
   }
   setSavedSelections(items) {
     this.savedSelections = [...items];
@@ -158916,7 +159293,7 @@ var AnnotationsPanel = class extends BasePanel {
     lineLabel.appendChild(lineCheckbox);
     lineLabel.appendChild(document.createTextNode("Leader Line"));
     offsetRow.appendChild(lineLabel);
-    createCard.appendChild(offsetRow);
+    createCard.appendChild(advancedFields("annotation-advanced", offsetRow));
     const hint = document.createElement("div");
     if (!this.settings.systemLoaded) {
       hint.textContent = "Load a structure first.";
@@ -159089,6 +159466,7 @@ var AnnotationsPanel = class extends BasePanel {
   renderAnnotation(item2) {
     const row3 = card6();
     row3.setAttribute("data-molsysviewer-annotation-tag", item2.tag);
+    row3.setAttribute("data-molsysviewer-list-search-text", [item2.tag, item2.text, item2.owner, item2.layerTag].filter(Boolean).join(" "));
     row3.setAttribute("data-molsysviewer-annotation-broken", String(item2.broken));
     row3.style.opacity = item2.hidden ? "0.42" : "1";
     if (item2.brokenReason) row3.title = item2.brokenReason;
@@ -159123,6 +159501,7 @@ var AnnotationsPanel = class extends BasePanel {
         this.selectedTag = item2.tag;
         this.editTextTag = item2.tag;
         this.scheduleRender();
+        this.focusTextEditor();
       });
       head.appendChild(text);
     }
@@ -159189,10 +159568,9 @@ var AnnotationsPanel = class extends BasePanel {
         this.finishTextEdit();
       }
     });
-    input.addEventListener("blur", () => this.finishTextEdit());
-    setTimeout(() => {
-      if (typeof input.focus === "function") input.focus();
-    }, 0);
+    input.addEventListener("blur", () => {
+      if (!this.repainting) this.finishTextEdit();
+    });
     return input;
   }
   finishTextEdit() {
@@ -159200,6 +159578,10 @@ var AnnotationsPanel = class extends BasePanel {
     this.editTextTag = null;
     this.endCoalescing();
     this.scheduleRender();
+  }
+  focusTextEditor() {
+    const field2 = this.host?.querySelector("[data-molsysviewer-annotation-text-input]");
+    field2?.focus?.();
   }
   renderDetails(item2) {
     const editor = document.createElement("div");
@@ -159405,7 +159787,7 @@ var AnnotationsPanel = class extends BasePanel {
   renderStyle() {
     const section = card6();
     section.setAttribute("data-molsysviewer-annotation-style", this.selectedTag ?? "default");
-    section.appendChild(makeSectionHeader("Label style"));
+    section.appendChild(makeSectionHeader("Annotation style"));
     const selected = this.annotations.find((item2) => item2.tag === this.selectedTag);
     const style = selected ? resolvedStyle(selected.style) : this.nextStyle;
     const context2 = document.createElement("div");
@@ -159832,6 +160214,7 @@ var InteractionsPanel = class extends BasePanel {
   constructor(ctx) {
     super();
     this.ctx = ctx;
+    this.analysisSearch = new ListSearch();
     this.key = "interactions";
     this.items = [];
     this.analyses = [];
@@ -159883,6 +160266,7 @@ var InteractionsPanel = class extends BasePanel {
     this.color = "#34d399";
     this.radius = "0.025";
     this.alpha = "0.85";
+    this.savedListTools = new SavedListTools("interactions", ctx, () => this.scheduleRender());
     this.composer = new ManualQueryComposer("interactions", (details) => ctx.onAction("selection_query_preview_request", details), void 0, { buttonLabel: "Select" });
   }
   openForm() {
@@ -159901,6 +160285,7 @@ var InteractionsPanel = class extends BasePanel {
     parent.appendChild(details);
   }
   setSummary(message) {
+    this.reconcileEditorTargets((message.interactions || []).map((item2) => item2.tag));
     const previous = this.items.find((item2) => item2.tag === this.inspecting);
     const next = message.interactions.find((item2) => item2.tag === this.inspecting);
     if (this.frame !== message.frame || this.inspecting && previous?.query_revision !== next?.query_revision) {
@@ -159928,6 +160313,7 @@ var InteractionsPanel = class extends BasePanel {
   }
   /** Stage target A; calculation and display still require explicit submission. */
   stageContextAtoms(atoms2, calculate) {
+    this.disclosures.openCreation();
     this.openForm();
     this.openFilters();
     this.a = [...atoms2];
@@ -160321,12 +160707,12 @@ var InteractionsPanel = class extends BasePanel {
     const submit = makeButton2(this.busy !== null ? "Working\u2026" : this.editing ? "Apply changes" : this.source === "calculate" ? "Calculate and create set" : this.source === "file" ? "Load and create set" : "Create set", () => {
       try {
         if (this.mode === "between_selections" && (!this.a || !this.b)) throw new Error("Stage disjoint selections A and B first.");
-        const filter5 = this.filter();
+        const filter6 = this.filter();
         if (this.editing) this.emit("edit_interaction", {
           tag: this.editing,
           new_tag: this.tag,
           layer_tag: this.layer,
-          filter: filter5,
+          filter: filter6,
           color: this.color,
           radius_nm: Number(this.radius),
           radius_unit: "nm",
@@ -160359,7 +160745,7 @@ var InteractionsPanel = class extends BasePanel {
             analysis_name: this.source === "stored" ? this.stored : this.name,
             tag: this.tag,
             layer_tag: this.layer,
-            filter: filter5,
+            filter: filter6,
             calculation,
             filename: this.filename,
             file_analysis_name: this.fileAnalysis,
@@ -160389,6 +160775,7 @@ var InteractionsPanel = class extends BasePanel {
     for (const item2 of this.items) {
       const card8 = box4();
       card8.setAttribute("data-molsysviewer-interaction-set", item2.tag);
+      card8.setAttribute("data-molsysviewer-list-search-text", [item2.tag, item2.analysis_name, item2.layer_tag].filter(Boolean).join(" "));
       append(card8, note2(`${item2.tag} \xB7 ${item2.analysis_name}`), note2(statusText(item2)), note2(`${item2.hidden ? "Hidden" : item2.layer_hidden ? "Hidden by layer" : "Enabled"} \xB7 layer ${item2.layer_tag}`));
       const actions = row2();
       for (const [text, action] of [["Focus", "focus_interaction"], [item2.hidden ? "Show" : "Hide", "toggle_interaction_visibility"], ["Delete", "delete_interaction"]]) {
@@ -160445,9 +160832,25 @@ var InteractionsPanel = class extends BasePanel {
     const summary = document.createElement("summary");
     summary.textContent = `Stored analyses (${this.analyses.length})`;
     stored.appendChild(summary);
+    const entries3 = [];
+    const status = note2("");
+    status.setAttribute("role", "status");
+    const filter5 = () => {
+      let matches = 0;
+      for (const entry of entries3) {
+        const visible = this.analysisSearch.matches(entry.text);
+        entry.card.style.display = visible ? "flex" : "none";
+        if (visible) matches++;
+      }
+      status.textContent = `${matches}/${entries3.length} analyses match${!matches && entries3.length ? " \xB7 No matches" : ""}`;
+    };
+    stored.appendChild(this.analysisSearch.field("Search stored analyses", filter5));
+    stored.appendChild(status);
     for (const analysis of this.analyses) {
       const card8 = box4();
       card8.appendChild(note2(`${analysis.name} \xB7 ${analysis.n_occurrences} observations \xB7 ${analysis.n_evaluated_structures}/${analysis.n_structures} structures \xB7 ${analysis.n_references} visual references`));
+      card8.setAttribute("data-molsysviewer-stored-analysis", analysis.name);
+      entries3.push({ card: card8, text: `${analysis.name} ${analysis.method}` });
       card8.appendChild(note2(analysis.method));
       this.metadata(card8, `${JSON.stringify(analysis.parameters)} \xB7 ${JSON.stringify(analysis.software)}`);
       const actions = row2();
@@ -160465,6 +160868,7 @@ var InteractionsPanel = class extends BasePanel {
       card8.appendChild(actions);
       stored.appendChild(card8);
     }
+    filter5();
     this.host.appendChild(stored);
   }
 };
@@ -160495,6 +160899,7 @@ var SHAPE_STYLE_CONTROLS = {
   add_triangle_faces: ["colors", "alpha"],
   add_anisotropy_ellipsoids: ["colors", "alpha"],
   add_pharmacophore_features: ["colors", "alpha", "radii"],
+  add_interaction_sites: ["colors", "alpha", "radii"],
   add_displacement_vectors: ["radius_scale", "length_scale"],
   add_pocket_blob: ["alpha", "radii", "radius_scale"],
   add_pocket_surface: ["alpha"],
@@ -160508,62 +160913,62 @@ var ALL_SHAPE_TYPES = [
   { op: "add_network_links", label: "Cylinder / Link (Pair)", mode: "ui", description: "Cylindrical link connecting two selections or coordinate points." },
   { op: "add_displacement_vectors", label: "Displacement Vector (Arrow)", mode: "ui", description: "3D arrow representing direction and displacement between two points." },
   { op: "add_pocket_surface", label: "Pocket Surface", mode: "ui", description: "Molecular surface representation for binding pockets and active sites." },
-  { op: "add_rings", label: "Aromatic Rings", mode: "ui", description: "Rings centroids and aromatic planes." },
+  { op: "add_rings", label: "Ring geometry", mode: "guide", description: "Draw known ring centers, normals and radii; this does not detect aromaticity.", codeSnippet: "view.shapes.rings.add_rings(centers=centers, normals=normals, radii=radii)" },
   {
     op: "add_scalar_isosurface",
-    label: "Scalar Isosurface (3D Grid Field)",
+    label: "Scalar Isosurface (Centers and Radii)",
     mode: "guide",
-    description: "3D surface mesh from electronic density or potential field data.",
-    codeSnippet: "view.shapes.blobs.add_scalar_isosurface(\n    field_data, isovalue=0.02, color='#10b981'\n)"
+    description: "Gaussian isosurface from supplied centers and radii, with optional scalar values.",
+    codeSnippet: "view.shapes.blobs.add_scalar_isosurface(\n    centers=centers, radii=radii, iso_level=0.02,\n    iso_colors=[0x10b981]\n)"
   },
   {
-    op: "add_pharmacophore_features",
+    op: "add_interaction_sites",
     label: "Pharmacophore Features",
     mode: "guide",
     description: "Interaction sites (acceptors, donors, hydrophobic cores).",
-    codeSnippet: "view.shapes.interaction_sites.add_pharmacophore_features(\n    features, color='#3b82f6'\n)"
+    codeSnippet: "view.shapes.interaction_sites.add_interaction_sites(\n    centers=centers, kinds=kinds, colors=[0x3b82f6]\n)"
   },
   {
     op: "add_channel_tube",
     label: "Channel Tube (Pore / Tunnel)",
     mode: "guide",
     description: "Pathways and radii along membrane channels or protein tunnels.",
-    codeSnippet: "view.shapes.tubes.add_channel_tube(\n    path_points, radii=radii_list\n)"
+    codeSnippet: "view.shapes.tubes.add_channel_tube(\n    centers=path_points, radii=radii\n)"
   },
   {
     op: "add_anisotropy_ellipsoids",
     label: "Anisotropy Ellipsoids",
     mode: "guide",
     description: "Thermal motion or fluctuation tensor ellipsoids.",
-    codeSnippet: "view.shapes.ellipsoids.add_anisotropy_ellipsoids(\n    tensors, atom_indices=indices\n)"
+    codeSnippet: "view.shapes.ellipsoids.add_anisotropy_ellipsoids(\n    centers=centers, tensors=tensors\n)"
   },
   {
     op: "add_pocket_blob",
     label: "Pocket Blob (Cavity Mesh)",
     mode: "guide",
     description: "Volumetric cavity mesh around binding pockets.",
-    codeSnippet: "view.shapes.blobs.add_pocket_blob(\n    pocket_coords, radius_scale=1.0\n)"
+    codeSnippet: "view.shapes.blobs.add_pocket_blob(\n    centers=centers, radii=radii, radius_scale=1.0\n)"
   },
   {
     op: "add_tetrahedra",
     label: "Tetrahedra Mesh",
     mode: "guide",
     description: "Volumetric tetrahedral elements.",
-    codeSnippet: "view.shapes.tetrahedra.add_tetrahedra(\n    vertices, indices\n)"
+    codeSnippet: "view.shapes.tetrahedra.add_tetrahedra(\n    tetra_coords=tetra_coords\n)"
   },
   {
     op: "add_triangle_faces",
     label: "Triangle Mesh",
     mode: "guide",
     description: "Custom surface meshes made of triangular faces.",
-    codeSnippet: "view.shapes.triangles.add_triangle_faces(\n    vertices, faces\n)"
+    codeSnippet: "# triangle_vertices: length quantity, shape (n_triangles, 3, 3)\nview.shapes.triangles.add_triangle_faces(\n    vertices=triangle_vertices\n)"
   },
   {
     op: "add_alpha_sphere_set",
     label: "Alpha Sphere Set",
     mode: "guide",
     description: "Alpha sphere clusters for pocket detection.",
-    codeSnippet: "view.shapes.spheres.add_set_alpha_spheres(\n    spheres_data\n)"
+    codeSnippet: "view.shapes.spheres.add_set_alpha_spheres(\n    centers=centers, radii=radii\n)"
   }
 ];
 var INPUT_STYLE3 = {
@@ -160612,11 +161017,26 @@ var ShapesPanel = class extends BasePanel {
     // in nm
     this.colorVal = "#3b82f6";
     this.alphaVal = 0.8;
+    this.creationPending = null;
+    this.creationMessage = "";
     this.selection = emptySelection3();
     this.savedSelections = [];
+    this.savedListTools = new SavedListTools("shapes", ctx, () => this.scheduleRender());
+  }
+  updateStudioAction(result2) {
+    super.updateStudioAction(result2);
+    if (result2.action !== "create_shape" || result2.request_id !== this.creationPending) return;
+    this.creationPending = null;
+    this.creationMessage = result2.ok ? "Shape created." : result2.error_message || "Creation failed.";
+    if (result2.ok) {
+      this.stagedAnchor1 = this.stagedAnchor2 = null;
+      this.customTag = "";
+    }
+    this.scheduleRender();
   }
   setShapes(items, renderStatuses = /* @__PURE__ */ new Map()) {
     this.shapes = [...items];
+    this.reconcileEditorTargets(items.map((item2) => item2.tag));
     this.renderStatuses = new Map(renderStatuses);
     if (this.detailsTag && !items.some((item2) => item2.tag === this.detailsTag)) this.detailsTag = null;
     this.ctx.setBadge(String(items.length));
@@ -160641,6 +161061,7 @@ var ShapesPanel = class extends BasePanel {
   }
   /** Stage a contextual anchor without replacing the user's active selection. */
   stageContextAtoms(atoms2) {
+    this.disclosures.openCreation();
     this.selectedOp = "add_sphere";
     this.anchorType = "selection";
     this.stagedAnchor1 = [...atoms2];
@@ -160799,6 +161220,9 @@ var ShapesPanel = class extends BasePanel {
           whiteSpace: "pre-wrap"
         });
         guideBox.appendChild(pre);
+        const units = document.createElement("div");
+        units.textContent = "Prepare the named arrays first. Supply coordinates and radii with explicit length units; ring normals are dimensionless. These examples draw supplied geometry, not computed detections.";
+        guideBox.appendChild(units);
       }
       formCard.appendChild(guideBox);
     } else {
@@ -160872,6 +161296,8 @@ var ShapesPanel = class extends BasePanel {
           this.stagedAnchorLabel = "selection";
           this.scheduleRender();
         });
+        anchorBtn.disabled = !this.selection.atom_indices.length;
+        anchorBtn.title = "Stage the current atom selection";
         anchorBtn.style.padding = "3px 8px";
         anchorBtn.style.fontSize = "11px";
         anchorBtn.setAttribute("data-molsysviewer-shape-anchor-btn", "true");
@@ -160903,7 +161329,7 @@ var ShapesPanel = class extends BasePanel {
           numInput.value = String(this.coord1[idx]);
           Object.assign(numInput.style, INPUT_STYLE3);
           numInput.addEventListener("input", () => {
-            this.coord1[idx] = Number(numInput.value) || 0;
+            this.coord1[idx] = numInput.value === "" ? Number.NaN : Number(numInput.value);
           });
           col.appendChild(span);
           col.appendChild(numInput);
@@ -160919,6 +161345,7 @@ var ShapesPanel = class extends BasePanel {
           this.stagedAnchor1 = [...this.selection.atom_indices];
           this.scheduleRender();
         });
+        btn1.disabled = !this.selection.atom_indices.length;
         btn1.style.padding = "3px 8px";
         btn1.style.fontSize = "10px";
         const hint1 = document.createElement("span");
@@ -160933,6 +161360,7 @@ var ShapesPanel = class extends BasePanel {
           this.stagedAnchor2 = [...this.selection.atom_indices];
           this.scheduleRender();
         });
+        btn2.disabled = !this.selection.atom_indices.length;
         btn2.style.padding = "3px 8px";
         btn2.style.fontSize = "10px";
         const hint2 = document.createElement("span");
@@ -160948,11 +161376,12 @@ var ShapesPanel = class extends BasePanel {
       const radCol = document.createElement("div");
       Object.assign(radCol.style, { display: "flex", alignItems: "center", gap: "4px" });
       const radLabel = document.createElement("span");
-      radLabel.textContent = "Radius (nm):";
+      const isArrow = this.selectedOp === "add_displacement_vectors";
+      radLabel.textContent = isArrow ? "Radius scale:" : "Radius (nm):";
       Object.assign(radLabel.style, { fontSize: "10px", color: "rgba(244,244,245,0.6)" });
       const radInput = document.createElement("input");
       radInput.type = "number";
-      radInput.setAttribute("aria-label", "Radius (nm)");
+      radInput.setAttribute("aria-label", isArrow ? "Arrow radius scale" : "Radius (nm)");
       radInput.min = "0.01";
       radInput.step = "0.05";
       radInput.value = String(this.radiusVal);
@@ -160960,11 +161389,12 @@ var ShapesPanel = class extends BasePanel {
       Object.assign(radInput.style, INPUT_STYLE3);
       radInput.setAttribute("data-molsysviewer-shape-new-radius", "true");
       radInput.addEventListener("input", () => {
-        this.radiusVal = Number(radInput.value) || 0.15;
+        this.radiusVal = radInput.value === "" ? Number.NaN : Number(radInput.value);
+        createBtn.disabled = !ready() || this.creationPending !== null || !(this.radiusVal > 0) || !Number.isFinite(this.radiusVal);
       });
       radCol.appendChild(radLabel);
       radCol.appendChild(radInput);
-      styleRow.appendChild(radCol);
+      if (this.selectedOp !== "add_pocket_surface") styleRow.appendChild(radCol);
       const colCol = document.createElement("div");
       Object.assign(colCol.style, { display: "flex", alignItems: "center", gap: "4px" });
       const colLabel = document.createElement("span");
@@ -160980,7 +161410,7 @@ var ShapesPanel = class extends BasePanel {
       });
       colCol.appendChild(colLabel);
       colCol.appendChild(colInput);
-      styleRow.appendChild(colCol);
+      if (!isArrow && this.selectedOp !== "add_pocket_surface") styleRow.appendChild(colCol);
       const alphaCol = document.createElement("div");
       Object.assign(alphaCol.style, { display: "flex", alignItems: "center", gap: "4px", flex: "1 1 auto" });
       const alphaLabel = document.createElement("span");
@@ -161000,11 +161430,11 @@ var ShapesPanel = class extends BasePanel {
       });
       alphaCol.appendChild(alphaLabel);
       alphaCol.appendChild(alphaInput);
-      styleRow.appendChild(alphaCol);
+      if (!isArrow) styleRow.appendChild(alphaCol);
       formCard.appendChild(styleRow);
       const createBtnRow = document.createElement("div");
       Object.assign(createBtnRow.style, { display: "flex", justifyContent: "flex-end", marginTop: "4px" });
-      const createBtn = makeButton2("Create Shape", () => {
+      const createBtn = makeButton2(this.creationPending ? "Creating\u2026" : "Create Shape", () => {
         const payload = {
           shape_type: this.selectedOp,
           tag: this.customTag.trim() || void 0,
@@ -161020,11 +161450,34 @@ var ShapesPanel = class extends BasePanel {
         } else if (this.anchorType === "coordinates") {
           payload.coordinates = this.coord1;
         }
-        this.ctx.onAction("create_shape", payload);
-        this.stagedAnchor1 = null;
-        this.stagedAnchor2 = null;
+        this.creationPending = studioRequestId("shape");
+        payload.request_id = this.creationPending;
+        try {
+          this.ctx.onAction("create_shape", payload);
+        } catch (error2) {
+          this.creationPending = null;
+          this.creationMessage = String(error2);
+        }
         this.scheduleRender();
       });
+      const ready = () => isDoubleAnchor ? !!this.stagedAnchor1?.length && !!this.stagedAnchor2?.length : this.anchorType === "coordinates" && !isSingleAnchorOnly ? this.coord1.every(Number.isFinite) : !!this.stagedAnchor1?.length;
+      createBtn.disabled = !ready() || this.creationPending !== null || !(this.radiusVal > 0) || !Number.isFinite(this.radiusVal);
+      formCard.addEventListener("input", () => {
+        createBtn.disabled = !ready() || this.creationPending !== null || !(this.radiusVal > 0) || !Number.isFinite(this.radiusVal);
+      });
+      createBtn.title = !ready() ? "Stage the required anchors before creating this shape." : "Create the configured shape";
+      if (isDoubleAnchor) {
+        const geometry = document.createElement("div");
+        geometry.textContent = "Uses the geometric centers of staged selections in the visible structure. The resulting geometry is fixed; it does not follow the trajectory.";
+        geometry.style.fontSize = "11px";
+        formCard.appendChild(geometry);
+      }
+      if (this.creationMessage) {
+        const status = document.createElement("div");
+        status.setAttribute("role", "status");
+        status.textContent = this.creationMessage;
+        formCard.appendChild(status);
+      }
       createBtn.style.padding = "4px 12px";
       createBtn.style.fontSize = "11px";
       createBtn.style.fontWeight = "600";
@@ -161032,11 +161485,15 @@ var ShapesPanel = class extends BasePanel {
       createBtnRow.appendChild(createBtn);
       formCard.appendChild(createBtnRow);
     }
+    if (this.creationPending) {
+      for (const control of formCard.querySelectorAll("input, select, button")) control.disabled = true;
+    }
     return formCard;
   }
   renderShape(item2) {
     const row3 = card7();
     row3.setAttribute("data-molsysviewer-shape-tag", item2.tag);
+    row3.setAttribute("data-molsysviewer-list-search-text", [item2.tag, item2.kind, item2.owner, item2.layerTag, item2.title, item2.subtitle].filter(Boolean).join(" "));
     row3.setAttribute("data-molsysviewer-shape-op", item2.op);
     row3.setAttribute("data-molsysviewer-shape-broken", String(item2.broken));
     row3.style.opacity = item2.hidden ? "0.48" : "1";
@@ -163199,6 +163656,11 @@ var GroupPanel = class {
   updateSystemLoading(requestId, ok, atoms2, structures, sources, error2) {
     this.systemPanel.updateLoading(requestId, ok, atoms2, structures, sources, error2);
   }
+  updateStudioAction(result2) {
+    const key2 = result2.domain === "selections" ? "selection" : result2.domain === "measurements" ? "measures" : result2.domain;
+    const panel = this.panels.get(key2)?.panel;
+    if (panel && "updateStudioAction" in panel) panel.updateStudioAction(result2);
+  }
   isExpanded() {
     return this.expanded;
   }
@@ -163241,6 +163703,7 @@ var GroupPanel = class {
     this.regionsPanel.setCurrentSelection(selection);
     this.measuresPanel.setCurrentSelection(selection);
     this.annotationsPanel.setCurrentSelection(selection);
+    this.shapesPanel.setCurrentSelection(selection);
     this.interactionsPanel.setSelection(selection);
   }
   updateSelectionHistoryState(state) {
@@ -163253,6 +163716,7 @@ var GroupPanel = class {
     this.regionsPanel.setSavedSelections(items);
     this.measuresPanel.setSavedSelections(items);
     this.annotationsPanel.setSavedSelections(items);
+    this.shapesPanel.setSavedSelections(items);
     this.interactionsPanel.setSavedSelections(items);
   }
   updateSelectionQueryPreview(preview) {
@@ -163328,6 +163792,9 @@ var GroupPanel = class {
   }
   setImageDimensions(width, height) {
     this.exportPanel.setImageDimensions(width, height);
+  }
+  setImageResult(pending, message) {
+    this.exportPanel.setImageResult(pending, message);
   }
   setSections(items, settings) {
     this.viewportPanel.setSections(items, settings);
@@ -163526,6 +163993,7 @@ var AddonsPanel = class {
     this.workspaceItems = [];
     this.workspacePanelItems = [];
     this.addonsList = [];
+    this.addonSearch = new ListSearch();
     this.currentWorkspaceId = "core";
     this.activeWorkspacePanelSummary = null;
     this.addonDiagnostics = [];
@@ -163805,6 +164273,9 @@ var AddonsPanel = class {
   }
   // ── Catalog Screen Rendering ──────────────────────────────────
   renderCatalogView() {
+    const activeSearch = this.workspaceOverviewHost.ownerDocument?.activeElement;
+    const keepSearchFocus = activeSearch?.getAttribute("data-molsysviewer-addon-search") === "true";
+    const caret = keepSearchFocus ? [activeSearch.selectionStart, activeSearch.selectionEnd] : null;
     this.workspaceOverviewHost.replaceChildren();
     const header2 = document.createElement("div");
     Object.assign(header2.style, {
@@ -164218,6 +164689,28 @@ var AddonsPanel = class {
       }
       listContainer.appendChild(row3);
     }
+    if (typeof listContainer.querySelectorAll === "function") {
+      const rows = Array.from(listContainer.children);
+      const status = document.createElement("div");
+      status.setAttribute("role", "status");
+      const filter5 = () => {
+        let count3 = 0;
+        for (const row3 of rows) {
+          const visible = this.addonSearch.matches(row3.textContent || "");
+          row3.style.display = visible ? "flex" : "none";
+          if (visible) count3++;
+        }
+        status.textContent = `${count3}/${rows.length} add-ons match${count3 === 0 && rows.length ? " \xB7 No matches" : ""}`;
+      };
+      const search = this.addonSearch.field("Search add-ons", filter5);
+      search.setAttribute("data-molsysviewer-addon-search", "true");
+      listContainer.before(search, status);
+      filter5();
+      if (keepSearchFocus) {
+        search.focus();
+        search.setSelectionRange(caret[0], caret[1]);
+      }
+    }
     let diagnosticsRendered = false;
     for (const failure of this.addonDiagnostics) {
       const isMatched = effectiveAddons.some((addon) => failure.source.toLowerCase().includes(addon.name.toLowerCase()));
@@ -164376,7 +164869,7 @@ var AddonsPanel = class {
         gap: "6px"
       });
       if (workspace.id === "core") {
-        title.textContent = "\u2699 Settings";
+        title.textContent = "Add-ons manager";
       } else {
         title.textContent = workspace.title;
       }
@@ -166786,6 +167279,9 @@ var MolSysViewerController = class _MolSysViewerController {
         case "system_load_result":
           this.groupPanel.updateSystemLoading(msg.request_id, msg.ok, msg.n_atoms, msg.n_structures, msg.n_sources, msg.error_message);
           break;
+        case "studio_action_result":
+          this.groupPanel.updateStudioAction(msg);
+          break;
         case "interaction_inspection":
           this.groupPanel.updateInteractionInspection(msg.request_id, msg.result);
           break;
@@ -168588,24 +169084,34 @@ var MolSysViewerController = class _MolSysViewerController {
     }
   }
   async downloadViewportImage() {
-    const preset = this.addonsScene?.figurePreset || "publication-light";
-    const scale = this.addonsScene?.figureScale || 2;
-    const variants = this.addonsScene?.figureVariants || ["dark", "transparent"];
-    const transparent = this.addonsScene?.figureBackground !== void 0 ? this.addonsScene.figureBackground === "transparent" : variants.includes("transparent");
-    const dataUri = await this.getImageDataUri({
-      scale,
-      transparent,
-      preset
-    });
-    if (typeof dataUri === "string") {
-      const link = document.createElement("a");
-      link.href = dataUri;
-      link.download = "molsysviewer.png";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else if (typeof dataUri === "object" && dataUri.success === false) {
-      alert(dataUri.message);
+    this.groupPanel.setImageResult(true, "Rendering PNG\u2026");
+    try {
+      const preset = this.addonsScene?.figurePreset || "publication-light";
+      const scale = this.addonsScene?.figureScale || 2;
+      const variants = this.addonsScene?.figureVariants || ["dark", "transparent"];
+      const transparent = this.addonsScene?.figureBackground !== void 0 ? this.addonsScene.figureBackground === "transparent" : variants.includes("transparent");
+      const dataUri = await this.getImageDataUri({
+        scale,
+        transparent,
+        preset
+      });
+      if (typeof dataUri === "string") {
+        const link = document.createElement("a");
+        link.href = dataUri;
+        link.download = "molsysviewer.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else if (typeof dataUri === "object" && dataUri.success === false) {
+        throw new Error(dataUri.message);
+      } else {
+        throw new Error("PNG rendering returned no image. Please try again.");
+      }
+      this.groupPanel.setImageResult(false, "PNG download started.");
+    } catch (error2) {
+      const message = error2 instanceof Error ? error2.message : String(error2);
+      console.error("[MolSysViewer] PNG export failed", error2);
+      this.groupPanel.setImageResult(false, message);
     }
   }
   async setCameraSnapshot(snapshot, durationMs) {
@@ -170300,7 +170806,7 @@ var PopupReplayLog = class {
     if (!message || typeof message !== "object") return;
     const op4 = operation(message);
     if (!op4) return;
-    if (op4 === "html_export_ready") return;
+    if (op4 === "html_export_ready" || op4 === "studio_action_result") return;
     if (op4 === "clear_all") {
       this.entries = [];
       return;

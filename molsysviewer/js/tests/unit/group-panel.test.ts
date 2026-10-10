@@ -21,11 +21,21 @@ class FakeElement {
         return child;
     }
 
+    append(...children: FakeElement[]) { for (const child of children) this.appendChild(child); }
+
     prepend(...children: FakeElement[]) {
         this.children.unshift(...children);
     }
 
     querySelector(selector: string): FakeElement | null {
+        const attributeOnly = selector.match(/^\[([\w-]+)\]$/);
+        if (attributeOnly) {
+            for (const child of this.children) {
+                if (child.getAttribute(attributeOnly[1]) !== undefined) return child;
+                const nested = child.querySelector(selector); if (nested) return nested;
+            }
+            return null;
+        }
         const match = selector.match(/^([a-z][\w-]*)(?:\[([\w-]+)="([^"]*)"\])?$/i);
         if (!match) throw new Error(`Unsupported test DOM selector ${selector}`);
         const [, tag, attribute, value] = match;

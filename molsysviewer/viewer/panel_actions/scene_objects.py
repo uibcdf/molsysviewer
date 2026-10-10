@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from math import isfinite
-from numbers import Real
+from numbers import Integral, Real
 from typing import Any, Mapping
 
 import molsysmt as msm
+import numpy as np
 
 from ... import pyunitwizard as puw
 from ...shapes import SHAPE_STYLE_CAPABILITIES
@@ -384,6 +385,38 @@ def request_measurement_series(view: Any, content: Mapping[str, Any]) -> None:
     )
 
 
+def _shape_point_nm(view: Any, atoms: Any, coordinates: Any) -> list[float]:
+    """Resolve an explicit point or a geometric center in the visible structure."""
+    if atoms is not None:
+        if (
+            not isinstance(atoms, (list, tuple))
+            or not atoms
+            or any(isinstance(index, bool) or not isinstance(index, Integral) for index in atoms)
+        ):
+            raise ValueError("Stage a nonempty atom selection for each anchor.")
+        n_atoms = msm.get(view.molsys, element="system", n_atoms=True, skip_digestion=True)
+        if any(index < 0 or index >= n_atoms for index in atoms):
+            raise ValueError("An anchor refers to atoms outside the current system.")
+        values = msm.get(
+            view.molsys,
+            element="atom",
+            selection=list(dict.fromkeys(atoms)),
+            coordinates=True,
+            structure_indices=view.player.index,
+            skip_digestion=True,
+        )
+        point = np.asarray(puw.get_value(values, to_unit="nm"), dtype=float).reshape(-1, 3).mean(axis=0)
+    else:
+        if not isinstance(coordinates, (list, tuple)) or len(coordinates) != 3:
+            raise ValueError("Stage each anchor or enter its three coordinates in nm.")
+        if any(isinstance(value, bool) or not isinstance(value, Real) for value in coordinates):
+            raise ValueError("Anchor coordinates must be finite numbers in nm.")
+        point = np.asarray(coordinates, dtype=float)
+    if not np.isfinite(point).all():
+        raise ValueError("Anchor coordinates must be finite numbers in nm.")
+    return point.tolist()
+
+
 def create_shape(view: Any, content: Mapping[str, Any]) -> None:
     shape_type = str(content.get("shape_type", "add_sphere")).strip()
     raw_tag = content.get("tag")
@@ -392,8 +425,13 @@ def create_shape(view: Any, content: Mapping[str, Any]) -> None:
     raw_color = content.get("color", "#3b82f6")
     color = str(raw_color).strip() if isinstance(raw_color, str) and raw_color.strip() else "#3b82f6"
 
-    alpha = float(content.get("alpha", 0.8)) if content.get("alpha") is not None else 0.8
-    radius_val = float(content.get("radius", 0.15)) if content.get("radius") is not None else 0.15
+    raw_alpha = content.get("alpha", 0.8)
+    raw_radius = content.get("radius", 0.15)
+    if any(isinstance(value, bool) or not isinstance(value, Real) for value in (raw_alpha, raw_radius)):
+        raise ValueError("Radius and opacity must be numerical scalars.")
+    alpha, radius_val = float(raw_alpha), float(raw_radius)
+    if not isfinite(radius_val) or radius_val <= 0 or not isfinite(alpha) or not 0 <= alpha <= 1:
+        raise ValueError("Radius must be finite and positive; opacity must be between 0 and 1.")
     radius_q = puw.quantity(radius_val, "nm")
 
     atom_indices = content.get("atom_indices")
@@ -402,7 +440,8 @@ def create_shape(view: Any, content: Mapping[str, Any]) -> None:
     coordinates_2 = content.get("coordinates_2")
 
     if shape_type in ("add_sphere", "sphere"):
-        if atom_indices is not None and len(atom_indices) > 0:
+        point = _shape_point_nm(view, atom_indices, coordinates)
+        if atom_indices is not None:
             view.shapes.add_sphere(
                 atom_indices=atom_indices,
                 radius=radius_q,
@@ -411,8 +450,8 @@ def create_shape(view: Any, content: Mapping[str, Any]) -> None:
                 tag=tag,
                 skip_digestion=True,
             )
-        elif coordinates is not None and len(coordinates) == 3:
-            center_q = [puw.quantity(float(c), "nm") for c in coordinates]
+        else:
+            center_q = puw.quantity(point, "nm")
             view.shapes.add_sphere(
                 center=center_q,
                 radius=radius_q,
@@ -421,87 +460,48 @@ def create_shape(view: Any, content: Mapping[str, Any]) -> None:
                 tag=tag,
                 skip_digestion=True,
             )
-        else:
-            view.shapes.add_sphere(
-                radius=radius_q,
-                color=color,
-                alpha=alpha,
-                tag=tag,
-                skip_digestion=True,
-            )
     elif shape_type in ("add_links", "add_network_links", "link"):
-        if atom_indices is not None and atom_indices_2 is not None:
-            idx1 = atom_indices[0] if len(atom_indices) > 0 else 0
-            idx2 = atom_indices_2[0] if len(atom_indices_2) > 0 else 0
-            view.shapes.add_links(
-                atom_pairs=[[idx1, idx2]],
-                radius=radius_q,
-                color=color,
-                alpha=alpha,
-                tag=tag,
-                skip_digestion=True,
-            )
-        elif coordinates is not None and coordinates_2 is not None:
-            p1 = [float(c) for c in coordinates]
-            p2 = [float(c) for c in coordinates_2]
-            view.shapes.add_links(
-                coordinate_pairs=[[p1, p2]],
-                radius=radius_q,
-                color=color,
-                alpha=alpha,
-                tag=tag,
-                skip_digestion=True,
-            )
-    elif shape_type in ("add_displacement_vectors", "displacement_vectors"):
-        if atom_indices is not None and atom_indices_2 is not None:
-            idx1 = atom_indices[0] if len(atom_indices) > 0 else 0
-            idx2 = atom_indices_2[0] if len(atom_indices_2) > 0 else 0
-            pos1 = msm.get(view._msm, element="atom", selection=[idx1], coordinates=True, structure_indices=0)[0][0]  # noqa: SLF001
-            pos2 = msm.get(view._msm, element="atom", selection=[idx2], coordinates=True, structure_indices=0)[0][0]  # noqa: SLF001
-            pos1_nm = puw.get_value(pos1, to_unit="nm") if puw.is_quantity(pos1) else pos1 / 10.0
-            pos2_nm = puw.get_value(pos2, to_unit="nm") if puw.is_quantity(pos2) else pos2 / 10.0
-            vec = [pos2_nm[i] - pos1_nm[i] for i in range(3)]
-            view.shapes.add_displacement_vectors(
-                origins=[pos1_nm],
-                vectors=[vec],
-                radius_scale=radius_val,
-                tag=tag,
-                skip_digestion=True,
-            )
-        elif coordinates is not None and coordinates_2 is not None:
-            p1 = [float(c) for c in coordinates]
-            p2 = [float(c) for c in coordinates_2]
-            vec = [p2[i] - p1[i] for i in range(3)]
-            view.shapes.add_displacement_vectors(
-                origins=[p1],
-                vectors=[vec],
-                radius_scale=radius_val,
-                tag=tag,
-                skip_digestion=True,
-            )
-    elif shape_type in ("add_pocket_surface", "pocket_surface"):
-        if atom_indices is not None and len(atom_indices) > 0:
-            view.shapes.add_pocket_surface(
-                atom_indices=atom_indices,
-                color=color,
-                alpha=alpha,
-                tag=tag,
-                skip_digestion=True,
-            )
-        else:
-            view.shapes.add_pocket_surface(
-                color=color,
-                alpha=alpha,
-                tag=tag,
-                skip_digestion=True,
-            )
-    elif shape_type in ("add_hbonds", "hbonds"):
-        raise ValueError("Use Interactions to calculate hydrogen bonds and create a visual set.")
-    elif shape_type in ("add_rings", "rings"):
-        view.shapes.rings.add_rings(
+        p1 = _shape_point_nm(view, atom_indices, coordinates)
+        p2 = _shape_point_nm(view, atom_indices_2, coordinates_2)
+        if p1 == p2:
+            raise ValueError("A link needs two distinct anchor centers.")
+        view.shapes.add_links(
+            coordinate_pairs=puw.quantity([[p1, p2]], "nm"),
+            radius=radius_q,
+            color=color,
+            alpha=alpha,
             tag=tag,
             skip_digestion=True,
         )
+    elif shape_type in ("add_displacement_vectors", "displacement_vectors"):
+        p1 = _shape_point_nm(view, atom_indices, coordinates)
+        p2 = _shape_point_nm(view, atom_indices_2, coordinates_2)
+        if p1 == p2:
+            raise ValueError("A displacement arrow needs two distinct anchor centers.")
+        view.shapes.add_displacement_vectors(
+            origins=puw.quantity([p1], "nm"),
+            vectors=puw.quantity([[b - a for a, b in zip(p1, p2)]], "nm"),
+            radius_scale=radius_val,
+            tag=tag,
+            skip_digestion=True,
+        )
+    elif shape_type in ("add_pocket_surface", "pocket_surface"):
+        if atom_indices is not None:
+            _shape_point_nm(view, atom_indices, None)
+            view.shapes.add_pocket_surface(
+                atom_indices=atom_indices,
+                alpha=alpha,
+                tag=tag,
+                skip_digestion=True,
+            )
+        else:
+            raise ValueError("Stage the atoms defining the pocket surface.")
+    elif shape_type in ("add_hbonds", "hbonds"):
+        raise ValueError("Use Interactions to calculate hydrogen bonds and create a visual set.")
+    elif shape_type in ("add_rings", "rings"):
+        raise ValueError("Use the ring geometry guide to supply centers, normals and radii.")
+    else:
+        raise ValueError("This shape type is not available for Studio creation.")
 
 
 HANDLERS = {

@@ -31,6 +31,38 @@ retains ownership of its atoms in Whole. Disabling it releases that ownership,
 so those atoms can appear in Whole again. Independent representations keep their
 own visibility; see {doc}`../scene_management/regions`.
 
+## Organizing saved objects
+
+Search each saved list by name and its displayed metadata. Searching only
+filters the list; it does not hide atoms or change the molecular selection.
+Open **Manage marked items** to mark individual rows or all matches. Marks
+are independent of atom selections and remain when you change the search.
+**Show marked**, **Hide marked** and **Delete marked** act on all marked rows,
+including those hidden by the search. Deletion lists the target names and asks
+for confirmation. Use **Undo** to restore the whole batch with one action.
+Deleting interaction sets keeps their stored scientific analyses; ungrouping
+layers keeps their members.
+
+Creation sections are collapsed when saved objects already exist. Open the
+**New …** heading to create another object. Studio keeps the disclosure state,
+creation values and secondary text drafts while you change sections or navigate
+structures. Cancelling an editor or deleting its target discards that draft.
+Optional annotation offsets and leader lines are in **Advanced options**.
+
+## Creating shapes
+
+Stage the required selections before creating a shape. An anchored sphere
+follows its atoms through the trajectory. Links and displacement arrows use
+the geometric centers of the staged selections in the visible structure;
+the resulting geometry is fixed and does not follow later structures.
+Coordinates and radii in the form use nm; arrow radius scale is dimensionless.
+Studio preserves the shape name and anchors if Python rejects creation and
+shows the reason in the form.
+
+Advanced shape entries provide Python examples for supplied geometry with
+explicit units. Ring geometry draws centers, normals and radii you supply;
+it does not detect aromaticity. Use Interactions for computed contacts.
+
 ## Calculating and displaying interactions
 
 Saved sets remain visible while **New interaction set** is collapsed. Open it

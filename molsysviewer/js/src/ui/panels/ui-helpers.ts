@@ -37,6 +37,7 @@ export function formatUnitLabel(unit: string): string {
 
 export function makeSectionHeader(title: string): HTMLDivElement {
     const header = document.createElement("div");
+    header.setAttribute("data-molsysviewer-section-heading", title);
     Object.assign(header.style, {
         fontSize: "13px",
         fontWeight: "700",
@@ -375,6 +376,26 @@ export function nameControls(control: HTMLElement, label: string): void {
     }
 }
 
+/** Complete native field/icon names, leaving explicit labels and names authoritative. */
+export function namePanelControls(host: HTMLElement, domain: string): void {
+    if (typeof host.querySelectorAll !== "function") return;
+    for (const input of host.querySelectorAll<HTMLInputElement>("input,select,textarea")) {
+        if (input.hasAttribute("aria-label") || input.hasAttribute("aria-labelledby") || input.closest("label")) continue;
+        const attr = Array.from(input.attributes).find(item => item.name.startsWith("data-molsysviewer-"));
+        const label = input.placeholder || attr?.name.replace("data-molsysviewer-", "").replace(/-/g, " ") || input.type;
+        input.setAttribute("aria-label", `${domain}: ${label}`);
+    }
+    for (const button of host.querySelectorAll<HTMLButtonElement>("button")) {
+        if (button.hasAttribute("aria-label")) continue;
+        const text = button.textContent?.trim() || "";
+        if (/[A-Za-z]/.test(text)) continue;
+        const attr = Array.from(button.attributes).find(item => item.name.startsWith("data-molsysviewer-") && /delete|visibility|focus|remove/.test(item.name));
+        const verb = attr?.name.includes("delete") || attr?.name.includes("remove") ? "Delete" : attr?.name.includes("visibility") ? "Toggle visibility" : "Action";
+        const name = button.title || `${verb} ${domain}${attr?.value && attr.value !== "true" ? `: ${attr.value}` : ""}`;
+        button.setAttribute("aria-label", name); if (!button.title) button.title = name;
+    }
+}
+
 /** A native keyboard-operable switch with the shared Studio appearance. */
 export function makeSwitch(label: string, checked: boolean, onToggle: () => void): HTMLButtonElement {
     const button = document.createElement("button");
@@ -390,4 +411,9 @@ export function makeSwitch(label: string, checked: boolean, onToggle: () => void
     button.appendChild(thumb);
     button.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); onToggle(); });
     return button;
+}
+
+/** Correlation IDs remain unique across native, popup and exported canvases. */
+export function studioRequestId(prefix: string): string {
+    return `${prefix}-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`}`;
 }

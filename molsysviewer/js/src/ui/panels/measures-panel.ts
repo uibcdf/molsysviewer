@@ -1,3 +1,4 @@
+import { SavedListTools } from "./saved-list-tools";
 import type { ActiveSelectionPayload } from "../../managers/active-selection";
 import type { SavedSelectionSummary, SelectionQueryPreview } from "../group-panel";
 import { BasePanel } from "./base-panel";
@@ -151,6 +152,7 @@ export class MeasuresPanel extends BasePanel {
     private readonly expectedSeriesRequest = new Map<string, number>();
     private nextSeriesRequest = 1;
     private editTag: string | null = null;
+    private creationName = "";
     private inlineTab: "active" | "query" | "saved" = "active";
 
     private selectedSavedKind: "distance" | "angle" | "dihedral" = "distance";
@@ -166,10 +168,12 @@ export class MeasuresPanel extends BasePanel {
     private measuresQueryComposer: ManualQueryComposer | null = null;
     private measuresCheatSheetOpen = false;
 
-    constructor(private readonly ctx: PanelContext) { super(); }
+    constructor(private readonly ctx: PanelContext) { super(); this.savedListTools = new SavedListTools("measurements", ctx, () => this.scheduleRender()); }
 
     setMeasurements(measurements: MeasurementSummary[], settings: MeasurementSettings): void {
         this.measurements = [...measurements];
+        this.reconcileEditorTargets(measurements.map(item => item.tag));
+        if (this.editTag && !measurements.some(item => item.tag === this.editTag)) this.editTag = null;
         this.settings = settings;
         this.ctx.setBadge(String(measurements.length));
         this.scheduleRender();
@@ -528,6 +532,8 @@ export class MeasuresPanel extends BasePanel {
 
         const nameInput = document.createElement("input");
         nameInput.type = "text";
+        nameInput.value = this.creationName;
+        nameInput.addEventListener("input", () => { this.creationName = nameInput.value; });
         nameInput.placeholder = "Measurement name (optional)...";
         Object.assign(nameInput.style, {
             flex: "1 1 auto",
@@ -553,6 +559,7 @@ export class MeasuresPanel extends BasePanel {
             }
             this.ctx.onAction("create_measurement", details);
             nameInput.value = "";
+            this.creationName = "";
             this.stagedSlots = [null, null, null, null];
             this.activeSlotExpansion = null;
             this.scheduleRender();
@@ -819,6 +826,7 @@ export class MeasuresPanel extends BasePanel {
     private renderMeasurement(item: MeasurementSummary): HTMLDivElement {
         const row = card();
         row.setAttribute("data-molsysviewer-measurement-tag", item.tag);
+        row.setAttribute("data-molsysviewer-list-search-text", [item.tag, item.kind, item.owner, item.layerTag, ...item.endpointLabels].filter(Boolean).join(" "));
         row.setAttribute("data-molsysviewer-measurement-broken", String(item.broken));
         row.style.opacity = item.hidden ? "0.42" : "1";
         if (item.brokenReason) row.title = item.brokenReason;

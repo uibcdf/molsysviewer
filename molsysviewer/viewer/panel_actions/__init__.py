@@ -4,6 +4,7 @@ from collections.abc import Callable, Mapping
 from typing import Any
 
 from .addons import HANDLERS as ADDON_HANDLERS
+from .batch import batch_scene_objects
 from .interactions import HANDLERS as INTERACTION_HANDLERS
 from .loading import load_systems
 from .regions import HANDLERS as REGION_HANDLERS
@@ -21,7 +22,7 @@ def _build_handlers() -> dict[str, PanelActionHandler]:
     for domain in (
         ADDON_HANDLERS,
         INTERACTION_HANDLERS,
-        {"load_systems": load_systems},
+        {"load_systems": load_systems, "batch_scene_objects": batch_scene_objects},
         SELECTION_HANDLERS,
         REGION_HANDLERS,
         SCENE_OBJECT_HANDLERS,
@@ -84,7 +85,33 @@ def dispatch_panel_action(view: Any, content: Mapping[str, Any]) -> None:
     handler = HANDLERS.get(action)
     if handler is None:
         raise ValueError(f"Unsupported panel action: {action!r}.")
-    handler(view, content)
+    if action in {"create_shape", "batch_scene_objects"} and isinstance(content.get("request_id"), str):
+        try:
+            handler(view, content)
+        except Exception as exc:
+            view._send_runtime_only(
+                {
+                    "op": "studio_action_result",
+                    "action": action,
+                    "request_id": content["request_id"],
+                    "ok": False,
+                    "domain": content.get("domain", "shapes"),
+                    "error_message": str(exc),
+                }
+            )
+            raise
+        else:
+            view._send_runtime_only(
+                {
+                    "op": "studio_action_result",
+                    "action": action,
+                    "request_id": content["request_id"],
+                    "ok": True,
+                    "domain": content.get("domain", "shapes"),
+                }
+            )
+    else:
+        handler(view, content)
 
 
 __all__ = [

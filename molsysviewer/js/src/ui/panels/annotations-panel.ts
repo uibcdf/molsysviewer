@@ -1,6 +1,8 @@
+import { SavedListTools } from "./saved-list-tools";
 import type { ActiveSelectionPayload } from "../../managers/active-selection";
 import type { SavedSelectionSummary, SelectionQueryPreview } from "../group-panel";
 import { BasePanel } from "./base-panel";
+import { advancedFields } from "./panel-disclosures";
 import type { PanelContext } from "./types";
 import { makeButton, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
 import { ManualQueryComposer } from "../query-composer";
@@ -111,10 +113,13 @@ export class AnnotationsPanel extends BasePanel {
     constructor(
         private readonly ctx: PanelContext,
         private readonly onFocus: (atomIndices: number[]) => void,
-    ) { super(); }
+    ) { super(); this.savedListTools = new SavedListTools("annotations", ctx, () => this.scheduleRender()); }
 
     setAnnotations(items: AnnotationSummary[], settings: AnnotationSettings): void {
         this.annotations = [...items];
+        this.reconcileEditorTargets(items.map(item => item.tag));
+        if (this.editDetailsTag && !items.some(item => item.tag === this.editDetailsTag)) this.editDetailsTag = null;
+        if (this.editTextTag && !items.some(item => item.tag === this.editTextTag)) { this.editTextTag = null; this.endCoalescing(); }
         this.settings = settings;
         if (this.selectedTag && !items.some(item => item.tag === this.selectedTag)) {
             this.selectedTag = null;
@@ -129,6 +134,7 @@ export class AnnotationsPanel extends BasePanel {
         if (text) this.editTextTag = tag;
         else this.editDetailsTag = tag;
         this.scheduleRender();
+        if (text) this.focusTextEditor();
     }
 
     setSavedSelections(items: SavedSelectionSummary[]): void {
@@ -519,7 +525,7 @@ export class AnnotationsPanel extends BasePanel {
         lineLabel.appendChild(document.createTextNode("Leader Line"));
         offsetRow.appendChild(lineLabel);
 
-        createCard.appendChild(offsetRow);
+        createCard.appendChild(advancedFields("annotation-advanced", offsetRow));
 
         const hint = document.createElement("div");
         if (!this.settings.systemLoaded) {
@@ -713,6 +719,7 @@ export class AnnotationsPanel extends BasePanel {
     private renderAnnotation(item: AnnotationSummary): HTMLDivElement {
         const row = card();
         row.setAttribute("data-molsysviewer-annotation-tag", item.tag);
+        row.setAttribute("data-molsysviewer-list-search-text", [item.tag, item.text, item.owner, item.layerTag].filter(Boolean).join(" "));
         row.setAttribute("data-molsysviewer-annotation-broken", String(item.broken));
         row.style.opacity = item.hidden ? "0.42" : "1";
         if (item.brokenReason) row.title = item.brokenReason;
@@ -739,6 +746,7 @@ export class AnnotationsPanel extends BasePanel {
                 this.selectedTag = item.tag;
                 this.editTextTag = item.tag;
                 this.scheduleRender();
+                this.focusTextEditor();
             });
             head.appendChild(text);
         }
@@ -816,10 +824,7 @@ export class AnnotationsPanel extends BasePanel {
                 this.finishTextEdit();
             }
         });
-        input.addEventListener("blur", () => this.finishTextEdit());
-        setTimeout(() => {
-            if (typeof input.focus === "function") input.focus();
-        }, 0);
+        input.addEventListener("blur", () => { if (!this.repainting) this.finishTextEdit(); });
         return input;
     }
 
@@ -828,6 +833,11 @@ export class AnnotationsPanel extends BasePanel {
         this.editTextTag = null;
         this.endCoalescing();
         this.scheduleRender();
+    }
+
+    private focusTextEditor(): void {
+        const field = this.host?.querySelector<HTMLInputElement>("[data-molsysviewer-annotation-text-input]");
+        field?.focus?.();
     }
 
     private renderDetails(item: AnnotationSummary): HTMLDivElement {
@@ -1061,7 +1071,7 @@ export class AnnotationsPanel extends BasePanel {
     private renderStyle(): HTMLDivElement {
         const section = card();
         section.setAttribute("data-molsysviewer-annotation-style", this.selectedTag ?? "default");
-        section.appendChild(makeSectionHeader("Label style"));
+        section.appendChild(makeSectionHeader("Annotation style"));
         const selected = this.annotations.find(item => item.tag === this.selectedTag);
         const style = selected ? resolvedStyle(selected.style) : this.nextStyle;
         const context = document.createElement("div");

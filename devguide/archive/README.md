@@ -301,3 +301,14 @@ Completed work, kept for the reasoning:
 - [retire_molsysmt_addon.md](retire_molsysmt_addon.md) — #186: Automatic discovery skips the legacy MolSysMT entry point before import; explicit namespace/module registration refuses it with the native route.
 - [studio_truthful_copy.md](studio_truthful_copy.md) — #187: Studio descriptions now name the available Layers visibility, PNG/HTML exports and controls visibility settings.
 - [studio_browser_guards.md](studio_browser_guards.md) — #188: The controls guard waits for actual molecular drawing before sampling the startup transition and retains an intermediate-opacity assertion for the whole group.
+
+## Studio refinement — 2026-10-10
+- [studio_shape_anchor_geometry.md](studio_shape_anchor_geometry.md) — #190: Visible-structure geometric centers and explicit quantities replace the broken atom-anchored arrow/link route.
+- [studio_shape_creation_feedback.md](studio_shape_creation_feedback.md) — #191: Validated prerequisites and correlated results preserve failed creation drafts; Shapes receives canonical selections.
+- [studio_shape_catalog_examples.md](studio_shape_catalog_examples.md) — #192: Nine catalogue snippets execute through real public digested APIs with explicit units.
+- [studio_secondary_editor_drafts.md](studio_secondary_editor_drafts.md) — #193: Secondary drafts, caret and creation names survive updates; missing targets prune hidden editors before Undo.
+- [studio_secondary_copy_and_names.md](studio_secondary_copy_and_names.md) — #194: Secondary actions use Annotation and Add-ons manager; native fields and icon actions carry accessible names.
+- [studio_saved_list_search.md](studio_saved_list_search.md) — #195: Reusable local search covers all saved domains, stored analyses and the addon manager without scene actions.
+- [studio_marked_batch_actions.md](studio_marked_batch_actions.md) — #196: Validated marked batches provide confirmation, rollback and one-step Undo while preserving analyses and ungrouped members.
+- [studio_creation_disclosures.md](studio_creation_disclosures.md) — #197: Native creation/advanced disclosures retain deliberate choices and adapt initial defaults to saved items.
+- [studio_annotation_stale_restore_refs.md](studio_annotation_stale_restore_refs.md) — #199: Annotation cleanup checks current transforms sequentially; real Undo restores annotation cells without stale-ref errors.

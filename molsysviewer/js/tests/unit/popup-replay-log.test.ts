@@ -50,10 +50,11 @@ test("panel popup bootstrap contains only explicit UI projections", () => {
     ]);
 });
 
-test("PopupReplayLog excludes transient HTML download bytes from every snapshot", () => {
+test("PopupReplayLog excludes transient HTML downloads and Studio replies from every snapshot", () => {
     const log = new PopupReplayLog();
     log.record({ op: "set_trajectory_frame", index: 2 });
     log.record({ op: "html_export_ready", request_id: "download", html: "<html>runtime</html>" });
+    log.record({ op: "studio_action_result", request_id: "creation", action: "create_shape", domain: "shapes", ok: true });
     assert.equal(log.size, 1);
     assert.deepEqual(log.snapshot("canvas"), [{ op: "set_trajectory_frame", index: 2 }]);
     assert.deepEqual(log.snapshot("panel"), []);

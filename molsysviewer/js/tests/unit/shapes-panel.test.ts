@@ -92,6 +92,7 @@ const EXPECTED_STYLE_CONTROLS: Readonly<Record<string, readonly string[]>> = {
     add_triangle_faces: ["colors", "alpha"],
     add_anisotropy_ellipsoids: ["colors", "alpha"],
     add_pharmacophore_features: ["colors", "alpha", "radii"],
+    add_interaction_sites: ["colors", "alpha", "radii"],
     add_displacement_vectors: ["radius_scale", "length_scale"],
     add_pocket_blob: ["alpha", "radii", "radius_scale"],
     add_pocket_surface: ["alpha"],

@@ -17,6 +17,7 @@
  * dispatcher and the Python `core.py` handlers.
  */
 export type PanelAction =
+    | "batch_scene_objects"
     | "load_systems"
     // Selection
     | "apply_selection_query"

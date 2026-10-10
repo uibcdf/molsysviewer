@@ -1,3 +1,4 @@
+import { SavedListTools } from "./saved-list-tools";
 import { ActiveSelectionItem, ActiveSelectionPayload, ActiveSelectionSetOperation } from "../../managers/active-selection";
 import { ManualQueryComposer } from "../query-composer";
 import type { SavedSelectionSummary, SelectionQueryPreview } from "../group-panel";
@@ -20,6 +21,8 @@ export class SelectionPanel extends BasePanel {
 
     // Domain state
     private currentSelection: ActiveSelectionPayload = { count_atoms: 0 } as ActiveSelectionPayload;
+    private savedEditor: { tag: string; mode: "rename" | "region" | "label"; value: string } | null = null;
+    private activeSaveDraft = "";
     private savedSelections: SavedSelectionSummary[] = [];
 
     // View state
@@ -38,7 +41,7 @@ export class SelectionPanel extends BasePanel {
         private readonly onActivateSavedSelection: (tag: string) => void,
         private readonly regionExists: (tag: string) => boolean,
     ) {
-        super();
+        super(); this.savedListTools = new SavedListTools("selections", ctx, () => this.scheduleRender());
     }
 
     protected onMount(): void {
@@ -72,6 +75,8 @@ export class SelectionPanel extends BasePanel {
 
     setSavedSelections(items: SavedSelectionSummary[]): void {
         this.savedSelections = [...items];
+        this.reconcileEditorTargets(items.map(item => item.tag));
+        if (this.savedEditor && !items.some(item => item.tag === this.savedEditor!.tag)) this.savedEditor = null;
         this.updateBadge();
         this.scheduleRender();
     }
@@ -315,6 +320,7 @@ export class SelectionPanel extends BasePanel {
                 card.setAttribute("data-molsysviewer-group-panel-row", "true");
                 card.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
                 card.setAttribute("data-molsysviewer-saved-selection-card", item.tag);
+                card.setAttribute("data-molsysviewer-list-search-text", [item.tag].filter(Boolean).join(" "));
                 Object.assign(card.style, {
                     display: "flex",
                     flexDirection: "column",
@@ -426,15 +432,19 @@ export class SelectionPanel extends BasePanel {
                 });
                 card.appendChild(inlineForm);
 
-                const showForm = (mode: "rename" | "region" | "label") => {
+                const showForm = (mode: "rename" | "region" | "label", focus = true) => {
                     btnRow.style.display = "none";
                     inlineForm.replaceChildren();
-                    inlineInput.value = "";
-                    inlineInput.placeholder = mode === "rename" ? "New name..." : mode === "region" ? "Region name..." : "Label text...";
+                    if (!this.savedEditor || this.savedEditor.tag !== item.tag || this.savedEditor.mode !== mode) this.savedEditor = { tag: item.tag, mode, value: "" };
+                    inlineInput.value = this.savedEditor.value;
+                    inlineInput.setAttribute("data-molsysviewer-saved-selection-editor", `${item.tag}:${mode}`);
+                    inlineInput.setAttribute("aria-label", mode === "rename" ? "New selection name" : mode === "region" ? "New region name" : "Annotation text");
+                    inlineInput.oninput = () => { if (this.savedEditor) this.savedEditor.value = inlineInput.value; };
+                    inlineInput.placeholder = mode === "rename" ? "New name..." : mode === "region" ? "Region name..." : "Annotation text...";
 
                     const inlineConfirm = document.createElement("button");
                     inlineConfirm.type = "button";
-                    inlineConfirm.textContent = mode === "rename" ? "Rename" : mode === "region" ? "Create" : "Add Label";
+                    inlineConfirm.textContent = mode === "rename" ? "Rename" : mode === "region" ? "Create" : "Add Annotation";
                     inlineConfirm.setAttribute("data-molsysviewer-saved-selection-confirm", item.tag);
                     inlineConfirm.setAttribute("data-molsysviewer-saved-selection-confirm-mode", mode);
                     Object.assign(inlineConfirm.style, {
@@ -470,6 +480,7 @@ export class SelectionPanel extends BasePanel {
                             const exists = this.savedSelections.some(s => s.tag === val);
                             if (exists) {
                                 if (val === item.tag) {
+                                    this.savedEditor = null;
                                     inlineForm.style.display = "none";
                                     btnRow.style.display = "flex";
                                     return;
@@ -500,6 +511,7 @@ export class SelectionPanel extends BasePanel {
                         } else if (mode === "label") {
                             this.ctx.onAction("create_label_from_saved_selection", { selection_tag: item.tag, text: val });
                         }
+                        this.savedEditor = null;
                         inlineForm.style.display = "none";
                         btnRow.style.display = "flex";
                     });
@@ -507,6 +519,7 @@ export class SelectionPanel extends BasePanel {
                     inlineCancel.addEventListener("click", (e) => {
                         e.preventDefault();
                         e.stopPropagation();
+                        this.savedEditor = null;
                         inlineForm.style.display = "none";
                         btnRow.style.display = "flex";
                     });
@@ -527,7 +540,7 @@ export class SelectionPanel extends BasePanel {
                     inlineForm.appendChild(inlineCancel);
 
                     inlineForm.style.display = "flex";
-                    inlineInput.focus?.();
+                    if (focus) inlineInput.focus?.();
                 };
 
                 const activateBtn = makeButton(isActive ? "Deactivate" : "Activate", () => {
@@ -558,6 +571,7 @@ export class SelectionPanel extends BasePanel {
 
                 card.appendChild(btnRow);
                 savedList.appendChild(card);
+                if (this.savedEditor?.tag === item.tag) showForm(this.savedEditor.mode, false);
             }
         } else {
             const emptyLabel = document.createElement("div");
@@ -701,6 +715,8 @@ export class SelectionPanel extends BasePanel {
             const input = document.createElement("input");
             input.type = "text";
             input.placeholder = "Selection name...";
+            input.value = this.activeSaveDraft;
+            input.oninput = () => this.activeSaveDraft = input.value;
             input.setAttribute("data-molsysviewer-active-selection-save-input", "true");
             this.activeSelectionSaveInput = input;
             Object.assign(input.style, {
@@ -729,12 +745,12 @@ export class SelectionPanel extends BasePanel {
                 } else {
                     this.ctx.onAction("save_selection", { tag });
                 }
-                this.showActiveSelectionSaveForm = false;
+                this.showActiveSelectionSaveForm = false; this.activeSaveDraft = "";
                 this.scheduleRender();
             };
 
             const cancelForm = () => {
-                this.showActiveSelectionSaveForm = false;
+                this.showActiveSelectionSaveForm = false; this.activeSaveDraft = "";
                 this.scheduleRender();
             };
 

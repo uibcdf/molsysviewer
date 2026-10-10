@@ -203,6 +203,15 @@ export class AnnotationHandlers {
         });
     }
 
+    /** Structure rebuilds may already have removed a label and its ghost parent. */
+    private async removeLabelRefs(refs: Iterable<string>): Promise<void> {
+        for (const ref of refs) {
+            const state = this.plugin.state.data;
+            if (!state.tree.transforms.has(ref)) continue;
+            await PluginCommands.State.RemoveObject(this.plugin, { state, ref, removeParentGhosts: true });
+        }
+    }
+
     async clearLabels() {
         this.specsByTag.clear();
         this.hiddenTags.clear();
@@ -212,13 +221,7 @@ export class AnnotationHandlers {
         const refs = Array.from(this.labelRefs);
         this.labelRefs.clear();
         this.refsByTag.clear();
-        await Promise.all(
-            refs.map(ref => PluginCommands.State.RemoveObject(this.plugin, {
-                state: this.plugin.state.data,
-                ref,
-                removeParentGhosts: true,
-            }))
-        );
+        await this.removeLabelRefs(refs);
     }
 
     async clearLabelByTag(tag: string) {
@@ -230,13 +233,7 @@ export class AnnotationHandlers {
         for (const ref of refs) {
             this.labelRefs.delete(ref);
         }
-        await Promise.all(
-            refs.map(ref => PluginCommands.State.RemoveObject(this.plugin, {
-                state: this.plugin.state.data,
-                ref,
-                removeParentGhosts: true,
-            }))
-        );
+        await this.removeLabelRefs(refs);
     }
 
     hasTag(tag: string): boolean {

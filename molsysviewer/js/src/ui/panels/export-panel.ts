@@ -20,6 +20,16 @@ function card(): HTMLDivElement {
 export class ExportPanel extends BasePanel {
     readonly key = "export";
     private state: SceneState = {};
+    private imagePending = false;
+    private imageMessage = "";
+
+    setImageResult(pending: boolean, message: string): void {
+        this.imagePending = pending; this.imageMessage = message;
+        const button = this.host?.querySelector<HTMLButtonElement>('[data-molsysviewer-export-image]');
+        if (button) button.disabled = pending;
+        const status = this.host?.querySelector('[data-molsysviewer-export-image-status]');
+        if (status) status.textContent = message;
+    }
 
     constructor(private readonly ctx: PanelContext, private readonly hasAuthority = true) {
         super();
@@ -33,7 +43,17 @@ export class ExportPanel extends BasePanel {
     setImageDimensions(width: number, height: number): void {
         if (this.state.imageWidth === width && this.state.imageHeight === height) return;
         this.state.imageWidth = width; this.state.imageHeight = height;
-        this.scheduleRender();
+        // A resize can arrive between pointer-down and click. Update this readout
+        // in place so it cannot remove the download button under the pointer.
+        const readout = this.host?.querySelector('[data-molsysviewer-export-dimensions]');
+        if (readout) readout.textContent = this.figureReadout();
+    }
+
+    private figureReadout(): string {
+        const scale = this.state.figureScale ?? 2.0;
+        const width = this.state.imageWidth ?? 0, height = this.state.imageHeight ?? 0;
+        const dimensions = width > 0 && height > 0 ? `${Math.max(1, Math.round(width * scale))} × ${Math.max(1, Math.round(height * scale))} px` : "Dimensions available in the canvas";
+        return `${scale}× Scale · ${dimensions} · ${(this.state.figurePreset || "publication-light").includes("dark") ? "Dark Preset" : "Light Preset"}`;
     }
 
     protected paint(): void {
@@ -56,15 +76,6 @@ export class ExportPanel extends BasePanel {
     private renderGlobalStatusCard(): HTMLDivElement {
         const globalCard = card();
         Object.assign(globalCard.style, { marginBottom: "10px" });
-
-        const currentPreset = this.state.figurePreset || "publication-light";
-        const currentScale = typeof this.state.figureScale === "number" ? this.state.figureScale : 2.0;
-        const width = this.state.imageWidth ?? 0;
-        const height = this.state.imageHeight ?? 0;
-        const dimensions = width > 0 && height > 0
-            ? `${Math.max(1, Math.round(width * currentScale))} × ${Math.max(1, Math.round(height * currentScale))} px`
-            : "Dimensions available in the canvas";
-        const presetName = currentPreset.includes("dark") ? "Dark Preset" : "Light Preset";
 
         const row = document.createElement("div");
         Object.assign(row.style, {
@@ -94,7 +105,7 @@ export class ExportPanel extends BasePanel {
         });
         info.appendChild(dot);
         const textSpan = document.createElement("span");
-        textSpan.textContent = `${currentScale}× Scale · ${dimensions} · ${presetName}`;
+        textSpan.textContent = this.figureReadout();
         textSpan.setAttribute("data-molsysviewer-export-dimensions", "true");
         info.style.flexWrap = "wrap";
         info.appendChild(textSpan);
@@ -170,9 +181,13 @@ export class ExportPanel extends BasePanel {
             this.ctx.onAction("download_image");
         });
         downloadButton.setAttribute("data-molsysviewer-export-image", "true");
+        downloadButton.disabled = this.imagePending;
         downloadButton.style.padding = "6px 10px";
         downloadButton.style.fontSize = "11px";
         downloadButton.style.fontWeight = "600";
+        const imageStatus = document.createElement("div"); imageStatus.setAttribute("data-molsysviewer-export-image-status", "true");
+        imageStatus.setAttribute("role", "status"); imageStatus.style.fontSize = "11px"; imageStatus.textContent = this.imageMessage;
+        downloadRow.appendChild(imageStatus);
 
         downloadRow.appendChild(downloadButton);
         figureCard.appendChild(downloadRow);

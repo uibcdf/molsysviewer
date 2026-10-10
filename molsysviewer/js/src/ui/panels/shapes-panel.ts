@@ -1,8 +1,10 @@
+import type { StudioActionResult } from "./saved-list-tools";
+import { SavedListTools } from "./saved-list-tools";
 import { BasePanel } from "./base-panel";
 import type { ActiveSelectionPayload } from "../../managers/active-selection";
 import type { SavedSelectionSummary } from "../group-panel";
 import type { PanelContext } from "./types";
-import { nameControls, makeButton, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
+import { studioRequestId, nameControls, makeButton, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
 
 export type ShapeLength = { magnitude: number; unit: string };
 
@@ -65,6 +67,7 @@ export const SHAPE_STYLE_CONTROLS: Readonly<Record<string, readonly ShapeStyleCo
     add_triangle_faces: ["colors", "alpha"],
     add_anisotropy_ellipsoids: ["colors", "alpha"],
     add_pharmacophore_features: ["colors", "alpha", "radii"],
+    add_interaction_sites: ["colors", "alpha", "radii"],
     add_displacement_vectors: ["radius_scale", "length_scale"],
     add_pocket_blob: ["alpha", "radii", "radius_scale"],
     add_pocket_surface: ["alpha"],
@@ -87,62 +90,62 @@ export const ALL_SHAPE_TYPES: ReadonlyArray<ShapeTypeCatalogItem> = [
     { op: "add_network_links", label: "Cylinder / Link (Pair)", mode: "ui", description: "Cylindrical link connecting two selections or coordinate points." },
     { op: "add_displacement_vectors", label: "Displacement Vector (Arrow)", mode: "ui", description: "3D arrow representing direction and displacement between two points." },
     { op: "add_pocket_surface", label: "Pocket Surface", mode: "ui", description: "Molecular surface representation for binding pockets and active sites." },
-    { op: "add_rings", label: "Aromatic Rings", mode: "ui", description: "Rings centroids and aromatic planes." },
+    { op: "add_rings", label: "Ring geometry", mode: "guide", description: "Draw known ring centers, normals and radii; this does not detect aromaticity.", codeSnippet: "view.shapes.rings.add_rings(centers=centers, normals=normals, radii=radii)" },
     {
         op: "add_scalar_isosurface",
-        label: "Scalar Isosurface (3D Grid Field)",
+        label: "Scalar Isosurface (Centers and Radii)",
         mode: "guide",
-        description: "3D surface mesh from electronic density or potential field data.",
-        codeSnippet: "view.shapes.blobs.add_scalar_isosurface(\n    field_data, isovalue=0.02, color='#10b981'\n)",
+        description: "Gaussian isosurface from supplied centers and radii, with optional scalar values.",
+        codeSnippet: "view.shapes.blobs.add_scalar_isosurface(\n    centers=centers, radii=radii, iso_level=0.02,\n    iso_colors=[0x10b981]\n)",
     },
     {
-        op: "add_pharmacophore_features",
+        op: "add_interaction_sites",
         label: "Pharmacophore Features",
         mode: "guide",
         description: "Interaction sites (acceptors, donors, hydrophobic cores).",
-        codeSnippet: "view.shapes.interaction_sites.add_pharmacophore_features(\n    features, color='#3b82f6'\n)",
+        codeSnippet: "view.shapes.interaction_sites.add_interaction_sites(\n    centers=centers, kinds=kinds, colors=[0x3b82f6]\n)",
     },
     {
         op: "add_channel_tube",
         label: "Channel Tube (Pore / Tunnel)",
         mode: "guide",
         description: "Pathways and radii along membrane channels or protein tunnels.",
-        codeSnippet: "view.shapes.tubes.add_channel_tube(\n    path_points, radii=radii_list\n)",
+        codeSnippet: "view.shapes.tubes.add_channel_tube(\n    centers=path_points, radii=radii\n)",
     },
     {
         op: "add_anisotropy_ellipsoids",
         label: "Anisotropy Ellipsoids",
         mode: "guide",
         description: "Thermal motion or fluctuation tensor ellipsoids.",
-        codeSnippet: "view.shapes.ellipsoids.add_anisotropy_ellipsoids(\n    tensors, atom_indices=indices\n)",
+        codeSnippet: "view.shapes.ellipsoids.add_anisotropy_ellipsoids(\n    centers=centers, tensors=tensors\n)",
     },
     {
         op: "add_pocket_blob",
         label: "Pocket Blob (Cavity Mesh)",
         mode: "guide",
         description: "Volumetric cavity mesh around binding pockets.",
-        codeSnippet: "view.shapes.blobs.add_pocket_blob(\n    pocket_coords, radius_scale=1.0\n)",
+        codeSnippet: "view.shapes.blobs.add_pocket_blob(\n    centers=centers, radii=radii, radius_scale=1.0\n)",
     },
     {
         op: "add_tetrahedra",
         label: "Tetrahedra Mesh",
         mode: "guide",
         description: "Volumetric tetrahedral elements.",
-        codeSnippet: "view.shapes.tetrahedra.add_tetrahedra(\n    vertices, indices\n)",
+        codeSnippet: "view.shapes.tetrahedra.add_tetrahedra(\n    tetra_coords=tetra_coords\n)",
     },
     {
         op: "add_triangle_faces",
         label: "Triangle Mesh",
         mode: "guide",
         description: "Custom surface meshes made of triangular faces.",
-        codeSnippet: "view.shapes.triangles.add_triangle_faces(\n    vertices, faces\n)",
+        codeSnippet: "# triangle_vertices: length quantity, shape (n_triangles, 3, 3)\nview.shapes.triangles.add_triangle_faces(\n    vertices=triangle_vertices\n)",
     },
     {
         op: "add_alpha_sphere_set",
         label: "Alpha Sphere Set",
         mode: "guide",
         description: "Alpha sphere clusters for pocket detection.",
-        codeSnippet: "view.shapes.spheres.add_set_alpha_spheres(\n    spheres_data\n)",
+        codeSnippet: "view.shapes.spheres.add_set_alpha_spheres(\n    centers=centers, radii=radii\n)",
     },
 ];
 
@@ -188,14 +191,26 @@ export class ShapesPanel extends BasePanel {
     private radiusVal = 0.15; // in nm
     private colorVal = "#3b82f6";
     private alphaVal = 0.8;
+    private creationPending: string | null = null;
+    private creationMessage = "";
 
     private selection: ActiveSelectionPayload = emptySelection();
     private savedSelections: SavedSelectionSummary[] = [];
 
-    constructor(private readonly ctx: PanelContext) { super(); }
+    constructor(private readonly ctx: PanelContext) { super(); this.savedListTools = new SavedListTools("shapes", ctx, () => this.scheduleRender()); }
+
+    override updateStudioAction(result: StudioActionResult): void {
+        super.updateStudioAction(result);
+        if (result.action !== "create_shape" || result.request_id !== this.creationPending) return;
+        this.creationPending = null;
+        this.creationMessage = result.ok ? "Shape created." : result.error_message || "Creation failed.";
+        if (result.ok) { this.stagedAnchor1 = this.stagedAnchor2 = null; this.customTag = ""; }
+        this.scheduleRender();
+    }
 
     setShapes(items: ShapeSummary[], renderStatuses: ReadonlyMap<string, ShapeRenderStatus> = new Map()): void {
         this.shapes = [...items];
+        this.reconcileEditorTargets(items.map(item => item.tag));
         this.renderStatuses = new Map(renderStatuses);
         if (this.detailsTag && !items.some(item => item.tag === this.detailsTag)) this.detailsTag = null;
         this.ctx.setBadge(String(items.length));
@@ -224,6 +239,7 @@ export class ShapesPanel extends BasePanel {
 
     /** Stage a contextual anchor without replacing the user's active selection. */
     stageContextAtoms(atoms: number[]): void {
+        this.disclosures.openCreation();
         this.selectedOp = "add_sphere";
         this.anchorType = "selection";
         this.stagedAnchor1 = [...atoms];
@@ -407,6 +423,7 @@ export class ShapesPanel extends BasePanel {
                     whiteSpace: "pre-wrap",
                 });
                 guideBox.appendChild(pre);
+                const units = document.createElement("div"); units.textContent = "Prepare the named arrays first. Supply coordinates and radii with explicit length units; ring normals are dimensionless. These examples draw supplied geometry, not computed detections."; guideBox.appendChild(units);
             }
 
             formCard.appendChild(guideBox);
@@ -492,6 +509,8 @@ export class ShapesPanel extends BasePanel {
                     this.stagedAnchorLabel = "selection";
                     this.scheduleRender();
                 });
+                anchorBtn.disabled = !this.selection.atom_indices.length;
+                anchorBtn.title = "Stage the current atom selection";
                 anchorBtn.style.padding = "3px 8px";
                 anchorBtn.style.fontSize = "11px";
                 anchorBtn.setAttribute("data-molsysviewer-shape-anchor-btn", "true");
@@ -528,7 +547,7 @@ export class ShapesPanel extends BasePanel {
                     numInput.value = String(this.coord1[idx]);
                     Object.assign(numInput.style, INPUT_STYLE);
                     numInput.addEventListener("input", () => {
-                        this.coord1[idx] = Number(numInput.value) || 0;
+                        this.coord1[idx] = numInput.value === "" ? Number.NaN : Number(numInput.value);
                     });
                     col.appendChild(span);
                     col.appendChild(numInput);
@@ -547,6 +566,7 @@ export class ShapesPanel extends BasePanel {
                     this.stagedAnchor1 = [...this.selection.atom_indices];
                     this.scheduleRender();
                 });
+                btn1.disabled = !this.selection.atom_indices.length;
                 btn1.style.padding = "3px 8px";
                 btn1.style.fontSize = "10px";
                 const hint1 = document.createElement("span");
@@ -563,6 +583,7 @@ export class ShapesPanel extends BasePanel {
                     this.stagedAnchor2 = [...this.selection.atom_indices];
                     this.scheduleRender();
                 });
+                btn2.disabled = !this.selection.atom_indices.length;
                 btn2.style.padding = "3px 8px";
                 btn2.style.fontSize = "10px";
                 const hint2 = document.createElement("span");
@@ -583,21 +604,25 @@ export class ShapesPanel extends BasePanel {
             const radCol = document.createElement("div");
             Object.assign(radCol.style, { display: "flex", alignItems: "center", gap: "4px" });
             const radLabel = document.createElement("span");
-            radLabel.textContent = "Radius (nm):";
+            const isArrow = this.selectedOp === "add_displacement_vectors";
+            radLabel.textContent = isArrow ? "Radius scale:" : "Radius (nm):";
             Object.assign(radLabel.style, { fontSize: "10px", color: "rgba(244,244,245,0.6)" });
             const radInput = document.createElement("input");
             radInput.type = "number";
-            radInput.setAttribute("aria-label", "Radius (nm)");
+            radInput.setAttribute("aria-label", isArrow ? "Arrow radius scale" : "Radius (nm)");
             radInput.min = "0.01";
             radInput.step = "0.05";
             radInput.value = String(this.radiusVal);
             radInput.style.width = "55px";
             Object.assign(radInput.style, INPUT_STYLE);
             radInput.setAttribute("data-molsysviewer-shape-new-radius", "true");
-            radInput.addEventListener("input", () => { this.radiusVal = Number(radInput.value) || 0.15; });
+            radInput.addEventListener("input", () => {
+                this.radiusVal = radInput.value === "" ? Number.NaN : Number(radInput.value);
+                createBtn.disabled = !ready() || this.creationPending !== null || !(this.radiusVal > 0) || !Number.isFinite(this.radiusVal);
+            });
             radCol.appendChild(radLabel);
             radCol.appendChild(radInput);
-            styleRow.appendChild(radCol);
+            if (this.selectedOp !== "add_pocket_surface") styleRow.appendChild(radCol);
 
             // Color
             const colCol = document.createElement("div");
@@ -613,7 +638,7 @@ export class ShapesPanel extends BasePanel {
             colInput.addEventListener("input", () => { this.colorVal = colInput.value; });
             colCol.appendChild(colLabel);
             colCol.appendChild(colInput);
-            styleRow.appendChild(colCol);
+            if (!isArrow && this.selectedOp !== "add_pocket_surface") styleRow.appendChild(colCol);
 
             // Alpha Slider
             const alphaCol = document.createElement("div");
@@ -633,7 +658,7 @@ export class ShapesPanel extends BasePanel {
             alphaInput.addEventListener("input", () => { this.alphaVal = Number(alphaInput.value); });
             alphaCol.appendChild(alphaLabel);
             alphaCol.appendChild(alphaInput);
-            styleRow.appendChild(alphaCol);
+            if (!isArrow) styleRow.appendChild(alphaCol);
 
             formCard.appendChild(styleRow);
 
@@ -641,7 +666,7 @@ export class ShapesPanel extends BasePanel {
             const createBtnRow = document.createElement("div");
             Object.assign(createBtnRow.style, { display: "flex", justifyContent: "flex-end", marginTop: "4px" });
 
-            const createBtn = makeButton("Create Shape", () => {
+            const createBtn = makeButton(this.creationPending ? "Creating…" : "Create Shape", () => {
                 const payload: Record<string, unknown> = {
                     shape_type: this.selectedOp,
                     tag: this.customTag.trim() || undefined,
@@ -659,11 +684,27 @@ export class ShapesPanel extends BasePanel {
                     payload.coordinates = this.coord1;
                 }
 
-                this.ctx.onAction("create_shape", payload);
-                this.stagedAnchor1 = null;
-                this.stagedAnchor2 = null;
+                this.creationPending = studioRequestId("shape");
+                payload.request_id = this.creationPending;
+                try { this.ctx.onAction("create_shape", payload); }
+                catch (error) { this.creationPending = null; this.creationMessage = String(error); }
                 this.scheduleRender();
             });
+            const ready = () => isDoubleAnchor ? !!this.stagedAnchor1?.length && !!this.stagedAnchor2?.length
+                : this.anchorType === "coordinates" && !isSingleAnchorOnly ? this.coord1.every(Number.isFinite) : !!this.stagedAnchor1?.length;
+            createBtn.disabled = !ready() || this.creationPending !== null || !(this.radiusVal > 0) || !Number.isFinite(this.radiusVal);
+            formCard.addEventListener("input", () => {
+                createBtn.disabled = !ready() || this.creationPending !== null || !(this.radiusVal > 0) || !Number.isFinite(this.radiusVal);
+            });
+            createBtn.title = !ready() ? "Stage the required anchors before creating this shape." : "Create the configured shape";
+            if (isDoubleAnchor) {
+                const geometry = document.createElement("div");
+                geometry.textContent = "Uses the geometric centers of staged selections in the visible structure. The resulting geometry is fixed; it does not follow the trajectory.";
+                geometry.style.fontSize = "11px"; formCard.appendChild(geometry);
+            }
+            if (this.creationMessage) {
+                const status = document.createElement("div"); status.setAttribute("role", "status"); status.textContent = this.creationMessage; formCard.appendChild(status);
+            }
             createBtn.style.padding = "4px 12px";
             createBtn.style.fontSize = "11px";
             createBtn.style.fontWeight = "600";
@@ -671,13 +712,16 @@ export class ShapesPanel extends BasePanel {
             createBtnRow.appendChild(createBtn);
             formCard.appendChild(createBtnRow);
         }
-
+        if (this.creationPending) {
+            for (const control of formCard.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLButtonElement>("input, select, button")) control.disabled = true;
+        }
         return formCard;
     }
 
     private renderShape(item: ShapeSummary): HTMLDivElement {
         const row = card();
         row.setAttribute("data-molsysviewer-shape-tag", item.tag);
+        row.setAttribute("data-molsysviewer-list-search-text", [item.tag, item.kind, item.owner, item.layerTag, item.title, item.subtitle].filter(Boolean).join(" "));
         row.setAttribute("data-molsysviewer-shape-op", item.op);
         row.setAttribute("data-molsysviewer-shape-broken", String(item.broken));
         row.style.opacity = item.hidden ? "0.48" : "1";

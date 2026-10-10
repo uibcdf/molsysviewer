@@ -332,3 +332,22 @@ and checks PNG dimensions/alpha, requester-only HTML delivery, native labels,
 compact navigation, floating bounds, observer/drag disposal and addon retirement.
 Keyboard Settings and shared control fade assertions additionally belong to the
 existing `controls-visibility.e2e.ts` profile.
+
+### Studio saved-list browser guard profile
+
+The bounded selector is exactly
+`molsysviewer/js/tests/e2e/studio-list-workflows.e2e.ts`, without suffixes,
+globs or commands. From `molsysviewer/js`, build with `npm run build:harness`
+and `npm run build:e2e:all`, then run
+`node tests/e2e/studio-list-workflows.e2e.js`. It also runs in
+`npm run test:e2e:core`. Browser/WebGL errors fail; `E2E_ALLOW_SKIP=1` does not
+qualify closure. Select the development interpreter explicitly with `PYTHON`
+when running its real-Python fixture bridge.
+
+The offline validator checks the fixture, correlated action replies, batch
+assertions and build/core registration. The guard uses real pentalanine and
+Mol*/Chromium to check shape failure/recovery, native field names, local search,
+marks independent of molecular selection, exact batch targets, deletion
+confirmation, one-step Undo with restored annotation cells, and drafts through
+frame/tab changes and deletion/restore. Registration establishes addressability;
+each closing report must identify its relevant behavioral assertions.

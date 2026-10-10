@@ -2525,6 +2525,7 @@ export class MolSysViewerController {
                     break;
                 case "interaction_action_result": this.groupPanel.updateInteractionCreation(msg.request_id, msg.ok, msg.analysis_name, msg.error_message); break;
                 case "system_load_result": this.groupPanel.updateSystemLoading(msg.request_id, msg.ok, msg.n_atoms, msg.n_structures, msg.n_sources, msg.error_message); break;
+                case "studio_action_result": this.groupPanel.updateStudioAction(msg); break;
                 case "interaction_inspection": this.groupPanel.updateInteractionInspection(msg.request_id, msg.result); break;
                 case "add_network_links": await this.shapes.addNetworkLinks(msg); break;
                 case "add_hbonds": await this.shapes.addHbonds(msg); break;
@@ -4472,27 +4473,37 @@ export class MolSysViewerController {
     }
 
     async downloadViewportImage() {
-        const preset = this.addonsScene?.figurePreset || "publication-light";
-        const scale = this.addonsScene?.figureScale || 2.0;
-        const variants = this.addonsScene?.figureVariants || ["dark", "transparent"];
-        const transparent = this.addonsScene?.figureBackground !== undefined
-            ? this.addonsScene.figureBackground === "transparent" : variants.includes("transparent");
+        this.groupPanel.setImageResult(true, "Rendering PNG…");
+        try {
+            const preset = this.addonsScene?.figurePreset || "publication-light";
+            const scale = this.addonsScene?.figureScale || 2.0;
+            const variants = this.addonsScene?.figureVariants || ["dark", "transparent"];
+            const transparent = this.addonsScene?.figureBackground !== undefined
+                ? this.addonsScene.figureBackground === "transparent" : variants.includes("transparent");
 
-        const dataUri = await this.getImageDataUri({
-            scale,
-            transparent,
-            preset,
-        });
+            const dataUri = await this.getImageDataUri({
+                scale,
+                transparent,
+                preset,
+            });
 
-        if (typeof dataUri === "string") {
-            const link = document.createElement("a");
-            link.href = dataUri;
-            link.download = "molsysviewer.png";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } else if (typeof dataUri === "object" && dataUri.success === false) {
-            alert(dataUri.message);
+            if (typeof dataUri === "string") {
+                const link = document.createElement("a");
+                link.href = dataUri;
+                link.download = "molsysviewer.png";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else if (typeof dataUri === "object" && dataUri.success === false) {
+                throw new Error(dataUri.message);
+            } else {
+                throw new Error("PNG rendering returned no image. Please try again.");
+            }
+            this.groupPanel.setImageResult(false, "PNG download started.");
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            console.error("[MolSysViewer] PNG export failed", error);
+            this.groupPanel.setImageResult(false, message);
         }
     }
 

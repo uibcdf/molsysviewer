@@ -154,7 +154,7 @@ async function run() {
         // Rename and promote the saved selection to a region.
         await page.locator('[data-molsysviewer-saved-selection-rename="chain_a"]').click();
         const chainCard = page.locator('[data-molsysviewer-saved-selection-card="chain_a"]');
-        await chainCard.locator("input").fill("active_chain");
+        await chainCard.getByRole("textbox", { name: "New selection name", exact: true }).fill("active_chain");
         // Not `filter({ hasText: "Rename" })`: the card's toolbar carries a Rename
         // button too, so the text matches two elements and Playwright refuses.
         await page.locator('[data-molsysviewer-saved-selection-confirm-mode="rename"]').click();
@@ -173,7 +173,7 @@ async function run() {
 
         await page.locator('[data-molsysviewer-saved-selection-to-region="active_chain"]').click();
         const renamedCard = page.locator('[data-molsysviewer-saved-selection-card="active_chain"]');
-        await renamedCard.locator("input").fill("active_chain_region");
+        await renamedCard.getByRole("textbox", { name: "New region name", exact: true }).fill("active_chain_region");
         await page.locator('[data-molsysviewer-saved-selection-confirm-mode="region"]').click();
         const promote = await latestAction(page, "create_region_from_saved_selection");
         assert.deepStrictEqual(
@@ -183,7 +183,7 @@ async function run() {
 
         // Promote the saved selection directly to an annotation.
         await page.locator('[data-molsysviewer-saved-selection-to-label="active_chain"]').click();
-        await renamedCard.locator("input").fill("Active chain");
+        await renamedCard.getByRole("textbox", { name: "Annotation text", exact: true }).fill("Active chain");
         await page.locator('[data-molsysviewer-saved-selection-confirm-mode="label"]').click();
         const label = await latestAction(page, "create_label_from_saved_selection");
         assert.deepStrictEqual(

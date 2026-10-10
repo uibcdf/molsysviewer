@@ -10,6 +10,7 @@ const SUITES = [
     "context-menu",
     "controls-visibility",
     "studio-usability",
+    "studio-list-workflows",
     "annotations-interaction",
     "annotations-subpanel",
     "array-native-load",

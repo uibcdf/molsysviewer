@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT))
 
 
-def replay(events):
+def replay(events, family=None):
     from molsysviewer.interactions import _to_plain
     from molsysviewer.viewer.panel_actions import dispatch_panel_action
 
@@ -27,6 +27,16 @@ def replay(events):
         view.set_figure_spec(FigureSpec(scale=1.5, background="white"))
         view.interactions.hbonds.get_buch_hbonds(name="review", structure_indices="all", distance_threshold="0.4 nm")
         view.interactions.add("review", tag="hbonds")
+        if family == "refinement":
+            view.active_selection.set([0, 1])
+            for index, tag in enumerate(["alpha-one", "alpha-two", "beta"]):
+                view.regions.add(atom_indices=[index], tag=tag)
+                view.selections.add(tag, atom_indices=[index])
+                view.annotations.add(text=tag, atom_indices=[index], tag=tag)
+                view.measurements.add_distance([index], [index + 5], tag=tag)
+                view.shapes.add_sphere(atom_indices=[index], tag=tag)
+            layer = view.layers.add("presentation")
+            layer.attach(view.shapes.get("beta"))
         initial = view._build_embedded_runtime_snapshot()  # noqa: SLF001
         transmitted = []
         original_send = view.widget.send
@@ -37,12 +47,31 @@ def replay(events):
 
         view.widget.send = observe_send
         view._ready = True  # noqa: SLF001
+        selection_messages = []
+        if family == "refinement":
+            # Embedded snapshots omit transient active selection. Use the real
+            # runtime projection, as a live Python selection would do.
+            view.active_selection.set([0, 1])
+            selection_messages.extend(transmitted)
+            transmitted.clear()
         batches = []
         for event in events:
             before = len(transmitted)
-            dispatch_panel_action(view, event)
+            if event.get("event") == "scene_history_undo":
+                view.history.undo()
+            else:
+                try:
+                    dispatch_panel_action(view, event)
+                except Exception:
+                    if family != "refinement" or not any(
+                        message.get("op") == "studio_action_result" and not message["ok"]
+                        for message in transmitted[before:]
+                    ):
+                        raise
             batches.append(transmitted[before:])
-        return _to_plain({"initial_messages": initial, "message_batches": batches})
+        return _to_plain(
+            {"initial_messages": initial, "selection_messages": selection_messages, "message_batches": batches}
+        )
     finally:
         view.close()
 
@@ -54,7 +83,7 @@ def main():
             request = json.loads(line)
             request_id = request["id"]
             with contextlib.redirect_stdout(sys.stderr):
-                result = replay(request.get("events", []))
+                result = replay(request.get("events", []), request.get("family"))
             response = {"id": request_id, "result": result}
         except Exception:
             response = {"id": request_id, "error": traceback.format_exc()}
