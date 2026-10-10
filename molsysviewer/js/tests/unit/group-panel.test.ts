@@ -2176,7 +2176,7 @@ test("GroupPanel Annotations edits labels and routes every mutation through pane
         );
 
         findFirstByAttribute(root, "data-molsysviewer-annotation-focus", "note")?.dispatch("click", clickEvent);
-        assert.deepStrictEqual(focused[0].atom_indices, [0, 1]);
+        assert.deepStrictEqual(actions.at(-1), { action: "focus_annotation", details: { tag: "note" } });
         findFirstByAttribute(root, "data-molsysviewer-annotation-visibility", "note")?.dispatch("click", clickEvent);
         findFirstByAttribute(root, "data-molsysviewer-annotation-delete", "note")?.dispatch("click", clickEvent);
         assert.deepStrictEqual(actions.slice(-2), [
@@ -2277,4 +2277,52 @@ test("GroupPanel tabs have correct tooltips and initial subtitle labels", () => 
     } finally {
         restore();
     }
+});
+
+test("Studio focuses coordinate annotation owners and disables broken anchors", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: any[] = [];
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {},
+            () => {}, (action, details) => actions.push({ action, details }));
+        panel.setAnnotations([
+            { kind: "label", tag: "point", text: "point", hidden: false, nAtoms: 0, atomIndices: [], anchor: { type: "absolute", indices: [] }, style: {}, broken: false },
+            { kind: "label", tag: "broken", text: "broken", hidden: false, nAtoms: 0, atomIndices: [], anchor: { type: "atoms", indices: [] }, style: {}, broken: true, brokenReason: "Missing anchor" },
+        ], { systemLoaded: true, activeSelectionCount: 0 });
+        (panel as any).switchTab("annotations");
+        const focus = findFirstByAttribute(host.children[0], "data-molsysviewer-annotation-focus", "point")!;
+        assert.equal(focus.disabled, false);
+        focus.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepEqual(actions.at(-1), { action: "focus_annotation", details: { tag: "point" } });
+        assert.equal(findFirstByAttribute(host.children[0], "data-molsysviewer-annotation-focus", "broken")!.disabled, true);
+    } finally { restore(); }
+});
+
+test("Studio work-file drafts survive projections and only matching replies end pending", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any, actions: any[] = [];
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {},
+            () => {}, (action, details) => actions.push({ action, details }));
+        panel.setAnnotations([], { systemLoaded: true, activeSelectionCount: 0 });
+        (panel as any).switchTab("export");
+        const path = findFirstByAttribute(host.children[0], "data-molsysviewer-work-file-path")!;
+        path.value = "review.json"; path.dispatch("input");
+        const save = findFirstByAttribute(host.children[0], "data-molsysviewer-work-file-save")!;
+        save.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.equal(save.disabled, true);
+        const action = actions.at(-1);
+        assert.equal(action.action, "save_work_file");
+        assert.equal(action.details.path, "review.json");
+        panel.setScene({ figureScale: 3 });
+        assert.strictEqual(findFirstByAttribute(host.children[0], "data-molsysviewer-work-file-path"), path);
+        assert.equal(path.value, "review.json");
+        panel.updateStudioAction({ action: "save_work_file", request_id: "other", domain: "export", ok: true });
+        assert.equal(save.disabled, true);
+        panel.updateStudioAction({ action: "save_work_file", request_id: action.details.request_id, domain: "export", ok: false, error_message: "Disk full" });
+        assert.equal(save.disabled, false);
+        assert.equal(findFirstByAttribute(host.children[0], "data-molsysviewer-work-file-status")!.textContent, "Disk full");
+        assert.equal(path.value, "review.json");
+    } finally { restore(); }
 });

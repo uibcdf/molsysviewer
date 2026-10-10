@@ -61,7 +61,83 @@ async function run() {
         assert.match(await page.locator('[data-molsysviewer-interaction-calculation-coverage]').innerText(), /All loaded structures/);
         await form.locator(":scope > summary").click();
 
+        const tips = section("interactions").locator('[data-molsysviewer-workflow-help="interactions"]');
+        assert.equal(await tips.evaluate((el: HTMLDetailsElement) => el.open), false);
+        await tips.locator(":scope > summary").click();
+        await apply(fixture.initial_messages.filter((message: any) => message.op === "set_interaction_summaries"));
+        assert.ok(await tips.evaluate((el: HTMLDetailsElement) => el.open));
+        const layerTag = fixture.initial_messages.find((message: any) => message.op === "set_interaction_summaries").interactions[0].layer_tag;
+        const toggleLayer = { action: "set_layer_visibility", tag: layerTag, hidden: true };
+        const layerHidden = await bridge.request([toggleLayer]);
+        await apply(layerHidden.message_batches[0]);
+        assert.match(await section("interactions").innerText(), /0\/1 sets visible/);
+        assert.match(await page.locator('[data-molsysviewer-interaction-set="hbonds"]').innerText(), /Hidden by layer/);
+        await apply((await bridge.request([toggleLayer, { ...toggleLayer, hidden: false }])).message_batches[1]);
+        assert.match(await section("interactions").innerText(), /1\/1 sets visible/);
+
+        // A coordinate annotation has no atom indices: Focus still uses its live owner.
+        await open("annotations");
+        const absoluteFocus = page.locator('[data-molsysviewer-annotation-focus="absolute-note"]');
+        assert.ok(await absoluteFocus.isEnabled()); await absoluteFocus.click();
+        const focusAction = await page.evaluate(() => [...(window as any).__messages].reverse().find((msg: any) => msg.action === "focus_annotation"));
+        assert.equal(focusAction.tag, "absolute-note");
+        await apply((await bridge.request([focusAction])).message_batches[0]);
+        await page.waitForFunction(() => {
+            const target = (window as any).__controller.plugin.canvas3d.camera.state.target;
+            return [10, 20, 30].every((value, index) => Math.abs(target[index] - value) < 0.01);
+        });
+
         await open("export");
+        const work = page.locator('[data-molsysviewer-work-files]');
+        const filePath = work.getByLabel("Path in Python session", { exact: true });
+        const fileKind = work.getByLabel("Work file format", { exact: true });
+        const fileStatus = work.locator('[data-molsysviewer-work-file-status]');
+        const fileEvents: any[] = [];
+        const fileReply = async (action: string) => {
+            const event = await page.evaluate(action => [...(window as any).__messages].reverse().find((msg: any) => msg.action === action), action);
+            fileEvents.push(event);
+            assert.ok(await filePath.isDisabled());
+            // A reply for another request must not unlock these controls.
+            await apply([{ op: "studio_action_result", action, request_id: "unrelated", domain: "export", ok: true }]);
+            assert.ok(await filePath.isDisabled());
+            const response = await bridge.request(fileEvents, "workfiles");
+            await apply(response.message_batches.at(-1));
+            assert.ok(await filePath.isEnabled());
+            assert.ok(await work.isVisible(), "Restoration must return to the requesting file controls, not leave them hidden by System loading");
+        };
+        await filePath.fill(resolve(downloadDir, "missing-directory", "review.json"));
+        await work.getByRole("button", { name: "Save file", exact: true }).click();
+        await fileReply("save_work_file");
+        assert.equal(await fileStatus.getAttribute("role"), "alert");
+        assert.ok((await filePath.inputValue()).includes("missing-directory"));
+        fileEvents.length = 0;
+        const statePath = resolve(downloadDir, "review.json");
+        await filePath.fill(statePath);
+        await work.getByLabel("Allow overwriting an existing file", { exact: true }).check();
+        await work.getByRole("button", { name: "Save file", exact: true }).click();
+        await fileReply("save_work_file");
+        assert.match(await fileStatus.innerText(), /Saved scene state/);
+        assert.ok(JSON.parse(await readFile(statePath, "utf8")).annotations.length > 0);
+        await open("viewport"); await open("export");
+        assert.equal(await filePath.inputValue(), statePath);
+        await work.getByRole("button", { name: "Restore file…", exact: true }).click();
+        await work.getByRole("button", { name: "Cancel", exact: true }).click();
+        assert.equal(await work.getByRole("button", { name: "Confirm restore", exact: true }).count(), 0);
+        await work.getByRole("button", { name: "Restore file…", exact: true }).click();
+        await work.getByRole("button", { name: "Confirm restore", exact: true }).click();
+        await fileReply("restore_work_file");
+        assert.match(await fileStatus.innerText(), /Restored scene state/);
+        const sessionPath = resolve(downloadDir, "review.msv");
+        await fileKind.selectOption("session"); await filePath.fill(sessionPath);
+        await work.getByRole("button", { name: "Save file", exact: true }).click();
+        await fileReply("save_work_file");
+        assert.match(await fileStatus.innerText(), /Saved experimental session/);
+        assert.equal((await readFile(sessionPath)).subarray(0, 2).toString(), "PK");
+        await work.getByRole("button", { name: "Restore file…", exact: true }).click();
+        await work.getByRole("button", { name: "Confirm restore", exact: true }).click();
+        await fileReply("restore_work_file");
+        assert.match(await fileStatus.innerText(), /Restored experimental session/);
+        assert.equal(await filePath.inputValue(), sessionPath);
         assert.equal(await page.getByLabel("Resolution Scale", { exact: true }).inputValue(), "1.5");
         assert.equal(await page.getByLabel("Transparent Background", { exact: true }).isChecked(), false);
         const dimensions = await page.evaluate(() => {
@@ -73,6 +149,11 @@ async function run() {
         await page.getByLabel("Transparent Background", { exact: true }).focus();
         await page.keyboard.press("Space");
         const figureAction = await page.evaluate(() => [...(window as any).__messages].reverse().find((msg: any) => msg.action === "set_figure_spec"));
+        assert.ok(figureAction, JSON.stringify(await page.evaluate(() => ({
+            active: document.activeElement?.outerHTML.slice(0, 500),
+            checkbox: document.querySelector('input[aria-label="Transparent Background"]')?.outerHTML,
+            events: (window as any).__messages.slice(-4),
+        }))));
         assert.ok(figureAction.figure_variants.includes("transparent"));
         const figureReply = await bridge.request([figureAction]); await apply(figureReply.message_batches[0]);
         assert.ok(await page.getByLabel("Transparent Background", { exact: true }).isChecked());
@@ -174,7 +255,13 @@ async function run() {
             const c = (window as any).__molsysviewerDocsController;
             c.setPanelMode("navigate", true); c.groupPanel.openSection(key);
         }, key);
+        await openExported("export");
+        const offlineWork = exported.locator('[data-molsysviewer-work-files]');
+        assert.ok(await offlineWork.getByRole("button", { name: "Save file", exact: true }).isDisabled());
+        assert.ok(await offlineWork.getByRole("button", { name: "Restore file…", exact: true }).isDisabled());
+        assert.match(await offlineWork.innerText(), /requires a live Python session/);
         await openExported("annotations");
+        assert.ok(await exported.locator('[data-molsysviewer-annotation-focus="absolute-note"]').isDisabled());
         const exportedAnnotations = exported.locator('[data-molsysviewer-group-panel-section="annotations"]');
         assert.ok(!(await exportedAnnotations.innerText()).includes("Load a structure first."));
         await openExported("shapes");

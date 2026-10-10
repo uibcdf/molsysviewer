@@ -37,6 +37,8 @@ def replay(events, family=None):
                 view.shapes.add_sphere(atom_indices=[index], tag=tag)
             layer = view.layers.add("presentation")
             layer.attach(view.shapes.get("beta"))
+        if family != "refinement":
+            view.annotations.add("Coordinate focus", position="[1, 2, 3] nm", tag="absolute-note")
         initial = view._build_embedded_runtime_snapshot()  # noqa: SLF001
         transmitted = []
         original_send = view.widget.send
@@ -68,7 +70,7 @@ def replay(events, family=None):
                 try:
                     dispatch_panel_action(view, event)
                 except Exception:
-                    if family != "refinement" or not any(
+                    if family not in ("refinement", "workfiles") or not any(
                         message.get("op") == "studio_action_result" and not message["ok"]
                         for message in transmitted[before:]
                     ):

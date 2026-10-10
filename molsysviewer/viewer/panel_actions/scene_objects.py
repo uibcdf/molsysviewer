@@ -199,6 +199,14 @@ def set_shape_layer(view: Any, content: Mapping[str, Any]) -> None:
     )
 
 
+def focus_annotation(view: Any, content: Mapping[str, Any]) -> None:
+    tag = _tag(content, "focus_annotation")
+    annotation = view.annotations.get(tag, skip_digestion=True)
+    if annotation is None:
+        raise ValueError(f"No annotation found with tag {tag!r}.")
+    annotation.focus()
+
+
 def focus_shape(view: Any, content: Mapping[str, Any]) -> None:
     tag = _tag(content, "focus_shape")
     shape = view.shapes.get(tag, skip_digestion=True)
@@ -512,6 +520,7 @@ def create_shape(view: Any, content: Mapping[str, Any]) -> None:
 
 
 HANDLERS = {
+    "focus_annotation": focus_annotation,
     "add_label_from_selection": add_label_from_selection,
     "create_annotation": create_annotation,
     "delete_annotation": delete_annotation,

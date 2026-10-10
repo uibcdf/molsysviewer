@@ -4,7 +4,7 @@ import { BasePanel } from "./base-panel";
 import type { ActiveSelectionPayload } from "../../managers/active-selection";
 import type { SavedSelectionSummary } from "../group-panel";
 import type { PanelContext } from "./types";
-import { studioRequestId, nameControls, makeButton, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
+import { studioRequestId, nameControls, makeButton, makeSectionHeader, makeStyledSelect, workflowHelp } from "./ui-helpers";
 
 export type ShapeLength = { magnitude: number; unit: string };
 
@@ -248,6 +248,8 @@ export class ShapesPanel extends BasePanel {
         this.scheduleRender();
     }
 
+    private workflowGuide?: HTMLDetailsElement;
+
     protected paint(): void {
         if (!this.host) return;
         this.host.replaceChildren();
@@ -259,6 +261,11 @@ export class ShapesPanel extends BasePanel {
         // 2. New Shape Card
         this.host.appendChild(makeSectionHeader("New shape"));
         this.host.appendChild(this.renderNewShapeCard());
+        this.host.appendChild(this.workflowGuide ??= workflowHelp("shapes", [
+            "Sphere: stage an atom selection as an anchor, or enter an absolute center in nm. An atom anchor follows its atoms across structures; an absolute center stays fixed.",
+            "Arrow or tube: stage both ends before creating. Studio uses the geometric centers in the visible structure to create fixed geometry; it does not follow later structures.",
+            "Advanced geometry examples use prepared arrays with explicit coordinate and radius units. Drawing ring geometry does not calculate aromaticity or molecular interactions.",
+        ]));
 
         // 3. Saved Shapes List
         this.host.appendChild(makeSectionHeader("Saved shapes"));

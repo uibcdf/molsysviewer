@@ -428,6 +428,7 @@ export class GroupPanel {
                 chain_indices: [],
                 entity_indices: [],
             }),
+            this.hasAuthority,
         );
         this.interactionsSection = this.createSection("interactions");
         this.interactionsPanel = new InteractionsPanel(this.makePanelContext("interactions"));
@@ -438,7 +439,8 @@ export class GroupPanel {
         this.viewportSection = this.createSection("viewport");
         this.viewportPanel = new ViewportPanel(this.makePanelContext("viewport"));
         this.exportSection = this.createSection("export");
-        this.exportPanel = new ExportPanel(this.makePanelContext("export"), this.hasAuthority);
+        this.exportPanel = new ExportPanel(this.makePanelContext("export"), this.hasAuthority,
+            () => this.switchTab("export"));
         this.settingsSection = this.createSection("settings");
 
         this.systemPanel = new SystemPanel(this.makePanelContext("system"), {
@@ -592,7 +594,7 @@ export class GroupPanel {
             shapes: "Manage custom 3D geometric shapes and objects in the scene.",
             layers: "Group scene objects in layers and control their visibility.",
             viewport: "Adjust background color, lighting, camera, and display parameters.",
-            export: "Download PNG images and self-contained HTML views.",
+            export: "Download PNG images and HTML views; save or restore scene states and experimental sessions.",
         };
         const tooltip = tooltips[key];
         if (tooltip) {
@@ -961,6 +963,7 @@ export class GroupPanel {
 
     setAnnotations(items: AnnotationSummary[], settings: AnnotationSettings): void {
         this.annotationsPanel.setAnnotations(items, settings);
+        this.exportPanel.setSystemLoaded(settings.systemLoaded);
     }
 
     setMeasurements(items: MeasurementSummary[], settings: MeasurementSettings): void {

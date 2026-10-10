@@ -17,6 +17,9 @@
  * dispatcher and the Python `core.py` handlers.
  */
 export type PanelAction =
+    | "focus_annotation"
+    | "save_work_file"
+    | "restore_work_file"
     | "addon_register_module"
     | "batch_scene_objects"
     | "load_systems"

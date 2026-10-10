@@ -1,5 +1,5 @@
 import type { PanelContext } from "./types";
-import { makeButton, makeSettingsCard, makeStyledSelect } from "./ui-helpers";
+import { makeButton, makeSettingsCard, makeStyledSelect, workflowHelp } from "./ui-helpers";
 
 export interface SystemLoadRow {
     source: string;
@@ -121,6 +121,11 @@ export class SystemLoadControls {
         this.status.setAttribute("data-molsysviewer-load-status", "true");
         this.status.setAttribute("role", "status");
         card.appendChild(this.status);
+        card.appendChild(workflowHelp("loading", [
+            "Several PDBs: choose Independent systems, add one source per PDB ID or file, then Add to whole. Each source keeps its own region. No alignment is performed.",
+            "Topology and trajectory: choose Complementary files: one system. Enter both paths and choose the structures in the first source; this loads one system, not two independent systems.",
+            "Structures are zero-based: all or 0, 8, 3. To combine multi-structure independent sources, declare pairing and use matching counts and times. Append structures requires compatible atom identity and order.",
+        ]));
         this.addRow();
     }
 

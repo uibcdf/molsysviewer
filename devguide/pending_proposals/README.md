@@ -36,7 +36,7 @@ list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 - [`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md) — [#39](https://github.com/uibcdf/molsysviewer/issues/39) — Build the runtime as a classic script so many shared views open from a disk with no server. *(measured)*
 - [`molsysmt_docs_pipeline_analysis.md`](molsysmt_docs_pipeline_analysis.md) — [#41](https://github.com/uibcdf/molsysviewer/issues/41) — MolSysMT's documentation pipeline read at the scale it is about to reach. *(measured)*
 
-### Deferred until after 1.0 (20)
+### Deferred until after 1.0 (21)
 
 - [`agent_token_cost_of_non_pytest_tests.md`](post_1.0/agent_token_cost_of_non_pytest_tests.md) — [#43](https://github.com/uibcdf/molsysviewer/issues/43) — Study the token cost of non-pytest test output for agent consumers.
 - [`annotations_mvs_machinery.md`](post_1.0/annotations_mvs_machinery.md) — [#44](https://github.com/uibcdf/molsysviewer/issues/44) — Advanced annotations on Mol*'s MVS machinery.
@@ -53,6 +53,7 @@ list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 - [`representative_scale_followups.md`](post_1.0/representative_scale_followups.md) — [#54](https://github.com/uibcdf/molsysviewer/issues/54) — Post-1.0 performance architecture.
 - [`reproducible_browser_and_render_worker_e2e_evidence.md`](post_1.0/reproducible_browser_and_render_worker_e2e_evidence.md) — [#100](https://github.com/uibcdf/molsysviewer/issues/100) — Define reproducible browser and render-worker E2E evidence lanes.
 - [`structure_windowing_and_lazy_materialization.md`](post_1.0/structure_windowing_and_lazy_materialization.md) — [#55](https://github.com/uibcdf/molsysviewer/issues/55) — Structure windowing and lazy materialization.
+- [`studio_copy_python.md`](post_1.0/studio_copy_python.md) — [#226](https://github.com/uibcdf/molsysviewer/issues/226) — Evaluate copying equivalent Python code from Studio.
 - [`studio_interactions_subpanel_ui_design.md`](post_1.0/studio_interactions_subpanel_ui_design.md) — [#56](https://github.com/uibcdf/molsysviewer/issues/56) — Studio subpanel for Interactions.
 - [`update_molstar_dependency.md`](post_1.0/update_molstar_dependency.md) — [#115](https://github.com/uibcdf/molsysviewer/issues/115) — Update the Mol* dependency after 1.0.
 - [`viewer_mixin_contract_and_caller_resolution.md`](post_1.0/viewer_mixin_contract_and_caller_resolution.md) — [#57](https://github.com/uibcdf/molsysviewer/issues/57) — Generated typing contract for MolSysView mixins.

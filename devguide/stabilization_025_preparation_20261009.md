@@ -109,3 +109,14 @@ sixteen-cell provider result as qualification of the changed menu. Public
 versions remain Viewer 0.24.0 and MolSysMT 0.23.0.
 
 This is a preparation plan, not release clearance or a package receipt.
+
+## Accepted cross-surface coverage round — 2026-10-10
+
+The principal maintainer adds #223–#225 before freezing 0.25.0: tagged annotation
+focus including absolute coordinates; truthful Interactions visibility wording;
+Studio state JSON/experimental MSV save/restore through the public owners; and
+folded workflow examples. Validation and closure evidence belongs to
+`studio_coverage_20261010.md`. Equivalent Python code generation from Studio
+is deliberately deferred to `uibcdf/molsysviewer#226` (post-1.0).
+These changes do not stabilize experimental session/Interactions contracts or
+freeze a producer. Both 1.0 publications and public promotion remain paused.

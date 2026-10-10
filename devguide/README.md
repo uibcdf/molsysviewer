@@ -41,6 +41,8 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- [Studio coverage review](studio_coverage_20261010.md): #223–#225/#227 complete focus, visibility, work files, figure persistence and examples; #226 defers Copy Python.
+
 The next agreed version is [0.25.0](stabilization_025_preparation_20261009.md);
 further changes remain, so its producer and staging qualification are not frozen.
 Both 1.0 publications remain paused.

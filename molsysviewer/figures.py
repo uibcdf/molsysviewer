@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from copy import deepcopy
 from dataclasses import dataclass, replace
 from typing import Any
@@ -25,8 +26,13 @@ class FigureSpec:
             raise ValueError("FigureSpec.width_px must be a positive integer or None.")
         if self.height_px is not None and (not isinstance(self.height_px, int) or self.height_px <= 0):
             raise ValueError("FigureSpec.height_px must be a positive integer or None.")
-        if not isinstance(self.scale, (int, float)) or float(self.scale) <= 0.0:
-            raise ValueError("FigureSpec.scale must be a positive number.")
+        if (
+            isinstance(self.scale, bool)
+            or not isinstance(self.scale, (int, float))
+            or not math.isfinite(self.scale)
+            or self.scale <= 0.0
+        ):
+            raise ValueError("FigureSpec.scale must be a finite positive number.")
         if not isinstance(self.background, str) or not self.background.strip():
             raise ValueError("FigureSpec.background must be a non-empty string.")
         if not isinstance(self.preset, str) or not self.preset.strip():

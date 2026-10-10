@@ -166,3 +166,47 @@ sends no request. Filtering does not change the captured target; analyses with
 visual references cannot be deleted. Completion/errors use a correlated result,
 and pending deletion cannot be submitted again. This does not change the public
 Python deletion contract or the experimental scientific classification.
+
+## Work files and cross-surface focus (#223–#225)
+
+Live annotation Focus dispatches the tagged object to `Annotation.focus()`;
+its current coordinates and units remain owned by that object. Broken anchors
+are unavailable. Exported HTML retains existing local atom-centroid focus;
+coordinate-anchor focus explains its need for live Python authority.
+Interaction visibility reads Visible/Hidden/Hidden by layer; the visible-set
+count respects the layer. Evaluated coverage and zero observations remain
+independent scientific statuses, not consequences of Show/Hide.
+
+`WorkFileControls` owns a persistent path/format/overwrite draft in Export.
+It reuses `studio_action_result` with domain `export`, matching request and
+action before unlocking controls. Replies are transient and not replayed.
+Save and restore call the existing public owners: `view.save_state`,
+`view.load_state`, `view.save_session`, `load_session(..., view=view)`.
+The filesystem is explicitly the Python host, never the browser filesystem;
+large session bytes stay off the widget transport. A restore requires explicit
+confirmation, replaces the scene and clears history; session restore also
+replaces the system. An existing save destination requires explicit overwrite.
+Owners retain their atomic-write/prevalidation contracts. This overwrite check
+is an interactive guard, not a lock against concurrent external writers.
+State restoration requires a loaded matching system, preserving the owner's
+identity warning contract. Session files remain experimental and unbounded in
+size. Hosts without Python authority disable both file workflows.
+
+Native folded examples cover loading interpretation, structure calculation
+versus display coverage, participant modes, fixed versus moving shape anchors,
+units and file contents. Help disclosure state and work-file drafts survive
+canonical projections and section changes. Studio does not generate equivalent
+Python code; that evaluation is deferred under `uibcdf/molsysviewer#226`.
+
+Guards: `tests/test_studio_work_persistence.py`, the coordinate-focus/draft tests
+in `molsysviewer/js/tests/unit/group-panel.test.ts` and the real file, focus,
+layer visibility and exported-host workflows in `studio-usability.e2e.ts`.
+
+The workbench figure recipe is an optional `figure` field in state version 2:
+`preset`, finite positive `scale` and `background`. It captures the subset
+actually stored by `set_figure_spec`, not export-only pixel dimensions or camera
+overrides. Import validates it before mutation and restores through that owner.
+Legacy states without the field remain accepted and leave an existing recipe
+unchanged. Changing Whole's representation preserves figure controls; explicit
+viewer reset still clears them. `tests/test_workbench_figure_state.py` and the
+real Studio file/PNG workflow guard `uibcdf/molsysviewer#227`.

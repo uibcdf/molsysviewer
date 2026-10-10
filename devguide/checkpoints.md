@@ -1,5 +1,17 @@
 # Development checkpoint
 
+**Cross-surface coverage round — 2026-10-10:** #223–#225 and #227 implement
+coordinate-annotation focus, truthful interaction visibility, Studio state/session
+files, folded examples and persisted workbench PNG settings. The expanded real
+Studio smoke and full 43/43 core browser regression pass. Hosted source CI remains in review;
+eight local experimental Qt context failures stay separate. The public API
+#210–#222 source round already has all applicable scientific/Python 3.14 cells
+complete on 792fd5f6; those results do not qualify this changed worktree.
+See [the coverage review](studio_coverage_20261010.md) and
+[the API follow-up](public_api_followup_20261010.md). Copy Python from Studio is
+explicitly deferred under #226. 0.25.0 remains unfrozen; both 1.0 publications
+remain paused.
+
 **Public API round — 2026-10-10:** #210–#216 implement the seven accepted
 boundary corrections; #217 completes handle inspection/editing and named sphere
 anchors. Related real-system tests pass 376/376. The updated inventory is
@@ -109,6 +121,10 @@ This is the current handoff. Normative behavior remains in the linked contracts;
 previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
+
+The current source task is [closing Studio/API coverage](studio_coverage_20261010.md),
+#223–#225/#227, before freezing 0.25.0; #226 stays post-1.0. Both 1.0
+publications remain paused. The public baseline below retains its original scope.
 
 **0.24.0 stabilization published (2026-10-07): public pair 16/16 verified.**
 Viewer **`1a4c97a58b68b69f3a836546c9e4ac6187c3efa2`**, noarch **build 1**, pairs
@@ -1595,9 +1611,11 @@ Resume toward **1.0** in this order:
 **Current session priority (2026-10-10):** the accepted context-menu and
 controls work is complete under #179/#180. Studio refinements and their
 follow-ups #189/#198/#209 are closed; integrated core 38041459348 passes 43/43.
-The authorized [public API round](public_api_review_20261010.md), #210–#217,
-is implemented and its full/source validation must be reviewed before continuing
-the maintainer's remaining changes or freezing 0.25.0. Preserve target/selection
+The authorized [public API follow-up](public_api_followup_20261010.md), #210–#222,
+is implemented with complete applicable source CI on 792fd5f6. Finish the
+[accepted Studio coverage round](studio_coverage_20261010.md), #223–#225/#227,
+and review its own validation and human workflow before freezing 0.25.0.
+Equivalent Copy Python is explicitly post-1.0 (#226). Preserve target/selection
 separation, region ownership and the
 [experimental Interactions contract](interactions_compatibility_contract.md).
 The [0.25.0 plan](stabilization_025_preparation_20261009.md) defines later exact

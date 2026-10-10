@@ -7,6 +7,7 @@ from .addons import HANDLERS as ADDON_HANDLERS
 from .batch import batch_scene_objects
 from .interactions import HANDLERS as INTERACTION_HANDLERS
 from .loading import load_systems
+from .persistence import HANDLERS as PERSISTENCE_HANDLERS
 from .regions import HANDLERS as REGION_HANDLERS
 from .scene_objects import HANDLERS as SCENE_OBJECT_HANDLERS
 from .selections import HANDLERS as SELECTION_HANDLERS
@@ -17,6 +18,8 @@ from .whole import HANDLERS as WHOLE_HANDLERS
 PanelActionHandler = Callable[[Any, Mapping[str, Any]], None]
 
 STUDIO_RESULT_DOMAINS = {
+    "save_work_file": "export",
+    "restore_work_file": "export",
     "create_region_from_selection": "regions",
     "create_region_from_saved_selection": "regions",
     "save_selection": "selections",
@@ -43,6 +46,7 @@ def _build_handlers() -> dict[str, PanelActionHandler]:
         WHOLE_HANDLERS,
         VIEWPORT_HANDLERS,
         TRAJECTORY_HANDLERS,
+        PERSISTENCE_HANDLERS,
     ):
         duplicates = handlers.keys() & domain.keys()
         if duplicates:

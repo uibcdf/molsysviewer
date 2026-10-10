@@ -3470,9 +3470,9 @@ export class MolSysViewerController {
                 ...this.addonsScene,
                 styleTag,
                 preset,
-                figurePreset: "publication-light",
-                figureScale: 2.0,
-                figureVariants: ["dark", "transparent"],
+                figurePreset: this.addonsScene?.figurePreset ?? "publication-light",
+                figureScale: this.addonsScene?.figureScale ?? 2.0,
+                figureVariants: this.addonsScene?.figureVariants ?? ["dark", "transparent"],
             };
         }
 

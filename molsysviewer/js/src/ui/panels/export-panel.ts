@@ -1,6 +1,8 @@
 import type { SceneState } from "../group-panel";
 import { BasePanel } from "./base-panel";
 import { PanelContext } from "./types";
+import { WorkFileControls } from "./work-file-controls";
+import type { StudioActionResult } from "./saved-list-tools";
 import { makeButton, makeCheckboxRow, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
 
 function card(): HTMLDivElement {
@@ -22,6 +24,13 @@ export class ExportPanel extends BasePanel {
     private state: SceneState = {};
     private imagePending = false;
     private imageMessage = "";
+    private workFiles: WorkFileControls;
+
+    setSystemLoaded(loaded: boolean): void { this.workFiles.setSystemLoaded(loaded); }
+    override updateStudioAction(result: StudioActionResult): void {
+        super.updateStudioAction(result);
+        if (this.workFiles.updateResult(result)) this.onRestoreComplete?.();
+    }
 
     setImageResult(pending: boolean, message: string): void {
         this.imagePending = pending; this.imageMessage = message;
@@ -31,8 +40,10 @@ export class ExportPanel extends BasePanel {
         if (status) status.textContent = message;
     }
 
-    constructor(private readonly ctx: PanelContext, private readonly hasAuthority = true) {
+    constructor(private readonly ctx: PanelContext, private readonly hasAuthority = true,
+        private readonly onRestoreComplete?: () => void) {
         super();
+        this.workFiles = new WorkFileControls(ctx, hasAuthority);
     }
 
     setScene(state: SceneState): void {
@@ -71,6 +82,8 @@ export class ExportPanel extends BasePanel {
         // 3. Data & Standalone Views Section
         this.host.appendChild(makeSectionHeader("HTML view"));
         this.host.appendChild(this.renderDataCard());
+        this.host.appendChild(makeSectionHeader("Save and restore work"));
+        this.host.appendChild(this.workFiles.root);
     }
 
     private renderGlobalStatusCard(): HTMLDivElement {

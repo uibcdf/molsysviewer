@@ -1,4 +1,19 @@
 // Shared, stateless DOM builders for the Studio subpanels.
+
+/** Quiet, keyboard-accessible workflow guidance; inputs remain the main task. */
+export function workflowHelp(key: string, tips: readonly string[]): HTMLDetailsElement {
+    const details = document.createElement("details");
+    details.setAttribute("data-molsysviewer-workflow-help", key);
+    const summary = document.createElement("summary"); summary.textContent = "Examples and tips";
+    Object.assign(summary.style, { cursor: "pointer", fontSize: "11px", padding: "4px 0" });
+    details.appendChild(summary);
+    for (const tip of tips) {
+        const text = document.createElement("p"); text.textContent = tip;
+        Object.assign(text.style, { fontSize: "11px", lineHeight: "1.5", margin: "6px 0" });
+        details.appendChild(text);
+    }
+    return details;
+}
 //
 // These are pure functions (no `this`, no shared state): each returns a fresh
 // element. They are the common vocabulary every subpanel module reuses so the

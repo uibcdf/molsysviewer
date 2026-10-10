@@ -23,7 +23,7 @@ Switching sections keeps the current scene and selection.
 | Shapes | Create and manage geometric objects. |
 | Layers | Group scene objects and control their visibility together. |
 | Viewport | Adjust camera, background, lighting and clipping sections. |
-| Export | Download PNG images and HTML views. |
+| Export | Download PNG/HTML, save scene states and restore experimental sessions. |
 | Settings | Configure automatic hiding and the reveal area of canvas controls. |
 
 Regions distinguish **Hide/Show** from **Enable/Disable**. A hidden enabled region
@@ -119,3 +119,34 @@ requirement appears beside unavailable creation actions; their drafts remain
 available and do not get stuck waiting for Python.
 This HTML view is distinct from the experimental standalone Qt host. Use the Python
 export API when you want to save to a path in the Python environment.
+
+## Saving and restoring work
+
+In **Export → Save and restore work**, choose **Scene state · JSON** or
+**Session · MSV · experimental**, then enter a **Path in Python session**.
+These paths belong to the machine running Python. Relative paths use Python's
+working directory; `~/review.json` refers to that machine's home directory.
+This workflow does not upload a file from your browser or download one to it.
+
+A state JSON saves the scene on the current molecular system. It includes objects,
+settings, camera, structure index and configured PNG preset/scale/background,
+but does not contain coordinates or calculated
+interaction analyses. Load the matching molecular system before restoring it.
+An experimental MSV session includes the system, all loaded structures, named
+interaction analyses and scene. It can reopen without loading a system first,
+but can be as large as the trajectory. Future versions may refuse older MSV
+files: do not use this format as an archive.
+
+**Save file** refuses to replace an existing file unless you select
+**Allow overwriting an existing file**. **Restore file…** shows a confirmation:
+restoring replaces the current scene and clears Undo/Redo; restoring a session
+also replaces the molecular system. Save current work first to keep a way back.
+A failed operation keeps the path and reports the error beside the controls.
+Saving and restoring work requires a live Python session.
+
+Folded **Examples and tips** in loading, Interactions, Shapes and work-file
+controls explain common inputs, structure coverage and units without filling
+the ordinary editor with extra controls. Annotation **Focus** handles both
+atom anchors and absolute coordinates in a live session. Broken anchors explain
+why focus is unavailable. Interaction sets use **Visible**, **Hidden** and
+**Hidden by layer** independently of whether the structure has observations.

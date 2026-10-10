@@ -17,6 +17,7 @@ from .._private.smonitor.warnings import (
     warn,
 )
 from .._private.smonitor_emit import emit_suppressed_exception
+from ..figures import FigureSpec
 from ..regions import Region
 from ..shapes._registry import register_shape_layer
 
@@ -96,6 +97,7 @@ class StateMixin:
             ``selections``, ``shapes``, ``whole``, ``order_high_water_mark``,
             ``uid_high_water_mark``, ``tag_high_water_marks``, ``structure``, ``view``.
             ``sources`` contains compact load records bound to the ordered system.
+            Optional `figure` records the workbench PNG preset, scale and background.
 
             ``structure`` records the system the document was written from -- its atom
             count and a topological fingerprint -- and is absent when no system is
@@ -253,6 +255,7 @@ class StateMixin:
         return _to_python(
             {
                 "version": STATE_VERSION,
+                **({"figure": self._export_figure_state()} if getattr(self, "_current_figure_spec", None) else {}),
                 **({"view": view_state} if (view_state := self._export_view_state()) else {}),
                 **({"focus": focus_state} if (focus_state := self._export_focus_overlays()) else {}),
                 # Absent when no system is loaded, and absent from every document written
@@ -414,6 +417,7 @@ class StateMixin:
                 f"Unsupported state version: {version!r}. This build reads only "
                 f"version {STATE_VERSION}; version 1 documents are no longer supported."
             )
+        figure_spec = self._prepare_figure_import(state.get("figure"))
         interaction_records = state.get("interactions", [])
         if interaction_records:
             interaction_version = state.get("interaction_state_version")
@@ -597,6 +601,8 @@ class StateMixin:
                 self._restore_focus_overlays(state.get("focus"))
                 self.trajectory_plot._replace(plot_cards)
                 self._restore_view_state(state.get("view"))
+                if figure_spec is not None:
+                    self.set_figure_spec(figure_spec)
                 self._send_resolved_atom_colors(replay=True)
                 self._restore_region_isolation(isolated_region)
                 self._sync_whole_summary_runtime()
@@ -614,6 +620,24 @@ class StateMixin:
 
         if not already_suspended:
             self.history.clear()
+
+    def _export_figure_state(self) -> dict:
+        """The workbench stores preset, scale and background, not export-only overrides."""
+        recipe = self._current_figure_spec
+        return {
+            "preset": recipe["figure_preset"],
+            "scale": recipe["figure_scale"],
+            "background": recipe["figure_background"],
+        }
+
+    @staticmethod
+    def _prepare_figure_import(recorded: Any) -> FigureSpec | None:
+        if recorded is None:
+            return None
+        fields = {"preset", "scale", "background"}
+        if not isinstance(recorded, dict) or not fields <= set(recorded):
+            raise ValueError("State figure must contain preset, scale and background.")
+        return FigureSpec(**{field: recorded[field] for field in fields})
 
     def _structure_identity(self) -> dict | None:
         """The system's identity, computed once per system rather than per snapshot.

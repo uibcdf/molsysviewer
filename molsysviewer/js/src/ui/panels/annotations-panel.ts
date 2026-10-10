@@ -115,6 +115,7 @@ export class AnnotationsPanel extends BasePanel {
     constructor(
         private readonly ctx: PanelContext,
         private readonly onFocus: (atomIndices: number[]) => void,
+        private readonly hasAuthority = true,
     ) { super(); this.savedListTools = new SavedListTools("annotations", ctx, () => this.scheduleRender()); }
 
     override updateStudioAction(result: StudioActionResult): void {
@@ -793,9 +794,14 @@ export class AnnotationsPanel extends BasePanel {
             marginTop: "4px",
         });
 
-        const focus = makeButton("Focus", () => this.onFocus(item.atomIndices));
+        const focus = makeButton("Focus", () => {
+            if (this.hasAuthority) this.ctx.onAction("focus_annotation", { tag: item.tag });
+            else this.onFocus(item.atomIndices);
+        });
         focus.title = "Focus annotation anchor";
-        focus.disabled = item.atomIndices.length === 0;
+        focus.disabled = item.broken || (!this.hasAuthority && item.atomIndices.length === 0);
+        if (item.broken) focus.title = item.brokenReason || "The annotation anchor is unavailable.";
+        else if (focus.disabled) focus.title = "Focusing a coordinate anchor requires a live Python session.";
         focus.setAttribute("data-molsysviewer-annotation-focus", item.tag);
 
         const eye = makeButton(item.hidden ? "⦻" : "👁", () =>

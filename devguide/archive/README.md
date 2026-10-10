@@ -1,5 +1,10 @@
 # Archived implementation plans
 
+- [`studio_absolute_annotation_focus.md`](studio_absolute_annotation_focus.md) — #223: Live tagged annotation Focus uses Annotation.focus, including absolute coordinates; broken anchors and exported-host availability remain explicit.
+- [`studio_work_persistence.md`](studio_work_persistence.md) — #224: Studio saves/restores JSON state and experimental MSV through the public owners, with Python-host paths, explicit overwrite/restore declarations, persistent drafts and correlated replies.
+- [`studio_visibility_and_workflow_guidance.md`](studio_visibility_and_workflow_guidance.md) — #225: Visible/Hidden/Hidden by layer replaces interaction enablement wording; counts respect layer visibility. Folded examples explain loading, structure coverage, geometry and persistence.
+- [`workbench_figure_state.md`](workbench_figure_state.md) — #227: Optional state-v2 workbench figure settings prevalidate and restore through the FigureSpec owner; Whole preserves the existing recipe and explicit reset clears it.
+
 - [`region_system_query_scope.md`](region_system_query_scope.md) — #218: Resolve default system queries through the region atom scope while preserving global structural attributes.
 - [`retired_handle_queries.md`](retired_handle_queries.md) — #219: Apply the existing current-handle check to public molecular queries and layer membership reads.
 - [`region_mode_history.md`](region_mode_history.md) — #220: Add digested Region.set_mode and route assignment through it; retain private automatic transitions.

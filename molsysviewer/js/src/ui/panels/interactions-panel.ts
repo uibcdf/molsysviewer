@@ -2,7 +2,7 @@ import { SavedListTools, type StudioActionResult } from "./saved-list-tools";
 import { ListSearch } from "../list-search";
 import { BasePanel } from "./base-panel";
 import type { PanelContext } from "./types";
-import { makeButton, makeSectionHeader, studioRequestId } from "./ui-helpers";
+import { makeButton, makeSectionHeader, studioRequestId, workflowHelp } from "./ui-helpers";
 import type { InteractionSummary, InteractionAnalysisSummary, InteractionInspection, InteractionSummariesMessage, InteractionCalculationFamily } from "../../managers/handlers/interaction-handlers";
 import type { ActiveSelectionPayload } from "../../managers/active-selection";
 import type { SavedSelectionSummary, SelectionQueryPreview } from "../group-panel";
@@ -270,6 +270,8 @@ export class InteractionsPanel extends BasePanel {
             }
         }
     }
+    private workflowGuide?: HTMLDetailsElement;
+
     protected paint() {
         if (!this.host) return;
         if (this.formDetails) this.formOpen = this.formDetails.open;
@@ -279,13 +281,19 @@ export class InteractionsPanel extends BasePanel {
         if (previousFilters) this.filtersOpen = previousFilters.open;
         const previousAnalyses = this.analysesDetails;
         if (previousAnalyses) this.analysesOpen = previousAnalyses.open;
-        this.host.replaceChildren(); Object.assign(this.host.style, { display: "flex", flexDirection: "column", gap: "9px" });
+        this.host.replaceChildren();
+        Object.assign(this.host.style, { display: "flex", flexDirection: "column", gap: "9px" });
         this.host.appendChild(makeSectionHeader("Interactions"));
         const experimental = note("Experimental · calculation and result contracts may evolve.");
         experimental.setAttribute("data-molsysviewer-interactions-experimental", "true"); this.host.appendChild(experimental);
+        this.host.appendChild(this.workflowGuide ??= workflowHelp("interactions", [
+            "Hydrogen bonds: give the calculation a new analysis name and choose Calculate structures = all to evaluate the whole loaded trajectory. Display structures only filters an existing result; it does not calculate missing structures.",
+            "Atom filters: stage selections A and B and choose the explicit participant mode. Restrict all participants to A for internal interactions; include at least one in A to also see interactions with other atoms.",
+            "An evaluated structure with zero observations is different from Not evaluated. Hydrogen-bond calculations need suitable hydrogen atoms and bonding. Criteria use explicit units; Interactions remains experimental.",
+        ]));
         if (!this.backendAvailable) this.host.appendChild(note("Interactions requires a compatible MolSysMT backend. Other viewer tools remain available."));
-        const enabled = this.items.filter(item => !item.hidden).length;
-        this.host.appendChild(note(`${enabled}/${this.items.length} sets enabled · structure ${this.frame}`));
+        const visible = this.items.filter(item => !item.hidden && !item.layer_hidden).length;
+        this.host.appendChild(note(`${visible}/${this.items.length} sets visible · structure ${this.frame}`));
         const all = row(); append(all, makeButton("Show all", () => this.emit("show_all_interactions")), makeButton("Hide all", () => this.emit("hide_all_interactions"))); this.host.appendChild(all);
         if (this.error) this.host.appendChild(note(this.error));
         const creation = document.createElement("details"); this.formDetails = creation;
@@ -399,7 +407,7 @@ export class InteractionsPanel extends BasePanel {
         for (const item of this.items) {
             const card = box(); card.setAttribute("data-molsysviewer-interaction-set", item.tag);
             card.setAttribute("data-molsysviewer-list-search-text", [item.tag, item.analysis_name, item.layer_tag].filter(Boolean).join(" "));
-            append(card, note(`${item.tag} · ${item.analysis_name}`), note(statusText(item)), note(`${item.hidden ? "Hidden" : item.layer_hidden ? "Hidden by layer" : "Enabled"} · layer ${item.layer_tag}`));
+            append(card, note(`${item.tag} · ${item.analysis_name}`), note(statusText(item)), note(`${item.layer_hidden ? "Hidden by layer" : item.hidden ? "Hidden" : "Visible"} · layer ${item.layer_tag}`));
             const actions = row();
             for (const [text, action] of [["Focus", "focus_interaction"], [item.hidden ? "Show" : "Hide", "toggle_interaction_visibility"], ["Delete", "delete_interaction"]] as const) { const button = makeButton(text, () => this.emit(action, { tag: item.tag })); if (action === "focus_interaction") button.disabled = !item.n_supported; actions.appendChild(button); }
             actions.appendChild(makeButton("Edit", () => this.openObject(item.tag)));

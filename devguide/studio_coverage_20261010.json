@@ -1,0 +1,102 @@
+{
+  "scope": "development source worktree; not a frozen producer or installed artifact",
+  "base_commit": "9aa3d573",
+  "issues_resolved": [
+    223,
+    224,
+    225,
+    227
+  ],
+  "copy_python_deferred": 226,
+  "environment": {
+    "python": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "python_version": "3.14.7",
+    "molsysmt_source": "edc78df0b6363e6b175041380db7a21405bd05b6",
+    "molsysmt_reported_version": "0.22.4+24.g42b487869",
+    "note": "editable development checkout; reported version is retained separately from current source; not an installed candidate"
+  },
+  "focused_file_actions": {
+    "passed": 27
+  },
+  "figure_image_final": {
+    "passed": 40
+  },
+  "typescript": "success",
+  "javascript_unit_file": "success",
+  "core_browser": {
+    "passed": 43,
+    "failed": 0,
+    "skipped": 0
+  },
+  "full_python_single_run": {
+    "passed": 3046,
+    "failed": 30,
+    "skipped": 23,
+    "note": "sandbox sockets/Chromium and untracked guide index failures retained"
+  },
+  "affected_modules_and_failed_nodes": {
+    "tests": 436,
+    "passed": 427,
+    "failed": 9,
+    "errors": 0,
+    "skipped": 0,
+    "note": "one docstring enumeration repair subsequently passes; eight Qt OpenGL/Vulkan-context failures remain experimental"
+  },
+  "final_governance": {
+    "passed": 30
+  },
+  "hosted_source_ci": "pending dispatch by direct push",
+  "publication": {
+    "version_agreed": "0.25.0",
+    "producer_frozen": false,
+    "public_publication_authorized": false,
+    "viewer_1_0_paused": true,
+    "molsysmt_1_0_paused": true
+  },
+  "logs": {
+    "python-focused.log": {
+      "sha256": "b0528253c6f33d237a008caa923ed50b0e6279a50b631d6bb6e2bf79ede9282a",
+      "bytes": 678
+    },
+    "figure-final.log": {
+      "sha256": "ed411f99044b9efc7ecc1e1d599c5643cff2ba4b6b54d2041ae48e09736e5546",
+      "bytes": 628
+    },
+    "python-full.log": {
+      "sha256": "d0e8a31f10d9dac417a918bdb57e6f8035f1804369f88ebce3ea5282a7745c6c",
+      "bytes": 20968
+    },
+    "affected.log": {
+      "sha256": "b1cddf1b5989c767031d176cea7ac62ba766e29c4be04e830e91012daa1e89f8",
+      "bytes": 13454
+    },
+    "affected.xml": {
+      "sha256": "6ccc3f7ca840bb4251f7e9df133a9404ff4a320132cf47009d1a8c56d57e6cc3",
+      "bytes": 84845
+    },
+    "state-docstring.log": {
+      "sha256": "e6baad46bf76577d0a73b5a0f25d715d06a57f4a3b2acc5e4c5085348ccd651e",
+      "bytes": 669
+    },
+    "typescript.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "js-final.log": {
+      "sha256": "b914d3b3dc731600b3ae4e1c33a683e513ca47c9b979acd8cca12df7a21f8f6d",
+      "bytes": 159
+    },
+    "studio-browser.log": {
+      "sha256": "e29210bb0292cccfd6522b34f68affe09c658228c9bedd6410838f018752d1a5",
+      "bytes": 144
+    },
+    "core-browser.log": {
+      "sha256": "6c608b631dbb2ba6f674865048231c468a478b58d99c811ae2573d1c7af9823f",
+      "bytes": 17266
+    },
+    "governance-final.log": {
+      "sha256": "37f1bea0a3555ff6fbbb37f0403599f4c46576f1034d7740247d4aa660f761f1",
+      "bytes": 920
+    }
+  }
+}

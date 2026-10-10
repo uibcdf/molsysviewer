@@ -152207,6 +152207,21 @@ function sameItems(a8, b8) {
 }
 
 // src/ui/panels/ui-helpers.ts
+function workflowHelp(key2, tips) {
+  const details = document.createElement("details");
+  details.setAttribute("data-molsysviewer-workflow-help", key2);
+  const summary = document.createElement("summary");
+  summary.textContent = "Examples and tips";
+  Object.assign(summary.style, { cursor: "pointer", fontSize: "11px", padding: "4px 0" });
+  details.appendChild(summary);
+  for (const tip of tips) {
+    const text = document.createElement("p");
+    text.textContent = tip;
+    Object.assign(text.style, { fontSize: "11px", lineHeight: "1.5", margin: "6px 0" });
+    details.appendChild(text);
+  }
+  return details;
+}
 function scalarColorRangeFromInput(value) {
   const text = value.trim();
   if (!text) return void 0;
@@ -153068,6 +153083,153 @@ var ViewportPanel = class extends BasePanel {
   }
 };
 
+// src/ui/panels/work-file-controls.ts
+var WorkFileControls = class {
+  constructor(ctx, hasAuthority) {
+    this.ctx = ctx;
+    this.hasAuthority = hasAuthority;
+    this.root = document.createElement("div");
+    this.path = document.createElement("input");
+    this.description = document.createElement("div");
+    this.status = document.createElement("div");
+    this.confirmation = document.createElement("div");
+    this.systemLoaded = false;
+    this.pending = null;
+    this.root.setAttribute("data-molsysviewer-work-files", "true");
+    Object.assign(this.root.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "8px",
+      padding: "10px",
+      fontSize: "11px",
+      borderRadius: "6px",
+      border: "1px solid rgba(255,255,255,0.08)",
+      background: "rgba(255,255,255,0.035)"
+    });
+    this.kind = makeStyledSelect([
+      { value: "state", label: "Scene state \xB7 JSON" },
+      { value: "session", label: "Session \xB7 MSV \xB7 experimental" }
+    ], "state", () => {
+      this.cancelConfirmation();
+      this.update();
+    });
+    this.kind.setAttribute("aria-label", "Work file format");
+    this.path.type = "text";
+    this.path.setAttribute("aria-label", "Path in Python session");
+    this.path.setAttribute("data-molsysviewer-work-file-path", "true");
+    this.path.addEventListener("input", () => {
+      this.cancelConfirmation();
+      this.update();
+    });
+    const pathLabel = document.createElement("label");
+    pathLabel.textContent = "Path in Python session";
+    pathLabel.appendChild(this.path);
+    Object.assign(this.path.style, {
+      display: "block",
+      boxSizing: "border-box",
+      width: "100%",
+      marginTop: "4px",
+      background: "rgba(0,0,0,0.2)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "4px 6px",
+      color: "#fff",
+      fontSize: "11px"
+    });
+    const location2 = document.createElement("div");
+    location2.textContent = "Paths refer to files on the machine running Python. Relative paths use its working directory; this is not a browser upload or download.";
+    location2.style.color = "rgba(244,244,245,0.65)";
+    const overwriteRow = makeCheckboxRow("Allow overwriting an existing file", false, () => {
+    });
+    this.overwrite = overwriteRow.querySelector("input");
+    this.overwrite.setAttribute("aria-label", "Allow overwriting an existing file");
+    this.save = makeButton2("Save file", () => this.submit("save_work_file"));
+    this.save.setAttribute("data-molsysviewer-work-file-save", "true");
+    this.restore = makeButton2("Restore file\u2026", () => this.askRestore());
+    this.restore.setAttribute("data-molsysviewer-work-file-restore", "true");
+    this.status.setAttribute("data-molsysviewer-work-file-status", "true");
+    this.status.setAttribute("role", "status");
+    this.status.style.overflowWrap = "anywhere";
+    this.root.append(
+      this.kind,
+      this.description,
+      pathLabel,
+      location2,
+      overwriteRow,
+      this.save,
+      this.restore,
+      this.confirmation,
+      this.status,
+      workflowHelp("work-files", [
+        "State example: review.json saves scene settings and objects. Restore it after loading the matching molecular system; it contains no coordinates or calculated analyses.",
+        "Session example: review.msv saves the molecular system, all loaded structures, named interaction analyses and scene. MSV is experimental, may be large, and is not an archival format.",
+        "Restoration replaces the saved scene and clears Undo/Redo. Session restoration also replaces the molecular system. Save your current work first if you need to return to it."
+      ])
+    );
+    this.update();
+  }
+  setSystemLoaded(loaded) {
+    this.systemLoaded = loaded;
+    this.update();
+  }
+  updateResult(result2) {
+    const request = this.pending;
+    if (!request || result2.request_id !== request.id || result2.action !== request.action || result2.domain !== "export") return false;
+    this.pending = null;
+    this.status.setAttribute("role", result2.ok ? "status" : "alert");
+    this.status.textContent = result2.ok ? `${request.action === "save_work_file" ? "Saved" : "Restored"} ${request.kind === "state" ? "scene state" : "experimental session"}: ${request.path}` : result2.error_message || "File operation failed. Your path is kept.";
+    this.update();
+    return request.action === "restore_work_file";
+  }
+  cancelConfirmation() {
+    this.confirmation.replaceChildren();
+  }
+  askRestore() {
+    if (this.restore.disabled) return;
+    this.cancelConfirmation();
+    const text = document.createElement("div");
+    text.textContent = `Restore ${this.path.value.trim()}? This replaces ${this.kind.value === "session" ? "the molecular system and scene" : "the scene on the current molecular system"} and clears Undo/Redo. Save current work first to keep it.`;
+    const accept = makeButton2("Confirm restore", () => this.submit("restore_work_file"));
+    accept.setAttribute("data-molsysviewer-work-file-confirm", "true");
+    this.confirmation.append(text, accept, makeButton2("Cancel", () => this.cancelConfirmation()));
+    accept.focus();
+  }
+  submit(action) {
+    if (this.pending || !this.hasAuthority || !this.path.value.trim()) return;
+    const path = this.path.value.trim(), kind = this.kind.value;
+    this.pending = { id: studioRequestId(action), action, path, kind };
+    this.cancelConfirmation();
+    this.status.setAttribute("role", "status");
+    this.status.textContent = action === "save_work_file" ? "Saving\u2026" : "Restoring\u2026";
+    this.update();
+    try {
+      this.ctx.onAction(action, {
+        request_id: this.pending.id,
+        file_kind: kind,
+        path,
+        ...action === "save_work_file" ? { overwrite: this.overwrite.checked } : { confirmed: true }
+      });
+    } catch (error2) {
+      this.pending = null;
+      this.status.setAttribute("role", "alert");
+      this.status.textContent = String(error2);
+      this.update();
+    }
+  }
+  update() {
+    const session = this.kind.value === "session", busy = this.pending !== null;
+    this.description.textContent = session ? "Experimental MSV: molecular system, structures, named analyses and scene. Future versions may reject older session files." : "JSON: scene settings and objects. Restore on the matching molecular system; molecular data and analyses are not included.";
+    this.path.placeholder = session ? "review.msv" : "review.json";
+    for (const control of [this.kind, this.path, this.overwrite]) control.disabled = busy || !this.hasAuthority;
+    const missingPath = !this.path.value.trim();
+    this.save.disabled = busy || !this.hasAuthority || missingPath || session && !this.systemLoaded;
+    this.restore.disabled = busy || !this.hasAuthority || missingPath || !session && !this.systemLoaded;
+    this.save.title = !this.hasAuthority ? "Requires a live Python session." : session && !this.systemLoaded ? "Load a molecular system before saving a session." : "Save to the Python filesystem.";
+    this.restore.title = !this.hasAuthority ? "Requires a live Python session." : !session && !this.systemLoaded ? "Load the matching molecular system first." : "Review confirmation before replacing current work.";
+    if (!this.hasAuthority) this.status.textContent = "Saving and restoring work requires a live Python session. PNG download remains available.";
+  }
+};
+
 // src/ui/panels/export-panel.ts
 function card2() {
   const element = document.createElement("div");
@@ -153083,14 +153245,23 @@ function card2() {
   return element;
 }
 var ExportPanel = class extends BasePanel {
-  constructor(ctx, hasAuthority = true) {
+  constructor(ctx, hasAuthority = true, onRestoreComplete) {
     super();
     this.ctx = ctx;
     this.hasAuthority = hasAuthority;
+    this.onRestoreComplete = onRestoreComplete;
     this.key = "export";
     this.state = {};
     this.imagePending = false;
     this.imageMessage = "";
+    this.workFiles = new WorkFileControls(ctx, hasAuthority);
+  }
+  setSystemLoaded(loaded) {
+    this.workFiles.setSystemLoaded(loaded);
+  }
+  updateStudioAction(result2) {
+    super.updateStudioAction(result2);
+    if (this.workFiles.updateResult(result2)) this.onRestoreComplete?.();
   }
   setImageResult(pending, message) {
     this.imagePending = pending;
@@ -153126,6 +153297,8 @@ var ExportPanel = class extends BasePanel {
     this.host.appendChild(this.renderFigureCard());
     this.host.appendChild(makeSectionHeader("HTML view"));
     this.host.appendChild(this.renderDataCard());
+    this.host.appendChild(makeSectionHeader("Save and restore work"));
+    this.host.appendChild(this.workFiles.root);
   }
   renderGlobalStatusCard() {
     const globalCard = card2();
@@ -157105,6 +157278,11 @@ var SystemLoadControls = class {
     this.status.setAttribute("data-molsysviewer-load-status", "true");
     this.status.setAttribute("role", "status");
     card8.appendChild(this.status);
+    card8.appendChild(workflowHelp("loading", [
+      "Several PDBs: choose Independent systems, add one source per PDB ID or file, then Add to whole. Each source keeps its own region. No alignment is performed.",
+      "Topology and trajectory: choose Complementary files: one system. Enter both paths and choose the structures in the first source; this loads one system, not two independent systems.",
+      "Structures are zero-based: all or 0, 8, 3. To combine multi-structure independent sources, declare pairing and use matching counts and times. Append structures requires compatible atom identity and order."
+    ]));
     this.addRow();
   }
   open() {
@@ -159006,10 +159184,11 @@ function resolvedStyle(style) {
   return { ...defaultStyle(), ...style };
 }
 var AnnotationsPanel = class extends BasePanel {
-  constructor(ctx, onFocus) {
+  constructor(ctx, onFocus, hasAuthority = true) {
     super();
     this.ctx = ctx;
     this.onFocus = onFocus;
+    this.hasAuthority = hasAuthority;
     this.creation = new CreationFeedback("create_annotation", "annotations");
     this.key = "annotations";
     this.annotations = [];
@@ -159651,9 +159830,14 @@ var AnnotationsPanel = class extends BasePanel {
       alignItems: "center",
       marginTop: "4px"
     });
-    const focus = makeButton2("Focus", () => this.onFocus(item2.atomIndices));
+    const focus = makeButton2("Focus", () => {
+      if (this.hasAuthority) this.ctx.onAction("focus_annotation", { tag: item2.tag });
+      else this.onFocus(item2.atomIndices);
+    });
     focus.title = "Focus annotation anchor";
-    focus.disabled = item2.atomIndices.length === 0;
+    focus.disabled = item2.broken || !this.hasAuthority && item2.atomIndices.length === 0;
+    if (item2.broken) focus.title = item2.brokenReason || "The annotation anchor is unavailable.";
+    else if (focus.disabled) focus.title = "Focusing a coordinate anchor requires a live Python session.";
     focus.setAttribute("data-molsysviewer-annotation-focus", item2.tag);
     const eye = makeButton2(
       item2.hidden ? "\u29BB" : "\u{1F441}",
@@ -160678,9 +160862,14 @@ var InteractionsPanel = class extends BasePanel {
     const experimental = note2("Experimental \xB7 calculation and result contracts may evolve.");
     experimental.setAttribute("data-molsysviewer-interactions-experimental", "true");
     this.host.appendChild(experimental);
+    this.host.appendChild(this.workflowGuide ??= workflowHelp("interactions", [
+      "Hydrogen bonds: give the calculation a new analysis name and choose Calculate structures = all to evaluate the whole loaded trajectory. Display structures only filters an existing result; it does not calculate missing structures.",
+      "Atom filters: stage selections A and B and choose the explicit participant mode. Restrict all participants to A for internal interactions; include at least one in A to also see interactions with other atoms.",
+      "An evaluated structure with zero observations is different from Not evaluated. Hydrogen-bond calculations need suitable hydrogen atoms and bonding. Criteria use explicit units; Interactions remains experimental."
+    ]));
     if (!this.backendAvailable) this.host.appendChild(note2("Interactions requires a compatible MolSysMT backend. Other viewer tools remain available."));
-    const enabled = this.items.filter((item2) => !item2.hidden).length;
-    this.host.appendChild(note2(`${enabled}/${this.items.length} sets enabled \xB7 structure ${this.frame}`));
+    const visible = this.items.filter((item2) => !item2.hidden && !item2.layer_hidden).length;
+    this.host.appendChild(note2(`${visible}/${this.items.length} sets visible \xB7 structure ${this.frame}`));
     const all3 = row2();
     append(all3, makeButton2("Show all", () => this.emit("show_all_interactions")), makeButton2("Hide all", () => this.emit("hide_all_interactions")));
     this.host.appendChild(all3);
@@ -160926,7 +161115,7 @@ var InteractionsPanel = class extends BasePanel {
       const card8 = box4();
       card8.setAttribute("data-molsysviewer-interaction-set", item2.tag);
       card8.setAttribute("data-molsysviewer-list-search-text", [item2.tag, item2.analysis_name, item2.layer_tag].filter(Boolean).join(" "));
-      append(card8, note2(`${item2.tag} \xB7 ${item2.analysis_name}`), note2(statusText(item2)), note2(`${item2.hidden ? "Hidden" : item2.layer_hidden ? "Hidden by layer" : "Enabled"} \xB7 layer ${item2.layer_tag}`));
+      append(card8, note2(`${item2.tag} \xB7 ${item2.analysis_name}`), note2(statusText(item2)), note2(`${item2.layer_hidden ? "Hidden by layer" : item2.hidden ? "Hidden" : "Visible"} \xB7 layer ${item2.layer_tag}`));
       const actions = row2();
       for (const [text, action] of [["Focus", "focus_interaction"], [item2.hidden ? "Show" : "Hide", "toggle_interaction_visibility"], ["Delete", "delete_interaction"]]) {
         const button2 = makeButton2(text, () => this.emit(action, { tag: item2.tag }));
@@ -160988,9 +161177,9 @@ var InteractionsPanel = class extends BasePanel {
     const filter5 = () => {
       let matches = 0;
       for (const entry of entries3) {
-        const visible = this.analysisSearch.matches(entry.text);
-        entry.card.style.display = visible ? "flex" : "none";
-        if (visible) matches++;
+        const visible2 = this.analysisSearch.matches(entry.text);
+        entry.card.style.display = visible2 ? "flex" : "none";
+        if (visible2) matches++;
       }
       status.textContent = `${matches}/${entries3.length} analyses match${!matches && entries3.length ? " \xB7 No matches" : ""}`;
     };
@@ -161261,6 +161450,11 @@ var ShapesPanel = class extends BasePanel {
     this.host.appendChild(this.renderGlobalActions());
     this.host.appendChild(makeSectionHeader("New shape"));
     this.host.appendChild(this.renderNewShapeCard());
+    this.host.appendChild(this.workflowGuide ??= workflowHelp("shapes", [
+      "Sphere: stage an atom selection as an anchor, or enter an absolute center in nm. An atom anchor follows its atoms across structures; an absolute center stays fixed.",
+      "Arrow or tube: stage both ends before creating. Studio uses the geometric centers in the visible structure to create fixed geometry; it does not follow later structures.",
+      "Advanced geometry examples use prepared arrays with explicit coordinate and radius units. Drawing ring geometry does not calculate aromaticity or molecular interactions."
+    ]));
     this.host.appendChild(makeSectionHeader("Saved shapes"));
     const list3 = document.createElement("div");
     Object.assign(list3.style, { display: "flex", flexDirection: "column", gap: "7px" });
@@ -163514,7 +163708,8 @@ var GroupPanel = class {
         group_indices: [],
         chain_indices: [],
         entity_indices: []
-      })
+      }),
+      this.hasAuthority
     );
     this.interactionsSection = this.createSection("interactions");
     this.interactionsPanel = new InteractionsPanel(this.makePanelContext("interactions"));
@@ -163525,7 +163720,11 @@ var GroupPanel = class {
     this.viewportSection = this.createSection("viewport");
     this.viewportPanel = new ViewportPanel(this.makePanelContext("viewport"));
     this.exportSection = this.createSection("export");
-    this.exportPanel = new ExportPanel(this.makePanelContext("export"), this.hasAuthority);
+    this.exportPanel = new ExportPanel(
+      this.makePanelContext("export"),
+      this.hasAuthority,
+      () => this.switchTab("export")
+    );
     this.settingsSection = this.createSection("settings");
     this.systemPanel = new SystemPanel(this.makePanelContext("system"), {
       onSelect: this.onSelect,
@@ -163664,7 +163863,7 @@ var GroupPanel = class {
       shapes: "Manage custom 3D geometric shapes and objects in the scene.",
       layers: "Group scene objects in layers and control their visibility.",
       viewport: "Adjust background color, lighting, camera, and display parameters.",
-      export: "Download PNG images and self-contained HTML views."
+      export: "Download PNG images and HTML views; save or restore scene states and experimental sessions."
     };
     const tooltip = tooltips[key2];
     if (tooltip) {
@@ -163984,6 +164183,7 @@ var GroupPanel = class {
   }
   setAnnotations(items, settings) {
     this.annotationsPanel.setAnnotations(items, settings);
+    this.exportPanel.setSystemLoaded(settings.systemLoaded);
   }
   setMeasurements(items, settings) {
     this.measuresPanel.setMeasurements(items, settings);
@@ -168449,9 +168649,9 @@ var MolSysViewerController = class _MolSysViewerController {
         ...this.addonsScene,
         styleTag,
         preset,
-        figurePreset: "publication-light",
-        figureScale: 2,
-        figureVariants: ["dark", "transparent"]
+        figurePreset: this.addonsScene?.figurePreset ?? "publication-light",
+        figureScale: this.addonsScene?.figureScale ?? 2,
+        figureVariants: this.addonsScene?.figureVariants ?? ["dark", "transparent"]
       };
     }
     if (op4 === "set_figure_spec") {
