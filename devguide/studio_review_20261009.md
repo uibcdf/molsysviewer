@@ -295,3 +295,21 @@ view. Check a duplicate measurement name and retained anchors, layer creation
 with initial members and one Undo, an unfocused region name during frame changes,
 an empty coordinate versus explicit zero, and analysis deletion cancellation/
 confirmation. Candidate 0.25.0 remains unfrozen; both 1.0 publications stay paused.
+
+
+### Final integration checkpoint
+
+Implementation `b1040700` is published on main, integrated with the independent
+human-facing feedback governance commit `8a02568c` through `d5e81cd4`. #201–#205
+are closed with their executed guards and archived records; derived state labels
+are removed and `devguide_issue.py sync --check` reports 29 documents agreeing
+with the board. Unrelated sandbox work is preserved.
+
+Initial CI for `d5e81cd4` passes lint and Conda governance. Suite policy
+38034071532 fails its formatting step because the duplicate-layer fixture's
+long parameter row needs formatter wrapping. Applying Ruff to that test is a
+layout-only correction; the original failure remains recorded. The complete
+900-file formatting check and Ruff check pass after correction. Browser
+38034071236, notebooks 38034071211 and source pair 38034071271 are active;
+scientific/Qt CI 38034071216 is queued at this inspection. These states do not
+clear the new source's hosted gates or installed qualification.

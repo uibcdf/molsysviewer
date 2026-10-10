@@ -42,7 +42,11 @@ def scene(view):
     "action, domain, details",
     [
         ("create_measurement", "measurements", {"kind": "distance", "picks": [[0], [5]], "tag": "existing"}),
-        ("create_layer", "layers", {"tag": "existing-layer", "members": [{"member_kind": "shape", "member_tag": "member"}]}),
+        (
+            "create_layer",
+            "layers",
+            {"tag": "existing-layer", "members": [{"member_kind": "shape", "member_tag": "member"}]},
+        ),
         ("create_annotation", "annotations", {"text": "draft", "position": [None, 0, 0]}),
     ],
 )
