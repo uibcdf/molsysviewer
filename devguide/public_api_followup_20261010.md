@@ -49,5 +49,18 @@ The [receipt](public_api_followup_receipt_20261010.json) records results and log
 digests. Reporting, link, architecture, capability and inventory guards pass
 **452/452** after correcting receipt creation and staging the archived reports.
 Two preceding scoped checks stopped on those bookkeeping errors; both logs are
-retained in the receipt. Source integration and new applicable hosted CI remain
-pending.
+retained in the receipt. Source integration is complete; applicable hosted CI remains pending.
+
+
+## Integration checkpoint
+
+Reviewed source is pushed directly to main in
+`792fd5f6baea34dd11016854ace78d76d5d087c6`. #218–#222 are closed with the fix,
+addressable guards and archived records. The 27 active queue documents agree
+with the issue board, and unrelated sandbox work remains outside integration.
+
+At the recorded observation, Ruff `38046731008` and publication governance
+`38046731328` pass. Notebooks `38046731029` is in progress; scientific CI
+`38046730917`, source pair `38046731092`, core browser `38046731000` and suite
+policy `38046731297` are queued. No terminal result is inferred for active runs.
+The source candidate stays unfrozen and both 1.0 publications remain paused.

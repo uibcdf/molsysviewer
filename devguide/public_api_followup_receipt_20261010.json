@@ -142,5 +142,61 @@
     "exit_code": 0,
     "seconds": 18.53,
     "command": "python -m pytest --receptor=llm tests/test_reporting_protocol.py tests/test_devguide_links.py tests/test_devguide_architecture_status.py tests/test_capability_audit.py tests/test_public_api_inventory.py -x"
+  },
+  "integration": {
+    "source_commit": "792fd5f6baea34dd11016854ace78d76d5d087c6",
+    "observed_at": "2026-10-10T10:58:55.495702+00:00",
+    "runs": [
+      {
+        "conclusion": "",
+        "databaseId": 38046731000,
+        "status": "queued",
+        "workflowName": "CI_e2e"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38046731092,
+        "status": "queued",
+        "workflowName": "Python 3.14 source pair"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38046730917,
+        "status": "queued",
+        "workflowName": "CI"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38046731297,
+        "status": "queued",
+        "workflowName": "MolSysSuite policy"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38046731008,
+        "status": "completed",
+        "workflowName": "Ruff Lint"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38046731328,
+        "status": "completed",
+        "workflowName": "Conda publication governance"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38046731029,
+        "status": "in_progress",
+        "workflowName": "Documentation notebooks"
+      }
+    ],
+    "issues_closed": [
+      218,
+      219,
+      220,
+      221,
+      222
+    ],
+    "board_sync": "27 documents agree with the board"
   }
 }
