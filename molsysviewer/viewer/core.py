@@ -1472,7 +1472,7 @@ class MolSysView(
                     dict.__setitem__(self._layers, tag, layer)
                 else:
                     layer = self._layers[tag]
-                    layer.kind = content.get("kind", layer.kind)
+                    layer._kind = content.get("kind", layer.kind)
                     if content.get("meta"):
                         layer.meta.update(content.get("meta"))
         elif event == "layer_deleted":

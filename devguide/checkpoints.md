@@ -1,5 +1,16 @@
 # Development checkpoint
 
+**Public API round — 2026-10-10:** #210–#216 implement the seven accepted
+boundary corrections; #217 completes handle inspection/editing and named sphere
+anchors. Related real-system tests pass 376/376. The updated inventory is
+726/726 decorated callables, with no missing bypass arguments or digesters.
+The single full run reports 3026 passed, 30 failed and 23 skipped: generated
+table/index bookkeeping is corrected with 433 passing guards; sandbox network/Chromium recovery passes
+53 tests with one explicit GPU skip. Eight experimental Qt failures remain
+separate. Applicable hosted CI still needs review. See the
+[API review](public_api_review_20261010.md) and current scene contracts.
+No candidate is frozen; both 1.0 publications remain paused.
+
 **Studio hosted follow-up — 2026-10-10:** #189 is closed: source `00716efb`
 preserves over-budget empty static regions and isolation on restore. Its 16
 local isolation tests and six hosted scientific cells (38038849075) pass;
@@ -1578,12 +1589,12 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current session priority (2026-10-09):** the accepted context-menu and
-controls work is complete under #179/#180. Continue the maintainer's remaining
-changes before freezing the agreed 0.25.0 candidate. The Studio round #181–#188
-is integrated in `c92c2760`; review its
-[human checklist and hosted runs](studio_review_20261009.md#integration-checkpoint)
-and reconcile the open macOS region diagnosis #189. Preserve target/selection
+**Current session priority (2026-10-10):** the accepted context-menu and
+controls work is complete under #179/#180. Studio refinements and their
+follow-ups #189/#198/#209 are closed; integrated core 38041459348 passes 43/43.
+The authorized [public API round](public_api_review_20261010.md), #210–#217,
+is implemented and its full/source validation must be reviewed before continuing
+the maintainer's remaining changes or freezing 0.25.0. Preserve target/selection
 separation, region ownership and the
 [experimental Interactions contract](interactions_compatibility_contract.md).
 The [0.25.0 plan](stabilization_025_preparation_20261009.md) defines later exact

@@ -26,7 +26,7 @@ from ._private.exceptions.interaction_analysis_error import InteractionAnalysisE
 from ._private.interaction_families import FAMILIES, segments
 from ._private.interaction_query_modes import QUERY_MODES
 from ._pyunitwizard import puw
-from .layers import SceneObject, _bounding_sphere_nm
+from .layers import SceneObject
 from .scene_history import records_scene_history
 
 
@@ -1019,6 +1019,13 @@ class ScientificInteractionsManager:
 class InteractionSet(SceneObject):
     """A filtered visual reference to an immutable named scientific analysis."""
 
+    @signal(tags=["interaction", "query"])
+    @digest()
+    def info(self, skip_digestion=False):
+        """Return detached current metadata for this live visual set."""
+        self._assert_current()
+        return deepcopy(self._view.interactions.info(self.tag, skip_digestion=True))
+
     def __init__(self, view, tag, *, analysis_name, filter, layer_tag=None):
         super().__init__(view, tag, kind="interaction", layer_tag=layer_tag)
         self.analysis_name = analysis_name
@@ -1063,11 +1070,11 @@ class InteractionSet(SceneObject):
         old_tag = self.tag
         old_layer = self.layer_tag
         self._view._send({"op": "delete_layer", "kind": "interaction", "tag": old_tag})
-        self.tag = new_tag
+        self._tag = new_tag
         self._view._reregister_scene_object(old_tag, new_tag, self)
         if old_layer == old_tag:
             self._view._move_or_rename_layer_group_for_object_tag_change(old_tag, new_tag, self)
-            self.layer_tag = new_tag
+            self._layer_tag = new_tag
         self._refresh()
 
     @records_scene_history
@@ -1130,13 +1137,21 @@ class InteractionSet(SceneObject):
 
     @signal(tags=["interaction", "camera"])
     @digest()
-    def focus(self, skip_digestion=False):
+    def focus(
+        self,
+        duration: Any = "250 ms",
+        duration_ms: Any | None = None,
+        extra_radius: Any = "0.5 nm",
+        *,
+        skip_digestion=False,
+    ):
+        """Focus current supported geometry of this live visual set."""
+        self._assert_current()
         payload = self._view.interactions._frame(self, self._view.player.index)
         points = [point for link in payload["links"] for point in (link["start"], link["end"])]
         if not points:
             raise ValueError("This frame has no supported interaction positions to focus.")
-        center, radius = _bounding_sphere_nm(points)
-        self._view._send({"op": "zoom_to_position", "center": [v * 10 for v in center], "radius": (radius + 0.4) * 10})
+        self._focus_points_nm(points, duration if duration_ms is None else duration_ms, extra_radius)
 
 
 class InteractionsManager(ScientificInteractionsManager):

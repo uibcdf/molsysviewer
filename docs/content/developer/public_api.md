@@ -40,6 +40,19 @@ manager: an old handle cannot mutate a replacement object with the same tag.
 Region and layer registries support dictionary reads; mutate through manager
 methods. Rejected operations and no-ops preserve redo.
 
+Scene identity fields (`tag`, `kind`, `layer_tag`, and region `uid`) are
+read-only. Use `set_tag()` and the owning membership operation to change them;
+`Region.rename()` remains available. Layer attachment, region boolean
+operations and camera focus reject handles from other views or retired handles,
+including when digestion is bypassed.
+
+Shapes, annotations, measurements and visual interaction sets expose detached
+`info()` records. An annotation also exposes `set_text()`, `set_style()`,
+`set_anchor()` and `focus()`. Object focus uses physical `duration` and
+`extra_radius` quantities; `duration_ms` remains a compatibility argument.
+Interaction sets focus supported geometry in the visible structure and raise
+when it has no positions. Their scientific contracts remain experimental.
+
 ### `config.set_structure_scale_budget(budget_bytes)`
 
 MolSysViewer materializes **every** selected structure: `view.molsys` is the
@@ -285,15 +298,17 @@ Related object wrappers are also part of the intended public surface:
 - `view.selections[tag].add_label(...)`
 - `view.selections[tag].set_tag(...)`
 - `view.selections[tag].delete()`
-- `view.annotations.add(text, selection=..., atom_indices=..., tag=..., layer_tag=..., label_style=...)`
+- `view.annotations.add(text, selection=..., atom_indices=..., position=..., syntax=..., tag=..., layer_tag=..., label_style=...)`
   - primary entry point for persistent labels anchored to atom selections
   - anchor resolves via MolSysMT selection string or explicit `atom_indices`
+  - `syntax` is honored; `kind` currently accepts only `"label"`
+  - an absolute physical `position` is an alternative anchor
   - `label_style` accepts a dict with optional keys: `color` (CSS hex string), `size_em` (float), `background` (bool), `background_opacity` (float 0–1)
   - `add_label(group_index=...)` is a deprecated alias; use `add` instead
 - `view.annotations.add_label_from_active_selection(text, tag=..., label_style=...)`
   - anchors to all atom indices in the last active canvas selection (multi-group supported)
   - `label_style` accepts the same dict as `add` (`color`, `size_em`)
-- `view.annotations.set_anchor(tag, selection=..., atom_indices=...)`
+- `view.annotations.set_anchor(tag, selection=..., atom_indices=..., position=..., syntax=...)`
   - reanchor an existing label to a different atom set
   - `set_group_index(tag, group_index)` is a deprecated alias; use `set_anchor` instead
 - `view.annotations.set_text(tag, text)`

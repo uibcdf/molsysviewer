@@ -3,15 +3,19 @@ from __future__ import annotations
 import math
 import warnings
 from copy import deepcopy
-from typing import Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from smonitor import signal
 
 from . import pyunitwizard as puw
 from ._private.argdigest import digest
+from ._private.scene_references import require_current_in_view
 from ._private.scene_registry import SceneRegistry
 from .scene_history import records_scene_history
 from .viewer.utils import quantity_value_in_unit
+
+if TYPE_CHECKING:
+    from .regions import Region
 
 _NM_TO_ANGSTROM = puw.conversion_factor("nm", "angstroms")
 
@@ -124,8 +128,8 @@ class LayerHandle:
         meta: Optional[Dict[str, Any]] = None,
     ) -> None:
         self._view = view
-        self.tag = tag
-        self.kind = kind
+        self._tag = tag
+        self._kind = kind
         self.meta = meta or {}
         current_owner = getattr(view, "_current_scene_owner", None)
         self._owner = current_owner() if callable(current_owner) else None
@@ -134,6 +138,16 @@ class LayerHandle:
         self.broken = False
         self.broken_reason: str | None = None
 
+    @property
+    def tag(self) -> str:
+        """Registered identity; rename with set_tag()."""
+        return self._tag
+
+    @property
+    def kind(self) -> str | None:
+        """Scene domain; fixed by the owning manager."""
+        return self._kind
+
     def _assert_current(self):
         if isinstance(self, SceneObject):
             current = self._view._scene_objects.get((self.kind, self.tag))
@@ -141,6 +155,20 @@ class LayerHandle:
             current = self._view._layers.get(self.tag)
         if current is not self or not self._active:
             raise ValueError(f"Scene handle {self.tag!r} is retired; reacquire it from its manager.")
+
+    def _focus_points_nm(self, points, duration, extra_radius):
+        """Focus finite physical points using the shared explicit wire conversion."""
+        self._assert_current()
+        if not points or any(not math.isfinite(value) for point in points for value in point):
+            raise ValueError("Focus requires finite physical positions.")
+        center, radius = _bounding_sphere_nm(points)
+        radius = max(radius + quantity_value_in_unit(extra_radius, "nm"), 0.5)
+        self._view._send({
+            "op": "zoom_to_position",
+            "center": [value * _NM_TO_ANGSTROM for value in center],
+            "radius": radius * _NM_TO_ANGSTROM,
+            "duration_ms": int(quantity_value_in_unit(duration, "ms")),
+        })
 
     @property
     def owner(self) -> str | None:
@@ -253,7 +281,7 @@ class LayerHandle:
             new_tag = self._view._assert_nonstructural_tag_available(new_tag, current_tag=self.tag)  # noqa: SLF001
         old_tag = self.tag
         self._view._send({"op": "set_layer_tag", "tag": old_tag, "new_tag": new_tag, "kind": "layer"})  # noqa: SLF001
-        self.tag = new_tag
+        self._tag = new_tag
         self._view._reregister_layer(old_tag, new_tag, self)  # noqa: SLF001
 
 
@@ -275,7 +303,12 @@ class SceneObject(LayerHandle):
         meta: Optional[Dict[str, Any]] = None,
     ) -> None:
         super().__init__(view, tag, kind=kind, meta=meta)
-        self.layer_tag = layer_tag or tag
+        self._layer_tag = layer_tag or tag
+
+    @property
+    def layer_tag(self) -> str:
+        """Grouping identity; change with set_layer_tag()."""
+        return self._layer_tag
 
     def _sync_group_layer_hidden_state(self) -> None:
         if hasattr(self._view, "_sync_layer_group_hidden_state"):
@@ -311,12 +344,12 @@ class SceneObject(LayerHandle):
         old_tag = self.tag
         old_layer_tag = self.layer_tag
         self._view._send({"op": "set_layer_tag", "tag": old_tag, "new_tag": new_tag, "kind": self.kind})  # noqa: SLF001
-        self.tag = new_tag
+        self._tag = new_tag
         self._view._reregister_scene_object(old_tag, new_tag, self)  # noqa: SLF001
         if old_layer_tag == old_tag:
             if hasattr(self._view, "_move_or_rename_layer_group_for_object_tag_change"):
                 self._view._move_or_rename_layer_group_for_object_tag_change(old_tag, new_tag, self)  # noqa: SLF001
-            self.layer_tag = new_tag
+            self._layer_tag = new_tag
 
     @records_scene_history
     @signal()
@@ -381,7 +414,7 @@ class Layer(LayerHandle):
         super().set_tag(new_tag, skip_digestion=True)
         for member in members:
             if hasattr(member, "layer_tag"):
-                member.layer_tag = self.tag
+                member._layer_tag = self.tag
             else:
                 # A region tracks membership by the layer tag string; keep it in
                 # step with the rename so it is not orphaned.
@@ -455,25 +488,30 @@ class Layer(LayerHandle):
     @records_scene_history
     @signal()
     @digest()
-    def attach(self, obj: "SceneObject", *, skip_digestion: bool = False) -> None:
+    def attach(self, obj: "SceneObject | Region", *, skip_digestion: bool = False) -> None:
         """Move *obj* into this layer (top-down membership management).
 
-        Equivalent to ``obj.set_layer_tag(self.tag)`` but expressed from the
-        layer's point of view.  If *obj* was the sole member of its previous
+        Uses ``obj.set_layer(self.tag)`` for a region and
+        ``obj.set_layer_tag(self.tag)`` for other scene objects. Both handles
+        must be current and belong to this view. If *obj* was the sole member of its previous
         layer and that layer shared the same tag as the object, the old layer
         is automatically cleaned up.
 
         Parameters
         ----------
         obj
-            A :class:`Shape`, :class:`Annotation`, or :class:`Measurement`
-            instance to bring into this layer.
+            A live Shape, Annotation, Measurement, InteractionSet or Region
+            belonging to this view.
         """
-        if not isinstance(obj, SceneObject):
-            raise TypeError(f"Expected a SceneObject (Shape/Annotation/Measurement), got {type(obj).__name__!r}.")
-        if not self._active:
-            raise ValueError(f"Layer {self.tag!r} is no longer active.")
-        obj.set_layer_tag(self.tag)
+        from .regions import Region
+
+        if not isinstance(obj, (SceneObject, Region)):
+            raise TypeError("Expected a scene object or Region.")
+        require_current_in_view(obj, self._view)
+        if isinstance(obj, Region):
+            obj.set_layer(self.tag, skip_digestion=True)
+        else:
+            obj.set_layer_tag(self.tag, skip_digestion=True)
 
     @signal()
     @digest()
@@ -495,7 +533,7 @@ class Layer(LayerHandle):
     @records_scene_history
     @signal()
     @digest()
-    def detach(self, obj: "SceneObject", *, skip_digestion: bool = False) -> None:
+    def detach(self, obj: "SceneObject | Region", *, skip_digestion: bool = False) -> None:
         """Detach *obj* from this layer, making it its own independent layer.
 
         Equivalent to ``obj.set_layer_tag(obj.tag)``.  A new layer group is
@@ -505,14 +543,21 @@ class Layer(LayerHandle):
         Parameters
         ----------
         obj
-            A :class:`Shape`, :class:`Annotation`, or :class:`Measurement`
-            that is currently a member of this layer.
+            A live Shape, Annotation, Measurement, InteractionSet or Region
+            that belongs to this view and is a member of this layer.
         """
-        if not isinstance(obj, SceneObject):
-            raise TypeError(f"Expected a SceneObject (Shape/Annotation/Measurement), got {type(obj).__name__!r}.")
-        if getattr(obj, "layer_tag", None) != self.tag:
+        from .regions import Region
+
+        if not isinstance(obj, (SceneObject, Region)):
+            raise TypeError("Expected a scene object or Region.")
+        require_current_in_view(obj, self._view)
+        membership = obj.layer if isinstance(obj, Region) else obj.layer_tag
+        if membership != self.tag:
             raise ValueError(f"Object {obj.tag!r} is not a member of layer {self.tag!r}.")
-        obj.set_layer_tag(obj.tag)
+        if isinstance(obj, Region):
+            obj.remove_from_layer(skip_digestion=True)
+        else:
+            obj.set_layer_tag(obj.tag, skip_digestion=True)
 
 
 class LayersManager(SceneRegistry):
@@ -646,6 +691,13 @@ class Shape(SceneObject):
         self, view: Any, tag: str, *, layer_tag: str | None = None, meta: Optional[Dict[str, Any]] = None
     ) -> None:
         super().__init__(view, tag, kind="shape", layer_tag=layer_tag, meta=meta)
+
+    @signal(tags=["shape", "query"])
+    @digest()
+    def info(self, skip_digestion: bool = False) -> dict:
+        """Return detached metadata for this live shape."""
+        self._assert_current()
+        return self._view.shapes.info(self.tag, skip_digestion=True)
 
     def _sync_summary_runtime(self) -> None:
         sync = getattr(self._view, "_sync_shape_summaries_runtime", None)
@@ -1233,6 +1285,45 @@ class Annotation(SceneObject):
     ) -> None:
         super().__init__(view, tag, kind="annotation", layer_tag=layer_tag, meta=meta)
 
+    @signal(tags=["annotation", "query"])
+    @digest()
+    def info(self, skip_digestion: bool = False) -> dict:
+        """Return detached metadata for this live annotation."""
+        self._assert_current()
+        return self._view.annotations.info(self.tag, skip_digestion=True)
+
+    @signal(tags=["annotation"])
+    @digest()
+    def set_text(self, text: str, skip_digestion: bool = False):
+        """Edit text through the canonical annotation owner."""
+        self._assert_current()
+        return self._view.annotations.set_text(self.tag, text, skip_digestion=True)
+
+    @signal(tags=["annotation"])
+    @digest()
+    def set_style(self, style: dict, skip_digestion: bool = False):
+        """Edit visual style through the canonical annotation owner."""
+        self._assert_current()
+        return self._view.annotations.set_style(self.tag, style, skip_digestion=True)
+
+    @signal(tags=["annotation"])
+    @digest()
+    def set_anchor(
+        self,
+        selection: Any = None,
+        *,
+        atom_indices: Any = None,
+        position: Any = None,
+        syntax: str = "MolSysMT",
+        skip_digestion: bool = False,
+    ):
+        """Reanchor through the canonical annotation owner."""
+        self._assert_current()
+        return self._view.annotations.set_anchor(
+            self.tag, selection, atom_indices=atom_indices, position=position,
+            syntax=syntax, skip_digestion=True,
+        )
+
     def _require_annotation_record(self) -> dict:
         self._assert_current()
         history = getattr(self._view, "_annotation_history", [])
@@ -1240,6 +1331,20 @@ class Annotation(SceneObject):
         if record is None:
             raise ValueError(f"No annotation record found for tag {self.tag!r}.")
         return record
+
+    @signal(tags=["annotation", "camera"])
+    @digest()
+    def focus(
+        self,
+        duration: Any = "250 ms",
+        duration_ms: Any | None = None,
+        extra_radius: Any = "0.5 nm",
+        *,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Focus the current atom centroid or absolute annotation anchor."""
+        position = puw.get_value(self.get_coordinates(skip_digestion=True), to_unit="nm")
+        self._focus_points_nm([position.tolist()], duration if duration_ms is None else duration_ms, extra_radius)
 
     @signal()
     @digest()
@@ -1295,6 +1400,13 @@ class Annotation(SceneObject):
 
 
 class Measurement(SceneObject):
+    @signal(tags=["measurement", "query"])
+    @digest()
+    def info(self, skip_digestion: bool = False) -> dict:
+        """Return detached metadata for this live measurement."""
+        self._assert_current()
+        return self._view.measurements.info(self.tag, skip_digestion=True)
+
     def __init__(
         self, view: Any, tag: str, *, layer_tag: str | None = None, meta: Optional[Dict[str, Any]] = None
     ) -> None:

@@ -2643,3 +2643,41 @@ Python guards: `tests/test_design_review_closure.py` and
 `js/tests/e2e/trajectory-plot.e2e.ts`; numeric geometry/seeking also has a unit guard
 in `js/tests/unit/trajectory-plot-overlay.test.ts`. Design/loading follow-up is
 tracked in [the closure plan](final_design_closure_20261003.md).
+
+## Public handle boundaries — 2026-10-10
+
+Identity fields `tag`, `kind`, `layer_tag` and region `uid` are read-only. Rename
+through `set_tag()` (`Region.rename()` remains available) and use owning
+membership operations. Region rename validates uniqueness within its domain.
+Layer attach/detach accept live regions and scene objects in the same view.
+Region boolean operations and camera focus also reject foreign or retired
+handles before changing state, even with `skip_digestion=True`.
+
+Shape, Annotation, Measurement and InteractionSet expose detached `info()`
+records. Annotation `set_text()`, `set_style()` and `set_anchor()` delegate to
+the canonical manager and share its history. Atom-based annotation creation and
+reanchoring honor `syntax`; unsupported `kind` values raise before mutation.
+The only implemented kind is `label`. Saved-selection labels retain exactly the
+saved atom indices, including partial and multiple groups.
+
+Annotation focus targets its current atom centroid or absolute position.
+InteractionSet focus targets supported geometry in the visible structure and
+raises when none exists. Both accept `duration` (default `250 ms`) and
+`extra_radius` (default `0.5 nm`), retaining `duration_ms` as a compatibility
+argument. Coordinates and padding convert explicitly to the camera wire units
+(angstrom and milliseconds), independent of configured output units. These
+operations do not recalculate analyses or alter the experimental Interactions
+contract.
+
+`new_view(load_mode="all", selection=...)` resolves the selection before hiding
+Whole. An empty selection warns and leaves Whole visible; invalid selection
+resolution cannot hide it. A nonempty selection retains its query provenance in
+the new represented region. General measurement construction validates once at
+the public boundary and forwards the normalized inputs with digestion bypassed.
+All ordinary public functions, including these additions, expose ArgDigest and
+`skip_digestion=False`. Bypass does not disable ownership or lifetime checks.
+
+The sphere manager shortcut names its existing `structure_centers`, `selection`,
+`atom_indices` and `structures_atom_indices` parameters explicitly. Existing
+deprecated shape and annotation migration routes remain in this development
+round. Guards: `tests/test_new_view.py` and `tests/test_public_api_hardening.py`.

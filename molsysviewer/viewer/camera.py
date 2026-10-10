@@ -12,6 +12,7 @@ import molsysmt as msm
 from smonitor import signal
 
 from .._private.argdigest import digest
+from .._private.scene_references import require_current_in_view
 from ..regions import Region
 from .signals import camera_snapshot_extra, zoom_signal_extra
 from .utils import quantity_value_in_unit
@@ -160,6 +161,7 @@ class CameraManager:
         else:
             raise TypeError("region must be a region tag or Region instance.")
 
+        require_current_in_view(target, self._view)
         if target.atom_indices is not None:
             selection: Any = list(target.atom_indices)
             syntax = "MolSysMT"
@@ -236,7 +238,8 @@ class CameraManager:
             raise KeyError(f"Unknown object tag: {tag!r}")
         if not hasattr(obj, "focus"):
             raise NotImplementedError(f"Objects of kind {getattr(obj, 'kind', '?')!r} do not support focus().")
-        obj.focus(duration=duration, extra_radius=extra_radius)
+        require_current_in_view(obj, view)
+        obj.focus(duration=duration, extra_radius=extra_radius, skip_digestion=True)
 
     @signal(tags=["camera"])
     @digest()

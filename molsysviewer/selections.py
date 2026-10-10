@@ -15,8 +15,13 @@ class Selection:
 
     def __init__(self, view: Any, tag: str) -> None:
         self._view = view
-        self.tag = tag
+        self._tag = tag
         self._active = True
+
+    @property
+    def tag(self) -> str:
+        """Registered identity; rename with set_tag()."""
+        return self._tag
 
     def _assert_current(self):
         if self._view._selections.get(self.tag) is not self or self._view.selections._record_for_tag(self.tag) is None:
@@ -147,12 +152,12 @@ class Selection:
     ):
         """Create a persistent label from this persistent selection."""
         info = self.info(skip_digestion=True)
-        group_indices = info.get("group_indices") or []
-        if not isinstance(group_indices, list) or len(group_indices) != 1:
-            raise ValueError("Selection.add_label() currently requires exactly one resolved group.")
-        return self._view.annotations.add_label(  # noqa: SLF001
+        atom_indices = info.get("atom_indices") or []
+        if not atom_indices:
+            raise ValueError("Selection.add_label() requires a nonempty atom selection.")
+        return self._view.annotations.add(  # noqa: SLF001
             text=text,
-            group_index=[int(group_indices[0])],
+            atom_indices=list(atom_indices),
             tag=tag,
             skip_digestion=True,
         )
@@ -579,7 +584,7 @@ class SelectionsManager:
         self._view._send({"op": "set_selection_tag", "tag": tag, "new_tag": new_tag})  # noqa: SLF001
         selection = self._view._selections.pop(tag, None)  # noqa: SLF001
         if selection is not None:
-            selection.tag = new_tag
+            selection._tag = new_tag
             self._view._selections[new_tag] = selection  # noqa: SLF001
         return self._selection(new_tag)
 

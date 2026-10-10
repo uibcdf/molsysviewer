@@ -26,7 +26,7 @@ def _normalize_position(value):
 
 
 def digest_position(position, caller=None):
-    if caller and caller.startswith("molsysviewer.annotations."):
+    if caller and (caller.startswith("molsysviewer.annotations.") or caller == "molsysviewer.layers.set_anchor"):
         if position is not None:
             from ...annotation_vectors import annotation_vector
 

@@ -45,6 +45,8 @@ The next agreed version is [0.25.0](stabilization_025_preparation_20261009.md);
 further changes remain, so its producer and staging qualification are not frozen.
 Both 1.0 publications remain paused.
 
+- [Public Python API review](public_api_review_20261010.md): the final source round covers #210–#216 and optional handle parity #217; exact candidate and installed qualification remain separate.
+
 - [Studio integration review](studio_review_20261009.md): both authorized rounds (#181–#188 and #190–#197/#199) implement native ownership, export/geometry, persistent editors, search/batches and disclosures; source/browser evidence retains Qt limits and pending #189/#198 diagnoses.
 - [`canvas_context_menu_pre_1_0_plan.md`](canvas_context_menu_pre_1_0_plan.md): #179's contextual workflows, picking corrections and parallel menus are accepted in the notebook; Cinema and consistent controls reveal are tracked under #180. Publication remains paused and 0.24.1 needs a replacement candidate.
 - [`open_issue_reconciliation_20261007.md`](open_issue_reconciliation_20261007.md): complete 34-issue scope review, public-promise corrections, historical publication decisions and remaining 1.0 gates.

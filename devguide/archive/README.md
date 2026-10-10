@@ -330,3 +330,14 @@ Completed work, kept for the reasoning:
 - [Hidden controls keyboard focus](hidden_controls_keyboard_focus.md) — #209 confirms focus after CSS reversal and skips hidden trajectory buttons; Enter/Space, fullscreen, static scene and popup guards pass.
 
 - [Studio PNG download source pair](studio_png_download_source_pair.md) — #198 separates measured render completion from file delivery, retaining full-quality PNG/alpha and held-click guards; exact-source Linux core passes 43/43.
+
+## Public API closure — 2026-10-10
+
+- [Empty factory selection](empty_factory_selection.md) — #210 resolves selection through Whole and warns before hiding an empty result.
+- [Annotation arguments](annotation_arguments.md) — #211 honors syntax and refuses unsupported kinds before mutation.
+- [Scene object ownership](scene_object_view_ownership.md) — #212 rejects foreign or retired handles before membership and boolean operations.
+- [Object focus contract](object_focus_contract.md) — #213 aligns annotation/interaction focus with camera dispatch and guards lifetime and units.
+- [Saved selection annotation scope](saved_selection_annotation_scope.md) — #214 labels exact saved atoms across partial and multiple groups.
+- [Measurement bypass](measurement_add_bypass.md) — #215 forwards validated constructor inputs without re-enabling digestion.
+- [Scene identity assignment](scene_identity_assignment.md) — #216 protects identity fields and validates region rename collisions.
+- [Scene handle API parity](scene_handle_api_parity.md) — #217 adds detached inspection, annotation editing, region rename vocabulary and explicit sphere anchors.

@@ -357,6 +357,11 @@ class ShapesManager:
         tag=None,
         layer_tag: str | None = None,
         skip_digestion: bool = False,
+        *,
+        structure_centers=None,
+        selection: str | None = None,
+        atom_indices=None,
+        structures_atom_indices=None,
         **kwargs,
     ):
         """Add one or more spheres.
@@ -372,6 +377,10 @@ class ShapesManager:
             alpha,
             tag=tag,
             layer_tag=layer_tag,
+            structure_centers=structure_centers,
+            selection=selection,
+            atom_indices=atom_indices,
+            structures_atom_indices=structures_atom_indices,
             skip_digestion=True,
             **kwargs,
         )

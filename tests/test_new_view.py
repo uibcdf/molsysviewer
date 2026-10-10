@@ -1,191 +1,61 @@
-from __future__ import annotations
+"""Factory contracts on actual molecular systems and viewer owners."""
 
 import pytest
 from molsysviewer._private.exceptions import ArgumentError
-from molsysviewer.new_view import new_view
+
+import molsysviewer as msv
 
 
-class DummyWhole:
-    def __init__(self) -> None:
-        self.hidden = False
-        self._preset = None
-        self._representation = None
-        self._repr_params = {}
-
-    def hide(self) -> None:
-        self.hidden = True
+@pytest.fixture
+def source():
+    with msv.demo["dialanine"] as view:
+        yield view.molsys
 
 
-class DummyRegion:
-    def __init__(self) -> None:
-        self.repr_calls: list[dict] = []
-
-    def set_representation(self, representation=None, *, preset=None, **params) -> None:
-        self.repr_calls.append({"representation": representation, "preset": preset, "params": params})
-
-
-class DummyRegions:
-    def __init__(self, view: "DummyView") -> None:
-        self._view = view
-
-    def add(self, selection, *, tag=None, syntax="MolSysMT", skip_digestion=False, **_kwargs):
-        self._view.new_region_calls.append(
-            {"selection": selection, "tag": tag, "syntax": syntax, "skip_digestion": skip_digestion}
-        )
-        return self._view.region
+def test_new_view_selection_mode_loads_selection(source):
+    with msv.new_view(source, selection=[0, 1], load_mode="selection") as view:
+        assert view.whole.get(n_atoms=True) == 2
+        assert view.regions.tags() == []
+        assert view.whole.visible
 
 
-class DummyView:
-    def __init__(self) -> None:
-        self.whole = DummyWhole()
-        self.load_calls: list[dict] = []
-        self.new_region_calls: list[dict] = []
-        self.select_calls: list[dict] = []
-        self.select_result = [0]
-        self.region = DummyRegion()
-        self.regions = DummyRegions(self)
-
-    def load(
-        self,
-        molecular_system,
-        *,
-        selection="all",
-        structure_indices="all",
-        syntax="MolSysMT",
-        skip_digestion=False,
-        **_kwargs,
-    ) -> None:
-        self.load_calls.append(
-            {
-                "molecular_system": molecular_system,
-                "selection": selection,
-                "structure_indices": structure_indices,
-                "syntax": syntax,
-                "skip_digestion": skip_digestion,
-            }
-        )
-
-    def select(self, selection="all", *, syntax="MolSysMT", skip_digestion=False, **_kwargs):
-        self.select_calls.append({"selection": selection, "syntax": syntax, "skip_digestion": skip_digestion})
-        return list(self.select_result)
+def test_new_view_all_mode_loads_all_and_creates_selection_region(source):
+    with msv.new_view(source, selection=[0, 1], load_mode="all") as view:
+        assert view.whole.get(n_atoms=True) == source.get_n_atoms()
+        assert view.regions["selection"].atom_indices == (0, 1)
+        assert not view.whole.visible
+        assert view.regions["selection"].representation == "inherit"
 
 
-def test_new_view_selection_mode_loads_selection():
-    view = DummyView()
-    result = new_view(
-        "system",
-        selection="molecule_index == 0",
-        load_mode="selection",
-        view=view,
-    )
-
-    assert result is view
-    assert view.load_calls == [
-        {
-            "molecular_system": "system",
-            "selection": "molecule_index == 0",
-            "structure_indices": "all",
-            "syntax": "MolSysMT",
-            "skip_digestion": True,
-        }
-    ]
-    assert view.new_region_calls == []
-    assert view.whole.hidden is False
+def test_new_view_all_mode_warns_and_keeps_whole_visible_for_empty_selection(source):
+    with msv.new_view() as view:
+        with pytest.warns(UserWarning, match="resolved to zero atoms"):
+            assert msv.new_view(source, selection="atom_index<0", load_mode="all", view=view) is view
+        assert view.whole.visible
+        assert view.regions.tags() == []
+        assert view.whole.get(n_atoms=True) == source.get_n_atoms()
 
 
-def test_new_view_all_mode_loads_all_and_creates_selection_region():
-    view = DummyView()
-    result = new_view(
-        "system",
-        selection="molecule_index == 0",
-        load_mode="all",
-        view=view,
-    )
-
-    assert result is view
-    assert view.whole.hidden is True
-    assert view.load_calls == [
-        {
-            "molecular_system": "system",
-            "selection": "all",
-            "structure_indices": "all",
-            "syntax": "MolSysMT",
-            "skip_digestion": True,
-        }
-    ]
-    assert view.new_region_calls == [
-        {"selection": "molecule_index == 0", "tag": "selection", "syntax": "MolSysMT", "skip_digestion": True}
-    ]
-    assert view.region.repr_calls == [{"representation": "inherit", "preset": None, "params": {"skip_digestion": True}}]
+def test_new_view_all_mode_inherits_whole_preset(source):
+    with msv.new_view(source, selection="group_index==0", load_mode="all") as view:
+        region = view.regions["selection"]
+        assert region.representation == "inherit"
+        assert region.provenance["kind"] == "query"
 
 
-def test_new_view_all_mode_warns_and_keeps_whole_visible_for_empty_selection():
-    view = DummyView()
-    view.select_result = []
-
-    with pytest.warns(UserWarning, match="resolved to zero atoms"):
-        result = new_view(
-            "system",
-            selection="missing ligand",
-            load_mode="all",
-            view=view,
-        )
-
-    assert result is view
-    assert view.whole.hidden is False
-    assert view.load_calls == [
-        {
-            "molecular_system": "system",
-            "selection": "all",
-            "structure_indices": "all",
-            "syntax": "MolSysMT",
-            "skip_digestion": True,
-        }
-    ]
-    assert view.select_calls == [{"selection": "missing ligand", "syntax": "MolSysMT", "skip_digestion": True}]
-    assert view.new_region_calls == []
-    assert view.region.repr_calls == []
+def test_new_view_forwards_syntax_to_load_and_region(source):
+    with msv.new_view(source, selection="resid 0", syntax="MDTraj", load_mode="all") as view:
+        assert view.regions["selection"].atom_indices == tuple(view.whole.select("resid 0", syntax="MDTraj"))
 
 
-def test_new_view_all_mode_inherits_whole_preset():
-    view = DummyView()
-    view.whole._preset = "polymer-cartoon"
-    view.whole._repr_params = {"quality": "high"}
-
-    new_view(
-        "system",
-        selection="molecule_index == 0",
-        load_mode="all",
-        view=view,
-    )
-
-    assert view.region.repr_calls == [
-        {
-            "representation": "inherit",
-            "preset": None,
-            "params": {"skip_digestion": True},
-        }
-    ]
+def test_new_view_refuses_invalid_selection_before_hiding_whole(source):
+    with msv.new_view() as view:
+        with pytest.raises(Exception):
+            msv.new_view(source, selection="this is not a valid query!", load_mode="all", view=view)
+        assert view.whole.visible
+        assert not view.regions
 
 
-def test_new_view_forwards_syntax_to_load_and_region():
-    view = DummyView()
-
-    new_view(
-        "system",
-        selection="resid 1",
-        load_mode="all",
-        syntax="MDTraj",
-        view=view,
-    )
-
-    assert view.load_calls[0]["syntax"] == "MDTraj"
-    assert view.load_calls[0]["skip_digestion"] is True
-    assert view.new_region_calls[0]["syntax"] == "MDTraj"
-    assert view.new_region_calls[0]["skip_digestion"] is True
-
-
-def test_new_view_rejects_invalid_load_mode():
-    view = DummyView()
+def test_new_view_rejects_invalid_load_mode(source):
     with pytest.raises(ArgumentError):
-        new_view("system", load_mode="invalid", view=view)
+        msv.new_view(source, load_mode="invalid")

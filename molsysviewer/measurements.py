@@ -52,7 +52,7 @@ class MeasurementsManager:
             method = methods[str(kind).strip().lower()]
         except KeyError as exc:
             raise ValueError(f"Unsupported measurement kind {kind!r}; choose from {sorted(methods)}.") from exc
-        return method(*selections, **kwargs)
+        return method(*selections, skip_digestion=True, **kwargs)
 
     def _ensure_layer(self, tag: str, *, layer_tag: str | None = None) -> Layer:
         tag = self._view._tag_managers["measurement"].validate(tag)  # noqa: SLF001

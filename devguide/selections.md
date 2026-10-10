@@ -60,7 +60,7 @@ The first slice should be intentionally narrow.
 - `add_selection(tag, selection, *, element, mask, syntax)` — MolSysMT-based selection ✓
 - `add_from_active_selection(tag)` ✓
 - `activate(tag)` ✓
-- `tags` (property, list) ✓
+- `tags()` (method, list) ✓
 - `contains(tag)` ✓
 - `get(tag)` ✓
 - `records()` ✓
@@ -79,6 +79,10 @@ The first slice should be intentionally narrow.
 - `view.selections[tag].add_label(...)`
 - `view.selections[tag].set_tag(...)`
 - `view.selections[tag].delete()`
+
+`add_label()` anchors to the exact saved atom indices, including selections that
+span several groups. It does not expand the selection to complete groups.
+`tag` is read-only; rename through `set_tag()` or the manager.
 
 ### `active_selection` bridge
 

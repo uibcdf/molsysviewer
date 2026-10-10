@@ -1,0 +1,94 @@
+{
+  "date": "2026-10-10",
+  "scope": "source-only public API closure; no frozen candidate or installed qualification",
+  "viewer_base": "b946a2b502e51335abbbeb8b7414d3d3096b70f3",
+  "molsysmt_checkout": "539633b77a4da51e9dd03c5edcd12c5658a4093a",
+  "environment": "molsyssuite@uibcdf_3.14",
+  "tool_versions": {
+    "pytest": "9.1.1",
+    "pytest-receptor": "1.1.0+19.g6d87a24",
+    "pytest-xdist": "3.8.0",
+    "argdigest": "0.15.0+1.g5c6711e",
+    "smonitor": "0.19.0"
+  },
+  "issues": [
+    210,
+    211,
+    212,
+    213,
+    214,
+    215,
+    216,
+    217
+  ],
+  "inventory": {
+    "totals": {
+      "public_callables": 726,
+      "digested": 726,
+      "undigested": 0,
+      "exempt": 0,
+      "declared_digesters": 442,
+      "missing_digesters": 0
+    },
+    "undigested": [],
+    "missing_skip_digestion": [],
+    "missing_digesters": []
+  },
+  "focused": {
+    "passed": 376,
+    "failed": 0,
+    "exit_code": 0
+  },
+  "full": {
+    "command": "python -m pytest --receptor=llm -n 12 tests/",
+    "passed": 3026,
+    "failed": 30,
+    "skipped": 23,
+    "exit_code": 1,
+    "seconds": 103.8,
+    "failure_partition": {
+      "sandbox_socket_or_chromium": 20,
+      "known_experimental_qt": 8,
+      "generated_table_or_git_index": 2
+    }
+  },
+  "environment_recovery": {
+    "command": "python -m pytest --receptor=llm tests/test_internal_render_worker_host.py tests/test_remote_session_service.py tests/test_remote_cli.py tests/test_preview_server.py tests/test_exported_page_opens_from_disk.py -x",
+    "passed": 53,
+    "failed": 0,
+    "skipped": 1,
+    "exit_code": 0,
+    "permissions": "unsandboxed local socket and Chromium execution",
+    "covers_all_twenty_sandbox_failures": true
+  },
+  "hosted_ci": "pending after direct source integration",
+  "publication": {
+    "version_agreed": "0.25.0",
+    "candidate_frozen": false,
+    "both_1_0_publications_paused": true
+  },
+  "logs": {
+    "python-full.log": {
+      "sha256": "de9b80ffb99dead26de8c9058bdde4575295aa5b33f987934d821b2a768afec0",
+      "bytes": 16535,
+      "local_directory": "/tmp/msv-api-hardening-20261010"
+    },
+    "python-full-detail.txt": {
+      "sha256": "ba7bfbf4d80443d2ec0aac0a01f13eed131f3f36f4e0f44d7a81d1a23e2598ab",
+      "bytes": 24201,
+      "local_directory": "/tmp/msv-api-hardening-20261010"
+    },
+    "environment-recovery.log": {
+      "sha256": "ec1bf6acb9d0fa2cb9b92060cfe11a59ebee5ba7126d88393b6a08b816a443db",
+      "bytes": 429,
+      "local_directory": "/tmp/msv-api-hardening-20261010"
+    }
+  },
+  "python": "3.14.7",
+  "devguide_recovery": {
+    "command": "python -m pytest --receptor=llm tests/test_reporting_protocol.py tests/test_devguide_links.py tests/test_devguide_architecture_status.py tests/test_capability_audit.py -x",
+    "passed": 433,
+    "failed": 0,
+    "exit_code": 0
+  }
+}

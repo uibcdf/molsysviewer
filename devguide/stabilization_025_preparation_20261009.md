@@ -70,6 +70,13 @@ and the [payload contract](../docs/content/developer/protocol_and_payloads.md).
 
 ## Qualification sequence after final source review
 
+The public Python API round is tracked in
+[the final API review](public_api_review_20261010.md): #210–#216 cover factory
+selection, annotation arguments, handle ownership/focus, saved-selection labels,
+delegated digestion and immutable identity. #217 completes handle inspection and
+editing parity. Its source evidence must be reviewed before freezing a producer;
+the existing public and staged packages do not contain these changes.
+
 1. Finish the remaining changes and inspect applicable source CI, including
    the complete core browser lane. Keep experimental Qt outcomes separate.
 2. Prepare canonical 0.25.0 citation/npm/Conda-route metadata, inspect the diff,

@@ -11,6 +11,7 @@ from smonitor import signal
 from ._private.argdigest import digest
 from ._private.delegated_errors import as_our_argument_error
 from ._private.exceptions import ArgumentError
+from ._private.scene_references import require_current_in_view
 from ._private.scene_registry import SceneRegistry
 from ._private.smonitor_emit import emit_suppressed_exception
 from ._private.variables import is_all
@@ -38,7 +39,7 @@ class Region:
         self._view = view
         current_owner = getattr(view, "_current_scene_owner", None)
         self._owner = current_owner() if callable(current_owner) else None
-        self.uid = uid or view._next_region_uid()  # noqa: SLF001
+        self._uid = uid or view._next_region_uid()  # noqa: SLF001
         self._tag = tag
         self.selection = selection
         self._atom_indices = tuple(atom_indices) if atom_indices is not None else None
@@ -62,6 +63,11 @@ class Region:
         # Layer membership (Contract B3, Phase 9): the tag of the layer this
         # region belongs to, or None for a region that belongs to no layer.
         self._layer: str | None = None
+
+    @property
+    def uid(self) -> str:
+        """Immutable recipe identity within this view."""
+        return self._uid
 
     @property
     def owner(self) -> str | None:
@@ -345,6 +351,7 @@ class Region:
 
     def _coerce_region_operand(self, other: Any) -> tuple[str, tuple[int, ...]]:
         if isinstance(other, Region):
+            require_current_in_view(other, self._view)
             return other.tag, other._require_atom_indices()
         try:
             indices = tuple(int(index) for index in other)
@@ -1212,6 +1219,9 @@ class Region:
         """Rename this region to *new_tag* on both the Python and JS sides."""
         if not self._active:
             return
+        new_tag = self._view._tag_managers["region"].validate(new_tag, current_tag=self.tag)
+        if new_tag == self.tag:
+            return
         old_tag = self.tag
         self._send("rename_region", new_tag=new_tag)
         self._tag = new_tag
@@ -1219,6 +1229,13 @@ class Region:
         dict.pop(self._view._regions, old_tag, None)  # noqa: SLF001
         self._view._rename_atom_color_layer(old_tag, new_tag)  # noqa: SLF001
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
+
+    @signal(tags=["region"])
+    @digest()
+    def set_tag(self, new_tag: str, skip_digestion: bool = False) -> None:
+        """Rename through the existing region lifecycle; rename remains available."""
+        self._assert_current()
+        self.rename(new_tag, skip_digestion=True)
 
     @records_scene_history
     @signal(tags=["region", "layer"])
@@ -1232,7 +1249,13 @@ class Region:
         """
         if not self._active:
             return
-        tag = layer.tag if hasattr(layer, "tag") else (None if layer is None else str(layer))
+        if layer is not None and not isinstance(layer, str):
+            from .layers import Layer
+
+            if not isinstance(layer, Layer):
+                raise TypeError("layer must be a Layer, its tag, or None.")
+            require_current_in_view(layer, self._view)
+        tag = layer.tag if layer is not None and not isinstance(layer, str) else layer
         self._set_layer_membership(tag)
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
 

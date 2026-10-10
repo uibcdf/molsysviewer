@@ -99,10 +99,7 @@ def new_view(
     view.load(
         molecular_system, selection="all", structure_indices=structure_indices, syntax=syntax, skip_digestion=True
     )
-    selected_atoms = None
-    select = getattr(view, "select", None)
-    if callable(select):
-        selected_atoms = list(select(selection=selection, syntax=syntax, skip_digestion=True))
+    selected_atoms = list(view.whole.select(selection=selection, syntax=syntax, skip_digestion=True))
     if selected_atoms == []:
         warn(
             EmptySelectionWarning(extra={"selection": repr(selection)}),
@@ -110,7 +107,7 @@ def new_view(
         )
         return view
 
-    view.whole.hide()
     region = view.regions.add(selection, tag="selection", syntax=syntax, skip_digestion=True)
     region.set_representation("inherit", skip_digestion=True)
+    view.whole.hide()
     return view

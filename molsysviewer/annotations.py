@@ -54,6 +54,7 @@ class AnnotationsManager:
         *,
         atom_indices: Any = None,
         group_index: Any = None,
+        syntax: str = "MolSysMT",
     ) -> list[int]:
         """Resolve the label anchor to a flat list of atom indices."""
         if self._view._molsys is None:  # noqa: SLF001
@@ -71,7 +72,7 @@ class AnnotationsManager:
                 for i in msm.select(
                     self._view._molsys,  # noqa: SLF001
                     selection=selection,
-                    syntax="MolSysMT",
+                    syntax=syntax,
                     skip_digestion=True,
                 )
             ]
@@ -256,12 +257,14 @@ class AnnotationsManager:
         label_style
             Optional visual style dict.
         """
+        if kind != "label":
+            raise ValueError(f"Unsupported annotation kind {kind!r}; choose 'label'.")
         if position is not None:
             resolved_position = annotation_vector(position, "position", physical=True)
             resolved_atom_indices = []
         else:
             resolved_position = None
-            resolved_atom_indices = self._resolve_anchor_atom_indices(selection, atom_indices=atom_indices)
+            resolved_atom_indices = self._resolve_anchor_atom_indices(selection, atom_indices=atom_indices, syntax=syntax)
 
         offset_list = annotation_vector(offset, "offset", physical=offset_mode == "world")
         if offset_mode not in {"camera", "world"} or leader_line_style not in {"solid", "dashed", "dotted"}:
@@ -513,6 +516,7 @@ class AnnotationsManager:
         *,
         atom_indices: Any = None,
         position: Any = None,
+        syntax: str = "MolSysMT",
         skip_digestion: bool = False,
     ) -> Layer:
         """Reanchor an existing label to atoms or one absolute physical position.
@@ -532,7 +536,7 @@ class AnnotationsManager:
         layer = self._require_annotation_layer(tag)
         resolved_position = annotation_vector(position, "position", physical=True) if position is not None else None
         resolved_atom_indices = (
-            [] if position is not None else self._resolve_anchor_atom_indices(selection, atom_indices=atom_indices)
+            [] if position is not None else self._resolve_anchor_atom_indices(selection, atom_indices=atom_indices, syntax=syntax)
         )
         record = self.info(tag, skip_digestion=True)
         if not isinstance(record, dict):

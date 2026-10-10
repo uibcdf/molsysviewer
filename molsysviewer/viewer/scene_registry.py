@@ -372,7 +372,7 @@ class SceneRegistryMixin:
             return
         provenance = "auto" if text == getattr(obj, "tag", None) else "user"
         self._ensure_layer_group(text, kind=getattr(obj, "kind", None), provenance=provenance)
-        obj.layer_tag = text
+        obj._layer_tag = text
         self._update_scene_object_history_layer_tag(obj.kind, obj.tag, text)
         if isinstance(old_layer_tag, str):
             old_layer = self._layers.get(old_layer_tag)
@@ -409,7 +409,7 @@ class SceneRegistryMixin:
             self._sync_layer_summaries_runtime()
         else:
             if kind is not None:
-                layer.kind = kind
+                layer._kind = kind
             if provenance == "user":
                 layer._promote_to_user()  # noqa: SLF001
                 self._sync_layer_summaries_runtime()
@@ -419,7 +419,7 @@ class SceneRegistryMixin:
         old_layer = self._layers.get(old_tag)
         if isinstance(old_layer, Layer) and len(old_layer.members) == 1 and (obj.kind, obj.tag) in old_layer.members:
             dict.pop(self._layers, old_tag, None)
-            old_layer.tag = new_tag
+            old_layer._tag = new_tag
             dict.__setitem__(self._layers, new_tag, old_layer)
             return
         self._ensure_layer_group(new_tag, provenance="user")

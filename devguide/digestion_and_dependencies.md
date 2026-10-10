@@ -11,12 +11,12 @@ We use ArgDigest in **package style**. Validation and normalization live outside
 - **Engine**: `molsysviewer/_private/argdigest/` contains the adapters and sub-packages.
 - **Digesters**: `molsysviewer/_private/argdigest/argument/` contains one `.py` file per argument name (e.g., `centers.py`, `radii.py`).
 
-### Current contract (2026-09-30)
+### Current contract (2026-10-10)
 
 Every ordinary supported public function has `@digest()` and an explicit
 `skip_digestion=False` parameter, including queries, delegating constructors,
 scene-handle methods and experimental hosts. There are no inventory exemptions.
-The inventory covers 699 reachable routes and reports missing decorators,
+The pinned inventory in `devtools/public_api_inventory_baseline.json` reports missing decorators,
 missing bypass parameters and missing named digesters separately. Exported class
 methods are included, as well as handles returned by managers.
 
