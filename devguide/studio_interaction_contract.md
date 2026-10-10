@@ -107,9 +107,12 @@ still propagate. History restoration must recover actual annotation cells.
 
 PNG dimension notifications update the readout in place, preserving a download
 button held between pointer-down/up. Export reports rendering, actual download
-initiation or a renderer error. The original hosted timeout remains historical
-evidence; this deterministic click-preservation guard alone does not establish
-its cause. An exact-source hosted rerun is still needed for qualification.
+initiation or a renderer error. The browser guard observes rendering completion
+separately from file delivery, preserving the requested PNG dimensions,
+transparency and rendering quality. The passing exact-source core run and the
+historical timeout are recorded in [the Studio review](studio_review_20261009.md)
+and its receipt; this source validation does not qualify a future packaged
+candidate.
 
 `studio-list-workflows.e2e.ts` is registered in the normal core lane. It uses
 pentalanine, real Python replies and Mol*/Chromium for creation failure/recovery,
