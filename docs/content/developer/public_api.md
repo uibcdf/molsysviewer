@@ -134,8 +134,9 @@ Removed in 0.22 (`uibcdf/molsysviewer#71`, executed in `#75`):
 Added in the same change: `whole.convert(...)` and `region.convert(...)`.
 
 Pure molecular-system reads should use `view.whole.*`, `region.*`, or `molsysmt.*(view, ...)`.
-Live molecular edits use the native viewer API, including `view.edit(...)`,
-coordinate setters and `view.interactions.calculate(...)`. MolSysMT is the
+Live molecular edits use the native viewer API, including `view.edit(...)`
+and coordinate setters. Calculate interactions through explicit family methods,
+such as `view.interactions.hbonds.get_buch_hbonds(...)`. MolSysMT is the
 scientific backend; it is not a built-in addon namespace.
 
 The user-facing translation table is in
