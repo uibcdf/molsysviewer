@@ -180,79 +180,119 @@
   },
   "logs": [
     {
+      "path": "/tmp/msv-core-qt-gates-20261013/board-check.log",
+      "bytes": 34,
+      "sha256": "ff09051a7d3df455b7dbc1f2a563e97f722bdd602c58530a8a4c77dfc6c3b943"
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/close-231.md",
+      "bytes": 2414,
+      "sha256": "2160d6ce8d474fc9262129901c966b723f398dfa8d5522dd5c6941a87da76bbe"
+    },
+    {
       "path": "/tmp/msv-core-qt-gates-20261013/devguide-final.log",
-      "sha256": "cccc7697f7243d3526e88b5b7ef2bd8f60eb9ade89dba455e1c4899ea9560d8d",
-      "bytes": 320
+      "bytes": 320,
+      "sha256": "cccc7697f7243d3526e88b5b7ef2bd8f60eb9ade89dba455e1c4899ea9560d8d"
     },
     {
       "path": "/tmp/msv-core-qt-gates-20261013/devguide-final.xml",
-      "sha256": "9e624f7f2148a33b2c825553b12963b804f338e2265e8227e6cfa00789f144e9",
-      "bytes": 41971
+      "bytes": 41971,
+      "sha256": "9e624f7f2148a33b2c825553b12963b804f338e2265e8227e6cfa00789f144e9"
     },
     {
       "path": "/tmp/msv-core-qt-gates-20261013/distribution-tests-final.log",
-      "sha256": "c66ef7936b32d2201bf6eb901cf69cbc8e71996669c38afe1f70ad40098e04a3",
-      "bytes": 80
+      "bytes": 80,
+      "sha256": "c66ef7936b32d2201bf6eb901cf69cbc8e71996669c38afe1f70ad40098e04a3"
     },
     {
       "path": "/tmp/msv-core-qt-gates-20261013/distribution-tests-final.xml",
-      "sha256": "d5a182ab1effa2af2d3eb4c53787a769a8469902344211ea74cc25f86954bfc8",
-      "bytes": 2969
+      "bytes": 2969,
+      "sha256": "d5a182ab1effa2af2d3eb4c53787a769a8469902344211ea74cc25f86954bfc8"
     },
     {
       "path": "/tmp/msv-core-qt-gates-20261013/focused.log",
-      "sha256": "341d5dca33250b815baddbafb6001e174c20bf1716bb74f3d612e77777db8938",
-      "bytes": 80
+      "bytes": 80,
+      "sha256": "341d5dca33250b815baddbafb6001e174c20bf1716bb74f3d612e77777db8938"
     },
     {
       "path": "/tmp/msv-core-qt-gates-20261013/focused.xml",
-      "sha256": "7b1fb120fd3a31ee8d8e5ae635223db3bf610b708498e19733d3bfd1ab3b2958",
-      "bytes": 2499
+      "bytes": 2499,
+      "sha256": "7b1fb120fd3a31ee8d8e5ae635223db3bf610b708498e19733d3bfd1ab3b2958"
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/format-check.log",
+      "bytes": 28,
+      "sha256": "e958043e7f0dc2349b2caf408b88c6437948f4c5be49e5d720e9a3f30a18703a"
     },
     {
       "path": "/tmp/msv-core-qt-gates-20261013/full-core.log",
-      "sha256": "1b2a4ad32d3fa9af7070095c57691e5821be2d68b271a2a37f32028dced57dee",
-      "bytes": 17882
+      "bytes": 17882,
+      "sha256": "1b2a4ad32d3fa9af7070095c57691e5821be2d68b271a2a37f32028dced57dee"
     },
     {
       "path": "/tmp/msv-core-qt-gates-20261013/full-core.xml",
-      "sha256": "6f7febc939759e857b1dbb6d20ff64e16c27cdf4a0c2c0760a0f612f1efe0aec",
-      "bytes": 442003
+      "bytes": 442003,
+      "sha256": "6f7febc939759e857b1dbb6d20ff64e16c27cdf4a0c2c0760a0f612f1efe0aec"
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/new-source-progress-final.json",
+      "bytes": 1009,
+      "sha256": "c6234578e8ef73195d88dc1bab78f335772e1abbbfe181269bf506feb51832fb"
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/new-source-progress.json",
+      "bytes": 1009,
+      "sha256": "c6234578e8ef73195d88dc1bab78f335772e1abbbfe181269bf506feb51832fb"
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/new-source-runs.json",
+      "bytes": 1322,
+      "sha256": "7913964841548ec43b7ba39fcb183d2e747e0f3d6e7ec609a48e44041e76a145"
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/policy-followup.json",
+      "bytes": 196,
+      "sha256": "fd9eb256221e5035b02d2712387dd82fe4144bf0619a5033150df55afd21a12b"
     },
     {
       "path": "/tmp/msv-core-qt-gates-20261013/previous-pair-jobs.json",
-      "sha256": "8e291aafc47f12b064e98143a4a180beedb03ac298734eeb177b41a39172e2cd",
-      "bytes": 18848
+      "bytes": 18848,
+      "sha256": "8e291aafc47f12b064e98143a4a180beedb03ac298734eeb177b41a39172e2cd"
     },
     {
       "path": "/tmp/msv-core-qt-gates-20261013/previous-scientific-jobs.json",
-      "sha256": "36c421001f0dc8e49981d7130bd38da21a5d4f25e02ef3154a3365d35e8eea62",
-      "bytes": 32284
+      "bytes": 32284,
+      "sha256": "36c421001f0dc8e49981d7130bd38da21a5d4f25e02ef3154a3365d35e8eea62"
     },
     {
       "path": "/tmp/msv-core-qt-gates-20261013/previous-source-runs.json",
-      "sha256": "b95e3855355b792a8205e7125e7b78c2dc469e8c76b32c55943e83c1bb868c0f",
-      "bytes": 1553
+      "bytes": 1553,
+      "sha256": "b95e3855355b792a8205e7125e7b78c2dc469e8c76b32c55943e83c1bb868c0f"
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/separate-qt-outcome.json",
+      "bytes": 513,
+      "sha256": "d7d78040b39aca21fbb9b623cbf08cbe4dd2f9a143f8c63da16c9d9d9b382a0b"
     },
     {
       "path": "/tmp/msv-core-qt-gates-20261013/workflow-tests-final.log",
-      "sha256": "d6f252ab95ef2be653249abda34581689e83b19703b1214b91b536683dce91bc",
-      "bytes": 1702
+      "bytes": 1702,
+      "sha256": "d6f252ab95ef2be653249abda34581689e83b19703b1214b91b536683dce91bc"
     },
     {
       "path": "/tmp/msv-core-qt-gates-20261013/workflow-tests-final.xml",
-      "sha256": "86290657865a31a0ef66f30adcfbb5065d9ff3f14a93c54400deb8a1607185dc",
-      "bytes": 5321
+      "bytes": 5321,
+      "sha256": "86290657865a31a0ef66f30adcfbb5065d9ff3f14a93c54400deb8a1607185dc"
     },
     {
       "path": "/tmp/msv-core-qt-gates-20261013/workflow-tests.log",
-      "sha256": "29b44533341930a3b020c9269760d835dbdee4c78adab36aae5a3410d4c65677",
-      "bytes": 2613
+      "bytes": 2613,
+      "sha256": "29b44533341930a3b020c9269760d835dbdee4c78adab36aae5a3410d4c65677"
     },
     {
       "path": "/tmp/msv-core-qt-gates-20261013/workflow-tests.xml",
-      "sha256": "5f8dd9262449c93f02fa07b60784d7b5074902e384b2e651df033b65c6a84e6f",
-      "bytes": 3325
+      "bytes": 3325,
+      "sha256": "5f8dd9262449c93f02fa07b60784d7b5074902e384b2e651df033b65c6a84e6f"
     }
   ],
   "devguide_reconciliation": {
@@ -340,7 +380,52 @@
         "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38370977225"
       }
     ],
-    "scope": "new source; pending core results are not inferred from f272e384"
+    "scope": "new source; pending core results are not inferred from f272e384",
+    "latest_inspection_at": "2026-10-13T08:54:10.216110+00:00",
+    "latest_runs": [
+      {
+        "conclusion": "",
+        "databaseId": 38370976318,
+        "name": "CI_e2e",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38370976318"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38370976346,
+        "name": "CI",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38370976346"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38370976339,
+        "name": "Python 3.14 source pair",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38370976339"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38370977474,
+        "name": "Conda publication governance",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38370977474"
+      },
+      {
+        "conclusion": "failure",
+        "databaseId": 38370977225,
+        "name": "MolSysSuite policy",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38370977225"
+      },
+      {
+        "conclusion": "failure",
+        "databaseId": 38370976385,
+        "name": "Experimental Qt diagnostics",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38370976385"
+      }
+    ]
   },
   "format_followup": {
     "failed_policy_run": 38370977225,
@@ -352,13 +437,54 @@
       "files": 911,
       "exit_code": 0
     },
-    "dedicated_hosted_policy": "pending exact followup dispatch",
-    "full_core_not_repeated": true
+    "dedicated_hosted_policy": {
+      "conclusion": "success",
+      "databaseId": 38371766429,
+      "headSha": "61c24e53e2c089944160e61551df21c90cb27e9d",
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38371766429"
+    },
+    "full_core_not_repeated": true,
+    "commit": "61c24e53e2c089944160e61551df21c90cb27e9d"
   },
   "pending": [
-    "dedicated exact policy followup",
     "new source scientific/Python314/core/notebook CI",
     "broad docs",
     "later authorized candidate/installed first contact/publication"
-  ]
+  ],
+  "experimental_qt_outcome": {
+    "run": 38370976385,
+    "jobs": [
+      {
+        "conclusion": "failure",
+        "diagnostics": [
+          {
+            "conclusion": "failure",
+            "name": "Qt transport round-trip in a real Qt process"
+          },
+          {
+            "conclusion": "failure",
+            "name": "The structure finishes loading through WebGL"
+          },
+          {
+            "conclusion": "success",
+            "name": "Qt offscreen transport and resource probes"
+          },
+          {
+            "conclusion": "success",
+            "name": "Preserve experimental Qt results"
+          }
+        ],
+        "id": 115207590982,
+        "name": "Qt pipeline completes (Xvfb, software WebGL)"
+      },
+      {
+        "conclusion": "skipped",
+        "diagnostics": [],
+        "id": 115207592588,
+        "name": "Check skipped-commit backlog"
+      }
+    ],
+    "note": "Two window/render diagnostics fail; offscreen transport/resource probes and artifact preservation succeed. The official independent Qt workflow remains failure; no native host certification is inferred."
+  }
 }

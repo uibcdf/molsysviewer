@@ -67,3 +67,14 @@ this contract owns validation scope only. Broad docs precede the eventual
 0.25.0 producer freeze. Build/qualify its exact
 files before the final installed first-contact review; both 1.0 publications
 remain paused.
+
+## Receiving checkpoint — 2026-10-13
+
+#231 is integrated in source `46527392`. Local full core passes 3,095 with
+21 skips, zero errors/failures; final devguide guards pass 242/242. A two-blank-
+line formatting correction keeps the test AST equal; exact policy 38371766429
+passes on `61c24e53`. Independent Qt 38370976385 preserves window/render
+failures, while offscreen/resource probes and JUnit preservation pass. New
+scientific/source-pair/core runs remain in progress in
+[the receipt](core_qt_qualification_20261013.json); prior f272e384 success is not
+transferred to their code or to future package bytes.

@@ -10,7 +10,11 @@ evidence retains its own scope in [the receiving receipt](core_qt_qualification_
 Source is integrated in `46527392`; #231 is closed and the board agrees. New
 scientific/source-pair/core/Qt workflows are separate. Policy 38370977225 found
 two formatting-only blank lines in the new guard; the AST-equivalent correction
-passes all 911 format checks and gets its own exact policy verification.
+passes all 911 format checks. Exact policy followup 38371766429 passes on
+`61c24e53`. The independent Qt 38370976385 retains window/render failures;
+offscreen transport/resource probes and JUnit preservation pass. Core scientific
+38370976346, Python 3.14 pair 38370976339 and browser 38370976318 remain in
+progress, with their own exact source 46527392.
 The previous exact source f272e384 has terminal scientific 6/6, Python 3.14 hosts
 3/3, hosted core 43/43 and notebooks 25/25. Its official CI conclusion remains
 failure on experimental Qt WebGL; the old verdict is preserved. Next: complete
