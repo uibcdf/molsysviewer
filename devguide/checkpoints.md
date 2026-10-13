@@ -50,9 +50,11 @@ core passes 3,105 with 21 recorded skips, zero failures/errors and experimental
 Qt excluded by the canonical mark. Fresh source CI retains separate
 [receiving](shape_only_canvas_workspace_validation_20261013.json).
 Functional source is integrated at `e7e21a79`; #240 and #244 are closed.
-Its first hosted policy run rejects formatting in one test fixture; the correction
-passes local lint/format checks with identical AST and unchanged runtime bytes.
-Fresh source campaigns retain exact identities in the receipt. No live
+Its first hosted policy run rejects formatting in one test fixture; `25b61e46`
+corrects it with identical AST and unchanged runtime bytes. Exact policy
+38456046969, lint, notebooks and Conda governance now succeed. Browser
+38456046033, core 38456045963 and Python 3.14 pair 38456046388 remain receiving;
+experimental Qt fails separately. Source campaigns retain exact identities in the receipt. No live
 Jupyter/provider or installed-package claim is inferred.
 
 **Canvas popup parity — 2026-10-13:** #232 implements the
