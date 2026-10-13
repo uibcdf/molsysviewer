@@ -6,6 +6,9 @@ import { captureCanvasPopupControllers, mountCanvasPopupFixture } from "./canvas
 
 /** Scientific mirror receiving guard, with native GPU picks and a real authority. */
 export async function checkCanvasPopupMirror(page: Page, dir: string) {
+    const started = Date.now();
+    const progress = (phase: string) => console.log(`[E2E popup mirror] ${phase}: ${Math.round((Date.now() - started) / 1000)}s`);
+    progress("starting real scientific receiving");
     const bridge = new PythonFixtureBridge(resolve(dir, "canvas-popup-bridge.py"), resolve(dir, "../../../.."));
     const errors: string[] = [];
     const onError = (error: Error) => errors.push(String(error));
@@ -21,6 +24,7 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
         popup.on("pageerror", onError);
         await popup.waitForFunction(() => !!(window as any).__mirrorController);
         await popup.locator("#molsysviewer-loading").waitFor({ state: "hidden" });
+        progress("widget and popup loaded");
         const peer = popup;
         const cameraEqual = async () => {
             await peer.bringToFront();
@@ -70,6 +74,7 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
         await fixture("selection", { indices: [0, 1] });
         for (const canvas of [page, peer]) await canvas.waitForFunction(() =>
             JSON.stringify((window as any).__mirrorController.currentActiveSelection.atom_indices) === "[0,1]");
+        progress("calculated scene and exact selections received");
 
         // Camera focus/reset and pointer/wheel updates must include their final
         // applied viewpoint, rather than stopping at pointerup.
@@ -114,6 +119,7 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
             await cameraEqual();
         }
 
+        progress("bidirectional camera and single motion clock received");
         // Isolate a visible shape and label for real GPU picking. The snapshot
         // comes through Python and is shared; no synthetic loci are supplied.
         const snapshot = await page.evaluate(() => (window as any).__mirrorController.getCameraSnapshot());
@@ -199,6 +205,7 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
                 && !c.state.resolveObjectLoci("interaction", "mirror-hbonds", groups, { ...identity, frame: identity.frame + 1 });
         }), true, "an old occurrence must not select a reused graphical group on another frame");
 
+        progress("native picks and edited annotation markers received");
         // Dock/ambient are window-local in both directions. Shared preferences
         // continue to use the existing trait projection guard.
         for (const canvas of [peer, page]) {
@@ -248,6 +255,7 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
         }
         await cameraEqual();
         assert.deepEqual(errors, []);
+        progress("local layout and stopped trajectory geometry received");
         assert.deepEqual(await page.evaluate(() => (window as any).__popupFixtureErrors), []);
         console.log("[E2E popup mirror] bidirectional focus/reset/drag/wheel, single motion/playback clocks, exact atom subsets, native shape/annotation picks and markers, local Dock, scene objects and frame-specific hbonds converge");
     } finally {

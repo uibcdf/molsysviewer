@@ -8,7 +8,9 @@ integration/followups, with 458 offline guards passing. Fresh hosted source gate
 are tracked separately in the [mirror receipt](canvas_popup_mirror_validation_20261013.json).
 Earlier #232 source 63c3d9c7 now passes its required hosted gates, with its
 independent Qt failure preserved. That evidence does not qualify later changes.
-Next finish the applicable mirror gates, complete broad documentation,
+Next finish the applicable mirror gates (#244 retains the hosted timeout),
+resolve [#240](pending_bugs/shape_only_canvas_workspace.md)'s shape-only workspace
+availability, complete broad documentation,
 prepare/qualify the agreed 0.25.0 candidate
 and perform human installed first contact before publication. Both 1.0
 publications remain paused.

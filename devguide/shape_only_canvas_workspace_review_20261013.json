@@ -1,0 +1,135 @@
+{
+  "date": "2026-10-13",
+  "issue": "uibcdf/molsysviewer#240",
+  "state": "reproduced_implementation_pending",
+  "viewer_source": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+  "metadata_head": "8f97fc5f",
+  "runtime_sha256": "d7e3a770bb6f63d2518038325cf693801a95f6cfe08489a478c7a1f78c669088",
+  "phmt_source": "a477d971c1dc09672ec83f97e2cc0f62869765e1",
+  "phmt_checkout_clean": true,
+  "python": "molsyssuite@uibcdf_3.14 / Python 3.14.7",
+  "browser": "headless Chrome/Mol* 5.4.1 via the existing WebGL-checked launcher",
+  "fixture": "Real MolSysView(viewer_mode=integrated), absolute unrelated sphere, actual PHMT addon registration/enablement and owning Python runtime summary; no molecular system or analytical detector calculation.",
+  "observed": {
+    "hasMolecularStructure": false,
+    "welcomeCards": 1,
+    "addonsVisible": false,
+    "addonsExpanded": false,
+    "nativeSphereRefs": [
+      {
+        "ref": "nze_YCknE-LCyidaDfUUlg",
+        "exists": true,
+        "hidden": false
+      }
+    ],
+    "workspaces": [
+      {
+        "id": "core",
+        "title": "Core",
+        "subtitle": "Studio + Workbench"
+      },
+      {
+        "id": "dockingmt",
+        "title": "Docking",
+        "addon": "dockingmt",
+        "subtitle": "2 panels · 1 section · 2 context actions · 1 export helper",
+        "panelCount": 2,
+        "workbenchSectionCount": 1,
+        "workbenchSectionTitles": [
+          "Docking Summary"
+        ],
+        "contextActionCount": 2,
+        "exportHelperCount": 1
+      },
+      {
+        "id": "pharmacophoremt",
+        "title": "PharmacophMT",
+        "addon": "pharmacophoremt",
+        "subtitle": "1 panel · 1 section · 1 context action · 1 export helper",
+        "panelCount": 1,
+        "workbenchSectionCount": 1,
+        "workbenchSectionTitles": [
+          "Pharmacophore Summary"
+        ],
+        "contextActionCount": 1,
+        "exportHelperCount": 1
+      },
+      {
+        "id": "topomt",
+        "title": "TopoMT",
+        "addon": "topomt",
+        "subtitle": "2 panels · 1 section · 2 context actions · 1 export helper",
+        "panelCount": 2,
+        "workbenchSectionCount": 1,
+        "workbenchSectionTitles": [
+          "Topography Summary"
+        ],
+        "contextActionCount": 2,
+        "exportHelperCount": 1
+      }
+    ],
+    "buttonCandidates": [
+      {
+        "text": "PharmacophMT1 panel · 1 section · 1 context action · 1 export helper",
+        "attributes": [
+          [
+            "type",
+            "button"
+          ],
+          [
+            "data-molsysviewer-addon-workspace-tab",
+            "pharmacophoremt"
+          ],
+          [
+            "aria-current",
+            "false"
+          ],
+          [
+            "style",
+            "display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; padding: 8px 12px; border-radius: 8px; border: 0px; background: transparent; color: rgba(244, 244, 245, 0.68); text-align: left; cursor: pointer; transition: 0.15s ease-in-out;"
+          ]
+        ],
+        "display": "flex",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      }
+    ]
+  },
+  "scope": "Read-only review of current real-controller DOM availability using real Python-produced messages. No runtime edits. Not a full Jupyter/addon widget control campaign or public-package qualification.",
+  "consumer_evidence": "uibcdf/pharmacophoremt#58; current-source live Jupyter receipt at https://github.com/uibcdf/pharmacophoremt/blob/98e7fd093433f8f6724428b86265f4027ff63fe8/devguide/evidence/current_viewer_addon_20261013_summary.json",
+  "preparation_failure": "Initial temporary-directory Node invocation could not resolve Playwright. Task-owned symlink to the repository dependency fixed resolution; this is not a product failure.",
+  "files": {
+    "fixture.json": {
+      "bytes": 12598,
+      "sha256": "170ba5936804dc0393aeefbb95ab7b74bc2848627bd1b3a3713121e19059730b"
+    },
+    "probe.ts": {
+      "bytes": 1938,
+      "sha256": "17d64ee7c1d5f29a3d22d5a18b09d62059138b17d78319064b95d2938820ef99"
+    },
+    "probe.log": {
+      "bytes": 865,
+      "sha256": "a88e0c0f9b2154afb051093d6d25d8a60b7de51c1bff9047310ad844117aeb80"
+    },
+    "probe-current.log": {
+      "bytes": 1654,
+      "sha256": "2cf46c01803977c10c11aeb4c6189b640e0d618e93ad1eaea30cb37420995a91"
+    },
+    "current-shape-only.json": {
+      "bytes": 2350,
+      "sha256": "b5592f31a617ab120bca400e617cb46cc18c357e4b749d7d11ab63d1f33819a9"
+    },
+    "current-shape-only.png": {
+      "bytes": 58560,
+      "sha256": "e136324dbb9f96a614f4cb5539e1ffac4a1b617fb0bcac2b0e297edb32e40b3e"
+    }
+  }
+}

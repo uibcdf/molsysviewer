@@ -19,9 +19,14 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Partially done (1)
+### Partially done (2)
 
+- [`scientific_popup_guard_budget.md`](scientific_popup_guard_budget.md) — [#244](https://github.com/uibcdf/molsysviewer/issues/244) — Expanded scientific popup guard exceeds the former 180-second CI suite budget *(medium, measured)*
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*
+
+### Open (1)
+
+- [`shape_only_canvas_workspace.md`](shape_only_canvas_workspace.md) — [#240](https://github.com/uibcdf/molsysviewer/issues/240) — Shape-only views keep the welcome card and hide addon workspaces until a molecular structure is loaded *(high, reproduced)*
 
 ### Deferred until after 1.0 (1)
 

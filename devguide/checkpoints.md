@@ -19,12 +19,23 @@ failed selectors pass after the fix outside the sandbox; another 48 selection/
 history/summary guards pass. This targeted recovery is not a second global pass.
 The [mirror receipt](canvas_popup_mirror_validation_20261013.json) owns this scope.
 Source is integrated directly in `main` at `c9471fe3`; all seven issues are
-closed with guard/archive evidence. Fresh hosted core 38442809595, browser
-38442809908, Python 3.14 pair 38442809327 and notebooks 38442809271 remain
-receiving; Ruff already succeeds. The independent experimental Qt run is
-38442809292. Official source conclusions stay distinct from local split coverage.
+closed with guard/archive evidence. Hosted browser 38442809908 failed its old
+180-second outer allowance after export/widget scenarios passed; #244 corrects
+only that three-scenario entry to 300 seconds, with phase timing and a passing
+local canonical receiving guard. Fresh hosted qualification remains required.
+Ruff, policy, Conda governance and notebooks succeed on c9471fe3; core
+38442809595 and Python 3.14 pair 38442809327 remain receiving. The independent
+experimental Qt 38442809292 also fails, with separate scope. Official source
+conclusions stay distinct from local split coverage.
 This work does not declare a frozen 0.25.0 candidate,
 installed artifact qualification or either 1.0 publication.
+
+**Shape-only host review — 2026-10-13:** [#240](pending_bugs/shape_only_canvas_workspace.md)
+is reproduced with the current controller and real Python-created sphere/addon
+summary. A valid native sphere and PHMT workspace coexist with one welcome card,
+hidden Add-ons and a zero-size workspace button. The issue remains open; no
+runtime fix was made in this review. Resolve generic workspace availability
+without a molecular dummy before broad documentation and candidate freeze.
 
 
 

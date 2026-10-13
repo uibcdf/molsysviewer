@@ -71,7 +71,12 @@ function suitesForLane(argument: string | undefined): readonly string[] {
 }
 
 function runSuite(name: string, endpoint: string, workspace: string): Promise<void> {
-    const timeoutMs = Number(process.env.E2E_SUITE_TIMEOUT_MS ?? 180_000);
+    const defaultTimeoutMs = Number(process.env.E2E_SUITE_TIMEOUT_MS ?? 180_000);
+    // Controls now receives export, notebook and scientific mirror scenarios,
+    // each with its own real Python authority/bootstrap. Keep other suites and
+    // an explicit caller override on their existing budget.
+    const timeoutMs = process.env.E2E_SUITE_TIMEOUT_MS === undefined && name === "controls-visibility"
+        ? 300_000 : defaultTimeoutMs;
     return new Promise((resolveSuite, rejectSuite) => {
         const child = spawn(process.execPath, [resolve(__dirname, `${name}.e2e.js`)], {
             env: { ...fixtureEnvironment(workspace), E2E_WS_ENDPOINT: endpoint },

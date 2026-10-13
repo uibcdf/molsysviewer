@@ -167,6 +167,11 @@ layout and frame-specific calculated hbonds in both windows. The exported-page
 scenario guards context rotation and bidirectional selection without Python.
 These scientific scene checks use the persistent real Python fixture and actual
 Mol* rendering; a control-style comparison cannot substitute for them.
+The three-scenario `controls-visibility` entry has a bounded 300-second default
+runner allowance; other suites keep 180 seconds. An explicit
+`E2E_SUITE_TIMEOUT_MS` retains precedence. Scientific phase timing must retain
+the distinction between progress, an assertion failure and outer termination;
+a timed-out run never qualifies closure by inference from earlier phases.
 `E2E_ALLOW_SKIP=1` does not qualify closure. Suffixes, globs and commands are
 rejected. The offline validator checks the fixture, actions, popup entrypoint
 and build/core registration. Its exact entrypoint is

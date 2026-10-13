@@ -41,7 +41,8 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- [Canvas scientific mirror](canvas_popup_contract.md): #234–#238/#241/#243 implement bidirectional scene receiving, portable native picks and single motion/playback clocks; [evidence](canvas_popup_mirror_validation_20261013.json) preserves all 43 core suites across retained runs/followups, 458 offline guards and the separate source CI/publication scope.
+- [Canvas scientific mirror](canvas_popup_contract.md): #234–#238/#241/#243 implement bidirectional scene receiving, portable native picks and single motion/playback clocks; [evidence](canvas_popup_mirror_validation_20261013.json) preserves all 43 core suites across retained runs/followups, 458 offline guards and the separate source CI/publication scope. The hosted timeout remains tracked under [#244](pending_bugs/scientific_popup_guard_budget.md).
+- [Shape-only workspace availability](pending_bugs/shape_only_canvas_workspace.md): #240 is reproduced in the current host and remains pre-1.0 work; absolute shapes and registered addons must not need a dummy molecular system to reach Studio.
 
 - [Canvas popup parity](canvas_popup_contract.md): #232 aligns runtime, controls, preferences, keyboard and popup actions; its [closure](archive/canvas_popup_controls_parity.md) retains real widget/export guards and passing core 43/43; [source CI receiving](canvas_popup_validation_20261013.json) tracks the integrated 63c3d9c7 separately.
 

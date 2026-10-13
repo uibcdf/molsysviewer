@@ -265,6 +265,18 @@
     "core-remainder.ts": {
       "bytes": 1209,
       "sha256": "7b2832572eca6c099d7c83739ec125703b300a79622bf091b63af1112aa7262d"
+    },
+    "controls-budget.log": {
+      "bytes": 2426,
+      "sha256": "c24e02c5e99e1db78271ac1c742e8742a48145c0d0149d5e9a3e47a203ca07de"
+    },
+    "budget-policy.log": {
+      "bytes": 80,
+      "sha256": "83a1593c5b5783693fe3006d1f6597bcb4f3a5968f23b59481ee09a0477f910a"
+    },
+    "ci-e2e-failed.log": {
+      "bytes": 8954,
+      "sha256": "60d660f575f4288747e970a65daa702f3e38cc27c275a7c8841c990d13d44a1b"
     }
   },
   "runtime_build": {
@@ -287,17 +299,8 @@
     "verification": "gh issue close completed for all seven, each with commit/guard/archive evidence."
   },
   "source_ci_receiving": {
-    "observed_at_utc": "2026-10-13T17:57:30Z",
+    "observed_at_utc": "2026-10-13T18:08:26.530584+00:00",
     "runs": [
-      {
-        "conclusion": "",
-        "createdAt": "2026-10-13T17:57:13Z",
-        "databaseId": 38442809908,
-        "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
-        "status": "queued",
-        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809908",
-        "workflowName": "CI_e2e"
-      },
       {
         "conclusion": "",
         "createdAt": "2026-10-13T17:57:13Z",
@@ -308,49 +311,31 @@
         "workflowName": "CI"
       },
       {
-        "conclusion": "",
-        "createdAt": "2026-10-13T17:57:13Z",
-        "databaseId": 38442810308,
-        "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
-        "status": "queued",
-        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442810308",
-        "workflowName": "Conda publication governance"
-      },
-      {
-        "conclusion": "",
+        "conclusion": "success",
         "createdAt": "2026-10-13T17:57:13Z",
         "databaseId": 38442810175,
         "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
-        "status": "queued",
+        "status": "completed",
         "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442810175",
         "workflowName": "MolSysSuite policy"
       },
       {
-        "conclusion": "",
-        "createdAt": "2026-10-13T17:57:12Z",
-        "databaseId": 38442809271,
+        "conclusion": "success",
+        "createdAt": "2026-10-13T17:57:13Z",
+        "databaseId": 38442810308,
         "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
-        "status": "in_progress",
-        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809271",
-        "workflowName": "Documentation notebooks"
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442810308",
+        "workflowName": "Conda publication governance"
       },
       {
-        "conclusion": "",
-        "createdAt": "2026-10-13T17:57:12Z",
-        "databaseId": 38442809292,
+        "conclusion": "failure",
+        "createdAt": "2026-10-13T17:57:13Z",
+        "databaseId": 38442809908,
         "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
-        "status": "queued",
-        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809292",
-        "workflowName": "Experimental Qt diagnostics"
-      },
-      {
-        "conclusion": "",
-        "createdAt": "2026-10-13T17:57:12Z",
-        "databaseId": 38442809327,
-        "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
-        "status": "queued",
-        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809327",
-        "workflowName": "Python 3.14 source pair"
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809908",
+        "workflowName": "CI_e2e"
       },
       {
         "conclusion": "success",
@@ -360,8 +345,127 @@
         "status": "completed",
         "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809246",
         "workflowName": "Ruff Lint"
+      },
+      {
+        "conclusion": "success",
+        "createdAt": "2026-10-13T17:57:12Z",
+        "databaseId": 38442809271,
+        "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809271",
+        "workflowName": "Documentation notebooks"
+      },
+      {
+        "conclusion": "failure",
+        "createdAt": "2026-10-13T17:57:12Z",
+        "databaseId": 38442809292,
+        "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809292",
+        "workflowName": "Experimental Qt diagnostics"
+      },
+      {
+        "conclusion": "",
+        "createdAt": "2026-10-13T17:57:12Z",
+        "databaseId": 38442809327,
+        "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809327",
+        "workflowName": "Python 3.14 source pair"
       }
     ],
-    "scope": "Official fresh source conclusions remain pending except Ruff. Local split coverage does not replace this canonical hosted gate; experimental Qt remains separately scoped. No candidate/artifact/publication qualification."
+    "scope": "Official c9471fe3 source browser conclusion is failure: the expanded entry hit its former 180-second outer budget after its first two scenarios passed. Issue #244 owns scoped runner correction and fresh qualification; no hosted scientific completion is inferred. Qt remains separate; core/source pair are still receiving."
+  },
+  "source_ci_history": [
+    {
+      "observed_at_utc": "2026-10-13T17:57:30Z",
+      "runs": [
+        {
+          "conclusion": "",
+          "createdAt": "2026-10-13T17:57:13Z",
+          "databaseId": 38442809908,
+          "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+          "status": "queued",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809908",
+          "workflowName": "CI_e2e"
+        },
+        {
+          "conclusion": "",
+          "createdAt": "2026-10-13T17:57:13Z",
+          "databaseId": 38442809595,
+          "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+          "status": "queued",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809595",
+          "workflowName": "CI"
+        },
+        {
+          "conclusion": "",
+          "createdAt": "2026-10-13T17:57:13Z",
+          "databaseId": 38442810308,
+          "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+          "status": "queued",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442810308",
+          "workflowName": "Conda publication governance"
+        },
+        {
+          "conclusion": "",
+          "createdAt": "2026-10-13T17:57:13Z",
+          "databaseId": 38442810175,
+          "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+          "status": "queued",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442810175",
+          "workflowName": "MolSysSuite policy"
+        },
+        {
+          "conclusion": "",
+          "createdAt": "2026-10-13T17:57:12Z",
+          "databaseId": 38442809271,
+          "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+          "status": "in_progress",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809271",
+          "workflowName": "Documentation notebooks"
+        },
+        {
+          "conclusion": "",
+          "createdAt": "2026-10-13T17:57:12Z",
+          "databaseId": 38442809292,
+          "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+          "status": "queued",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809292",
+          "workflowName": "Experimental Qt diagnostics"
+        },
+        {
+          "conclusion": "",
+          "createdAt": "2026-10-13T17:57:12Z",
+          "databaseId": 38442809327,
+          "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+          "status": "queued",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809327",
+          "workflowName": "Python 3.14 source pair"
+        },
+        {
+          "conclusion": "success",
+          "createdAt": "2026-10-13T17:57:12Z",
+          "databaseId": 38442809246,
+          "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+          "status": "completed",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809246",
+          "workflowName": "Ruff Lint"
+        }
+      ],
+      "scope": "Official fresh source conclusions remain pending except Ruff. Local split coverage does not replace this canonical hosted gate; experimental Qt remains separately scoped. No candidate/artifact/publication qualification."
+    }
+  ],
+  "controls_budget_followup": {
+    "issue": "uibcdf/molsysviewer#244",
+    "scope": "Test infrastructure only; same production runtime bytes. Default controls allowance 300 seconds; other entries retain 180 and explicit overrides retain precedence.",
+    "local": "Canonical shared runner --lane=core --suites=controls-visibility passes all three scenarios, including scientific completion in 83 seconds from its own start. Seven E2E-policy checks pass.",
+    "hosted": "Fresh exact source receiving required; no public artifact or publication claim.",
+    "offline_validation": {
+      "tests": 260,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
   }
 }
