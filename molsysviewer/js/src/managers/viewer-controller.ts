@@ -3152,6 +3152,8 @@ export class MolSysViewerController {
                 }
 
                 case "addon_panel_message": {
+                    const messageKey = `${(msg as any).addon}:${(msg as any).panel}`;
+                    if (messageKey !== this.activePanelWidgetKey) break;
                     const content = (msg as any).content;
                     if (content) {
                         for (const cb of this.activePanelMsgListeners) {

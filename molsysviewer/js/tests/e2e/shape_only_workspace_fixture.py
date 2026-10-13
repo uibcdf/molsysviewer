@@ -14,6 +14,14 @@ import molsysviewer as msv
 class WorkspacePanel(AddonPanelWidget):
     _esm = """
     export function render({model, el}) {
+        let stateCount = 0;
+        const state = message => {
+            if (message.type === 'state') {
+                el.dataset.workspaceStateCount = String(++stateCount);
+                if (message.state.initial) el.dataset.workspaceReady = 'true';
+            }
+        };
+        model.on('msg:custom', state);
         for (const id of ['render', 'clear']) {
             const button = document.createElement('button');
             button.textContent = id === 'render' ? 'Render geometry' : 'Clear geometry';
@@ -21,9 +29,12 @@ class WorkspacePanel(AddonPanelWidget):
             button.onclick = () => model.send({type:'action', id});
             el.appendChild(button);
         }
-        return () => el.replaceChildren();
+        return () => { model.off('msg:custom', state); el.replaceChildren(); };
     }
     """
+
+    def on_mount(self, view, *, skip_digestion=False):
+        self.push_state({"initial": True})
 
     def handle_action(self, view, action_id, payload, *, skip_digestion=False):
         if action_id == "render":
@@ -46,6 +57,7 @@ def fixture_event(view, event):
         view.shapes["caller-sphere"].hide()
     elif action == "load-molecule":
         view.load(msv.demo["dialanine"].molsys)
+        view.player.set_fps(17)
     elif action == "enable":
         view.addons.enable("geometry-review")
     else:

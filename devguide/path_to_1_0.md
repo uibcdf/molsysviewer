@@ -1,5 +1,14 @@
 # Path to 1.0.0 (Unified Release Plan)
 
+**Latest triage — 2026-10-13:** the
+[complete open-board reconciliation](open_issue_reconciliation_20261013.md)
+identifies #233 generic addon discovery and #242 compatible transitive
+dependency updates before the next freeze. #245 corrects independent addon
+window lifecycle after canonical hosted browser/source-pair failures; source
+receiving remains separate from the earlier local pass. The real PHMT/Jupyter
+manual smoke is prepared and explicitly postponed by Diego. Both 1.0 releases
+remain paused; 0.25.0 remains unfrozen.
+
 **Current work — 2026-10-13:** the scientific
 [canvas mirror](canvas_popup_contract.md) implements #234–#238/#241/#243,
 including resolved cameras, single motion/playback clocks and native object picks.

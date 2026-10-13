@@ -411,30 +411,36 @@ class PanelModeMixin:
     def _sync_addons_runtime(self) -> None:
         self._send(self._build_addon_runtime_summary_message())
 
-    def _mount_addon_panel(self, addon_name: str, panel_id: str) -> None:
-        self._unmount_addon_panel()
+    def _mount_addon_panel(self, addon_name: str, panel_id: str, *, endpoint_id: str | None = None) -> None:
+        self._unmount_addon_panel(endpoint_id=endpoint_id)
         widget = self.addons.resolve_panel_widget(addon_name, panel_id)
         if widget is None:
             return
 
+        destination = {"target_endpoint_id": endpoint_id} if endpoint_id is not None else {}
+
         def _routed_send(msg: dict, buffers: Any = None) -> None:
+            active = self._active_panel_widgets.get(endpoint_id)
+            if active is None or active[2] is not widget:
+                return
             self._send_runtime_only(
                 {
                     "op": "addon_panel_message",
                     "addon": addon_name,
                     "panel": panel_id,
                     "content": msg,
+                    **destination,
                 }
             )
 
         widget.send = _routed_send
-        self._active_panel_widget = (addon_name, panel_id, widget)
+        active = (addon_name, panel_id, widget)
+        self._active_panel_widgets[endpoint_id] = active
+        if endpoint_id is None:
+            self._active_panel_widget = active
 
-        widget.on_mount(self)
-
-        ctx = widget._build_viewer_context()
-        _routed_send({"type": "context", "context": ctx})
-
+        # The controller awaits ESM render before consuming subsequent state.
+        # Initial on_mount messages therefore reach installed listeners.
         self._send_runtime_only(
             {
                 "op": "mount_addon_panel",
@@ -442,14 +448,21 @@ class PanelModeMixin:
                 "panel": panel_id,
                 "esm": widget._esm,
                 "css": getattr(widget, "_css", "") or "",
+                **destination,
             }
         )
+        widget.on_mount(self)
+        ctx = widget._build_viewer_context()
+        _routed_send({"type": "context", "context": ctx})
 
-    def _unmount_addon_panel(self) -> None:
-        if self._active_panel_widget is None:
+    def _unmount_addon_panel(self, *, endpoint_id: str | None = None) -> None:
+        active = self._active_panel_widgets.pop(endpoint_id, None)
+        if endpoint_id is None:
+            active = active or self._active_panel_widget
+            self._active_panel_widget = None
+        if active is None:
             return
-        _, _, widget = self._active_panel_widget
-        self._active_panel_widget = None
+        _, _, widget = active
         try:
             widget.on_unmount(self)
         except Exception:
@@ -462,6 +475,11 @@ class PanelModeMixin:
                 if callable(close_layout):
                     close_layout()
             widget._view = None
+
+    def _unmount_all_addon_panels(self) -> None:
+        for endpoint_id in list(self._active_panel_widgets):
+            self._unmount_addon_panel(endpoint_id=endpoint_id)
+        self._unmount_addon_panel()
 
 
 PanelModeMixin.__module__ = "molsysviewer.viewer"

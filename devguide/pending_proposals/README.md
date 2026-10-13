@@ -20,6 +20,9 @@ compression, workers, shared memory and multiview remain post-1.0.
 Entries are rendered from each proposal's front matter — edit the proposals, not this
 list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 
+#39 remains post-1.0 on demand at its legacy queue path because immutable
+archived documents link there; its location does not reopen its release scope.
+
 <!-- generated: devguide_index -->
 
 ### Being worked on (2)
@@ -31,10 +34,11 @@ list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 
 - [`molsysmt_known_source_form_and_large_string_detection.md`](molsysmt_known_source_form_and_large_string_detection.md) — [#42](https://github.com/uibcdf/molsysviewer/issues/42) — Adopt a public source-form hint when MolSysMT provides it; historical extension detection is repaired. *(measured)* — waiting on uibcdf/molsysmt#151
 
-### Open (2)
+### Open (3)
 
 - [`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md) — [#39](https://github.com/uibcdf/molsysviewer/issues/39) — Build the runtime as a classic script so many shared views open from a disk with no server. *(measured)*
 - [`molsysmt_docs_pipeline_analysis.md`](molsysmt_docs_pipeline_analysis.md) — [#41](https://github.com/uibcdf/molsysviewer/issues/41) — MolSysMT's documentation pipeline read at the scale it is about to reach. *(measured)*
+- [`pytest_xdist_receiver_thread_report.md`](pytest_xdist_receiver_thread_report.md) — [#80](https://github.com/uibcdf/molsysviewer/issues/80) — Decide whether to report pytest-xdist receiver-thread warning imports upstream *(inspected)*
 
 ### Deferred until after 1.0 (21)
 

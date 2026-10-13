@@ -1,0 +1,1232 @@
+{
+  "observed_at": "2026-10-13T20:29:05.244728+00:00",
+  "scope": "open board / current source, not installed artifact qualification",
+  "source_before_changes": "df5214ce",
+  "issues": [
+    {
+      "labels": [],
+      "milestone": null,
+      "number": 245,
+      "title": "Addon panel lifecycle and action routing are shared across independent popup windows",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/245",
+      "disposition": "Pre-freeze core defect; fix in qualification",
+      "remaining": "Independent window lifecycle and owner-specific actions implemented; local Python/JS/browser guards pass. Hosted exact-source qualification is still required.",
+      "record": "archive/addon_popup_panel_lifecycle.md",
+      "source_resolution": "resolved with guards; remote closure follows source integration"
+    },
+    {
+      "labels": [],
+      "milestone": null,
+      "number": 242,
+      "title": "Review npm audit findings in the current locked JavaScript dependency graph",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/242",
+      "disposition": "Pre-freeze dependency review",
+      "remaining": "Nine registry advisories confirmed; Immutable is used by Mol* state at runtime. Compatible lockfile remediation and qualification remain. No exploit is asserted.",
+      "record": "pending_bugs/locked_javascript_dependency_advisories.md"
+    },
+    {
+      "labels": [],
+      "milestone": null,
+      "number": 239,
+      "title": "Live Jupyter widget reports set_trajectory_summary as an unknown frontend operation",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/239",
+      "disposition": "Implemented; closure receiving",
+      "remaining": "c9471fe3 consumes trajectory summaries. Real Python/widget/Mol* guard now requires 17 fps in original and popup and rejects the unknown-op warning.",
+      "record": "archive/widget_trajectory_summary_dispatch.md",
+      "source_resolution": "resolved with guards; remote closure follows source integration"
+    },
+    {
+      "labels": [],
+      "milestone": null,
+      "number": 233,
+      "title": "Entry-point discovery reports a partially initialized addon as invalid when the addon imports public specs",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/233",
+      "disposition": "Pre-freeze generic addon defect",
+      "remaining": "Entry-point circular-import behavior remains distinct from known-module checks. Current PHMT avoids it, but the generic documented root-import route needs correction/qualification.",
+      "record": "pending_bugs/addon_entrypoint_partial_initialization.md"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 226,
+      "title": "Evaluate copying equivalent Python code from Studio",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/226",
+      "disposition": "Post-1.0; explicitly deferred",
+      "remaining": "Copy equivalent Python from Studio is the maintainer's explicit remaining UI deferral.",
+      "record": "pending_proposals/post_1.0/studio_copy_python.md"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 115,
+      "title": "Update the Mol* dependency after 1.0",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/115",
+      "disposition": "Post-1.0"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 113,
+      "title": "Evaluate aligned PySide6/Qt for a future supported standalone host",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/113",
+      "disposition": "Post-1.0"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        },
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DfQ",
+          "name": "in-progress",
+          "description": "Being worked on now",
+          "color": "fbca04"
+        }
+      ],
+      "milestone": null,
+      "number": 109,
+      "title": "Migrate optional Qt host to canonical PySide6 6.11.2",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/109",
+      "disposition": "Experimental; outside core gate"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": null,
+      "number": 100,
+      "title": "Define reproducible browser and render-worker E2E evidence lanes",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/100",
+      "disposition": "Post-1.0 remote preview",
+      "remaining": "Core/portable/remote/server-GPU lane contracts exist. Managed remote qualification remains deferred. The old issue has no milestone; accepted local scope takes precedence without rewriting its open body.",
+      "record": "pending_proposals/post_1.0/reproducible_browser_and_render_worker_e2e_evidence.md"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        },
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DfQ",
+          "name": "in-progress",
+          "description": "Being worked on now",
+          "color": "fbca04"
+        },
+        {
+          "id": "LA_kwDOQUmQWc8AAAAC3id81w",
+          "name": "component:molsysmt",
+          "description": "Cross-component relationship with uibcdf/molsysmt",
+          "color": "1d76db"
+        }
+      ],
+      "milestone": null,
+      "number": 93,
+      "title": "Coordinate MolSysViewer Python 3.14 support with MolSysMT",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/93",
+      "disposition": "Delivered support; central admission pending",
+      "remaining": "Existing public Python 3.11\u20133.14 evidence remains valid. The current central suite.toml still records authorized, not admitted; old central implementation text is not a new missing Viewer feature.",
+      "record": "pending_proposals/extend_python_support_to_3_14.md"
+    },
+    {
+      "labels": [],
+      "milestone": null,
+      "number": 80,
+      "title": "Report upstream to pytest-xdist: an import in the receiver thread can end the session",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/80",
+      "disposition": "External reporting decision; outside core gate",
+      "remaining": "Viewer workaround is delivered. Reporting to third-party pytest-xdist is still a separate unapproved decision.",
+      "record": "pending_proposals/pytest_xdist_receiver_thread_report.md"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 59,
+      "title": "Advanced representations for pockets, voids, channels and interfaces",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/59",
+      "disposition": "Post-1.0"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 58,
+      "title": "View a scene as pixels in a terminal",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/58",
+      "disposition": "Post-1.0"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 57,
+      "title": "Generated typing contract for MolSysView mixins",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/57",
+      "disposition": "Post-1.0"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 56,
+      "title": "Studio subpanel for Interactions",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/56",
+      "disposition": "Post-1.0 growth; baseline delivered"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 55,
+      "title": "Structure windowing and lazy materialization",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/55",
+      "disposition": "Post-1.0"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 54,
+      "title": "Post-1.0 performance architecture",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/54",
+      "disposition": "Post-1.0"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 53,
+      "title": "Move the structure barrier to the receiver",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/53",
+      "disposition": "Post-1.0"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 52,
+      "title": "Automate the Qt render check on a GPU runner",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/52",
+      "disposition": "Post-1.0"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 51,
+      "title": "Popout parity in the Qt standalone host",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/51",
+      "disposition": "Post-1.0"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 50,
+      "title": "Idea inventory from an external terminal viewer",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/50",
+      "disposition": "Post-1.0 ideas"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 49,
+      "title": "Multi-view split-screen viewport synchronization",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/49",
+      "disposition": "Post-1.0"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 48,
+      "title": "An Interactions domain for derived atom-atom relations",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/48",
+      "disposition": "Post-1.0 growth; baseline delivered"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 47,
+      "title": "Rough edges of the 2026-08 export rework, to review cold",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/47",
+      "disposition": "Post-1.0 cold review"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 46,
+      "title": "Preserve enriched chemical metadata from SDF and MOL2",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/46",
+      "disposition": "Post-1.0 enriched metadata"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 45,
+      "title": "Configurable canvas picking granularity via the context menu",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/45",
+      "disposition": "Post-1.0"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 44,
+      "title": "Advanced annotations on Mol*'s MVS machinery",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/44",
+      "disposition": "Post-1.0"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 43,
+      "title": "Study the token cost of non-pytest test output for agent consumers",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/43",
+      "disposition": "Post-1.0 tooling"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        },
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5D3A",
+          "name": "blocked",
+          "description": "Waiting on something named in blocked_by",
+          "color": "b60205"
+        }
+      ],
+      "milestone": null,
+      "number": 42,
+      "title": "Adopt MolSysMT's explicit source-form hint once it exists",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/42",
+      "disposition": "Provider API improvement; outside core gate"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": null,
+      "number": 41,
+      "title": "Offer MolSysMT a read of their documentation pipeline at the scale it is reaching",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/41",
+      "disposition": "Advisory; outside core gate"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5DHg",
+          "name": "proposal",
+          "description": "Work not yet part of the contract",
+          "color": "0e8a16"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 39,
+      "title": "Build the runtime as a classic script so exported views open from a disk",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/39",
+      "disposition": "Post-1.0 on demand",
+      "remaining": "Existing board deferral remains explicit; the legacy path is retained for immutable archived backlinks. Single self-contained HTML and served shared bundles retain their supported routes.",
+      "record": "pending_proposals/classic_script_runtime_for_offline_bundles.md"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACPlmhZg",
+          "name": "bug",
+          "description": "Something isn't working",
+          "color": "d73a4a"
+        }
+      ],
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 36,
+      "title": "Standalone Qt movie export lacks a camera snapshot",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/36",
+      "disposition": "Post-1.0 experimental defect"
+    },
+    {
+      "labels": [
+        {
+          "id": "LA_kwDOQUmQWc8AAAACPlmhZg",
+          "name": "bug",
+          "description": "Something isn't working",
+          "color": "d73a4a"
+        },
+        {
+          "id": "LA_kwDOQUmQWc8AAAACwR5EGA",
+          "name": "partial",
+          "description": "Some phases done, the rest pending",
+          "color": "d4c5f9"
+        }
+      ],
+      "milestone": null,
+      "number": 35,
+      "title": "Standalone Qt: live demo replacement does not update the scene",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/35",
+      "disposition": "Experimental defect; outside core gate"
+    }
+  ],
+  "central_python_admission": "authorized (remote suite.toml)",
+  "external_source_form_hint": "uibcdf/molsysmt#151 OPEN",
+  "ci_previous_source": "25b61e4602d0aeab4f25303e02f18d37fc0e2eda",
+  "ci_observation": [
+    {
+      "conclusion": "failure",
+      "databaseId": 38456046216,
+      "name": "Experimental Qt diagnostics",
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "databaseId": 38456046033,
+      "name": "CI_e2e",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38456046296,
+      "name": "Ruff Lint",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38456046858,
+      "name": "Conda publication governance",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38456046198,
+      "name": "Documentation notebooks",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38456046969,
+      "name": "MolSysSuite policy",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38456045963,
+      "name": "CI",
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "databaseId": 38456046388,
+      "name": "Python 3.14 source pair",
+      "status": "completed"
+    }
+  ],
+  "npm_audit": {
+    "auditReportVersion": 2,
+    "vulnerabilities": {
+      "body-parser": {
+        "name": "body-parser",
+        "severity": "low",
+        "isDirect": false,
+        "via": [
+          {
+            "source": 1123976,
+            "name": "body-parser",
+            "dependency": "body-parser",
+            "title": "body-parser vulnerable to denial of service when invalid limit value silently disables size enforcement",
+            "url": "https://github.com/advisories/GHSA-v422-hmwv-36x6",
+            "severity": "low",
+            "cwe": [
+              "CWE-770"
+            ],
+            "cvss": {
+              "score": 3.7,
+              "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L"
+            },
+            "range": ">=2.0.0 <2.3.0"
+          }
+        ],
+        "effects": [],
+        "range": "2.0.0 - 2.2.2",
+        "nodes": [
+          "node_modules/body-parser"
+        ],
+        "fixAvailable": true
+      },
+      "brace-expansion": {
+        "name": "brace-expansion",
+        "severity": "high",
+        "isDirect": false,
+        "via": [
+          {
+            "source": 1115541,
+            "name": "brace-expansion",
+            "dependency": "brace-expansion",
+            "title": "brace-expansion: Zero-step sequence causes process hang and memory exhaustion",
+            "url": "https://github.com/advisories/GHSA-f886-m6hf-6m8v",
+            "severity": "moderate",
+            "cwe": [
+              "CWE-400"
+            ],
+            "cvss": {
+              "score": 6.5,
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H"
+            },
+            "range": ">=2.0.0 <2.0.3"
+          },
+          {
+            "source": 1123896,
+            "name": "brace-expansion",
+            "dependency": "brace-expansion",
+            "title": "brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups",
+            "url": "https://github.com/advisories/GHSA-3jxr-9vmj-r5cp",
+            "severity": "high",
+            "cwe": [
+              "CWE-400",
+              "CWE-407"
+            ],
+            "cvss": {
+              "score": 5.3,
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+            },
+            "range": ">=2.0.0 <2.1.2"
+          },
+          {
+            "source": 1130589,
+            "name": "brace-expansion",
+            "dependency": "brace-expansion",
+            "title": "brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash",
+            "url": "https://github.com/advisories/GHSA-mh99-v99m-4gvg",
+            "severity": "high",
+            "cwe": [
+              "CWE-400",
+              "CWE-770"
+            ],
+            "cvss": {
+              "score": 7.5,
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "range": ">=2.0.0 <2.1.3"
+          },
+          {
+            "source": 1130736,
+            "name": "brace-expansion",
+            "dependency": "brace-expansion",
+            "title": "brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation",
+            "url": "https://github.com/advisories/GHSA-rgw5-rvv9-x895",
+            "severity": "high",
+            "cwe": [
+              "CWE-400",
+              "CWE-770"
+            ],
+            "cvss": {
+              "score": 7.5,
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "range": ">=2.0.0 <2.1.4"
+          },
+          {
+            "source": 1240101,
+            "name": "brace-expansion",
+            "dependency": "brace-expansion",
+            "title": "brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service",
+            "url": "https://github.com/advisories/GHSA-q2hr-2g5m-vwhr",
+            "severity": "moderate",
+            "cwe": [
+              "CWE-400",
+              "CWE-407"
+            ],
+            "cvss": {
+              "score": 5.3,
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+            },
+            "range": ">=2.0.0 <2.1.7"
+          },
+          {
+            "source": 1240105,
+            "name": "brace-expansion",
+            "dependency": "brace-expansion",
+            "title": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion",
+            "url": "https://github.com/advisories/GHSA-qhr7-859c-m2p7",
+            "severity": "high",
+            "cwe": [
+              "CWE-400",
+              "CWE-674"
+            ],
+            "cvss": {
+              "score": 7.5,
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "range": ">=2.0.0 <2.1.6"
+          },
+          {
+            "source": 1240109,
+            "name": "brace-expansion",
+            "dependency": "brace-expansion",
+            "title": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion",
+            "url": "https://github.com/advisories/GHSA-6j4f-fj2g-mc7p",
+            "severity": "high",
+            "cwe": [
+              "CWE-400",
+              "CWE-674"
+            ],
+            "cvss": {
+              "score": 7.5,
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "range": ">=2.0.0 <2.1.5"
+          }
+        ],
+        "effects": [],
+        "range": "2.0.0 - 2.1.6",
+        "nodes": [
+          "node_modules/test-exclude/node_modules/brace-expansion"
+        ],
+        "fixAvailable": true
+      },
+      "compression": {
+        "name": "compression",
+        "severity": "high",
+        "isDirect": false,
+        "via": [
+          {
+            "source": 1241221,
+            "name": "compression",
+            "dependency": "compression",
+            "title": "compression vulnerable to Denial of Service via memory leak on premature response close",
+            "url": "https://github.com/advisories/GHSA-vc2v-76pw-4v95",
+            "severity": "high",
+            "cwe": [
+              "CWE-401",
+              "CWE-459"
+            ],
+            "cvss": {
+              "score": 7.5,
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "range": "<1.8.2"
+          }
+        ],
+        "effects": [],
+        "range": "<1.8.2",
+        "nodes": [
+          "node_modules/compression"
+        ],
+        "fixAvailable": true
+      },
+      "form-data": {
+        "name": "form-data",
+        "severity": "high",
+        "isDirect": false,
+        "via": [
+          {
+            "source": 1120743,
+            "name": "form-data",
+            "dependency": "form-data",
+            "title": "form-data: CRLF injection in form-data via unescaped multipart field names and filenames",
+            "url": "https://github.com/advisories/GHSA-hmw2-7cc7-3qxx",
+            "severity": "high",
+            "cwe": [
+              "CWE-93"
+            ],
+            "cvss": {
+              "score": 7.5,
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N"
+            },
+            "range": ">=4.0.0 <4.0.6"
+          }
+        ],
+        "effects": [],
+        "range": "4.0.0 - 4.0.5",
+        "nodes": [
+          "node_modules/form-data"
+        ],
+        "fixAvailable": true
+      },
+      "immutable": {
+        "name": "immutable",
+        "severity": "high",
+        "isDirect": false,
+        "via": [
+          {
+            "source": 1117068,
+            "name": "immutable",
+            "dependency": "immutable",
+            "title": "Immutable is vulnerable to Prototype Pollution",
+            "url": "https://github.com/advisories/GHSA-wf6x-7x77-mvgw",
+            "severity": "high",
+            "cwe": [
+              "CWE-1321"
+            ],
+            "cvss": {
+              "score": 9.8,
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+            },
+            "range": ">=5.0.0 <5.1.5"
+          },
+          {
+            "source": 1164790,
+            "name": "immutable",
+            "dependency": "immutable",
+            "title": "Immutable: Hash-collision algorithmic complexity denial of service in Immutable.Map/Set",
+            "url": "https://github.com/advisories/GHSA-xvcm-6775-5m9r",
+            "severity": "high",
+            "cwe": [
+              "CWE-400",
+              "CWE-407"
+            ],
+            "cvss": {
+              "score": 0,
+              "vectorString": null
+            },
+            "range": ">=5.0.0-beta.1 <5.1.8"
+          },
+          {
+            "source": 1224659,
+            "name": "immutable",
+            "dependency": "immutable",
+            "title": "Immutable.js `List` 32-bit trie overflow \u2192 unrecoverable DoS",
+            "url": "https://github.com/advisories/GHSA-v56q-mh7h-f735",
+            "severity": "high",
+            "cwe": [
+              "CWE-190",
+              "CWE-400",
+              "CWE-835",
+              "CWE-1284"
+            ],
+            "cvss": {
+              "score": 7.5,
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "range": ">=5.0.0-beta.1 <5.1.8"
+          }
+        ],
+        "effects": [],
+        "range": "5.0.0-beta.1 - 5.1.7",
+        "nodes": [
+          "node_modules/immutable"
+        ],
+        "fixAvailable": true
+      },
+      "minimatch": {
+        "name": "minimatch",
+        "severity": "high",
+        "isDirect": false,
+        "via": [
+          {
+            "source": 1113465,
+            "name": "minimatch",
+            "dependency": "minimatch",
+            "title": "minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern",
+            "url": "https://github.com/advisories/GHSA-3ppc-4f35-3m26",
+            "severity": "high",
+            "cwe": [
+              "CWE-1333"
+            ],
+            "cvss": {
+              "score": 0,
+              "vectorString": null
+            },
+            "range": ">=9.0.0 <9.0.6"
+          },
+          {
+            "source": 1113544,
+            "name": "minimatch",
+            "dependency": "minimatch",
+            "title": "minimatch has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments",
+            "url": "https://github.com/advisories/GHSA-7r86-cg39-jmmj",
+            "severity": "high",
+            "cwe": [
+              "CWE-407"
+            ],
+            "cvss": {
+              "score": 7.5,
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "range": ">=9.0.0 <9.0.7"
+          },
+          {
+            "source": 1113552,
+            "name": "minimatch",
+            "dependency": "minimatch",
+            "title": "minimatch ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions",
+            "url": "https://github.com/advisories/GHSA-23c5-xmqv-rm74",
+            "severity": "high",
+            "cwe": [
+              "CWE-1333"
+            ],
+            "cvss": {
+              "score": 7.5,
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "range": ">=9.0.0 <9.0.7"
+          }
+        ],
+        "effects": [],
+        "range": "9.0.0 - 9.0.6",
+        "nodes": [
+          "node_modules/test-exclude/node_modules/minimatch"
+        ],
+        "fixAvailable": true
+      },
+      "path-to-regexp": {
+        "name": "path-to-regexp",
+        "severity": "high",
+        "isDirect": false,
+        "via": [
+          {
+            "source": 1115573,
+            "name": "path-to-regexp",
+            "dependency": "path-to-regexp",
+            "title": "path-to-regexp vulnerable to Denial of Service via sequential optional groups",
+            "url": "https://github.com/advisories/GHSA-j3q9-mxjg-w52f",
+            "severity": "high",
+            "cwe": [
+              "CWE-400",
+              "CWE-1333"
+            ],
+            "cvss": {
+              "score": 7.5,
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "range": ">=8.0.0 <8.4.0"
+          },
+          {
+            "source": 1115582,
+            "name": "path-to-regexp",
+            "dependency": "path-to-regexp",
+            "title": "path-to-regexp vulnerable to Regular Expression Denial of Service via multiple wildcards",
+            "url": "https://github.com/advisories/GHSA-27v5-c462-wpq7",
+            "severity": "moderate",
+            "cwe": [
+              "CWE-1333"
+            ],
+            "cvss": {
+              "score": 5.9,
+              "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "range": ">=8.0.0 <8.4.0"
+          }
+        ],
+        "effects": [],
+        "range": "8.0.0 - 8.3.0",
+        "nodes": [
+          "node_modules/path-to-regexp"
+        ],
+        "fixAvailable": true
+      },
+      "proxy-addr": {
+        "name": "proxy-addr",
+        "severity": "critical",
+        "isDirect": false,
+        "via": [
+          {
+            "source": 1241210,
+            "name": "proxy-addr",
+            "dependency": "proxy-addr",
+            "title": "proxy-addr vulnerable to IP spoofing via IPv4-mapped IPv6 trust subnet",
+            "url": "https://github.com/advisories/GHSA-jqcg-44mw-7w3h",
+            "severity": "critical",
+            "cwe": [
+              "CWE-290",
+              "CWE-348",
+              "CWE-697"
+            ],
+            "cvss": {
+              "score": 9.1,
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N"
+            },
+            "range": ">=1.1.0 <2.0.8"
+          }
+        ],
+        "effects": [],
+        "range": "1.1.0 - 2.0.7",
+        "nodes": [
+          "node_modules/proxy-addr"
+        ],
+        "fixAvailable": true
+      },
+      "qs": {
+        "name": "qs",
+        "severity": "moderate",
+        "isDirect": false,
+        "via": [
+          {
+            "source": 1113161,
+            "name": "qs",
+            "dependency": "qs",
+            "title": "qs's arrayLimit bypass in comma parsing allows denial of service",
+            "url": "https://github.com/advisories/GHSA-w7fw-mjwx-w883",
+            "severity": "low",
+            "cwe": [
+              "CWE-20"
+            ],
+            "cvss": {
+              "score": 3.7,
+              "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L"
+            },
+            "range": ">=6.7.0 <=6.14.1"
+          },
+          {
+            "source": 1113719,
+            "name": "qs",
+            "dependency": "qs",
+            "title": "qs's arrayLimit bypass in its bracket notation allows DoS via memory exhaustion",
+            "url": "https://github.com/advisories/GHSA-6rw7-vpxm-498p",
+            "severity": "moderate",
+            "cwe": [
+              "CWE-20"
+            ],
+            "cvss": {
+              "score": 3.7,
+              "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L"
+            },
+            "range": "<6.14.1"
+          },
+          {
+            "source": 1119502,
+            "name": "qs",
+            "dependency": "qs",
+            "title": "qs has a remotely triggerable DoS: qs.stringify crashes with TypeError on null/undefined entries in comma-format arrays when encodeValuesOnly is set",
+            "url": "https://github.com/advisories/GHSA-q8mj-m7cp-5q26",
+            "severity": "moderate",
+            "cwe": [
+              "CWE-476"
+            ],
+            "cvss": {
+              "score": 5.3,
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+            },
+            "range": ">=6.11.1 <=6.15.1"
+          },
+          {
+            "source": 1158507,
+            "name": "qs",
+            "dependency": "qs",
+            "title": "qs: Denial of Service via Attacker Controlled isBuffer",
+            "url": "https://github.com/advisories/GHSA-4mjr-xmp4-gh2g",
+            "severity": "moderate",
+            "cwe": [
+              "CWE-248",
+              "CWE-703"
+            ],
+            "cvss": {
+              "score": 5.3,
+              "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+            },
+            "range": ">=2.2.5 <6.16.0"
+          }
+        ],
+        "effects": [],
+        "range": "<=6.15.3",
+        "nodes": [
+          "node_modules/qs"
+        ],
+        "fixAvailable": true
+      }
+    },
+    "metadata": {
+      "vulnerabilities": {
+        "info": 0,
+        "low": 1,
+        "moderate": 1,
+        "high": 6,
+        "critical": 1,
+        "total": 9
+      },
+      "dependencies": {
+        "prod": 297,
+        "dev": 100,
+        "optional": 28,
+        "peer": 6,
+        "peerOptional": 0,
+        "total": 402
+      }
+    }
+  },
+  "phmt_review_source": "f0d96ae0dd6d22152bc4422fd3e0ec125353e168",
+  "manual_live_jupyter": "explicitly postponed by Diego; notebook prepared and setup preflight passed; no manual browser pass",
+  "publication": "paused; no candidate freeze or artifact operations",
+  "addon_entrypoint_current_reproduction": {
+    "initial_registered": false,
+    "initial_failures": [
+      {
+        "source": "entry-point:review-entrypoint-addon",
+        "reason": "review_entrypoint_addon does not expose a valid add-on contract. Expected `addon`, `ADDON`, or `get_addon()`.",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/diego/repos@uibcdf/molsysviewer/molsysviewer/addons.py\", line 912, in discover\n    addon = self.register_module(loaded)\n  File \"/home/diego/repos@uibcdf/smonitor/smonitor/core/decorator.py\", line 326, in invoke\n    return fn(*args, **kwargs)\n  File \"/home/diego/repos@uibcdf/smonitor/smonitor/core/decorator.py\", line 326, in invoke\n    return fn(*args, **kwargs)\n  File \"/home/diego/repos@uibcdf/argdigest/argdigest/core/decorator.py\", line 646, in wrapper\n    return _run_digestion()\n  File \"/home/diego/repos@uibcdf/argdigest/argdigest/core/decorator.py\", line 639, in _run_digestion\n    return _invoke(plan, fn_to_wrap, bound)\n  File \"/home/diego/repos@uibcdf/argdigest/argdigest/core/decorator.py\", line 170, in _invoke\n    return fn_to_wrap(**bound)\n  File \"/home/diego/repos@uibcdf/molsysviewer/molsysviewer/addons.py\", line 838, in register_module\n    _load_addon_spec_from_module(imported),\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^\n  File \"/home/diego/repos@uibcdf/molsysviewer/molsysviewer/addons.py\", line 511, in _load_addon_spec_from_module\n    raise ValueError(\n        f\"{module_name} does not expose a valid add-on contract. Expected `addon`, `ADDON`, or `get_addon()`.\"\n    )\nValueError: review_entrypoint_addon does not expose a valid add-on contract. Expected `addon`, `ADDON`, or `get_addon()`.\n"
+      }
+    ],
+    "after_explicit_discovery": true
+  },
+  "browser_bundle_reachability": {
+    "scope": "Same source entrypoint/options, metadata-only write:false; no duplicate runtime written",
+    "counts": {
+      "body-parser": 0,
+      "brace-expansion": 0,
+      "compression": 0,
+      "form-data": 0,
+      "immutable": 1,
+      "minimatch": 0,
+      "path-to-regexp": 0,
+      "proxy-addr": 0,
+      "qs": 0
+    }
+  },
+  "board_initial_open_count": 33
+}

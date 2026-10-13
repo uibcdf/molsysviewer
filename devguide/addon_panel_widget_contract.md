@@ -42,6 +42,25 @@ navigation, preserves an unrelated sphere and works in both popup types before
 loading real dialanine. Its notebook transport is adapted for Playwright; this
 is not a claim about every third-party provider or every live Jupyter host.
 
+### Independent window ownership
+
+Each live window owns its mounted Python addon widget. Navigating or closing a
+panel in one window tears down only that window's instance. Actions must match
+both its endpoint and its addon/panel identifiers; late events from a closed
+popup cannot recreate it. Popup endpoint identity comes from the existing
+validated host channel, not a client-supplied owner identifier.
+
+ESM mount and panel-state messages are delivered only to the owning window,
+and are excluded from shared scene replay. ESM render completes before the
+initial `on_mount` state is consumed. Scientific mutations still use the shared
+Python view and its public API, so geometry is mirrored normally. Per-addon
+view state remains shared; this lifecycle isolation does not promise automatic
+broadcast of every provider's arbitrary panel-local message.
+
+`view.close()` releases all window-owned widgets and layouts. These rules are
+guarded by `tests/test_addon_panel_endpoints.py`, the popup replay unit test and
+the real Render/Clear/navigation/closing browser scenario above.
+
 ## Context
 
 The current add-on host (`molsyssuite_addon_direction.md`) supports workspaces,

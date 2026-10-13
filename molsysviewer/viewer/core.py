@@ -118,7 +118,7 @@ class MolSysView(
         Closing is explicit because widget registries retain open views even
         after user code drops its last reference. The operation is idempotent.
         """
-        self._unmount_addon_panel()
+        self._unmount_all_addon_panels()
         self.addons._close_runtime()  # noqa: SLF001
         self._cancel_binary_structure_stream("view closed")
         self._endpoint_transfers.clear()
@@ -313,6 +313,7 @@ class MolSysView(
         self._atom_color_map: dict[int, int] = {}  # resolved atomIndex → 0xRRGGBB
         self._region_order_counter: int = 0
         self._active_panel_widget: tuple[str, str, AddonPanelWidget] | None = None
+        self._active_panel_widgets: dict[str | None, tuple[str, str, AddonPanelWidget]] = {}
 
         self.whole = Whole(self)
         self.styles = StylesManager(self)
@@ -1435,6 +1436,7 @@ class MolSysView(
                 target_endpoint_id=endpoint_id,
                 notify_receiver=False,
             )
+            self._unmount_addon_panel(endpoint_id=endpoint_id)
             self._endpoint_transfers.close(endpoint_id)
         elif event == "request_widget_runtime_source":
             # This is the lazy-load bootstrap handshake: the frontend requests the
@@ -1792,18 +1794,31 @@ class MolSysView(
             self._handle_dynamic_region_evaluation_request(content)
         elif event == "panel_mode_state":
             self._last_panel_mode_state_event = dict(content)
-        elif event == "panel_navigate":
-            addon_name = content.get("addon")
-            panel_id = content.get("panel")
-            if isinstance(addon_name, str) and isinstance(panel_id, str):
-                self._mount_addon_panel(addon_name.strip(), panel_id.strip())
-            else:
-                self._unmount_addon_panel()
-        elif event == "panel_unmount":
-            self._unmount_addon_panel()
-        elif event == "addon_panel_action":
-            if self._active_panel_widget is not None:
-                _, _, widget = self._active_panel_widget
+        elif event in {"panel_navigate", "panel_unmount", "addon_panel_action"}:
+            # PopupHostManager stamps this private field after authenticating the
+            # source window. A late event cannot resurrect a closed endpoint.
+            endpoint_id = content.get("_panel_endpoint_id")
+            if endpoint_id is not None and (
+                not isinstance(endpoint_id, str) or endpoint_id not in self._endpoint_transfers.modes
+            ):
+                return
+            addon_name, panel_id = content.get("addon"), content.get("panel")
+            if event == "panel_navigate":
+                if isinstance(addon_name, str) and isinstance(panel_id, str):
+                    self._mount_addon_panel(addon_name.strip(), panel_id.strip(), endpoint_id=endpoint_id)
+                else:
+                    self._unmount_addon_panel(endpoint_id=endpoint_id)
+                return
+            active = self._active_panel_widgets.get(endpoint_id)
+            if event == "panel_unmount":
+                if active is not None and (
+                    (addon_name is not None and addon_name != active[0])
+                    or (panel_id is not None and panel_id != active[1])
+                ):
+                    return
+                self._unmount_addon_panel(endpoint_id=endpoint_id)
+            elif active is not None and (addon_name, panel_id) == active[:2]:
+                _, _, widget = active
                 msg_content = content.get("content")
                 if isinstance(msg_content, dict):
                     widget._route_frontend_message(widget, msg_content, [])  # noqa: SLF001

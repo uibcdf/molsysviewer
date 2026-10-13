@@ -28,8 +28,6 @@ const PANEL_PROJECTION_OPS = new Set([
     "selection_query_preview",
     "set_addon_runtime_summary",
     "set_addon_context_items",
-    "mount_addon_panel",
-    "addon_panel_message",
     "backend_error_occurred",
     "set_panel_mode",
     "set_workspace",
@@ -74,6 +72,9 @@ export class PopupReplayLog {
         // Download replies contain an entire runtime and are endpoint-local effects,
         // never scene history. A late popup must not retain or replay those bytes.
         if (op === "html_export_ready" || op === "studio_action_result") return;
+        // Addon widget instances belong to one window; navigation mounts its
+        // own instance. Replaying another window's ESM/state violates ownership.
+        if (op === "mount_addon_panel" || op === "addon_panel_message") return;
 
         if (op === "clear_all") {
             this.entries = [];

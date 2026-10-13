@@ -59,3 +59,15 @@ test("PopupReplayLog excludes transient HTML downloads and Studio replies from e
     assert.deepEqual(log.snapshot("canvas"), [{ op: "set_trajectory_frame", index: 2 }]);
     assert.deepEqual(log.snapshot("panel"), []);
 });
+
+test("popup replay never transfers another window's addon widget or state", () => {
+    const log = new PopupReplayLog([
+        message("mount_addon_panel", { addon: "review", panel: "one", esm: "private widget" }),
+        message("addon_panel_message", { addon: "review", panel: "one", content: { type: "state" } }),
+        message("set_addon_runtime_summary", { addons: ["review"] }),
+    ]);
+    assert.equal(log.size, 1);
+    for (const mode of ["canvas", "panel"] as const) {
+        assert.deepEqual(log.snapshot(mode), [message("set_addon_runtime_summary", { addons: ["review"] })]);
+    }
+});

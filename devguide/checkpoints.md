@@ -1,5 +1,30 @@
 # Development checkpoint
 
+**Current receiving/reconciliation — 2026-10-13:** the
+[33-issue inventory](open_issue_reconciliation_20261013.md) restores local
+ownership for #233/#239/#242 and the optional external-report decision #80.
+#39 keeps its accepted post-1.0 scope and legacy path for immutable archived backlinks.
+The previous 25b61e46 Python CI passes all six cells; browser 38456046033 and
+Python 3.14 source-pair 38456046388 fail the same Render-after-panel-popup-close
+assertion. #245 corrects independent window lifecycle, action ownership and
+addressed addon mount/state delivery; targeted Python/JS/native browser guards
+pass and final integration evidence is being received. #239's summary dispatch
+was introduced in c9471fe3 and is now guarded by actual 17-fps receiving in
+original/popup controllers, without an unknown-op warning.
+Both source fixes have guard-backed archived records. The one full Python core
+invocation passes 3,128 with 21 recorded skips; the first endpoint-isolation core
+campaign passes 43/43. Final retired-widget/message-owner hardening passes its
+separate actual browser guard; do not relabel the intermediate global campaign
+as final exact-runtime qualification. The
+[new receiving receipt](addon_window_lifecycle_validation_20261013.json) retains
+that distinction and the upcoming exact hosted source campaign.
+The actual PHMT/Jupyter manual smoke is explicitly postponed by Diego;
+`sandbox/revision_shape_only_addon_pre_1_0.ipynb` is prepared with a real isolated
+PHMT f0d96ae0 source copy, and its setup cells pass. This is not a live-browser
+or installed-package result. #233 generic discovery and #242 compatible
+dependency remediation remain before the next freeze. Both 1.0 publications
+stay paused; 0.25.0 is not frozen.
+
 **Canvas scientific mirror followup — 2026-10-13:** #234–#238 close the gaps
 identified by the maintainer's bidirectional review; #241/#243 cover native
 callout text picking and deleted annotation refs found by the receiving guard. Shared camera and
@@ -240,6 +265,10 @@ This is the current handoff. Normative behavior remains in the linked contracts;
 previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
+
+Start with the [October 13 board reconciliation](open_issue_reconciliation_20261013.md):
+complete addon-window source qualification, then #233/#242 before freezing a
+candidate. The PHMT/Jupyter manual smoke is deliberately postponed, not passed.
 
 The [core/Qt scope](core_qt_qualification.md) and its
 [receiving receipt](core_qt_qualification_20261013.json) are the current gate
@@ -1732,10 +1761,13 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current session priority (2026-10-13):** #232 canvas popup parity is implemented and locally verified; complete
-its new exact hosted source receiving review. #231 required source gates are now complete; native
-Qt retains its separate failed outcome. Then broad docs, exact candidate
-preparation/qualification and human installed first contact before publication.
+**Current session priority (2026-10-13):** complete #245 window-owned addon
+qualification and the [board reconciliation](open_issue_reconciliation_20261013.md).
+#233 generic discovery and #242 compatible dependency remediation remain before
+freezing the next candidate. The prepared PHMT/Jupyter observation is postponed
+by the maintainer. #232/#231 source checks are complete on their own sources;
+native Qt retains a separate failed outcome. Broad docs, exact candidate
+qualification and human installed first contact still precede publication.
 
 **Delivered design/source rounds (2026-10-10):** the accepted context-menu and
 controls work is complete under #179/#180. Studio refinements and their

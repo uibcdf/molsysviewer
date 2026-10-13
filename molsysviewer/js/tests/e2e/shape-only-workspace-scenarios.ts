@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { resolve } from "node:path";
-import type { Page } from "playwright";
+import type { ConsoleMessage, Page } from "playwright";
 import { PythonFixtureBridge } from "./python-fixture-bridge";
 import { captureCanvasPopupControllers, mountCanvasPopupFixture } from "./canvas-popup-fixture";
 
@@ -9,7 +9,11 @@ export async function checkShapeOnlyWorkspace(page: Page, dir: string) {
     const bridge = new PythonFixtureBridge(resolve(dir, "shape_only_workspace_fixture.py"), resolve(dir, "../../../.."));
     const errors: string[] = [];
     const onError = (error: Error) => errors.push(String(error));
+    const onConsole = (message: ConsoleMessage) => {
+        if (message.text().includes("unknown op: set_trajectory_summary")) errors.push(message.text());
+    };
     page.on("pageerror", onError);
+    page.on("console", onConsole);
     let release: (() => Promise<void>) | undefined;
     let popup: Page | undefined, panel: Page | undefined;
     const welcome = (endpoint: Page) => endpoint.locator('[data-molsysviewer-welcome-card="true"]');
@@ -45,6 +49,7 @@ export async function checkShapeOnlyWorkspace(page: Page, dir: string) {
         await page.getByTitle("Open popup", {exact:true}).click();
         popup = await opened;
         popup.on("pageerror", onError);
+        popup.on("console", onConsole);
         await popup.waitForFunction(() => !!(window as any).__mirrorController);
         await popup.locator("#molsysviewer-loading").waitFor({state:"hidden"});
         assert.equal(await welcome(popup).count(), 1, "empty canvas popup retains quick start");
@@ -79,6 +84,16 @@ export async function checkShapeOnlyWorkspace(page: Page, dir: string) {
         if (await addonsTab.isVisible()) await addonsTab.click();
         await page.locator('[data-molsysviewer-addon-workspace-tab="geometry-review"]').click();
         await geometryControl(page, "render").waitFor({state:"visible"});
+        await page.locator('[data-workspace-ready="true"]').waitFor({state:"visible"});
+        const stateCount = await page.locator('[data-workspace-ready="true"]').getAttribute("data-workspace-state-count");
+        await page.evaluate(async () => {
+            await (window as any).__mirrorController.handleMessage({
+                op: "addon_panel_message", addon: "another-addon", panel: "geometry",
+                content: { type: "state", state: { initial: true } },
+            });
+        });
+        assert.equal(await page.locator('[data-workspace-ready="true"]').getAttribute("data-workspace-state-count"), stateCount,
+            "a panel message for another owner cannot reach this widget's listeners");
         await geometryControl(page, "render").click();
         await drain();
         for (const endpoint of [page, popup]) await hasShape(endpoint, "workspace-sphere", true);
@@ -104,6 +119,7 @@ export async function checkShapeOnlyWorkspace(page: Page, dir: string) {
         await page.getByTitle("Popout panel to external window", {exact:true}).click();
         panel = await panelOpened;
         panel.on("pageerror", onError);
+        panel.on("console", onConsole);
         await panel.locator("#molsysviewer-loading").waitFor({state:"hidden"});
         assert.equal(await welcome(panel).count(), 0);
         // Navigation is local to each window; reach its workspace through UI.
@@ -126,11 +142,16 @@ export async function checkShapeOnlyWorkspace(page: Page, dir: string) {
             await popup.locator('[data-molsysviewer-addon-workspace-tab="geometry-review"]').click();
         }
         await geometryControl(popup, "render").waitFor({state:"visible"});
+        await popup.locator('[data-workspace-ready="true"]').waitFor({state:"visible"});
+        // Host navigation must not unmount the canvas popup's widget.
+        await page.locator('[data-molsysviewer-addon-workspace-tab="core"]').click();
+        await drain();
         await geometryControl(popup, "render").click(); await drain();
         await hasShape(page, "workspace-sphere", true);
         await fixture("load-molecule");
         for (const endpoint of [page, popup]) {
             await endpoint.waitForFunction(() => !!(window as any).__mirrorController.getStructureData());
+            await endpoint.waitForFunction(() => (window as any).__mirrorController.trajectory.getTrajectoryState().fps === 17);
             assert.equal(await welcome(endpoint).count(), 0);
         }
         assert.deepEqual(errors, []);
@@ -138,6 +159,6 @@ export async function checkShapeOnlyWorkspace(page: Page, dir: string) {
     } finally {
         await panel?.close(); await popup?.close();
         await page.evaluate(async () => { await (window as any).__popupFixtureDrain?.(); (window as any).__popupWidgetDispose?.(); }).catch(() => undefined);
-        await release?.(); await bridge.close(); page.off("pageerror", onError);
+        await release?.(); await bridge.close(); page.off("pageerror", onError); page.off("console", onConsole);
     }
 }

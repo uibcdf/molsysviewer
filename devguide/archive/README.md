@@ -1,5 +1,8 @@
 # Archived implementation plans
 
+- [Addon window lifecycle](addon_popup_panel_lifecycle.md) — #245 gives each window its own widget, addresses mount/state delivery, validates action ownership and releases only the closing owner's resources.
+- [Widget trajectory summary](widget_trajectory_summary_dispatch.md) — #239 confirms c9471fe3 dispatch with actual 17-fps receiving in original and popup controllers, without an unknown-op warning.
+
 - [Shape-only workspace availability](shape_only_canvas_workspace.md) — #240 makes Studio/Add-ons accessible without atoms and separates Welcome from molecular hierarchy, with real owned geometry and both popup types guarded.
 
 - [Scientific popup guard budget](scientific_popup_guard_budget.md) — #244 scopes the expanded controls guard to 300 seconds; exact hosted source completes all three scenarios and core 43/43 without weaker assertions.

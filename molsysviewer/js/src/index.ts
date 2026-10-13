@@ -1310,7 +1310,12 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
 
                     case "molsysviewer-popup-interaction":
                         // 1. Forward to Python so it is recorded.
-                        if (data) sendToPython(data);
+                        if (data) {
+                            const panelEvent = ["panel_navigate", "panel_unmount", "addon_panel_action"].includes(data.event);
+                            sendToPython(panelEvent
+                                ? { ...data, _panel_endpoint_id: popupMessage.channel.popupEndpointId }
+                                : data);
+                        }
                         // 2. Apply to the host canvas (popup already has it, so do NOT re-sync to popup).
                         if (data) {
                             const op = buildMeasurementOpFromInteractionEvent(data);
@@ -1446,6 +1451,10 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                     return;
                 }
                 if (msg.op === "structure_data_begin") popupMgr.beginBootstrap(mode);
+                if (msg.op === "mount_addon_panel" || msg.op === "addon_panel_message") {
+                    popupMgr.sendTo(mode, "molsysviewer-sync-op", msg);
+                    return;
+                }
                 popupMgr.sendTo(mode, "molsysviewer-structure-data", {
                     message: msg,
                     buffers: buffers ?? [],
@@ -1544,7 +1553,8 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                 });
                 return;
             }
-            enqueueMessage(msg, { syncToPopup: true });
+            const panelLocal = msg.op === "mount_addon_panel" || msg.op === "addon_panel_message";
+            enqueueMessage(msg, { syncToPopup: !panelLocal });
         };
 
         model.on("msg:custom", onCustomMsg);

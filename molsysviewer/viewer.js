@@ -168514,6 +168514,8 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         }
         case "addon_panel_message": {
+          const messageKey = `${msg.addon}:${msg.panel}`;
+          if (messageKey !== this.activePanelWidgetKey) break;
           const content = msg.content;
           if (content) {
             for (const cb2 of this.activePanelMsgListeners) {
@@ -171464,8 +171466,6 @@ var PANEL_PROJECTION_OPS = /* @__PURE__ */ new Set([
   "selection_query_preview",
   "set_addon_runtime_summary",
   "set_addon_context_items",
-  "mount_addon_panel",
-  "addon_panel_message",
   "backend_error_occurred",
   "set_panel_mode",
   "set_workspace",
@@ -171501,6 +171501,7 @@ var PopupReplayLog = class {
     const op4 = operation(message);
     if (!op4) return;
     if (op4 === "html_export_ready" || op4 === "studio_action_result") return;
+    if (op4 === "mount_addon_panel" || op4 === "addon_panel_message") return;
     if (op4 === "clear_all") {
       this.entries = [];
       return;
@@ -174922,7 +174923,10 @@ function render({ model, el, runtimeSource }) {
           await cameraSync?.apply(data);
           break;
         case "molsysviewer-popup-interaction":
-          if (data) sendToPython(data);
+          if (data) {
+            const panelEvent = ["panel_navigate", "panel_unmount", "addon_panel_action"].includes(data.event);
+            sendToPython(panelEvent ? { ...data, _panel_endpoint_id: popupMessage.channel.popupEndpointId } : data);
+          }
           if (data) {
             const op4 = buildMeasurementOpFromInteractionEvent(data);
             if (op4) enqueueMessage(op4, { syncToPopup: false });
@@ -175023,6 +175027,10 @@ function render({ model, el, runtimeSource }) {
         return;
       }
       if (msg.op === "structure_data_begin") popupMgr.beginBootstrap(mode);
+      if (msg.op === "mount_addon_panel" || msg.op === "addon_panel_message") {
+        popupMgr.sendTo(mode, "molsysviewer-sync-op", msg);
+        return;
+      }
       popupMgr.sendTo(mode, "molsysviewer-structure-data", {
         message: msg,
         buffers: buffers ?? []
@@ -175108,7 +175116,8 @@ function render({ model, el, runtimeSource }) {
       });
       return;
     }
-    enqueueMessage(msg, { syncToPopup: true });
+    const panelLocal = msg.op === "mount_addon_panel" || msg.op === "addon_panel_message";
+    enqueueMessage(msg, { syncToPopup: !panelLocal });
   };
   model.on("msg:custom", onCustomMsg);
   for (const trait of ["autohide_controls", "autohide_scope", "show_controls", "controls_position", "controls_position_fullscreen"]) {

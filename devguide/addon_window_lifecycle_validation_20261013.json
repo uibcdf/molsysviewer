@@ -1,0 +1,107 @@
+{
+  "date": "2026-10-13",
+  "observed_at_utc": "2026-10-13T20:51:08.066607+00:00",
+  "scope": "Source addon-window lifecycle/trajectory receiving; no installed artifact or live Jupyter qualification",
+  "source_parent": "df5214ce",
+  "issues": [
+    "uibcdf/molsysviewer#245",
+    "uibcdf/molsysviewer#239"
+  ],
+  "runtime_sha256": "bf823e96b2e4fff7305a29ac4d7991147db2d23907e0adaa508bbc9554125892",
+  "initial_full_core_campaign": {
+    "result": "passed",
+    "suites": 43,
+    "command": "PYTHON=<molsyssuite@uibcdf_3.14>/bin/python npm run test:e2e:core",
+    "runtime": {
+      "runtime_sha256": "e80dde513f8076e46d495072a4911bf56f7b2a4e0f78c1e6115fe0c6aeec9da5",
+      "scope": "Core campaign started before final retired-widget message hardening; retain separate targeted/hosted final qualification."
+    },
+    "scope": "First endpoint isolation implementation; before final retired-widget/message-owner hardening. Retained separately from final exact receiving."
+  },
+  "final_targeted_browser": {
+    "result": "passed",
+    "guard": "molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts",
+    "runtime_sha256": "bf823e96b2e4fff7305a29ac4d7991147db2d23907e0adaa508bbc9554125892",
+    "assertions": [
+      "empty/shape-only workspace availability",
+      "on_mount state received after ESM render",
+      "wrong-owner panel message ignored",
+      "host navigation preserves popup actions",
+      "closing Studio popup preserves canvas popup Render",
+      "Clear preserves caller geometry",
+      "17 fps received by original and canvas popup",
+      "no unknown set_trajectory_summary operation"
+    ]
+  },
+  "python_core": {
+    "result": "passed",
+    "command": "python -m pytest tests/ -m 'not qt_runtime' -q --tb=short",
+    "tests": 3149,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 21,
+    "passed": 3128,
+    "seconds": 673.289,
+    "scope": "One full Python core invocation after the final Python lifecycle changes; browser runtime at its first isolation revision. Experimental Qt is selected separately."
+  },
+  "python_targeted": {
+    "result": "passed",
+    "files": [
+      "tests/test_addon_panel_endpoints.py",
+      "tests/test_addons.py",
+      "tests/test_popup_snapshot_completeness.py"
+    ],
+    "new_endpoint_cases": 4
+  },
+  "js_units": {
+    "result": "passed",
+    "authority": "npm run test:js; Node aggregate tests=1 pass=1 fail=0, no inferred subtest count",
+    "scope": "Final source after panel-owner message filtering; final npm run test:js passes."
+  },
+  "offline_preclosure": {
+    "result": "passed",
+    "tests": 266,
+    "failures": 0,
+    "errors": 0
+  },
+  "development_attempts": [
+    {
+      "kind": "test invocation error",
+      "result": "exit 4",
+      "reason": "Incorrect tests/test_markdown_links.py name; no tests ran. Corrected to actual tests/test_devguide_links.py."
+    },
+    {
+      "kind": "link validation failure",
+      "result": "failed",
+      "reason": "Moving #39 broke immutable archived backlinks; restored its legacy path while retaining accepted post-1.0 scope. Corrected 266-check run passes."
+    },
+    {
+      "kind": "lint correction",
+      "result": "I001",
+      "reason": "New test import order corrected; final changed Python files pass Ruff check/format."
+    }
+  ],
+  "phmt_manual_smoke": {
+    "status": "explicitly postponed by Diego",
+    "notebook": "sandbox/revision_shape_only_addon_pre_1_0.ipynb",
+    "provider_source": "f0d96ae0dd6d22152bc4422fd3e0ec125353e168",
+    "setup_preflight": "passed with real Pharmacophore and two actual interaction sites; no MolSys; review source isolated under /tmp",
+    "not_claimed": [
+      "live Jupyter controls",
+      "installed provider/artifact qualification"
+    ]
+  },
+  "source_ci_receiving": {
+    "status": "not yet dispatched by source push",
+    "policy": "Receive exact new source; original-source browser/pair failures are preserved as #245 evidence."
+  },
+  "publication": "both 1.0 publications paused; 0.25.0 not frozen; no artifact/tag/promotion operation",
+  "offline_final": {
+    "result": "passed",
+    "tests": 260,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "scope": "After archive/index updates, including clean-checkout relative links"
+  }
+}
