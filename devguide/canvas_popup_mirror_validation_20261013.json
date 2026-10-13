@@ -466,6 +466,76 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0
+    },
+    "source_commit": "9616b22c89d649aeb545338e6a3dc7ab51c24c04",
+    "source_ci_receiving": {
+      "observed_at_utc": "2026-10-13T18:29:08.322578+00:00",
+      "runs": [
+        {
+          "conclusion": "",
+          "createdAt": "2026-10-13T18:27:31Z",
+          "databaseId": 38446899091,
+          "headSha": "9616b22c89d649aeb545338e6a3dc7ab51c24c04",
+          "status": "queued",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38446899091",
+          "workflowName": "Python 3.14 source pair"
+        },
+        {
+          "conclusion": "",
+          "createdAt": "2026-10-13T18:27:31Z",
+          "databaseId": 38446899003,
+          "headSha": "9616b22c89d649aeb545338e6a3dc7ab51c24c04",
+          "status": "queued",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38446899003",
+          "workflowName": "CI"
+        },
+        {
+          "conclusion": "",
+          "createdAt": "2026-10-13T18:27:31Z",
+          "databaseId": 38446899009,
+          "headSha": "9616b22c89d649aeb545338e6a3dc7ab51c24c04",
+          "status": "in_progress",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38446899009",
+          "workflowName": "Experimental Qt diagnostics"
+        },
+        {
+          "conclusion": "",
+          "createdAt": "2026-10-13T18:27:31Z",
+          "databaseId": 38446898953,
+          "headSha": "9616b22c89d649aeb545338e6a3dc7ab51c24c04",
+          "status": "in_progress",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38446898953",
+          "workflowName": "Documentation notebooks"
+        },
+        {
+          "conclusion": "",
+          "createdAt": "2026-10-13T18:27:31Z",
+          "databaseId": 38446898982,
+          "headSha": "9616b22c89d649aeb545338e6a3dc7ab51c24c04",
+          "status": "in_progress",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38446898982",
+          "workflowName": "CI_e2e"
+        },
+        {
+          "conclusion": "success",
+          "createdAt": "2026-10-13T18:27:31Z",
+          "databaseId": 38446899706,
+          "headSha": "9616b22c89d649aeb545338e6a3dc7ab51c24c04",
+          "status": "completed",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38446899706",
+          "workflowName": "MolSysSuite policy"
+        },
+        {
+          "conclusion": "success",
+          "createdAt": "2026-10-13T18:27:31Z",
+          "databaseId": 38446899780,
+          "headSha": "9616b22c89d649aeb545338e6a3dc7ab51c24c04",
+          "status": "completed",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38446899780",
+          "workflowName": "Conda publication governance"
+        }
+      ],
+      "scope": "New canonical exact-source gates; pending results are not qualifications. #244 remains partial until the hosted expanded guard is received."
     }
   }
 }

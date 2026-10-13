@@ -56,3 +56,8 @@ at 83 seconds from its own start. Seven E2E-policy guards pass; other suite
 defaults and explicit override behavior retain their existing code path. Fresh canonical hosted evidence
 remains pending. No assertion, suite selection or explicit failure/skip policy
 is weakened, and production runtime bytes do not change.
+
+The tested correction is integrated at `9616b22c`; fresh canonical browser
+38446898982 and source/core campaigns retain their own receiving identity in
+`devguide/canvas_popup_mirror_validation_20261013.json`. This report remains
+partial and the owning issue open until hosted completion is verified.

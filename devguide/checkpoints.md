@@ -27,6 +27,11 @@ Ruff, policy, Conda governance and notebooks succeed on c9471fe3; core
 38442809595 and Python 3.14 pair 38442809327 remain receiving. The independent
 experimental Qt 38442809292 also fails, with separate scope. Official source
 conclusions stay distinct from local split coverage.
+Budget instrumentation is integrated in `9616b22c`, with its complete local
+controls guard and 260 reporting/link/E2E-policy checks passing. Fresh browser
+38446898982, core 38446899003, Python 3.14 pair 38446899091 and notebooks
+38446898953 are receiving. Policy and Conda governance already pass on that
+source; #244 remains partial until hosted completion. Runtime bytes are unchanged.
 This work does not declare a frozen 0.25.0 candidate,
 installed artifact qualification or either 1.0 publication.
 
