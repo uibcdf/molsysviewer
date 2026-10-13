@@ -8,15 +8,15 @@ retains the exact board snapshot and scoped evidence.
 
 ## Before the next candidate freeze
 
-- **#245:** the source fix and guards are complete; receive exact hosted
-  qualification of window-owned addon panels. The old hosted
+- **#245:** source and exact hosted core qualification are complete. The
+  window-owned addon fix passes the actual receiving guard and core 43/43. The old hosted
   browser and Linux Python 3.14 source-pair campaigns fail at the same real
   Render-after-popup-close assertion; neither is called green.
 - **#233:** fix/qualify generic entry-point discovery during root-spec imports.
   Current PharmacophoreMT avoids that cycle, so its receiving smoke can proceed.
 - **#242:** remediate compatible vulnerable transitive lockfile versions and
   qualify the exact rebuilt runtime. Mol* upgrade #115 stays post-1.0.
-- Receive final applicable source CI, the actual PHMT/Jupyter smoke and central
+- Retain completed applicable source CI; resume the postponed PHMT/Jupyter smoke and central
   Python admission #93. Qt's separate experimental failures are retained.
 - Finish public documentation and human first contact, then explicitly freeze
   an authorized 0.25.0 producer and qualify its installed artifacts. Existing
@@ -30,7 +30,7 @@ reviewed issue set does not cover subsequently reported #233/#239/#242/#245.
 
 | Issue | Disposition | What remains or was delivered | Owning record |
 | --- | --- | --- | --- |
-| [#245](https://github.com/uibcdf/molsysviewer/issues/245) | Resolved in source; hosted receiving pending | Independent window lifecycle and owner-specific actions implemented; local Python/JS/browser guards pass. Hosted exact-source qualification is still required. | [Record](archive/addon_popup_panel_lifecycle.md) |
+| [#245](https://github.com/uibcdf/molsysviewer/issues/245) | Resolved; exact hosted core approved | Independent window lifecycle and owner-specific actions implemented; local Python/JS/browser guards pass. Exact-source hosted core is approved: six Python cells, three Python 3.14 hosts and 43/43 browser suites. | [Record](archive/addon_popup_panel_lifecycle.md) |
 | [#242](https://github.com/uibcdf/molsysviewer/issues/242) | Pre-freeze dependency review | Nine registry advisories confirmed; Immutable is used by Mol* state at runtime. Compatible lockfile remediation and qualification remain. No exploit is asserted. | [Record](pending_bugs/locked_javascript_dependency_advisories.md) |
 | [#239](https://github.com/uibcdf/molsysviewer/issues/239) | Resolved in source | c9471fe3 consumes trajectory summaries. Real Python/widget/Mol* guard now requires 17 fps in original and popup and rejects the unknown-op warning. | [Record](archive/widget_trajectory_summary_dispatch.md) |
 | [#233](https://github.com/uibcdf/molsysviewer/issues/233) | Pre-freeze generic addon defect | Entry-point circular-import behavior remains distinct from known-module checks. Current PHMT avoids it, but the generic documented root-import route needs correction/qualification. | [Record](pending_bugs/addon_entrypoint_partial_initialization.md) |
@@ -85,7 +85,14 @@ incorrect because Immutable is used by the real Mol* state tree.
 ## Source closures
 
 #245 and #239 have fixes and passing guards with archived records. Issue-board
-closure is synchronized after reviewed source integration. The 33-issue table
+closure is independently verified after reviewed source integration at 19d92c25. The 33-issue table
 retains the initial snapshot; it does not mean these two still require a code fix.
-The final hosted campaign, #233/#242 and the postponed human smoke keep their
-separate pending scope.
+The final required hosted campaign is approved. #233/#242 and the postponed
+human smoke keep their separate pending scope.
+
+The final board contains **31 open issues and 31 local queue records**, with no
+missing owner record. The new exact-source CI passes all required core gates: six Python regression
+cells, three Python 3.14 hosts and 43/43 core browser suites, plus lint, policy,
+notebooks and Conda governance. Experimental Qt fails separately; the
+[lifecycle receipt](addon_window_lifecycle_validation_20261013.json) preserves
+its independent scope. No installed-package or live-Jupyter result is inferred.

@@ -79,6 +79,11 @@
       "kind": "lint correction",
       "result": "I001",
       "reason": "New test import order corrected; final changed Python files pass Ruff check/format."
+    },
+    {
+      "kind": "issue-close CLI invocation",
+      "result": "unknown flag --comment-file; no issue mutation occurred",
+      "reason": "Installed gh supports --comment only; exact prepared text passed through Python subprocess argv without shell interpolation. Both closures independently verified."
     }
   ],
   "phmt_manual_smoke": {
@@ -92,8 +97,167 @@
     ]
   },
   "source_ci_receiving": {
-    "status": "not yet dispatched by source push",
-    "policy": "Receive exact new source; original-source browser/pair failures are preserved as #245 evidence."
+    "observed_at_utc": "2026-10-13T21:27:05.173266+00:00",
+    "source_commit": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+    "runs": [
+      {
+        "conclusion": "success",
+        "databaseId": 38466665723,
+        "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466665723",
+        "workflowName": "CI"
+      },
+      {
+        "conclusion": "failure",
+        "databaseId": 38466665895,
+        "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466665895",
+        "workflowName": "Experimental Qt diagnostics"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38466665830,
+        "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466665830",
+        "workflowName": "CI_e2e"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38466666526,
+        "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466666526",
+        "workflowName": "Conda publication governance"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38466665923,
+        "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466665923",
+        "workflowName": "Documentation notebooks"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38466665910,
+        "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466665910",
+        "workflowName": "Ruff Lint"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38466666744,
+        "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466666744",
+        "workflowName": "MolSysSuite policy"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38466665617,
+        "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466665617",
+        "workflowName": "Python 3.14 source pair"
+      }
+    ],
+    "required_core_result": "success",
+    "proof": {
+      "core": {
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+        "jobs": [
+          {
+            "name": "Test on macos-15, Python 3.11",
+            "conclusion": "success",
+            "steps": []
+          },
+          {
+            "name": "Test on ubuntu-latest, Python 3.11",
+            "conclusion": "success",
+            "steps": []
+          },
+          {
+            "name": "Test on macos-15, Python 3.12",
+            "conclusion": "success",
+            "steps": []
+          },
+          {
+            "name": "Test on ubuntu-latest, Python 3.13",
+            "conclusion": "success",
+            "steps": []
+          },
+          {
+            "name": "Test on ubuntu-latest, Python 3.12",
+            "conclusion": "success",
+            "steps": []
+          },
+          {
+            "name": "Test on macos-15, Python 3.13",
+            "conclusion": "success",
+            "steps": []
+          },
+          {
+            "name": "Check skipped-commit backlog",
+            "conclusion": "skipped",
+            "steps": []
+          },
+          {
+            "name": "PR full suite",
+            "conclusion": "skipped",
+            "steps": []
+          }
+        ]
+      },
+      "browser": {
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+        "jobs": [
+          {
+            "name": "Core E2E",
+            "conclusion": "success",
+            "steps": []
+          },
+          {
+            "name": "Check skipped-commit backlog",
+            "conclusion": "skipped",
+            "steps": []
+          }
+        ],
+        "suites": 43,
+        "repaired_guard": "PASS: shape-only workspace and panel-popup-welcome",
+        "official_log_sha256": "fbbbd1e125919cf32f8e3189389502a19e2e7402871d0737f8cd21046e448ff1"
+      },
+      "pair": {
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+        "jobs": [
+          {
+            "name": "Source pair on windows-2025, Python 3.14",
+            "conclusion": "success",
+            "steps": []
+          },
+          {
+            "name": "Source pair on macos-15, Python 3.14",
+            "conclusion": "success",
+            "steps": []
+          },
+          {
+            "name": "Source pair on ubuntu-latest, Python 3.14",
+            "conclusion": "success",
+            "steps": []
+          }
+        ]
+      }
+    },
+    "scope": "Terminal exact-source receiving: six Python 3.11\u20133.13 cells, all three Python 3.14 hosts and official 43/43 core browser suites pass; lint, policy, notebooks and Conda governance succeed. Experimental Qt retains a separate failure. No installed artifact, live Jupyter or publication qualification."
   },
   "publication": "both 1.0 publications paused; 0.25.0 not frozen; no artifact/tag/promotion operation",
   "offline_final": {
@@ -103,5 +267,92 @@
     "failures": 0,
     "skipped": 0,
     "scope": "After archive/index updates, including clean-checkout relative links"
+  },
+  "integrated_source_commit": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+  "issue_closures": {
+    "245": "CLOSED 2026-10-13T20:56:42Z",
+    "239": "CLOSED 2026-10-13T20:56:45Z"
+  },
+  "source_ci_history": [
+    {
+      "observed_at_utc": "2026-10-13T21:00:52.043819+00:00",
+      "source_commit": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+      "runs": [
+        {
+          "conclusion": "",
+          "databaseId": 38466665617,
+          "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+          "status": "in_progress",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466665617",
+          "workflowName": "Python 3.14 source pair"
+        },
+        {
+          "conclusion": "",
+          "databaseId": 38466665830,
+          "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+          "status": "in_progress",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466665830",
+          "workflowName": "CI_e2e"
+        },
+        {
+          "conclusion": "",
+          "databaseId": 38466665895,
+          "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+          "status": "in_progress",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466665895",
+          "workflowName": "Experimental Qt diagnostics"
+        },
+        {
+          "conclusion": "",
+          "databaseId": 38466665723,
+          "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+          "status": "in_progress",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466665723",
+          "workflowName": "CI"
+        },
+        {
+          "conclusion": "success",
+          "databaseId": 38466666526,
+          "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+          "status": "completed",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466666526",
+          "workflowName": "Conda publication governance"
+        },
+        {
+          "conclusion": "success",
+          "databaseId": 38466665923,
+          "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+          "status": "completed",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466665923",
+          "workflowName": "Documentation notebooks"
+        },
+        {
+          "conclusion": "success",
+          "databaseId": 38466665910,
+          "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+          "status": "completed",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466665910",
+          "workflowName": "Ruff Lint"
+        },
+        {
+          "conclusion": "success",
+          "databaseId": 38466666744,
+          "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+          "status": "completed",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466666744",
+          "workflowName": "MolSysSuite policy"
+        }
+      ],
+      "scope": "Exact new source receiving: lint, policy, notebooks and Conda governance succeed; scientific/core/source-pair/Qt jobs remain active. Experimental Qt is separate. No installed/publication qualification."
+    }
+  ],
+  "evidence_acquisition": {
+    "http_502": "Transient GitHub job-metadata acquisition errors retained; native CLI fallback and receptor watch completed. They were not interpreted as product failures or passing test evidence.",
+    "watch_results": {
+      "core": "PASS",
+      "browser": "PASS",
+      "source_pair": "PASS"
+    },
+    "experimental_qt_failed_log_sha256": "49a0a94e40f1a7339a6ac90afe98a621981381cd1fd114a20f76f3105a3821a7"
   }
 }

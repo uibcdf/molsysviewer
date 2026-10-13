@@ -12,7 +12,7 @@
       "disposition": "Pre-freeze core defect; fix in qualification",
       "remaining": "Independent window lifecycle and owner-specific actions implemented; local Python/JS/browser guards pass. Hosted exact-source qualification is still required.",
       "record": "archive/addon_popup_panel_lifecycle.md",
-      "source_resolution": "resolved with guards; remote closure follows source integration"
+      "source_resolution": "resolved with guards; GitHub closure independently verified"
     },
     {
       "labels": [],
@@ -33,7 +33,7 @@
       "disposition": "Implemented; closure receiving",
       "remaining": "c9471fe3 consumes trajectory summaries. Real Python/widget/Mol* guard now requires 17 fps in original and popup and rejects the unknown-op warning.",
       "record": "archive/widget_trajectory_summary_dispatch.md",
-      "source_resolution": "resolved with guards; remote closure follows source integration"
+      "source_resolution": "resolved with guards; GitHub closure independently verified"
     },
     {
       "labels": [],
@@ -1228,5 +1228,384 @@
       "qs": 0
     }
   },
-  "board_initial_open_count": 33
+  "board_initial_open_count": 33,
+  "issue_closures": {
+    "245": "CLOSED",
+    "239": "CLOSED"
+  },
+  "board_after_closures": [
+    {
+      "milestone": null,
+      "number": 242,
+      "title": "Review npm audit findings in the current locked JavaScript dependency graph",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/242"
+    },
+    {
+      "milestone": null,
+      "number": 233,
+      "title": "Entry-point discovery reports a partially initialized addon as invalid when the addon imports public specs",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/233"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 226,
+      "title": "Evaluate copying equivalent Python code from Studio",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/226"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 115,
+      "title": "Update the Mol* dependency after 1.0",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/115"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 113,
+      "title": "Evaluate aligned PySide6/Qt for a future supported standalone host",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/113"
+    },
+    {
+      "milestone": null,
+      "number": 109,
+      "title": "Migrate optional Qt host to canonical PySide6 6.11.2",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/109"
+    },
+    {
+      "milestone": null,
+      "number": 100,
+      "title": "Define reproducible browser and render-worker E2E evidence lanes",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/100"
+    },
+    {
+      "milestone": null,
+      "number": 93,
+      "title": "Coordinate MolSysViewer Python 3.14 support with MolSysMT",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/93"
+    },
+    {
+      "milestone": null,
+      "number": 80,
+      "title": "Report upstream to pytest-xdist: an import in the receiver thread can end the session",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/80"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 59,
+      "title": "Advanced representations for pockets, voids, channels and interfaces",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/59"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 58,
+      "title": "View a scene as pixels in a terminal",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/58"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 57,
+      "title": "Generated typing contract for MolSysView mixins",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/57"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 56,
+      "title": "Studio subpanel for Interactions",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/56"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 55,
+      "title": "Structure windowing and lazy materialization",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/55"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 54,
+      "title": "Post-1.0 performance architecture",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/54"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 53,
+      "title": "Move the structure barrier to the receiver",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/53"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 52,
+      "title": "Automate the Qt render check on a GPU runner",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/52"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 51,
+      "title": "Popout parity in the Qt standalone host",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/51"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 50,
+      "title": "Idea inventory from an external terminal viewer",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/50"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 49,
+      "title": "Multi-view split-screen viewport synchronization",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/49"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 48,
+      "title": "An Interactions domain for derived atom-atom relations",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/48"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 47,
+      "title": "Rough edges of the 2026-08 export rework, to review cold",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/47"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 46,
+      "title": "Preserve enriched chemical metadata from SDF and MOL2",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/46"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 45,
+      "title": "Configurable canvas picking granularity via the context menu",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/45"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 44,
+      "title": "Advanced annotations on Mol*'s MVS machinery",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/44"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 43,
+      "title": "Study the token cost of non-pytest test output for agent consumers",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/43"
+    },
+    {
+      "milestone": null,
+      "number": 42,
+      "title": "Adopt MolSysMT's explicit source-form hint once it exists",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/42"
+    },
+    {
+      "milestone": null,
+      "number": 41,
+      "title": "Offer MolSysMT a read of their documentation pipeline at the scale it is reaching",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/41"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 39,
+      "title": "Build the runtime as a classic script so exported views open from a disk",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/39"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 36,
+      "title": "Standalone Qt movie export lacks a camera snapshot",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/36"
+    },
+    {
+      "milestone": null,
+      "number": 35,
+      "title": "Standalone Qt: live demo replacement does not update the scene",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/35"
+    }
+  ],
+  "board_current_open_count": 31,
+  "integrated_source_commit": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+  "queue_alignment": {
+    "open_board_issues": 31,
+    "open_local_records": 31,
+    "missing_local_records": [],
+    "local_without_open_issue": [],
+    "legacy_location_exception": "#39 accepted post-1.0 on demand; immutable archived backlinks retain its old path",
+    "milestone_scope_note": "#100 remains explicitly post-1.0 in maintained guidance; its unchanged historical issue has no milestone."
+  },
+  "new_source_ci_receiving": [
+    {
+      "conclusion": "success",
+      "databaseId": 38466665723,
+      "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466665723",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "failure",
+      "databaseId": 38466665895,
+      "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466665895",
+      "workflowName": "Experimental Qt diagnostics"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38466665830,
+      "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466665830",
+      "workflowName": "CI_e2e"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38466666526,
+      "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466666526",
+      "workflowName": "Conda publication governance"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38466665923,
+      "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466665923",
+      "workflowName": "Documentation notebooks"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38466665910,
+      "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466665910",
+      "workflowName": "Ruff Lint"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38466666744,
+      "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466666744",
+      "workflowName": "MolSysSuite policy"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38466665617,
+      "headSha": "19d92c25b3d758f8f992dde78183f0e4a6188c59",
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38466665617",
+      "workflowName": "Python 3.14 source pair"
+    }
+  ],
+  "required_core_source_result": "success on 19d92c25: six regression cells, three Python 3.14 hosts, exact core browser 43/43"
 }

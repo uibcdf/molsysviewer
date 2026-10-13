@@ -5,7 +5,9 @@
 identifies #233 generic addon discovery and #242 compatible transitive
 dependency updates before the next freeze. #245 corrects independent addon
 window lifecycle after canonical hosted browser/source-pair failures; source
-receiving remains separate from the earlier local pass. The real PHMT/Jupyter
+receiving now passes all required hosted gates on 19d92c25 (six Python cells,
+three Python 3.14 hosts, 43/43 core browser suites). The experimental Qt failure
+retains its separate scope. The real PHMT/Jupyter
 manual smoke is prepared and explicitly postponed by Diego. Both 1.0 releases
 remain paused; 0.25.0 remains unfrozen.
 

@@ -8,7 +8,7 @@ The previous 25b61e46 Python CI passes all six cells; browser 38456046033 and
 Python 3.14 source-pair 38456046388 fail the same Render-after-panel-popup-close
 assertion. #245 corrects independent window lifecycle, action ownership and
 addressed addon mount/state delivery; targeted Python/JS/native browser guards
-pass and final integration evidence is being received. #239's summary dispatch
+pass and exact hosted core qualification is complete on `19d92c25`. #239's summary dispatch
 was introduced in c9471fe3 and is now guarded by actual 17-fps receiving in
 original/popup controllers, without an unknown-op warning.
 Both source fixes have guard-backed archived records. The one full Python core
@@ -17,7 +17,10 @@ campaign passes 43/43. Final retired-widget/message-owner hardening passes its
 separate actual browser guard; do not relabel the intermediate global campaign
 as final exact-runtime qualification. The
 [new receiving receipt](addon_window_lifecycle_validation_20261013.json) retains
-that distinction and the upcoming exact hosted source campaign.
+that distinction and the completed exact hosted source campaign: six Python
+regression cells, all three Python 3.14 hosts and official core browser 43/43
+pass. Lint, policy, notebooks and Conda governance succeed. Experimental Qt
+38466665895 fails separately with the retained WebGL/bridge diagnostics.
 The actual PHMT/Jupyter manual smoke is explicitly postponed by Diego;
 `sandbox/revision_shape_only_addon_pre_1_0.ipynb` is prepared with a real isolated
 PHMT f0d96ae0 source copy, and its setup cells pass. This is not a live-browser
@@ -1761,8 +1764,10 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current session priority (2026-10-13):** complete #245 window-owned addon
-qualification and the [board reconciliation](open_issue_reconciliation_20261013.md).
+**Current session priority (2026-10-13):** #245/#239 and their exact required
+source qualification are complete on 19d92c25; the
+[board reconciliation](open_issue_reconciliation_20261013.md) matches all 31
+remaining open issues to local records.
 #233 generic discovery and #242 compatible dependency remediation remain before
 freezing the next candidate. The prepared PHMT/Jupyter observation is postponed
 by the maintainer. #232/#231 source checks are complete on their own sources;

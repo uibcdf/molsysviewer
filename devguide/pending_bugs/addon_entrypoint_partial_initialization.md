@@ -55,3 +55,17 @@ import completes registers it. No discovery method or entry-point loader is
 mocked. The synthetic metadata fixture is a source diagnostic, not qualification
 of an installed scientific provider. This confirms that the generic defect is
 still present; it is unrelated to the window-lifecycle changes in #245.
+
+The retained diagnostic command was:
+
+```bash
+/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python \
+  /tmp/msv-issue240-review-20261013/entrypoint-repro/reproduce.py
+```
+
+Its temporary `review_entrypoint_addon.py` contains
+`from molsysviewer import AddonSpec` followed by
+`addon = AddonSpec(name="review-entrypoint-addon")`; real `.dist-info` metadata
+registers `review-entrypoint-addon = review_entrypoint_addon` under
+`molsysviewer.addons`. Both initial failure and successful explicit rediscovery
+are preserved in the reconciliation receipt.
