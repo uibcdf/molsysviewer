@@ -1,8 +1,8 @@
 {
   "date": "2026-10-13",
   "issue": "uibcdf/molsysviewer#232",
-  "state": "local_verified_source_integration_pending",
-  "source_commit": null,
+  "state": "integrated_and_issue_closed",
+  "source_commit": "63c3d9c78229561c70339ed9e83aa27b58610ed4",
   "environment": {
     "name": "molsyssuite@uibcdf_3.14",
     "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python"
@@ -69,7 +69,74 @@
     }
   },
   "hosted_source": {
-    "state": "not_dispatched_yet"
+    "state": "in_progress",
+    "runs": [
+      {
+        "conclusion": "success",
+        "databaseId": 38383553809,
+        "headSha": "63c3d9c78229561c70339ed9e83aa27b58610ed4",
+        "name": "MolSysSuite policy",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38383553809"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38383553164,
+        "headSha": "63c3d9c78229561c70339ed9e83aa27b58610ed4",
+        "name": "Experimental Qt diagnostics",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38383553164"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38383553044,
+        "headSha": "63c3d9c78229561c70339ed9e83aa27b58610ed4",
+        "name": "CI_e2e",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38383553044"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38383552955,
+        "headSha": "63c3d9c78229561c70339ed9e83aa27b58610ed4",
+        "name": "Documentation notebooks",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38383552955"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38383553047,
+        "headSha": "63c3d9c78229561c70339ed9e83aa27b58610ed4",
+        "name": "CI",
+        "status": "queued",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38383553047"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38383553067,
+        "headSha": "63c3d9c78229561c70339ed9e83aa27b58610ed4",
+        "name": "Ruff Lint",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38383553067"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38383553080,
+        "headSha": "63c3d9c78229561c70339ed9e83aa27b58610ed4",
+        "name": "Python 3.14 source pair",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38383553080"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38383554097,
+        "headSha": "63c3d9c78229561c70339ed9e83aa27b58610ed4",
+        "name": "Conda publication governance",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38383554097"
+      }
+    ],
+    "scope": "Actual states at receiving checkpoint. Source CI only; native Qt remains independent."
   },
   "qualification_scope": "Source/browser only. No new tag, candidate freeze, installed-pair qualification, package promotion or publication. Qt popout remains separately experimental under #51; both 1.0 publications remain paused."
 }

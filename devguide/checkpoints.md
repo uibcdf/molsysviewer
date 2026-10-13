@@ -11,8 +11,11 @@ full Python run has 3,095 passed, 21 skips and one clean-checkout link failure:
 new documents were not yet staged. Staging those files repairs the 4/4 link guard;
 the global failure is preserved rather than rerun. Full browser integration passes 43/43; the final controls guard also protects
 keyboard use in shadow notebook hosts and input typing. #232 is closed with
-[its report](archive/canvas_popup_controls_parity.md). New exact hosted source
-evidence remains a separate gate. No candidate is frozen or published.
+[its report](archive/canvas_popup_controls_parity.md). Source is integrated at `63c3d9c7`; #232 is closed and the board agrees.
+New exact hosted source [evidence](canvas_popup_validation_20261013.json)
+remains a separate receiving gate. Policy, Ruff and Conda governance already
+succeed; core 38383553047, browser 38383553044, Python 3.14 pair 38383553080
+and notebooks 38383552955 are queued/running. Qt 38383553164 remains independent. No candidate is frozen or published.
 
 **Core/Qt gate alignment — 2026-10-13:** #231 implements the
 [explicit qualification scope](core_qt_qualification.md). Native process/window/
