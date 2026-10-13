@@ -1003,9 +1003,9 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
         });
         const enablePopout = !!model.get("enable_popout");
         const openPanelPopup = (preopenedWindow?: Window | null, panel?: "navigate" | "addons") => {
-            controllerPromise.then(c => {
+            controllerPromise.then(async c => {
                 c.saveHostPanelState();
-                if (panel) c.setPanelMode(panel, true);
+                if (panel) await c.handleMessage({ op: "set_panel_mode", panel, expanded: true });
                 if (c.canvasHost.style.display === "none") c.setCanvasVisibility(true);
                 c.sharedShell?.setVisible(false);
                 void popupMgr.open("panel", preopenedWindow);

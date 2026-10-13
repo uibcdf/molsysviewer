@@ -2045,6 +2045,17 @@ function hashString(string) {
   }
   return smi(hashed);
 }
+var COLLISION_HASH_BASE = (Math.random() * 1048576 | 1) % 1048576 || 40503;
+function hashCollisionKey(key2) {
+  if (typeof key2 !== "string") {
+    return hash(key2);
+  }
+  var hashed = 0;
+  for (var ii = 0; ii < key2.length; ii++) {
+    hashed = COLLISION_HASH_BASE * hashed + key2.charCodeAt(ii) | 0;
+  }
+  return hashed;
+}
 function hashSymbol(sym) {
   var hashed = symbolMap[sym];
   if (hashed !== void 0) {
@@ -2402,7 +2413,6 @@ function mapFactory(collection, mapper, context2) {
   return mappedSequence;
 }
 function reverseFactory(collection, useKeys) {
-  var this$1$1 = this;
   var reversedSequence = makeSequence(collection);
   reversedSequence._iter = collection;
   reversedSequence.size = collection.size;
@@ -2429,12 +2439,12 @@ function reverseFactory(collection, useKeys) {
   };
   reversedSequence.cacheResult = cacheResultThrough;
   reversedSequence.__iterate = function(fn, reverse3) {
-    var this$1$12 = this;
+    var this$1$1 = this;
     var i = 0;
     reverse3 && ensureSize(collection);
     return collection.__iterate(
       function(v4, k) {
-        return fn(v4, useKeys ? k : reverse3 ? this$1$12.size - ++i : i++, this$1$12);
+        return fn(v4, useKeys ? k : reverse3 ? this$1$1.size - ++i : i++, this$1$1);
       },
       !reverse3
     );
@@ -2451,7 +2461,9 @@ function reverseFactory(collection, useKeys) {
       var entry = step.value;
       return iteratorValue(
         type3,
-        useKeys ? entry[0] : reverse3 ? this$1$1.size - ++i : i++,
+        // `__iterator` is an arrow function, so `this` is not the reversed
+        // sequence here — read `reversedSequence.size` explicitly.
+        useKeys ? entry[0] : reverse3 ? reversedSequence.size - ++i : i++,
         entry[1],
         step
       );
@@ -3133,6 +3145,9 @@ function isPlainObject(value) {
 function isDataStructure(value) {
   return typeof value === "object" && (isImmutable(value) || Array.isArray(value) || isPlainObject(value));
 }
+function isProtoKey(key2) {
+  return typeof key2 === "string" && (key2 === "__proto__" || key2 === "constructor");
+}
 function arrCopy(arr, offset4) {
   offset4 = offset4 || 0;
   var len = Math.max(0, arr.length - offset4);
@@ -3148,6 +3163,9 @@ function shallowCopy(from2) {
   }
   var to = {};
   for (var key2 in from2) {
+    if (isProtoKey(key2)) {
+      continue;
+    }
     if (hasOwnProperty.call(from2, key2)) {
       to[key2] = from2[key2];
     }
@@ -3175,6 +3193,9 @@ function mergeWithSources(collection, sources, merger) {
     }
     merged.push(value);
   } : function(value, key2) {
+    if (isProtoKey(key2)) {
+      return;
+    }
     var hasVal = hasOwnProperty.call(merged, key2);
     var nextVal = hasVal && merger ? merger(merged[key2], value, key2) : value;
     if (!hasVal || nextVal !== merged[key2]) {
@@ -3555,15 +3576,51 @@ var HashCollisionNode = function HashCollisionNode2(ownerID, keyHash, entries3) 
   this.ownerID = ownerID;
   this.keyHash = keyHash;
   this.entries = entries3;
+  this._index = void 0;
 };
-HashCollisionNode.prototype.get = function get4(shift2, keyHash, key2, notSetValue) {
+HashCollisionNode.prototype._positionOf = function _positionOf(key2, buildIndex) {
   var entries3 = this.entries;
-  for (var ii = 0, len = entries3.length; ii < len; ii++) {
-    if (is(key2, entries3[ii][0])) {
-      return entries3[ii][1];
+  var index = this._index;
+  if (index === void 0 && buildIndex && entries3.length >= MIN_HASH_COLLISION_INDEX_SIZE) {
+    index = this._buildIndex();
+  }
+  if (index !== void 0) {
+    var positions = index[hashCollisionKey(key2)];
+    if (positions !== void 0) {
+      for (var jj = 0; jj < positions.length; jj++) {
+        var ii = positions[jj];
+        if (is(key2, entries3[ii][0])) {
+          return ii;
+        }
+      }
+    }
+    return -1;
+  }
+  for (var ii$1 = 0, len = entries3.length; ii$1 < len; ii$1++) {
+    if (is(key2, entries3[ii$1][0])) {
+      return ii$1;
     }
   }
-  return notSetValue;
+  return -1;
+};
+HashCollisionNode.prototype._buildIndex = function _buildIndex() {
+  var index = /* @__PURE__ */ Object.create(null);
+  var entries3 = this.entries;
+  for (var ii = 0, len = entries3.length; ii < len; ii++) {
+    var secondaryHash = hashCollisionKey(entries3[ii][0]);
+    var positions = index[secondaryHash];
+    if (positions !== void 0) {
+      positions.push(ii);
+    } else {
+      index[secondaryHash] = [ii];
+    }
+  }
+  this._index = index;
+  return index;
+};
+HashCollisionNode.prototype.get = function get4(shift2, keyHash, key2, notSetValue) {
+  var idx = this._positionOf(key2, true);
+  return idx === -1 ? notSetValue : this.entries[idx][1];
 };
 HashCollisionNode.prototype.update = function update5(ownerID, shift2, keyHash, key2, value, didChangeSize, didAlter) {
   if (keyHash === void 0) {
@@ -3579,14 +3636,11 @@ HashCollisionNode.prototype.update = function update5(ownerID, shift2, keyHash, 
     return mergeIntoNode(this, ownerID, shift2, keyHash, [key2, value]);
   }
   var entries3 = this.entries;
-  var idx = 0;
   var len = entries3.length;
-  for (; idx < len; idx++) {
-    if (is(key2, entries3[idx][0])) {
-      break;
-    }
-  }
-  var exists = idx < len;
+  var isEditable = ownerID && ownerID === this.ownerID;
+  var foundIdx = this._positionOf(key2, isEditable);
+  var idx = foundIdx === -1 ? len : foundIdx;
+  var exists = foundIdx !== -1;
   if (exists ? entries3[idx][1] === value : removed) {
     return this;
   }
@@ -3595,16 +3649,27 @@ HashCollisionNode.prototype.update = function update5(ownerID, shift2, keyHash, 
   if (removed && len === 2) {
     return new ValueNode(ownerID, this.keyHash, entries3[idx ^ 1]);
   }
-  var isEditable = ownerID && ownerID === this.ownerID;
   var newEntries = isEditable ? entries3 : arrCopy(entries3);
   if (exists) {
     if (removed) {
       idx === len - 1 ? newEntries.pop() : newEntries[idx] = newEntries.pop();
+      if (isEditable) {
+        this._index = void 0;
+      }
     } else {
       newEntries[idx] = [key2, value];
     }
   } else {
     newEntries.push([key2, value]);
+    if (isEditable && this._index !== void 0) {
+      var secondaryHash = hashCollisionKey(key2);
+      var positions = this._index[secondaryHash];
+      if (positions !== void 0) {
+        positions.push(len);
+      } else {
+        this._index[secondaryHash] = [len];
+      }
+    }
   }
   if (isEditable) {
     this.entries = newEntries;
@@ -3882,6 +3947,7 @@ function spliceOut(array2, idx, canEdit) {
 var MAX_ARRAY_MAP_SIZE = SIZE / 4;
 var MAX_BITMAP_INDEXED_SIZE = SIZE / 2;
 var MIN_HASH_ARRAY_MAP_SIZE = SIZE / 4;
+var MIN_HASH_COLLISION_INDEX_SIZE = 16;
 function coerceKeyPath(keyPath) {
   if (isArrayLike(keyPath) && typeof keyPath !== "string") {
     return keyPath;
@@ -3941,6 +4007,9 @@ function remove(collection, key2) {
   return collectionCopy;
 }
 function set(collection, key2, value) {
+  if (isProtoKey(key2)) {
+    return collection;
+  }
   if (!isDataStructure(collection)) {
     throw new TypeError("Cannot update non-data-structure value: " + collection);
   }
@@ -4025,7 +4094,7 @@ var List = /* @__PURE__ */ (function(IndexedCollection2) {
     }
     assertNotInfinite(size4);
     if (size4 > 0 && size4 < SIZE) {
-      return makeList(0, size4, SHIFT, null, new VNode(iter.toArray()));
+      return makeList(0, size4, SHIFT, void 0, new VNode(iter.toArray()));
     }
     return empty2.withMutations(function(list3) {
       list3.setSize(size4);
@@ -4450,7 +4519,17 @@ function listNodeFor(list3, rawIndex) {
     return node;
   }
 }
+function validateListBoundsRequest(list3, begin, end4) {
+  var requestedOrigin = list3._origin + (begin === void 0 ? 0 : begin);
+  var requestedCapacity = end4 === void 0 ? list3._capacity : end4 < 0 ? list3._capacity + end4 : list3._origin + end4;
+  if (Number.isFinite(requestedCapacity) && requestedCapacity > MAX_LIST_SIZE || Number.isFinite(requestedOrigin) && requestedOrigin < -MAX_LIST_SIZE || Number.isFinite(requestedCapacity) && Number.isFinite(requestedOrigin) && requestedCapacity - requestedOrigin > MAX_LIST_SIZE) {
+    throw new RangeError(
+      "Invalid List size: a List cannot hold more than " + MAX_LIST_SIZE + " (2 ** 30) values."
+    );
+  }
+}
 function setListBounds(list3, begin, end4) {
+  validateListBoundsRequest(list3, begin, end4);
   if (begin !== void 0) {
     begin |= 0;
   }
@@ -4477,7 +4556,7 @@ function setListBounds(list3, begin, end4) {
       owner
     );
     newLevel += SHIFT;
-    offsetShift += 1 << newLevel;
+    offsetShift += levelCapacity(newLevel);
   }
   if (offsetShift) {
     newOrigin += offsetShift;
@@ -4487,7 +4566,7 @@ function setListBounds(list3, begin, end4) {
   }
   var oldTailOffset = getTailOffset(oldCapacity);
   var newTailOffset = getTailOffset(newCapacity);
-  while (newTailOffset >= 1 << newLevel + SHIFT) {
+  while (newTailOffset >= levelCapacity(newLevel + SHIFT)) {
     newRoot = new VNode(
       newRoot && newRoot.array.length ? [newRoot] : [],
       owner
@@ -4512,7 +4591,7 @@ function setListBounds(list3, begin, end4) {
     newOrigin -= newTailOffset;
     newCapacity -= newTailOffset;
     newLevel = SHIFT;
-    newRoot = null;
+    newRoot = void 0;
     newTail = newTail && newTail.removeBefore(owner, 0, newOrigin);
   } else if (newOrigin > oldOrigin || newTailOffset < oldTailOffset) {
     offsetShift = 0;
@@ -4557,6 +4636,10 @@ function setListBounds(list3, begin, end4) {
 }
 function getTailOffset(size4) {
   return size4 < SIZE ? 0 : size4 - 1 >>> SHIFT << SHIFT;
+}
+var MAX_LIST_SIZE = Math.pow(2, 30);
+function levelCapacity(exp) {
+  return exp < 31 ? 1 << exp : Math.pow(2, exp);
 }
 function isOrderedMap(maybeOrderedMap) {
   return isMap(maybeOrderedMap) && isOrdered(maybeOrderedMap);
@@ -5322,6 +5405,9 @@ function toObject() {
   assertNotInfinite(this.size);
   var object = {};
   this.__iterate(function(v4, k) {
+    if (isProtoKey(k)) {
+      return;
+    }
     object[k] = v4;
   });
   return object;
@@ -5339,6 +5425,9 @@ function toJS(value) {
   if (isKeyed(value)) {
     var result$1 = {};
     value.__iterate(function(v4, k) {
+      if (isProtoKey(k)) {
+        return;
+      }
       result$1[k] = toJS(v4);
     });
     return result$1;
@@ -5814,7 +5903,9 @@ mixin(IndexedCollection, {
   },
   has: function has3(index) {
     index = wrapIndex(this, index);
-    return index >= 0 && (this.size !== void 0 ? this.size === Infinity || index < this.size : this.indexOf(index) !== -1);
+    return index >= 0 && (this.size !== void 0 ? this.size === Infinity || index < this.size : this.find(function(_, key2) {
+      return key2 === index;
+    }, void 0, NOT_SET) !== NOT_SET);
   },
   interpose: function interpose(separator) {
     return reify(this, interposeFactory(this, separator));
@@ -174664,9 +174755,9 @@ function render({ model, el, runtimeSource }) {
   });
   const enablePopout = !!model.get("enable_popout");
   const openPanelPopup = (preopenedWindow, panel) => {
-    controllerPromise.then((c8) => {
+    controllerPromise.then(async (c8) => {
       c8.saveHostPanelState();
-      if (panel) c8.setPanelMode(panel, true);
+      if (panel) await c8.handleMessage({ op: "set_panel_mode", panel, expanded: true });
       if (c8.canvasHost.style.display === "none") c8.setCanvasVisibility(true);
       c8.sharedShell?.setVisible(false);
       void popupMgr.open("panel", preopenedWindow);

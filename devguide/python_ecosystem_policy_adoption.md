@@ -198,3 +198,22 @@ local promotion preconditions and the upstream shared installed-matrix action;
 186 focused release/reporting/configuration tests pass. The remaining scientific
 and design changes are still in the working tree. The principal maintainer
 authorizes continued commits and direct pushes, with PRs only on request.
+
+## Approved support-library receiving — 2026-10-13
+
+The required `molsyssuite@uibcdf_3.14` development environment now uses public
+SMonitor **0.20.0 build 1** and DepDigest **0.15.1 build 0**, replacing their
+editable installations without changing the sibling checkouts. Downloaded
+SHA-256 and all installed package files match the canonical Conda archives
+(41 SMonitor files and 17 DepDigest files). Development environment minima track
+these approved versions. Existing runtime/recipe floors retain their previously
+used APIs; this receiving does not introduce a new provider capability promise.
+
+The focused source campaign passes 129 support/addon/dependency/release tests,
+plus 13 real entry-point import-order cases. The scientific backend is the clean
+MolSysMT development checkout recorded in the
+[receiving receipt](addon_discovery_dependency_validation_20261013.json), not
+an installed canonical pair. Seven unrelated pre-existing `pip check` conflicts
+in the large suite environment are unchanged; this is not a clean solver gate.
+The final global source campaigns and hosted exact-source receiving retain their
+own outcomes in the receipt. Live PHMT/Jupyter is postponed and publication paused.

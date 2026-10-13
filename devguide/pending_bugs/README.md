@@ -23,11 +23,6 @@ list.
 
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*
 
-### Open (2)
-
-- [`addon_entrypoint_partial_initialization.md`](addon_entrypoint_partial_initialization.md) — [#233](https://github.com/uibcdf/molsysviewer/issues/233) — Entry-point discovery rejects a partially initialized addon importing public specs *(medium, reproduced)*
-- [`locked_javascript_dependency_advisories.md`](locked_javascript_dependency_advisories.md) — [#242](https://github.com/uibcdf/molsysviewer/issues/242) — Locked JavaScript dependencies retain nine registry advisory findings *(high, measured)*
-
 ### Deferred until after 1.0 (1)
 
 - [`standalone_qt_movie_camera_snapshot.md`](post_1.0/standalone_qt_movie_camera_snapshot.md) — [#36](https://github.com/uibcdf/molsysviewer/issues/36) — Movie export in the Qt host fails because the camera snapshot is never mirrored back.

@@ -1,0 +1,353 @@
+{
+  "observed_at": "2026-10-13T21:56:09.233973+00:00",
+  "scope": "development source receiving, not clean installed-pair or final 0.25.0 qualification",
+  "source_before_changes": "2e3a6dd696fb",
+  "resolved_issues": [
+    233,
+    242,
+    246
+  ],
+  "support_libraries": {
+    "smonitor": {
+      "version": "0.20.0",
+      "build": "py_1",
+      "url": "https://conda.anaconda.org/uibcdf/noarch/smonitor-0.20.0-py_1.tar.bz2",
+      "sha256": "887cbbe8fa9056388ee1344c8244138af2c06371846584dc234de1d994335ebf",
+      "verified_package_files": 41,
+      "import_path": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/lib/python3.14/site-packages/smonitor",
+      "editable": false,
+      "producer_direct_url": {
+        "dir_info": {},
+        "url": "file:///home/runner/micromamba/envs/build/conda-bld/smonitor_1791923939404/work"
+      }
+    },
+    "depdigest": {
+      "version": "0.15.1",
+      "build": "py_0",
+      "url": "https://conda.anaconda.org/uibcdf/noarch/depdigest-0.15.1-py_0.tar.bz2",
+      "sha256": "2765c692de4e6aacff4197c4226ebb42ec1f0df9edb27e92f196ef1390cb1850",
+      "verified_package_files": 17,
+      "import_path": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/lib/python3.14/site-packages/depdigest",
+      "editable": false,
+      "producer_direct_url": {
+        "dir_info": {},
+        "url": "file:///home/runner/micromamba/envs/build/conda-bld/depdigest_1791922759285/work"
+      }
+    }
+  },
+  "scientific_provider": {
+    "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+    "molsysmt_import_path": "/home/diego/repos@uibcdf/molsysmt/molsysmt/__init__.py",
+    "molsysmt_distribution_version": "0.22.4+24.g42b487869",
+    "molsysmt_source_head": "4201fb2a062fd48e3ea51b837abcdca7e3541ba9",
+    "molsysmt_source_status": ""
+  },
+  "pip_check": {
+    "result": "same seven pre-existing unrelated conflicts before/after; not a clean solver environment",
+    "before": [
+      "packmol-memgen 2026.3.25 requires pdb2pqr, which is not installed.",
+      "proprep 1.0.0 requires pdb2pqr, which is not installed.",
+      "ndfes 3.6.5 has requirement numpy<2, but you have numpy 2.4.6.",
+      "fetkutils 3.6.5 has requirement numpy<2, but you have numpy 2.4.6.",
+      "edgembar 3.6.5 has requirement numpy<2, but you have numpy 2.4.6.",
+      "proprep 1.0.0 has requirement biopython<1.86,>=1.83, but you have biopython 1.88.",
+      "proprep 1.0.0 has requirement numpy<2.0,>=1.26, but you have numpy 2.4.6."
+    ],
+    "after": [
+      "WARNING: The directory '/home/diego/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.",
+      "packmol-memgen 2026.3.25 requires pdb2pqr, which is not installed.",
+      "proprep 1.0.0 requires pdb2pqr, which is not installed.",
+      "ndfes 3.6.5 has requirement numpy<2, but you have numpy 2.4.6.",
+      "fetkutils 3.6.5 has requirement numpy<2, but you have numpy 2.4.6.",
+      "edgembar 3.6.5 has requirement numpy<2, but you have numpy 2.4.6.",
+      "proprep 1.0.0 has requirement biopython<1.86,>=1.83, but you have biopython 1.88.",
+      "proprep 1.0.0 has requirement numpy<2.0,>=1.26, but you have numpy 2.4.6."
+    ]
+  },
+  "npm": {
+    "before": {
+      "info": 0,
+      "low": 1,
+      "moderate": 1,
+      "high": 6,
+      "critical": 1,
+      "total": 9
+    },
+    "after": {
+      "auditReportVersion": 2,
+      "vulnerabilities": {},
+      "metadata": {
+        "vulnerabilities": {
+          "info": 0,
+          "low": 0,
+          "moderate": 0,
+          "high": 0,
+          "critical": 0,
+          "total": 0
+        },
+        "dependencies": {
+          "prod": 299,
+          "dev": 100,
+          "optional": 28,
+          "peer": 6,
+          "peerOptional": 0,
+          "total": 404
+        }
+      }
+    },
+    "before_raw_sha256": "1a773ba0c8b4b800782466a83796394162eedf7b93a52cbf06f34dd0f75a3654",
+    "after_raw_sha256": "e39715826aa94c5d704294ee3b0a981b39a29daeab08f0e1047ff7058397c42a",
+    "molstar_version": "5.4.1",
+    "molstar_lock_entry_unchanged": true,
+    "root_manifest_unchanged": true,
+    "direct_lock_entries_unchanged": true,
+    "repaired_versions": {
+      "body-parser": [
+        "2.3.0"
+      ],
+      "brace-expansion": [
+        "2.1.7"
+      ],
+      "compression": [
+        "1.8.2"
+      ],
+      "form-data": [
+        "4.0.6"
+      ],
+      "immutable": [
+        "5.1.9"
+      ],
+      "minimatch": [
+        "9.0.9"
+      ],
+      "path-to-regexp": [
+        "8.4.2"
+      ],
+      "proxy-addr": [
+        "2.0.8"
+      ],
+      "qs": [
+        "6.16.0"
+      ]
+    },
+    "observed_advisory_ranges": [
+      {
+        "package": "body-parser",
+        "url": "https://github.com/advisories/GHSA-v422-hmwv-36x6",
+        "range": ">=2.0.0 <2.3.0"
+      },
+      {
+        "package": "brace-expansion",
+        "url": "https://github.com/advisories/GHSA-f886-m6hf-6m8v",
+        "range": ">=2.0.0 <2.0.3"
+      },
+      {
+        "package": "brace-expansion",
+        "url": "https://github.com/advisories/GHSA-3jxr-9vmj-r5cp",
+        "range": ">=2.0.0 <2.1.2"
+      },
+      {
+        "package": "brace-expansion",
+        "url": "https://github.com/advisories/GHSA-mh99-v99m-4gvg",
+        "range": ">=2.0.0 <2.1.3"
+      },
+      {
+        "package": "brace-expansion",
+        "url": "https://github.com/advisories/GHSA-rgw5-rvv9-x895",
+        "range": ">=2.0.0 <2.1.4"
+      },
+      {
+        "package": "brace-expansion",
+        "url": "https://github.com/advisories/GHSA-q2hr-2g5m-vwhr",
+        "range": ">=2.0.0 <2.1.7"
+      },
+      {
+        "package": "brace-expansion",
+        "url": "https://github.com/advisories/GHSA-qhr7-859c-m2p7",
+        "range": ">=2.0.0 <2.1.6"
+      },
+      {
+        "package": "brace-expansion",
+        "url": "https://github.com/advisories/GHSA-6j4f-fj2g-mc7p",
+        "range": ">=2.0.0 <2.1.5"
+      },
+      {
+        "package": "compression",
+        "url": "https://github.com/advisories/GHSA-vc2v-76pw-4v95",
+        "range": "<1.8.2"
+      },
+      {
+        "package": "form-data",
+        "url": "https://github.com/advisories/GHSA-hmw2-7cc7-3qxx",
+        "range": ">=4.0.0 <4.0.6"
+      },
+      {
+        "package": "immutable",
+        "url": "https://github.com/advisories/GHSA-wf6x-7x77-mvgw",
+        "range": ">=5.0.0 <5.1.5"
+      },
+      {
+        "package": "immutable",
+        "url": "https://github.com/advisories/GHSA-xvcm-6775-5m9r",
+        "range": ">=5.0.0-beta.1 <5.1.8"
+      },
+      {
+        "package": "immutable",
+        "url": "https://github.com/advisories/GHSA-v56q-mh7h-f735",
+        "range": ">=5.0.0-beta.1 <5.1.8"
+      },
+      {
+        "package": "minimatch",
+        "url": "https://github.com/advisories/GHSA-3ppc-4f35-3m26",
+        "range": ">=9.0.0 <9.0.6"
+      },
+      {
+        "package": "minimatch",
+        "url": "https://github.com/advisories/GHSA-7r86-cg39-jmmj",
+        "range": ">=9.0.0 <9.0.7"
+      },
+      {
+        "package": "minimatch",
+        "url": "https://github.com/advisories/GHSA-23c5-xmqv-rm74",
+        "range": ">=9.0.0 <9.0.7"
+      },
+      {
+        "package": "path-to-regexp",
+        "url": "https://github.com/advisories/GHSA-j3q9-mxjg-w52f",
+        "range": ">=8.0.0 <8.4.0"
+      },
+      {
+        "package": "path-to-regexp",
+        "url": "https://github.com/advisories/GHSA-27v5-c462-wpq7",
+        "range": ">=8.0.0 <8.4.0"
+      },
+      {
+        "package": "proxy-addr",
+        "url": "https://github.com/advisories/GHSA-jqcg-44mw-7w3h",
+        "range": ">=1.1.0 <2.0.8"
+      },
+      {
+        "package": "qs",
+        "url": "https://github.com/advisories/GHSA-w7fw-mjwx-w883",
+        "range": ">=6.7.0 <=6.14.1"
+      },
+      {
+        "package": "qs",
+        "url": "https://github.com/advisories/GHSA-6rw7-vpxm-498p",
+        "range": "<6.14.1"
+      },
+      {
+        "package": "qs",
+        "url": "https://github.com/advisories/GHSA-q8mj-m7cp-5q26",
+        "range": ">=6.11.1 <=6.15.1"
+      },
+      {
+        "package": "qs",
+        "url": "https://github.com/advisories/GHSA-4mjr-xmp4-gh2g",
+        "range": ">=2.2.5 <6.16.0"
+      }
+    ],
+    "repaired_audit_includes_dev_dependencies": true
+  },
+  "targeted": {
+    "entrypoint_real_metadata_cases": 13,
+    "support_and_existing_addon_tests": 129,
+    "typescript_real_compiler": 1,
+    "js_unit_aggregate": 1,
+    "actual_panel_popup_browser": "success; Render/Clear/remount, both endpoints, ownership, closing Studio popup then canvas Render",
+    "guidance_reporting_and_clean_checkout_links": 255,
+    "final_js_unit_aggregate": 1,
+    "final_guidance_reporting_and_clean_checkout_links": 255
+  },
+  "intermediate_failures": [
+    {
+      "name": "support-targeted collection",
+      "cause": "new test imported script-owned release_gate through package path; release_evidence module not on that path",
+      "resolution": "release-step assertion uses existing test_release_gate owner/import route"
+    },
+    {
+      "name": "expanded entrypoint fixture",
+      "cause": "fixture explicitly rediscovered all providers while asserting a fresh factory runs once; explicit namespace replacement is refused",
+      "resolution": "bound explicit bootstrap discovery to initializing provider; preserve automatic once-only companion assertion"
+    },
+    {
+      "name": "typescript original source",
+      "cause": "TS2341 private setPanelMode access from popup bootstrap introduced in 63c3d9c78",
+      "resolution": "#246 public message route; real compiler/browser pass"
+    },
+    {
+      "name": "package provenance check",
+      "cause": "incorrect assumption canonical Conda packages have no direct_url.json; public packages retain non-editable producer paths",
+      "resolution": "verify non-editable flag, receiving path and all package bytes against canonical archive"
+    }
+  ],
+  "full_python_core": {
+    "status": "failure before final clear-preservation correction; not a final-source passing suite",
+    "invocations": 1,
+    "cases": 3155,
+    "failures": 3,
+    "errors": 0,
+    "skipped": 21,
+    "passed": 3131,
+    "duration_s": 734.935,
+    "failed_cases": [
+      "tests.test_panel_mode_request::test_workspace_catalog_and_panels_follow_effective_runtime",
+      "tests.test_panel_mode_request::test_workspace_catalog_and_panels_reflect_active_runtime_state",
+      "tests.test_panel_mode_request::test_workspace_runtime_aggregates_state_catalog_and_current_panels"
+    ],
+    "junit_sha256": "f00573f27a0b292bb775a6b348e3d218b4cf02d45c954a54d939973492643997",
+    "log_sha256": "f44730482a7a855e0ca9d94469d5d1ac37ebb9fd90ed913c6e64b6ea2891ab08"
+  },
+  "full_core_browser": {
+    "status": "success; exact final TypeScript runtime/lockfile, before final Python clear-preservation correction",
+    "suites": 43,
+    "log_sha256": "9d525c2246542a39742294f93f02786fe0f6884022558cf9760f51d66734f193"
+  },
+  "hosted_ci": "pending new reviewed source commit",
+  "manual_phmt_jupyter": "explicitly postponed by maintainer",
+  "publication": "both 1.0 releases paused; 0.25.0 producer not frozen; no tag/release/artifact/promotion operations",
+  "retained_local_evidence": "/tmp/msv-233-242-20261013",
+  "original_source_reproduction_after_fix": {
+    "initial_registered": true,
+    "initial_failures": [],
+    "after_explicit_discovery": true
+  },
+  "source_artifact_hashes": {
+    "molsysviewer/js/package-lock.json": "2810bd714528ae441438ee0e75596ded42f25cad14d9db6c86193122a598c34c",
+    "molsysviewer/js/src/index.ts": "9d34f03a6eb06fdf6765922e27c2845eaedcb2fcd02f27abbc31c76af41f0f27",
+    "molsysviewer/__init__.py": "76c5968d9a66d9fe01a475166515f4e0f02c3784b135ec60319cb2bf83b17cd4",
+    "molsysviewer/addons.py": "baaadc6ec1cc7d145ac276b4fd5fac7093386c1cb93e94698073d384bebbb6d9",
+    "molsysviewer/viewer.js": "6f1358ae29aee4ebbbb17ebee25a1d6b71292f0ab1a8038e62501a7b7ad50e12",
+    "tests/test_addon_entrypoint_import_order.py": "011a14e6f879403fa5bddb0f9411a084c1ffaf15aa625d129750ac4076b3194d"
+  },
+  "validation_commands": {
+    "python_targeted": "python -m pytest tests/test_addon_entrypoint_import_order.py -x -q",
+    "typescript_targeted": "python -m pytest tests/test_panel_popup_controller_contract.py -x -q",
+    "python_core": "python -m pytest tests/ -m 'not qt_runtime' -q --tb=short --junitxml=python-core.xml",
+    "browser_core": "PYTHON=<required-env>/bin/python npm run test:e2e:core",
+    "browser_targeted": "npm run build:harness && npm run build:e2e:all && PYTHON=<required-env>/bin/python node tests/e2e/panel-popup-welcome.e2e.js",
+    "runtime": "npm run build:runtime",
+    "audit": "npm ci; npm audit --json",
+    "js_unit": "npm run test:js",
+    "guidance": "python -m pytest tests/test_reporting_protocol.py tests/test_devguide_links.py -x -q"
+  },
+  "clear_preservation_followup": {
+    "reproduced": {
+      "before_clear": true,
+      "direct_after_clear": false,
+      "root_after_clear": true
+    },
+    "diagnosis": "clear reset automatic-discovery initialization; root registry/view use rediscovered removed installed providers and polluted three explicit-workspace assertions",
+    "resolution": "clear marks automatic discovery complete; empty registry is preserved across root reads and view construction until explicit discover/register",
+    "targeted_cases": 27,
+    "real_entrypoint_cases": 14,
+    "failed_module_cases": 13,
+    "status": "success; all three previously failing workspace assertions and real metadata clear guard pass"
+  },
+  "final_popup_browser_after_clear": {
+    "status": "success",
+    "log_sha256": "9b6b7f97731baa97263ef674c3a0ca0a95dc70fd570e3846d3b172508d7e64c5"
+  },
+  "local_full_suite_policy": "single full Python invocation retained as failed; targeted correction passes; fresh exact hosted full/core gates required",
+  "synchronized_guides_commit": "2170e65e79286006583a603d0295e92ee854b319"
+}

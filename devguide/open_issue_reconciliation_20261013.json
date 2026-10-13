@@ -22,7 +22,7 @@
       "url": "https://github.com/uibcdf/molsysviewer/issues/242",
       "disposition": "Pre-freeze dependency review",
       "remaining": "Nine registry advisories confirmed; Immutable is used by Mol* state at runtime. Compatible lockfile remediation and qualification remain. No exploit is asserted.",
-      "record": "pending_bugs/locked_javascript_dependency_advisories.md"
+      "record": "archive/locked_javascript_dependency_advisories.md"
     },
     {
       "labels": [],
@@ -43,7 +43,7 @@
       "url": "https://github.com/uibcdf/molsysviewer/issues/233",
       "disposition": "Pre-freeze generic addon defect",
       "remaining": "Entry-point circular-import behavior remains distinct from known-module checks. Current PHMT avoids it, but the generic documented root-import route needs correction/qualification.",
-      "record": "pending_bugs/addon_entrypoint_partial_initialization.md"
+      "record": "archive/addon_entrypoint_partial_initialization.md"
     },
     {
       "labels": [

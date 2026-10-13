@@ -1,13 +1,13 @@
 ---
 summary: Entry-point discovery rejects a partially initialized addon importing public specs
 issue: uibcdf/molsysviewer#233
-status: open
+status: resolved
 opened: 2026-10-13
-closed:
+closed: 2026-10-13
 severity: medium
 verification: reproduced
 area: [addons, imports]
-guard:
+guard: tests/test_addon_entrypoint_import_order.py
 normative:
 blocked_by: []
 supersedes: []
@@ -69,3 +69,36 @@ Its temporary `review_entrypoint_addon.py` contains
 registers `review-entrypoint-addon = review_entrypoint_addon` under
 `molsysviewer.addons`. Both initial failure and successful explicit rediscovery
 are preserved in the reconciliation receipt.
+
+## Resolution — 2026-10-13
+
+Public spec/class exports no longer start discovery. First registry use or view
+construction discovers providers once; exact sources still initializing are
+retained and retried on subsequent use without rerunning completed factories.
+The in-progress guard prevents recursive discovery. Completed missing contracts
+and actual import failures retain their original reasons/tracebacks; the retired
+MolSysMT entry point still stays excluded.
+
+The real importlib.metadata/fresh-process guard passes 13 cases: addon-first,
+root-types-first and registry-first; module/callable entry points; early registry
+access and explicit bounded discovery; two simultaneous providers with a fresh
+factory; lifecycle activation/deactivation on two real views; genuine invalid
+contracts/import errors; and direct view construction without registry access.
+The original source reproduction now registers immediately without a false
+failure. Explicit rediscovery is not automatic refresh/replacement of an already
+registered namespace; unregister before replacing a contract. This source guard
+uses real metadata, not a mocked loader or an installed scientific provider.
+
+## Compatibility follow-up — 2026-10-13
+
+The single complete local Python run exposed three workspace assertions polluted
+by automatic rediscovery after explicit `addons.clear()`. A separate real-metadata
+reproduction confirmed that a root read restored the cleared provider. The final
+correction marks that explicit empty registry as initialized; only explicit
+registration/discovery restores it. The guard now passes 14 import-order/clear
+cases, and the full previously failing workspace module passes 13 cases (27 total).
+The actual popup browser guard also passes after this final Python correction.
+The original complete invocation remains failed (3,131 passes, 21 skips, three
+failures) and is not repeated or relabelled. Exact hosted qualification is tracked
+separately in the receiving receipt. This follow-up preserves the public clear
+contract; it does not change provider lifecycle or remove genuine load diagnostics.

@@ -24,6 +24,13 @@ sys.path.insert(0, str(ROOT / "devtools"))
 from release_gate import STEPS, _check_version_consistency, _run  # noqa: E402
 
 
+def test_live_registry_audit_is_required_in_release_gate():
+    audit = next(step for step in STEPS if step.name == "npm_audit")
+    assert audit.command == ["npm", "audit", "--audit-level=low"]
+    assert audit.cwd == ROOT / "molsysviewer/js"
+    assert not audit.evidence
+
+
 def test_dependency_audit_runs_before_costly_release_checks():
     assert STEPS[0].name == "dependencies"
     assert STEPS[0].command == [sys.executable, "devtools/audit_dependency_contract.py"]

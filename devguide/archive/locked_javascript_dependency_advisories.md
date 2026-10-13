@@ -1,13 +1,13 @@
 ---
 summary: Locked JavaScript dependencies retain nine registry advisory findings
 issue: uibcdf/molsysviewer#242
-status: open
+status: resolved
 opened: 2026-10-13
-closed:
+closed: 2026-10-13
 severity: high
 verification: measured
 area: [dependencies, frontend, tooling]
-guard:
+guard: tests/test_javascript_dependency_audit.py
 normative:
 blocked_by: []
 supersedes: []
@@ -31,7 +31,7 @@ This is advisory evidence, not a demonstrated exploit against MolSysViewer.
 | compression | high | Mol* server entry points; no direct Viewer source import |
 | path-to-regexp | high | HTTP routing dependencies; no direct Viewer source import |
 | qs | moderate | HTTP/query dependencies; no direct Viewer source import |
-| form-data | high | Node request dependencies; browser bundling needs exact review |
+| form-data | high | Node request dependencies; zero inputs in the browser bundle probe |
 | immutable | high | Mol* state tree, plugin context and snapshots use it at runtime |
 | brace-expansion | high | Nested test-exclude dependency, coverage tooling |
 | minimatch | high | Nested test-exclude dependency, coverage tooling |
@@ -67,3 +67,29 @@ reachability; Node/coverage tools and the installed dependency graph retain
 their own advisories. It does not prove the absence of all indirect or external
 attack paths, nor qualify repaired bytes. Compatible transitive remediation
 remains pending.
+
+## Resolution — 2026-10-13
+
+Compatible transitive lockfile updates repair all nine observed packages.
+Immutable is 5.1.9, proxy-addr 2.0.8, compression 1.8.2, body-parser 2.3.0,
+path-to-regexp 8.4.2, qs 6.16.0, form-data 4.0.6, minimatch 9.0.7 and
+brace-expansion 2.1.7. Required leaf dependencies also update/deduplicate within
+their parents' declared ranges. The entire Mol* 5.4.1 lock entry, root manifest
+and all direct dependency entries remain identical. No force, overrides or
+advisory suppression is used; #115 keeps its post-1.0 scope.
+
+Clean npm ci and npm audit --json return zero findings at every severity.
+Runtime build and the JS unit aggregate pass. The offline guard rejects the
+observed advisory ranges at every lockfile depth. Core browser CI and the local
+release gate now require the full live npm audit at severity low, covering later
+registry notices; failure/acquisition error cannot count as a clean audit.
+Browser qualification and source-suite results are retained separately in
+`devguide/addon_discovery_dependency_validation_20261013.json`. Neither this
+repair nor a clean audit asserts absence of all exploit paths or installed
+artifact qualification.
+
+## Correction — 2026-10-13
+
+The resolved lockfile contains minimatch **9.0.9**. The 9.0.7 mentioned in the
+resolution is the fixed lower bound, not the observed installed version. The
+clean audit, compatible range and other recorded versions are unchanged.

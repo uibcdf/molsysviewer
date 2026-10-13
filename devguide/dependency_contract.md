@@ -69,3 +69,14 @@ This catches dependency metadata contradictions introduced by `--no-deps`;
 it does not replace exact origin checks or behavioral qualification. Test
 fixture dependencies such as RDKit belong to the test/development environments,
 not to the mandatory Viewer runtime requirements (`uibcdf/molsysviewer#161`).
+
+## JavaScript registry advisories
+
+After a clean `npm ci`, core browser CI and the local release gate require
+`npm audit --audit-level=low` for the entire locked graph, including development
+dependencies. A registry/acquisition failure is not a clean audit. Preserve the
+before/after JSON when repairing advisories and inspect compatible transitive
+updates without implicitly updating Mol* (`uibcdf/molsysviewer#242`). The offline
+guard in `tests/test_javascript_dependency_audit.py` checks the affected ranges
+observed on 2026-10-13 at every lockfile depth; the live audit finds later notices.
+Neither a clean audit nor severity alone proves browser exploitability.

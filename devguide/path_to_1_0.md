@@ -1,6 +1,18 @@
 # Path to 1.0.0 (Unified Release Plan)
 
-**Latest triage — 2026-10-13:** the
+**Latest hardening — 2026-10-13:** #233/#242 and the newly found #246 are
+implemented with passing targeted import/diagnostic/compiler/browser guards.
+The locked graph has zero registry advisories without a Mol* upgrade. Approved
+SMonitor 0.20.0 / DepDigest 0.15.1 public packages are received in development;
+see the [new source receipt](addon_discovery_dependency_validation_20261013.json).
+The single full local Python run retains three corrected clear-related failures;
+27 final affected checks and the final popup guard pass. Browser core passes
+43/43 before that final Python correction. Complete fresh exact hosted source
+qualification before broad docs/freeze.
+The prepared manual Jupyter observation remains postponed, 0.25.0 unfrozen,
+and both 1.0 publications paused.
+
+**Prior triage (preserved scope) — 2026-10-13:** the
 [complete open-board reconciliation](open_issue_reconciliation_20261013.md)
 identifies #233 generic addon discovery and #242 compatible transitive
 dependency updates before the next freeze. #245 corrects independent addon

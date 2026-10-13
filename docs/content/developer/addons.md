@@ -136,6 +136,16 @@ import molsysviewer
 molsysviewer.addons.discover(include_known_modules=True)
 ```
 
+Importing public `AddonSpec`, panel/widget specs or `MolSysView` declares types
+without discovering providers. Automatic discovery happens on first use of
+`molsysviewer.addons` or construction of a view. A provider still initializing
+is deferred and retried on subsequent registry/view use, preserving its exact
+entry point and lifecycle. Completed invalid contracts retain load diagnostics.
+Explicit `discover()` remains available after installing providers. Replacing
+an already registered contract requires unregistering its namespace first.
+`addons.clear()` preserves an empty registry across reads and view construction;
+only explicit discovery or registration restores providers afterward.
+
 ---
 
 ## Python Lifecycle Contract

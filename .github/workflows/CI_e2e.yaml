@@ -132,6 +132,11 @@ jobs:
         shell: bash -l {0}
         run: npm ci
 
+      - name: Audit locked JS dependencies
+        working-directory: molsysviewer/js
+        shell: bash -l {0}
+        run: npm audit --audit-level=low
+
       - name: Build harness and bundle
         working-directory: molsysviewer/js
         shell: bash -l {0}

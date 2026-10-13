@@ -75,6 +75,13 @@ STEPS = (
         "version", "one version across the package, the built runtime and the npm manifest", None
     ),  # reads rather than shells out; see _check_version_consistency
     Step("typescript", "tsc is clean", ["npx", "tsc", "--noEmit"], blocked_by=_node_available, cwd=JS_ROOT),
+    Step(
+        "npm_audit",
+        "the complete locked JS graph has no registry advisories",
+        ["npm", "audit", "--audit-level=low"],
+        blocked_by=_node_available,
+        cwd=JS_ROOT,
+    ),
     Step("js", "the JS unit suite", ["npm", "run", "test:js"], blocked_by=_node_available, cwd=JS_ROOT),
     Step("runtime", "the runtime builds", ["npm", "run", "build:runtime"], blocked_by=_node_available, cwd=JS_ROOT),
     Step("perf", "the performance gates hold", ["npm", "run", "test:perf"], blocked_by=_node_available, cwd=JS_ROOT),

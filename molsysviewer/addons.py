@@ -763,6 +763,19 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         self._discovery_failures: dict[str, dict[str, str]] = {}
         self._project_enabled_defaults: set[str] = set()
         self._project_disabled_defaults: set[str] = set()
+        self._automatic_discovery_done = False
+        self._discovery_in_progress = False
+        self._deferred_sources: dict[str, tuple[str, str | None, Any | None]] = {}
+
+    def _ensure_discovered(self) -> None:
+        """Discover on registry/view use; retry only providers deferred by import."""
+        if self._discovery_in_progress:
+            return
+        if not self._automatic_discovery_done:
+            self.discover(include_known_modules=True, skip_digestion=True)
+            self._automatic_discovery_done = True
+        elif self._deferred_sources:
+            self._discover_sources(list(self._deferred_sources.values()))
 
     def _iter_effective_addons(self) -> list[tuple[str, AddonSpec]]:
         return [(name, self._registry[name]) for name in self.enabled(skip_digestion=True)]
@@ -863,7 +876,6 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         include_known_modules: bool = False,
         skip_digestion: bool = False,
     ) -> list[AddonSpec]:
-        discovered: list[AddonSpec] = []
         sources: list[tuple[str, str | None, Any | None]] = []
         if modules is None:
             seen: set[str] = set()
@@ -890,21 +902,33 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         else:
             sources = [(str(module_name), str(module_name), None) for module_name in modules]
 
+        return self._discover_sources(sources)
+
+    def _discover_sources(self, sources: list[tuple[str, str | None, Any | None]]) -> list[AddonSpec]:
+        if self._discovery_in_progress:
+            return []
+        self._discovery_in_progress = True
+        try:
+            return self._load_discovery_sources(sources)
+        finally:
+            self._discovery_in_progress = False
+
+    def _load_discovery_sources(self, sources: list[tuple[str, str | None, Any | None]]) -> list[AddonSpec]:
+        discovered: list[AddonSpec] = []
+
         import sys
 
         for source, module_name, entry_point in sources:
+            imported_mod = sys.modules.get(module_name) if module_name is not None else None
+            if getattr(getattr(imported_mod, "__spec__", None), "_initializing", False):
+                # Preserve the exact entry point, including a callable attribute.
+                # An incomplete declaration is not an invalid addon contract.
+                self._deferred_sources[source] = (source, module_name, entry_point)
+                continue
+            self._deferred_sources.pop(source, None)
             if entry_point is None and module_name is not None:
                 if find_spec(module_name) is None:
                     continue
-                # Skip partially initialized modules during circular import
-                imported_mod = sys.modules.get(module_name)
-                if imported_mod is not None:
-                    if (
-                        not hasattr(imported_mod, "addon")
-                        and not hasattr(imported_mod, "ADDON")
-                        and not hasattr(imported_mod, "get_addon")
-                    ):
-                        continue
             try:
                 if entry_point is not None and hasattr(entry_point, "load"):
                     loaded = entry_point.load()
@@ -964,6 +988,10 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         self._discovery_failures.clear()
         self._project_enabled_defaults.clear()
         self._project_disabled_defaults.clear()
+        # An explicit clear must remain empty until explicit discovery or
+        # registration. Registry reads/view construction must not restore it.
+        self._automatic_discovery_done = True
+        self._deferred_sources.clear()
 
     @signal(tags=["addon"])
     @digest()
@@ -1106,6 +1134,7 @@ class ViewAddonsManager(_AddonAggregationMixin):
     """View-local add-on projection derived from the host registry."""
 
     def __init__(self, view: Any, host_registry: GlobalAddonsRegistry) -> None:
+        host_registry._ensure_discovered()
         self._view = view
         self._host = host_registry
         self._enabled_overrides: set[str] = set()

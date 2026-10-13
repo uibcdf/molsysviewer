@@ -93,15 +93,14 @@ def _materialize(name: str):
         module_name, attribute_name = target
         module = importlib.import_module(module_name, __name__)
         if module_name == ".addons":
-            module.addons.discover(include_known_modules=True)
+            # Spec imports are declaration boundaries, not discovery boundaries:
+            # an entry-point provider may still be initializing its own contract.
             for public_name, public_target in _LAZY_ATTRIBUTES.items():
-                if isinstance(public_target, tuple) and public_target[0] == ".addons":
+                if public_name != "addons" and isinstance(public_target, tuple) and public_target[0] == ".addons":
                     globals()[public_name] = getattr(module, public_target[1])
+            if name == "addons":
+                module.addons._ensure_discovered()
         value = getattr(module, attribute_name)
-    if name in {"MolSysView", "demo", "new_view"}:
-        addons_module = importlib.import_module(".addons", __name__)
-        addons_module.addons.discover(include_known_modules=True)
-        globals()["addons"] = addons_module.addons
     globals()[name] = value
     return value
 
@@ -117,6 +116,8 @@ class _LazyPackageModule(ModuleType):
         current = ModuleType.__getattribute__(self, "__dict__").get(name)
         if isinstance(current, ModuleType) and isinstance(target, tuple):
             return _materialize(name)
+        if name == "addons" and current is not None:
+            current._ensure_discovered()
         return ModuleType.__getattribute__(self, name)
 
 

@@ -1,5 +1,9 @@
 # Archived implementation plans
 
+- [Addon entry-point import order](addon_entrypoint_partial_initialization.md) — #233 separates type declarations from discovery and retries only initializing providers; real metadata/import/lifecycle guards preserve invalid-contract diagnostics.
+- [JavaScript advisory remediation](locked_javascript_dependency_advisories.md) — #242 repairs nine transitive advisories without changing Mol* 5.4.1 and adds offline range guards plus live registry gates.
+- [Panel popup controller access](panel_popup_private_controller_access.md) — #246 uses the public message route and preserves popup ordering; real TypeScript and popup browser guards pass.
+
 - [Addon window lifecycle](addon_popup_panel_lifecycle.md) — #245 gives each window its own widget, addresses mount/state delivery, validates action ownership and releases only the closing owner's resources.
 - [Widget trajectory summary](widget_trajectory_summary_dispatch.md) — #239 confirms c9471fe3 dispatch with actual 17-fps receiving in original and popup controllers, without an unknown-op warning.
 

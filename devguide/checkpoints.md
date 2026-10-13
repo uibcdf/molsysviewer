@@ -1,6 +1,21 @@
 # Development checkpoint
 
-**Current receiving/reconciliation — 2026-10-13:** the
+**Latest authorized hardening — 2026-10-13:** #233 separates public type exports
+from effective addon discovery and passes 13 fresh-process real-metadata cases.
+#242 repairs all nine advisories while preserving Mol* 5.4.1; clean npm ci/audit
+reports zero findings and live audit is required in core CI/release gates.
+#246 repairs a pre-existing TypeScript private controller access in Studio popup;
+the real compiler and native popup browser guard pass. Published SMonitor 0.20.0
+build 1 / DepDigest 0.15.1 build 0 are received in the required development
+environment with canonical archive/file checks; 129 focused source checks pass.
+The [new receipt](addon_discovery_dependency_validation_20261013.json) retains
+provenance and intermediate failures. The single local Python core run has three clear-related failures, retained
+without relabelling; all 27 final affected checks and the final native popup
+guard pass after correction. The browser core passes 43/43 before that last
+Python correction. Fresh exact hosted source gates remain pending. Manual PHMT/Jupyter remains explicitly
+postponed; both 1.0 publications stay paused and 0.25.0 is not frozen.
+
+**Prior receiving/reconciliation (preserved scope) — 2026-10-13:** the
 [33-issue inventory](open_issue_reconciliation_20261013.md) restores local
 ownership for #233/#239/#242 and the optional external-report decision #80.
 #39 keeps its accepted post-1.0 scope and legacy path for immutable archived backlinks.
@@ -24,8 +39,8 @@ pass. Lint, policy, notebooks and Conda governance succeed. Experimental Qt
 The actual PHMT/Jupyter manual smoke is explicitly postponed by Diego;
 `sandbox/revision_shape_only_addon_pre_1_0.ipynb` is prepared with a real isolated
 PHMT f0d96ae0 source copy, and its setup cells pass. This is not a live-browser
-or installed-package result. #233 generic discovery and #242 compatible
-dependency remediation remain before the next freeze. Both 1.0 publications
+or installed-package result. The #233/#242 source corrections now have the
+new receiving scope above. Both 1.0 publications
 stay paused; 0.25.0 is not frozen.
 
 **Canvas scientific mirror followup — 2026-10-13:** #234–#238 close the gaps
@@ -270,8 +285,9 @@ previous qualification records retain their original candidate and environment.
 ## Resume in one page
 
 Start with the [October 13 board reconciliation](open_issue_reconciliation_20261013.md):
-complete addon-window source qualification, then #233/#242 before freezing a
-candidate. The PHMT/Jupyter manual smoke is deliberately postponed, not passed.
+addon-window source qualification is complete. The #233/#242/#246 corrections
+now have passing focused guards and the [new receiving scope](addon_discovery_dependency_validation_20261013.json);
+complete their final source campaigns before freezing a candidate. The PHMT/Jupyter manual smoke is deliberately postponed, not passed.
 
 The [core/Qt scope](core_qt_qualification.md) and its
 [receiving receipt](core_qt_qualification_20261013.json) are the current gate
@@ -1768,8 +1784,8 @@ Resume toward **1.0** in this order:
 source qualification are complete on 19d92c25; the
 [board reconciliation](open_issue_reconciliation_20261013.md) matches all 31
 remaining open issues to local records.
-#233 generic discovery and #242 compatible dependency remediation remain before
-freezing the next candidate. The prepared PHMT/Jupyter observation is postponed
+#233/#242 and the additional #246 correction are implemented with passing
+focused guards; complete final source receiving before freezing the next candidate. The prepared PHMT/Jupyter observation is postponed
 by the maintainer. #232/#231 source checks are complete on their own sources;
 native Qt retains a separate failed outcome. Broad docs, exact candidate
 qualification and human installed first contact still precede publication.
