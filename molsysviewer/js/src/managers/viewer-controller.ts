@@ -77,6 +77,9 @@ const PANEL_REFRESH_BY_OPERATION: Partial<Record<KnownViewerMessage["op"], reado
     add_dihedral_measurement: ["addons"],
     add_sphere: ["addons"],
     update_sphere: ["addons"],
+    add_alpha_sphere_set: ["addons"],
+    add_rings: ["addons"],
+    add_hbonds: ["addons"],
     add_network_links: ["addons"],
     add_triangle_faces: ["addons"],
     add_channel_tube: ["addons"],
@@ -93,6 +96,7 @@ const PANEL_REFRESH_BY_OPERATION: Partial<Record<KnownViewerMessage["op"], reado
     delete_layer: ["addons"],
     set_layer_tag: ["addons"],
     clear_scene: ["addons"],
+    clear_shapes_by_tag: ["addons"],
     clear_all: ["addons"],
     set_figure_spec: ["addons"],
     set_canvas_visibility: ["addons"],
@@ -1277,16 +1281,10 @@ export class MolSysViewerController {
             }
         };
         this.addonsPanel = new AddonsPanel(host, addonsOptions);
+        // Workspaces and absolute shapes do not require a molecular system.
+        this.addonsPanel.setVisible(true);
         if (this.isPanelOnly) {
             this.groupPanel.setExpanded(true);
-            // Both panels are normally revealed by `captureCurrentStructure`, and a
-            // panel-only endpoint never captures one: its snapshot carries UI state
-            // and deliberately no geometry. Waiting for a structure that is not
-            // coming left this window showing its two header buttons and nothing
-            // else — the summaries arrive and are stored, but nothing is on screen
-            // to put them in. Same premise error as the welcome card, one level in.
-            this.groupPanel.setRuntimeVisible(true);
-            this.addonsPanel.setVisible(true);
         }
         this.refreshPanelWorkspaceChrome();
         this.groupPanel.setOnExpandedChange((expanded) => {
@@ -1939,6 +1937,7 @@ export class MolSysViewerController {
             this.syncingPanelExpansion = false;
         }
         this.updateCanvasInsets();
+        this.updateWelcomeState();
         this.emitPanelModeState();
     }
 
@@ -2001,6 +2000,7 @@ export class MolSysViewerController {
         }
         if (!expanded) {
             this.updateCanvasInsets();
+            this.updateWelcomeState();
             return;
         }
         this.syncingPanelExpansion = true;
@@ -2014,6 +2014,7 @@ export class MolSysViewerController {
             this.syncingPanelExpansion = false;
         }
         this.updateCanvasInsets();
+        this.updateWelcomeState();
         this.emitPanelModeState();
     }
 
@@ -2067,6 +2068,7 @@ export class MolSysViewerController {
             this.syncingPanelExpansion = false;
         }
         this.updateCanvasInsets();
+        this.updateWelcomeState();
         this.emitPanelModeState();
     }
 
@@ -2078,12 +2080,9 @@ export class MolSysViewerController {
         }
 
         if (this.currentWorkspace === "core") {
-            // `null` means "follow the structure", which is the right default for a
-            // viewer and wrong for a panel-only endpoint: it has no structure by
-            // design, so following it means staying hidden forever. This runs on
-            // every chrome refresh, so setting the override once at construction
-            // would simply be wiped here.
-            this.groupPanel.setRuntimeVisible(this.isPanelOnly ? true : null);
+            // Studio also owns shapes, loading and settings on an empty canvas.
+            // Individual molecular tools retain their own data prerequisites.
+            this.groupPanel.setRuntimeVisible(true);
             this.groupPanel.setOnNavigateToWorkbench(() => {
                 this.setPanelMode("addons", true);
             }, "Add-ons");
@@ -3195,6 +3194,9 @@ export class MolSysViewerController {
             if (options.throwOnError) throw error;
         } finally {
             if (isLoaderOp) this.setStructureLoadPending(false);
+            else if (PANEL_REFRESH_BY_OPERATION[msg.op as KnownViewerMessage["op"]]?.includes("addons")) {
+                this.updateWelcomeState();
+            }
         }
     }
 
@@ -3416,7 +3418,6 @@ export class MolSysViewerController {
         this.loadedStructure = undefined;
         this.currentStructure = undefined;
         this.groupPanel.setStructure(undefined);
-        this.addonsPanel.setVisible(false);
         this.updateWelcomeState();
     }
 
@@ -4095,8 +4096,9 @@ export class MolSysViewerController {
             this.hideWelcomeCard();
             return;
         }
-        const hasStructure = !!this.getStructureData();
-        if (hasStructure) {
+        const workspaceOpen = (this.groupPanel.isVisible() && this.groupPanel.isExpanded())
+            || (this.addonsPanel.isVisible() && this.addonsPanel.isExpanded());
+        if (workspaceOpen || this.getStructureData() || this.state.hasSceneContent()) {
             this.hideWelcomeCard();
         } else {
             if (isInitPhase && this.initOptions?.hasInitialStructures) {

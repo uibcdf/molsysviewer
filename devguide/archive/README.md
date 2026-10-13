@@ -1,5 +1,9 @@
 # Archived implementation plans
 
+- [Shape-only workspace availability](shape_only_canvas_workspace.md) — #240 makes Studio/Add-ons accessible without atoms and separates Welcome from molecular hierarchy, with real owned geometry and both popup types guarded.
+
+- [Scientific popup guard budget](scientific_popup_guard_budget.md) — #244 scopes the expanded controls guard to 300 seconds; exact hosted source completes all three scenarios and core 43/43 without weaker assertions.
+
 - [Core and experimental Qt gates](core_and_experimental_qt_gates.md) — #231 separates native Qt diagnostics from required core/release checks and recovery, with actual collection and fail-closed guards.
 
 - [Temporary resource owner review](temporary_resource_owner_review.md) — #200 records applicable owners, caller protection, managed cleanup, retained evidence and bounded Qt/forced-termination exceptions.

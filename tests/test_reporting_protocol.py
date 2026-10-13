@@ -44,6 +44,7 @@ COMPOSITE_LOAD_BROWSER_GUARD = "molsysviewer/js/tests/e2e/composite-load.e2e.ts"
 MOVIE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/movie-playback.e2e.ts"
 CONTEXT_MENU_BROWSER_GUARD = "molsysviewer/js/tests/e2e/context-menu.e2e.ts"
 CONTROLS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/controls-visibility.e2e.ts"
+WORKSPACE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts"
 STUDIO_LIST_BROWSER_GUARD = "molsysviewer/js/tests/e2e/studio-list-workflows.e2e.ts"
 STUDIO_BROWSER_GUARD = "molsysviewer/js/tests/e2e/studio-usability.e2e.ts"
 GROUP_PANEL_UNIT_GUARD = "molsysviewer/js/tests/unit/group-panel.test.ts"
@@ -75,6 +76,7 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         MOVIE_BROWSER_GUARD,
         CONTEXT_MENU_BROWSER_GUARD,
         CONTROLS_BROWSER_GUARD,
+        WORKSPACE_BROWSER_GUARD,
         STUDIO_BROWSER_GUARD,
         STUDIO_LIST_BROWSER_GUARD,
     ):
@@ -134,6 +136,15 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             "assert.equal(downloads, 1)" in entry,
             "run().catch(" in entry,
             (js_root / "tests/e2e/studio-usability-bridge.py").is_file(),
+        )
+    elif selector == WORKSPACE_BROWSER_GUARD:
+        requirements += (
+            'import { checkShapeOnlyWorkspace } from "./shape-only-workspace-scenarios";' in entry,
+            "await checkShapeOnlyWorkspace(page, __dirname);" in entry,
+            "run().catch(" in entry,
+            (js_root / "tests/e2e/shape-only-workspace-scenarios.ts").is_file(),
+            (js_root / "tests/e2e/shape_only_workspace_fixture.py").is_file(),
+            (js_root / "tests/e2e/canvas-popup-fixture.ts").is_file(),
         )
     elif selector == CONTROLS_BROWSER_GUARD:
         requirements += (
@@ -482,6 +493,7 @@ def test_browser_guard_resolves_its_build_entrypoint_and_core_lane() -> None:
     assert validate_guard(ROOT, MOVIE_BROWSER_GUARD) == []
     assert validate_guard(ROOT, CONTEXT_MENU_BROWSER_GUARD) == []
     assert validate_guard(ROOT, CONTROLS_BROWSER_GUARD) == []
+    assert validate_guard(ROOT, WORKSPACE_BROWSER_GUARD) == []
     assert validate_guard(ROOT, STUDIO_BROWSER_GUARD) == []
 
 
@@ -497,6 +509,8 @@ def test_browser_guard_rejects_missing_or_unadopted_targets(tmp_path: Path) -> N
     assert validate_guard(tmp_path, COMPOSITE_LOAD_BROWSER_GUARD)
     assert validate_guard(tmp_path, MOVIE_BROWSER_GUARD)
     assert validate_guard(tmp_path, CONTROLS_BROWSER_GUARD)
+    assert validate_guard(tmp_path, WORKSPACE_BROWSER_GUARD)
+    assert validate_guard(ROOT, WORKSPACE_BROWSER_GUARD + "::run")
     assert validate_guard(tmp_path, STUDIO_BROWSER_GUARD)
     assert validate_guard(ROOT, STUDIO_BROWSER_GUARD + "::run")
     assert validate_guard(ROOT, CONTROLS_BROWSER_GUARD + "::run")

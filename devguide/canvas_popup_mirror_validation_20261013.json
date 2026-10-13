@@ -460,7 +460,7 @@
     "issue": "uibcdf/molsysviewer#244",
     "scope": "Test infrastructure only; same production runtime bytes. Default controls allowance 300 seconds; other entries retain 180 and explicit overrides retain precedence.",
     "local": "Canonical shared runner --lane=core --suites=controls-visibility passes all three scenarios, including scientific completion in 83 seconds from its own start. Seven E2E-policy checks pass.",
-    "hosted": "Fresh exact source receiving required; no public artifact or publication claim.",
+    "hosted": "Exact 9616b22c canonical browser run 38446898982 completed success: all 43/43 core suites, including all three controls scenarios and scientific completion at 132 seconds from its own start (189 seconds for the full controls entry). No skips or weakened assertions. Source qualification, not installed-artifact evidence.",
     "offline_validation": {
       "tests": 260,
       "failures": 0,
@@ -469,14 +469,14 @@
     },
     "source_commit": "9616b22c89d649aeb545338e6a3dc7ab51c24c04",
     "source_ci_receiving": {
-      "observed_at_utc": "2026-10-13T18:29:08.322578+00:00",
+      "observed_at_utc": "2026-10-13T19:00:14.162803+00:00",
       "runs": [
         {
-          "conclusion": "",
+          "conclusion": "success",
           "createdAt": "2026-10-13T18:27:31Z",
           "databaseId": 38446899091,
           "headSha": "9616b22c89d649aeb545338e6a3dc7ab51c24c04",
-          "status": "queued",
+          "status": "completed",
           "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38446899091",
           "workflowName": "Python 3.14 source pair"
         },
@@ -490,29 +490,29 @@
           "workflowName": "CI"
         },
         {
-          "conclusion": "",
+          "conclusion": "failure",
           "createdAt": "2026-10-13T18:27:31Z",
           "databaseId": 38446899009,
           "headSha": "9616b22c89d649aeb545338e6a3dc7ab51c24c04",
-          "status": "in_progress",
+          "status": "completed",
           "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38446899009",
           "workflowName": "Experimental Qt diagnostics"
         },
         {
-          "conclusion": "",
+          "conclusion": "success",
           "createdAt": "2026-10-13T18:27:31Z",
           "databaseId": 38446898953,
           "headSha": "9616b22c89d649aeb545338e6a3dc7ab51c24c04",
-          "status": "in_progress",
+          "status": "completed",
           "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38446898953",
           "workflowName": "Documentation notebooks"
         },
         {
-          "conclusion": "",
+          "conclusion": "success",
           "createdAt": "2026-10-13T18:27:31Z",
           "databaseId": 38446898982,
           "headSha": "9616b22c89d649aeb545338e6a3dc7ab51c24c04",
-          "status": "in_progress",
+          "status": "completed",
           "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38446898982",
           "workflowName": "CI_e2e"
         },
@@ -535,7 +535,19 @@
           "workflowName": "Conda publication governance"
         }
       ],
-      "scope": "New canonical exact-source gates; pending results are not qualifications. #244 remains partial until the hosted expanded guard is received."
+      "scope": "Exact 9616b22c source results; core CI remains queued. Browser completion qualifies #244; Qt diagnostics fail separately and do not qualify the experimental host."
+    },
+    "hosted_receipt": {
+      "run_id": 38446898982,
+      "source_commit": "9616b22c89d649aeb545338e6a3dc7ab51c24c04",
+      "conclusion": "success",
+      "core_suites": 43,
+      "controls_entry_seconds": 189,
+      "scientific_scenario_seconds": 132,
+      "scientific_completion_utc": "2026-10-13T18:33:36.8106144Z",
+      "hosted_log_sha256": "d1dcaebc2884dcf005313f20b43c72a26cccb968c8aeb2e033cb3d56cc57b741",
+      "run_url": "https://github.com/uibcdf/molsysviewer/actions/runs/38446898982",
+      "receptor_result": "PASS conclusion=success | profile=ci | roles=test:1,other:1 | jobs=1/2 | artifacts=0"
     }
   }
 }

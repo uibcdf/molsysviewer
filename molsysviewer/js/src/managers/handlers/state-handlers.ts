@@ -2,6 +2,7 @@ import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
 import { StateObjectRef, StateObjectSelector, StateSelection, StateTransform } from "molstar/lib/mol-state";
 import { StateTransforms } from "molstar/lib/mol-plugin-state/transforms";
+import { PluginStateObject } from "molstar/lib/mol-plugin-state/objects";
 import { Structure, StructureElement, Unit } from "molstar/lib/mol-model/structure";
 import { Shape, ShapeGroup } from "molstar/lib/mol-model/shape";
 import { StructureSelection } from "molstar/lib/mol-model/structure/query";
@@ -280,6 +281,18 @@ export class StateHandlers {
 
     registerShapeRef(ref?: StateObjectRef, tag?: string) {
         this.registerTaggedRef(ref, tag, "shape");
+    }
+
+    /** Live scene content, including hidden and untagged absolute geometry.
+     * Inspect representation cells, never atom coordinates or trajectory frames.
+     * Registry metadata alone can outlive a deleted representation.
+     */
+    hasSceneContent(): boolean {
+        for (const cell of this.plugin.state.data.cells.values()) {
+            if (PluginStateObject.isRepresentation3D(cell.obj)
+                && cell.obj.data.repr.renderObjects.length > 0) return true;
+        }
+        return false;
     }
 
     /** Resolve the current owner without relying on stale/absent shape tags.

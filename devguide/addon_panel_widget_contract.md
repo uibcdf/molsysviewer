@@ -1,6 +1,6 @@
 # Add-On Panel Widget Contract
 
-Last update: 2026-04-17
+Last update: 2026-10-13
 
 This document defines the architectural decision and implementation contract for
 **interactive add-on panels** in MolSysViewer.
@@ -17,6 +17,30 @@ works identically from the Python API and from the canvas panel mode?*
   tested as of 2026-04-17.
 - **First proof**: `ElastNetMTModelPanel` in `molsysviewer_elastnetmt/panels/model.py`
   is the first `AddonPanelWidget` subclass in production. 12 integration tests pass.
+
+## Workspace availability without a molecular system
+
+Studio and Add-ons are reachable on an empty canvas, a shape-only scene and a
+molecular scene. Registration and `view.addons.enable(name)` use the existing
+public lifecycle. The user opens the panel control, selects Add-ons and then the
+registered workspace; an add-on can render absolute geometry before any `view.load`.
+There is no host-wide molecular prerequisite and no dummy MolSys requirement.
+Individual operations that require atoms retain their own disabled state/reason.
+
+The welcome card is quick-start guidance for a genuinely empty, closed canvas.
+It is absent while a workspace is open or loading is pending, and when molecular
+data or live scene geometry exists. Hidden representations still belong to the
+scene. Deleted cells and registry metadata alone do not count as geometry.
+Closing the workspace restores guidance only if the scene is genuinely empty.
+This rule is identical in the original and canvas popup; a panel-only popup
+never displays a welcome card. Clearing an add-on's output must use its owned
+tags and preserve caller-owned shapes, as in the existing public ownership contract.
+
+The bounded guard is `molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts`:
+a real public add-on sends Render/Clear through Python, remounts after workspace
+navigation, preserves an unrelated sphere and works in both popup types before
+loading real dialanine. Its notebook transport is adapted for Playwright; this
+is not a claim about every third-party provider or every live Jupyter host.
 
 ## Context
 
@@ -56,9 +80,9 @@ does in a cell, and inherits history and checkpoints for free. Do not "upgrade"
 this channel to envelopes: enveloping exists to arbitrate a channel with several
 endpoints (canvas, popups, Qt) competing to mutate one viewer. A panel widget is
 a single endpoint talking to Python, and the envelope would buy it nothing.
-- anywidget works in every MolSysViewer host: Jupyter, JupyterLab, VS Code
-  notebooks, and Qt WebEngine (standalone). The panel author does not need to
-  know which host is active.
+- Notebook hosts and their connected popups route panel actions to the same
+  Python authority. Standalone Qt remains experimental and has separate
+  qualification; source browser guards do not certify that host.
 - Add-on authors only need HTML/CSS/JS — no MolSysViewer TypeScript knowledge
   required.
 - Python stays the owner of all scientific logic and viewer state. The panel is
@@ -128,7 +152,7 @@ This pattern provides a modern, reactive programming model similar to standard `
 #### The State Synchronization Mechanism
 - **Backend Storage**: All active add-on states are stored in a single synchronized dictionary traitlet, `addon_states`, on the main viewer widget. This dictionary is keyed by the add-on name, e.g. `addon_states["my-addon"] = { ... }`.
 - **Namespace Isolation**: The `AddonPanelWidget` in Python and the state proxy in JavaScript automatically isolate state operations. The panel only reads and writes within its own add-on namespace, preventing collisions with other add-ons.
-- **Environment Fallback**: In stand-alone or popout modes where the Backbone widget connection is not active, the JavaScript state proxy automatically falls back to a local state dictionary. This ensures that panels run identically and flawlessly across all hosts (Jupyter, Standalone, exports) with zero code changes.
+- **Environment Fallback**: Where the Backbone widget connection is absent, the JavaScript proxy keeps a local state dictionary with the same namespace interface. A connected popup still routes scientific actions to Python. A browser-only export has no Python backend; local UI state does not provide scientific computation or certify a provider across all hosts. Standalone Qt qualification remains separate.
 
 #### Python API (Backend)
 The Python panel class can read, update, and react to state changes using the `state` property and `set_state` method:

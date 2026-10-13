@@ -55,6 +55,9 @@ test("scene-object summaries drive panels and visibility goes through Python", a
     controller.refreshNavigatePanel = () => {};
     controller.syncStripOverlaysForMessage = () => {};
     controller.refreshPanelWorkspaceChrome = () => {};
+    // This existing summary-routing seam has no scene or DOM. Welcome and
+    // workspace availability are received with real controllers in browser E2E.
+    controller.updateWelcomeState = () => {};
 
     const originalError = console.error;
     console.error = (...args: unknown[]) => {

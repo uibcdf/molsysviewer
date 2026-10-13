@@ -28,21 +28,28 @@ Ruff, policy, Conda governance and notebooks succeed on c9471fe3; core
 experimental Qt 38442809292 also fails, with separate scope. Official source
 conclusions stay distinct from local split coverage.
 Budget instrumentation is integrated in `9616b22c`, with its complete local
-controls guard and 260 reporting/link/E2E-policy checks passing. Fresh browser
-38446898982, core 38446899003, Python 3.14 pair 38446899091 and notebooks
-38446898953 are receiving. Policy and Conda governance already pass on that
-source; #244 remains partial until hosted completion. Runtime bytes are unchanged.
+controls guard and 260 reporting/link/E2E-policy checks passing. Exact browser
+38446898982 now succeeds with 43/43 core suites and scientific completion at
+132 seconds (189 seconds for the full controls entry). Python 3.14 pair
+38446899091, notebooks 38446898953, policy and Conda governance pass; core
+38446899003 remains queued and Qt fails separately.
+[#244](archive/scientific_popup_guard_budget.md) closes with this hosted guard.
+That test infrastructure correction leaves runtime bytes unchanged; the subsequent
+#240 runtime correction retains its own validation.
 This work does not declare a frozen 0.25.0 candidate,
 installed artifact qualification or either 1.0 publication.
 
-**Shape-only host review — 2026-10-13:** [#240](pending_bugs/shape_only_canvas_workspace.md)
-is reproduced with the current controller and real Python-created sphere/addon
-summary. A valid native sphere and PHMT workspace coexist with one welcome card,
-hidden Add-ons and a zero-size workspace button. The issue remains open; no
-runtime fix was made in this review. Resolve generic workspace availability
-without a molecular dummy before broad documentation and candidate freeze.
-
-
+**Shape-only host correction — 2026-10-13:** [#240](archive/shape_only_canvas_workspace.md)
+separates molecular prerequisites, actual scene content and workspace availability.
+The real public-add-on guard passes for empty, shape-only, addon-first and molecular
+scenes, both popups, Render/Clear/remount and caller-owned geometry. Studio opening
+removes Welcome; closing restores it only for a genuinely empty canvas. Hidden
+representations count as content and deleted cells do not. JS units, 247 reporting/link
+checks and Ruff pass; one full core browser invocation passes 43/43, and Python
+core passes 3,105 with 21 recorded skips, zero failures/errors and experimental
+Qt excluded by the canonical mark. Fresh source CI retains separate
+[receiving](shape_only_canvas_workspace_validation_20261013.json).
+No live Jupyter/provider or installed-package claim is inferred.
 
 **Canvas popup parity — 2026-10-13:** #232 implements the
 [shared popup contract](canvas_popup_contract.md): the runtime actually used by

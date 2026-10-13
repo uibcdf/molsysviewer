@@ -1,14 +1,14 @@
 ---
 summary: Shape-only views keep the welcome card and hide addon workspaces until a molecular structure is loaded
 issue: uibcdf/molsysviewer#240
-status: open
+status: resolved
 opened: 2026-10-13
-closed:
+closed: 2026-10-13
 severity: high
 verification: reproduced
 area: [canvas, addons, welcome]
-guard:
-normative:
+guard: molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts
+normative: devguide/addon_panel_widget_contract.md
 blocked_by: []
 supersedes: []
 ---
@@ -75,3 +75,40 @@ Before closure, receive real controls for empty, shape-only, addon-first and
 molecular scenes, Render/Clear/remount and caller-owned shape preservation,
 including canvas/panel popup behavior. Implementation and its closing guard
 remain pending. No API or runtime code was changed during this review.
+
+## Resolution — 2026-10-13
+
+Studio/Add-ons availability no longer follows the molecular hierarchy. Core Studio
+remains reachable for loading, absolute shapes and settings; non-core workspaces
+keep their existing panel navigation. Removing a molecular system does not hide
+Add-ons. `StateHandlers.hasSceneContent` reads live Mol* representation cells,
+including hidden and untagged geometry, without reading atoms or trajectories;
+metadata/deleted refs alone do not suppress guidance. The controller updates
+Welcome after scene operations, including rings, alpha spheres and clear-by-tag,
+and after explicit panel open/close. Molecular loading still suppresses transient
+Welcome. A genuinely empty, closed canvas keeps its quick start; an open workspace
+and every panel-only endpoint are unobstructed. There is no provider-specific
+branch or new scientific/API prerequisite.
+
+The registered closing guard uses an actual `AddonPanelWidget` and public
+`view.shapes` operations, real Mol*/Chromium, the AnyWidget bootstrap and production
+popup snapshots. It receives empty original/canvas popup guidance, normal Studio
+opening/closing, disabled molecular interaction creation, visible/hidden/deleted
+absolute geometry, addon-first Render/Clear/remount, caller-owned sphere protection,
+Clear from the panel popup, Render from the canvas popup's W navigation, and
+subsequent real dialanine loading in both canvases. Navigation remains local to
+each window; the guard uses each window's normal workspace controls.
+
+The specific shared-runner guard passes. JS units pass after updating the existing
+summary-routing seam to exclude its absent DOM; the guard above receives real
+workspace behavior. Regression integration and exact-source hosted campaigns
+retain separate status in [the validation receipt](../shape_only_canvas_workspace_validation_20261013.json).
+This is source/runtime evidence, not installed package qualification or a complete
+live Jupyter/PharmacophoreMT campaign. Consumer confirmation under
+uibcdf/pharmacophoremt#58 can exercise this host correction without a dummy system.
+
+The retained development attempts caught fixture errors (an unsupported AddonSpec
+title, molecular-only camera observation, controls hidden while a floating panel
+is open, and assumptions about local popup navigation). Each was diagnosed before
+a targeted rerun. No force-click, fake molecular system, synthetic scene or
+skipped browser failure was used to obtain the final passing guard.

@@ -62,6 +62,8 @@ async function checkProgressiveWelcome(page: any, fixture: any) {
         return w.__welcomeInsertions;
     });
     assert.equal(insertions, 0, "Welcome must never enter the DOM during progressive loading or replacement");
+    // Quick start belongs to an empty, closed canvas; an open Studio stays usable.
+    await apply([{ op: "set_panel_mode", expanded: false }]);
     await apply([{ op: "clear_all" }]);
     assert.equal(await welcome.count(), 1);
     const failed = await page.evaluate(async () => {

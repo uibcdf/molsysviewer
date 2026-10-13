@@ -1,0 +1,158 @@
+{
+  "date": "2026-10-13",
+  "scope": "Development source/runtime qualification; adapted notebook transport, actual Python/public addon API, real Mol*/Chromium and production popup boot. Not installed artifact or live Jupyter/provider certification.",
+  "source_parent": "668417af116870dd9ad03c2a530ba15cd74c9701",
+  "integrated_source_commit": null,
+  "issue": "uibcdf/molsysviewer#240",
+  "environment": {
+    "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+    "executable": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "libraries": {
+      "molsysviewer": "0.23.0+17.g3fa27e68",
+      "molsysmt": "0.22.4+24.g42b487869",
+      "argdigest": "0.15.0+1.g5c6711e",
+      "smonitor": "0.19.0",
+      "anywidget": "0.11.0"
+    },
+    "molsysmt_checkout": "31f4476ca00b2a556d74cadc1a364678c6049741",
+    "imported_modules": {
+      "molsysviewer": {
+        "file": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/__init__.py",
+        "module_version": "0.24.0+15.gf23d6226.dirty"
+      },
+      "molsysmt": {
+        "file": "/home/diego/repos@uibcdf/molsysmt/molsysmt/__init__.py",
+        "module_version": "0.22.4+24.g42b487869"
+      }
+    },
+    "scope": "Editable development checkouts; distribution metadata is not installed-candidate identity. No installed package qualification.",
+    "javascript": {
+      "node": "v24.11.1",
+      "molstar": "5.4.1",
+      "playwright": "1.57.0"
+    }
+  },
+  "runtime_sha256": "12a9d1d2c032270bae05ee80e58bd57ae700e61701a50d4d9538857ee543c6a4",
+  "guard": "molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts",
+  "fixture": "molsysviewer/js/tests/e2e/shape_only_workspace_fixture.py",
+  "specific_guard": {
+    "result": "pass",
+    "shared_runner": "--lane=core --suites=panel-popup-welcome",
+    "real_molecular_fixture": "dialanine after empty/shape-only operations",
+    "cases": [
+      "empty original and canvas popup quick start",
+      "open/close Studio without atoms",
+      "molecular calculation remains disabled",
+      "absolute hidden/deleted shape welcome policy",
+      "addon-first Render/Clear/remount through real Python",
+      "caller-owned geometry preserved",
+      "panel popup Clear",
+      "canvas popup W navigation and Render",
+      "molecular loading in both canvases"
+    ],
+    "log_sha256": "d7a5ffa5087e5fb90adae6a992e272a7a7b74b859c7354ca3d17165764b3379c",
+    "explicit_skip": false
+  },
+  "js_units": {
+    "result": "pass",
+    "scope": "Node canonical aggregate; one aggregate entry, no invented subtest count"
+  },
+  "regression_receiving": {
+    "core_browser": {
+      "result": "pass",
+      "suites": 43,
+      "scope": "One complete canonical shared Chromium core invocation on the current runtime; remote preview excluded",
+      "log_sha256": "cbe3214eaeb39fd3640a76a524f2b6750ca8a184fa8720c93eec69d9e06959a2"
+    },
+    "python_core": {
+      "result": "pass",
+      "passed": 3105,
+      "skipped": 21,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 675.729,
+      "excluded_mark": "qt_runtime (same applicable core gate as CI)",
+      "skip_reasons": {
+        "template has no placeholders": 14,
+        "Requires installed scientific artifacts": 2,
+        "requires an explicitly selected real Chromium/GPU environment": 2,
+        "imageio is installed; cannot test ImportError path": 1,
+        "molsysviewer_elastnetmt is not installed": 1,
+        "Windows process memory API": 1
+      },
+      "junit_sha256": "f5f23f5aaf32d7c767450d42f184bc1a617f8fdf5ff1eb7c07aadfe084630a96"
+    }
+  },
+  "qualification_limits": [
+    "No exact installed package qualification",
+    "No frozen 0.25.0 producer",
+    "Both 1.0 publications remain paused",
+    "Experimental Qt and remote preview are separate",
+    "Third-party PharmacophoreMT live Jupyter confirmation retains its own consumer scope"
+  ],
+  "development_attempts": {
+    "fixture_failures": [
+      "unsupported AddonSpec title",
+      "empty scene has no camera updates",
+      "floating panel suppresses canvas controls",
+      "popup navigation is window-local"
+    ],
+    "retained_local_logs": "/tmp/msv-issue240-review-20261013",
+    "claims": "Each failure was diagnosed; final guard uses real controls and no force clicks or opt-out."
+  },
+  "observed_at_utc": "2026-10-13T19:29:03.245276+00:00",
+  "offline_validation": {
+    "tests": 247,
+    "failures": 0,
+    "errors": 0,
+    "guard": "tests/test_reporting_protocol.py + tests/test_devguide_links.py"
+  },
+  "consumer_prerequisite_reprobe": {
+    "scope": "Same retained real Python-created sphere and PharmacophoreMT summary as the failing probe; current drawing Mol*/Chromium controller, normal Add-ons/workspace clicks. No live notebook transport or PHMT panel-control/calculation campaign.",
+    "has_molecular_structure": false,
+    "welcome_cards": 0,
+    "addons_visible": true,
+    "addons_expanded": true,
+    "native_sphere_refs": [
+      {
+        "ref": "oh05C6xOAvtaTA5WBx0gDg",
+        "exists": true,
+        "hidden": false
+      }
+    ],
+    "workspace_buttons": [
+      {
+        "text": "PharmacophMT1 panel \u00b7 1 section \u00b7 1 context action \u00b7 1 export helper",
+        "rect": {
+          "x": 144,
+          "y": 186,
+          "width": 171,
+          "height": 54,
+          "top": 186,
+          "right": 315,
+          "bottom": 240,
+          "left": 144
+        }
+      },
+      {
+        "text": "Pharmacophore",
+        "rect": {
+          "x": 336,
+          "y": 160,
+          "width": 83.75,
+          "height": 24,
+          "top": 160,
+          "right": 419.75,
+          "bottom": 184,
+          "left": 336
+        }
+      }
+    ],
+    "json_sha256": "1a2e663e5f9acbea3e3e68b98f06ca7dccf3fc6ce481a9a8556c53b8c335e287"
+  },
+  "ruff": "All changed Python files pass",
+  "source_ci_receiving": {
+    "state": "not_dispatched_yet",
+    "scope": "Fresh canonical source gates will be received after direct main integration; local source results are not hosted/installed-artifact qualification."
+  }
+}

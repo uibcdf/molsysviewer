@@ -147218,6 +147218,16 @@ var StateHandlers = class {
   registerShapeRef(ref, tag) {
     this.registerTaggedRef(ref, tag, "shape");
   }
+  /** Live scene content, including hidden and untagged absolute geometry.
+   * Inspect representation cells, never atom coordinates or trajectory frames.
+   * Registry metadata alone can outlive a deleted representation.
+   */
+  hasSceneContent() {
+    for (const cell of this.plugin.state.data.cells.values()) {
+      if (PluginStateObject.isRepresentation3D(cell.obj) && cell.obj.data.repr.renderObjects.length > 0) return true;
+    }
+    return false;
+  }
   /** Resolve the current owner without relying on stale/absent shape tags.
    * Scans registered scene refs on demand; never reads molecular trajectories.
    */
@@ -165660,6 +165670,9 @@ var PANEL_REFRESH_BY_OPERATION = {
   add_dihedral_measurement: ["addons"],
   add_sphere: ["addons"],
   update_sphere: ["addons"],
+  add_alpha_sphere_set: ["addons"],
+  add_rings: ["addons"],
+  add_hbonds: ["addons"],
   add_network_links: ["addons"],
   add_triangle_faces: ["addons"],
   add_channel_tube: ["addons"],
@@ -165676,6 +165689,7 @@ var PANEL_REFRESH_BY_OPERATION = {
   delete_layer: ["addons"],
   set_layer_tag: ["addons"],
   clear_scene: ["addons"],
+  clear_shapes_by_tag: ["addons"],
   clear_all: ["addons"],
   set_figure_spec: ["addons"],
   set_canvas_visibility: ["addons"],
@@ -166299,10 +166313,9 @@ var MolSysViewerController = class _MolSysViewerController {
       }
     };
     this.addonsPanel = new AddonsPanel(host, addonsOptions);
+    this.addonsPanel.setVisible(true);
     if (this.isPanelOnly) {
       this.groupPanel.setExpanded(true);
-      this.groupPanel.setRuntimeVisible(true);
-      this.addonsPanel.setVisible(true);
     }
     this.refreshPanelWorkspaceChrome();
     this.groupPanel.setOnExpandedChange((expanded) => {
@@ -167254,6 +167267,7 @@ var MolSysViewerController = class _MolSysViewerController {
       this.syncingPanelExpansion = false;
     }
     this.updateCanvasInsets();
+    this.updateWelcomeState();
     this.emitPanelModeState();
   }
   updateCanvasInsets() {
@@ -167299,6 +167313,7 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     if (!expanded) {
       this.updateCanvasInsets();
+      this.updateWelcomeState();
       return;
     }
     this.syncingPanelExpansion = true;
@@ -167312,6 +167327,7 @@ var MolSysViewerController = class _MolSysViewerController {
       this.syncingPanelExpansion = false;
     }
     this.updateCanvasInsets();
+    this.updateWelcomeState();
     this.emitPanelModeState();
   }
   setPanelMode(panel, expanded, skipToggleCore = false) {
@@ -167358,6 +167374,7 @@ var MolSysViewerController = class _MolSysViewerController {
       this.syncingPanelExpansion = false;
     }
     this.updateCanvasInsets();
+    this.updateWelcomeState();
     this.emitPanelModeState();
   }
   refreshPanelWorkspaceChrome() {
@@ -167367,7 +167384,7 @@ var MolSysViewerController = class _MolSysViewerController {
       this.currentWorkspace = "core";
     }
     if (this.currentWorkspace === "core") {
-      this.groupPanel.setRuntimeVisible(this.isPanelOnly ? true : null);
+      this.groupPanel.setRuntimeVisible(true);
       this.groupPanel.setOnNavigateToWorkbench(() => {
         this.setPanelMode("addons", true);
       }, "Add-ons");
@@ -168538,6 +168555,9 @@ var MolSysViewerController = class _MolSysViewerController {
       if (options.throwOnError) throw error2;
     } finally {
       if (isLoaderOp) this.setStructureLoadPending(false);
+      else if (PANEL_REFRESH_BY_OPERATION[msg.op]?.includes("addons")) {
+        this.updateWelcomeState();
+      }
     }
   }
   async handleArrayNativeMolSysMessage(msg, buffers) {
@@ -168719,7 +168739,6 @@ var MolSysViewerController = class _MolSysViewerController {
     this.loadedStructure = void 0;
     this.currentStructure = void 0;
     this.groupPanel.setStructure(void 0);
-    this.addonsPanel.setVisible(false);
     this.updateWelcomeState();
   }
   applyWorkbenchMessage(msg) {
@@ -169282,8 +169301,8 @@ var MolSysViewerController = class _MolSysViewerController {
       this.hideWelcomeCard();
       return;
     }
-    const hasStructure = !!this.getStructureData();
-    if (hasStructure) {
+    const workspaceOpen = this.groupPanel.isVisible() && this.groupPanel.isExpanded() || this.addonsPanel.isVisible() && this.addonsPanel.isExpanded();
+    if (workspaceOpen || this.getStructureData() || this.state.hasSceneContent()) {
       this.hideWelcomeCard();
     } else {
       if (isInitPhase && this.initOptions?.hasInitialStructures) {

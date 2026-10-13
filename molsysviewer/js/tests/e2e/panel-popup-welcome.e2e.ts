@@ -24,6 +24,7 @@ import process from "node:process";
 import { chromium } from "./e2e-browser";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
+import { checkShapeOnlyWorkspace } from "./shape-only-workspace-scenarios";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -191,6 +192,7 @@ async function run() {
     );
     assert.deepStrictEqual(errors, [], `page errors: ${errors.join(" | ")}`);
 
+    await checkShapeOnlyWorkspace(page, __dirname);
     console.log("[E2E panel-popup-welcome] PASS");
     await browser.close();
 }

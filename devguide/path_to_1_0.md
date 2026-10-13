@@ -8,10 +8,11 @@ across retained integration/followups and 458 offline guards passing. Fresh exac
 hosted source CI retains separate [evidence](canvas_popup_mirror_validation_20261013.json).
 Earlier #232 controls source 63c3d9c7 now passes its required hosted gates;
 its independent Qt failure does not qualify or block the new core mirror source.
-Complete the new applicable source gates before broad documentation; #244 owns
-the measured controls-entry timeout. The current host also reproduces [#240](pending_bugs/shape_only_canvas_workspace.md):
-shape-only scenes retain the welcome card and hide addon workspaces. Resolve
-that generic availability contract before broad documentation and producer freeze.
+Complete the new applicable source gates before broad documentation;
+[#244](archive/scientific_popup_guard_budget.md) closes after exact 9616b22c hosted
+browser 43/43, including scientific completion within the scoped budget. [#240](archive/shape_only_canvas_workspace.md) now fixes generic workspace
+availability without atoms, with the real addon/shape/popup guard passing. Receive
+its applicable regression/source gates before broad documentation and producer freeze.
 Both 1.0 publications and 0.25.0 candidate freezing remain paused.
 
 **Current gate alignment — 2026-10-13:** #231 separates required core from

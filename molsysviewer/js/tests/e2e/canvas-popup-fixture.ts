@@ -7,7 +7,8 @@ const boundPages = new WeakSet<Page>();
 const activeFixtures = new WeakMap<Page, PythonFixtureBridge>();
 
 /** Only the notebook comm/trait transport is adapted; the Python authority is real. */
-export async function mountCanvasPopupFixture(page: Page, bridge: PythonFixtureBridge) {
+export async function mountCanvasPopupFixture(page: Page, bridge: PythonFixtureBridge,
+    options: { trajectoryLabel?: string | null } = {}) {
         const fixture = await bridge.request();
         await page.goto("about:blank");
         await page.setContent('<div id="notebook" style="width:850px;height:600px"></div>');
@@ -72,20 +73,28 @@ export async function mountCanvasPopupFixture(page: Page, bridge: PythonFixtureB
                 w.__popupWidgetDispose = await bootstrap.default.render({ model, el: document.getElementById("notebook") });
             } finally { URL.revokeObjectURL(url); }
         }, fixture);
-        await page.waitForFunction(() => document.querySelector('[data-molsysviewer-trajectory-label="true"]')?.textContent === "1 / 3");
+        const trajectoryLabel = options.trajectoryLabel === undefined ? "1 / 3" : options.trajectoryLabel;
+        if (trajectoryLabel !== null) {
+            await page.waitForFunction(label => document.querySelector('[data-molsysviewer-trajectory-label="true"]')?.textContent === label, trajectoryLabel);
+        } else {
+            await page.waitForFunction(() => !!document.querySelector("canvas"));
+            await page.evaluate(() => (window as any).__popupFixtureDrain());
+        }
         return async () => {
             if (activeFixtures.get(page) === bridge) activeFixtures.delete(page);
         };
 }
 
 /** Observe real controllers without replacing molecular or rendering operations. */
-export async function captureCanvasPopupControllers(page: Page) {
+export async function captureCanvasPopupControllers(page: Page, waitForController = true) {
     await page.evaluate(() => {
         const w=window as any;
         const C=w.__molsysviewer_anywidget_runtime__?.module.MolSysViewerController;
         if (C) {
-            const snapshot=C.prototype.getCameraSnapshot;
-            C.prototype.getCameraSnapshot=function(...args:any[]) { w.__mirrorController=this; return snapshot.apply(this,args); };
+            for (const method of ["getCameraSnapshot", "togglePanelMode"]) {
+                const operation=C.prototype[method];
+                C.prototype[method]=function(...args:any[]) { w.__mirrorController=this; return operation.apply(this,args); };
+            }
         } else w.__mirrorController = w.__molsysviewerDocsController;
         const open=window.open.bind(window);
         window.open=((...args:any[])=>{
@@ -103,5 +112,5 @@ export async function captureCanvasPopupControllers(page: Page) {
             return win;
         }) as typeof window.open;
     });
-    await page.waitForFunction(()=>!!(window as any).__mirrorController);
+    if (waitForController) await page.waitForFunction(()=>!!(window as any).__mirrorController);
 }

@@ -106,6 +106,20 @@ and interruption; browser/WebGL errors fail. No node suffix, wildcard or
 unregistered browser target is accepted. `tests/test_reporting_protocol.py`
 verifies this exact build/runner registration.
 
+### Empty and shape-only workspace browser guard profile
+
+The bounded selector `molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts`
+is accepted without node suffixes, globs or commands. From `molsysviewer/js`,
+build with `npm run build:harness` and `npm run build:e2e:all`, then run
+`node tests/e2e/panel-popup-welcome.e2e.js`; it also runs in
+`npm run test:e2e:core`. Browser/WebGL failure fails the guard.
+The validator checks the exact entry, build/core registration and fixture owners.
+The guard uses a real public Python add-on, absolute shapes and the actual widget
+bootstrap/popup snapshots. It checks empty quick start, workspace access without
+atoms, disabled molecular calculation, hidden/deleted geometry, Render/Clear,
+remount and caller ownership, both popup types and subsequent molecular loading.
+It does not qualify a particular third-party add-on or a live Jupyter installation.
+
 ### Interactions browser guard profile
 
 For defects originating in the Studio TypeScript request path, the bounded local

@@ -13,8 +13,9 @@ from molsysviewer.runtime_contract import wrap_outbound
 import molsysviewer as msv
 
 
-def serve():
-    view = msv.new_view(msv.demo["pentalanine"].molsys, structure_indices=[0, 8, 3], controls_mode="classic")
+def serve(view=None, fixture_event_handler=None):
+    if view is None:
+        view = msv.new_view(msv.demo["pentalanine"].molsys, structure_indices=[0, 8, 3], controls_mode="classic")
     view.set_controls_visible(True, autohide=False, position=["top", "left"])
     sent = []
 
@@ -33,6 +34,8 @@ def serve():
             try:
                 sent.clear()
                 for event in request.get("events", []):
+                    if fixture_event_handler is not None and fixture_event_handler(view, event):
+                        continue
                     if "mirror_fixture" in event:
                         action = event["mirror_fixture"]
                         if action == "seed":
