@@ -140907,13 +140907,13 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
   let stepControl = null;
   let fpsControl = null;
   let trajCapsule;
-  const btnPlayPause = isMinimal ? makeMinimalTrajButton(`<polygon points="5,3 13,8 5,13" fill="currentColor"/>`, "Play Trajectory", () => {
+  const btnPlayPause = isMinimal ? makeMinimalTrajButton(`<polygon points="5,3 13,8 5,13" fill="currentColor"/>`, "Play Trajectory", async () => {
     const isPlaying = c8.trajectory.getTrajectoryState().isPlaying;
     if (isPlaying) {
-      c8.stopTrajectoryPlayback();
+      await c8.stopTrajectoryPlayback();
       sendSync({ op: "set_trajectory_playback", action: "stop" });
     } else {
-      c8.playTrajectory({ fps: currentFps, step: currentStep });
+      await c8.playTrajectory({ fps: currentFps, step: currentStep });
       sendSync({
         op: "set_trajectory_playback",
         action: "play",
@@ -140921,13 +140921,13 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
         step: currentStep
       });
     }
-  }) : makeButton("\u25B6 / \u23F8", () => {
+  }) : makeButton("\u25B6 / \u23F8", async () => {
     const isPlaying = c8.trajectory.getTrajectoryState().isPlaying;
     if (isPlaying) {
-      c8.stopTrajectoryPlayback();
+      await c8.stopTrajectoryPlayback();
       sendSync({ op: "set_trajectory_playback", action: "stop" });
     } else {
-      c8.playTrajectory({ fps: currentFps, step: currentStep });
+      await c8.playTrajectory({ fps: currentFps, step: currentStep });
       sendSync({
         op: "set_trajectory_playback",
         action: "play",
@@ -141021,37 +141021,41 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
     traj.appendChild(btnPlayPause);
     if (btnNext) traj.appendChild(btnNext);
     if (isCinema) {
-      stepControl = makeNumberControl(1, (n) => {
+      stepControl = makeNumberControl(1, async (n) => {
         currentStep = n;
         const state = c8.trajectory.getTrajectoryState();
         if (state.isPlaying) {
-          c8.playTrajectory({ fps: currentFps, step: currentStep });
+          await c8.playTrajectory({ fps: currentFps, step: currentStep });
+          sendSync({ op: "set_trajectory_playback", action: "play", fps: currentFps, step: currentStep });
         }
       }, "Step size", true);
-      fpsControl = makeNumberControl(30, (n) => {
+      fpsControl = makeNumberControl(30, async (n) => {
         currentFps = n;
         const state = c8.trajectory.getTrajectoryState();
         if (state.isPlaying) {
-          c8.playTrajectory({ fps: currentFps, step: currentStep });
+          await c8.playTrajectory({ fps: currentFps, step: currentStep });
+          sendSync({ op: "set_trajectory_playback", action: "play", fps: currentFps, step: currentStep });
         }
       }, "FPS", true);
       traj.appendChild(stepControl.wrapper);
       traj.appendChild(fpsControl.wrapper);
     }
   } else {
-    stepControl = makeNumberControl(1, (n) => {
+    stepControl = makeNumberControl(1, async (n) => {
       currentStep = n;
       const state = c8.trajectory.getTrajectoryState();
       if (state.isPlaying) {
         btnPlayPause.setAttribute("data-molsysviewer-trajectory-playback", "stop");
-        c8.playTrajectory({ fps: currentFps, step: currentStep });
+        await c8.playTrajectory({ fps: currentFps, step: currentStep });
+        sendSync({ op: "set_trajectory_playback", action: "play", fps: currentFps, step: currentStep });
       }
     }, "Step size", isMinimal);
-    fpsControl = makeNumberControl(30, (n) => {
+    fpsControl = makeNumberControl(30, async (n) => {
       currentFps = n;
       const state = c8.trajectory.getTrajectoryState();
       if (state.isPlaying) {
-        c8.playTrajectory({ fps: currentFps, step: currentStep });
+        await c8.playTrajectory({ fps: currentFps, step: currentStep });
+        sendSync({ op: "set_trajectory_playback", action: "play", fps: currentFps, step: currentStep });
       }
     }, "FPS", isMinimal);
     if (btnPrev) traj.appendChild(btnPrev);
@@ -141138,8 +141142,18 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
   }
   let hasSeenState = false;
   let lastIsPlaying = null;
+  let lastFps;
+  let lastStep;
   const applyTrajectoryState = (state) => {
     hasSeenState = true;
+    if (state.fps !== void 0 && state.fps !== lastFps) {
+      lastFps = currentFps = state.fps;
+      if (fpsControl) fpsControl.input.value = String(state.fps);
+    }
+    if (state.step !== void 0 && state.step !== lastStep) {
+      lastStep = currentStep = state.step;
+      if (stepControl) stepControl.input.value = String(state.step);
+    }
     const frameCount = state.frameCount;
     const current2 = state.currentFrame;
     traj.style.display = frameCount > 1 ? "flex" : "none";
@@ -141992,12 +142006,14 @@ var transform = Transformer.builderFactory("molsysviewer")({
     return Task.create("Annotation", async (ctx) => {
       const repr = createRepresentation(plugin);
       await repr.createOrUpdate(visualProps(params.geometry), params.geometry).runInContext(ctx);
+      repr.setState({ pickable: true });
       return new PluginStateObject.Shape.Representation3D({ repr, sourceData: params.geometry }, { label: params.geometry.text });
     });
   },
   update({ b: b8, newParams }) {
     return Task.create("Annotation", async (ctx) => {
       await b8.data.repr.createOrUpdate(visualProps(newParams.geometry), newParams.geometry).runInContext(ctx);
+      b8.data.repr.setState({ pickable: true });
       b8.data.sourceData = newParams.geometry;
       return Transformer.UpdateResult.Updated;
     });
@@ -142184,6 +142200,7 @@ var AnnotationHandlers = class {
     await this.refreshQueue;
     const refs = Array.from(this.labelRefs);
     this.labelRefs.clear();
+    for (const [tag, registered] of this.refsByTag) for (const ref of registered) this.callbacks.unregisterRef?.(ref, tag);
     this.refsByTag.clear();
     await this.removeLabelRefs(refs);
   }
@@ -142195,6 +142212,7 @@ var AnnotationHandlers = class {
     this.refsByTag.delete(tag);
     for (const ref of refs) {
       this.labelRefs.delete(ref);
+      this.callbacks.unregisterRef?.(ref, tag);
     }
     await this.removeLabelRefs(refs);
   }
@@ -142238,7 +142256,10 @@ var AnnotationHandlers = class {
     const refs = Array.from(this.refsByTag.get(tag) ?? []);
     this.refsByTag.delete(tag);
     this.specsByTag.delete(tag);
-    for (const ref of refs) this.labelRefs.delete(ref);
+    for (const ref of refs) {
+      this.labelRefs.delete(ref);
+      this.callbacks.unregisterRef?.(ref, tag);
+    }
     for (const tags of this.layerTagIndex.values()) tags.delete(tag);
     this.layerTagIndex.delete(tag);
   }
@@ -146442,6 +146463,8 @@ var SceneHandlers = class {
     this.swingActive = false;
     this.spinActive = false;
     this.darkMode = false;
+    this.motionFollower = false;
+    this.motionSpeed = 0.1;
     // ── Section gizmo state ────────────────────────────────────────────────
     this._activeSections = [];
     this._sectionGizmoTags = /* @__PURE__ */ new Set();
@@ -146457,6 +146480,15 @@ var SceneHandlers = class {
   }
   get isDarkMode() {
     return this.darkMode;
+  }
+  setMotionFollower(enabled) {
+    this.motionFollower = enabled;
+    this.applyMotion();
+  }
+  applyMotion() {
+    this.plugin.canvas3d?.setProps({ trackball: {
+      animate: this.motionFollower ? { name: "off", params: {} } : this.spinActive ? { name: "spin", params: { speed: this.motionSpeed } } : this.swingActive ? { name: "rock", params: { speed: this.motionSpeed, angle: 20 } } : { name: "off", params: {} }
+    } });
   }
   async resetView() {
     await PluginCommands.Camera.Reset(this.plugin, { durationMs: 250 });
@@ -146525,12 +146557,8 @@ var SceneHandlers = class {
     const shouldEnable = enable ?? !this.swingActive;
     this.swingActive = shouldEnable;
     this.spinActive = false;
-    canvas3d.setProps({
-      trackball: {
-        ...canvas3d.props?.trackball || {},
-        animate: shouldEnable ? { name: "rock", params: { speed, angle: 20 } } : { name: "off", params: {} }
-      }
-    });
+    this.motionSpeed = speed;
+    this.applyMotion();
   }
   async toggleSpin(msg) {
     const enable = typeof msg === "boolean" ? msg : msg.enable;
@@ -146540,12 +146568,8 @@ var SceneHandlers = class {
     const shouldEnable = enable ?? !this.spinActive;
     this.spinActive = shouldEnable;
     this.swingActive = false;
-    canvas3d.setProps({
-      trackball: {
-        ...canvas3d.props?.trackball || {},
-        animate: shouldEnable ? { name: "spin", params: { speed } } : { name: "off", params: {} }
-      }
-    });
+    this.motionSpeed = speed;
+    this.applyMotion();
   }
   // ── Section helpers ────────────────────────────────────────────────────
   /**
@@ -147205,6 +147229,30 @@ var StateHandlers = class {
         if (cells.some((cell) => cell.obj?.data?.sourceData === sourceData)) {
           const separator = key2.indexOf("\0");
           return { kind: key2.slice(0, separator), tag: key2.slice(separator + 1) };
+        }
+      }
+    }
+    return null;
+  }
+  /** Resolve portable pick groups against this endpoint's own representations. */
+  resolveObjectLoci(kind, tag, groups, entityRef) {
+    const refs = this.tagIndex.get(this.taggedKey(kind, tag));
+    if (!refs) return null;
+    for (const ref of refs) {
+      for (const cell of this.plugin.state.data.select(StateSelection.Generators.byRef(ref).subtree())) {
+        const repr = cell.obj?.data?.repr;
+        for (const loci of repr?.getAllLoci?.() ?? []) {
+          const shape = Shape.isLoci(loci) || ShapeGroup.isLoci(loci) ? loci.shape : null;
+          if (!shape) continue;
+          const data = shape.sourceData;
+          const interaction = data?.interaction;
+          if (entityRef?.kind === "interaction" && (!interaction || ["analysis_name", "analysis_revision", "query_revision", "frame"].some((key2) => entityRef[key2] !== interaction[key2]))) continue;
+          if (!groups?.length) return Shape.Loci(shape);
+          const valid = groups.map((group) => ({
+            instance: group.instance,
+            ids: SortedArray.ofSortedArray(group.ids.filter((id) => id >= 0 && id < shape.groupCount && (entityRef?.kind !== "interaction" || interaction.observations[id]?.occurrence_index === entityRef.occurrence_index)).sort((a8, b8) => a8 - b8))
+          })).filter((group) => group.ids.length && group.instance >= 0 && group.instance < shape.transforms.length);
+          if (valid.length) return ShapeGroup.Loci(shape, valid);
         }
       }
     }
@@ -148780,7 +148828,25 @@ var TrajectoryHandlers = class {
     this.plugin = plugin;
     this.context = context2;
     this.pendingFrames = /* @__PURE__ */ new Set();
+    this.follower = false;
+    this.followerPlaying = false;
+    this.playbackOptions = {
+      fps: 30,
+      step: 1,
+      mode: "loop",
+      direction: "forward"
+    };
     this.trajectoryListeners = /* @__PURE__ */ new Set();
+  }
+  setFollower(enabled) {
+    this.follower = enabled;
+  }
+  applySummary(message) {
+    if (Number.isSafeInteger(message.fps) && message.fps > 0) this.playbackOptions.fps = message.fps;
+    if (Number.isSafeInteger(message.step) && message.step > 0) this.playbackOptions.step = message.step;
+    if (message.mode) this.playbackOptions.mode = normalizePlaybackMode(message.mode);
+    if (message.direction === "forward" || message.direction === "backward") this.playbackOptions.direction = message.direction;
+    this.updateTrajectoryState();
   }
   async partialCoordinatesUpdate(msg) {
     const loaded = this.context.getLoadedStructure();
@@ -148871,11 +148937,12 @@ var TrajectoryHandlers = class {
     this.updateTrajectoryState();
   }
   async setTrajectoryPlayback(msg) {
-    const action = msg.action ?? "stop";
-    const fps = msg.fps ?? 30;
-    const step = msg.step ?? 1;
-    const mode = msg.mode ?? "loop";
-    const direction = msg.direction ?? "forward";
+    const action = msg.action ?? (this.getTrajectoryState().isPlaying ? "play" : "stop");
+    const fps = msg.fps ?? this.playbackOptions.fps;
+    const step = msg.step ?? this.playbackOptions.step;
+    const mode = msg.mode ?? this.playbackOptions.mode;
+    const direction = msg.direction ?? this.playbackOptions.direction;
+    this.playbackOptions = { fps, step, mode: normalizePlaybackMode(mode), direction };
     if (action === "play") {
       await this.playTrajectory({ fps, mode, direction, step });
     } else {
@@ -148888,11 +148955,17 @@ var TrajectoryHandlers = class {
       console.warn("[MolSysViewer] playTrajectory ignored: trajectory has less than 2 frames");
       return;
     }
-    const fps = options.fps ?? 30;
-    const step = Math.max(1, Math.floor(options.step ?? 1));
-    const direction = options.direction ?? "forward";
-    const mode = normalizePlaybackMode(options.mode);
-    await this.stopTrajectoryPlayback();
+    const fps = options.fps ?? this.playbackOptions.fps;
+    const step = Math.max(1, Math.floor(options.step ?? this.playbackOptions.step));
+    const direction = options.direction ?? this.playbackOptions.direction;
+    const mode = normalizePlaybackMode(options.mode ?? this.playbackOptions.mode);
+    this.playbackOptions = { fps, step, direction, mode };
+    await this.stopTrajectoryPlayback(false);
+    if (this.follower) {
+      this.followerPlaying = true;
+      this.updateTrajectoryState();
+      return;
+    }
     const intervalMs = Math.max(1, Math.floor(1e3 / Math.max(fps, 1)));
     let delta2 = direction === "backward" ? -step : step;
     this.playbackTimer = setInterval(() => {
@@ -148908,8 +148981,9 @@ var TrajectoryHandlers = class {
     }, 200);
     this.updateTrajectoryState();
   }
-  async stopTrajectoryPlayback() {
+  async stopTrajectoryPlayback(notifyStopped = true) {
     const wasPlaying = !!this.playbackTimer;
+    this.followerPlaying = false;
     this.plugin.managers.animation.stop();
     if (this.playbackTimer) {
       clearInterval(this.playbackTimer);
@@ -148922,7 +148996,7 @@ var TrajectoryHandlers = class {
     await Promise.all(Array.from(this.pendingFrames));
     await this.context.afterFrameApplied?.();
     this.updateTrajectoryState();
-    if (wasPlaying) {
+    if (wasPlaying && notifyStopped) {
       this.context.onPlaybackStopped?.(this.getCurrentFrameIndex());
     }
   }
@@ -148933,8 +149007,16 @@ var TrajectoryHandlers = class {
       frameCount = this.expectedFrameCount;
     }
     const currentFrame = this.getCurrentFrameIndex();
-    const isPlaying = !!this.playbackTimer || this.plugin.managers.animation.isAnimating;
-    return { frameCount, currentFrame, isPlaying, hasTrajectory, expectedFrameCount: this.expectedFrameCount };
+    const isPlaying = !!this.playbackTimer || this.followerPlaying || this.plugin.managers.animation.isAnimating;
+    return {
+      frameCount,
+      currentFrame,
+      isPlaying,
+      hasTrajectory,
+      expectedFrameCount: this.expectedFrameCount,
+      fps: this.playbackOptions.fps,
+      step: this.playbackOptions.step
+    };
   }
   onTrajectoryState(cb2, opts) {
     this.trajectoryListeners.add(cb2);
@@ -151956,7 +152038,11 @@ function lociToShapeItems(rawLoci) {
     group_indices: arrayOfNumbers(data.group_indices),
     chain_indices: arrayOfNumbers(data.chain_indices),
     entity_indices: arrayOfNumbers(data.entity_indices),
-    ...entityRef !== void 0 ? { entity_ref: entityRef } : {}
+    ...entityRef !== void 0 ? { entity_ref: entityRef } : {},
+    ...ShapeGroup.isLoci(rawLoci) ? { shape_groups: rawLoci.groups.map((group) => ({
+      ids: Array.from(OrderedSet2.toArray(group.ids)),
+      instance: group.instance
+    })) } : {}
   };
   if (rawLoci) {
     Object.defineProperty(item2, "_loci", { value: rawLoci, enumerable: false, configurable: true });
@@ -151987,7 +152073,7 @@ function signature(item2) {
     return `${item2.source_kind}:${item2.annotation_kind}:${item2.tag ?? ""}:${item2.group_indices.join(",")}:${item2.chain_indices.join(",")}`;
   }
   if (item2.source_kind === "shape") {
-    return `${item2.source_kind}:${item2.tag ?? ""}:${item2.shape_name ?? item2.shape_kind}`;
+    return `${item2.source_kind}:${item2.scene_kind ?? "shape"}:${item2.tag ?? ""}:${item2.shape_name ?? item2.shape_kind}`;
   }
   return `${item2.source_kind}:${item2.element_level}:${item2.group_indices.join(",")}:${item2.chain_indices.join(",")}`;
 }
@@ -152074,6 +152160,12 @@ var ActiveSelectionController = class {
       item2.tag = shapeTarget.tag;
       item2.atom_indices = shapeTarget.atom_indices;
       if (shapeTarget.entity_ref !== void 0) item2.entity_ref = shapeTarget.entity_ref;
+      if (["shape", "measurement", "interaction"].includes(shapeTarget.kind ?? "")) {
+        item2.scene_kind = shapeTarget.kind;
+      }
+      if (shapeTarget.kind === "annotation") {
+        Object.assign(item2, { source_kind: "annotation", annotation_kind: "label" });
+      }
     }
     if (pickedItems.length === 0) {
       if (!shift2) {
@@ -152194,21 +152286,10 @@ var ActiveSelectionController = class {
     this.notify?.(buildPayload(this.items));
   }
   applyItems(next) {
-    if (sameItems(this.items, next)) {
-      this.emit();
-      return;
-    }
     this.items = [...next];
     this.emit();
   }
 };
-function sameItems(a8, b8) {
-  if (a8.length !== b8.length) return false;
-  for (let i = 0; i < a8.length; i++) {
-    if (signature(a8[i]) !== signature(b8[i])) return false;
-  }
-  return true;
-}
 
 // src/ui/panels/ui-helpers.ts
 function workflowHelp(key2, tips) {
@@ -165910,6 +165991,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.host = host;
     this.notify = notify;
     this.initOptions = initOptions;
+    this.applyingSelectionProjection = false;
     this.webglContextLost = false;
     this.pendingHtmlDownload = null;
     this.canvasInsetAnimFrame = null;
@@ -166027,7 +166109,7 @@ var MolSysViewerController = class _MolSysViewerController {
           picked_count: msg.picked_count
         };
       }
-      this.notify?.(msg);
+      if (msg?.event !== "interaction_active_selection_changed" || !this.applyingSelectionProjection) this.notify?.(msg);
     };
     this.toolStatusOverlay = new ToolStatusOverlay(host);
     this.legendOverlay = new LegendOverlay(host);
@@ -166602,6 +166684,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.annotations = new AnnotationHandlers(plugin, {
       getStructure: () => this.getStructureData(),
       registerRef: (ref, tag) => this.state.registerTaggedRef(ref, tag, "annotation"),
+      unregisterRef: (ref, tag) => this.state.unregisterTaggedRef(ref, tag, "annotation"),
       addLabelOverlay: (msg) => this.groupPanel.addLabelOverlay(msg)
     });
     this.measurements = new MeasurementHandlers(plugin, {
@@ -167793,6 +167876,9 @@ var MolSysViewerController = class _MolSysViewerController {
         case "set_measurement_settings":
           this.measurements.setSettings(msg.options);
           break;
+        case "set_trajectory_summary":
+          this.trajectory.applySummary(msg);
+          break;
         // Scene Ops
         case "reset_view":
         case "reset_camera":
@@ -168145,10 +168231,30 @@ var MolSysViewerController = class _MolSysViewerController {
           this.activeSelection.clear();
           break;
         case "set_active_selection":
-          this.activeSelection.setFromAtomIndices(
-            Array.isArray(msg.atom_indices) ? msg.atom_indices : [],
-            this.getStructureData()
-          );
+          this.applyingSelectionProjection = true;
+          try {
+            if (Array.isArray(msg.items) && msg.items.length) {
+              this.activeSelection.setItems(msg.items.map((item2) => {
+                const local = { ...item2 };
+                if (item2.source_kind !== "element" && item2.tag) {
+                  const kind = item2.source_kind === "annotation" ? "annotation" : item2.scene_kind ?? (this.interactionSummaries.some((entry) => entry.tag === item2.tag) ? "interaction" : "shape");
+                  const loci = this.state.resolveObjectLoci(
+                    kind,
+                    item2.tag,
+                    item2.shape_groups,
+                    item2.source_kind === "shape" ? item2.entity_ref : void 0
+                  );
+                  if (loci) Object.defineProperty(local, "_loci", { value: loci, enumerable: false });
+                }
+                return local;
+              }), "replace");
+            } else this.activeSelection.setFromAtomIndices(
+              Array.isArray(msg.atom_indices) ? msg.atom_indices : [],
+              this.getStructureData()
+            );
+          } finally {
+            this.applyingSelectionProjection = false;
+          }
           break;
         case "save_selection":
           this.upsertSavedSelection(msg);
@@ -169462,6 +169568,9 @@ var MolSysViewerController = class _MolSysViewerController {
   async toggleSwing(enable) {
     await this.scene.toggleSwing(enable ?? !this.scene.isSwingActive);
   }
+  setCameraMotionFollower(enabled) {
+    this.scene.setMotionFollower(enabled);
+  }
   stepTrajectory(by) {
     return this.trajectory.stepTrajectory(by);
   }
@@ -169470,6 +169579,9 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   stopTrajectoryPlayback() {
     return this.trajectory.stopTrajectoryPlayback();
+  }
+  setTrajectoryFollower(enabled) {
+    this.trajectory.setFollower(enabled);
   }
   setTrajectoryFrame(index) {
     return this.trajectory.setTrajectoryFrame(index);
@@ -169579,6 +169691,7 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   async setCameraSnapshot(snapshot, durationMs) {
     if (!snapshot) return;
+    this.state.markIntentionalViewpoint();
     try {
       await PluginCommands.Camera.SetSnapshot(this.plugin, {
         snapshot,
@@ -169658,6 +169771,34 @@ function trajectorySyncToAuthority(msg) {
       ...msg.step === void 0 ? {} : { step: msg.step }
     };
   }
+  return null;
+}
+
+// src/messages/frontend-scene-projection.ts
+var FRONTEND_CONTEXT_ACTIONS = /* @__PURE__ */ new Set([
+  "reset_view",
+  "focus_target",
+  "focus_region",
+  "focus_selection",
+  "toggle_background",
+  "toggle_spin",
+  "toggle_swing"
+]);
+function frontendSceneProjection(event) {
+  if (event?.event === "interaction_active_selection_changed") return {
+    op: "set_active_selection",
+    atom_indices: [...event.atom_indices],
+    items: event.items?.map((item2) => ({ ...item2 }))
+  };
+  if (event?.event === "section_moved") return {
+    op: "sync_section_position",
+    tag: event.tag,
+    point: event.point,
+    normal: event.normal
+  };
+  if (event?.event !== "interaction_context_action") return null;
+  if (event.action === "toggle_background") return { op: event.action, mode: event.mode };
+  if (event.action === "toggle_spin" || event.action === "toggle_swing") return { op: event.action, enable: event.enabled };
   return null;
 }
 
@@ -170449,6 +170590,49 @@ function createLocalUiModel(initial = {}, onSave) {
   };
 }
 
+// src/managers/camera-sync.ts
+var CameraSync = class {
+  constructor(controller, options) {
+    this.controller = controller;
+    this.options = options;
+    this.key = "";
+    this.disposed = false;
+    this.subscription = controller.plugin.canvas3d?.didDraw?.subscribe(() => this.onDraw());
+  }
+  fingerprint(snapshot) {
+    return JSON.stringify(snapshot, (_key, value) => typeof value === "number" ? Math.round(value * 1e8) / 1e8 : value);
+  }
+  onDraw() {
+    if (this.disposed) return;
+    const snapshot = this.controller.getCameraSnapshot();
+    if (!snapshot) return;
+    const key2 = this.fingerprint(snapshot);
+    if (!this.options.enabled() || key2 === this.key) return;
+    if (this.timer === void 0) this.timer = setTimeout(() => {
+      this.timer = void 0;
+      if (this.disposed || !this.options.enabled()) return;
+      const current2 = this.controller.getCameraSnapshot();
+      const currentKey = this.fingerprint(current2);
+      if (!current2 || currentKey === this.key) return;
+      this.key = currentKey;
+      this.options.send(current2);
+    }, 20);
+  }
+  async apply(snapshot) {
+    if (!snapshot || this.disposed || this.options.interacting()) return;
+    if (this.timer !== void 0) clearTimeout(this.timer);
+    this.timer = void 0;
+    this.key = this.fingerprint(snapshot);
+    if (this.key === this.fingerprint(this.controller.getCameraSnapshot())) return;
+    await this.controller.setCameraSnapshot(snapshot, 0);
+  }
+  dispose() {
+    this.disposed = true;
+    if (this.timer !== void 0) clearTimeout(this.timer);
+    this.subscription?.unsubscribe();
+  }
+};
+
 // src/popup/popup-logic.ts
 var bootPopup = async (loadedModule) => {
   const openerWin = window.opener;
@@ -170539,6 +170723,8 @@ var bootPopup = async (loadedModule) => {
     Object.assign(container.style, { touchAction: "none", outline: "none", cursor: "default" });
   }
   const loading = document.getElementById("molsysviewer-loading");
+  let sceneReady = false;
+  let cameraSync;
   let isUserInteracting = false;
   let wheelTimeout = null;
   container?.addEventListener("pointerdown", () => {
@@ -170649,6 +170835,8 @@ var bootPopup = async (loadedModule) => {
         sendToHost("molsysviewer-popup-panel", { panel: ctrl3.getActivePanel() });
       } : void 0
     });
+    ctrl3.setCameraMotionFollower?.(true);
+    ctrl3.setTrajectoryFollower?.(true);
     if (initOptions.isPanelOnly) {
       ctrl3.setCanvasVisibility(false);
       if (ctrl3.sharedShell) {
@@ -170676,22 +170864,11 @@ var bootPopup = async (loadedModule) => {
         console.warn("MolSysViewer Popout: Canvas3D failed to initialize after timeout (visuals may work but sync won't).");
         return;
       }
-      const c3d = ctrl3.plugin.canvas3d;
-      let popCameraSyncTimer = null;
-      const syncCamera = () => {
-        if (!isUserInteracting) return;
-        if (popCameraSyncTimer) clearTimeout(popCameraSyncTimer);
-        popCameraSyncTimer = setTimeout(() => {
-          sendToHost("molsysviewer-sync-camera", ctrl3.getCameraSnapshot());
-          popCameraSyncTimer = null;
-        }, 20);
-      };
-      if (c3d.didDraw) {
-        c3d.didDraw.subscribe(syncCamera);
-        console.log("MolSysViewer Popout: Sync via didDraw (interactive camera movements).");
-      } else {
-        console.warn("MolSysViewer Popout: didDraw event not found for sync.");
-      }
+      cameraSync = new CameraSync(ctrl3, {
+        enabled: () => sceneReady && !initOptions.isPanelOnly,
+        interacting: () => isUserInteracting,
+        send: (snapshot) => sendToHost("molsysviewer-sync-camera", snapshot)
+      });
     });
     return ctrl3;
   })();
@@ -170731,7 +170908,7 @@ var bootPopup = async (loadedModule) => {
             await ctrl3.setTrajectoryFrame(data.trajectoryFrame);
           }
           if (data.cameraSnapshot) {
-            ctrl3.setCameraSnapshot(data.cameraSnapshot, 0);
+            await cameraSync?.apply(data.cameraSnapshot);
           }
           if (data.isSpinActive) await ctrl3.toggleSpin(true);
           if (data.isSwingActive) await ctrl3.toggleSwing(true);
@@ -170748,6 +170925,7 @@ var bootPopup = async (loadedModule) => {
           updateControlsUi(data);
           window.clearTimeout(revealTimer);
           revealViewer();
+          sceneReady = true;
           break;
         case "molsysviewer-sync-ui":
           updateControlsUi(data);
@@ -170756,9 +170934,7 @@ var bootPopup = async (loadedModule) => {
           if (initOptions.isPanelOnly) ctrl3.setPanelModeStyle("split");
           else if (data.panelModeStyle) ctrl3.setPanelModeStyle(data.panelModeStyle);
           if (ctrl3.sharedShell) {
-            if (data.isAmbient !== void 0) ctrl3.sharedShell.setAmbient(data.isAmbient);
             if (initOptions.isPanelOnly) ctrl3.sharedShell.setSplit(true);
-            else if (data.isSplit !== void 0) ctrl3.sharedShell.setSplit(data.isSplit);
           }
           break;
         case "molsysviewer-sync-autohide":
@@ -170771,9 +170947,7 @@ var bootPopup = async (loadedModule) => {
           if (Array.isArray(data?.items)) ctrl3.setHierarchyItems(data.items);
           break;
         case "molsysviewer-sync-camera":
-          if (data && !isUserInteracting) {
-            ctrl3.setCameraSnapshot(data, 0);
-          }
+          await cameraSync?.apply(data);
           break;
         // D4: Python streams this popup its own typed molecular
         // generation; the host only relays. Acknowledgements travel back
@@ -170816,6 +170990,13 @@ var bootPopup = async (loadedModule) => {
     () => window.close(),
     { popupButtonTitle: "Close popup" }
   );
+  window.addEventListener("pagehide", () => {
+    sceneReady = false;
+    cameraSync?.dispose();
+    if (wheelTimeout) clearTimeout(wheelTimeout);
+    window.clearTimeout(revealTimer);
+    ctrl2.dispose();
+  }, { once: true });
   sendToHost(initOptions.isPanelOnly ? "molsysviewer-panel-ready" : "molsysviewer-pop-ready", null);
 };
 
@@ -171183,6 +171364,16 @@ var PopupHostManager = class {
     target.postMessage(encodePopupMessage(channel, envelope), this.targetOrigin());
   }
 };
+
+// src/managers/trajectory-sync.ts
+function syncTrajectoryFrames(controller, enabled, send) {
+  let previous;
+  return controller.onTrajectoryState((state) => {
+    const changed = previous !== state.currentFrame;
+    previous = state.currentFrame;
+    if (changed && enabled()) send({ op: "set_trajectory_frame", index: state.currentFrame });
+  });
+}
 
 // src/utils/logger.ts
 var formatArg = (v4) => {
@@ -173805,6 +173996,7 @@ var parseInitialTrajectoryInfo = (msgs) => {
 function needsRunningSession(msg) {
   const name = typeof msg?.event === "string" ? msg.event : "";
   if (!name) return false;
+  if (name === "interaction_context_action" && FRONTEND_CONTEXT_ACTIONS.has(msg.action)) return false;
   if (ACTION_CATEGORIES.get(name) !== "command") return false;
   return !FRONTEND_AUTHORITATIVE.has(name);
 }
@@ -173958,6 +174150,7 @@ async function bootDocsView(opts) {
     });
   });
   let isUserInteracting = false;
+  let cameraSync;
   let wheelTimeout = null;
   const onPointerDown = () => {
     isUserInteracting = true;
@@ -173979,7 +174172,15 @@ async function bootDocsView(opts) {
   hostEl.appendChild(target);
   const trajInfo = parseInitialTrajectoryInfo(initialMessages);
   const panelModeStyle = model.get("panel_mode_style");
-  const controllerPromise = MolSysViewerController.create(target, makeMissingAuthorityReporter(hostEl), void 0, {
+  const missingAuthority = makeMissingAuthorityReporter(hostEl);
+  const controllerPromise = MolSysViewerController.create(target, (message) => {
+    const projection = frontendSceneProjection(message);
+    if (projection) {
+      popupReplay.record(projection);
+      popupMgr.send("molsysviewer-sync-op", projection);
+    }
+    missingAuthority(message);
+  }, void 0, {
     panelModeStyle,
     model,
     hasInitialStructures: trajInfo.hasStructures,
@@ -174032,22 +174233,20 @@ async function bootDocsView(opts) {
         controlsPositionFullscreen: model.get("controls_position_fullscreen")
       }));
     }
-    if (c8.plugin.canvas3d) {
-      let hostCameraSyncTimer = null;
-      const c3d = c8.plugin.canvas3d;
-      const syncCamera = () => {
-        if (!popupMgr.isReady || !isUserInteracting) return;
-        if (hostCameraSyncTimer) clearTimeout(hostCameraSyncTimer);
-        hostCameraSyncTimer = setTimeout(() => {
-          popupMgr.send("molsysviewer-sync-camera", c8.getCameraSnapshot());
-          hostCameraSyncTimer = null;
-        }, 20);
-      };
-      const onCameraFrame = () => syncCamera();
-      if (c3d.didDraw) {
-        c3d.didDraw.subscribe(onCameraFrame);
-      }
-    }
+    cameraSync = new CameraSync(c8, {
+      enabled: () => popupMgr.isReady,
+      interacting: () => isUserInteracting,
+      send: (snapshot) => popupMgr.send("molsysviewer-sync-camera", snapshot)
+    });
+    const releaseTrajectorySync = syncTrajectoryFrames(
+      c8,
+      () => popupMgr.isReady,
+      (message) => popupMgr.send("molsysviewer-sync-op", message)
+    );
+    window.addEventListener("pagehide", () => {
+      cameraSync?.dispose();
+      releaseTrajectorySync();
+    }, { once: true });
   });
   const messageHandler = async (ev) => {
     const popupMessage = popupMgr.receive(ev);
@@ -174090,10 +174289,19 @@ async function bootDocsView(opts) {
           }
           model.save_changes();
           break;
-        case "molsysviewer-sync-camera":
-          if (data && !isUserInteracting) {
-            controller.setCameraSnapshot(data, 0);
+        case "molsysviewer-popup-interaction":
+          {
+            const projection = frontendSceneProjection(data);
+            if (projection) {
+              await controller.handleMessage(projection);
+              popupReplay.record(projection);
+              popupMgr.send("molsysviewer-sync-op", projection);
+            }
+            missingAuthority(data);
           }
+          break;
+        case "molsysviewer-sync-camera":
+          await cameraSync?.apply(data);
           break;
         case "molsysviewer-log-from-popout":
           sendLog("info", "[Popout Log]:", data?.msg);
@@ -174360,6 +174568,7 @@ function render({ model, el, runtimeSource }) {
   });
   const releaseNotebookContextMenuSuppression = suppressCanvasContextMenu(el, target);
   let isUserInteracting = false;
+  let cameraSync;
   let wheelTimeout = null;
   const onPointerDown = () => {
     isUserInteracting = true;
@@ -174517,6 +174726,11 @@ function render({ model, el, runtimeSource }) {
       }
     );
     popupMgr.setController(c8);
+    releaseRuntime.push(syncTrajectoryFrames(
+      c8,
+      () => popupMgr.isReady,
+      (message) => popupMgr.send("molsysviewer-sync-op", message)
+    ));
     model.on("change:controls_mode", () => {
       popupMgr.send("molsysviewer-sync-ui", { controlsMode: model.get("controls_mode") });
     });
@@ -174528,22 +174742,18 @@ function render({ model, el, runtimeSource }) {
     });
     if (c8.sharedShell) {
       c8.sharedShell.onLayoutChange = (state) => {
-        popupMgr.send("molsysviewer-sync-ui", state);
         c8.triggerLayoutChange(state);
       };
     }
     if (c8.plugin.canvas3d) {
-      let hostCameraSyncTimer = null;
       let cameraSnapshotTimer = null;
       const c3d = c8.plugin.canvas3d;
-      const syncCamera = () => {
-        if (!popupMgr.isReady || !isUserInteracting) return;
-        if (hostCameraSyncTimer) clearTimeout(hostCameraSyncTimer);
-        hostCameraSyncTimer = setTimeout(() => {
-          popupMgr.send("molsysviewer-sync-camera", c8.getCameraSnapshot());
-          hostCameraSyncTimer = null;
-        }, 20);
-      };
+      cameraSync = new CameraSync(c8, {
+        enabled: () => popupMgr.isReady,
+        interacting: () => isUserInteracting,
+        send: (snapshot) => popupMgr.send("molsysviewer-sync-camera", snapshot)
+      });
+      releaseRuntime.push(() => cameraSync?.dispose());
       const scheduleCameraSnapshot = () => {
         if (cameraSnapshotTimer) clearTimeout(cameraSnapshotTimer);
         cameraSnapshotTimer = setTimeout(() => {
@@ -174555,12 +174765,10 @@ function render({ model, el, runtimeSource }) {
         }, 300);
       };
       const onCameraFrame = () => {
-        syncCamera();
         scheduleCameraSnapshot();
       };
       let cameraSubscription;
       releaseRuntime.push(() => {
-        if (hostCameraSyncTimer) window.clearTimeout(hostCameraSyncTimer);
         if (cameraSnapshotTimer) window.clearTimeout(cameraSnapshotTimer);
         cameraSubscription?.unsubscribe();
       });
@@ -174692,9 +174900,7 @@ function render({ model, el, runtimeSource }) {
           }
           break;
         case "molsysviewer-sync-camera":
-          if (data && !isUserInteracting) {
-            controller.setCameraSnapshot(data, 0);
-          }
+          await cameraSync?.apply(data);
           break;
         case "molsysviewer-popup-interaction":
           if (data) sendToPython(data);

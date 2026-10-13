@@ -1,10 +1,14 @@
 # Path to 1.0.0 (Unified Release Plan)
 
-**Current work — 2026-10-13:** the #232
-[canvas popup parity](canvas_popup_contract.md) is closed with local core 43/43
-and final keyboard/transport guards. Receive its new exact hosted source CI
-before broad documentation. #231 core science/source-pair/browser
-gates now all pass at 46527392; its independent Qt failure remains explicit.
+**Current work — 2026-10-13:** the scientific
+[canvas mirror](canvas_popup_contract.md) implements #234–#238/#241/#243,
+including resolved cameras, single motion/playback clocks and native object picks.
+Its complete controls receiving guard passes, with all 43 core suites verified
+across retained integration/followups and 458 offline guards passing. Fresh exact
+hosted source CI retains separate [evidence](canvas_popup_mirror_validation_20261013.json).
+Earlier #232 controls source 63c3d9c7 now passes its required hosted gates;
+its independent Qt failure does not qualify or block the new core mirror source.
+Complete the new applicable source gates before broad documentation.
 Both 1.0 publications and 0.25.0 candidate freezing remain paused.
 
 **Current gate alignment — 2026-10-13:** #231 separates required core from

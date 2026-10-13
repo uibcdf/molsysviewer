@@ -32,6 +32,48 @@ canvas UI traits; the authenticated host updates its model and synchronizes
 the other endpoints. Applying a host projection suppresses the popup's echo.
 These layout preferences are outside scientific scene mutation history.
 
+### Shared scene and local windows
+
+The resolved viewpoint, molecular frame, scene objects and active selection
+belong to the session. Pointer/wheel motion, focus/reset transitions and their
+final drawn snapshot propagate in either direction. `CameraSync` observes
+changed viewpoints, throttles continuous updates and consumes incoming
+projections without echo. Automatic Spin/Swing uses the original canvas's one
+clock; popup controllers retain the settings but follow its drawn snapshots.
+During direct pointer input, an endpoint keeps its own input priority. Rendering
+and transport have latency; this is convergence of applied state, not a promise
+of simultaneous GPU frames or identical pixels at different window sizes.
+
+Trajectory playback also has one original-canvas clock. Popup buttons request
+the same operation; applied absolute frames propagate to the popup. Stop drains
+pending frame writes before its final notification/projection. Derived geometry
+must correspond to each endpoint's displayed frame after that projection.
+
+Portable selection carries object owner kinds and tags, selected shape groups/instances and
+entity references in addition to atoms. Each endpoint resolves its own Mol*
+loci and applies projections without another Python intent. Atom membership
+and selected subelements are replaced independently of coarse group toggle
+identity. Pick identity is also retained in state/history and popup bootstrap;
+legacy atom-only selections remain supported. An interaction reference from
+another frame or analysis/query version cannot highlight a reused group number.
+Managed callout text is explicitly pickable after creation and updates.
+Re-picking an unchanged portable object still projects its selection: an edit
+can replace its local representation without changing its portable identity.
+Each endpoint then resolves fresh loci without adding another history entry.
+Annotation replacement unregisters deleted refs from the pick registry.
+
+Dock/Float, ambient/opacity/lock, expansion/navigation, window position and
+fullscreen are local to each window. Initial layout is inherited, but subsequent
+shell changes do not move or dock another window. Canvas mode, control
+visibility, autohide/scope and control positions remain shared preferences.
+Studio form drafts are local; accepted scene operations share Python ownership.
+
+HTML exports retain that same frontend scene mirror and one playback/motion
+clock. Selection, section movement and native viewport context actions have
+portable frontend projections. Backend-dependent operations still require a
+running session; a working focus or rotation action must not report a missing
+Python backend.
+
 Trajectory buttons in a live notebook emit the same Python authority intent
 as the embedded canvas. Local feedback is reconciled with Python's resulting
 frame projection. A relative step is not echoed back as another relative step.
@@ -61,3 +103,13 @@ Help, keyboard, fullscreen, Studio, panel popout, preferences and single-step
 trajectory convergence. Browser/WebGL failures are errors. Source/browser
 evidence does not qualify future installed package bytes or the experimental
 Qt host's distinct popup implementation (`uibcdf/molsysviewer#51`).
+
+`canvas-popup-mirror-scenarios.ts` extends the same guard with real scientific
+state: partial selections within one group, actual GPU picks and selected marker
+bits for shapes/annotations, focus/reset/drag/wheel in both directions,
+single-clock Spin/Swing and playback, symmetric local Dock, object visibility
+and calculated Buch hbonds with frame-specific geometry. Controller capture
+observes the real factories; it does not replace rendering or calculations.
+The export scenario also receives context rotation and bidirectional selections
+without Python. Earlier controls-only evidence for #232 does not qualify these
+later scientific mirror changes.

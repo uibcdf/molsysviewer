@@ -3,6 +3,7 @@ import { PluginCommands } from "molstar/lib/mol-plugin/commands";
 import { StateObjectRef, StateObjectSelector, StateSelection, StateTransform } from "molstar/lib/mol-state";
 import { StateTransforms } from "molstar/lib/mol-plugin-state/transforms";
 import { Structure, StructureElement, Unit } from "molstar/lib/mol-model/structure";
+import { Shape, ShapeGroup } from "molstar/lib/mol-model/shape";
 import { StructureSelection } from "molstar/lib/mol-model/structure/query";
 import { Loci, isEmptyLoci } from "molstar/lib/mol-model/loci";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
@@ -292,6 +293,38 @@ export class StateHandlers {
                 if (cells.some(cell => cell.obj?.data?.sourceData === sourceData)) {
                     const separator = key.indexOf("\u0000");
                     return { kind: key.slice(0, separator), tag: key.slice(separator + 1) };
+                }
+            }
+        }
+        return null;
+    }
+
+    /** Resolve portable pick groups against this endpoint's own representations. */
+    resolveObjectLoci(kind: string, tag: string, groups?: { ids: number[]; instance: number }[], entityRef?: any): Loci | null {
+        const refs = this.tagIndex.get(this.taggedKey(kind, tag));
+        if (!refs) return null;
+        for (const ref of refs) {
+            for (const cell of this.plugin.state.data.select(StateSelection.Generators.byRef(ref).subtree())) {
+                const repr = cell.obj?.data?.repr;
+                for (const loci of repr?.getAllLoci?.() ?? []) {
+                    const shape = Shape.isLoci(loci) || ShapeGroup.isLoci(loci) ? loci.shape : null;
+                    if (!shape) continue;
+                    // Interaction identities are scoped to one analysis/query
+                    // version and frame; never highlight a different occurrence
+                    // that happens to reuse the same graphical group number.
+                    const data = shape.sourceData as any;
+                    const interaction = data?.interaction;
+                    if (entityRef?.kind === "interaction" && (!interaction
+                        || ["analysis_name", "analysis_revision", "query_revision", "frame"]
+                            .some(key => entityRef[key] !== interaction[key]))) continue;
+                    if (!groups?.length) return Shape.Loci(shape);
+                    const valid = groups.map(group => ({
+                        instance: group.instance,
+                        ids: SortedArray.ofSortedArray(group.ids.filter(id => id >= 0 && id < shape.groupCount
+                            && (entityRef?.kind !== "interaction" || interaction.observations[id]?.occurrence_index === entityRef.occurrence_index))
+                            .sort((a, b) => a - b)),
+                    })).filter(group => group.ids.length && group.instance >= 0 && group.instance < shape.transforms.length);
+                    if (valid.length) return ShapeGroup.Loci(shape, valid);
                 }
             }
         }

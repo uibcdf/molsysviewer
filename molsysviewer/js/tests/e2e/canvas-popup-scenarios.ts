@@ -2,70 +2,16 @@ import assert from "node:assert/strict";
 import { resolve } from "node:path";
 import type { Page } from "playwright";
 import { PythonFixtureBridge } from "./python-fixture-bridge";
+import { mountCanvasPopupFixture } from "./canvas-popup-fixture";
 
 /** Actual Python widget bootstrap, runtime-source handshake and popup snapshot. */
 export async function checkNotebookCanvasPopup(page: Page, dir: string) {
     const bridge = new PythonFixtureBridge(resolve(dir, "canvas-popup-bridge.py"), resolve(dir, "../../../.."));
     const errors: string[] = [];
+    let releaseFixture: (() => Promise<void>) | undefined;
     page.on("pageerror", error => errors.push(String(error)));
     try {
-        const fixture = await bridge.request();
-        await page.goto("about:blank");
-        await page.setContent('<div id="notebook" style="width:850px;height:600px"></div>');
-        await page.exposeFunction("__popupFixtureRequest", (message: unknown) => bridge.request([message]));
-        await page.evaluate(async fixture => {
-            const w = window as any;
-            const traits = fixture.traits;
-            // Legacy notebook state must not override the runtime actually loaded.
-            traits.popup_js_source = 'throw new Error("obsolete popup runtime selected");';
-            const listeners = new Map<string, Set<(...args: any[]) => void>>();
-            let queue = Promise.resolve();
-            const model = w.__popupWidgetModel = {
-                get: (key: string) => traits[key],
-                set(key: string, value: unknown) {
-                    if (JSON.stringify(traits[key]) === JSON.stringify(value)) return;
-                    traits[key] = value;
-                    for (const callback of listeners.get(`change:${key}`) || []) callback();
-                },
-                on(event: string, callback: (...args: any[]) => void) {
-                    if (!listeners.has(event)) listeners.set(event, new Set());
-                    listeners.get(event)!.add(callback);
-                },
-                off(event: string, callback: (...args: any[]) => void) { listeners.get(event)?.delete(callback); },
-                save_changes() {
-                    model.send({ review_traits: Object.fromEntries([
-                        "viewer_mode", "controls_mode", "panel_mode_style", "show_controls", "autohide_controls",
-                        "autohide_scope", "controls_position", "controls_position_fullscreen",
-                    ].map(trait => [trait, traits[trait]])) });
-                },
-                send(message: unknown) {
-                    queue = queue.then(async () => {
-                        const result = await w.__popupFixtureRequest(message);
-                        // Simulate only the notebook transport, with real Python responses.
-                        for (const { content, buffers } of result.messages) {
-                            const views = buffers.map((encoded: string) => new DataView(
-                                Uint8Array.from(atob(encoded), char => char.charCodeAt(0)).buffer));
-                            for (const callback of listeners.get("msg:custom") || []) callback(content, views);
-                        }
-                    }).catch(error => { errors.push(String(error)); console.error(error); });
-                },
-            };
-            const errors = w.__popupFixtureErrors = [];
-            w.__popupFixtureDrain = async () => {
-                // Responses may enqueue further stream acknowledgments.
-                while (true) {
-                    const pending = queue;
-                    await pending;
-                    if (pending === queue) return;
-                }
-            };
-            const url = URL.createObjectURL(new Blob([traits._esm], { type: "text/javascript" }));
-            try {
-                const bootstrap = await import(url);
-                w.__popupWidgetDispose = await bootstrap.default.render({ model, el: document.getElementById("notebook") });
-            } finally { URL.revokeObjectURL(url); }
-        }, fixture);
-        await page.waitForFunction(() => document.querySelector('[data-molsysviewer-trajectory-label="true"]')?.textContent === "1 / 3");
+        releaseFixture = await mountCanvasPopupFixture(page, bridge);
         const signature = (canvas: Page) => canvas.locator(".molsysviewer-controls").evaluate(element => {
             const style = getComputedStyle(element);
             return {
@@ -214,6 +160,7 @@ export async function checkNotebookCanvasPopup(page: Page, dir: string) {
             await (window as any).__popupFixtureDrain?.();
         });
         await bridge.close();
+        await releaseFixture?.();
         assert.deepEqual(await page.evaluate(() => (window as any).__popupFixtureErrors || []), [],
             "the notebook transport must drain before its Python authority closes");
     }

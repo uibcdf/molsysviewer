@@ -1,5 +1,28 @@
 # Development checkpoint
 
+**Canvas scientific mirror followup — 2026-10-13:** #234–#238 close the gaps
+identified by the maintainer's bidirectional review; #241/#243 cover native
+callout text picking and deleted annotation refs found by the receiving guard. Shared camera and
+single motion/playback clocks, portable pick identity, atom subset membership
+and symmetric local Studio layout follow the [popup contract](canvas_popup_contract.md).
+Real Python authority tests and the new native Mol*/Chromium mirror scenario
+pass locally, including edited annotation markers and unchanged re-picks without
+new history entries. The complete controls/export/widget guard passes inside core
+integration. All 43 core browser suites are verified across the retained run's
+39 completed suites and four successful followups. Two old annotation tests
+required dead refs after hide; their repaired assertions verify live refs before
+hide, an empty registry and actual transform deletion afterward. No single clean
+full invocation is claimed. Python's single full run
+retains 3,095 passes, 25 failures, 21 skips and 12 native Qt deselections: 24
+sandbox browser/socket restrictions and one final-frame expectation. All 25
+failed selectors pass after the fix outside the sandbox; another 48 selection/
+history/summary guards pass. This targeted recovery is not a second global pass.
+The [mirror receipt](canvas_popup_mirror_validation_20261013.json) owns this scope.
+This work does not declare a frozen 0.25.0 candidate,
+installed artifact qualification or either 1.0 publication.
+
+
+
 **Canvas popup parity — 2026-10-13:** #232 implements the
 [shared popup contract](canvas_popup_contract.md): the runtime actually used by
 the notebook, correct preferences on the first controls mount, shared styles and
@@ -13,9 +36,11 @@ the global failure is preserved rather than rerun. Full browser integration pass
 keyboard use in shadow notebook hosts and input typing. #232 is closed with
 [its report](archive/canvas_popup_controls_parity.md). Source is integrated at `63c3d9c7`; #232 is closed and the board agrees.
 New exact hosted source [evidence](canvas_popup_validation_20261013.json)
-remains a separate receiving gate. Policy, Ruff and Conda governance already
-succeed; core 38383553047, browser 38383553044, Python 3.14 pair 38383553080
-and notebooks 38383552955 are queued/running. Qt 38383553164 remains independent. No candidate is frozen or published.
+is now terminal for that source: policy, Ruff, Conda governance, core
+38383553047, browser 38383553044, Python 3.14 pair 38383553080 and notebooks
+38383552955 all succeed. Qt 38383553164 fails independently. These receipts
+qualify #232's source, not the later scientific mirror changes. No candidate
+is frozen or published.
 
 **Core/Qt gate alignment — 2026-10-13:** #231 implements the
 [explicit qualification scope](core_qt_qualification.md). Native process/window/

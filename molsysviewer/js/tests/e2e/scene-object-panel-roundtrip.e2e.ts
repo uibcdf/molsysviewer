@@ -50,6 +50,10 @@ async function run() {
             await row.locator('[data-molsysviewer-annotation-identity="note"]').textContent() || "",
             /from elastnetmt/,
         );
+        const visibleRefs = await page.evaluate(() =>
+            (window as any).Harness.inspectTaggedRefs((window as any).__controller, "annotation", "note")
+        );
+        assert.ok(visibleRefs.length > 0 && visibleRefs.some((item: any) => item.exists && !item.hidden));
         await row.locator('[data-molsysviewer-annotation-visibility="note"]').click();
         const action = await page.evaluate(() =>
             [...((window as any).__messages || [])].reverse().find((message: any) =>
@@ -72,19 +76,17 @@ async function run() {
         const backend = JSON.parse(python.stdout);
         assert.strictEqual(backend.visible, false, "Python visibility did not change");
 
-        const rendered = await page.evaluate(async messages => {
+        const rendered = await page.evaluate(async ({ messages, previous }) => {
             const controller = (window as any).__controller;
             for (const message of messages) await controller.handleMessage(message);
             return {
                 refs: (window as any).Harness.inspectTaggedRefs(controller, "annotation", "note"),
+                removed: previous.every((item: any) => !controller.plugin.state.data.tree.transforms.has(item.ref)),
                 eyeTitle: document.querySelector('[data-molsysviewer-annotation-visibility="note"]')?.getAttribute("title"),
             };
-        }, backend.messages);
-        assert.ok(rendered.refs.length > 0, "annotation registered no Mol* nodes");
-        assert.ok(
-            rendered.refs.every((item: any) => !item.exists || item.hidden),
-            "Mol* annotation nodes stayed renderable",
-        );
+        }, { messages: backend.messages, previous: visibleRefs });
+        assert.strictEqual(rendered.refs.length, 0, "annotation retained deleted registered refs");
+        assert.ok(rendered.removed, "Mol* annotation nodes stayed alive after hide");
         assert.strictEqual(rendered.eyeTitle, "Show annotation", "panel did not consume Python's hidden summary");
 
         console.log("[E2E scene-object-panel-roundtrip] section setup");

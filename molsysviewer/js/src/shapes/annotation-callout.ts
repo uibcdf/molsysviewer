@@ -78,12 +78,16 @@ const transform = StateTransformer.builderFactory("molsysviewer")({
         return Task.create("Annotation", async ctx => {
             const repr = createRepresentation(plugin);
             await repr.createOrUpdate(visualProps(params.geometry), params.geometry).runInContext(ctx);
+            // Managed annotations are canvas targets; Mol* Text defaults to
+            // non-pickable, unlike our tooltip-enabled structure labels.
+            repr.setState({ pickable: true });
             return new SO.Shape.Representation3D({ repr, sourceData: params.geometry }, { label: params.geometry.text });
         });
     },
     update({ b, newParams }) {
         return Task.create("Annotation", async ctx => {
             await b.data.repr.createOrUpdate(visualProps(newParams.geometry), newParams.geometry).runInContext(ctx);
+            b.data.repr.setState({ pickable: true });
             b.data.sourceData = newParams.geometry;
             return StateTransformer.UpdateResult.Updated;
         });

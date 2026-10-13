@@ -23,6 +23,7 @@ from smonitor import signal
 
 from .._private.argdigest import digest
 from .._private.smonitor_emit import emit_suppressed_exception
+from ..active_selection import _selection_projection
 
 # Deterministic order for the coalesced scene-look entries.
 _SCENE_LOOK_ORDER = (
@@ -167,12 +168,7 @@ class PopupSnapshotMixin:
         #     already complete `save_selection` messages; emit them verbatim.
         for record in self.selections.records(skip_digestion=True):
             messages.append(deepcopy(record))
-        messages.append(
-            {
-                "op": "set_active_selection",
-                "atom_indices": list(self.active_selection.atom_indices),
-            }
-        )
+        messages.append(_selection_projection(self._last_active_selection_event))
 
         # 11. measurement settings.
         messages.append(
@@ -246,10 +242,7 @@ class PopupSnapshotMixin:
                 "op": "set_measurement_settings",
                 **deepcopy(self.measurements.settings(skip_digestion=True)),
             },
-            {
-                "op": "set_active_selection",
-                "atom_indices": list(self.active_selection.atom_indices),
-            },
+            _selection_projection(self._last_active_selection_event),
             {
                 "op": "set_history_state",
                 "can_undo": self.history.can_undo(),

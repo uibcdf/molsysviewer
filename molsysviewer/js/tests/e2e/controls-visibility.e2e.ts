@@ -5,6 +5,8 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { chromium } from "./e2e-browser";
 import { checkNotebookCanvasPopup } from "./canvas-popup-scenarios";
+import { checkCanvasPopupMirror } from "./canvas-popup-mirror-scenarios";
+import { captureCanvasPopupControllers } from "./canvas-popup-fixture";
 
 const dir = dirname(fileURLToPath(import.meta.url));
 
@@ -289,6 +291,7 @@ print(json.dumps({"page": str(output), "single": str(single)}))
                 if (envelope) (window as any).__controlsReviewMessages.push(envelope.action);
             });
         });
+        await captureCanvasPopupControllers(page);
         await controls.getByTitle("Open popup", { exact: true }).click();
         const popup = await popupReady;
         popup.on("pageerror", error => errors.push(String(error)));
@@ -314,6 +317,31 @@ print(json.dumps({"page": str(output), "single": str(single)}))
         const nextFrame = (previousFrame + 1) % 3;
         for (const canvas of [page, popup]) await canvas.waitForFunction(frame =>
             document.querySelector<HTMLInputElement>('[data-molsysviewer-trajectory-frame="true"]')?.value === String(frame), nextFrame);
+        await popup.waitForFunction(() => !!(window as any).__mirrorController);
+        const popupCanvas = await popup.locator("canvas").boundingBox(); assert.ok(popupCanvas);
+        await popup.mouse.click(popupCanvas.x + 20, popupCanvas.y + popupCanvas.height - 30, { button: "right" });
+        const exportedMenu = popup.locator('[data-molsysviewer-context-menu="true"]');
+        await exportedMenu.locator('[data-molsysviewer-context-submenu="View"]').click();
+        await exportedMenu.getByRole("menuitem", { name: "Start Automatic Rotation", exact: true }).click();
+        for (const endpoint of [page, popup]) await endpoint.waitForFunction(() => (window as any).__mirrorController.isSpinActive);
+        await popup.mouse.click(popupCanvas.x + 20, popupCanvas.y + popupCanvas.height - 30, { button: "right" });
+        await exportedMenu.locator('[data-molsysviewer-context-submenu="View"]').click();
+        await exportedMenu.getByRole("menuitem", { name: "Stop Automatic Rotation", exact: true }).click();
+        for (const endpoint of [page, popup]) await endpoint.waitForFunction(() => !(window as any).__mirrorController.isSpinActive);
+        await popup.waitForFunction(() => {
+            const a = (window.opener as any).__mirrorController.getCameraSnapshot();
+            const b = (window as any).__mirrorController.getCameraSnapshot();
+            return a.position.every((v: number, i: number) => Math.abs(v - b.position[i]) < 1e-5);
+        });
+        for (const [source, indices] of [[popup, [0, 1]], [page, [4, 5]]] as [typeof page, number[]][]) {
+            await source.evaluate(indices => {
+                const c = (window as any).__mirrorController;
+                c.activeSelection.setFromAtomIndices(indices, c.getStructureData());
+            }, indices);
+            for (const endpoint of [page, popup]) await endpoint.waitForFunction(indices =>
+                JSON.stringify((window as any).__mirrorController.currentActiveSelection.atom_indices) === JSON.stringify(indices), indices);
+        }
+        assert.equal(await page.locator('[data-molsysviewer-needs-session="true"]').count(), 0);
         await selectMode("Cinema");
         await popup.waitForFunction(() => !document.querySelector(".molsysviewer-controls"));
         assert.equal(await popup.locator('[data-molsysviewer-trajectory-controls="true"]').count(), 1);
@@ -331,6 +359,7 @@ print(json.dumps({"page": str(output), "single": str(single)}))
         assert.deepEqual(errors, []);
         console.log("[E2E controls] actual Python export/popup: whole-group fade, inert fading input, Cinema slide, two-second discovery, preset cycles, scopes, Settings, Dock/fullscreen, keyboard and stable subscriptions pass");
         await checkNotebookCanvasPopup(page, dir);
+        await checkCanvasPopupMirror(page, dir);
     } finally { await browser.close(); }
 }
 withFixtureWorkspace("controls-visibility", run).catch(error => { console.error(error); process.exit(1); });

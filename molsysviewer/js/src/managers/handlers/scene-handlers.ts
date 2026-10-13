@@ -41,6 +41,8 @@ export class SceneHandlers {
     private swingActive = false;
     private spinActive = false;
     private darkMode = false;
+    private motionFollower = false;
+    private motionSpeed = 0.1;
     private savedLightRenderer?: any;
     private savedDarkRenderer?: any;
     private savedLightCamera?: any;
@@ -63,6 +65,20 @@ export class SceneHandlers {
     get isSpinActive() { return this.spinActive; }
     get isSwingActive() { return this.swingActive; }
     get isDarkMode() { return this.darkMode; }
+
+    setMotionFollower(enabled: boolean) {
+        this.motionFollower = enabled;
+        this.applyMotion();
+    }
+
+    private applyMotion() {
+        this.plugin.canvas3d?.setProps({ trackball: {
+            animate: this.motionFollower ? { name: "off", params: {} }
+                : this.spinActive ? { name: "spin", params: { speed: this.motionSpeed } }
+                : this.swingActive ? { name: "rock", params: { speed: this.motionSpeed, angle: 20 } }
+                : { name: "off", params: {} },
+        } });
+    }
 
     async resetView() {
         await PluginCommands.Camera.Reset(this.plugin, { durationMs: 250 });
@@ -146,14 +162,8 @@ export class SceneHandlers {
         const shouldEnable = enable ?? !this.swingActive;
         this.swingActive = shouldEnable;
         this.spinActive = false;
-        canvas3d.setProps({
-            trackball: {
-                ...(canvas3d.props?.trackball || {}),
-                animate: shouldEnable
-                    ? { name: "rock", params: { speed, angle: 20 } }
-                    : { name: "off", params: {} },
-            },
-        });
+        this.motionSpeed = speed;
+        this.applyMotion();
     }
 
     async toggleSpin(msg: ToggleSpinMessage | boolean) {
@@ -164,12 +174,8 @@ export class SceneHandlers {
         const shouldEnable = enable ?? !this.spinActive;
         this.spinActive = shouldEnable;
         this.swingActive = false;
-        canvas3d.setProps({
-            trackball: {
-                ...(canvas3d.props?.trackball || {}),
-                animate: shouldEnable ? { name: "spin", params: { speed } } : { name: "off", params: {} },
-            },
-        });
+        this.motionSpeed = speed;
+        this.applyMotion();
     }
 
     // ── Section helpers ────────────────────────────────────────────────────

@@ -380,7 +380,7 @@ test("bootPopup replays initial sync and projects controls preferences", async (
     }
 });
 
-test("bootPopup gates camera sync by interaction in both directions", async () => {
+test("bootPopup relays changed programmatic cameras and consumes projections without echo", async () => {
     const previousWindow = (globalThis as any).window;
     const previousDocument = (globalThis as any).document;
     const previousSetTimeout = (globalThis as any).setTimeout;
@@ -407,12 +407,13 @@ test("bootPopup gates camera sync by interaction in both directions", async () =
         async handleMessage(_msg: any) {},
         setCameraSnapshot(snapshot: any, duration: number) {
             cameraApplied.push({ snapshot, duration });
+            ctrl.currentSnapshot = snapshot;
         },
         async toggleSpin(_enable?: boolean) {},
         async toggleSwing(_enable?: boolean) {},
         async toggleBackground(_mode?: string) {},
         getCameraSnapshot() {
-            return { eye: [9, 8, 7] };
+            return ctrl.currentSnapshot ?? { eye: [9, 8, 7] };
         },
         onTrajectoryState(_cb: any, _opts: any) {},
         async resetView() {},
@@ -429,7 +430,7 @@ test("bootPopup gates camera sync by interaction in both directions", async () =
     (globalThis as any).window = env.windowObj;
     (globalThis as any).document = env.document;
     (globalThis as any).setTimeout = (fn: () => void, _ms?: number) => {
-        fn();
+        queueMicrotask(fn);
         return 1;
     };
     (globalThis as any).clearTimeout = (_id: number) => {};
@@ -445,8 +446,14 @@ test("bootPopup gates camera sync by interaction in both directions", async () =
             false,
         );
 
-        env.container.dispatch("pointerdown");
+        env.windowObj.dispatch("message", {
+            source: env.windowObj.opener,
+            data: hostWire("molsysviewer-initial-sync", { messages: [] }),
+        });
+        await flushAsync();
+        // Focus changes do not require a pressed pointer.
         drawSubscriber?.();
+        await flushAsync();
         assert.deepStrictEqual(
             env.postedToHost.at(-1)?.envelope.action,
             "molsysviewer-sync-camera",
@@ -457,6 +464,7 @@ test("bootPopup gates camera sync by interaction in both directions", async () =
         );
         assert.deepStrictEqual(env.postedToHost.at(-1)?.envelope.direction, "event");
 
+        env.container.dispatch("pointerdown");
         env.windowObj.dispatch("message", {
             source: env.windowObj.opener,
             data: hostWire("molsysviewer-sync-camera", { target: [1, 1, 1] }),
@@ -473,6 +481,19 @@ test("bootPopup gates camera sync by interaction in both directions", async () =
         assert.deepStrictEqual(cameraApplied, [
             { snapshot: { target: [2, 2, 2] }, duration: 0 },
         ]);
+        const count = env.postedToHost.length;
+        drawSubscriber?.(); await flushAsync();
+        drawSubscriber?.(); await flushAsync();
+        assert.equal(env.postedToHost.length, count, "received projections and unchanged draws never echo");
+        env.windowObj.dispatch("message", {
+            source: env.windowObj.opener,
+            data: hostWire("molsysviewer-sync-camera", { target: [4, 4, 4] }),
+        });
+        await flushAsync();
+        // New input before that projection's first draw must still travel.
+        ctrl.currentSnapshot = { eye: [3, 4, 5] };
+        drawSubscriber?.(); await flushAsync();
+        assert.deepStrictEqual(env.postedToHost.at(-1)?.envelope.payload, { eye: [3, 4, 5] });
     } finally {
         (globalThis as any).window = previousWindow;
         (globalThis as any).document = previousDocument;

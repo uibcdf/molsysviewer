@@ -361,3 +361,11 @@ Completed work, kept for the reasoning:
 - [Scene handle API parity](scene_handle_api_parity.md) — #217 adds detached inspection, annotation editing, region rename vocabulary and explicit sphere anchors.
 
 - [Canvas popup controls parity](canvas_popup_controls_parity.md) — #232 binds the notebook runtime, shares initial controls/styles/keys and preferences, preserves Studio popout and reconciles trajectory steps once; real widget/export guards and core 43/43 pass.
+
+- [canvas popup camera](canvas_popup_camera.md) — #234: Resolved viewpoints converge in both directions with one automatic motion clock.
+- [canvas popup selection membership](canvas_popup_selection_membership.md) — #235: Replacement retains exact atom subsets and fresh subelement loci.
+- [canvas popup selection identity](canvas_popup_selection_identity.md) — #236: Portable object identity survives projections/history and resolves native selected markers in each endpoint.
+- [canvas popup layout](canvas_popup_layout.md) — #237: Dock/Float and ambient state are symmetric window-local settings; canvas preferences remain shared.
+- [canvas popup playback](canvas_popup_playback.md) — #238: One playback clock projects applied frames and final derived geometry; FPS edits preserve playback.
+- [annotation callout picking](annotation_callout_picking.md) — #241: Managed callout text is pickable after creation and updates, verified with native GPU hits.
+- [annotation pick registry lifecycle](annotation_pick_registry_lifecycle.md) — #243: Annotation replacement unregisters deleted refs and retains only live registry entries.

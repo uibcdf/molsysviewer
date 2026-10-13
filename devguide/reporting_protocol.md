@@ -160,6 +160,13 @@ hidden-frame updates and subscription cleanup. The same guard's notebook
 scenario runs the actual widget bootstrap against a persistent Python authority
 and checks runtime/control parity, UI preferences, panel popout and single-step
 trajectory convergence in both windows. Browser/WebGL failures fail;
+The same entrypoint's `canvas-popup-mirror-scenarios.ts` receiving owner guards
+resolved camera convergence, single motion/playback clocks, exact atom subsets,
+portable object identity and native GPU pick/marker behavior, local Studio
+layout and frame-specific calculated hbonds in both windows. The exported-page
+scenario guards context rotation and bidirectional selection without Python.
+These scientific scene checks use the persistent real Python fixture and actual
+Mol* rendering; a control-style comparison cannot substitute for them.
 `E2E_ALLOW_SKIP=1` does not qualify closure. Suffixes, globs and commands are
 rejected. The offline validator checks the fixture, actions, popup entrypoint
 and build/core registration. Its exact entrypoint is

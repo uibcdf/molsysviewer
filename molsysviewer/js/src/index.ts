@@ -3,9 +3,12 @@
 import { MolSysViewerController, suppressCanvasContextMenu } from "./managers/viewer-controller";
 import { ViewerMessage } from "./messages/viewer-messages";
 import { trajectorySyncToAuthority } from "./messages/trajectory-intent";
+import { frontendSceneProjection, FRONTEND_CONTEXT_ACTIONS } from "./messages/frontend-scene-projection";
 import { bootPopup } from "./popup/popup-logic";
 import { PopupHostManager } from "./managers/popup-host";
 import { waitForCanvasDraw } from "./managers/canvas-draw";
+import { CameraSync } from "./managers/camera-sync";
+import { syncTrajectoryFrames } from "./managers/trajectory-sync";
 import { mountControls } from "./ui/controls";
 import { createLocalUiModel } from "./ui/local-ui-model";
 import { createLogger } from "./utils/logger";
@@ -110,6 +113,7 @@ const parseInitialTrajectoryInfo = (msgs: ViewerMessage[] | undefined) => {
 export function needsRunningSession(msg: unknown): boolean {
     const name = typeof (msg as any)?.event === "string" ? (msg as any).event : "";
     if (!name) return false;
+    if (name === "interaction_context_action" && FRONTEND_CONTEXT_ACTIONS.has((msg as any).action)) return false;
     // Events and acks are informational: nothing was asked of anybody.
     if (ACTION_CATEGORIES.get(name) !== "command") return false;
     // The browser already did these and is only reporting them.
@@ -305,6 +309,7 @@ export async function bootDocsView(opts: {
 
     // Track user interaction for camera sync logic
     let isUserInteracting = false;
+    let cameraSync: CameraSync | undefined;
     let wheelTimeout: ReturnType<typeof window.setTimeout> | null = null;
     const onPointerDown = () => { isUserInteracting = true; };
     const onPointerUpOrCancel = () => { isUserInteracting = false; };
@@ -323,9 +328,17 @@ export async function bootDocsView(opts: {
 
     const trajInfo = parseInitialTrajectoryInfo(initialMessages);
 
-    // Initialize Controller (no-op notify)
+    // Initialize Controller with frontend scene projection and backend diagnostics.
     const panelModeStyle = model.get("panel_mode_style") as string;
-    const controllerPromise = MolSysViewerController.create(target, makeMissingAuthorityReporter(hostEl), undefined, { 
+    const missingAuthority = makeMissingAuthorityReporter(hostEl);
+    const controllerPromise = MolSysViewerController.create(target, message => {
+        const projection = frontendSceneProjection(message);
+        if (projection) {
+            popupReplay.record(projection);
+            popupMgr.send("molsysviewer-sync-op", projection);
+        }
+        missingAuthority(message);
+    }, undefined, {
         panelModeStyle,
         model,
         hasInitialStructures: trajInfo.hasStructures,
@@ -397,23 +410,17 @@ export async function bootDocsView(opts: {
             }));
         }
 
-        // Camera sync (Host -> Popup)
-        if (c.plugin.canvas3d) {
-            let hostCameraSyncTimer: ReturnType<typeof window.setTimeout> | null = null;
-            const c3d = c.plugin.canvas3d;
-            const syncCamera = () => {
-                if (!popupMgr.isReady || !isUserInteracting) return;
-                if (hostCameraSyncTimer) clearTimeout(hostCameraSyncTimer);
-                hostCameraSyncTimer = setTimeout(() => {
-                    popupMgr.send("molsysviewer-sync-camera", c.getCameraSnapshot());
-                    hostCameraSyncTimer = null;
-                }, 20);
-            };
-            const onCameraFrame = () => syncCamera();
-            if (c3d.didDraw) {
-                c3d.didDraw.subscribe(onCameraFrame);
-            }
-        }
+        cameraSync = new CameraSync(c, {
+            enabled: () => popupMgr.isReady,
+            interacting: () => isUserInteracting,
+            send: snapshot => popupMgr.send("molsysviewer-sync-camera", snapshot),
+        });
+        const releaseTrajectorySync = syncTrajectoryFrames(c, () => popupMgr.isReady,
+            message => popupMgr.send("molsysviewer-sync-op", message));
+        window.addEventListener("pagehide", () => {
+            cameraSync?.dispose(); releaseTrajectorySync();
+        }, { once: true });
+
     });
 
     // Handle Incoming Messages (Popup -> Host)
@@ -462,10 +469,19 @@ export async function bootDocsView(opts: {
                     }
                     model.save_changes();
                     break;
-                case "molsysviewer-sync-camera":
-                    if (data && !isUserInteracting) {
-                        controller.setCameraSnapshot(data, 0);
+                case "molsysviewer-popup-interaction":
+                    {
+                        const projection = frontendSceneProjection(data);
+                        if (projection) {
+                            await controller.handleMessage(projection);
+                            popupReplay.record(projection);
+                            popupMgr.send("molsysviewer-sync-op", projection);
+                        }
+                        missingAuthority(data);
                     }
+                    break;
+                case "molsysviewer-sync-camera":
+                    await cameraSync?.apply(data);
                     break;
                 case "molsysviewer-log-from-popout":
                     sendLog("info", "[Popout Log]:", data?.msg);
@@ -890,6 +906,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
         
         // Track user interaction for "Master/Slave" camera sync logic
         let isUserInteracting = false;
+        let cameraSync: CameraSync | undefined;
         let wheelTimeout: ReturnType<typeof window.setTimeout> | null = null;
 
         const onPointerDown = () => { 
@@ -1013,7 +1030,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                 const syncOp = { op: "sync_section_position", tag: msg.tag, point: msg.point, normal: msg.normal };
                 popupMgr.send("molsysviewer-sync-op", syncOp);
             }
-        }, undefined, { 
+        }, undefined, {
             panelModeStyle, 
             model,
             hasInitialStructures: trajInfo.hasStructures,
@@ -1080,6 +1097,9 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
             );
             popupMgr.setController(c);
 
+            releaseRuntime.push(syncTrajectoryFrames(c, () => popupMgr.isReady,
+                message => popupMgr.send("molsysviewer-sync-op", message)));
+
             model.on("change:controls_mode", () => {
                 popupMgr.send("molsysviewer-sync-ui", { controlsMode: model.get("controls_mode") });
             });
@@ -1092,27 +1112,21 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
 
             if (c.sharedShell) {
                 c.sharedShell.onLayoutChange = (state) => {
-                    popupMgr.send("molsysviewer-sync-ui", state);
+                    // Window layout is local; canvas preferences use trait projections.
                     c.triggerLayoutChange(state);
                 };
             }
 
             // 5. Setup Camera Sync (Host -> Popup)
             if (c.plugin.canvas3d) {
-                let hostCameraSyncTimer: ReturnType<typeof window.setTimeout> | null = null;
                 let cameraSnapshotTimer: ReturnType<typeof window.setTimeout> | null = null;
                 const c3d = c.plugin.canvas3d;
-
-                const syncCamera = () => {
-                    // Only sync if popout is open AND user is actively interacting with this viewer
-                    if (!popupMgr.isReady || !isUserInteracting) return;
-                    
-                    if (hostCameraSyncTimer) clearTimeout(hostCameraSyncTimer);
-                    hostCameraSyncTimer = setTimeout(() => {
-                        popupMgr.send("molsysviewer-sync-camera", c.getCameraSnapshot());
-                        hostCameraSyncTimer = null;
-                    }, 20); // Fast debounce
-                };
+                cameraSync = new CameraSync(c, {
+                    enabled: () => popupMgr.isReady,
+                    interacting: () => isUserInteracting,
+                    send: snapshot => popupMgr.send("molsysviewer-sync-camera", snapshot),
+                });
+                releaseRuntime.push(() => cameraSync?.dispose());
 
                 const scheduleCameraSnapshot = () => {
                     if (cameraSnapshotTimer) clearTimeout(cameraSnapshotTimer);
@@ -1126,12 +1140,10 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                 };
 
                 const onCameraFrame = () => {
-                    syncCamera();
                     scheduleCameraSnapshot();
                 };
                 let cameraSubscription: { unsubscribe(): void } | undefined;
                 releaseRuntime.push(() => {
-                    if (hostCameraSyncTimer) window.clearTimeout(hostCameraSyncTimer);
                     if (cameraSnapshotTimer) window.clearTimeout(cameraSnapshotTimer);
                     cameraSubscription?.unsubscribe();
                 });
@@ -1293,9 +1305,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
 
                     case "molsysviewer-sync-camera":
                         // Apply camera from popup ONLY if user is NOT interacting with host
-                        if (data && !isUserInteracting) {
-                            controller.setCameraSnapshot(data, 0);
-                        }
+                        await cameraSync?.apply(data);
                         break;
 
                     case "molsysviewer-popup-interaction":

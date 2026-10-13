@@ -17,6 +17,7 @@ from .._private.smonitor.warnings import (
     warn,
 )
 from .._private.smonitor_emit import emit_suppressed_exception
+from ..active_selection import _empty_payload, _selection_projection
 from ..figures import FigureSpec
 from ..regions import Region
 from ..shapes._registry import register_shape_layer
@@ -242,6 +243,11 @@ class StateMixin:
             layers.append(record)
 
         active = {"atom_indices": list(self.active_selection.atom_indices)}
+        portable_pick = _selection_projection(self._last_active_selection_event)
+        if "items" in portable_pick:
+            event = self._last_active_selection_event or {}
+            active["pick"] = {key: deepcopy(event[key]) for key in _empty_payload() if key in event and key != "items"}
+            active["pick"]["items"] = portable_pick["items"]
 
         whole = {
             "representation": self.whole.representation,
@@ -1351,6 +1357,13 @@ class StateMixin:
             self.active_selection.set(indices, syntax="Indices", skip_digestion=True)
         else:
             self.active_selection.clear(skip_digestion=True)
+        pick = active.get("pick")
+        if isinstance(pick, dict):
+            projection = _selection_projection(pick)
+            if "items" in projection and projection["atom_indices"] == list(indices or []):
+                self._last_active_selection_event = deepcopy(pick)
+                self._last_active_selection_event["items"] = projection["items"]
+                self._send(projection)
 
     def _restore_whole_state(self, whole: Any) -> None:
         if not isinstance(whole, dict):

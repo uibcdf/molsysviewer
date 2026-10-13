@@ -822,6 +822,7 @@ export type ClearActiveSelectionMessage = {
 export type SetActiveSelectionMessage = {
     op: "set_active_selection";
     atom_indices?: number[];
+    items?: import("../managers/active-selection").ActiveSelectionItem[];
 };
 
 export type SaveSelectionMessage = {

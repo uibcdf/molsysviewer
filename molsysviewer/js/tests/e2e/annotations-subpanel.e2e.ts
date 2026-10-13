@@ -113,11 +113,19 @@ async function run() {
             "Gate closed",
             "the Mol* label kept its old customText",
         );
+        const visibleRefs = await page.evaluate(() =>
+            (window as any).Harness.inspectTaggedRefs((window as any).__controller, "annotation", "note")
+        );
+        assert.ok(visibleRefs.length > 0 && visibleRefs.some((item: any) => item.exists && !item.hidden));
         await applyMessages(page, lifecycle.message_batches[3]);
         const refs = await page.evaluate(() =>
             (window as any).Harness.inspectTaggedRefs((window as any).__controller, "annotation", "note")
         );
-        assert.ok(refs.length > 0 && refs.every((item: any) => !item.exists || item.hidden), "hide left the label renderable");
+        assert.strictEqual(refs.length, 0, "hide retained deleted refs in the annotation registry");
+        assert.ok(await page.evaluate(previous => {
+            const state = (window as any).__controller.plugin.state.data;
+            return previous.every((item: any) => !state.tree.transforms.has(item.ref));
+        }, visibleRefs), "hide left the label representation alive");
         console.log("[E2E annotations-subpanel] passed");
     } finally {
         await browser.close();

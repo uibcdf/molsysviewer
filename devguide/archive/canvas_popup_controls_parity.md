@@ -74,3 +74,13 @@ notebook host and input typing. The transport drains before Python closes.
 New exact hosted source CI remains a separate receiving gate; no installed
 artifact or publication claim follows. The normative contract is
 `devguide/canvas_popup_contract.md`.
+
+## Scope clarification — 2026-10-13
+
+The closure above qualifies its listed UI/control and trajectory-step assertions.
+The subsequent scientific mirror review reproduced camera/selection/layout gaps
+and measured loaded playback divergence under uibcdf/molsysviewer#234–#238.
+The same registered guard now additionally receives native object picks, edited
+annotation markers, single motion/playback clocks and frame-specific geometry.
+Its expanded results belong to the new mirror receipt and do not retroactively
+extend the earlier 63c3d9c7 or installed-artifact evidence.

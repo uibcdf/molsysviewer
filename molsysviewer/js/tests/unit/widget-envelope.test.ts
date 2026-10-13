@@ -212,6 +212,9 @@ test("an exported page reports only what genuinely needs a session", () => {
     assert.equal(needsRunningSession({ event: "interaction_measurement_created" }), false);
     assert.equal(needsRunningSession({ event: "section_moved" }), false);
     assert.equal(needsRunningSession({ event: "interaction_active_selection_changed" }), false);
+    for (const action of ["focus_target", "focus_region", "focus_selection", "reset_view", "toggle_spin", "toggle_swing", "toggle_background"]) {
+        assert.equal(needsRunningSession({ event: "interaction_context_action", action }), false);
+    }
 
     // Informational traffic is not a failed request.
     assert.equal(needsRunningSession({ event: "interaction_tool_state" }), false);

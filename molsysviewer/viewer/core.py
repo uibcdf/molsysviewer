@@ -23,7 +23,7 @@ from .._private.argdigest.argument.viewer_mode import digest_viewer_mode
 from .._private.smonitor import CATALOG, META, PACKAGE_ROOT
 from .._private.smonitor.warnings import StructureStreamFallbackWarning, warn
 from .._private.smonitor_emit import emit_suppressed_exception
-from ..active_selection import ActiveSelection, _combine
+from ..active_selection import ActiveSelection, _combine, _selection_projection
 from ..addons import AddonPanelWidget, ViewAddonsManager
 from ..addons import addons as global_addons
 from ..annotations import AnnotationsManager
@@ -1586,7 +1586,9 @@ class MolSysView(
             # that Python itself just set (e.g. during an undo/redo replay) echoes
             # back unchanged and must not add a spurious history entry.
             _previous_selection = list((self._last_active_selection_event or {}).get("atom_indices") or [])
-            _selection_changed = atom_indices != _previous_selection
+            _selection_changed = atom_indices != _previous_selection or _selection_projection(
+                enriched
+            ) != _selection_projection(self._last_active_selection_event)
             if _selection_changed:
                 self.history._begin_operation(("active_selection", "", "set"))  # noqa: SLF001
 
@@ -1695,18 +1697,10 @@ class MolSysView(
                     enriched["count_atoms"] = len(atom_indices)
 
             self._last_active_selection_event = enriched
-            if _selection_changed:
-                # A split remote session has two consumers: the render worker
-                # already knows the pick it produced, while the UI-only client
-                # does not. Reproject the accepted authoritative selection so
-                # every endpoint converges. Applying it again in an embedded or
-                # worker canvas is idempotent and emits no new interaction.
-                self._send_runtime_only(
-                    {
-                        "op": "set_active_selection",
-                        "atom_indices": list(atom_indices),
-                    }
-                )
+            # Even an unchanged portable pick must refresh each endpoint's
+            # local loci: editing an object can replace its representation.
+            # Projections emit no new intent and do not create history entries.
+            self._send_runtime_only(_selection_projection(enriched))
             if atom_indices:
                 self._set_active_selection_recipe(
                     [
@@ -1770,6 +1764,8 @@ class MolSysView(
             self._current_structure_index = frame
             self.player._is_playing = bool(content.get("is_playing", False))  # noqa: SLF001
             self.player._store_state()  # noqa: SLF001
+            if not self.player._is_playing:  # noqa: SLF001
+                self._send_runtime_only({"op": "set_trajectory_frame", "index": frame})
             self._sync_trajectory_summary_runtime()
             self._sync_measurement_summaries_runtime()
             if self._frame_change_callbacks:

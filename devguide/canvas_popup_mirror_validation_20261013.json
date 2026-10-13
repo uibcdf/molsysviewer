@@ -1,0 +1,276 @@
+{
+  "date": "2026-10-13",
+  "scope": "Development source receiving: real Python/AnyWidget transport and drawing Mol*/Chromium endpoints. Not installed-artifact qualification.",
+  "source_parent": "76c8cee1b2f00821820e05975609262844b27224",
+  "integrated_source_commit": null,
+  "issues": [
+    234,
+    235,
+    236,
+    237,
+    238,
+    241,
+    243
+  ],
+  "environment": {
+    "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+    "executable": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "libraries": {
+      "molsysviewer": "0.23.0+17.g3fa27e68",
+      "molsysmt": "0.22.4+24.g42b487869",
+      "argdigest": "0.15.0+1.g5c6711e",
+      "smonitor": "0.19.0",
+      "anywidget": "0.11.0"
+    },
+    "molsysmt_checkout": "21987c626d20a305bb591ab536c1519e648a6e59",
+    "imported_modules": {
+      "molsysviewer": {
+        "file": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/__init__.py",
+        "module_version": "0.24.0+15.gf23d6226.dirty"
+      },
+      "molsysmt": {
+        "file": "/home/diego/repos@uibcdf/molsysmt/molsysmt/__init__.py",
+        "module_version": "0.22.4+24.g42b487869"
+      }
+    },
+    "scope": "Editable development checkouts; distribution metadata is not installed-candidate identity. No installed package qualification.",
+    "javascript": {
+      "node": "v24.11.1",
+      "molstar": "5.4.1",
+      "playwright": "1.57.0"
+    }
+  },
+  "browser": {
+    "executable": "/usr/bin/google-chrome",
+    "rendering": "headless Chromium with ANGLE/SwiftShader; real GPU picking/marker paths, no synthetic loci",
+    "explicit_skip": false
+  },
+  "guard": "molsysviewer/js/tests/e2e/controls-visibility.e2e.ts",
+  "scientific_fixture": {
+    "system": "real pentalanine",
+    "structure_indices": [
+      0,
+      8,
+      3
+    ],
+    "interactions": "calculated Buch hbonds, all structures, distance threshold 0.4 nm",
+    "objects": [
+      "region",
+      "sphere",
+      "explicit-position annotation",
+      "interaction set"
+    ]
+  },
+  "results": {
+    "python_focused_initial": {
+      "passed": 3
+    },
+    "python_integration_before_last_pick_fix": {
+      "passed": 302
+    },
+    "python_object_ownership": {
+      "passed": 28
+    },
+    "python_repeat_pick_history_and_summaries": {
+      "passed": 48
+    },
+    "python_full_once": {
+      "passed": 3095,
+      "failed": 25,
+      "skipped": 21,
+      "deselected": 12,
+      "diagnosis": "24 browser/socket sandbox restrictions and one final-frame projection expectation; original global result retained."
+    },
+    "python_exact_failed_nodes_after_fix_unsandboxed": {
+      "passed": 25,
+      "failed": 0,
+      "scope": "Exact failed node selectors; not a second full-suite pass."
+    },
+    "js_units": {
+      "state": "passed",
+      "runner": "npm run test:js; Node reports one aggregate file, no failures/skips"
+    },
+    "native_scientific_mirror": {
+      "state": "passed",
+      "log": "mirror-repeat-pick.log"
+    },
+    "full_controls_export_widget_mirror": {
+      "state": "passed",
+      "log": "core-final.log",
+      "scope": "controls-visibility entry completed in core integration"
+    },
+    "core_browser": {
+      "state": "all_suites_verified_across_invocations",
+      "suites_verified": 43,
+      "suites_expected": 43,
+      "clean_full_invocation": false,
+      "lane": "Core; remotes excluded and native Qt qualification separate.",
+      "integration_invocation": {
+        "log": "core-registry-final.log",
+        "completed_suites": 39,
+        "interrupted_at": "scene-object-panel-roundtrip",
+        "diagnosis": "Its legacy assertion required retained registered refs after hide, despite actual deletion. The expectation was repaired to verify positive live refs before hide, no refs after hide and no surviving transforms."
+      },
+      "remaining_suites": [
+        {
+          "suite": "scene-object-panel-roundtrip",
+          "log": "panel-roundtrip-clean-registry.log",
+          "state": "passed"
+        },
+        {
+          "suite": "bioassembly-chain-identity",
+          "log": "core-remainder.log",
+          "state": "passed"
+        },
+        {
+          "suite": "trajectory-plot",
+          "log": "core-remainder.log",
+          "state": "passed"
+        },
+        {
+          "suite": "movie-playback",
+          "log": "core-remainder.log",
+          "state": "passed"
+        }
+      ],
+      "scope": "Production TypeScript/runtime is unchanged between the 39 successful integration suites and the four followups. Two test-only expectations were corrected. This source coverage is not a claim that the full command returned success; the exact hosted canonical run remains a separate gate."
+    },
+    "ruff": {
+      "check": "passed",
+      "format": "8 selected Python files already formatted"
+    },
+    "final_offline_governance": {
+      "state": "passed",
+      "tests": 458,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "Reporting/indexes, clean-checkout links, architecture status and public capability inventory."
+    },
+    "core_browser_previous_attempt": {
+      "state": "failed",
+      "completed_suites": 5,
+      "failed_suite": "annotations-subpanel",
+      "diagnosis": "The old assertion required retained refs after hide. The owner now unregisters them. The revised specific guard proves visible live refs before hide, an empty registry after hide and deleted actual transforms; it passes independently. The complete controls/mirror entry passed before this failure.",
+      "log": "core-final.log"
+    },
+    "annotation_hide_registry": {
+      "state": "passed",
+      "log": "annotations-clean-registry.log"
+    }
+  },
+  "diagnoses": [
+    "Coarse group identity retained old atom membership; replacement now installs values and current loci.",
+    "Camera pointer gating/debounce and competing motion/playback clocks prevented convergence; applied snapshots/frames now have one original-canvas clock.",
+    "Portable picks lost owner/subelement identity; endpoint-local loci are reconstructed and projection echoes suppressed.",
+    "Equal re-picks after geometry replacement still need authority projection, without new history entries.",
+    "MolStar Text.updateRenderableState defaults pickable=false; managed callouts explicitly opt in after creation/update.",
+    "Annotation replacement retained deleted registered refs; paired unregister callbacks remove them.",
+    "Annotation GPU picking must wait for a fresh actual hit after a representation update; a summary is not drawing evidence.",
+    "Playwright exposed binding persists navigation; shared test transport retains one binding and releases its current worker owner."
+  ],
+  "limits": {
+    "window_local": [
+      "Dock/Float",
+      "ambient/opacity/lock",
+      "expansion/navigation",
+      "window position",
+      "fullscreen",
+      "form drafts"
+    ],
+    "camera": "Applied-state convergence, not simultaneous GPU frames or pixel equality across viewport sizes.",
+    "publication": "0.25.0 unfrozen; both 1.0 publications remain paused; no tags, package builds or promotions."
+  },
+  "evidence": {
+    "environment.json": {
+      "bytes": 920,
+      "sha256": "f81b9d8c9b0d824bfd7dd50df34c7a1f660a0290fea616c7cb0bcf8c871f93b3"
+    },
+    "python-focused.log": {
+      "bytes": 299,
+      "sha256": "4967ffb6dbd1182015a6446c8f692b12116d8649489546c5904c5afdad950eed"
+    },
+    "python-integration.log": {
+      "bytes": 305,
+      "sha256": "3bd09f8a9befcfbaebe53b51e144904ef7a2090e588aeee68461b69993f794d9"
+    },
+    "python-final-ownership.log": {
+      "bytes": 303,
+      "sha256": "46185ad663b7581f60f203d919d5aa00ad18d12513fb9de3afe7c6a0f0083d7c"
+    },
+    "python-full.log": {
+      "bytes": 13800,
+      "sha256": "35ae08c3764fbc290ae1a0bc2ecaaa47391905d15dc49d110e880266664ad612"
+    },
+    "python-full.xml": {
+      "bytes": 642147,
+      "sha256": "df61df73f6ff88a989b2df3378603c29f76cf6b7f721ee0ec1d747cd8c8709b4"
+    },
+    "python-failed-targeted.log": {
+      "bytes": 421,
+      "sha256": "f6fd84bf296c9a0db6219327558039540535b80e82ca6ce51afc6c6493f6befb"
+    },
+    "python-failed-targeted.xml": {
+      "bytes": 3710,
+      "sha256": "c8a437eda2cb001b31812f3763abd42e6ad48f7341ddf06e8f91d97f82a7663e"
+    },
+    "python-repeat-pick-fixed.log": {
+      "bytes": 715,
+      "sha256": "2870324ac687b64186d3ec43569655e5874c93bbe1416dfed41210c3bb271735"
+    },
+    "unit-registry.log": {
+      "bytes": 505,
+      "sha256": "570b891839cadfd98a61a2c480dd9f5df5a9f70217370c8d12db8b0703b0eb21"
+    },
+    "mirror-registry-diagnosis.log": {
+      "bytes": 1889,
+      "sha256": "919067a849faeafb73903e8f0dfd7d7afa461b14c8bcf19a4b813c473fd7ce37"
+    },
+    "mirror-repeat-pick.log": {
+      "bytes": 212,
+      "sha256": "f4cb9e0ec1506b628cc35625919e1e3a5e2d47fa5211475fed30933bc383cd10"
+    },
+    "build-final.log": {
+      "bytes": 3324,
+      "sha256": "91823a21368160f20448a32acefc35f00f1cf2594196052d6fa643fe80e06325"
+    },
+    "offline-final.xml": {
+      "bytes": 71129,
+      "sha256": "a64a8776ca10cdc75f83eefe2e890305002d7750c1ef66552cffe0064797b659"
+    },
+    "offline-final.log": {
+      "bytes": 1232,
+      "sha256": "7e3ca81f7a4eeb0b06ed5c76f2b1b75bb86e9b9b4622dd1bacabac715adc805d"
+    },
+    "core-final.log": {
+      "bytes": 3043,
+      "sha256": "ad66de240ff3bff21caf0cfc25eeca57f4d4c8e1e92c5bd0b22070a4eac1d146"
+    },
+    "annotations-clean-registry.log": {
+      "bytes": 86,
+      "sha256": "bee1778154f386cedb763bac13989ddafb1b421792b4d5bc9700858d5eb024cf"
+    },
+    "core-registry-final.log": {
+      "bytes": 17759,
+      "sha256": "db8438aa6fc7047cba35b9232d72db5012f42863036120e8715cba82448a8666"
+    },
+    "panel-roundtrip-clean-registry.log": {
+      "bytes": 326,
+      "sha256": "2894fc50772acb6b42ae43ae0d4c2eef7f9210d964ed6ec2d7826ef9650d1ab6"
+    },
+    "core-remainder.log": {
+      "bytes": 166,
+      "sha256": "787e3109323832aed779c429861ce642366d802a0cd84d5f0d022ec4f6806afd"
+    },
+    "core-remainder.ts": {
+      "bytes": 1209,
+      "sha256": "7b2832572eca6c099d7c83739ec125703b300a79622bf091b63af1112aa7262d"
+    }
+  },
+  "runtime_build": {
+    "command": "npm run build:runtime",
+    "sha256": "d7e3a770bb6f63d2518038325cf693801a95f6cfe08489a478c7a1f78c669088",
+    "package_version_metadata_changed": false,
+    "scope": "Runtime generated from reviewed TypeScript; not a published package."
+  }
+}

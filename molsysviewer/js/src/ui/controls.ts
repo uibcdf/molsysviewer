@@ -520,13 +520,13 @@ export const buildControls = (
     let trajCapsule: HTMLDivElement | undefined;
 
     const btnPlayPause = isMinimal
-        ? makeMinimalTrajButton(`<polygon points="5,3 13,8 5,13" fill="currentColor"/>`, "Play Trajectory", () => {
+        ? makeMinimalTrajButton(`<polygon points="5,3 13,8 5,13" fill="currentColor"/>`, "Play Trajectory", async () => {
             const isPlaying = c.trajectory.getTrajectoryState().isPlaying;
             if (isPlaying) {
-                c.stopTrajectoryPlayback();
+                await c.stopTrajectoryPlayback();
                 sendSync({ op: "set_trajectory_playback", action: "stop" });
             } else {
-                c.playTrajectory({ fps: currentFps, step: currentStep });
+                await c.playTrajectory({ fps: currentFps, step: currentStep });
                 sendSync({
                     op: "set_trajectory_playback",
                     action: "play",
@@ -535,13 +535,13 @@ export const buildControls = (
                 });
             }
           })
-        : makeButton("▶ / ⏸", () => {
+        : makeButton("▶ / ⏸", async () => {
             const isPlaying = c.trajectory.getTrajectoryState().isPlaying;
             if (isPlaying) {
-                c.stopTrajectoryPlayback();
+                await c.stopTrajectoryPlayback();
                 sendSync({ op: "set_trajectory_playback", action: "stop" });
             } else {
-                c.playTrajectory({ fps: currentFps, step: currentStep });
+                await c.playTrajectory({ fps: currentFps, step: currentStep });
                 sendSync({
                     op: "set_trajectory_playback",
                     action: "play",
@@ -642,19 +642,21 @@ export const buildControls = (
         if (btnNext) traj.appendChild(btnNext);
 
         if (isCinema) {
-            stepControl = makeNumberControl(1, n => {
+            stepControl = makeNumberControl(1, async n => {
                 currentStep = n;
                 const state = c.trajectory.getTrajectoryState();
                 if (state.isPlaying) {
-                    c.playTrajectory({ fps: currentFps, step: currentStep });
+                    await c.playTrajectory({ fps: currentFps, step: currentStep });
+                    sendSync({ op: "set_trajectory_playback", action: "play", fps: currentFps, step: currentStep });
                 }
             }, "Step size", true);
 
-            fpsControl = makeNumberControl(30, n => {
+            fpsControl = makeNumberControl(30, async n => {
                 currentFps = n;
                 const state = c.trajectory.getTrajectoryState();
                 if (state.isPlaying) {
-                    c.playTrajectory({ fps: currentFps, step: currentStep });
+                    await c.playTrajectory({ fps: currentFps, step: currentStep });
+                    sendSync({ op: "set_trajectory_playback", action: "play", fps: currentFps, step: currentStep });
                 }
             }, "FPS", true);
 
@@ -662,20 +664,22 @@ export const buildControls = (
             traj.appendChild(fpsControl.wrapper);
         }
     } else {
-        stepControl = makeNumberControl(1, n => {
+        stepControl = makeNumberControl(1, async n => {
             currentStep = n;
             const state = c.trajectory.getTrajectoryState();
             if (state.isPlaying) {
                 btnPlayPause.setAttribute("data-molsysviewer-trajectory-playback", "stop");
-                c.playTrajectory({ fps: currentFps, step: currentStep });
+                await c.playTrajectory({ fps: currentFps, step: currentStep });
+                sendSync({ op: "set_trajectory_playback", action: "play", fps: currentFps, step: currentStep });
             }
         }, "Step size", isMinimal);
 
-        fpsControl = makeNumberControl(30, n => {
+        fpsControl = makeNumberControl(30, async n => {
             currentFps = n;
             const state = c.trajectory.getTrajectoryState();
             if (state.isPlaying) {
-                c.playTrajectory({ fps: currentFps, step: currentStep });
+                await c.playTrajectory({ fps: currentFps, step: currentStep });
+                sendSync({ op: "set_trajectory_playback", action: "play", fps: currentFps, step: currentStep });
             }
         }, "FPS", isMinimal);
 
@@ -772,8 +776,18 @@ export const buildControls = (
 
     let hasSeenState = false;
     let lastIsPlaying: boolean | null = null;
+    let lastFps: number | undefined;
+    let lastStep: number | undefined;
     const applyTrajectoryState = (state: ReturnType<typeof c.trajectory.getTrajectoryState>) => {
         hasSeenState = true;
+        if (state.fps !== undefined && state.fps !== lastFps) {
+            lastFps = currentFps = state.fps;
+            if (fpsControl) fpsControl.input.value = String(state.fps);
+        }
+        if (state.step !== undefined && state.step !== lastStep) {
+            lastStep = currentStep = state.step;
+            if (stepControl) stepControl.input.value = String(state.step);
+        }
         const frameCount = state.frameCount;
         const current = state.currentFrame;
         traj.style.display = frameCount > 1 ? "flex" : "none";

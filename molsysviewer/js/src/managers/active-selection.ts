@@ -32,8 +32,10 @@ export type ActiveSelectionItem = {
     entity_indices: number[];
     tag?: string;
     text?: string;
+    shape_groups?: { ids: number[]; instance: number }[];
 } | {
     source_kind: "shape";
+    scene_kind?: "shape" | "measurement" | "interaction";
     shape_kind: string;
     shape_name?: string;
     tag?: string;
@@ -44,6 +46,7 @@ export type ActiveSelectionItem = {
     molecule_indices?: number[];
     entity_indices: number[];
     entity_ref?: unknown;
+    shape_groups?: { ids: number[]; instance: number }[];
 };
 
 /**
@@ -346,6 +349,9 @@ function lociToShapeItems(rawLoci: any): ActiveSelectionItem[] {
         chain_indices: arrayOfNumbers(data.chain_indices),
         entity_indices: arrayOfNumbers(data.entity_indices),
         ...(entityRef !== undefined ? { entity_ref: entityRef } : {}),
+        ...(ShapeGroup.isLoci(rawLoci) ? { shape_groups: rawLoci.groups.map(group => ({
+            ids: Array.from(OrderedSet.toArray(group.ids)), instance: group.instance,
+        })) } : {}),
     };
     // Keep the picked loci alongside the item for persistent shape-group
     // highlighting (consumed by syncVisualSelection). Non-enumerable so it does
@@ -381,7 +387,7 @@ function signature(item: ActiveSelectionItem): string {
         return `${item.source_kind}:${item.annotation_kind}:${item.tag ?? ""}:${item.group_indices.join(",")}:${item.chain_indices.join(",")}`;
     }
     if (item.source_kind === "shape") {
-        return `${item.source_kind}:${item.tag ?? ""}:${item.shape_name ?? item.shape_kind}`;
+        return `${item.source_kind}:${item.scene_kind ?? "shape"}:${item.tag ?? ""}:${item.shape_name ?? item.shape_kind}`;
     }
     return `${item.source_kind}:${item.element_level}:${item.group_indices.join(",")}:${item.chain_indices.join(",")}`;
 }
@@ -473,7 +479,7 @@ export class ActiveSelectionController {
         return this.allAvailableItems;
     }
 
-    handlePrimaryClick(ev: any, shapeTarget?: { tag?: string; atom_indices: number[]; entity_ref?: unknown }): void {
+    handlePrimaryClick(ev: any, shapeTarget?: { kind?: string; tag?: string; atom_indices: number[]; entity_ref?: unknown }): void {
         const shift = !!ev?.modifiers?.shift;
         const alt = !!ev?.modifiers?.alt;
         const pickedItems: ActiveSelectionItem[] = [
@@ -485,6 +491,12 @@ export class ActiveSelectionController {
             item.tag = shapeTarget.tag;
             item.atom_indices = shapeTarget.atom_indices;
             if (shapeTarget.entity_ref !== undefined) item.entity_ref = shapeTarget.entity_ref;
+            if (["shape", "measurement", "interaction"].includes(shapeTarget.kind ?? "")) {
+                item.scene_kind = shapeTarget.kind as "shape" | "measurement" | "interaction";
+            }
+            if (shapeTarget.kind === "annotation") {
+                Object.assign(item, { source_kind: "annotation", annotation_kind: "label" });
+            }
         }
         
         if (pickedItems.length === 0) {
@@ -627,22 +639,12 @@ export class ActiveSelectionController {
     }
 
     private applyItems(next: ActiveSelectionItem[]): void {
-        if (sameItems(this.items, next)) {
-            this.emit();
-            return;
-        }
+        // Replace selected content, not coarse Shift-toggle identity. Even
+        // equal portable picks can carry fresh loci after a geometry update.
         // Undo/redo is owned by the single scene history (Python view.history),
         // which checkpoints on the resulting interaction_active_selection_changed
         // event; this controller no longer keeps its own stack.
         this.items = [...next];
         this.emit();
     }
-}
-
-function sameItems(a: ActiveSelectionItem[], b: ActiveSelectionItem[]): boolean {
-    if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-        if (signature(a[i]) !== signature(b[i])) return false;
-    }
-    return true;
 }

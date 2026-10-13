@@ -145,6 +145,10 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             'withFixtureWorkspace("controls-visibility", run).catch(' in entry,
             'from "./fixture-workspace";' in entry,
             (js_root / "tests/e2e/fixture-workspace.ts").is_file(),
+            "await checkCanvasPopupMirror(page, dir);" in entry,
+            (js_root / "tests/e2e/canvas-popup-mirror-scenarios.ts").is_file(),
+            (js_root / "tests/e2e/canvas-popup-fixture.ts").is_file(),
+            (js_root / "tests/e2e/canvas-popup-bridge.py").is_file(),
         )
     else:
         requirements += (

@@ -1,11 +1,15 @@
 # Development roadmap
 
-**Current receiving review — 2026-10-13:** #232
-[canvas popup parity](canvas_popup_contract.md) is closed with local core 43/43
-and final keyboard/transport guards; receive its new exact hosted source CI.
-#231's core/Qt separation now has passing scientific 6/6, Python 3.14 hosts 3/3
-and core browser on 46527392; the independent Qt failure remains explicit.
-Next complete broad documentation, prepare/qualify the agreed 0.25.0 candidate
+**Current receiving review — 2026-10-13:** the scientific
+[canvas mirror](canvas_popup_contract.md) implements #234–#238/#241/#243
+with native object picks, frame-specific geometry and one motion/playback clock.
+Its full controls guard passes; all 43 core suites are verified across retained
+integration/followups, with 458 offline guards passing. Fresh hosted source gates
+are tracked separately in the [mirror receipt](canvas_popup_mirror_validation_20261013.json).
+Earlier #232 source 63c3d9c7 now passes its required hosted gates, with its
+independent Qt failure preserved. That evidence does not qualify later changes.
+Next finish the applicable mirror gates, complete broad documentation,
+prepare/qualify the agreed 0.25.0 candidate
 and perform human installed first contact before publication. Both 1.0
 publications remain paused.
 

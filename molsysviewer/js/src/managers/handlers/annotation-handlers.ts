@@ -32,6 +32,7 @@ function styleToVisualParams(style?: LabelStyle): Record<string, unknown> | unde
 export interface AnnotationCallbacks {
     getStructure: () => Structure | undefined;
     registerRef: (ref?: StateObjectRef, tag?: string) => void;
+    unregisterRef?: (ref: string, tag: string) => void;
     addLabelOverlay?: (msg: AddLabelMessage) => void;
 }
 
@@ -220,6 +221,7 @@ export class AnnotationHandlers {
         await this.refreshQueue;
         const refs = Array.from(this.labelRefs);
         this.labelRefs.clear();
+        for (const [tag, registered] of this.refsByTag) for (const ref of registered) this.callbacks.unregisterRef?.(ref, tag);
         this.refsByTag.clear();
         await this.removeLabelRefs(refs);
     }
@@ -232,6 +234,7 @@ export class AnnotationHandlers {
         this.refsByTag.delete(tag);
         for (const ref of refs) {
             this.labelRefs.delete(ref);
+            this.callbacks.unregisterRef?.(ref, tag);
         }
         await this.removeLabelRefs(refs);
     }
@@ -275,7 +278,10 @@ export class AnnotationHandlers {
         const refs = Array.from(this.refsByTag.get(tag) ?? []);
         this.refsByTag.delete(tag);
         this.specsByTag.delete(tag);
-        for (const ref of refs) this.labelRefs.delete(ref);
+        for (const ref of refs) {
+            this.labelRefs.delete(ref);
+            this.callbacks.unregisterRef?.(ref, tag);
+        }
         for (const tags of this.layerTagIndex.values()) tags.delete(tag);
         this.layerTagIndex.delete(tag);
     }

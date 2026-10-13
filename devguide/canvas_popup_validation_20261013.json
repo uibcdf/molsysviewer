@@ -138,5 +138,55 @@
     ],
     "scope": "Actual states at receiving checkpoint. Source CI only; native Qt remains independent."
   },
-  "qualification_scope": "Source/browser only. No new tag, candidate freeze, installed-pair qualification, package promotion or publication. Qt popout remains separately experimental under #51; both 1.0 publications remain paused."
+  "qualification_scope": "Controls parity on exact source 63c3d9c7; does not qualify later scientific mirror changes or installed artifacts.",
+  "hosted_source_final_receiving": [
+    {
+      "conclusion": "success",
+      "databaseId": 38383553809,
+      "status": "completed",
+      "workflowName": "MolSysSuite policy"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38383553067,
+      "status": "completed",
+      "workflowName": "Ruff Lint"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38383554097,
+      "status": "completed",
+      "workflowName": "Conda publication governance"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38383552955,
+      "status": "completed",
+      "workflowName": "Documentation notebooks"
+    },
+    {
+      "conclusion": "failure",
+      "databaseId": 38383553164,
+      "status": "completed",
+      "workflowName": "Experimental Qt diagnostics"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38383553047,
+      "status": "completed",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38383553044,
+      "status": "completed",
+      "workflowName": "CI_e2e"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38383553080,
+      "status": "completed",
+      "workflowName": "Python 3.14 source pair"
+    }
+  ]
 }

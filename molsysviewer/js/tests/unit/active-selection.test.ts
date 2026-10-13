@@ -3,6 +3,28 @@ import test from "node:test";
 
 import { ActiveSelectionController } from "../../src/managers/active-selection";
 
+test("replacement compares atom membership separately from group toggle identity", () => {
+    const controller = new ActiveSelectionController();
+    const item = { source_kind: "element" as const, element_level: "group" as const,
+        group_indices: [0], chain_indices: [0], entity_indices: [0], atom_indices: [0, 1] };
+    controller.setItems([item]);
+    controller.setItems([{ ...item, atom_indices: [2] }]);
+    assert.deepStrictEqual(controller.getCurrentItems()[0].atom_indices, [2]);
+    controller.setItems([{ ...item, atom_indices: [0, 1] }], "add");
+    assert.deepStrictEqual(controller.getCurrentItems(), [], "Shift still toggles one group");
+});
+
+test("replacement preserves a different selected group of the same shape", () => {
+    const controller = new ActiveSelectionController();
+    const item = { source_kind: "shape" as const, shape_kind: "mesh", tag: "faces",
+        group_indices: [], chain_indices: [], entity_indices: [], atom_indices: [0, 1, 2],
+        shape_groups: [{ ids: [0], instance: 0 }], entity_ref: { face: 0 } };
+    controller.setItems([item]);
+    const next = { ...item, atom_indices: [2, 3, 4], shape_groups: [{ ids: [1], instance: 0 }], entity_ref: { face: 1 } };
+    controller.setItems([next]);
+    assert.deepStrictEqual(controller.getCurrentItems(), [next]);
+});
+
 const fullElements = [0, 1, 2, 3, 4];
 const residueIndexByAtom = [0, 0, 0, 1, 1];
 const residueOffsets = [0, 3, 5];
@@ -410,7 +432,7 @@ test("ActiveSelectionController supports shape selections", () => {
         current: {
             loci: {
                 kind: "group-loci",
-                groups: [{ ids: [0] }],
+                groups: [{ ids: [0], instance: 0 }],
                 shape: {
                     name: "Pocket Blob",
                     sourceData: {
@@ -442,6 +464,7 @@ test("ActiveSelectionController supports shape selections", () => {
             chain_indices: [0],
             entity_indices: [0],
             entity_ref: { kind: "topomt.tetra", id: 3 },
+            shape_groups: [{ ids: [0], instance: 0 }],
         }],
         atom_indices: [8],
         group_indices: [2],

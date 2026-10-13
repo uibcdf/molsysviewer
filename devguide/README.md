@@ -41,6 +41,8 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- [Canvas scientific mirror](canvas_popup_contract.md): #234–#238/#241/#243 implement bidirectional scene receiving, portable native picks and single motion/playback clocks; [evidence](canvas_popup_mirror_validation_20261013.json) preserves all 43 core suites across retained runs/followups, 458 offline guards and the separate source CI/publication scope.
+
 - [Canvas popup parity](canvas_popup_contract.md): #232 aligns runtime, controls, preferences, keyboard and popup actions; its [closure](archive/canvas_popup_controls_parity.md) retains real widget/export guards and passing core 43/43; [source CI receiving](canvas_popup_validation_20261013.json) tracks the integrated 63c3d9c7 separately.
 
 - [Core/Qt qualification scope](core_qt_qualification.md): #231 separates required core from native experimental diagnostics, retaining independent official outcomes and recovery watermarks.

@@ -16,6 +16,7 @@ import { ArrayNativeStreamReceiver } from "../messages/array-native-stream";
 import { popupActionAllows } from "../messages/runtime-actions";
 import { mountControls } from "../ui/controls";
 import { createLocalUiModel } from "../ui/local-ui-model";
+import { CameraSync } from "../managers/camera-sync";
 import { trajectorySyncToAuthority } from "../messages/trajectory-intent";
 
 /** Boot the popup through the same imported runtime module as its host. */
@@ -125,7 +126,9 @@ export const bootPopup = async (loadedModule?: any) => {
         Object.assign(container.style, { touchAction: "none", outline: "none", cursor: "default" });
     }
     const loading = document.getElementById("molsysviewer-loading");
-    let isUserInteracting = false; // Only send camera updates when user is interacting
+    let sceneReady = false;
+    let cameraSync: CameraSync | undefined;
+    let isUserInteracting = false; // Local input has priority over incoming viewpoints.
     let wheelTimeout: any = null;
 
     // Track user interaction state
@@ -233,6 +236,8 @@ export const bootPopup = async (loadedModule?: any) => {
                 } : undefined,
         });
 
+        ctrl.setCameraMotionFollower?.(true);
+        ctrl.setTrajectoryFollower?.(true);
         if (initOptions.isPanelOnly) {
             ctrl.setCanvasVisibility(false);
             if (ctrl.sharedShell) {
@@ -266,28 +271,12 @@ export const bootPopup = async (loadedModule?: any) => {
                 return;
             }
 
-            const c3d = ctrl.plugin.canvas3d!;
-            let popCameraSyncTimer: any = null;
+            cameraSync = new CameraSync(ctrl, {
+                enabled: () => sceneReady && !initOptions.isPanelOnly,
+                interacting: () => isUserInteracting,
+                send: snapshot => sendToHost("molsysviewer-sync-camera", snapshot),
+            });
 
-            // Define the sync function
-            const syncCamera = () => {
-                // Crucial: Only sync if the change comes from USER INTERACTION
-                if (!isUserInteracting) return;
-                
-                if (popCameraSyncTimer) clearTimeout(popCameraSyncTimer);
-                popCameraSyncTimer = setTimeout(() => {
-                    sendToHost("molsysviewer-sync-camera", ctrl.getCameraSnapshot());
-                    popCameraSyncTimer = null;
-                }, 20);
-            };
-
-            // Use didDraw for interactive camera synchronization as it's directly tied to rendering updates.
-            if (c3d.didDraw) {
-                c3d.didDraw.subscribe(syncCamera);
-                console.log("MolSysViewer Popout: Sync via didDraw (interactive camera movements).");
-            } else {
-                console.warn("MolSysViewer Popout: didDraw event not found for sync.");
-            }
         });
 
         return ctrl;
@@ -339,7 +328,7 @@ export const bootPopup = async (loadedModule?: any) => {
                         await ctrl.setTrajectoryFrame(data.trajectoryFrame);
                     }
                     if (data.cameraSnapshot) {
-                        ctrl.setCameraSnapshot(data.cameraSnapshot, 0);
+                        await cameraSync?.apply(data.cameraSnapshot);
                     }
                     if (data.isSpinActive) await ctrl.toggleSpin(true);
                     if (data.isSwingActive) await ctrl.toggleSwing(true);
@@ -360,6 +349,7 @@ export const bootPopup = async (loadedModule?: any) => {
                     updateControlsUi(data);
                     window.clearTimeout(revealTimer);
                     revealViewer();
+                    sceneReady = true;
                     break;
 
                 case "molsysviewer-sync-ui":
@@ -369,9 +359,7 @@ export const bootPopup = async (loadedModule?: any) => {
                     if (initOptions.isPanelOnly) ctrl.setPanelModeStyle("split");
                     else if (data.panelModeStyle) ctrl.setPanelModeStyle(data.panelModeStyle);
                     if (ctrl.sharedShell) {
-                        if (data.isAmbient !== undefined) ctrl.sharedShell.setAmbient(data.isAmbient);
                         if (initOptions.isPanelOnly) ctrl.sharedShell.setSplit(true);
-                        else if (data.isSplit !== undefined) ctrl.sharedShell.setSplit(data.isSplit);
                     }
                     break;
 
@@ -390,9 +378,7 @@ export const bootPopup = async (loadedModule?: any) => {
 
                 case "molsysviewer-sync-camera":
                     // Apply host camera update only if user is NOT fighting it
-                    if (data && !isUserInteracting) {
-                        ctrl.setCameraSnapshot(data, 0);
-                    }
+                    await cameraSync?.apply(data);
                     break;
 
                 // D4: Python streams this popup its own typed molecular
@@ -436,6 +422,13 @@ export const bootPopup = async (loadedModule?: any) => {
             }
         }, container!, () => window.close(),
         { popupButtonTitle: "Close popup" });
+    window.addEventListener("pagehide", () => {
+        sceneReady = false;
+        cameraSync?.dispose();
+        if (wheelTimeout) clearTimeout(wheelTimeout);
+        window.clearTimeout(revealTimer);
+        ctrl.dispose();
+    }, { once: true });
     // Notify host
     sendToHost(initOptions.isPanelOnly ? "molsysviewer-panel-ready" : "molsysviewer-pop-ready", null);
 };

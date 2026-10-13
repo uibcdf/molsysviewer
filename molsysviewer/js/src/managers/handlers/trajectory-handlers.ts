@@ -30,6 +30,8 @@ export interface TrajectoryState {
     isPlaying: boolean;
     hasTrajectory: boolean;
     expectedFrameCount?: number;
+    fps?: number;
+    step?: number;
 }
 
 /** Playback modes. Python's public API says "ping-pong"; the frontend has always
@@ -73,6 +75,23 @@ export function nextPlaybackStep(
 
 export class TrajectoryHandlers {
     private readonly pendingFrames = new Set<Promise<void>>();
+    private follower = false;
+    private followerPlaying = false;
+    private playbackOptions: { fps: number; step: number; mode: PlaybackMode; direction: "forward" | "backward" } = {
+        fps: 30, step: 1, mode: "loop", direction: "forward",
+    };
+
+    setFollower(enabled: boolean) { this.follower = enabled; }
+
+    applySummary(message: any) {
+        if (Number.isSafeInteger(message.fps) && message.fps > 0) this.playbackOptions.fps = message.fps;
+        if (Number.isSafeInteger(message.step) && message.step > 0) this.playbackOptions.step = message.step;
+        if (message.mode) this.playbackOptions.mode = normalizePlaybackMode(message.mode);
+        if (message.direction === "forward" || message.direction === "backward") this.playbackOptions.direction = message.direction;
+        // The summary describes Python state; it does not start a second clock
+        // or move the renderer before an applied frame projection arrives.
+        this.updateTrajectoryState();
+    }
     private playbackTimer?: ReturnType<typeof setInterval>;
     private trajectoryPoll?: ReturnType<typeof setInterval>;
     private trajectoryListeners = new Set<(state: TrajectoryState) => void>();
@@ -166,11 +185,12 @@ export class TrajectoryHandlers {
     }
 
     async setTrajectoryPlayback(msg: SetTrajectoryPlaybackMessage) {
-        const action = msg.action ?? "stop";
-        const fps = msg.fps ?? 30;
-        const step = msg.step ?? 1;
-        const mode = msg.mode ?? "loop";
-        const direction = msg.direction ?? "forward";
+        const action = msg.action ?? (this.getTrajectoryState().isPlaying ? "play" : "stop");
+        const fps = msg.fps ?? this.playbackOptions.fps;
+        const step = msg.step ?? this.playbackOptions.step;
+        const mode = msg.mode ?? this.playbackOptions.mode;
+        const direction = msg.direction ?? this.playbackOptions.direction;
+        this.playbackOptions = { fps, step, mode: normalizePlaybackMode(mode), direction };
         if (action === "play") {
             await this.playTrajectory({ fps, mode, direction, step });
         } else {
@@ -185,13 +205,20 @@ export class TrajectoryHandlers {
             return;
         }
 
-        const fps = options.fps ?? 30;
-        const step = Math.max(1, Math.floor(options.step ?? 1));
-        const direction = options.direction ?? "forward";
-        const mode = normalizePlaybackMode(options.mode);
+        const fps = options.fps ?? this.playbackOptions.fps;
+        const step = Math.max(1, Math.floor(options.step ?? this.playbackOptions.step));
+        const direction = options.direction ?? this.playbackOptions.direction;
+        const mode = normalizePlaybackMode(options.mode ?? this.playbackOptions.mode);
+        this.playbackOptions = { fps, step, direction, mode };
 
         // Stop any existing animation/timer first
-        await this.stopTrajectoryPlayback();
+        await this.stopTrajectoryPlayback(false);
+
+        if (this.follower) {
+            this.followerPlaying = true;
+            this.updateTrajectoryState();
+            return;
+        }
 
         const intervalMs = Math.max(1, Math.floor(1000 / Math.max(fps, 1)));
         let delta = direction === "backward" ? -step : step;
@@ -214,8 +241,9 @@ export class TrajectoryHandlers {
         this.updateTrajectoryState();
     }
 
-    async stopTrajectoryPlayback() {
+    async stopTrajectoryPlayback(notifyStopped = true) {
         const wasPlaying = !!this.playbackTimer;
+        this.followerPlaying = false;
         this.plugin.managers.animation.stop();
         if (this.playbackTimer) {
             clearInterval(this.playbackTimer);
@@ -228,7 +256,7 @@ export class TrajectoryHandlers {
         await Promise.all(Array.from(this.pendingFrames));
         await this.context.afterFrameApplied?.();
         this.updateTrajectoryState();
-        if (wasPlaying) {
+        if (wasPlaying && notifyStopped) {
             this.context.onPlaybackStopped?.(this.getCurrentFrameIndex());
         }
     }
@@ -241,8 +269,9 @@ export class TrajectoryHandlers {
         }
         const currentFrame = this.getCurrentFrameIndex();
         // Check our custom timer or Mol*'s built-in manager as a fallback
-        const isPlaying = !!this.playbackTimer || this.plugin.managers.animation.isAnimating;
-        return { frameCount, currentFrame, isPlaying, hasTrajectory, expectedFrameCount: this.expectedFrameCount };
+        const isPlaying = !!this.playbackTimer || this.followerPlaying || this.plugin.managers.animation.isAnimating;
+        return { frameCount, currentFrame, isPlaying, hasTrajectory, expectedFrameCount: this.expectedFrameCount,
+            fps: this.playbackOptions.fps, step: this.playbackOptions.step };
     }
 
     onTrajectoryState(cb: (state: TrajectoryState) => void, opts?: { immediate?: boolean }): () => void {

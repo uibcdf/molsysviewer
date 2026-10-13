@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import Any, Literal
 
 from smonitor import signal
@@ -8,6 +9,46 @@ from ._private.argdigest import digest
 from .scene_history import records_scene_history
 
 SelectionCombineOperation = Literal["replace", "add", "subtract", "intersect", "invert"]
+
+
+def _selection_projection(event: dict[str, Any] | None) -> dict[str, Any]:
+    """Project portable pick identity; Mol* loci remain local to each endpoint."""
+    event = event or {}
+    atoms = list(event.get("atom_indices") or [])
+    projection = {"op": "set_active_selection", "atom_indices": atoms}
+    allowed = {
+        "source_kind",
+        "scene_kind",
+        "element_level",
+        "annotation_kind",
+        "shape_kind",
+        "shape_name",
+        "tag",
+        "text",
+        "atom_indices",
+        "group_indices",
+        "component_indices",
+        "chain_indices",
+        "molecule_indices",
+        "entity_indices",
+        "group_name",
+        "group_id",
+        "component_name",
+        "chain_name",
+        "molecule_name",
+        "entity_name",
+        "available_scopes",
+        "entity_ref",
+        "shape_groups",
+    }
+    items = event.get("items") or []
+    if items and all(isinstance(item, dict) for item in items):
+        portable = [{key: deepcopy(value) for key, value in item.items() if key in allowed} for item in items]
+        if all(item.get("source_kind") in {"element", "shape", "annotation"} for item in portable):
+            members = {atom for item in portable for atom in item.get("atom_indices", [])}
+            if members == set(atoms):
+                projection["items"] = portable
+    return projection
 
 
 def _dedupe_indices(indices: Any) -> list[int]:

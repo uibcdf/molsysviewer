@@ -576,6 +576,7 @@ export class MolSysViewerController {
     private readonly contextMenu: ViewerContextMenu;
     private readonly measurementTools: MeasurementToolController;
     private readonly activeSelection: ActiveSelectionController;
+    private applyingSelectionProjection = false;
     private readonly toolStatusOverlay: ToolStatusOverlay;
     private readonly legendOverlay: LegendOverlay;
     private readonly trajectoryPlotOverlay: TrajectoryPlotOverlay;
@@ -1080,7 +1081,7 @@ export class MolSysViewerController {
                     picked_count: msg.picked_count,
                 };
             }
-            this.notify?.(msg);
+            if (msg?.event !== "interaction_active_selection_changed" || !this.applyingSelectionProjection) this.notify?.(msg);
         };
 
         this.toolStatusOverlay = new ToolStatusOverlay(host);
@@ -1695,6 +1696,7 @@ export class MolSysViewerController {
         this.annotations = new AnnotationHandlers(plugin, {
             getStructure: () => this.getStructureData(),
             registerRef: (ref, tag) => this.state.registerTaggedRef(ref, tag, "annotation"),
+            unregisterRef: (ref, tag) => this.state.unregisterTaggedRef(ref, tag, "annotation"),
             addLabelOverlay: (msg) => this.groupPanel.addLabelOverlay(msg),
         });
         this.measurements = new MeasurementHandlers(plugin, {
@@ -2576,6 +2578,7 @@ export class MolSysViewerController {
                     break;
                 }
                 case "set_measurement_settings": this.measurements.setSettings(msg.options); break;
+                case "set_trajectory_summary": this.trajectory.applySummary(msg); break;
 
                 // Scene Ops
                 case "reset_view":
@@ -2895,10 +2898,23 @@ export class MolSysViewerController {
                     this.activeSelection.clear();
                     break;
                 case "set_active_selection":
-                    this.activeSelection.setFromAtomIndices(
-                        Array.isArray(msg.atom_indices) ? msg.atom_indices : [],
-                        this.getStructureData(),
-                    );
+                    this.applyingSelectionProjection = true;
+                    try {
+                        if (Array.isArray(msg.items) && msg.items.length) {
+                            this.activeSelection.setItems(msg.items.map(item => {
+                                const local = { ...item };
+                                if (item.source_kind !== "element" && item.tag) {
+                                    const kind = item.source_kind === "annotation" ? "annotation"
+                                        : item.scene_kind ?? (this.interactionSummaries.some(entry => entry.tag === item.tag) ? "interaction" : "shape");
+                                    const loci = this.state.resolveObjectLoci(kind, item.tag, item.shape_groups,
+                                        item.source_kind === "shape" ? item.entity_ref : undefined);
+                                    if (loci) Object.defineProperty(local, "_loci", { value: loci, enumerable: false });
+                                }
+                                return local;
+                            }), "replace");
+                        } else this.activeSelection.setFromAtomIndices(
+                            Array.isArray(msg.atom_indices) ? msg.atom_indices : [], this.getStructureData());
+                    } finally { this.applyingSelectionProjection = false; }
                     break;
                 case "save_selection":
                     this.upsertSavedSelection(msg);
@@ -4390,10 +4406,12 @@ export class MolSysViewerController {
     // Actually, direct calls from UI buttons might not pass msg. Scene handler handles boolean or msg.
     async toggleSpin(enable?: boolean) { await this.scene.toggleSpin(enable ?? !this.scene.isSpinActive); }
     async toggleSwing(enable?: boolean) { await this.scene.toggleSwing(enable ?? !this.scene.isSwingActive); }
+    setCameraMotionFollower(enabled: boolean) { this.scene.setMotionFollower(enabled); }
     
     stepTrajectory(by: number) { return this.trajectory.stepTrajectory(by); }
     playTrajectory(opts: any) { return this.trajectory.playTrajectory(opts); }
     stopTrajectoryPlayback() { return this.trajectory.stopTrajectoryPlayback(); }
+    setTrajectoryFollower(enabled: boolean) { this.trajectory.setFollower(enabled); }
     setTrajectoryFrame(index: number) { return this.trajectory.setTrajectoryFrame(index); }
     
     onTrajectoryState(cb: (state: TrajectoryState) => void, opts?: { immediate?: boolean }) { 
@@ -4527,6 +4545,7 @@ export class MolSysViewerController {
 
     async setCameraSnapshot(snapshot?: Camera.Snapshot, durationMs?: number) {
         if (!snapshot) return;
+        this.state.markIntentionalViewpoint();
         try {
             await PluginCommands.Camera.SetSnapshot(this.plugin, {
                 snapshot,
