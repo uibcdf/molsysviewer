@@ -12,10 +12,10 @@ retains the exact board snapshot and scoped evidence.
   window-owned addon fix passes the actual receiving guard and core 43/43. The old hosted
   browser and Linux Python 3.14 source-pair campaigns fail at the same real
   Render-after-popup-close assertion; neither is called green.
-- **#233:** fix/qualify generic entry-point discovery during root-spec imports.
-  Current PharmacophoreMT avoids that cycle, so its receiving smoke can proceed.
-- **#242:** remediate compatible vulnerable transitive lockfile versions and
-  qualify the exact rebuilt runtime. Mol* upgrade #115 stays post-1.0.
+- **#233:** corrected at 4d15a410; 14 real metadata/import/clear cases and 13
+  affected workspace cases pass. Exact hosted source receiving is complete at 4d15a410.
+- **#242:** compatible remediation returns zero advisories with Mol* 5.4.1
+  preserved; the actual runtime passes 43/43 core browser suites. #115 stays post-1.0.
 - Retain completed applicable source CI; resume the postponed PHMT/Jupyter smoke and central
   Python admission #93. Qt's separate experimental failures are retained.
 - Finish public documentation and human first contact, then explicitly freeze
@@ -31,9 +31,9 @@ reviewed issue set does not cover subsequently reported #233/#239/#242/#245.
 | Issue | Disposition | What remains or was delivered | Owning record |
 | --- | --- | --- | --- |
 | [#245](https://github.com/uibcdf/molsysviewer/issues/245) | Resolved; exact hosted core approved | Independent window lifecycle and owner-specific actions implemented; local Python/JS/browser guards pass. Exact-source hosted core is approved: six Python cells, three Python 3.14 hosts and 43/43 browser suites. | [Record](archive/addon_popup_panel_lifecycle.md) |
-| [#242](https://github.com/uibcdf/molsysviewer/issues/242) | Pre-freeze dependency review | Nine registry advisories confirmed; Immutable is used by Mol* state at runtime. Compatible lockfile remediation and qualification remain. No exploit is asserted. | [Record](archive/locked_javascript_dependency_advisories.md) |
+| [#242](https://github.com/uibcdf/molsysviewer/issues/242) | Resolved in source | Nine affected packages repaired; clean audit has zero findings, Mol* 5.4.1 preserved and live/offline audit guards required. | [Record](archive/locked_javascript_dependency_advisories.md) |
 | [#239](https://github.com/uibcdf/molsysviewer/issues/239) | Resolved in source | c9471fe3 consumes trajectory summaries. Real Python/widget/Mol* guard now requires 17 fps in original and popup and rejects the unknown-op warning. | [Record](archive/widget_trajectory_summary_dispatch.md) |
-| [#233](https://github.com/uibcdf/molsysviewer/issues/233) | Pre-freeze generic addon defect | Entry-point circular-import behavior remains distinct from known-module checks. Current PHMT avoids it, but the generic documented root-import route needs correction/qualification. | [Record](archive/addon_entrypoint_partial_initialization.md) |
+| [#233](https://github.com/uibcdf/molsysviewer/issues/233) | Resolved in source | Type exports no longer discover partial providers; exact deferred sources and explicit registry clear are guarded with 27 final import/workspace cases. | [Record](archive/addon_entrypoint_partial_initialization.md) |
 | [#226](https://github.com/uibcdf/molsysviewer/issues/226) | Post-1.0; explicitly deferred | Copy equivalent Python from Studio is the maintainer's explicit remaining UI deferral. | [Record](pending_proposals/post_1.0/studio_copy_python.md) |
 | [#115](https://github.com/uibcdf/molsysviewer/issues/115) | Post-1.0 | Mol* dependency update, imported-API review and exact core qualification; retain the current pin for 1.0. | [Viewer frontend](pending_proposals/post_1.0/update_molstar_dependency.md) |
 | [#113](https://github.com/uibcdf/molsysviewer/issues/113) | Post-1.0 | Future supported Qt candidate: exact native artifacts and visible-window workflows; no core gate. | [Viewer / native Qt providers](pending_proposals/post_1.0/recheck_latest_conda_forge_qt_for_standalone.md) |
@@ -87,12 +87,24 @@ incorrect because Immutable is used by the real Mol* state tree.
 #245 and #239 have fixes and passing guards with archived records. Issue-board
 closure is independently verified after reviewed source integration at 19d92c25. The 33-issue table
 retains the initial snapshot; it does not mean these two still require a code fix.
-The final required hosted campaign is approved. #233/#242 and the postponed
-human smoke keep their separate pending scope.
+The 19d92c25 required hosted campaign is approved. Later #233/#242 and the
+newly found #246 are resolved at 4d15a410, with archived guards. Their fresh exact
+hosted campaign passes all required core gates; the human smoke remains postponed.
 
-The final board contains **31 open issues and 31 local queue records**, with no
-missing owner record. The new exact-source CI passes all required core gates: six Python regression
+After #233/#242/#246 closure, the current board contains **29 open issues and
+29 local queue records**, with no
+missing owner record. The preceding 19d92c25 source CI passes all required core gates: six Python regression
 cells, three Python 3.14 hosts and 43/43 core browser suites, plus lint, policy,
 notebooks and Conda governance. Experimental Qt fails separately; the
 [lifecycle receipt](addon_window_lifecycle_validation_20261013.json) preserves
 its independent scope. No installed-package or live-Jupyter result is inferred.
+
+## Additional hardening / approved providers
+
+The [new receiving receipt](addon_discovery_dependency_validation_20261013.json)
+records canonical SMonitor 0.20.0 build 1 / DepDigest 0.15.1 build 0 adoption in
+development and all #233/#242/#246 scopes. The single full local Python run
+retains three clear-related failures; 27 final affected cases and a final real
+popup guard pass after correction. Runtime/lockfile browser core passes 43/43
+before the final Python clear correction. Fresh exact hosted qualification passes six regression cells, three Python
+3.14 hosts, official core 43/43 and 25/25 notebooks; Qt remains a separate failure; these are source results, not installed candidate or live Jupyter gates.

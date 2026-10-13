@@ -7,8 +7,11 @@ SMonitor 0.20.0 / DepDigest 0.15.1 public packages are received in development;
 see the [new source receipt](addon_discovery_dependency_validation_20261013.json).
 The single full local Python run retains three corrected clear-related failures;
 27 final affected checks and the final popup guard pass. Browser core passes
-43/43 before that final Python correction. Complete fresh exact hosted source
-qualification before broad docs/freeze.
+43/43 before that final Python correction. Fresh exact hosted source
+qualification passes on `4d15a410`: six regression cells, three Python 3.14 hosts,
+core browser 43/43 and notebooks 25/25. Qt fails in its separate experimental
+lane. Complete broad docs before freezing a candidate, then qualify its exact
+installed artifacts before publication.
 The prepared manual Jupyter observation remains postponed, 0.25.0 unfrozen,
 and both 1.0 publications paused.
 

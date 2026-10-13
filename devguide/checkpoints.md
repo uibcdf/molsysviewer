@@ -1,7 +1,7 @@
 # Development checkpoint
 
 **Latest authorized hardening — 2026-10-13:** #233 separates public type exports
-from effective addon discovery and passes 13 fresh-process real-metadata cases.
+from effective addon discovery and passes 14 fresh-process real-metadata/import/clear cases.
 #242 repairs all nine advisories while preserving Mol* 5.4.1; clean npm ci/audit
 reports zero findings and live audit is required in core CI/release gates.
 #246 repairs a pre-existing TypeScript private controller access in Studio popup;
@@ -12,7 +12,10 @@ The [new receipt](addon_discovery_dependency_validation_20261013.json) retains
 provenance and intermediate failures. The single local Python core run has three clear-related failures, retained
 without relabelling; all 27 final affected checks and the final native popup
 guard pass after correction. The browser core passes 43/43 before that last
-Python correction. Fresh exact hosted source gates remain pending. Manual PHMT/Jupyter remains explicitly
+Python correction. Fresh exact hosted source receiving now passes on `4d15a410`: six Python
+regression cells, all three Python 3.14 hosts, official core browser 43/43
+and 25/25 notebooks. Lint, policy and Conda governance pass. Qt experimental
+38477058248 fails separately with native WebGL/bridge-ready diagnostics. Manual PHMT/Jupyter remains explicitly
 postponed; both 1.0 publications stay paused and 0.25.0 is not frozen.
 
 **Prior receiving/reconciliation (preserved scope) — 2026-10-13:** the
@@ -287,7 +290,9 @@ previous qualification records retain their original candidate and environment.
 Start with the [October 13 board reconciliation](open_issue_reconciliation_20261013.md):
 addon-window source qualification is complete. The #233/#242/#246 corrections
 now have passing focused guards and the [new receiving scope](addon_discovery_dependency_validation_20261013.json);
-complete their final source campaigns before freezing a candidate. The PHMT/Jupyter manual smoke is deliberately postponed, not passed.
+their final required hosted source campaigns pass at `4d15a410`; broad
+documentation remains before the candidate freeze; exact installed qualification
+follows that freeze and precedes publication. The PHMT/Jupyter manual smoke is deliberately postponed, not passed.
 
 The [core/Qt scope](core_qt_qualification.md) and its
 [receiving receipt](core_qt_qualification_20261013.json) are the current gate
@@ -1782,10 +1787,12 @@ Resume toward **1.0** in this order:
 
 **Current session priority (2026-10-13):** #245/#239 and their exact required
 source qualification are complete on 19d92c25; the
-[board reconciliation](open_issue_reconciliation_20261013.md) matches all 31
-remaining open issues to local records.
-#233/#242 and the additional #246 correction are implemented with passing
-focused guards; complete final source receiving before freezing the next candidate. The prepared PHMT/Jupyter observation is postponed
+[board reconciliation](open_issue_reconciliation_20261013.md) now matches all 29
+remaining open issues to local records after #233/#242/#246 closure.
+#233/#242/#246 are closed at `4d15a410` with final required source receiving
+complete: six regression cells, three Python 3.14 hosts, core 43/43 and notebooks
+25/25. Complete broad documentation, then explicitly freeze the agreed candidate
+and qualify its installed artifacts before publication. The prepared PHMT/Jupyter observation is postponed
 by the maintainer. #232/#231 source checks are complete on their own sources;
 native Qt retains a separate failed outcome. Broad docs, exact candidate
 qualification and human installed first contact still precede publication.

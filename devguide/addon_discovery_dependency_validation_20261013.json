@@ -303,7 +303,72 @@
     "suites": 43,
     "log_sha256": "9d525c2246542a39742294f93f02786fe0f6884022558cf9760f51d66734f193"
   },
-  "hosted_ci": "pending new reviewed source commit",
+  "hosted_ci": [
+    {
+      "conclusion": "success",
+      "databaseId": 38477059151,
+      "headSha": "4d15a410a3f8530c1643297cbfc7fcccb42dd895",
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477059151",
+      "workflowName": "Python 3.14 source pair"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38477058801,
+      "headSha": "4d15a410a3f8530c1643297cbfc7fcccb42dd895",
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058801",
+      "workflowName": "Conda publication governance"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38477058281,
+      "headSha": "4d15a410a3f8530c1643297cbfc7fcccb42dd895",
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058281",
+      "workflowName": "Ruff Lint"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38477058646,
+      "headSha": "4d15a410a3f8530c1643297cbfc7fcccb42dd895",
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058646",
+      "workflowName": "MolSysSuite policy"
+    },
+    {
+      "conclusion": "failure",
+      "databaseId": 38477058248,
+      "headSha": "4d15a410a3f8530c1643297cbfc7fcccb42dd895",
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058248",
+      "workflowName": "Experimental Qt diagnostics"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38477058246,
+      "headSha": "4d15a410a3f8530c1643297cbfc7fcccb42dd895",
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058246",
+      "workflowName": "Documentation notebooks"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38477058241,
+      "headSha": "4d15a410a3f8530c1643297cbfc7fcccb42dd895",
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058241",
+      "workflowName": "CI_e2e"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 38477058233,
+      "headSha": "4d15a410a3f8530c1643297cbfc7fcccb42dd895",
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058233",
+      "workflowName": "CI"
+    }
+  ],
   "manual_phmt_jupyter": "explicitly postponed by maintainer",
   "publication": "both 1.0 releases paused; 0.25.0 producer not frozen; no tag/release/artifact/promotion operations",
   "retained_local_evidence": "/tmp/msv-233-242-20261013",
@@ -349,5 +414,2195 @@
     "log_sha256": "9b6b7f97731baa97263ef674c3a0ca0a95dc70fd570e3846d3b172508d7e64c5"
   },
   "local_full_suite_policy": "single full Python invocation retained as failed; targeted correction passes; fresh exact hosted full/core gates required",
-  "synchronized_guides_commit": "2170e65e79286006583a603d0295e92ee854b319"
+  "synchronized_guides_commit": "2170e65e79286006583a603d0295e92ee854b319",
+  "integrated_source_commit": "4d15a410a3f8530c1643297cbfc7fcccb42dd895",
+  "issues_closed": [
+    233,
+    242,
+    246
+  ],
+  "queue_alignment": {
+    "open_board": 29,
+    "open_local": 29,
+    "missing": [],
+    "extra": []
+  },
+  "hosted_completed_auxiliary": {
+    "documentation_notebooks": {
+      "run_id": 38477058246,
+      "status": "success",
+      "executed": 25,
+      "failed": 0,
+      "jobs": [
+        {
+          "completedAt": "2026-10-13T22:22:06Z",
+          "conclusion": "success",
+          "databaseId": 115570237652,
+          "name": "Execute the documented notebooks",
+          "startedAt": "2026-10-13T22:20:01Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-10-13T22:20:05Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-10-13T22:20:02Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-13T22:20:09Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "startedAt": "2026-10-13T22:20:05Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-13T22:20:53Z",
+              "conclusion": "success",
+              "name": "Setup conda env",
+              "number": 3,
+              "startedAt": "2026-10-13T22:20:09Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-13T22:20:59Z",
+              "conclusion": "success",
+              "name": "Install MolSysViewer",
+              "number": 4,
+              "startedAt": "2026-10-13T22:20:53Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-13T22:22:03Z",
+              "conclusion": "success",
+              "name": "Execute every documented notebook",
+              "number": 5,
+              "startedAt": "2026-10-13T22:20:59Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-13T22:22:03Z",
+              "conclusion": "skipped",
+              "name": "Collect the failure logs",
+              "number": 6,
+              "startedAt": "2026-10-13T22:22:03Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-13T22:22:03Z",
+              "conclusion": "success",
+              "name": "Post Setup conda env",
+              "number": 11,
+              "startedAt": "2026-10-13T22:22:03Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-13T22:22:03Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 12,
+              "startedAt": "2026-10-13T22:22:03Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-13T22:22:03Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 13,
+              "startedAt": "2026-10-13T22:22:03Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058246/job/115570237652"
+        }
+      ],
+      "log_sha256": "f2885aac258cf4c3267e962b299f0acfe2c78185f53ffa8b863188c4e13e34b2"
+    },
+    "experimental_qt": {
+      "run_id": 38477058248,
+      "status": "failure",
+      "scope": "experimental, outside required core; not a manual visible-window observation",
+      "native_assertions": [
+        "Qt message bridge failed to become ready: Exported scene has no WebGL canvas; could not create WebGL rendering context",
+        "bridge never became ready: Loading molecular system"
+      ],
+      "compact_diagnostic": "DBus socket error retained; native assertions reviewed rather than treating this single compact cause as complete evidence",
+      "jobs": [
+        {
+          "completedAt": "2026-10-13T22:22:37Z",
+          "conclusion": "failure",
+          "databaseId": 115570239645,
+          "name": "Qt pipeline completes (Xvfb, software WebGL)",
+          "startedAt": "2026-10-13T22:20:02Z",
+          "status": "completed",
+          "steps": [],
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058248/job/115570239645"
+        },
+        {
+          "completedAt": "2026-10-13T22:19:59Z",
+          "conclusion": "skipped",
+          "databaseId": 115570239885,
+          "name": "Check skipped-commit backlog",
+          "startedAt": "2026-10-13T22:19:59Z",
+          "status": "completed",
+          "steps": [],
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058248/job/115570239885"
+        }
+      ],
+      "log_sha256": "f511e8000619f290c2edd438b44cd84c4bea18f97ebec73242f5baaeb6118c35"
+    }
+  },
+  "hosted_final_regression": {
+    "run_id": 38477058233,
+    "conclusion": "success",
+    "source_commit": "4d15a410a3f8530c1643297cbfc7fcccb42dd895",
+    "regression_cells": 6,
+    "pytest_log_results": [
+      {
+        "job": "Test on macos-15, Python 3.11",
+        "summary": "2026-10-13T22:32:18.7824400Z PASS exit=0 | 3103 passed, 51 skipped, 12 deselected | 642.17s | 1131 warnings"
+      },
+      {
+        "job": "Test on macos-15, Python 3.12",
+        "summary": "2026-10-13T22:33:02.9122650Z PASS exit=0 | 3103 passed, 51 skipped, 12 deselected | 685.41s | 1590 warnings"
+      },
+      {
+        "job": "Test on ubuntu-latest, Python 3.11",
+        "summary": "2026-10-13T22:27:59.0986531Z PASS exit=0 | 3130 passed, 24 skipped, 12 deselected | 419.43s | 1155 warnings"
+      },
+      {
+        "job": "Test on ubuntu-latest, Python 3.12",
+        "summary": "2026-10-13T22:29:23.1451793Z PASS exit=0 | 3130 passed, 24 skipped, 12 deselected | 498.51s | 1678 warnings"
+      },
+      {
+        "job": "Test on macos-15, Python 3.13",
+        "summary": "2026-10-13T22:30:51.2971490Z PASS exit=0 | 3103 passed, 51 skipped, 12 deselected | 541.98s | 1590 warnings"
+      },
+      {
+        "job": "Test on ubuntu-latest, Python 3.13",
+        "summary": "2026-10-13T22:32:20.0059444Z PASS exit=0 | 3130 passed, 24 skipped, 12 deselected | 666.10s | 1678 warnings"
+      }
+    ],
+    "jobs": [
+      {
+        "completedAt": "2026-10-13T22:32:33Z",
+        "conclusion": "success",
+        "databaseId": 115570238331,
+        "name": "Test on macos-15, Python 3.11",
+        "startedAt": "2026-10-13T22:20:07Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-13T22:20:10Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-13T22:20:08Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:21Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-13T22:20:10Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:21Z",
+            "conclusion": "success",
+            "name": "Additional info about the build",
+            "number": 3,
+            "startedAt": "2026-10-13T22:20:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:22Z",
+            "conclusion": "success",
+            "name": "Set up Python",
+            "number": 4,
+            "startedAt": "2026-10-13T22:20:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:21Z",
+            "conclusion": "success",
+            "name": "Setup conda env",
+            "number": 5,
+            "startedAt": "2026-10-13T22:20:22Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:21Z",
+            "conclusion": "skipped",
+            "name": "Validate and locally tag the staged Viewer candidate",
+            "number": 6,
+            "startedAt": "2026-10-13T22:21:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Info conda",
+            "number": 7,
+            "startedAt": "2026-10-13T22:21:21Z",
+            "status": "in_progress"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Record published pytest tool versions",
+            "number": 8,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:26Z",
+            "conclusion": "success",
+            "name": "Install package",
+            "number": 9,
+            "startedAt": "2026-10-13T22:21:22Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:26Z",
+            "conclusion": "skipped",
+            "name": "Remove the temporary Viewer tag after installation",
+            "number": 10,
+            "startedAt": "2026-10-13T22:21:26Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Install JS build dependencies for Python distribution tests",
+            "number": 11,
+            "startedAt": "2026-10-13T22:21:26Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:34Z",
+            "conclusion": "success",
+            "name": "Test import module",
+            "number": 12,
+            "startedAt": "2026-10-13T22:21:34Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:34Z",
+            "conclusion": "skipped",
+            "name": "Resolve documented Python API calls",
+            "number": 13,
+            "startedAt": "2026-10-13T22:21:34Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Run tests",
+            "number": 14,
+            "startedAt": "2026-10-13T22:21:34Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "JS unit tests (Node)",
+            "number": 15,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Check coverage",
+            "number": 16,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Upload coverage reports to Codecov",
+            "number": 17,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Upload test results to Codecov",
+            "number": 18,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Post Setup conda env",
+            "number": 34,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Post Set up Python",
+            "number": 35,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Post Run actions/checkout@v4",
+            "number": 36,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "2026-10-13T22:32:32Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 37,
+            "startedAt": "2026-10-13T22:32:30Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058233/job/115570238331"
+      },
+      {
+        "completedAt": "2026-10-13T22:33:12Z",
+        "conclusion": "success",
+        "databaseId": 115570238595,
+        "name": "Test on macos-15, Python 3.12",
+        "startedAt": "2026-10-13T22:20:07Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-13T22:20:12Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-13T22:20:08Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-13T22:20:12Z",
+            "status": "in_progress"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Additional info about the build",
+            "number": 3,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:23Z",
+            "conclusion": "success",
+            "name": "Set up Python",
+            "number": 4,
+            "startedAt": "2026-10-13T22:20:23Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:18Z",
+            "conclusion": "success",
+            "name": "Setup conda env",
+            "number": 5,
+            "startedAt": "2026-10-13T22:20:23Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:18Z",
+            "conclusion": "skipped",
+            "name": "Validate and locally tag the staged Viewer candidate",
+            "number": 6,
+            "startedAt": "2026-10-13T22:21:18Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:19Z",
+            "conclusion": "success",
+            "name": "Info conda",
+            "number": 7,
+            "startedAt": "2026-10-13T22:21:18Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:19Z",
+            "conclusion": "success",
+            "name": "Record published pytest tool versions",
+            "number": 8,
+            "startedAt": "2026-10-13T22:21:19Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Install package",
+            "number": 9,
+            "startedAt": "2026-10-13T22:21:19Z",
+            "status": "in_progress"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Remove the temporary Viewer tag after installation",
+            "number": 10,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Install JS build dependencies for Python distribution tests",
+            "number": 11,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Test import module",
+            "number": 12,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Resolve documented Python API calls",
+            "number": 13,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Run tests",
+            "number": 14,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "JS unit tests (Node)",
+            "number": 15,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Check coverage",
+            "number": 16,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Upload coverage reports to Codecov",
+            "number": 17,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Upload test results to Codecov",
+            "number": 18,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Post Setup conda env",
+            "number": 34,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Post Run actions/checkout@v4",
+            "number": 36,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          }
+        ],
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058233/job/115570238595"
+      },
+      {
+        "completedAt": "2026-10-13T22:28:07Z",
+        "conclusion": "success",
+        "databaseId": 115570238626,
+        "name": "Test on ubuntu-latest, Python 3.11",
+        "startedAt": "2026-10-13T22:20:02Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-13T22:20:05Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-13T22:20:03Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:11Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-13T22:20:05Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:11Z",
+            "conclusion": "success",
+            "name": "Additional info about the build",
+            "number": 3,
+            "startedAt": "2026-10-13T22:20:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:11Z",
+            "conclusion": "success",
+            "name": "Set up Python",
+            "number": 4,
+            "startedAt": "2026-10-13T22:20:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Setup conda env",
+            "number": 5,
+            "startedAt": "2026-10-13T22:20:11Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Validate and locally tag the staged Viewer candidate",
+            "number": 6,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:48Z",
+            "conclusion": "success",
+            "name": "Info conda",
+            "number": 7,
+            "startedAt": "2026-10-13T22:20:47Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:48Z",
+            "conclusion": "success",
+            "name": "Record published pytest tool versions",
+            "number": 8,
+            "startedAt": "2026-10-13T22:20:48Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Install package",
+            "number": 9,
+            "startedAt": "2026-10-13T22:20:48Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Remove the temporary Viewer tag after installation",
+            "number": 10,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:57Z",
+            "conclusion": "success",
+            "name": "Install JS build dependencies for Python distribution tests",
+            "number": 11,
+            "startedAt": "2026-10-13T22:20:52Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:57Z",
+            "conclusion": "success",
+            "name": "Test import module",
+            "number": 12,
+            "startedAt": "2026-10-13T22:20:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:57Z",
+            "conclusion": "skipped",
+            "name": "Resolve documented Python API calls",
+            "number": 13,
+            "startedAt": "2026-10-13T22:20:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Run tests",
+            "number": 14,
+            "startedAt": "2026-10-13T22:20:57Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "JS unit tests (Node)",
+            "number": 15,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Check coverage",
+            "number": 16,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Upload coverage reports to Codecov",
+            "number": 17,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Upload test results to Codecov",
+            "number": 18,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Post Setup conda env",
+            "number": 34,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "2026-10-13T22:28:04Z",
+            "conclusion": "success",
+            "name": "Post Set up Python",
+            "number": 35,
+            "startedAt": "2026-10-13T22:28:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:28:04Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 36,
+            "startedAt": "2026-10-13T22:28:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:28:04Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 37,
+            "startedAt": "2026-10-13T22:28:04Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058233/job/115570238626"
+      },
+      {
+        "completedAt": "2026-10-13T22:29:30Z",
+        "conclusion": "success",
+        "databaseId": 115570238758,
+        "name": "Test on ubuntu-latest, Python 3.12",
+        "startedAt": "2026-10-13T22:20:02Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-13T22:20:02Z",
+            "status": "in_progress"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Additional info about the build",
+            "number": 3,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Set up Python",
+            "number": 4,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Setup conda env",
+            "number": 5,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Validate and locally tag the staged Viewer candidate",
+            "number": 6,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:52Z",
+            "conclusion": "success",
+            "name": "Info conda",
+            "number": 7,
+            "startedAt": "2026-10-13T22:20:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:52Z",
+            "conclusion": "success",
+            "name": "Record published pytest tool versions",
+            "number": 8,
+            "startedAt": "2026-10-13T22:20:52Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:57Z",
+            "conclusion": "success",
+            "name": "Install package",
+            "number": 9,
+            "startedAt": "2026-10-13T22:20:52Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:57Z",
+            "conclusion": "skipped",
+            "name": "Remove the temporary Viewer tag after installation",
+            "number": 10,
+            "startedAt": "2026-10-13T22:20:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:02Z",
+            "conclusion": "success",
+            "name": "Install JS build dependencies for Python distribution tests",
+            "number": 11,
+            "startedAt": "2026-10-13T22:20:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:02Z",
+            "conclusion": "success",
+            "name": "Test import module",
+            "number": 12,
+            "startedAt": "2026-10-13T22:21:02Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:02Z",
+            "conclusion": "skipped",
+            "name": "Resolve documented Python API calls",
+            "number": 13,
+            "startedAt": "2026-10-13T22:21:02Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Run tests",
+            "number": 14,
+            "startedAt": "2026-10-13T22:21:02Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "JS unit tests (Node)",
+            "number": 15,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Check coverage",
+            "number": 16,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Upload coverage reports to Codecov",
+            "number": 17,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "2026-10-13T22:29:27Z",
+            "conclusion": "success",
+            "name": "Upload test results to Codecov",
+            "number": 18,
+            "startedAt": "2026-10-13T22:29:26Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Post Setup conda env",
+            "number": 34,
+            "startedAt": "2026-10-13T22:29:27Z",
+            "status": "in_progress"
+          }
+        ],
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058233/job/115570238758"
+      },
+      {
+        "completedAt": "2026-10-13T22:31:03Z",
+        "conclusion": "success",
+        "databaseId": 115570238818,
+        "name": "Test on macos-15, Python 3.13",
+        "startedAt": "2026-10-13T22:20:07Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-13T22:20:10Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-13T22:20:07Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-13T22:20:10Z",
+            "status": "in_progress"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Additional info about the build",
+            "number": 3,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Set up Python",
+            "number": 4,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Setup conda env",
+            "number": 5,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Validate and locally tag the staged Viewer candidate",
+            "number": 6,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Info conda",
+            "number": 7,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Record published pytest tool versions",
+            "number": 8,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:38Z",
+            "conclusion": "success",
+            "name": "Install package",
+            "number": 9,
+            "startedAt": "2026-10-13T22:21:33Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:38Z",
+            "conclusion": "skipped",
+            "name": "Remove the temporary Viewer tag after installation",
+            "number": 10,
+            "startedAt": "2026-10-13T22:21:38Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Install JS build dependencies for Python distribution tests",
+            "number": 11,
+            "startedAt": "2026-10-13T22:21:38Z",
+            "status": "in_progress"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:47Z",
+            "conclusion": "success",
+            "name": "Test import module",
+            "number": 12,
+            "startedAt": "2026-10-13T22:21:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:47Z",
+            "conclusion": "skipped",
+            "name": "Resolve documented Python API calls",
+            "number": 13,
+            "startedAt": "2026-10-13T22:21:47Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Run tests",
+            "number": 14,
+            "startedAt": "2026-10-13T22:21:47Z",
+            "status": "in_progress"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "JS unit tests (Node)",
+            "number": 15,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Check coverage",
+            "number": 16,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Upload coverage reports to Codecov",
+            "number": 17,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Upload test results to Codecov",
+            "number": 18,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "2026-10-13T22:30:59Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 36,
+            "startedAt": "2026-10-13T22:30:58Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Complete job",
+            "number": 37,
+            "startedAt": "2026-10-13T22:30:59Z",
+            "status": "in_progress"
+          }
+        ],
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058233/job/115570238818"
+      },
+      {
+        "completedAt": "2026-10-13T22:32:54Z",
+        "conclusion": "success",
+        "databaseId": 115570238840,
+        "name": "Test on ubuntu-latest, Python 3.13",
+        "startedAt": "2026-10-13T22:20:02Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-13T22:20:06Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-13T22:20:03Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-13T22:20:06Z",
+            "status": "in_progress"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Additional info about the build",
+            "number": 3,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Set up Python",
+            "number": 4,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:58Z",
+            "conclusion": "success",
+            "name": "Setup conda env",
+            "number": 5,
+            "startedAt": "2026-10-13T22:20:18Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:58Z",
+            "conclusion": "skipped",
+            "name": "Validate and locally tag the staged Viewer candidate",
+            "number": 6,
+            "startedAt": "2026-10-13T22:20:58Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:59Z",
+            "conclusion": "success",
+            "name": "Info conda",
+            "number": 7,
+            "startedAt": "2026-10-13T22:20:58Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:59Z",
+            "conclusion": "success",
+            "name": "Record published pytest tool versions",
+            "number": 8,
+            "startedAt": "2026-10-13T22:20:59Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Install package",
+            "number": 9,
+            "startedAt": "2026-10-13T22:20:59Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Remove the temporary Viewer tag after installation",
+            "number": 10,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:10Z",
+            "conclusion": "success",
+            "name": "Install JS build dependencies for Python distribution tests",
+            "number": 11,
+            "startedAt": "2026-10-13T22:21:03Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:11Z",
+            "conclusion": "success",
+            "name": "Test import module",
+            "number": 12,
+            "startedAt": "2026-10-13T22:21:10Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:12Z",
+            "conclusion": "success",
+            "name": "Resolve documented Python API calls",
+            "number": 13,
+            "startedAt": "2026-10-13T22:21:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Run tests",
+            "number": 14,
+            "startedAt": "2026-10-13T22:21:12Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "JS unit tests (Node)",
+            "number": 15,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Check coverage",
+            "number": 16,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Upload coverage reports to Codecov",
+            "number": 17,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Upload test results to Codecov",
+            "number": 18,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "2026-10-13T22:32:51Z",
+            "conclusion": "success",
+            "name": "Post Setup conda env",
+            "number": 34,
+            "startedAt": "2026-10-13T22:32:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:32:51Z",
+            "conclusion": "success",
+            "name": "Post Set up Python",
+            "number": 35,
+            "startedAt": "2026-10-13T22:32:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:32:51Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 36,
+            "startedAt": "2026-10-13T22:32:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:32:51Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 37,
+            "startedAt": "2026-10-13T22:32:51Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058233/job/115570238840"
+      },
+      {
+        "completedAt": "2026-10-13T22:19:59Z",
+        "conclusion": "skipped",
+        "databaseId": 115570239685,
+        "name": "Check skipped-commit backlog",
+        "startedAt": "2026-10-13T22:19:59Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058233/job/115570239685"
+      },
+      {
+        "completedAt": "2026-10-13T22:33:13Z",
+        "conclusion": "skipped",
+        "databaseId": 115575214297,
+        "name": "PR full suite",
+        "startedAt": "2026-10-13T22:33:13Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058233/job/115575214297"
+      }
+    ],
+    "log_sha256": "1346d3b3295ea1324e5b8e9c806cdb17984b949d4c5686c72945241703876b54",
+    "step_metadata_discrepancy": "Completed successful jobs retain pending/null Run tests steps in GitHub metadata; independently checked native REST on macOS/Linux. Actual native logs record pytest PASS exit=0 in all six cells. No pending step is rewritten as success."
+  },
+  "hosted_final_browser": {
+    "run_id": 38477058241,
+    "conclusion": "success",
+    "source_commit": "4d15a410a3f8530c1643297cbfc7fcccb42dd895",
+    "suites": 43,
+    "locked_registry_audit": "executed; zero findings",
+    "jobs": [
+      {
+        "completedAt": "2026-10-13T22:37:23Z",
+        "conclusion": "success",
+        "databaseId": 115570238352,
+        "name": "Core E2E",
+        "startedAt": "2026-10-13T22:20:02Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-13T22:20:06Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-13T22:20:03Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:16Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-13T22:20:06Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:55Z",
+            "conclusion": "success",
+            "name": "Setup conda env",
+            "number": 3,
+            "startedAt": "2026-10-13T22:20:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:55Z",
+            "conclusion": "skipped",
+            "name": "Validate and locally tag the exact Viewer source candidate",
+            "number": 4,
+            "startedAt": "2026-10-13T22:20:55Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:01Z",
+            "conclusion": "success",
+            "name": "Install package",
+            "number": 5,
+            "startedAt": "2026-10-13T22:20:55Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:01Z",
+            "conclusion": "skipped",
+            "name": "Remove the temporary Viewer tag after installation",
+            "number": 6,
+            "startedAt": "2026-10-13T22:21:01Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:08Z",
+            "conclusion": "success",
+            "name": "Install JS deps",
+            "number": 7,
+            "startedAt": "2026-10-13T22:21:01Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:08Z",
+            "conclusion": "success",
+            "name": "Audit locked JS dependencies",
+            "number": 8,
+            "startedAt": "2026-10-13T22:21:08Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:11Z",
+            "conclusion": "success",
+            "name": "Build harness and bundle",
+            "number": 9,
+            "startedAt": "2026-10-13T22:21:08Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:13Z",
+            "conclusion": "success",
+            "name": "Verify hosted Chrome",
+            "number": 10,
+            "startedAt": "2026-10-13T22:21:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:37:20Z",
+            "conclusion": "success",
+            "name": "Run core E2E tests",
+            "number": 11,
+            "startedAt": "2026-10-13T22:21:13Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:37:20Z",
+            "conclusion": "skipped",
+            "name": "Run remote preview E2E diagnostics",
+            "number": 12,
+            "startedAt": "2026-10-13T22:37:20Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:37:20Z",
+            "conclusion": "success",
+            "name": "Post Setup conda env",
+            "number": 23,
+            "startedAt": "2026-10-13T22:37:20Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Post Run actions/checkout@v4",
+            "number": 24,
+            "startedAt": "2026-10-13T22:37:20Z",
+            "status": "in_progress"
+          }
+        ],
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058241/job/115570238352"
+      },
+      {
+        "completedAt": "2026-10-13T22:19:59Z",
+        "conclusion": "skipped",
+        "databaseId": 115570239776,
+        "name": "Check skipped-commit backlog",
+        "startedAt": "2026-10-13T22:19:59Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477058241/job/115570239776"
+      }
+    ],
+    "log_sha256": "2727ec59f6dfe4de8cda50dbd2f72fd5b386ae5bc94fe62b93bb168e1a22bff9"
+  },
+  "hosted_final_source_pair": {
+    "run_id": 38477059151,
+    "conclusion": "success",
+    "source_commit": "4d15a410a3f8530c1643297cbfc7fcccb42dd895",
+    "hosts": 3,
+    "log_results": [
+      {
+        "job": "Source pair on macos-15, Python 3.14",
+        "summary": "2026-10-13T22:24:37.1050860Z PASS exit=0 | 3 passed | 3.35s | 1 warnings"
+      },
+      {
+        "job": "Source pair on macos-15, Python 3.14",
+        "summary": "2026-10-13T22:24:42.4060330Z PASS exit=0 | 2 passed | 3.26s"
+      },
+      {
+        "job": "Source pair on macos-15, Python 3.14",
+        "summary": "2026-10-13T22:31:28.6096800Z PASS exit=0 | 3103 passed, 51 skipped, 12 deselected | 403.37s | 1590 warnings"
+      },
+      {
+        "job": "Source pair on ubuntu-latest, Python 3.14",
+        "summary": "2026-10-13T22:22:54.8856967Z PASS exit=0 | 3 passed | 1.98s | 1 warnings"
+      },
+      {
+        "job": "Source pair on ubuntu-latest, Python 3.14",
+        "summary": "2026-10-13T22:23:00.1418221Z PASS exit=0 | 2 passed | 2.70s"
+      },
+      {
+        "job": "Source pair on ubuntu-latest, Python 3.14",
+        "summary": "2026-10-13T22:28:17.0453072Z PASS exit=0 | 3130 passed, 24 skipped, 12 deselected | 313.81s | 1678 warnings"
+      },
+      {
+        "job": "Source pair on ubuntu-latest, Python 3.14",
+        "summary": "2026-10-13T22:44:11.9299395Z [E2E runner:--lane=core] 43/43 suites passed"
+      },
+      {
+        "job": "Source pair on ubuntu-latest, Python 3.14",
+        "summary": "2026-10-13T22:45:00.4842312Z execute_notebooks: 25 notebooks, 25 executed, 0 failed (48s)"
+      },
+      {
+        "job": "Source pair on windows-2025, Python 3.14",
+        "summary": "2026-10-13T22:27:27.6484282Z PASS exit=0 | 3 passed | 3.82s | 1 warnings"
+      },
+      {
+        "job": "Source pair on windows-2025, Python 3.14",
+        "summary": "2026-10-13T22:27:35.4918366Z PASS exit=0 | 2 passed | 4.71s"
+      },
+      {
+        "job": "Source pair on windows-2025, Python 3.14",
+        "summary": "2026-10-13T22:36:43.3782137Z PASS exit=0 | 3103 passed, 51 skipped, 12 deselected | 544.07s | 1590 warnings"
+      }
+    ],
+    "jobs": [
+      {
+        "completedAt": "2026-10-13T22:31:35Z",
+        "conclusion": "success",
+        "databaseId": 115570240967,
+        "name": "Source pair on macos-15, Python 3.14",
+        "startedAt": "2026-10-13T22:20:08Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-13T22:20:10Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-13T22:20:09Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:21Z",
+            "conclusion": "success",
+            "name": "Check out MolSysViewer",
+            "number": 2,
+            "startedAt": "2026-10-13T22:20:10Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:38Z",
+            "conclusion": "success",
+            "name": "Check out the exact MolSysMT source candidate",
+            "number": 3,
+            "startedAt": "2026-10-13T22:20:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:38Z",
+            "conclusion": "success",
+            "name": "Require an exact MolSysMT commit",
+            "number": 4,
+            "startedAt": "2026-10-13T22:20:38Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:47Z",
+            "conclusion": "success",
+            "name": "Select MolSysMT's pinned Rust toolchain",
+            "number": 5,
+            "startedAt": "2026-10-13T22:20:38Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:47Z",
+            "conclusion": "success",
+            "name": "Create the Python 3.14 source-pair environment",
+            "number": 6,
+            "startedAt": "2026-10-13T22:20:47Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:47Z",
+            "conclusion": "skipped",
+            "name": "Validate and locally tag the exact Viewer source candidate",
+            "number": 7,
+            "startedAt": "2026-10-13T22:21:47Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:47Z",
+            "conclusion": "success",
+            "name": "Locally tag the exact MolSysMT candidate version",
+            "number": 8,
+            "startedAt": "2026-10-13T22:21:47Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:24:16Z",
+            "conclusion": "success",
+            "name": "Install both exact source candidates",
+            "number": 9,
+            "startedAt": "2026-10-13T22:21:47Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:24:16Z",
+            "conclusion": "skipped",
+            "name": "Remove the temporary Viewer tag after installation",
+            "number": 10,
+            "startedAt": "2026-10-13T22:24:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:24:16Z",
+            "conclusion": "skipped",
+            "name": "Remove the temporary MolSysMT tag after installation",
+            "number": 11,
+            "startedAt": "2026-10-13T22:24:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:24:26Z",
+            "conclusion": "success",
+            "name": "Install JavaScript test dependencies",
+            "number": 12,
+            "startedAt": "2026-10-13T22:24:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:24:30Z",
+            "conclusion": "success",
+            "name": "Synchronize the development runtime before source validation",
+            "number": 13,
+            "startedAt": "2026-10-13T22:24:26Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:24:30Z",
+            "conclusion": "success",
+            "name": "Audit dependency routes and the installed exact source provider",
+            "number": 14,
+            "startedAt": "2026-10-13T22:24:30Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:24:31Z",
+            "conclusion": "success",
+            "name": "Check installed Rust and viewer resources",
+            "number": 15,
+            "startedAt": "2026-10-13T22:24:30Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:24:31Z",
+            "conclusion": "success",
+            "name": "Record published pytest tool versions",
+            "number": 16,
+            "startedAt": "2026-10-13T22:24:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:24:38Z",
+            "conclusion": "success",
+            "name": "Guard native MolSysMT paths in the installed pair",
+            "number": 17,
+            "startedAt": "2026-10-13T22:24:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:24:43Z",
+            "conclusion": "success",
+            "name": "Test MolSysMT integration against the installed pair",
+            "number": 18,
+            "startedAt": "2026-10-13T22:24:38Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:31:31Z",
+            "conclusion": "success",
+            "name": "Run MolSysViewer Python tests",
+            "number": 19,
+            "startedAt": "2026-10-13T22:24:43Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:31:31Z",
+            "conclusion": "skipped",
+            "name": "Register the exact source-pair notebook kernel",
+            "number": 20,
+            "startedAt": "2026-10-13T22:31:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:31:31Z",
+            "conclusion": "skipped",
+            "name": "Build the source-pair browser runtime and harness",
+            "number": 21,
+            "startedAt": "2026-10-13T22:31:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:31:31Z",
+            "conclusion": "skipped",
+            "name": "Verify the hosted source-pair browser",
+            "number": 22,
+            "startedAt": "2026-10-13T22:31:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:31:31Z",
+            "conclusion": "skipped",
+            "name": "Run all core browser suites against the exact source pair",
+            "number": 23,
+            "startedAt": "2026-10-13T22:31:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:31:31Z",
+            "conclusion": "skipped",
+            "name": "Execute every documented notebook against the exact source pair",
+            "number": 24,
+            "startedAt": "2026-10-13T22:31:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:31:31Z",
+            "conclusion": "skipped",
+            "name": "Preserve source-pair notebook failure logs",
+            "number": 25,
+            "startedAt": "2026-10-13T22:31:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:31:31Z",
+            "conclusion": "success",
+            "name": "Post Create the Python 3.14 source-pair environment",
+            "number": 48,
+            "startedAt": "2026-10-13T22:31:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:31:32Z",
+            "conclusion": "success",
+            "name": "Post Check out the exact MolSysMT source candidate",
+            "number": 49,
+            "startedAt": "2026-10-13T22:31:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:31:33Z",
+            "conclusion": "success",
+            "name": "Post Check out MolSysViewer",
+            "number": 50,
+            "startedAt": "2026-10-13T22:31:32Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:31:34Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 51,
+            "startedAt": "2026-10-13T22:31:33Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477059151/job/115570240967"
+      },
+      {
+        "completedAt": "2026-10-13T22:45:03Z",
+        "conclusion": "success",
+        "databaseId": 115570241124,
+        "name": "Source pair on ubuntu-latest, Python 3.14",
+        "startedAt": "2026-10-13T22:20:02Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-13T22:20:05Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-13T22:20:03Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:14Z",
+            "conclusion": "success",
+            "name": "Check out MolSysViewer",
+            "number": 2,
+            "startedAt": "2026-10-13T22:20:05Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:31Z",
+            "conclusion": "success",
+            "name": "Check out the exact MolSysMT source candidate",
+            "number": 3,
+            "startedAt": "2026-10-13T22:20:14Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:31Z",
+            "conclusion": "success",
+            "name": "Require an exact MolSysMT commit",
+            "number": 4,
+            "startedAt": "2026-10-13T22:20:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:38Z",
+            "conclusion": "success",
+            "name": "Select MolSysMT's pinned Rust toolchain",
+            "number": 5,
+            "startedAt": "2026-10-13T22:20:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:16Z",
+            "conclusion": "success",
+            "name": "Create the Python 3.14 source-pair environment",
+            "number": 6,
+            "startedAt": "2026-10-13T22:20:38Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:16Z",
+            "conclusion": "skipped",
+            "name": "Validate and locally tag the exact Viewer source candidate",
+            "number": 7,
+            "startedAt": "2026-10-13T22:21:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:21:16Z",
+            "conclusion": "success",
+            "name": "Locally tag the exact MolSysMT candidate version",
+            "number": 8,
+            "startedAt": "2026-10-13T22:21:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:22:41Z",
+            "conclusion": "success",
+            "name": "Install both exact source candidates",
+            "number": 9,
+            "startedAt": "2026-10-13T22:21:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:22:41Z",
+            "conclusion": "skipped",
+            "name": "Remove the temporary Viewer tag after installation",
+            "number": 10,
+            "startedAt": "2026-10-13T22:22:41Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:22:41Z",
+            "conclusion": "skipped",
+            "name": "Remove the temporary MolSysMT tag after installation",
+            "number": 11,
+            "startedAt": "2026-10-13T22:22:41Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:22:47Z",
+            "conclusion": "success",
+            "name": "Install JavaScript test dependencies",
+            "number": 12,
+            "startedAt": "2026-10-13T22:22:41Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:22:50Z",
+            "conclusion": "success",
+            "name": "Synchronize the development runtime before source validation",
+            "number": 13,
+            "startedAt": "2026-10-13T22:22:47Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:22:50Z",
+            "conclusion": "success",
+            "name": "Audit dependency routes and the installed exact source provider",
+            "number": 14,
+            "startedAt": "2026-10-13T22:22:50Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:22:51Z",
+            "conclusion": "success",
+            "name": "Check installed Rust and viewer resources",
+            "number": 15,
+            "startedAt": "2026-10-13T22:22:50Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:22:51Z",
+            "conclusion": "success",
+            "name": "Record published pytest tool versions",
+            "number": 16,
+            "startedAt": "2026-10-13T22:22:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:22:56Z",
+            "conclusion": "success",
+            "name": "Guard native MolSysMT paths in the installed pair",
+            "number": 17,
+            "startedAt": "2026-10-13T22:22:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:23:01Z",
+            "conclusion": "success",
+            "name": "Test MolSysMT integration against the installed pair",
+            "number": 18,
+            "startedAt": "2026-10-13T22:22:56Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:28:19Z",
+            "conclusion": "success",
+            "name": "Run MolSysViewer Python tests",
+            "number": 19,
+            "startedAt": "2026-10-13T22:23:01Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:28:19Z",
+            "conclusion": "success",
+            "name": "Register the exact source-pair notebook kernel",
+            "number": 20,
+            "startedAt": "2026-10-13T22:28:19Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:28:21Z",
+            "conclusion": "success",
+            "name": "Build the source-pair browser runtime and harness",
+            "number": 21,
+            "startedAt": "2026-10-13T22:28:19Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:28:21Z",
+            "conclusion": "success",
+            "name": "Verify the hosted source-pair browser",
+            "number": 22,
+            "startedAt": "2026-10-13T22:28:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:44:12Z",
+            "conclusion": "success",
+            "name": "Run all core browser suites against the exact source pair",
+            "number": 23,
+            "startedAt": "2026-10-13T22:28:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:45:00Z",
+            "conclusion": "success",
+            "name": "Execute every documented notebook against the exact source pair",
+            "number": 24,
+            "startedAt": "2026-10-13T22:44:12Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:45:00Z",
+            "conclusion": "skipped",
+            "name": "Preserve source-pair notebook failure logs",
+            "number": 25,
+            "startedAt": "2026-10-13T22:45:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:45:00Z",
+            "conclusion": "success",
+            "name": "Post Create the Python 3.14 source-pair environment",
+            "number": 48,
+            "startedAt": "2026-10-13T22:45:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:45:00Z",
+            "conclusion": "success",
+            "name": "Post Check out the exact MolSysMT source candidate",
+            "number": 49,
+            "startedAt": "2026-10-13T22:45:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:45:00Z",
+            "conclusion": "success",
+            "name": "Post Check out MolSysViewer",
+            "number": 50,
+            "startedAt": "2026-10-13T22:45:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:45:00Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 51,
+            "startedAt": "2026-10-13T22:45:00Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477059151/job/115570241124"
+      },
+      {
+        "completedAt": "2026-10-13T22:36:51Z",
+        "conclusion": "success",
+        "databaseId": 115570241228,
+        "name": "Source pair on windows-2025, Python 3.14",
+        "startedAt": "2026-10-13T22:20:03Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-13T22:20:06Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-13T22:20:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:25Z",
+            "conclusion": "success",
+            "name": "Check out MolSysViewer",
+            "number": 2,
+            "startedAt": "2026-10-13T22:20:06Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:46Z",
+            "conclusion": "success",
+            "name": "Check out the exact MolSysMT source candidate",
+            "number": 3,
+            "startedAt": "2026-10-13T22:20:25Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:46Z",
+            "conclusion": "success",
+            "name": "Require an exact MolSysMT commit",
+            "number": 4,
+            "startedAt": "2026-10-13T22:20:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:20:57Z",
+            "conclusion": "success",
+            "name": "Select MolSysMT's pinned Rust toolchain",
+            "number": 5,
+            "startedAt": "2026-10-13T22:20:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:23:14Z",
+            "conclusion": "success",
+            "name": "Create the Python 3.14 source-pair environment",
+            "number": 6,
+            "startedAt": "2026-10-13T22:20:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:23:14Z",
+            "conclusion": "skipped",
+            "name": "Validate and locally tag the exact Viewer source candidate",
+            "number": 7,
+            "startedAt": "2026-10-13T22:23:14Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:23:15Z",
+            "conclusion": "success",
+            "name": "Locally tag the exact MolSysMT candidate version",
+            "number": 8,
+            "startedAt": "2026-10-13T22:23:14Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:26:47Z",
+            "conclusion": "success",
+            "name": "Install both exact source candidates",
+            "number": 9,
+            "startedAt": "2026-10-13T22:23:15Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:26:48Z",
+            "conclusion": "skipped",
+            "name": "Remove the temporary Viewer tag after installation",
+            "number": 10,
+            "startedAt": "2026-10-13T22:26:48Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:26:48Z",
+            "conclusion": "skipped",
+            "name": "Remove the temporary MolSysMT tag after installation",
+            "number": 11,
+            "startedAt": "2026-10-13T22:26:48Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:27:10Z",
+            "conclusion": "success",
+            "name": "Install JavaScript test dependencies",
+            "number": 12,
+            "startedAt": "2026-10-13T22:26:48Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:27:18Z",
+            "conclusion": "success",
+            "name": "Synchronize the development runtime before source validation",
+            "number": 13,
+            "startedAt": "2026-10-13T22:27:10Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:27:19Z",
+            "conclusion": "success",
+            "name": "Audit dependency routes and the installed exact source provider",
+            "number": 14,
+            "startedAt": "2026-10-13T22:27:18Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:27:20Z",
+            "conclusion": "success",
+            "name": "Check installed Rust and viewer resources",
+            "number": 15,
+            "startedAt": "2026-10-13T22:27:19Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:27:21Z",
+            "conclusion": "success",
+            "name": "Record published pytest tool versions",
+            "number": 16,
+            "startedAt": "2026-10-13T22:27:20Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:27:29Z",
+            "conclusion": "success",
+            "name": "Guard native MolSysMT paths in the installed pair",
+            "number": 17,
+            "startedAt": "2026-10-13T22:27:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:27:37Z",
+            "conclusion": "success",
+            "name": "Test MolSysMT integration against the installed pair",
+            "number": 18,
+            "startedAt": "2026-10-13T22:27:29Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:36:45Z",
+            "conclusion": "success",
+            "name": "Run MolSysViewer Python tests",
+            "number": 19,
+            "startedAt": "2026-10-13T22:27:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:36:45Z",
+            "conclusion": "skipped",
+            "name": "Register the exact source-pair notebook kernel",
+            "number": 20,
+            "startedAt": "2026-10-13T22:36:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:36:45Z",
+            "conclusion": "skipped",
+            "name": "Build the source-pair browser runtime and harness",
+            "number": 21,
+            "startedAt": "2026-10-13T22:36:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:36:45Z",
+            "conclusion": "skipped",
+            "name": "Verify the hosted source-pair browser",
+            "number": 22,
+            "startedAt": "2026-10-13T22:36:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:36:45Z",
+            "conclusion": "skipped",
+            "name": "Run all core browser suites against the exact source pair",
+            "number": 23,
+            "startedAt": "2026-10-13T22:36:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:36:45Z",
+            "conclusion": "skipped",
+            "name": "Execute every documented notebook against the exact source pair",
+            "number": 24,
+            "startedAt": "2026-10-13T22:36:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:36:45Z",
+            "conclusion": "skipped",
+            "name": "Preserve source-pair notebook failure logs",
+            "number": 25,
+            "startedAt": "2026-10-13T22:36:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:36:45Z",
+            "conclusion": "success",
+            "name": "Post Create the Python 3.14 source-pair environment",
+            "number": 48,
+            "startedAt": "2026-10-13T22:36:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:36:48Z",
+            "conclusion": "success",
+            "name": "Post Check out the exact MolSysMT source candidate",
+            "number": 49,
+            "startedAt": "2026-10-13T22:36:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:36:50Z",
+            "conclusion": "success",
+            "name": "Post Check out MolSysViewer",
+            "number": 50,
+            "startedAt": "2026-10-13T22:36:48Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-13T22:36:50Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 51,
+            "startedAt": "2026-10-13T22:36:50Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38477059151/job/115570241228"
+      }
+    ],
+    "log_sha256": "755080fa36fc9ea046f4116f309fdc9ef14a7b6a7bbbfd7dbe0eb569133fd463"
+  },
+  "required_core_source_result": "success on 4d15a410: six regression cells, three Python 3.14 hosts, official core 43/43 and 25/25 notebooks; experimental Qt fails separately",
+  "evidence_scope_note": "The final hosted result closes final source regression. Earlier local full failure and before-clear browser scope remain unchanged. No installed-pair, live Jupyter, version freeze or publication qualification is inferred."
 }
