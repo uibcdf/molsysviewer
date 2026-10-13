@@ -7,10 +7,14 @@ bridge contracts and Chromium PNG remain core. Actual collection/selection,
 backlog and release guards pass 18/18; full core passes 3,095 with 21 skips,
 zero failures/errors and 12 native Qt cases classified separately. Final devguide guards pass 242/242. New hosted
 evidence retains its own scope in [the receiving receipt](core_qt_qualification_20261013.json).
+Source is integrated in `46527392`; #231 is closed and the board agrees. New
+scientific/source-pair/core/Qt workflows are separate. Policy 38370977225 found
+two formatting-only blank lines in the new guard; the AST-equivalent correction
+passes all 911 format checks and gets its own exact policy verification.
 The previous exact source f272e384 has terminal scientific 6/6, Python 3.14 hosts
 3/3, hosted core 43/43 and notebooks 25/25. Its official CI conclusion remains
 failure on experimental Qt WebGL; the old verdict is preserved. Next: complete
-this wiring review and broad documentation, then an authorized exact 0.25.0
+fresh source/policy evidence and broad documentation, then an authorized exact 0.25.0
 candidate, its installed qualification and final human first contact. Both 1.0 publications remain paused.
 
 **Integrated scientific/resource review — 2026-10-10:** #200 and #228–#230

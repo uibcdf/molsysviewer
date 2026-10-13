@@ -149,3 +149,8 @@ Python 3.14 hosts 3/3, core 43/43 and notebooks 25/25. Qt's official failure is
 retained. The new wiring needs its own source evidence; neither result freezes
 a producer or qualifies package bytes. Broad docs precede the next authorized
 candidate preparation; qualify its exact files before installed first contact.
+
+Source `46527392` integrates #231; local full core has 3,095 passed, 21 skips
+and zero failures. Final devguide guards pass 242/242. The formatting-only
+followup preserves the test AST and separately verifies policy; new required
+hosted source outcomes are retained independently of old f272e384 results.

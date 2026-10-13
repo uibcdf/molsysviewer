@@ -1,6 +1,6 @@
 {
   "date": "2026-10-13",
-  "state": "local_validation_complete",
+  "state": "integrated_and_issue_closed",
   "issue": "uibcdf/molsysviewer#231",
   "base_commit": "a61b75bc994e3ad674c3e7eafe53bb6b2a989c5f",
   "previous_source_terminal_ci": {
@@ -276,5 +276,89 @@
       "sha256": "b2127b66fb73c2ec3cfbe9c749028806480beebbe0e9ff350c4dba071514e755",
       "reason": "opening issue delivered and owning report archived; exact draft no longer needed"
     }
+  ],
+  "source_integration": {
+    "commit": "46527392e4029816a9ee1efcb33f2727439df0b9",
+    "branch": "main",
+    "direct_push": true
+  },
+  "board_check": {
+    "exit_code": 0,
+    "result": "28 documents agree with the board",
+    "issue_closed": 231
+  },
+  "hosted_source_ci": {
+    "source_commit": "46527392e4029816a9ee1efcb33f2727439df0b9",
+    "inspected_at": "2026-10-13T08:47:23.755151+00:00",
+    "runs": [
+      {
+        "conclusion": "",
+        "databaseId": 38370976318,
+        "headSha": "46527392e4029816a9ee1efcb33f2727439df0b9",
+        "name": "CI_e2e",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38370976318"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38370976385,
+        "headSha": "46527392e4029816a9ee1efcb33f2727439df0b9",
+        "name": "Experimental Qt diagnostics",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38370976385"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38370976346,
+        "headSha": "46527392e4029816a9ee1efcb33f2727439df0b9",
+        "name": "CI",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38370976346"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38370976339,
+        "headSha": "46527392e4029816a9ee1efcb33f2727439df0b9",
+        "name": "Python 3.14 source pair",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38370976339"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38370977474,
+        "headSha": "46527392e4029816a9ee1efcb33f2727439df0b9",
+        "name": "Conda publication governance",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38370977474"
+      },
+      {
+        "conclusion": "failure",
+        "databaseId": 38370977225,
+        "headSha": "46527392e4029816a9ee1efcb33f2727439df0b9",
+        "name": "MolSysSuite policy",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38370977225"
+      }
+    ],
+    "scope": "new source; pending core results are not inferred from f272e384"
+  },
+  "format_followup": {
+    "failed_policy_run": 38370977225,
+    "failed_step": "Check Python formatting",
+    "file": "tests/test_core_qt_gates.py",
+    "change": "two blank lines around a local helper definition",
+    "ast_equal": true,
+    "format_check": {
+      "files": 911,
+      "exit_code": 0
+    },
+    "dedicated_hosted_policy": "pending exact followup dispatch",
+    "full_core_not_repeated": true
+  },
+  "pending": [
+    "dedicated exact policy followup",
+    "new source scientific/Python314/core/notebook CI",
+    "broad docs",
+    "later authorized candidate/installed first contact/publication"
   ]
 }

@@ -57,8 +57,10 @@ def test_actual_core_and_qt_collection_keep_contract_and_chromium_checks():
 
 def test_workflows_use_the_same_scope_and_keep_qt_failure_visible():
     workflow_root = ROOT / ".github/workflows"
+
     def load(name):
         return yaml.load((workflow_root / name).read_text(), Loader=yaml.BaseLoader)
+
     ci = load("CI.yaml")
     qt = load("CI_qt_experimental.yaml")
     pair = load("ci-python-314-source-pair.yaml")
