@@ -54,12 +54,17 @@ def fixture_event(view, event):
 
 
 def main():
-    msv.addons.register(AddonSpec(
-        name="geometry-review",
-        workspaces=(AddonWorkspaceSpec(id="geometry-review", title="Geometry Review", entry_panel="geometry"),),
-        panels=(AddonPanelSpec(id="geometry", title="Geometry",
-            widget_class="shape_only_workspace_fixture.WorkspacePanel"),),
-    ))
+    msv.addons.register(
+        AddonSpec(
+            name="geometry-review",
+            workspaces=(AddonWorkspaceSpec(id="geometry-review", title="Geometry Review", entry_panel="geometry"),),
+            panels=(
+                AddonPanelSpec(
+                    id="geometry", title="Geometry", widget_class="shape_only_workspace_fixture.WorkspacePanel"
+                ),
+            ),
+        )
+    )
     view = msv.MolSysView(viewer_mode="integrated", controls_mode="classic")
     # Start genuinely empty; registration/activation is tested after mounting.
     runpy.run_path(str(Path(__file__).with_name("canvas-popup-bridge.py")))["serve"](view, fixture_event)

@@ -2,7 +2,7 @@
   "date": "2026-10-13",
   "scope": "Development source/runtime qualification; adapted notebook transport, actual Python/public addon API, real Mol*/Chromium and production popup boot. Not installed artifact or live Jupyter/provider certification.",
   "source_parent": "668417af116870dd9ad03c2a530ba15cd74c9701",
-  "integrated_source_commit": null,
+  "integrated_source_commit": "e7e21a792bafe064ad0e54072db19fdd4925e037",
   "issue": "uibcdf/molsysviewer#240",
   "environment": {
     "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
@@ -152,7 +152,83 @@
   },
   "ruff": "All changed Python files pass",
   "source_ci_receiving": {
-    "state": "not_dispatched_yet",
-    "scope": "Fresh canonical source gates will be received after direct main integration; local source results are not hosted/installed-artifact qualification."
+    "observed_at_utc": "2026-10-13T19:35:24.963288+00:00",
+    "source_commit": "e7e21a792bafe064ad0e54072db19fdd4925e037",
+    "runs": [
+      {
+        "conclusion": "",
+        "databaseId": 38455422680,
+        "headSha": "e7e21a792bafe064ad0e54072db19fdd4925e037",
+        "status": "queued",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38455422680",
+        "workflowName": "Python 3.14 source pair"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38455420755,
+        "headSha": "e7e21a792bafe064ad0e54072db19fdd4925e037",
+        "status": "queued",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38455420755",
+        "workflowName": "CI"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38455420730,
+        "headSha": "e7e21a792bafe064ad0e54072db19fdd4925e037",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38455420730",
+        "workflowName": "Ruff Lint"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38455420707,
+        "headSha": "e7e21a792bafe064ad0e54072db19fdd4925e037",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38455420707",
+        "workflowName": "Documentation notebooks"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38455420721,
+        "headSha": "e7e21a792bafe064ad0e54072db19fdd4925e037",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38455420721",
+        "workflowName": "Experimental Qt diagnostics"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 38455420870,
+        "headSha": "e7e21a792bafe064ad0e54072db19fdd4925e037",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38455420870",
+        "workflowName": "CI_e2e"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38455422806,
+        "headSha": "e7e21a792bafe064ad0e54072db19fdd4925e037",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38455422806",
+        "workflowName": "Conda publication governance"
+      },
+      {
+        "conclusion": "failure",
+        "databaseId": 38455421322,
+        "headSha": "e7e21a792bafe064ad0e54072db19fdd4925e037",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38455421322",
+        "workflowName": "MolSysSuite policy"
+      }
+    ],
+    "scope": "Exact e7e21a79 source campaigns. Policy formatting failure is preserved; other pending gates are not qualification."
+  },
+  "formatting_followup": {
+    "file": "molsysviewer/js/tests/e2e/shape_only_workspace_fixture.py",
+    "ast_equal": true,
+    "ast_sha256": "5849ddf45ba724c7346246d0b6a1dc68b4d16f788ebf932342aecabc25733f2a",
+    "failed_policy_run": 38455421322,
+    "diagnosis": "Ruff formatting only; one fixture file. Lint and all functional source guards already passed.",
+    "runtime_unchanged": true,
+    "local_lint_and_format": "pass on all three changed Python files"
   }
 }

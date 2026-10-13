@@ -49,7 +49,11 @@ checks and Ruff pass; one full core browser invocation passes 43/43, and Python
 core passes 3,105 with 21 recorded skips, zero failures/errors and experimental
 Qt excluded by the canonical mark. Fresh source CI retains separate
 [receiving](shape_only_canvas_workspace_validation_20261013.json).
-No live Jupyter/provider or installed-package claim is inferred.
+Functional source is integrated at `e7e21a79`; #240 and #244 are closed.
+Its first hosted policy run rejects formatting in one test fixture; the correction
+passes local lint/format checks with identical AST and unchanged runtime bytes.
+Fresh source campaigns retain exact identities in the receipt. No live
+Jupyter/provider or installed-package claim is inferred.
 
 **Canvas popup parity — 2026-10-13:** #232 implements the
 [shared popup contract](canvas_popup_contract.md): the runtime actually used by
