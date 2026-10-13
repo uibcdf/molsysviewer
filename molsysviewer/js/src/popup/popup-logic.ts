@@ -16,6 +16,7 @@ import { ArrayNativeStreamReceiver } from "../messages/array-native-stream";
 import { popupActionAllows } from "../messages/runtime-actions";
 import { mountControls } from "../ui/controls";
 import { createLocalUiModel } from "../ui/local-ui-model";
+import { trajectorySyncToAuthority } from "../messages/trajectory-intent";
 
 /** Boot the popup through the same imported runtime module as its host. */
 export const bootPopup = async (loadedModule?: any) => {
@@ -118,67 +119,11 @@ export const bootPopup = async (loadedModule?: any) => {
         try { openerWin.postMessage(encodePopupMessage(popupChannel, envelope), targetOrigin); } catch (e) {}
     };
 
-    // Inject minimal styles for the trajectory slider to match the host look
-    const injectSliderStyles = () => {
-        if (document.getElementById("molsysviewer-pop-slider-style")) return;
-        const css = `
-            .molsysviewer-slider {
-                background: transparent;
-                height: 16px;
-                border-radius: 999px;
-                overflow: visible;
-            }
-            .molsysviewer-slider::-webkit-slider-runnable-track {
-                background: rgba(200,200,200,0.35) !important;
-                height: 16px;
-                border-radius: 999px;
-            }
-            .molsysviewer-slider::-moz-range-track {
-                background: rgba(200,200,200,0.35) !important;
-                height: 16px;
-                border-radius: 999px;
-            }
-            .molsysviewer-slider::-ms-track {
-                background: rgba(200,200,200,0.35) !important;
-                height: 16px;
-                border-radius: 999px;
-                border: none;
-                color: transparent;
-            }
-            .molsysviewer-slider::-webkit-slider-thumb {
-                -webkit-appearance: none !important;
-                appearance: none !important;
-                width: 16px;
-                height: 16px;
-                border-radius: 50% !important;
-                background: rgb(80,80,80) !important;
-                border: none !important;
-                box-shadow: none !important;
-                margin-top: 0px;
-            }
-            .molsysviewer-slider::-moz-range-thumb {
-                width: 16px;
-                height: 16px;
-                border-radius: 50% !important;
-                background: rgb(80,80,80) !important;
-                border: none !important;
-            }
-            .molsysviewer-slider::-ms-thumb {
-                width: 16px;
-                height: 16px;
-                border-radius: 50% !important;
-                background: rgb(80,80,80) !important;
-                border: none !important;
-            }
-        `;
-        const el = document.createElement("style");
-        el.id = "molsysviewer-pop-slider-style";
-        el.textContent = css;
-        document.head.appendChild(el);
-    };
-    injectSliderStyles();
-
     const container = document.getElementById("molsysviewer-pop");
+    if (container) {
+        container.tabIndex = 0;
+        Object.assign(container.style, { touchAction: "none", outline: "none", cursor: "default" });
+    }
     const loading = document.getElementById("molsysviewer-loading");
     let isUserInteracting = false; // Only send camera updates when user is interacting
     let wheelTimeout: any = null;
@@ -235,7 +180,28 @@ export const bootPopup = async (loadedModule?: any) => {
         },
     );
 
-    const uiModel = createLocalUiModel({ panel_mode_style: initOptions.panelModeStyle || "integrated" });
+    let applyingHostState = false;
+    let pendingUiSave = false;
+    const uiModel = createLocalUiModel({
+        viewer_mode: initOptions.viewerMode || "integrated",
+        controls_mode: initOptions.controlsMode || "minimal",
+        panel_mode_style: initOptions.panelModeStyle || "integrated",
+        ...initOptions.uiState,
+        // A separate Studio window always uses its own split shell.
+        ...(initOptions.isPanelOnly ? { panel_mode_style: "split" } : {}),
+    }, () => {
+        if (applyingHostState || pendingUiSave) return;
+        pendingUiSave = true;
+        queueMicrotask(() => {
+            pendingUiSave = false;
+            if (!applyingHostState) sendToHost("molsysviewer-popup-ui", ctrlUiState());
+        });
+    });
+    const ctrlUiState = () => Object.fromEntries([
+        "viewer_mode", "controls_mode", "panel_mode_style", "show_controls", "autohide_controls",
+        "autohide_scope", "controls_position", "controls_position_fullscreen",
+    ].filter(trait => !initOptions.isPanelOnly || trait !== "panel_mode_style")
+        .map(trait => [trait, uiModel.get(trait)]));
     const updateControlsUi = (data: any) => {
         for (const [field, trait] of Object.entries({
             autohide: "autohide_controls", autohideScope: "autohide_scope", showControls: "show_controls",
@@ -254,7 +220,18 @@ export const bootPopup = async (loadedModule?: any) => {
             } else {
                 sendToHost("molsysviewer-log-from-popout", msg);
             }
-        }, undefined, { ...initOptions, model: uiModel });
+        }, undefined, { ...initOptions, model: uiModel,
+            onPanelPopClick: initOptions.enablePanelPopout && !initOptions.isPanelOnly
+                ? () => {
+                    if (openerWin.closed) return;
+                    const size = ctrl.getPanelPopupSize();
+                    // Reserve on the click itself; a later postMessage handler
+                    // cannot rely on the browser retaining user activation.
+                    (window as any).__molsysviewer_pending_panel_window = window.open(
+                        "", "_blank", `width=${size.width},height=${size.height}`);
+                    sendToHost("molsysviewer-popup-panel", { panel: ctrl.getActivePanel() });
+                } : undefined,
+        });
 
         if (initOptions.isPanelOnly) {
             ctrl.setCanvasVisibility(false);
@@ -343,6 +320,8 @@ export const bootPopup = async (loadedModule?: any) => {
         // We need to await the controller promise created above
         const ctrl = await popControllerPromise;
 
+        applyingHostState = type === "molsysviewer-initial-sync"
+            || type === "molsysviewer-sync-ui" || type === "molsysviewer-sync-autohide";
         try {
             switch (type) {
                 case "molsysviewer-initial-sync":
@@ -356,6 +335,9 @@ export const bootPopup = async (loadedModule?: any) => {
                             await ctrl.handleMessage(msg);
                         }
                     }
+                    if (Number.isInteger(data.trajectoryFrame) && data.trajectoryFrame >= 0) {
+                        await ctrl.setTrajectoryFrame(data.trajectoryFrame);
+                    }
                     if (data.cameraSnapshot) {
                         ctrl.setCameraSnapshot(data.cameraSnapshot, 0);
                     }
@@ -366,10 +348,12 @@ export const bootPopup = async (loadedModule?: any) => {
                     // Sync UI state
                     if (data.viewerMode) ctrl.setViewerMode(data.viewerMode);
                     if (data.controlsMode) ctrl.setControlsMode(data.controlsMode);
-                    if (data.panelModeStyle) ctrl.setPanelModeStyle(data.panelModeStyle);
+                    if (initOptions.isPanelOnly) ctrl.setPanelModeStyle("split");
+                    else if (data.panelModeStyle) ctrl.setPanelModeStyle(data.panelModeStyle);
                     if (ctrl.sharedShell) {
                         if (data.isAmbient !== undefined) ctrl.sharedShell.setAmbient(data.isAmbient);
-                        if (data.isSplit !== undefined) ctrl.sharedShell.setSplit(data.isSplit);
+                        if (initOptions.isPanelOnly) ctrl.sharedShell.setSplit(true);
+                        else if (data.isSplit !== undefined) ctrl.sharedShell.setSplit(data.isSplit);
                     }
 
                     // Sync autohide state
@@ -382,10 +366,12 @@ export const bootPopup = async (loadedModule?: any) => {
                     updateControlsUi(data);
                     if (data.viewerMode) ctrl.setViewerMode(data.viewerMode);
                     if (data.controlsMode) ctrl.setControlsMode(data.controlsMode);
-                    if (data.panelModeStyle) ctrl.setPanelModeStyle(data.panelModeStyle);
+                    if (initOptions.isPanelOnly) ctrl.setPanelModeStyle("split");
+                    else if (data.panelModeStyle) ctrl.setPanelModeStyle(data.panelModeStyle);
                     if (ctrl.sharedShell) {
                         if (data.isAmbient !== undefined) ctrl.sharedShell.setAmbient(data.isAmbient);
-                        if (data.isSplit !== undefined) ctrl.sharedShell.setSplit(data.isSplit);
+                        if (initOptions.isPanelOnly) ctrl.sharedShell.setSplit(true);
+                        else if (data.isSplit !== undefined) ctrl.sharedShell.setSplit(data.isSplit);
                     }
                     break;
 
@@ -425,6 +411,8 @@ export const bootPopup = async (loadedModule?: any) => {
             }
         } catch (e) {
             console.error("Popout sync error", e);
+        } finally {
+            applyingHostState = false;
         }
     };
     let popupInboundQueue = Promise.resolve();
@@ -439,7 +427,14 @@ export const bootPopup = async (loadedModule?: any) => {
     const controlsProvider = loadedModule?.mountControls || mountControls;
     const ctrl = await popControllerPromise;
     if (!initOptions.isPanelOnly) controlsProvider(ctrl, uiModel,
-        (msg: any) => sendToHost("molsysviewer-sync-op", msg), container!, () => window.close(),
+        (msg: any) => {
+            const authorityAction = trajectorySyncToAuthority(msg);
+            if (authorityAction && initOptions.hasAuthority !== false) {
+                sendToHost("molsysviewer-popup-interaction", authorityAction);
+            } else {
+                sendToHost("molsysviewer-sync-op", msg);
+            }
+        }, container!, () => window.close(),
         { popupButtonTitle: "Close popup" });
     // Notify host
     sendToHost(initOptions.isPanelOnly ? "molsysviewer-panel-ready" : "molsysviewer-pop-ready", null);

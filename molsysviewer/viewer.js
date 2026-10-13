@@ -140832,13 +140832,17 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
   const onHelpKey = (ev) => {
     if (ev.target?.closest?.("input, textarea, [contenteditable]")) return;
     if (!container.contains(ev.target)) return;
-    if (ev.key.toLowerCase() === "h") {
+    if (ev.key.toLowerCase() === "v") {
+      ev.preventDefault();
+      ev.stopPropagation();
+      c8.setCanvasVisibility(c8.canvasHost.style.display === "none");
+    } else if (ev.key.toLowerCase() === "h") {
       ev.preventDefault();
       ev.stopPropagation();
       helpOverlay.toggle();
     }
   };
-  listen(window, "keydown", onHelpKey, true);
+  listen(container, "keydown", onHelpKey, true);
   if (isCinema) {
     const toast = document.createElement("div");
     toast.textContent = "Cinema Mode active. Press N/W for panels, H for help.";
@@ -166881,6 +166885,21 @@ var MolSysViewerController = class _MolSysViewerController {
   getControlsMode() {
     return this.model ? this.model.get("controls_mode") || "classic" : this.localControlsMode;
   }
+  /** Initial UI projection for another canvas of this session. */
+  getCanvasUiState() {
+    return {
+      viewer_mode: this.getViewerMode(),
+      controls_mode: this.getControlsMode(),
+      panel_mode_style: this.getPanelModeStyle(),
+      ...Object.fromEntries([
+        "show_controls",
+        "autohide_controls",
+        "autohide_scope",
+        "controls_position",
+        "controls_position_fullscreen"
+      ].filter((trait) => this.model?.get(trait) !== void 0).map((trait) => [trait, this.model.get(trait)]))
+    };
+  }
   getPanelModeStyle() {
     return this.model ? this.model.get("panel_mode_style") || "drawer" : this.localPanelModeStyle;
   }
@@ -166888,6 +166907,12 @@ var MolSysViewerController = class _MolSysViewerController {
     if (this.groupPanel.isExpanded()) return "navigate";
     if (this.addonsPanel.isExpanded()) return "addons";
     return null;
+  }
+  canPopoutPanel() {
+    return !!this.initOptions?.onPanelPopClick;
+  }
+  hasPythonAuthority() {
+    return this.initOptions?.hasAuthority !== false;
   }
   saveHostPanelState() {
     if (this.sharedShell) {
@@ -169616,6 +169641,26 @@ var MolSysViewerController = class _MolSysViewerController {
   }
 };
 
+// src/messages/trajectory-intent.ts
+function trajectorySyncToAuthority(msg) {
+  if (msg.op === "set_trajectory_frame") {
+    return { event: "interaction_context_action", action: msg.op, index: msg.index };
+  }
+  if (msg.op === "step_trajectory") {
+    return { event: "interaction_context_action", action: msg.op, by: msg.by };
+  }
+  if (msg.op === "set_trajectory_playback") {
+    return {
+      event: "interaction_context_action",
+      action: msg.op,
+      playback_action: msg.action,
+      ...msg.fps === void 0 ? {} : { fps: msg.fps },
+      ...msg.step === void 0 ? {} : { step: msg.step }
+    };
+  }
+  return null;
+}
+
 // src/messages/popup-channel.ts
 var POPUP_CHANNEL_PROTOCOL_VERSION = 1;
 function nonEmptyString(value) {
@@ -169800,6 +169845,12 @@ var runtime_actions_default = {
     "request_image_export"
   ],
   popup_actions: {
+    "molsysviewer-popup-ui": [
+      "event"
+    ],
+    "molsysviewer-popup-panel": [
+      "event"
+    ],
     "molsysviewer-initial-sync": [
       "projection"
     ],
@@ -170365,7 +170416,7 @@ var ArrayNativeStreamReceiver = class {
 };
 
 // src/ui/local-ui-model.ts
-function createLocalUiModel(initial = {}) {
+function createLocalUiModel(initial = {}, onSave) {
   const values2 = {
     viewer_mode: "integrated",
     controls_mode: "minimal",
@@ -170393,6 +170444,7 @@ function createLocalUiModel(initial = {}) {
       listeners.get(event)?.delete(callback);
     },
     save_changes() {
+      onSave?.({ ...values2 });
     }
   };
 }
@@ -170481,65 +170533,11 @@ var bootPopup = async (loadedModule) => {
     } catch (e) {
     }
   };
-  const injectSliderStyles = () => {
-    if (document.getElementById("molsysviewer-pop-slider-style")) return;
-    const css = `
-            .molsysviewer-slider {
-                background: transparent;
-                height: 16px;
-                border-radius: 999px;
-                overflow: visible;
-            }
-            .molsysviewer-slider::-webkit-slider-runnable-track {
-                background: rgba(200,200,200,0.35) !important;
-                height: 16px;
-                border-radius: 999px;
-            }
-            .molsysviewer-slider::-moz-range-track {
-                background: rgba(200,200,200,0.35) !important;
-                height: 16px;
-                border-radius: 999px;
-            }
-            .molsysviewer-slider::-ms-track {
-                background: rgba(200,200,200,0.35) !important;
-                height: 16px;
-                border-radius: 999px;
-                border: none;
-                color: transparent;
-            }
-            .molsysviewer-slider::-webkit-slider-thumb {
-                -webkit-appearance: none !important;
-                appearance: none !important;
-                width: 16px;
-                height: 16px;
-                border-radius: 50% !important;
-                background: rgb(80,80,80) !important;
-                border: none !important;
-                box-shadow: none !important;
-                margin-top: 0px;
-            }
-            .molsysviewer-slider::-moz-range-thumb {
-                width: 16px;
-                height: 16px;
-                border-radius: 50% !important;
-                background: rgb(80,80,80) !important;
-                border: none !important;
-            }
-            .molsysviewer-slider::-ms-thumb {
-                width: 16px;
-                height: 16px;
-                border-radius: 50% !important;
-                background: rgb(80,80,80) !important;
-                border: none !important;
-            }
-        `;
-    const el = document.createElement("style");
-    el.id = "molsysviewer-pop-slider-style";
-    el.textContent = css;
-    document.head.appendChild(el);
-  };
-  injectSliderStyles();
   const container = document.getElementById("molsysviewer-pop");
+  if (container) {
+    container.tabIndex = 0;
+    Object.assign(container.style, { touchAction: "none", outline: "none", cursor: "default" });
+  }
   const loading = document.getElementById("molsysviewer-loading");
   let isUserInteracting = false;
   let wheelTimeout = null;
@@ -170593,7 +170591,33 @@ var bootPopup = async (loadedModule) => {
       await ctrl3.loadArrayNativeMolSysPayload(payload, begin.label);
     }
   );
-  const uiModel = createLocalUiModel({ panel_mode_style: initOptions.panelModeStyle || "integrated" });
+  let applyingHostState = false;
+  let pendingUiSave = false;
+  const uiModel = createLocalUiModel({
+    viewer_mode: initOptions.viewerMode || "integrated",
+    controls_mode: initOptions.controlsMode || "minimal",
+    panel_mode_style: initOptions.panelModeStyle || "integrated",
+    ...initOptions.uiState,
+    // A separate Studio window always uses its own split shell.
+    ...initOptions.isPanelOnly ? { panel_mode_style: "split" } : {}
+  }, () => {
+    if (applyingHostState || pendingUiSave) return;
+    pendingUiSave = true;
+    queueMicrotask(() => {
+      pendingUiSave = false;
+      if (!applyingHostState) sendToHost("molsysviewer-popup-ui", ctrlUiState());
+    });
+  });
+  const ctrlUiState = () => Object.fromEntries([
+    "viewer_mode",
+    "controls_mode",
+    "panel_mode_style",
+    "show_controls",
+    "autohide_controls",
+    "autohide_scope",
+    "controls_position",
+    "controls_position_fullscreen"
+  ].filter((trait) => !initOptions.isPanelOnly || trait !== "panel_mode_style").map((trait) => [trait, uiModel.get(trait)]));
   const updateControlsUi = (data) => {
     for (const [field2, trait] of Object.entries({
       autohide: "autohide_controls",
@@ -170611,7 +170635,20 @@ var bootPopup = async (loadedModule) => {
       } else {
         sendToHost("molsysviewer-log-from-popout", msg);
       }
-    }, void 0, { ...initOptions, model: uiModel });
+    }, void 0, {
+      ...initOptions,
+      model: uiModel,
+      onPanelPopClick: initOptions.enablePanelPopout && !initOptions.isPanelOnly ? () => {
+        if (openerWin.closed) return;
+        const size4 = ctrl3.getPanelPopupSize();
+        window.__molsysviewer_pending_panel_window = window.open(
+          "",
+          "_blank",
+          `width=${size4.width},height=${size4.height}`
+        );
+        sendToHost("molsysviewer-popup-panel", { panel: ctrl3.getActivePanel() });
+      } : void 0
+    });
     if (initOptions.isPanelOnly) {
       ctrl3.setCanvasVisibility(false);
       if (ctrl3.sharedShell) {
@@ -170678,6 +170715,7 @@ var bootPopup = async (loadedModule) => {
     const type3 = routed.envelope.action;
     const data = routed.envelope.payload;
     const ctrl3 = await popControllerPromise;
+    applyingHostState = type3 === "molsysviewer-initial-sync" || type3 === "molsysviewer-sync-ui" || type3 === "molsysviewer-sync-autohide";
     try {
       switch (type3) {
         case "molsysviewer-initial-sync":
@@ -170689,6 +170727,9 @@ var bootPopup = async (loadedModule) => {
               await ctrl3.handleMessage(msg);
             }
           }
+          if (Number.isInteger(data.trajectoryFrame) && data.trajectoryFrame >= 0) {
+            await ctrl3.setTrajectoryFrame(data.trajectoryFrame);
+          }
           if (data.cameraSnapshot) {
             ctrl3.setCameraSnapshot(data.cameraSnapshot, 0);
           }
@@ -170697,10 +170738,12 @@ var bootPopup = async (loadedModule) => {
           if (data.isDarkMode) await ctrl3.toggleBackground("dark");
           if (data.viewerMode) ctrl3.setViewerMode(data.viewerMode);
           if (data.controlsMode) ctrl3.setControlsMode(data.controlsMode);
-          if (data.panelModeStyle) ctrl3.setPanelModeStyle(data.panelModeStyle);
+          if (initOptions.isPanelOnly) ctrl3.setPanelModeStyle("split");
+          else if (data.panelModeStyle) ctrl3.setPanelModeStyle(data.panelModeStyle);
           if (ctrl3.sharedShell) {
             if (data.isAmbient !== void 0) ctrl3.sharedShell.setAmbient(data.isAmbient);
-            if (data.isSplit !== void 0) ctrl3.sharedShell.setSplit(data.isSplit);
+            if (initOptions.isPanelOnly) ctrl3.sharedShell.setSplit(true);
+            else if (data.isSplit !== void 0) ctrl3.sharedShell.setSplit(data.isSplit);
           }
           updateControlsUi(data);
           window.clearTimeout(revealTimer);
@@ -170710,10 +170753,12 @@ var bootPopup = async (loadedModule) => {
           updateControlsUi(data);
           if (data.viewerMode) ctrl3.setViewerMode(data.viewerMode);
           if (data.controlsMode) ctrl3.setControlsMode(data.controlsMode);
-          if (data.panelModeStyle) ctrl3.setPanelModeStyle(data.panelModeStyle);
+          if (initOptions.isPanelOnly) ctrl3.setPanelModeStyle("split");
+          else if (data.panelModeStyle) ctrl3.setPanelModeStyle(data.panelModeStyle);
           if (ctrl3.sharedShell) {
             if (data.isAmbient !== void 0) ctrl3.sharedShell.setAmbient(data.isAmbient);
-            if (data.isSplit !== void 0) ctrl3.sharedShell.setSplit(data.isSplit);
+            if (initOptions.isPanelOnly) ctrl3.sharedShell.setSplit(true);
+            else if (data.isSplit !== void 0) ctrl3.sharedShell.setSplit(data.isSplit);
           }
           break;
         case "molsysviewer-sync-autohide":
@@ -170746,6 +170791,8 @@ var bootPopup = async (loadedModule) => {
       }
     } catch (e) {
       console.error("Popout sync error", e);
+    } finally {
+      applyingHostState = false;
     }
   };
   let popupInboundQueue = Promise.resolve();
@@ -170757,7 +170804,14 @@ var bootPopup = async (loadedModule) => {
   if (!initOptions.isPanelOnly) controlsProvider(
     ctrl2,
     uiModel,
-    (msg) => sendToHost("molsysviewer-sync-op", msg),
+    (msg) => {
+      const authorityAction = trajectorySyncToAuthority(msg);
+      if (authorityAction && initOptions.hasAuthority !== false) {
+        sendToHost("molsysviewer-popup-interaction", authorityAction);
+      } else {
+        sendToHost("molsysviewer-sync-op", msg);
+      }
+    },
     container,
     () => window.close(),
     { popupButtonTitle: "Close popup" }
@@ -170827,9 +170881,10 @@ var PopupHostManager = class {
   get isPanelOpen() {
     return this.panelWin && !this.panelWin.closed;
   }
-  async open(mode = "canvas") {
+  async open(mode = "canvas", preopenedWindow) {
     const isOpen = mode === "canvas" ? this.isCanvasOpen : this.isPanelOpen;
     if (isOpen) {
+      preopenedWindow?.close();
       this.close(mode);
       return;
     }
@@ -170848,8 +170903,9 @@ var PopupHostManager = class {
       const size4 = this.controller?.getPanelPopupSize?.() ?? { width: 950, height: 800 };
       features = `width=${size4.width},height=${size4.height}`;
     }
-    const win = window.open("", "_blank", features);
+    const win = preopenedWindow || window.open("", "_blank", features);
     if (!win) return;
+    if (preopenedWindow) win.opener = window;
     if (mode === "canvas") {
       this.popoutWin = win;
       this.isReady = false;
@@ -170874,11 +170930,14 @@ var PopupHostManager = class {
       win.molsysviewer_init_options = {
         viewerMode: this.controller.getViewerMode(),
         controlsMode: this.controller.getControlsMode(),
+        uiState: this.controller.getCanvasUiState?.(),
         panelModeStyle: mode === "panel" ? "split" : this.controller.getPanelModeStyle(),
         isAmbient: this.controller.sharedShell?.isAmbient,
         isSplit: this.controller.sharedShell?.isSplit,
         isPanelOnly: mode === "panel",
-        activePanel: this.controller.getActivePanel() || "navigate"
+        activePanel: this.controller.getActivePanel() || "navigate",
+        enablePanelPopout: this.controller.canPopoutPanel?.() ?? false,
+        hasAuthority: this.controller.hasPythonAuthority?.() ?? true
       };
     }
     const doc = win.document;
@@ -170895,19 +170954,6 @@ var PopupHostManager = class {
     #molsysviewer-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #fff; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 14px; letter-spacing: 0.2px; background: #121216; z-index: 1000; transition: opacity 240ms ease; }
     #molsysviewer-loading .spinner { width: 28px; height: 28px; border-radius: 999px; border: 3px solid rgba(255,255,255,0.12); border-top-color: rgba(255,255,255,0.45); animation: molsysviewer-spin 0.9s linear infinite; }
     @keyframes molsysviewer-spin { to { transform: rotate(360deg); } }
-    .molsysviewer-controls { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "DejaVu Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
-    .molsysviewer-controls button,
-    .molsysviewer-controls input,
-    .molsysviewer-controls select,
-    .molsysviewer-controls textarea,
-    .molsysviewer-controls span { font-family: inherit; }
-    .molsysviewer-controls, .molsysviewer-controls * { user-select: none; -webkit-user-select: none; -moz-user-select: none; }
-    .molsysviewer-traj-input::-webkit-inner-spin-button,
-    .molsysviewer-traj-input::-webkit-outer-spin-button { -webkit-appearance: none !important; margin: 0 !important; }
-    .molsysviewer-traj-input { -moz-appearance: textfield !important; appearance: none !important; color: rgba(255,255,255,0.9); background: rgba(40,40,40,0.6); }
-    .molsysviewer-slider { background: transparent; height: 16px; border-radius: 999px; overflow: visible; }
-    .molsysviewer-slider::-webkit-slider-runnable-track { background: rgba(200,200,200,0.35) !important; height: 16px; border-radius: 999px; }
-    .molsysviewer-slider::-webkit-slider-thumb { -webkit-appearance: none !important; width: 16px; height: 16px; border-radius: 50% !important; background: rgba(0,0,0,0.5) !important; margin-top: 0px; }
   </style>
   ${resolvedModuleUrl ? `<link rel="modulepreload" href="${resolvedModuleUrl}">` : ""}
 </head>
@@ -173724,24 +173770,6 @@ function buildMeasurementOpFromInteractionEvent(event) {
     }
   };
 }
-function trajectorySyncToAuthority(msg) {
-  if (msg.op === "set_trajectory_frame") {
-    return { event: "interaction_context_action", action: msg.op, index: msg.index };
-  }
-  if (msg.op === "step_trajectory") {
-    return { event: "interaction_context_action", action: msg.op, by: msg.by };
-  }
-  if (msg.op === "set_trajectory_playback") {
-    return {
-      event: "interaction_context_action",
-      action: msg.op,
-      playback_action: msg.action,
-      ...msg.fps === void 0 ? {} : { fps: msg.fps },
-      ...msg.step === void 0 ? {} : { step: msg.step }
-    };
-  }
-  return null;
-}
 var parseInitialTrajectoryInfo = (msgs) => {
   let frameCount = void 0;
   let multipleStructures = false;
@@ -174033,6 +174061,7 @@ async function bootDocsView(opts) {
           popupMgr.isReady = true;
           popupMgr.send("molsysviewer-initial-sync", {
             messages: popupReplay.snapshot("canvas"),
+            trajectoryFrame: controller.trajectory.getTrajectoryState().currentFrame,
             cameraSnapshot: controller.getCameraSnapshot(),
             isSpinActive: controller.isSpinActive,
             isSwingActive: controller.isSwingActive,
@@ -174049,8 +174078,17 @@ async function bootDocsView(opts) {
           break;
         case "molsysviewer-sync-op":
           if (data) await controller.handleMessage(data);
-          if (data) popupReplay.record(data);
-          if (data) popupMgr.send("molsysviewer-sync-op", data);
+          if (data) {
+            const projection = data.op === "step_trajectory" ? { op: "set_trajectory_frame", index: controller.trajectory.getTrajectoryState().currentFrame } : data;
+            popupReplay.record(projection);
+            popupMgr.send("molsysviewer-sync-op", projection);
+          }
+          break;
+        case "molsysviewer-popup-ui":
+          for (const trait of Object.keys(controller.getCanvasUiState())) {
+            if (data?.[trait] !== void 0) model.set(trait, data[trait]);
+          }
+          model.save_changes();
           break;
         case "molsysviewer-sync-camera":
           if (data && !isUserInteracting) {
@@ -174239,8 +174277,10 @@ function setupWidgetResizer(host, target, onResize) {
   });
   host.appendChild(handle);
 }
-function render({ model, el }) {
+function render({ model, el, runtimeSource }) {
   const debug = !!model.get("debug_js");
+  let disposed = false;
+  const releaseRuntime = [];
   const envelopeAdapter = new WidgetEnvelopeAdapter(
     String(model.get("runtime_viewer_id") || ""),
     String(model.get("runtime_session_id") || ""),
@@ -174251,6 +174291,7 @@ function render({ model, el }) {
     } : void 0
   );
   const reportContractRejection = (seam, reason, detail) => {
+    if (disposed) return;
     console.error(`[MolSysViewer] runtime contract rejected ${seam} (${reason}): ${detail}`);
     const diagnostic = envelopeAdapter.wrapOutbound({
       event: "runtime_contract_rejected",
@@ -174262,6 +174303,7 @@ function render({ model, el }) {
   };
   let sendLog;
   const sendToPython = (message) => {
+    if (disposed) return null;
     const result2 = envelopeAdapter.wrapOutbound(message);
     if (result2.kind === "send") {
       model.send(result2.message);
@@ -174337,20 +174379,6 @@ function render({ model, el }) {
   window.addEventListener("pointercancel", onPointerUpOrCancel);
   target.addEventListener("wheel", onWheel, { passive: true });
   target.tabIndex = 0;
-  target.addEventListener("keydown", (e) => {
-    if (e.key === "v" || e.key === "V") {
-      const active = document.activeElement;
-      if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.hasAttribute("contenteditable"))) {
-        return;
-      }
-      e.preventDefault();
-      e.stopPropagation();
-      controllerPromise.then((c8) => {
-        const isHidden = c8.canvasHost.style.display === "none";
-        c8.setCanvasVisibility(isHidden);
-      });
-    }
-  });
   el.appendChild(target);
   setupWidgetResizer(el, target, (w, h) => {
     el.style.height = `${h}px`;
@@ -174364,7 +174392,7 @@ function render({ model, el }) {
   const esmSource = model.get("_esm");
   const esmLooksLikeFullRuntime = typeof esmSource === "string" && esmSource.includes("bootPopup") && esmSource.includes("MolSysViewerController");
   const cachedWidgetRuntime = globalThis.__molsysviewer_anywidget_runtime__;
-  let popupJsSourceCache = typeof legacyPopupJsSource === "string" && legacyPopupJsSource ? legacyPopupJsSource : typeof cachedWidgetRuntime?.source === "string" && cachedWidgetRuntime.source ? cachedWidgetRuntime.source : esmLooksLikeFullRuntime ? esmSource : "";
+  let popupJsSourceCache = typeof runtimeSource === "string" && runtimeSource ? runtimeSource : typeof cachedWidgetRuntime?.source === "string" && cachedWidgetRuntime.source ? cachedWidgetRuntime.source : esmLooksLikeFullRuntime ? esmSource : typeof legacyPopupJsSource === "string" ? legacyPopupJsSource : "";
   let pendingPopupSource = null;
   let resolvePendingPopupSource = null;
   let rejectPendingPopupSource = null;
@@ -174406,6 +174434,15 @@ function render({ model, el }) {
     )
   });
   const enablePopout = !!model.get("enable_popout");
+  const openPanelPopup = (preopenedWindow, panel) => {
+    controllerPromise.then((c8) => {
+      c8.saveHostPanelState();
+      if (panel) c8.setPanelMode(panel, true);
+      if (c8.canvasHost.style.display === "none") c8.setCanvasVisibility(true);
+      c8.sharedShell?.setVisible(false);
+      void popupMgr.open("panel", preopenedWindow);
+    });
+  };
   const panelModeStyle = model.get("panel_mode_style") || "drawer";
   const controllerPromise = MolSysViewerController.create(target, (msg) => {
     sendToPython(msg);
@@ -174423,18 +174460,7 @@ function render({ model, el }) {
     panelModeStyle,
     model,
     hasInitialStructures: trajInfo.hasStructures,
-    onPanelPopClick: enablePopout ? () => {
-      controllerPromise.then((c8) => {
-        c8.saveHostPanelState();
-        if (c8.canvasHost.style.display === "none") {
-          c8.setCanvasVisibility(true);
-        }
-        if (c8.sharedShell) {
-          c8.sharedShell.setVisible(false);
-        }
-        popupMgr.open("panel");
-      });
-    } : void 0
+    onPanelPopClick: enablePopout ? () => openPanelPopup() : void 0
   });
   const arrayNativeStream = new ArrayNativeStreamReceiver(
     (event) => sendToPython(event),
@@ -174444,6 +174470,10 @@ function render({ model, el }) {
     }
   );
   controllerPromise.then((c8) => {
+    if (disposed) {
+      c8.dispose();
+      return;
+    }
     const removeOutputLimits = () => {
       let parent = target.parentElement;
       while (parent) {
@@ -174528,11 +174558,17 @@ function render({ model, el }) {
         syncCamera();
         scheduleCameraSnapshot();
       };
+      let cameraSubscription;
+      releaseRuntime.push(() => {
+        if (hostCameraSyncTimer) window.clearTimeout(hostCameraSyncTimer);
+        if (cameraSnapshotTimer) window.clearTimeout(cameraSnapshotTimer);
+        cameraSubscription?.unsubscribe();
+      });
       if (c3d.didDraw) {
-        c3d.didDraw.subscribe(onCameraFrame);
+        cameraSubscription = c3d.didDraw.subscribe(onCameraFrame);
         console.log("[MolSysViewer] Host: Sync via didDraw (interactive camera movements).");
       } else if (c3d.camera.stateChanged) {
-        c3d.camera.stateChanged.subscribe(onCameraFrame);
+        cameraSubscription = c3d.camera.stateChanged.subscribe(onCameraFrame);
         console.log("[MolSysViewer] Host: Sync via camera.stateChanged (fallback).");
       } else {
         console.warn("[MolSysViewer] Host: No suitable camera event found for sync.");
@@ -174624,6 +174660,20 @@ function render({ model, el }) {
         case "molsysviewer-sync-op":
           if (data) await controller.handleMessage(data);
           if (data) popupMgr.send("molsysviewer-sync-op", data);
+          break;
+        case "molsysviewer-popup-ui":
+          for (const trait of Object.keys(controller.getCanvasUiState())) {
+            if (data?.[trait] !== void 0) model.set(trait, data[trait]);
+          }
+          model.save_changes();
+          break;
+        case "molsysviewer-popup-panel":
+          {
+            const sourceWindow = ev.source;
+            const reserved = sourceWindow.__molsysviewer_pending_panel_window;
+            delete sourceWindow.__molsysviewer_pending_panel_window;
+            if (reserved && !reserved.closed) openPanelPopup(reserved, data?.panel);
+          }
           break;
         case "molsysviewer-structure-data-ack":
           if (data) {
@@ -174846,7 +174896,13 @@ function render({ model, el }) {
     }));
   }
   return () => {
+    if (disposed) return;
     console.log("[MolSysViewer] Disposing widget...");
+    popupMgr.dispose();
+    arrayNativeStream.dispose();
+    disposed = true;
+    for (const release of releaseRuntime) release();
+    if (wheelTimeout) window.clearTimeout(wheelTimeout);
     window.removeEventListener("message", messageHandler);
     window.removeEventListener("pointerup", onPointerUpOrCancel);
     window.removeEventListener("pointercancel", onPointerUpOrCancel);
@@ -174870,8 +174926,6 @@ function render({ model, el }) {
         console.error("[MolSysViewer] Error disposing plugin:", e);
       }
     });
-    popupMgr.dispose();
-    arrayNativeStream.dispose();
   };
 }
 var index_default = { render };

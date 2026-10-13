@@ -71,7 +71,8 @@ export default {
         if (!widget || typeof widget.render !== "function") {
             throw new Error("MolSysViewer runtime module does not export a render function");
         }
-        return widget.render(context);
+        // Bind the popup to the source that actually rendered this widget.
+        return widget.render({ ...context, runtimeSource: globalThis[CACHE_KEY]?.source });
     },
 };
 """

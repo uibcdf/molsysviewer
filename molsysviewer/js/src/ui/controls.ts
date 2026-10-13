@@ -431,13 +431,19 @@ export const buildControls = (
     const onHelpKey = (ev: KeyboardEvent) => {
         if ((ev.target as HTMLElement)?.closest?.("input, textarea, [contenteditable]")) return;
         if (!container.contains(ev.target as Node)) return;
-        if (ev.key.toLowerCase() === "h") {
+        if (ev.key.toLowerCase() === "v") {
+            ev.preventDefault();
+            ev.stopPropagation();
+            c.setCanvasVisibility(c.canvasHost.style.display === "none");
+        } else if (ev.key.toLowerCase() === "h") {
             ev.preventDefault();
             ev.stopPropagation();
             helpOverlay.toggle();
         }
     };
-    listen(window, "keydown", onHelpKey as EventListener, true);
+    // Listen inside the canvas: notebook hosts can use a shadow root, which
+    // retargets window events and hides the actual focused input/container.
+    listen(container, "keydown", onHelpKey as EventListener, true);
 
     if (isCinema) {
         // Render a subtle, elegant, self-dismissing helper toast for accessibility

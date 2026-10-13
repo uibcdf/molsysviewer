@@ -359,3 +359,5 @@ Completed work, kept for the reasoning:
 - [Measurement bypass](measurement_add_bypass.md) — #215 forwards validated constructor inputs without re-enabling digestion.
 - [Scene identity assignment](scene_identity_assignment.md) — #216 protects identity fields and validates region rename collisions.
 - [Scene handle API parity](scene_handle_api_parity.md) — #217 adds detached inspection, annotation editing, region rename vocabulary and explicit sphere anchors.
+
+- [Canvas popup controls parity](canvas_popup_controls_parity.md) — #232 binds the notebook runtime, shares initial controls/styles/keys and preferences, preserves Studio popout and reconciles trajectory steps once; real widget/export guards and core 43/43 pass.

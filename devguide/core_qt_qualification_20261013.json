@@ -448,7 +448,7 @@
     "commit": "61c24e53e2c089944160e61551df21c90cb27e9d"
   },
   "pending": [
-    "new source scientific/Python314/core/notebook CI",
+    "canvas popup correction #232 and its own source CI",
     "broad docs",
     "later authorized candidate/installed first contact/publication"
   ],
@@ -486,5 +486,90 @@
       }
     ],
     "note": "Two window/render diagnostics fail; offscreen transport/resource probes and artifact preservation succeed. The official independent Qt workflow remains failure; no native host certification is inferred."
+  },
+  "terminal_source_gate_receiving": {
+    "source_commit": "46527392e4029816a9ee1efcb33f2727439df0b9",
+    "runs": [
+      {
+        "databaseId": 38370976346,
+        "headSha": "46527392e4029816a9ee1efcb33f2727439df0b9",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38370976346",
+        "jobs": [
+          {
+            "name": "Test on macos-15, Python 3.13",
+            "conclusion": "success"
+          },
+          {
+            "name": "Test on ubuntu-latest, Python 3.11",
+            "conclusion": "success"
+          },
+          {
+            "name": "Test on ubuntu-latest, Python 3.13",
+            "conclusion": "success"
+          },
+          {
+            "name": "Test on macos-15, Python 3.12",
+            "conclusion": "success"
+          },
+          {
+            "name": "Test on macos-15, Python 3.11",
+            "conclusion": "success"
+          },
+          {
+            "name": "Test on ubuntu-latest, Python 3.12",
+            "conclusion": "success"
+          },
+          {
+            "name": "Check skipped-commit backlog",
+            "conclusion": "skipped"
+          },
+          {
+            "name": "PR full suite",
+            "conclusion": "skipped"
+          }
+        ]
+      },
+      {
+        "databaseId": 38370976339,
+        "headSha": "46527392e4029816a9ee1efcb33f2727439df0b9",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38370976339",
+        "jobs": [
+          {
+            "name": "Source pair on ubuntu-latest, Python 3.14",
+            "conclusion": "success"
+          },
+          {
+            "name": "Source pair on windows-2025, Python 3.14",
+            "conclusion": "success"
+          },
+          {
+            "name": "Source pair on macos-15, Python 3.14",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "databaseId": 38370976318,
+        "headSha": "46527392e4029816a9ee1efcb33f2727439df0b9",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38370976318",
+        "jobs": [
+          {
+            "name": "Core E2E",
+            "conclusion": "success"
+          },
+          {
+            "name": "Check skipped-commit backlog",
+            "conclusion": "skipped"
+          }
+        ]
+      }
+    ],
+    "scope": "Core science 6/6, Python 3.14 hosts 3/3 and core browser succeed for the original #231 source. This does not qualify subsequent popup changes."
   }
 }

@@ -2,6 +2,7 @@
 
 import { MolSysViewerController, suppressCanvasContextMenu } from "./managers/viewer-controller";
 import { ViewerMessage } from "./messages/viewer-messages";
+import { trajectorySyncToAuthority } from "./messages/trajectory-intent";
 import { bootPopup } from "./popup/popup-logic";
 import { PopupHostManager } from "./managers/popup-host";
 import { waitForCanvasDraw } from "./managers/canvas-draw";
@@ -56,25 +57,6 @@ function buildMeasurementOpFromInteractionEvent(event: any): ViewerMessage | nul
             endpoint_atom_indices: event.endpoint_atom_indices,
         },
     } as unknown as ViewerMessage;
-}
-
-function trajectorySyncToAuthority(msg: ViewerMessage): Record<string, unknown> | null {
-    if (msg.op === "set_trajectory_frame") {
-        return { event: "interaction_context_action", action: msg.op, index: msg.index };
-    }
-    if (msg.op === "step_trajectory") {
-        return { event: "interaction_context_action", action: msg.op, by: msg.by };
-    }
-    if (msg.op === "set_trajectory_playback") {
-        return {
-            event: "interaction_context_action",
-            action: msg.op,
-            playback_action: msg.action,
-            ...(msg.fps === undefined ? {} : { fps: msg.fps }),
-            ...(msg.step === undefined ? {} : { step: msg.step }),
-        };
-    }
-    return null;
 }
 
 const parseInitialTrajectoryInfo = (msgs: ViewerMessage[] | undefined) => {
@@ -447,6 +429,7 @@ export async function bootDocsView(opts: {
                     popupMgr.isReady = true;
                     popupMgr.send("molsysviewer-initial-sync", {
                         messages: popupReplay.snapshot("canvas"),
+                        trajectoryFrame: controller.trajectory.getTrajectoryState().currentFrame,
                         cameraSnapshot: controller.getCameraSnapshot(),
                         isSpinActive: controller.isSpinActive,
                         isSwingActive: controller.isSwingActive,
@@ -463,8 +446,21 @@ export async function bootDocsView(opts: {
                     break;
                 case "molsysviewer-sync-op":
                     if (data) await controller.handleMessage(data as ViewerMessage);
-                    if (data) popupReplay.record(data as ViewerMessage);
-                    if (data) popupMgr.send("molsysviewer-sync-op", data);
+                    if (data) {
+                        // The popup already applied its relative step optimistically.
+                        // Project the resulting frame instead of advancing it again.
+                        const projection = data.op === "step_trajectory"
+                            ? { op: "set_trajectory_frame", index: controller.trajectory.getTrajectoryState().currentFrame }
+                            : data;
+                        popupReplay.record(projection as ViewerMessage);
+                        popupMgr.send("molsysviewer-sync-op", projection);
+                    }
+                    break;
+                case "molsysviewer-popup-ui":
+                    for (const trait of Object.keys(controller.getCanvasUiState())) {
+                        if (data?.[trait] !== undefined) model.set(trait, data[trait]);
+                    }
+                    model.save_changes();
                     break;
                 case "molsysviewer-sync-camera":
                     if (data && !isUserInteracting) {
@@ -780,8 +776,10 @@ function setupWidgetResizer(
  * The generated bundle lives at ../viewer.js and should be rebuilt manually.
  * Do not edit viewer.js directly; modify TS sources under js/src/ instead.
  */
-export function render({ model, el }: { model: any; el: HTMLElement }) {
+export function render({ model, el, runtimeSource }: { model: any; el: HTMLElement; runtimeSource?: string }) {
         const debug = !!model.get("debug_js");
+        let disposed = false;
+        const releaseRuntime: Array<() => void> = [];
 
         // R1 seam: every browser->Python message goes through sendToPython, which
         // envelopes control messages (raw/data-plane pass through). The widget.py
@@ -797,6 +795,7 @@ export function render({ model, el }: { model: any; el: HTMLElement }) {
             } : undefined,
         );
         const reportContractRejection = (seam: string, reason: string, detail: string) => {
+            if (disposed) return;
             console.error(`[MolSysViewer] runtime contract rejected ${seam} (${reason}): ${detail}`);
             const diagnostic = envelopeAdapter.wrapOutbound({
                 event: "runtime_contract_rejected",
@@ -810,6 +809,7 @@ export function render({ model, el }: { model: any; el: HTMLElement }) {
         /** Sends to Python; returns the envelope messageId so a request can be
          *  correlated to its answer, or null when the adapter rejected it. */
         const sendToPython = (message: Record<string, unknown>): string | null => {
+            if (disposed) return null;
             const result = envelopeAdapter.wrapOutbound(message);
             if (result.kind === "send") {
                 model.send(result.message);
@@ -912,21 +912,6 @@ export function render({ model, el }: { model: any; el: HTMLElement }) {
         target.addEventListener("wheel", onWheel, { passive: true }); // Make sure this line is not cut off
         
         target.tabIndex = 0;
-        target.addEventListener("keydown", (e: KeyboardEvent) => {
-            if (e.key === "v" || e.key === "V") {
-                const active = document.activeElement;
-                if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.hasAttribute("contenteditable"))) {
-                    return;
-                }
-                e.preventDefault();
-                e.stopPropagation();
-                controllerPromise.then(c => {
-                    const isHidden = c.canvasHost.style.display === "none";
-                    c.setCanvasVisibility(isHidden);
-                });
-            }
-        });
-        
         el.appendChild(target);
 
         // Setup interactive resizing
@@ -950,13 +935,13 @@ export function render({ model, el }: { model: any; el: HTMLElement }) {
             esmSource.includes("MolSysViewerController");
         const cachedWidgetRuntime = (globalThis as any).__molsysviewer_anywidget_runtime__;
         let popupJsSourceCache =
-            typeof legacyPopupJsSource === "string" && legacyPopupJsSource
-                ? legacyPopupJsSource
+            typeof runtimeSource === "string" && runtimeSource
+                ? runtimeSource
                 : typeof cachedWidgetRuntime?.source === "string" && cachedWidgetRuntime.source
                     ? cachedWidgetRuntime.source
                     : esmLooksLikeFullRuntime
                         ? esmSource
-                        : "";
+                        : typeof legacyPopupJsSource === "string" ? legacyPopupJsSource : "";
         let pendingPopupSource: Promise<string> | null = null;
         let resolvePendingPopupSource: ((source: string) => void) | null = null;
         let rejectPendingPopupSource: ((reason?: unknown) => void) | null = null;
@@ -1000,6 +985,15 @@ export function render({ model, el }: { model: any; el: HTMLElement }) {
             ),
         });
         const enablePopout = !!model.get("enable_popout");
+        const openPanelPopup = (preopenedWindow?: Window | null, panel?: "navigate" | "addons") => {
+            controllerPromise.then(c => {
+                c.saveHostPanelState();
+                if (panel) c.setPanelMode(panel, true);
+                if (c.canvasHost.style.display === "none") c.setCanvasVisibility(true);
+                c.sharedShell?.setVisible(false);
+                void popupMgr.open("panel", preopenedWindow);
+            });
+        };
 
         // 3. Initialize Controller
         const panelModeStyle = (model.get("panel_mode_style") as string) || "drawer";
@@ -1023,18 +1017,7 @@ export function render({ model, el }: { model: any; el: HTMLElement }) {
             panelModeStyle, 
             model,
             hasInitialStructures: trajInfo.hasStructures,
-            onPanelPopClick: enablePopout ? () => {
-                controllerPromise.then(c => {
-                    c.saveHostPanelState();
-                    if (c.canvasHost.style.display === "none") {
-                        c.setCanvasVisibility(true);
-                    }
-                    if (c.sharedShell) {
-                        c.sharedShell.setVisible(false);
-                    }
-                    popupMgr.open("panel");
-                });
-            } : undefined
+            onPanelPopClick: enablePopout ? () => openPanelPopup() : undefined
         });
         const arrayNativeStream = new ArrayNativeStreamReceiver(
             event => sendToPython(event),
@@ -1046,6 +1029,7 @@ export function render({ model, el }: { model: any; el: HTMLElement }) {
 
         // 4. Build UI Controls & Setup Sync
         controllerPromise.then(c => {
+            if (disposed) { c.dispose(); return; }
             // Auto-expand Jupyter/VS Code cell output area to prevent scrolling of molsysviewer.
             // This is a strictly local change traversing up only our widget's parent chain.
             const removeOutputLimits = () => {
@@ -1145,13 +1129,19 @@ export function render({ model, el }: { model: any; el: HTMLElement }) {
                     syncCamera();
                     scheduleCameraSnapshot();
                 };
+                let cameraSubscription: { unsubscribe(): void } | undefined;
+                releaseRuntime.push(() => {
+                    if (hostCameraSyncTimer) window.clearTimeout(hostCameraSyncTimer);
+                    if (cameraSnapshotTimer) window.clearTimeout(cameraSnapshotTimer);
+                    cameraSubscription?.unsubscribe();
+                });
 
                 // Force usage of didDraw for reliable interactive sync, matching the popup's working logic
                 if (c3d.didDraw) {
-                    c3d.didDraw.subscribe(onCameraFrame);
+                    cameraSubscription = c3d.didDraw.subscribe(onCameraFrame);
                     console.log("[MolSysViewer] Host: Sync via didDraw (interactive camera movements).");
                 } else if (c3d.camera.stateChanged) {
-                    c3d.camera.stateChanged.subscribe(onCameraFrame);
+                    cameraSubscription = c3d.camera.stateChanged.subscribe(onCameraFrame);
                     console.log("[MolSysViewer] Host: Sync via camera.stateChanged (fallback).");
                 } else {
                     console.warn("[MolSysViewer] Host: No suitable camera event found for sync.");
@@ -1263,6 +1253,23 @@ export function render({ model, el }: { model: any; el: HTMLElement }) {
                         // to every popup endpoint, including the source.
                         if (data) await controller.handleMessage(data as ViewerMessage);
                         if (data) popupMgr.send("molsysviewer-sync-op", data);
+                        break;
+
+                    case "molsysviewer-popup-ui":
+                        // Only canvas preferences cross this authenticated seam.
+                        for (const trait of Object.keys(controller.getCanvasUiState())) {
+                            if (data?.[trait] !== undefined) model.set(trait, data[trait]);
+                        }
+                        model.save_changes();
+                        break;
+
+                    case "molsysviewer-popup-panel":
+                        {
+                            const sourceWindow = ev.source as Window & { __molsysviewer_pending_panel_window?: Window | null };
+                            const reserved = sourceWindow.__molsysviewer_pending_panel_window;
+                            delete sourceWindow.__molsysviewer_pending_panel_window;
+                            if (reserved && !reserved.closed) openPanelPopup(reserved, data?.panel);
+                        }
                         break;
 
                     case "molsysviewer-structure-data-ack":
@@ -1543,7 +1550,14 @@ export function render({ model, el }: { model: any; el: HTMLElement }) {
 
         // RETURN CLEANUP FUNCTION (supported by anywidget)
         return () => {
+            if (disposed) return;
             console.log("[MolSysViewer] Disposing widget...");
+            // Endpoint/stream cancellations still leave before the wire closes.
+            popupMgr.dispose();
+            arrayNativeStream.dispose();
+            disposed = true;
+            for (const release of releaseRuntime) release();
+            if (wheelTimeout) window.clearTimeout(wheelTimeout);
             
             // 1. Remove global listeners
             window.removeEventListener("message", messageHandler);
@@ -1575,9 +1589,6 @@ export function render({ model, el }: { model: any; el: HTMLElement }) {
                 }
             });
 
-            // 4. Close popup if open
-            popupMgr.dispose();
-            arrayNativeStream.dispose();
         };
 }
 

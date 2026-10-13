@@ -119,6 +119,12 @@
     "request_image_export"
   ],
   "popup_actions": {
+    "molsysviewer-popup-ui": [
+      "event"
+    ],
+    "molsysviewer-popup-panel": [
+      "event"
+    ],
     "molsysviewer-initial-sync": [
       "projection"
     ],

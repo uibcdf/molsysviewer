@@ -118,9 +118,10 @@ export class PopupHostManager {
         return this.panelWin && !this.panelWin.closed;
     }
 
-    async open(mode: "canvas" | "panel" = "canvas") {
+    async open(mode: "canvas" | "panel" = "canvas", preopenedWindow?: Window | null) {
         const isOpen = mode === "canvas" ? this.isCanvasOpen : this.isPanelOpen;
         if (isOpen) {
+            preopenedWindow?.close();
             this.close(mode);
             return;
         }
@@ -143,8 +144,11 @@ export class PopupHostManager {
             const size = this.controller?.getPanelPopupSize?.() ?? { width: 950, height: 800 };
             features = `width=${size.width},height=${size.height}`;
         }
-        const win = window.open("", "_blank", features);
+        const win = preopenedWindow || window.open("", "_blank", features);
         if (!win) return;
+        // A canvas popup may reserve this window during its own click gesture.
+        // The notebook remains its authenticated host and bootstrap authority.
+        if (preopenedWindow) win.opener = window;
 
         if (mode === "canvas") {
             this.popoutWin = win;
@@ -173,11 +177,14 @@ export class PopupHostManager {
             (win as any).molsysviewer_init_options = {
                 viewerMode: this.controller.getViewerMode(),
                 controlsMode: this.controller.getControlsMode(),
+                uiState: this.controller.getCanvasUiState?.(),
                 panelModeStyle: mode === "panel" ? "split" : this.controller.getPanelModeStyle(),
                 isAmbient: this.controller.sharedShell?.isAmbient,
                 isSplit: this.controller.sharedShell?.isSplit,
                 isPanelOnly: mode === "panel",
                 activePanel: this.controller.getActivePanel() || "navigate",
+                enablePanelPopout: this.controller.canPopoutPanel?.() ?? false,
+                hasAuthority: this.controller.hasPythonAuthority?.() ?? true,
             };
         }
         
@@ -196,19 +203,6 @@ export class PopupHostManager {
     #molsysviewer-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #fff; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 14px; letter-spacing: 0.2px; background: #121216; z-index: 1000; transition: opacity 240ms ease; }
     #molsysviewer-loading .spinner { width: 28px; height: 28px; border-radius: 999px; border: 3px solid rgba(255,255,255,0.12); border-top-color: rgba(255,255,255,0.45); animation: molsysviewer-spin 0.9s linear infinite; }
     @keyframes molsysviewer-spin { to { transform: rotate(360deg); } }
-    .molsysviewer-controls { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "DejaVu Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
-    .molsysviewer-controls button,
-    .molsysviewer-controls input,
-    .molsysviewer-controls select,
-    .molsysviewer-controls textarea,
-    .molsysviewer-controls span { font-family: inherit; }
-    .molsysviewer-controls, .molsysviewer-controls * { user-select: none; -webkit-user-select: none; -moz-user-select: none; }
-    .molsysviewer-traj-input::-webkit-inner-spin-button,
-    .molsysviewer-traj-input::-webkit-outer-spin-button { -webkit-appearance: none !important; margin: 0 !important; }
-    .molsysviewer-traj-input { -moz-appearance: textfield !important; appearance: none !important; color: rgba(255,255,255,0.9); background: rgba(40,40,40,0.6); }
-    .molsysviewer-slider { background: transparent; height: 16px; border-radius: 999px; overflow: visible; }
-    .molsysviewer-slider::-webkit-slider-runnable-track { background: rgba(200,200,200,0.35) !important; height: 16px; border-radius: 999px; }
-    .molsysviewer-slider::-webkit-slider-thumb { -webkit-appearance: none !important; width: 16px; height: 16px; border-radius: 50% !important; background: rgba(0,0,0,0.5) !important; margin-top: 0px; }
   </style>
   ${resolvedModuleUrl ? `<link rel="modulepreload" href="${resolvedModuleUrl}">` : ""}
 </head>

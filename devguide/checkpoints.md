@@ -1,5 +1,19 @@
 # Development checkpoint
 
+**Canvas popup parity — 2026-10-13:** #232 implements the
+[shared popup contract](canvas_popup_contract.md): the runtime actually used by
+the notebook, correct preferences on the first controls mount, shared styles and
+keyboard focus, bidirectional UI changes and Studio panel popout. Trajectory
+intents reach Python once; exported popups start at the current frame and receive
+absolute frame reconciliation. Widget cleanup cancels camera notifications.
+The actual AnyWidget/Python-authority browser guard and JS units pass. The single
+full Python run has 3,095 passed, 21 skips and one clean-checkout link failure:
+new documents were not yet staged. Staging those files repairs the 4/4 link guard;
+the global failure is preserved rather than rerun. Full browser integration passes 43/43; the final controls guard also protects
+keyboard use in shadow notebook hosts and input typing. #232 is closed with
+[its report](archive/canvas_popup_controls_parity.md). New exact hosted source
+evidence remains a separate gate. No candidate is frozen or published.
+
 **Core/Qt gate alignment — 2026-10-13:** #231 implements the
 [explicit qualification scope](core_qt_qualification.md). Native process/window/
 GPU/resource diagnostics have their own workflow and recovery watermark; pure
@@ -13,8 +27,9 @@ two formatting-only blank lines in the new guard; the AST-equivalent correction
 passes all 911 format checks. Exact policy followup 38371766429 passes on
 `61c24e53`. The independent Qt 38370976385 retains window/render failures;
 offscreen transport/resource probes and JUnit preservation pass. Core scientific
-38370976346, Python 3.14 pair 38370976339 and browser 38370976318 remain in
-progress, with their own exact source 46527392.
+38370976346, Python 3.14 pair 38370976339 and browser 38370976318 now all pass,
+with their own exact source 46527392 (6/6 scientific cells, 3/3 source-pair
+hosts and successful core browser). These results do not qualify later #232 changes.
 The previous exact source f272e384 has terminal scientific 6/6, Python 3.14 hosts
 3/3, hosted core 43/43 and notebooks 25/25. Its official CI conclusion remains
 failure on experimental Qt WebGL; the old verdict is preserved. Next: complete
@@ -1655,9 +1670,10 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current session priority (2026-10-13):** finish #231 and its own source
-validation, then broad docs, exact candidate preparation/qualification and
-human installed first contact before publication.
+**Current session priority (2026-10-13):** #232 canvas popup parity is implemented and locally verified; complete
+its new exact hosted source receiving review. #231 required source gates are now complete; native
+Qt retains its separate failed outcome. Then broad docs, exact candidate
+preparation/qualification and human installed first contact before publication.
 
 **Delivered design/source rounds (2026-10-10):** the accepted context-menu and
 controls work is complete under #179/#180. Studio refinements and their

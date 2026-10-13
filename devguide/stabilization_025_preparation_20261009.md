@@ -9,6 +9,12 @@ Both Viewer and MolSysMT 1.0 publication remain paused.
 
 ## Included work
 
+The canvas popup parity round (`uibcdf/molsysviewer#232`) shares runtime identity,
+initial controls, keyboard behavior and UI preferences with the notebook and
+repairs single-step trajectory reconciliation. Review the
+[popup contract](canvas_popup_contract.md) and its source/browser evidence before
+freezing a producer; existing installed campaigns do not qualify these changes.
+
 The candidate will include #149/#177 and the experimental Interactions consumer
 contract already prepared for 0.24.1, plus the accepted canvas-menu and controls
 work under `uibcdf/molsysviewer#179` and `uibcdf/molsysviewer#180`.
@@ -146,7 +152,7 @@ contact follows qualification of its exact files; this does not freeze a SHA/ref
 core selection/aggregation from experimental native diagnostics and their
 recovery. Prior f272e384 required source checks now complete: scientific 6/6,
 Python 3.14 hosts 3/3, core 43/43 and notebooks 25/25. Qt's official failure is
-retained. The new wiring needs its own source evidence; neither result freezes
+retained. The new wiring has its own passing source evidence on 46527392; neither result freezes
 a producer or qualifies package bytes. Broad docs precede the next authorized
 candidate preparation; qualify its exact files before installed first contact.
 
@@ -154,3 +160,7 @@ Source `46527392` integrates #231; local full core has 3,095 passed, 21 skips
 and zero failures. Final devguide guards pass 242/242. The formatting-only
 followup preserves the test AST and separately verifies policy; new required
 hosted source outcomes are retained independently of old f272e384 results.
+
+Scientific 38370976346 passes 6/6, Python 3.14 pair 38370976339 passes 3/3 and
+core browser 38370976318 succeeds. Later #232 popup changes need their own
+source/browser receiving results and never inherit prior installed evidence.

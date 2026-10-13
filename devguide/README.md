@@ -41,6 +41,8 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- [Canvas popup parity](canvas_popup_contract.md): #232 aligns runtime, controls, preferences, keyboard and popup actions; its [closure](archive/canvas_popup_controls_parity.md) retains real widget/export guards and passing core 43/43.
+
 - [Core/Qt qualification scope](core_qt_qualification.md): #231 separates required core from native experimental diagnostics, retaining independent official outcomes and recovery watermarks.
 - [Gate receiving receipt](core_qt_qualification_20261013.json): prior exact source has scientific 6/6, Python 3.14 hosts 3/3, core 43/43 and notebooks 25/25; the new wiring passes the full local core (3,095 passed, 21 skips), with its own source evidence.
 

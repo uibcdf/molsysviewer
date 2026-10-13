@@ -872,6 +872,19 @@ export class MolSysViewerController {
     getControlsMode(): string {
         return this.model ? (this.model.get("controls_mode") || "classic") : this.localControlsMode;
     }
+    /** Initial UI projection for another canvas of this session. */
+    getCanvasUiState(): Record<string, unknown> {
+        return {
+            viewer_mode: this.getViewerMode(),
+            controls_mode: this.getControlsMode(),
+            panel_mode_style: this.getPanelModeStyle(),
+            ...Object.fromEntries([
+                "show_controls", "autohide_controls", "autohide_scope",
+                "controls_position", "controls_position_fullscreen",
+            ].filter(trait => this.model?.get(trait) !== undefined)
+                .map(trait => [trait, this.model.get(trait)])),
+        };
+    }
     getPanelModeStyle(): string {
         return this.model ? (this.model.get("panel_mode_style") || "drawer") : this.localPanelModeStyle;
     }
@@ -881,6 +894,8 @@ export class MolSysViewerController {
         if (this.addonsPanel.isExpanded()) return "addons";
         return null;
     }
+    canPopoutPanel(): boolean { return !!this.initOptions?.onPanelPopClick; }
+    hasPythonAuthority(): boolean { return this.initOptions?.hasAuthority !== false; }
 
     private savedHostPanelState: any = null;
 

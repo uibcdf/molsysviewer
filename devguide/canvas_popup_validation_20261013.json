@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-13",
+  "issue": "uibcdf/molsysviewer#232",
+  "state": "local_verified_source_integration_pending",
+  "source_commit": null,
+  "environment": {
+    "name": "molsyssuite@uibcdf_3.14",
+    "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python"
+  },
+  "guard": "molsysviewer/js/tests/e2e/controls-visibility.e2e.ts",
+  "normative": "devguide/canvas_popup_contract.md",
+  "local": {
+    "runtime_build": {
+      "command": "npm run build:runtime",
+      "exit_code": 0,
+      "package_version_metadata_unchanged": true
+    },
+    "controls_guard": {
+      "exit_code": 0,
+      "scope": "real Python exports and actual widget bootstrap/authority; stale legacy source, first mount, UI/style/keys/preferences/panel/context/trajectory/teardown plus final shadow-root input/keyboard follow-up"
+    },
+    "core_browser": {
+      "exit_code": 0,
+      "suites": 43,
+      "passed": 43,
+      "note": "Full integration passes; the small final keyboard listener placement and shadow-root assertions pass independently in the complete controls guard."
+    },
+    "python_widget": {
+      "exit_code": 0,
+      "passed": 3
+    },
+    "python_runtime_router": {
+      "exit_code": 0,
+      "passed": 67
+    },
+    "python_full": {
+      "exit_code": 1,
+      "passed": 3095,
+      "failed": 1,
+      "skipped": 21,
+      "deselected": 12,
+      "seconds": 592.83,
+      "failure": "test_relative_links_resolve_in_a_clean_checkout: new documents were not yet staged",
+      "corrected_guard": {
+        "exit_code": 0,
+        "passed": 4
+      },
+      "full_suite_not_repeated": true
+    },
+    "devguide_review": {
+      "exit_code": 0,
+      "passed": 454,
+      "includes": [
+        "reporting protocol",
+        "tracked clean-checkout links",
+        "architecture",
+        "capability audit"
+      ]
+    },
+    "evidence_directory": "/tmp/msv-popup-parity-20261013",
+    "javascript_unit": {
+      "command": "npm run test:js",
+      "exit_code": 0
+    },
+    "devguide_final": {
+      "exit_code": 0,
+      "passed": 451,
+      "scope": "after archiving/indexing #232; reporting, links, architecture and capability audit"
+    }
+  },
+  "hosted_source": {
+    "state": "not_dispatched_yet"
+  },
+  "qualification_scope": "Source/browser only. No new tag, candidate freeze, installed-pair qualification, package promotion or publication. Qt popout remains separately experimental under #51; both 1.0 publications remain paused."
+}

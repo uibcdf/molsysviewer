@@ -75,6 +75,7 @@ remain paused.
 line formatting correction keeps the test AST equal; exact policy 38371766429
 passes on `61c24e53`. Independent Qt 38370976385 preserves window/render
 failures, while offscreen/resource probes and JUnit preservation pass. New
-scientific/source-pair/core runs remain in progress in
-[the receipt](core_qt_qualification_20261013.json); prior f272e384 success is not
-transferred to their code or to future package bytes.
+scientific/source-pair/core runs now succeed on 46527392: science 6/6,
+Python 3.14 hosts 3/3 and core browser. See
+[the receipt](core_qt_qualification_20261013.json); these results do not qualify
+subsequent #232 popup changes or future package bytes.

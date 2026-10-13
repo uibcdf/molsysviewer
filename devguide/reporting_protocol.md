@@ -156,7 +156,10 @@ is exactly `molsysviewer/js/tests/e2e/controls-visibility.e2e.ts`. From
 then run `node tests/e2e/controls-visibility.e2e.js`. It is also mandatory in
 `npm run test:e2e:core`. Its real Python export and Mol*/Chromium popup check
 Cinema cycles, Dock/fullscreen, Settings, both reveal scopes, keyboard access,
-hidden-frame updates and subscription cleanup. Browser/WebGL failures fail;
+hidden-frame updates and subscription cleanup. The same guard's notebook
+scenario runs the actual widget bootstrap against a persistent Python authority
+and checks runtime/control parity, UI preferences, panel popout and single-step
+trajectory convergence in both windows. Browser/WebGL failures fail;
 `E2E_ALLOW_SKIP=1` does not qualify closure. Suffixes, globs and commands are
 rejected. The offline validator checks the fixture, actions, popup entrypoint
 and build/core registration. Its exact entrypoint is

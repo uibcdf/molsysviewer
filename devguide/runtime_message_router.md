@@ -13,7 +13,7 @@ the Qt render check on a GPU runner
 ([`pending_proposals/post_1.0/qt_render_check_on_a_gpu_runner.md`](pending_proposals/post_1.0/qt_render_check_on_a_gpu_runner.md)),
 and nothing else. The sentence that stood here until 2026-08-06 — thirteen legacy
 `molsysviewer-*` popup actions still outside the shared manifest — was stale:
-`runtime_actions.json` enumerates all thirteen with their permitted directions,
+`runtime_actions.json` enumerates the popup actions with their permitted directions,
 and `popupActionAllows` refuses anything else on host inbound, host outbound and
 popup inbound alike.
 
@@ -36,11 +36,13 @@ Before R1/R2, the popup path:
 
 Current message inventory:
 
-| Legacy message | Current meaning | Target class |
+| Wire message | Current meaning | Target class |
 |---|---|---|
 | `molsysviewer-pop-ready`, `molsysviewer-panel-ready` | endpoint readiness | event |
 | `molsysviewer-initial-sync` | host state replay | projection |
 | `molsysviewer-sync-ui`, `molsysviewer-sync-autohide` | UI state | projection |
+| `molsysviewer-popup-ui` | popup canvas preferences reconciled by host | event |
+| `molsysviewer-popup-panel` | adopt a panel window reserved on the popup click | event |
 | `molsysviewer-popup-interaction` | user intent forwarded to Python | command/event by payload |
 | `molsysviewer-sync-camera` | ephemeral camera synchronization | targeted event |
 | `molsysviewer-log-from-popout` | diagnostics | event |
@@ -49,6 +51,10 @@ Current message inventory:
 The last row is the central defect in the legacy vocabulary: direction is
 inferred from which window sent the message rather than represented in the
 message itself.
+
+The [canvas popup contract](canvas_popup_contract.md) specifies runtime identity,
+initial control preferences, bidirectional UI projections, panel-window adoption
+and single-application trajectory intents for the current implementation.
 
 This works for one viewer and modest payloads, but it does not establish who is
 authoritative, prevent cross-talk between viewers, or bound data duplication.

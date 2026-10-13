@@ -4,6 +4,7 @@ import { spawnSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { chromium } from "./e2e-browser";
+import { checkNotebookCanvasPopup } from "./canvas-popup-scenarios";
 
 const dir = dirname(fileURLToPath(import.meta.url));
 
@@ -308,6 +309,11 @@ print(json.dumps({"page": str(output), "single": str(single)}))
         // Revealing deliberately puts the actual controls above the hotspot.
         await popup.mouse.move(popupReveal.x + popupReveal.width / 2, popupReveal.y + popupReveal.height / 2);
         await popup.waitForFunction(() => document.querySelector<HTMLElement>(".molsysviewer-controls")?.style.visibility === "visible");
+        const previousFrame = Number(await popup.locator('[data-molsysviewer-trajectory-frame="true"]').inputValue());
+        await popup.getByTitle("Next Step", { exact: true }).click();
+        const nextFrame = (previousFrame + 1) % 3;
+        for (const canvas of [page, popup]) await canvas.waitForFunction(frame =>
+            document.querySelector<HTMLInputElement>('[data-molsysviewer-trajectory-frame="true"]')?.value === String(frame), nextFrame);
         await selectMode("Cinema");
         await popup.waitForFunction(() => !document.querySelector(".molsysviewer-controls"));
         assert.equal(await popup.locator('[data-molsysviewer-trajectory-controls="true"]').count(), 1);
@@ -324,6 +330,7 @@ print(json.dumps({"page": str(output), "single": str(single)}))
         assert.ok(await controls.getByTitle("Panel mode (N / W)", { exact: true }).evaluate(element => element === document.activeElement));
         assert.deepEqual(errors, []);
         console.log("[E2E controls] actual Python export/popup: whole-group fade, inert fading input, Cinema slide, two-second discovery, preset cycles, scopes, Settings, Dock/fullscreen, keyboard and stable subscriptions pass");
+        await checkNotebookCanvasPopup(page, dir);
     } finally { await browser.close(); }
 }
 withFixtureWorkspace("controls-visibility", run).catch(error => { console.error(error); process.exit(1); });

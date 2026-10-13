@@ -1,5 +1,12 @@
 # Path to 1.0.0 (Unified Release Plan)
 
+**Current work — 2026-10-13:** the #232
+[canvas popup parity](canvas_popup_contract.md) is closed with local core 43/43
+and final keyboard/transport guards. Receive its new exact hosted source CI
+before broad documentation. #231 core science/source-pair/browser
+gates now all pass at 46527392; its independent Qt failure remains explicit.
+Both 1.0 publications and 0.25.0 candidate freezing remain paused.
+
 **Current gate alignment — 2026-10-13:** #231 separates required core from
 [experimental native Qt diagnostics](core_qt_qualification.md). The prior exact
 f272e384 source has scientific 6/6, Python 3.14 hosts 3/3, hosted core 43/43 and

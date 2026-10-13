@@ -1,10 +1,13 @@
 # Development roadmap
 
-**Current receiving review — 2026-10-13:** finish #231's
-[core/Qt qualification scope](core_qt_qualification.md) and its own source
-validation. Previous f272e384 required hosted gates are complete. Next complete
-broad documentation, then prepare/qualify the agreed 0.25.0 candidate and
-perform human installed first contact before publication. Both 1.0 publications remain paused.
+**Current receiving review — 2026-10-13:** #232
+[canvas popup parity](canvas_popup_contract.md) is closed with local core 43/43
+and final keyboard/transport guards; receive its new exact hosted source CI.
+#231's core/Qt separation now has passing scientific 6/6, Python 3.14 hosts 3/3
+and core browser on 46527392; the independent Qt failure remains explicit.
+Next complete broad documentation, prepare/qualify the agreed 0.25.0 candidate
+and perform human installed first contact before publication. Both 1.0
+publications remain paused.
 
 **Delivered design rounds — 2026-10-10:** the
 [canvas context-menu redesign](canvas_context_menu_pre_1_0_plan.md) (#179/#180)

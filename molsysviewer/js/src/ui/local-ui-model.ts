@@ -1,5 +1,5 @@
 /** Observable UI traits for exported pages and popups without a widget model. */
-export function createLocalUiModel(initial: Record<string, unknown> = {}) {
+export function createLocalUiModel(initial: Record<string, unknown> = {}, onSave?: (values: Record<string, unknown>) => void) {
     const values: Record<string, unknown> = {
         viewer_mode: "integrated", controls_mode: "minimal", panel_mode_style: "integrated",
         show_controls: true, autohide_controls: true, autohide_scope: "controls",
@@ -19,6 +19,6 @@ export function createLocalUiModel(initial: Record<string, unknown> = {}) {
             listeners.get(event)!.add(callback);
         },
         off(event: string, callback: () => void) { listeners.get(event)?.delete(callback); },
-        save_changes() {},
+        save_changes() { onSave?.({ ...values }); },
     };
 }
