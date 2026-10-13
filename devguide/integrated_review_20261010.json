@@ -48,7 +48,6 @@
     }
   },
   "pending": [
-    "fresh applicable hosted CI",
     "documentation and human installed first contact",
     "later authorized frozen candidate and installed-byte qualification"
   ],
@@ -370,5 +369,128 @@
       }
     ],
     "note": "Scientific/Python3.14/core/notebooks still pending; no terminal passing result is inferred"
+  },
+  "terminal_hosted_source_review_20261013": {
+    "source_commit": "f272e3845737568392aefb9397776c6e34675118",
+    "inspected_at": "2026-10-13T08:25:47.190981+00:00",
+    "runs": [
+      {
+        "conclusion": "success",
+        "databaseId": 38062652204,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "Conda publication governance",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062652204"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38062651941,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "MolSysSuite policy",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062651941"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38062650303,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "Ruff Lint",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062650303"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38062650323,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "Documentation notebooks",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062650323"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38062650521,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "CI_e2e",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062650521"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38062650331,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "Python 3.14 source pair",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062650331"
+      },
+      {
+        "conclusion": "failure",
+        "databaseId": 38062650438,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "CI",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062650438"
+      }
+    ],
+    "scientific_cells": [
+      {
+        "id": 114243880629,
+        "name": "Test on macos-15, Python 3.12",
+        "conclusion": "success"
+      },
+      {
+        "id": 114243880789,
+        "name": "Test on macos-15, Python 3.11",
+        "conclusion": "success"
+      },
+      {
+        "id": 114243880804,
+        "name": "Test on ubuntu-latest, Python 3.13",
+        "conclusion": "success"
+      },
+      {
+        "id": 114243880812,
+        "name": "Test on macos-15, Python 3.13",
+        "conclusion": "success"
+      },
+      {
+        "id": 114243880828,
+        "name": "Test on ubuntu-latest, Python 3.12",
+        "conclusion": "success"
+      },
+      {
+        "id": 114243880833,
+        "name": "Test on ubuntu-latest, Python 3.11",
+        "conclusion": "success"
+      }
+    ],
+    "python314_hosts": [
+      {
+        "id": 114243880533,
+        "name": "Source pair on macos-15, Python 3.14",
+        "conclusion": "success"
+      },
+      {
+        "id": 114243880753,
+        "name": "Source pair on ubuntu-latest, Python 3.14",
+        "conclusion": "success"
+      },
+      {
+        "id": 114243880797,
+        "name": "Source pair on windows-2025, Python 3.14",
+        "conclusion": "success"
+      }
+    ],
+    "core_suites": 43,
+    "notebooks": {
+      "total": 25,
+      "executed": 25,
+      "failed": 0
+    },
+    "qt": {
+      "job_id": 114243880832,
+      "conclusion": "failure",
+      "native_diagnosis": "Bridge not ready: exported scene has no WebGL canvas; could not create a WebGL rendering context.",
+      "scope": "experimental; official CI workflow conclusion stays failure"
+    }
   }
 }

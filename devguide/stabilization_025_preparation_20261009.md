@@ -61,8 +61,8 @@ claiming that the full still-pending pair is green.
 The subsequent core stopped before PNG on keyboard focus transfer (#209). Its
 shared-owner correction and expanded Enter/Space/fullscreen/static-scene/popup
 guard pass locally; integrated cba156d8 core 38041459348 passes 43/43.
-Latest scientific/source-pair campaigns still need review; experimental Qt
-failure is separate.
+Later f272e384 scientific/source-pair campaigns now have complete required
+results; experimental Qt failure remains separate.
 
 The user guide is [Using the canvas context menu](../docs/content/user/viewer/context_menu.md).
 Normative behavior remains in [gestures and menus](interaction_gestures_and_menus.md)
@@ -135,6 +135,17 @@ Source `f272e384` closes #200/#228–#230 under
 [the integrated review](integrated_review_20261010.md). It passes 13 resource,
 137 scientific, 241 final policy and 43/43 core-browser checks. The single
 complete Python run retains eight experimental Qt context failures after six
-bookkeeping repairs. Fresh applicable hosted CI remains pending. Include these
-fixes in the future producer after documentation and final installed first
-contact; this does not freeze a SHA/ref or authorize staging/publication.
+bookkeeping repairs. Its applicable hosted core results are now inspected in
+the Oct-13 terminal section. Include these
+fixes in the future producer after documentation; final installed first
+contact follows qualification of its exact files; this does not freeze a SHA/ref or authorize staging/publication.
+
+## Gate alignment and prior terminal CI — 2026-10-13
+
+[The core/Qt contract](core_qt_qualification.md) under #231 separates required
+core selection/aggregation from experimental native diagnostics and their
+recovery. Prior f272e384 required source checks now complete: scientific 6/6,
+Python 3.14 hosts 3/3, core 43/43 and notebooks 25/25. Qt's official failure is
+retained. The new wiring needs its own source evidence; neither result freezes
+a producer or qualifies package bytes. Broad docs precede the next authorized
+candidate preparation; qualify its exact files before installed first contact.

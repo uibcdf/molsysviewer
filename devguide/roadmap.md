@@ -1,6 +1,12 @@
 # Development roadmap
 
-**Current execution order — 2026-10-10:** the
+**Current receiving review — 2026-10-13:** finish #231's
+[core/Qt qualification scope](core_qt_qualification.md) and its own source
+validation. Previous f272e384 required hosted gates are complete. Next complete
+broad documentation, then prepare/qualify the agreed 0.25.0 candidate and
+perform human installed first contact before publication. Both 1.0 publications remain paused.
+
+**Delivered design rounds — 2026-10-10:** the
 [canvas context-menu redesign](canvas_context_menu_pre_1_0_plan.md) (#179/#180)
 is accepted. The authorized Studio round (#181–#188), including removal
 of the MolSysMT addon, is implemented. The second Studio round (#190–#197,
@@ -16,10 +22,10 @@ over-budget empty region keeps its frozen snapshot and isolation on restoration.
 Its six hosted scientific cells pass (separate Qt failure retained). #198 closes
 with the measured PNG lifecycle correction and 43/43 Linux source-pair core
 guards. The distinct keyboard focus reversal (#209) is corrected with an expanded
-real-browser guard. Full cba156d8 core integration passes 43/43; remaining
-scientific/macOS/source-pair jobs are not yet declared successful.
-Then prepare and qualify the agreed 0.25.0 candidate, complete public documentation
-and installed first contact, and independently qualify the eventual 1.0 producer.
+real-browser guard. Full cba156d8 core integration passes 43/43. The later exact f272e384 source
+also completes scientific 6/6, Python 3.14 hosts 3/3 and core/notebook checks.
+Complete documentation, then prepare and qualify the agreed 0.25.0 candidate,
+perform installed first contact and independently qualify the eventual 1.0 producer.
 Viewer/MolSysMT 1.0 publication is paused by the maintainer. Keep the
 [0.24.1 build-1 preparation](stabilization_0241_preparation_20261008.md) and its
 exact files/evidence fixed; they do not qualify the changed menu. The next

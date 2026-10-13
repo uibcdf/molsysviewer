@@ -57,7 +57,7 @@ and published package identities do not change.
 Experimental Qt and forced-termination exceptions remain owned under #109/#100;
 neither is certified by software-rendered Playwright checks. Old hosted results
 keep their exact old source scope. Fresh applicable hosted CI must use the
-integrated commit; those new hosted outcomes remain pending. Final human installed first contact, documentation and exact
+integrated commit; terminal results are now inspected in the section below. Final human installed first contact, documentation and exact
 candidate-byte qualification remain before 1.0.
 
 ## Closeout
@@ -82,3 +82,13 @@ work is preserved. Fresh automatic source CI retains exact `f272e384`: scientifi
 `38062650438`, Python 3.14 pair `38062650331`, core browser `38062650521` and
 notebooks `38062650323` are pending. Lint, suite policy and publication governance
 already pass. These are source gates, without tag/build/promotion authority.
+
+## Terminal hosted review — 2026-10-13
+
+Exact f272e384 passes scientific 6/6, Python 3.14 hosts 3/3, hosted core 43/43
+and notebooks 25/25, plus lint/policy/governance. The official scientific CI
+workflow remains failure solely on Qt's inability to create WebGL, confirmed
+with the native job log; secondary DBus stderr is not substituted as its cause.
+The receipt preserves both the original Oct-10 pending snapshot and this
+terminal inspection. New core/Qt gate wiring is owned by #231 and has separate
+source evidence; these results do not certify its eventual candidate bytes.

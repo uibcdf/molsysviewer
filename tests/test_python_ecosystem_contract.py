@@ -40,7 +40,7 @@ def test_test_environments_pin_the_reviewed_published_receptor(name):
     assert not any("pytest-receptor" in item for item in project["project"]["dependencies"])
 
 
-@pytest.mark.parametrize("filename", ["CI.yaml", "ci-python-314-source-pair.yaml"])
+@pytest.mark.parametrize("filename", ["CI.yaml", "CI_qt_experimental.yaml", "ci-python-314-source-pair.yaml"])
 def test_every_hosted_pytest_command_selects_ci_and_an_executable_rerun(filename):
     workflow = yaml.load((ROOT / ".github/workflows" / filename).read_text(), Loader=yaml.BaseLoader)
     commands = []
@@ -59,7 +59,7 @@ def test_every_hosted_pytest_command_selects_ci_and_an_executable_rerun(filename
                 step for step in job["steps"] if step.get("name") == "Record published pytest tool versions"
             )
             assert f"assert version('pytest-receptor') == '{RECEPTOR_VERSION}'" in version_step["run"]
-    assert len(commands) == 3
+    assert len(commands) == (1 if filename == "CI.yaml" else 3)
     for tokens in commands:
         assert tokens[tokens.index("pytest") - 2 : tokens.index("pytest")] == ["python", "-m"]
         assert "--receptor=ci" in tokens
@@ -69,9 +69,13 @@ def test_every_hosted_pytest_command_selects_ci_and_an_executable_rerun(filename
         main = next(tokens for tokens in commands if "--junitxml=junit.xml" in tokens)
         assert {"--cov-config=.coveragerc", "--cov=molsysviewer", "--cov-report=xml"} <= set(main)
         assert "-k" not in main and "--ignore" not in main
-        assert {tokens[tokens.index("-k") + 1] for tokens in commands if "-k" in tokens} == {
+        assert main[main.index("-m", main.index("pytest") + 1) + 1] == "not qt_runtime"
+    elif filename == "CI_qt_experimental.yaml":
+        assert all(tokens[tokens.index("-m", tokens.index("pytest") + 1) + 1] == "qt_runtime" for tokens in commands)
+        assert {tokens[tokens.index("-k") + 1] for tokens in commands} == {
             "qt_live_model_smoke_real_window",
             "full_render_gpu",
+            "not qt_live_model_smoke_real_window and not full_render_gpu",
         }
     else:
         assert any("tests/" in tokens for tokens in commands)

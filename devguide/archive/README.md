@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Core and experimental Qt gates](core_and_experimental_qt_gates.md) — #231 separates native Qt diagnostics from required core/release checks and recovery, with actual collection and fail-closed guards.
+
 - [Temporary resource owner review](temporary_resource_owner_review.md) — #200 records applicable owners, caller protection, managed cleanup, retained evidence and bounded Qt/forced-termination exceptions.
 - [Headless export resources](headless_export_resource_ownership.md) — #228 renders from read-only packages with managed HTML and explicit browser/thread/socket close.
 - [Browser fixture resources](browser_fixture_resource_ownership.md) — #229 gives exported fixtures a managed suite/runner lifetime through browser verification, preserving caller output.

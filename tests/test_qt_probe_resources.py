@@ -11,6 +11,8 @@ import pytest
 
 from tests import test_standalone
 
+pytestmark = pytest.mark.qt_runtime
+
 REAL_RUN = subprocess.run
 PROBES = [
     test_standalone.test_qt_event_transport_smoke_real_qt,

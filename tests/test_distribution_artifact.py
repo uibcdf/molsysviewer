@@ -435,7 +435,7 @@ def test_python_314_source_pair_uses_exact_provider_commit_without_metadata_bypa
     assert "git -C molsysmt-source rev-parse HEAD" in workflow
     assert "--ignore-requires-python" not in workflow
     assert "python -m pip check" in workflow
-    assert "--receptor=ci tests/" in workflow
+    assert '--receptor=ci -m "not qt_runtime" tests/' in workflow
 
     environment = yaml.safe_load((ROOT / "devtools/conda-envs/test_source_pair_py314.yaml").read_text(encoding="utf-8"))
     dependencies = _conda_dependencies_by_name(environment["dependencies"])
@@ -470,7 +470,7 @@ def test_hosted_gates_can_select_the_exact_coordinated_staging_candidate():
     dispatch must be able to put staging first and pin the agreed MolSysMT candidate.
     Otherwise the only way to make hosted CI green would be an unvalidated publication.
     """
-    for workflow_name in ("CI.yaml", "CI_e2e.yaml", "docs-notebooks.yaml"):
+    for workflow_name in ("CI.yaml", "CI_qt_experimental.yaml", "CI_e2e.yaml", "docs-notebooks.yaml"):
         path = ROOT / ".github" / "workflows" / workflow_name
         text = path.read_text(encoding="utf-8")
         workflow = yaml.safe_load(text)

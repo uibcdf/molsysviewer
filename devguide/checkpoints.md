@@ -1,5 +1,18 @@
 # Development checkpoint
 
+**Core/Qt gate alignment — 2026-10-13:** #231 implements the
+[explicit qualification scope](core_qt_qualification.md). Native process/window/
+GPU/resource diagnostics have their own workflow and recovery watermark; pure
+bridge contracts and Chromium PNG remain core. Actual collection/selection,
+backlog and release guards pass 18/18; full core passes 3,095 with 21 skips,
+zero failures/errors and 12 native Qt cases classified separately. Final devguide guards pass 242/242. New hosted
+evidence retains its own scope in [the receiving receipt](core_qt_qualification_20261013.json).
+The previous exact source f272e384 has terminal scientific 6/6, Python 3.14 hosts
+3/3, hosted core 43/43 and notebooks 25/25. Its official CI conclusion remains
+failure on experimental Qt WebGL; the old verdict is preserved. Next: complete
+this wiring review and broad documentation, then an authorized exact 0.25.0
+candidate, its installed qualification and final human first contact. Both 1.0 publications remain paused.
+
 **Integrated scientific/resource review — 2026-10-10:** #200 and #228–#230
 complete the owner disposition and correct headless PNG, browser fixture and
 preview lifetimes. Resource guards pass 13/13; real integrated science 137/137;
@@ -8,8 +21,10 @@ Python run has 3,093 passed, 14 failed, 23 skipped: six integration bookkeeping
 failures are repaired; eight known experimental Qt context failures remain.
 Global CI is not described as green. See [the review](integrated_review_20261010.md)
 and [resource contract](temporary_resource_lifecycle.md). Source is integrated in `f272e384`; all four issues are closed and the board
-agrees. Scientific 38062650438, Python 3.14 pair 38062650331, core 38062650521
-and notebooks 38062650323 are pending; lint/policy/governance pass. No candidate
+agrees. Scientific 38062650438 passes six core cells, Python 3.14 pair 38062650331
+passes all three hosts, core 38062650521 passes 43/43 and notebooks 38062650323
+passes 25/25. Lint/policy/governance pass; the scientific workflow remains
+failed on its separate experimental Qt job. No candidate
 freeze or publication is authorized. Broad docs and
 final human installed first contact remain next, with both 1.0 publications paused.
 
@@ -141,6 +156,9 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+The [core/Qt scope](core_qt_qualification.md) and its
+[receiving receipt](core_qt_qualification_20261013.json) are the current gate
+alignment handoff. Prior f272e384 required hosted checks have completed.
 The [Studio/API coverage source round](studio_coverage_20261010.md),
 #223–#225/#227, is closed with applicable hosted gates and fresh browser flows passing.
 Human final installed first contact and exact candidate gates remain before release;
@@ -1629,7 +1647,11 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current session priority (2026-10-10):** the accepted context-menu and
+**Current session priority (2026-10-13):** finish #231 and its own source
+validation, then broad docs, exact candidate preparation/qualification and
+human installed first contact before publication.
+
+**Delivered design/source rounds (2026-10-10):** the accepted context-menu and
 controls work is complete under #179/#180. Studio refinements and their
 follow-ups #189/#198/#209 are closed; integrated core 38041459348 passes 43/43.
 The authorized [public API follow-up](public_api_followup_20261010.md), #210–#222,
@@ -1637,9 +1659,9 @@ is implemented with complete applicable source CI on 792fd5f6. The
 [accepted Studio coverage round](studio_coverage_20261010.md), #223–#225/#227,
 is also complete in 33e73587 with applicable hosted gates and fresh real-browser
 flows passing. The [integrated scientific/resource review](integrated_review_20261010.md)
-now passes local science/core gates and closes #200/#228–#230. Complete fresh
-hosted evidence, broad documentation and final human installed first contact
-before freezing/qualifying 0.25.0.
+now has complete required hosted science/core gates and closes #200/#228–#230.
+Complete broad documentation before freezing/qualifying 0.25.0; human final
+installed first contact follows candidate qualification, before publication.
 Equivalent Copy Python is explicitly post-1.0 (#226). Preserve target/selection
 separation, region ownership and the
 [experimental Interactions contract](interactions_compatibility_contract.md).

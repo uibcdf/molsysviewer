@@ -39,12 +39,12 @@ def test_only_executed_complete_lanes_clear_backlog(monkeypatch):
             assert "status=success" not in path
             return {
                 "workflow_runs": [
-                    {"id": 3, "event": "push", "head_sha": "failed", "conclusion": "failure"},
+                    {"id": 3, "event": "push", "head_sha": "core-passed-qt-failed", "conclusion": "failure"},
                     {"id": 2, "event": "schedule", "head_sha": "probe", "conclusion": "success"},
                     {"id": 1, "event": "push", "head_sha": "green", "conclusion": "success"},
                 ]
             }
-        run_id = 2 if "/runs/2/" in path else 1
+        run_id = 3 if "/runs/3/" in path else 2 if "/runs/2/" in path else 1
         jobs = []
         for os_name in ("ubuntu-latest", "macos-15"):
             for version in ci_backlog.PYTHON_VERSIONS:
@@ -66,12 +66,18 @@ def test_only_executed_complete_lanes_clear_backlog(monkeypatch):
         jobs.append(
             {
                 "name": "Qt pipeline completes (Xvfb, software WebGL)",
-                "conclusion": "success",
+                "conclusion": "failure" if run_id == 3 else "success",
                 "steps": [
-                    {"name": name, "conclusion": "success"}
+                    {
+                        "name": name,
+                        "conclusion": "skipped"
+                        if run_id == 2 and name == "Qt offscreen transport and resource probes"
+                        else "success",
+                    }
                     for name in (
                         "Qt transport round-trip in a real Qt process",
                         "The structure finishes loading through WebGL",
+                        "Qt offscreen transport and resource probes",
                     )
                 ],
             }
@@ -79,11 +85,11 @@ def test_only_executed_complete_lanes_clear_backlog(monkeypatch):
         jobs.append(
             {
                 "name": "Core E2E",
-                "conclusion": "success",
+                "conclusion": "failure" if run_id == 3 else "success",
                 "steps": [
                     {
                         "name": "Run core E2E tests",
-                        "conclusion": "skipped" if run_id == 2 else "success",
+                        "conclusion": "failure" if run_id == 3 else "skipped" if run_id == 2 else "success",
                     }
                 ],
             }
@@ -92,7 +98,20 @@ def test_only_executed_complete_lanes_clear_backlog(monkeypatch):
 
     monkeypatch.setattr(ci_backlog, "api_json", fake_api)
     monkeypatch.setattr(ci_backlog, "is_ancestor", lambda *_: True)
-    assert ci_backlog.last_full_success("uibcdf/molsysviewer", "head", "token", "ci") == "green"
+    # The historical run is officially failed on Qt and remains so; core jobs
+    # completed. The unrelated failed E2E job is absent from the CI workflow.
+    original = fake_api
+
+    def workflow_api(path, token):
+        result = original(path, token)
+        if "/runs?" not in path and "jobs" in result and "Core E2E" == result["jobs"][-1]["name"]:
+            result["jobs"] = result["jobs"][:-1]
+        return result
+
+    monkeypatch.setattr(ci_backlog, "api_json", workflow_api)
+    assert ci_backlog.last_full_success("uibcdf/molsysviewer", "head", "token", "ci") == "core-passed-qt-failed"
+    assert ci_backlog.last_full_success("uibcdf/molsysviewer", "head", "token", "qt") == "green"
+    monkeypatch.setattr(ci_backlog, "api_json", original)
     assert ci_backlog.last_full_success("uibcdf/molsysviewer", "head", "token", "e2e") == "green"
 
 
@@ -121,9 +140,13 @@ def test_pr_gates_and_nightly_recovery_are_wired():
     assert "--lane ci" in ci["jobs"]["nightly-decision"]["steps"][1]["run"]
     assert "--lane e2e" in e2e["jobs"]["nightly-decision"]["steps"][1]["run"]
     assert ci["jobs"]["pr-gate"]["name"] == "PR full suite"
-    assert set(ci["jobs"]["pr-gate"]["needs"]) == {"test", "qt-pipeline"}
+    assert set(ci["jobs"]["pr-gate"]["needs"]) == {"test"}
+    assert "QT_RESULT" not in ci["jobs"]["pr-gate"]["steps"][0]["run"]
+    qt = yaml.load((workflows / "CI_qt_experimental.yaml").read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
+    assert "--lane qt" in qt["jobs"]["nightly-decision"]["steps"][1]["run"]
     assert e2e["jobs"]["e2e"]["name"] == "Core E2E"
-    for job in (ci["jobs"]["test"], ci["jobs"]["qt-pipeline"], e2e["jobs"]["e2e"]):
+    assert "qt-pipeline" not in ci["jobs"]
+    for job in (ci["jobs"]["test"], qt["jobs"]["qt-pipeline"], e2e["jobs"]["e2e"]):
         assert "pull_request" not in job["if"]
         assert "run_full" in job["if"]
         assert "probe_backlog" in job["if"]

@@ -70,7 +70,7 @@ def test_candidate_versions_are_bound_before_source_installation():
 
 
 def test_temporary_candidate_tags_are_removed_after_installation():
-    for name in ("CI.yaml", "CI_e2e.yaml", "ci-python-314-source-pair.yaml"):
+    for name in ("CI.yaml", "CI_qt_experimental.yaml", "CI_e2e.yaml", "ci-python-314-source-pair.yaml"):
         workflow = yaml.load((ROOT / ".github/workflows" / name).read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
         for job in workflow["jobs"].values():
             steps = job.get("steps", [])

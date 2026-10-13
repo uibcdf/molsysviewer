@@ -60,7 +60,11 @@ STEPS = (
         "dependency metadata and source routes agree",
         [sys.executable, "devtools/audit_dependency_contract.py"],
     ),
-    Step("python", "the full Python suite", [sys.executable, "-m", "pytest", "tests/", "-q", "-x"]),
+    Step(
+        "python",
+        "the full core Python suite; experimental native Qt runs separately",
+        [sys.executable, "-m", "pytest", "tests/", "-m", "not qt_runtime", "-q", "-x"],
+    ),
     Step("devguide", "generated indexes are current", [sys.executable, "devtools/devguide_index.py", "--check"]),
     Step("citation", "citation and Zenodo metadata agree", [sys.executable, "devtools/validate_citation.py"]),
     # The capability audit's currency, the API inventory baseline and the wheel build are

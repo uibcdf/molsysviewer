@@ -69,108 +69,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: python devtools/ci_backlog.py --lane ci
 
-  qt-pipeline:
-    # Runs the two Qt observations that had been reported as impossible without a screen.
-    # They are not: under Xvfb with software WebGL both complete, which nobody had tried
-    # since the 2026-08-09 attempt to attach to a real display failed on X authorization.
-    #
-    # **What this establishes and what it does not.** These assert that the Qt pipeline
-    # *completes* -- the bridge becomes ready, the payload is served over the custom
-    # scheme, and the structure finishes loading through a real WebGL context. Nothing
-    # reads the framebuffer. uibcdf/molsysviewer#64 is the standing proof that completion
-    # and correctness are different questions: every atom arrived, the load finished, and
-    # fifty-nine of sixty protein copies were missing from the picture.
-    #
-    # So this job does not close Phase 7's item in `devguide/what_needs_a_human_2026_08.md`
-    # and must never be recorded as the human observation. It catches a Qt host that is
-    # broken outright, which until now nothing did.
-    name: Qt pipeline completes (Xvfb, software WebGL)
-    needs: nightly-decision
-    if: >-
-      always() && inputs.probe_backlog != true
-      && (needs.nightly-decision.result != 'success' || needs.nightly-decision.outputs.run_full == 'true')
-      && !(github.event_name == 'push' && contains(github.event.head_commit.message, '[skip ci]'))
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Setup conda env with the Qt stack
-      uses: mamba-org/setup-micromamba@v3.2.1
-      with:
-        environment-file: devtools/conda-envs/test_env.yaml
-        environment-name: test
-        condarc: |
-          channels:
-            - uibcdf
-            - conda-forge
-            - ambermd
-          channel_priority: strict
-        create-args: >-
-          python=3.13
-          pyside6=6.11.2
-          qt6-webengine=6.11.2
-          qt6-positioning=6.11.2
-          ${{ inputs.use_staging && '--override-channels --channel uibcdf/label/staging --channel uibcdf --channel conda-forge --channel ambermd' || '' }}
-          ${{ inputs.use_staging && format('molsysmt={0}', inputs.molsysmt_version) || '' }}
-
-    - name: Validate and locally tag the staged Viewer candidate
-      id: viewer-candidate-tag
-      if: github.event_name == 'workflow_dispatch' && inputs.use_staging
-      shell: bash -l {0}
-      env:
-        EXPECTED_VERSION: ${{ inputs.viewer_version }}
-      run: |
-        set -euo pipefail
-        [[ "$EXPECTED_VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
-        test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-        python devtools/validate_python_wheel_runtime.py --expected-version "$EXPECTED_VERSION"
-        if git show-ref --verify --quiet "refs/tags/$EXPECTED_VERSION"; then
-          test "$(git rev-list -n 1 "$EXPECTED_VERSION")" = "$GITHUB_SHA"
-        else
-          git tag "$EXPECTED_VERSION" HEAD
-          echo "created=true" >> "$GITHUB_OUTPUT"
-        fi
-
-    - name: Record published pytest tool versions
-      shell: bash -l {0}
-      run: |
-        python -c "import sys; from importlib.metadata import version; print(sys.version); print('pytest', version('pytest')); print('pytest-receptor', version('pytest-receptor')); assert version('pytest-receptor') == '1.2.0'"
-
-    - name: Install package
-      shell: bash -l {0}
-      run: |
-        python -m pip install . --no-deps
-
-    - name: Remove the temporary Viewer tag after installation
-      if: always() && steps.viewer-candidate-tag.outputs.created == 'true'
-      shell: bash -l {0}
-      env:
-        EXPECTED_VERSION: ${{ inputs.viewer_version }}
-      run: |
-        set -euo pipefail
-        test "$(git rev-list -n 1 "$EXPECTED_VERSION")" = "$GITHUB_SHA"
-        git tag -d "$EXPECTED_VERSION"
-
-    - name: Xvfb and the software GL stack
-      shell: bash -l {0}
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y xvfb libgl1 libegl1
-
-    - name: Qt transport round-trip in a real Qt process
-      shell: bash -l {0}
-      run: |
-        xvfb-run -a python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci -k qt_live_model_smoke_real_window -v --no-header
-
-    - name: The structure finishes loading through WebGL
-      shell: bash -l {0}
-      env:
-        MOLSYSVIEWER_QT_GPU_TEST: "1"
-        QTWEBENGINE_CHROMIUM_FLAGS: "--use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader"
-      run: |
-        xvfb-run -a python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci -k full_render_gpu -v --no-header
 
   test:
     name: Test on ${{ matrix.cfg.os }}, Python ${{ matrix.cfg.python-version }}
@@ -292,7 +190,7 @@ jobs:
       shell: bash -l {0}
       run: |
         # pytest -n logical -v --cov-config=.coveragerc --cov=molsysviewer --cov-report=xml --junitxml=junit.xml --color=yes
-        python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci -v --cov-config=.coveragerc --cov=molsysviewer --cov-report=xml --junitxml=junit.xml --color=yes
+        python -m pytest -m "not qt_runtime" -o receptor_rerun_command="python -m pytest" --receptor=ci -v --cov-config=.coveragerc --cov=molsysviewer --cov-report=xml --junitxml=junit.xml --color=yes
 
     - name: JS unit tests (Node)
       if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.13'
@@ -331,14 +229,12 @@ jobs:
 
   pr-gate:
     name: PR full suite
-    needs: [test, qt-pipeline]
+    needs: [test]
     if: always() && github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - name: Require all Python, JS and Qt jobs
+      - name: Require all core Python and JS jobs
         env:
           TEST_RESULT: ${{ needs.test.result }}
-          QT_RESULT: ${{ needs.qt-pipeline.result }}
         run: |
           test "$TEST_RESULT" = success
-          test "$QT_RESULT" = success

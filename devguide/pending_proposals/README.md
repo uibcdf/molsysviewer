@@ -90,9 +90,10 @@ inventories, and **one theme, one issue** cannot apply to them.
   attachment. Old popups are closed or disconnected and never adopt a new
   `session_id` implicitly; a replacement popup authenticates and bootstraps
   from current state.
-- **Interactions:** the minimal Python/renderer/Studio implementation is tracked
-  before 1.0 in #114; compatible published-provider qualification remains open.
-  Additional families, analytics and advanced UI stay post-1.0.
+- **Interactions:** the minimal Python/renderer/Studio implementation and the
+  public 0.24.0/0.23.0 pair are delivered; #114/#140/#151 are closed. The future
+  0.25.0/1.0 candidate needs its own qualification, preserving experimental
+  contracts. Remaining analytics and advanced growth stay post-1.0.
 - **Opportunistic small work:** configurable canvas picking may be scheduled
   independently once the post-1.0 API freeze opens.
 - **Wait for dependencies:** chemical metadata waits for MolSysMT's schema;

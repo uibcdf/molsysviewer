@@ -48,7 +48,12 @@ def test_the_gate_lists_its_steps_without_running_them():
     )
 
     assert completed.returncode == 0, completed.stderr
-    assert "the full Python suite" in completed.stdout
+    assert "the full core Python suite" in completed.stdout
+
+
+def test_python_release_step_selects_core_without_hiding_optional_diagnostics():
+    step = next(step for step in STEPS if step.name == "python")
+    assert step.command == [sys.executable, "-m", "pytest", "tests/", "-m", "not qt_runtime", "-q", "-x"]
 
 
 def test_every_step_can_either_run_or_say_why_not():

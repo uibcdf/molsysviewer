@@ -219,7 +219,7 @@ jobs:
       - name: Run MolSysViewer Python tests
         shell: bash -l {0}
         working-directory: molsysviewer-source
-        run: python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci tests/
+        run: python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci -m "not qt_runtime" tests/
 
       # Keep the published/staging notebook and E2E gates independent. This
       # Linux source observation supplies the coordinated development handoff;

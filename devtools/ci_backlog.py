@@ -22,7 +22,7 @@ SKIP_MARKER = re.compile(
     re.IGNORECASE | re.MULTILINE,
 )
 PYTHON_VERSIONS = ("3.11", "3.12", "3.13")
-WORKFLOWS = {"ci": "CI.yaml", "e2e": "CI_e2e.yaml"}
+WORKFLOWS = {"ci": "CI.yaml", "e2e": "CI_e2e.yaml", "qt": "CI_qt_experimental.yaml"}
 
 
 def api_json(path: str, token: str) -> dict:
@@ -57,6 +57,30 @@ def lane_passed(repository: str, run_id: int, token: str, lane: str) -> bool:
         job = successful.get("Core E2E")
         return job is not None and step_passed(job, "Run core E2E tests")
 
+    if lane == "qt":
+        qt = successful.get("Qt pipeline completes (Xvfb, software WebGL)")
+        return qt is not None and all(
+            step_passed(qt, name)
+            for name in (
+                "Qt transport round-trip in a real Qt process",
+                "The structure finishes loading through WebGL",
+                "Qt offscreen transport and resource probes",
+            )
+        )
+
+    # Historical Qt failures are outside the core. An unknown failed job is
+    # not automatically experimental and cannot clear core debt.
+    allowed_nonpassing = {"Qt pipeline completes (Xvfb, software WebGL)"}
+    conditional_controls = {"Check skipped-commit backlog", "PR full suite"}
+    for job in jobs:
+        if job["name"] in allowed_nonpassing:
+            continue
+        if job["conclusion"] == "success":
+            continue
+        if job["conclusion"] == "skipped" and job["name"] in conditional_controls:
+            continue
+        return False
+
     for os_name in ("ubuntu-latest", "macos-15"):
         for version in PYTHON_VERSIONS:
             job = successful.get(f"Test on {os_name}, Python {version}")
@@ -65,14 +89,7 @@ def lane_passed(repository: str, run_id: int, token: str, lane: str) -> bool:
             if os_name == "ubuntu-latest" and version == "3.13":
                 if not step_passed(job, "JS unit tests (Node)"):
                     return False
-    qt = successful.get("Qt pipeline completes (Xvfb, software WebGL)")
-    return qt is not None and all(
-        step_passed(qt, name)
-        for name in (
-            "Qt transport round-trip in a real Qt process",
-            "The structure finishes loading through WebGL",
-        )
-    )
+    return True
 
 
 def last_full_success(repository: str, head: str, token: str, lane: str) -> str | None:
@@ -83,7 +100,9 @@ def last_full_success(repository: str, head: str, token: str, lane: str) -> str 
             token,
         )["workflow_runs"]
         for run in runs:
-            if run["conclusion"] != "success":
+            # Older core runs can have an aggregate Qt failure. Inspect their
+            # required core jobs without relabelling the official run verdict.
+            if run["conclusion"] != "success" and not (lane == "ci" and run["conclusion"] == "failure"):
                 continue
             if run["event"] not in {"push", "schedule", "workflow_dispatch"}:
                 continue

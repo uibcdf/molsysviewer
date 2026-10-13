@@ -14,6 +14,15 @@ schema and reusable staging policy remain owned by `uibcdf/molsyssuite#27`;
 this implementation does not adopt a new ecosystem policy or change publication
 workflows. Public documentation reconciliation remains a later block.
 
+## Python and native-host scope
+
+Under #231, the Python release step selects `tests/ -m "not qt_runtime"`.
+[The core/Qt contract](core_qt_qualification.md) retains pure bridge/transport
+contracts and Chromium PNG in core and actual native Qt probes in a separate
+failed-capable workflow. This is explicit scope classification, not a passing
+Qt result or a waiver of core, artifact, citation/version or hosted checks.
+Ordinary unfiltered pytest still runs both scopes.
+
 ## Independent checks
 
 | Step | Required evidence | What it establishes |

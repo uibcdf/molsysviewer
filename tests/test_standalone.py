@@ -1687,6 +1687,7 @@ sys.exit(0 if ok else 1)
 """
 
 
+@pytest.mark.qt_runtime
 def test_qt_event_transport_smoke_real_qt():
     """Real Qt JS->Python transport smoke (fetch -> scheme handler -> bridge).
 
@@ -1825,6 +1826,7 @@ sys.exit(0 if first_ok and second_ok else 1)
 '''
 
 
+@pytest.mark.qt_runtime
 def test_qt_payload_refs_replace_across_two_real_generations():
     """Real Qt bridge serves and acknowledges two successive payload generations."""
     try:
@@ -1863,6 +1865,7 @@ def test_qt_payload_refs_replace_across_two_real_generations():
     assert report["failed_deliveries"] == []
 
 
+@pytest.mark.qt_runtime
 def test_qt_live_model_smoke_real_window(monkeypatch):
     """Real (offscreen) Qt WebEngine smoke test for the live-message transport.
 
@@ -1956,6 +1959,7 @@ def test_qt_live_model_smoke_real_window(monkeypatch):
     assert bridge.inflight is None
 
 
+@pytest.mark.qt_runtime
 def test_qt_live_model_full_render_gpu(monkeypatch):
     """Opt-in end-to-end render test: also validates the actual 3D/WebGL draw.
 

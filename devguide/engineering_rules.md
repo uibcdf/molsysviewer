@@ -46,6 +46,16 @@ was ~10 KB behind its own source, with every test green.
 
 ## 4. Tests
 
+### Core and experimental native Qt
+
+Required core qualification uses `-m "not qt_runtime"`; real native process,
+window/GPU and resource probes use the complementary marker and their own
+failed-capable workflow. Pure bridge/transport contracts and Chromium export
+remain core. Ordinary unfiltered pytest remains available for both scopes.
+See [the core/Qt qualification contract](core_qt_qualification.md); failed or
+skipped diagnostics do not certify Qt and cannot clear its recovery watermark.
+
+
 ### A test whose name claims an outcome must assert that outcome
 
 `test_region_reset_representation_restores_base_visual_state` passed for months while asserting

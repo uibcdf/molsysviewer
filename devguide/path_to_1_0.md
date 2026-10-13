@@ -1,5 +1,14 @@
 # Path to 1.0.0 (Unified Release Plan)
 
+**Current gate alignment — 2026-10-13:** #231 separates required core from
+[experimental native Qt diagnostics](core_qt_qualification.md). The prior exact
+f272e384 source has scientific 6/6, Python 3.14 hosts 3/3, hosted core 43/43 and
+notebooks 25/25 complete; its official CI failure remains Qt only. The new
+selection/wiring retains its own [receiving evidence](core_qt_qualification_20261013.json).
+Broad documentation precedes an authorized 0.25.0 producer freeze. Qualify
+the exact built files and perform human installed first contact before
+publication. Both 1.0 publications stay paused.
+
 **Before broad documentation — 2026-10-10:** the
 [integrated scientific/resource review](integrated_review_20261010.md) closes
 #200/#228–#230 with 13 resource, 137 scientific, 241 policy and 43/43 core-browser
@@ -33,8 +42,8 @@ ownership and retirement of the MolSysMT addon. Provider cleanup is
 hydrogen-free hbonds identification is `uibcdf/molsysmt#355`. Both provider
 issues are fixed in source, without new package qualification. See the
 [Studio review](studio_review_20261009.md) for scoped source results;
-`uibcdf/molsysviewer#189` retains the macOS dynamic-region restoration diagnosis.
-Human confirmation and applicable hosted evidence remain before candidate freeze.
+`uibcdf/molsysviewer#189` is closed with its restoration guard and passing
+scientific cells. New installed candidate evidence remains before publication.
 
 **Complete board review — 2026-10-07:** [all 34 open issues are reconciled](open_issue_reconciliation_20261007.md).
 #95/#97 public installation/host promises are corrected; #78 retains developer-only

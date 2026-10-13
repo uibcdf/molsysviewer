@@ -22,10 +22,18 @@ remain authoritative. Routine double execution with plain pytest is not
 required. Inspect the native report or rerun a specific failing test with human
 output when there is a concrete diagnostic gap or suspected reporting error.
 
+## Qualification scopes
+
+Core source/release checks explicitly add `-m "not qt_runtime"`. Experimental
+native Qt uses the complementary marker and its own workflow. Ordinary pytest
+retains both scopes; pure bridge contracts and Chromium export remain core.
+See [the qualification contract](core_qt_qualification.md). This change is owned
+by #231; output-profile changes alone must never alter selection.
+
 ## Hosted tests
 
-Every maintained pytest command in `CI.yaml` and the Python 3.14 source-pair
-workflow uses `--receptor=ci`. Each job records and checks the installed tool
+Every maintained pytest command in `CI.yaml`, `CI_qt_experimental.yaml` and
+the Python 3.14 source-pair workflow uses `--receptor=ci`. Each job records and checks the installed tool
 version before running tests. Keep the Python matrix, full suite, Qt selectors,
 coverage XML and JUnit XML unchanged when changing output profiles. Configure
 `receptor_rerun_command=python -m pytest` explicitly so emitted rerun commands

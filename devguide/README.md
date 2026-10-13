@@ -41,7 +41,10 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- [Integrated scientific/resource review](integrated_review_20261010.md): #200 records local ownership and #228–#230 correct export/fixture/preview lifecycle; 137 science checks and 43/43 core suites pass, with Qt and fresh hosted CI separate.
+- [Core/Qt qualification scope](core_qt_qualification.md): #231 separates required core from native experimental diagnostics, retaining independent official outcomes and recovery watermarks.
+- [Gate receiving receipt](core_qt_qualification_20261013.json): prior exact source has scientific 6/6, Python 3.14 hosts 3/3, core 43/43 and notebooks 25/25; the new wiring passes the full local core (3,095 passed, 21 skips), with its own source evidence.
+
+- [Integrated scientific/resource review](integrated_review_20261010.md): #200 records local ownership and #228–#230 correct export/fixture/preview lifecycle; 137 science checks and 43/43 core suites pass; its exact hosted source review is complete, with Qt failure retained.
 - [Temporary resource lifecycle](temporary_resource_lifecycle.md): applicable owners, managed cleanup, retained evidence and bounded Qt/forced-termination exceptions.
 
 - [Studio coverage review](studio_coverage_20261010.md): #223–#225/#227 complete focus, visibility, work files, figure persistence and examples; #226 defers Copy Python.
@@ -53,7 +56,7 @@ Both 1.0 publications remain paused.
 - [Public Python API review](public_api_review_20261010.md): the final source round covers #210–#216 and optional handle parity #217; exact candidate and installed qualification remain separate.
 - [Public API follow-up](public_api_followup_20261010.md): #218–#222 close query scope, retired reads, mode history, handle annotations and visual-state ownership before freezing a candidate.
 
-- [Studio integration review](studio_review_20261009.md): both authorized rounds (#181–#188 and #190–#197/#199) implement native ownership, export/geometry, persistent editors, search/batches and disclosures; source/browser evidence retains Qt limits and pending #189/#198 diagnoses.
+- [Studio integration review](studio_review_20261009.md): both authorized rounds (#181–#188 and #190–#197/#199) implement native ownership, export/geometry, persistent editors, search/batches and disclosures; source/browser evidence retains Qt limits and the resolved #189/#198 follow-ups.
 - [`canvas_context_menu_pre_1_0_plan.md`](canvas_context_menu_pre_1_0_plan.md): #179's contextual workflows, picking corrections and parallel menus are accepted in the notebook; Cinema and consistent controls reveal are tracked under #180. Publication remains paused and 0.24.1 needs a replacement candidate.
 - [`open_issue_reconciliation_20261007.md`](open_issue_reconciliation_20261007.md): complete 34-issue scope review, public-promise corrections, historical publication decisions and remaining 1.0 gates.
 - [`public_distribution_contract.md`](public_distribution_contract.md): public Conda/core backend route and experimental native-host boundary.

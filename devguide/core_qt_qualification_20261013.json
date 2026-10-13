@@ -1,0 +1,280 @@
+{
+  "date": "2026-10-13",
+  "state": "local_validation_complete",
+  "issue": "uibcdf/molsysviewer#231",
+  "base_commit": "a61b75bc994e3ad674c3e7eafe53bb6b2a989c5f",
+  "previous_source_terminal_ci": {
+    "source_commit": "f272e3845737568392aefb9397776c6e34675118",
+    "inspected_at": "2026-10-13T08:25:47.190981+00:00",
+    "runs": [
+      {
+        "conclusion": "success",
+        "databaseId": 38062652204,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "Conda publication governance",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062652204"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38062651941,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "MolSysSuite policy",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062651941"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38062650303,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "Ruff Lint",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062650303"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38062650323,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "Documentation notebooks",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062650323"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38062650521,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "CI_e2e",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062650521"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 38062650331,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "Python 3.14 source pair",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062650331"
+      },
+      {
+        "conclusion": "failure",
+        "databaseId": 38062650438,
+        "headSha": "f272e3845737568392aefb9397776c6e34675118",
+        "name": "CI",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38062650438"
+      }
+    ],
+    "scientific_cells": [
+      {
+        "id": 114243880629,
+        "name": "Test on macos-15, Python 3.12",
+        "conclusion": "success"
+      },
+      {
+        "id": 114243880789,
+        "name": "Test on macos-15, Python 3.11",
+        "conclusion": "success"
+      },
+      {
+        "id": 114243880804,
+        "name": "Test on ubuntu-latest, Python 3.13",
+        "conclusion": "success"
+      },
+      {
+        "id": 114243880812,
+        "name": "Test on macos-15, Python 3.13",
+        "conclusion": "success"
+      },
+      {
+        "id": 114243880828,
+        "name": "Test on ubuntu-latest, Python 3.12",
+        "conclusion": "success"
+      },
+      {
+        "id": 114243880833,
+        "name": "Test on ubuntu-latest, Python 3.11",
+        "conclusion": "success"
+      }
+    ],
+    "python314_hosts": [
+      {
+        "id": 114243880533,
+        "name": "Source pair on macos-15, Python 3.14",
+        "conclusion": "success"
+      },
+      {
+        "id": 114243880753,
+        "name": "Source pair on ubuntu-latest, Python 3.14",
+        "conclusion": "success"
+      },
+      {
+        "id": 114243880797,
+        "name": "Source pair on windows-2025, Python 3.14",
+        "conclusion": "success"
+      }
+    ],
+    "core_suites": 43,
+    "notebooks": {
+      "total": 25,
+      "executed": 25,
+      "failed": 0
+    },
+    "qt": {
+      "job_id": 114243880832,
+      "conclusion": "failure",
+      "native_diagnosis": "Bridge not ready: exported scene has no WebGL canvas; could not create a WebGL rendering context.",
+      "scope": "experimental; official CI workflow conclusion stays failure"
+    }
+  },
+  "marker_scope": {
+    "native_qt_collected": 12,
+    "core_contract_and_chromium_tests_retained": true
+  },
+  "validation": {
+    "focused_scope_backlog_release": {
+      "passed": 18,
+      "failed": 0
+    },
+    "workflow_guards": {
+      "contract_and_source_wiring_passed_before_distribution_followup": 23,
+      "distribution_final_passed": 20,
+      "note": "Initial guard parsing used Python -m instead of pytest -m; repaired. A stale exact command check also updated. Full core includes all repaired guards."
+    },
+    "full_core": {
+      "tests": 3116,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 21,
+      "passed": 3095,
+      "seconds": 554.873,
+      "exit_code": 0,
+      "scope": "all tests selected with not qt_runtime; not an unfiltered Qt result"
+    },
+    "devguide_final": {
+      "tests": 242,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "publication": "0.25.0 unfrozen; both 1.0 publications paused",
+  "resource_owner": {
+    "path": "/tmp/msv-core-qt-gates-20261013",
+    "purpose": "source selection/workflow guards, exact old CI metadata and new regression evidence",
+    "retention": "through source CI inspection and handoff; review explicit owned paths after last use"
+  },
+  "environment": {
+    "python": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "version": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+    "provider_commit": "c38a2e146936fad4d199a26e9f5a5c5033377a9a",
+    "provider_worktree": [],
+    "qualification": "editable source development; not clean installed-pair qualification"
+  },
+  "remote_sync": {
+    "commit": "ef52674a",
+    "scope": "read-only DEPDIGEST_GUIDE.md synchronization only; no product or test code change",
+    "preserved_local_and_sandbox_work": true
+  },
+  "configuration_check": {
+    "gh_run_receptor": "valid schema=1 rules=9"
+  },
+  "logs": [
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/devguide-final.log",
+      "sha256": "cccc7697f7243d3526e88b5b7ef2bd8f60eb9ade89dba455e1c4899ea9560d8d",
+      "bytes": 320
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/devguide-final.xml",
+      "sha256": "9e624f7f2148a33b2c825553b12963b804f338e2265e8227e6cfa00789f144e9",
+      "bytes": 41971
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/distribution-tests-final.log",
+      "sha256": "c66ef7936b32d2201bf6eb901cf69cbc8e71996669c38afe1f70ad40098e04a3",
+      "bytes": 80
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/distribution-tests-final.xml",
+      "sha256": "d5a182ab1effa2af2d3eb4c53787a769a8469902344211ea74cc25f86954bfc8",
+      "bytes": 2969
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/focused.log",
+      "sha256": "341d5dca33250b815baddbafb6001e174c20bf1716bb74f3d612e77777db8938",
+      "bytes": 80
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/focused.xml",
+      "sha256": "7b1fb120fd3a31ee8d8e5ae635223db3bf610b708498e19733d3bfd1ab3b2958",
+      "bytes": 2499
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/full-core.log",
+      "sha256": "1b2a4ad32d3fa9af7070095c57691e5821be2d68b271a2a37f32028dced57dee",
+      "bytes": 17882
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/full-core.xml",
+      "sha256": "6f7febc939759e857b1dbb6d20ff64e16c27cdf4a0c2c0760a0f612f1efe0aec",
+      "bytes": 442003
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/previous-pair-jobs.json",
+      "sha256": "8e291aafc47f12b064e98143a4a180beedb03ac298734eeb177b41a39172e2cd",
+      "bytes": 18848
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/previous-scientific-jobs.json",
+      "sha256": "36c421001f0dc8e49981d7130bd38da21a5d4f25e02ef3154a3365d35e8eea62",
+      "bytes": 32284
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/previous-source-runs.json",
+      "sha256": "b95e3855355b792a8205e7125e7b78c2dc469e8c76b32c55943e83c1bb868c0f",
+      "bytes": 1553
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/workflow-tests-final.log",
+      "sha256": "d6f252ab95ef2be653249abda34581689e83b19703b1214b91b536683dce91bc",
+      "bytes": 1702
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/workflow-tests-final.xml",
+      "sha256": "86290657865a31a0ef66f30adcfbb5065d9ff3f14a93c54400deb8a1607185dc",
+      "bytes": 5321
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/workflow-tests.log",
+      "sha256": "29b44533341930a3b020c9269760d835dbdee4c78adab36aae5a3410d4c65677",
+      "bytes": 2613
+    },
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/workflow-tests.xml",
+      "sha256": "5f8dd9262449c93f02fa07b60784d7b5074902e384b2e651df033b65c6a84e6f",
+      "bytes": 3325
+    }
+  ],
+  "devguide_reconciliation": {
+    "old_source_ci_terminal": true,
+    "resolved_studio_189_198": true,
+    "minimal_interactions_published_pair_delivered": true,
+    "order": [
+      "finish source gate alignment",
+      "broad documentation",
+      "authorized candidate freeze/build",
+      "installed exact-pair qualification",
+      "human installed first contact",
+      "separately authorized publication"
+    ],
+    "historical_archives_preserved": true,
+    "shared_guides_read_only": true
+  },
+  "removed_task_owned": [
+    {
+      "path": "/tmp/msv-core-qt-gates-20261013/issue.md",
+      "sha256": "b2127b66fb73c2ec3cfbe9c749028806480beebbe0e9ff350c4dba071514e755",
+      "reason": "opening issue delivered and owning report archived; exact draft no longer needed"
+    }
+  ]
+}
