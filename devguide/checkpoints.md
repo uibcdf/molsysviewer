@@ -18,6 +18,11 @@ sandbox browser/socket restrictions and one final-frame expectation. All 25
 failed selectors pass after the fix outside the sandbox; another 48 selection/
 history/summary guards pass. This targeted recovery is not a second global pass.
 The [mirror receipt](canvas_popup_mirror_validation_20261013.json) owns this scope.
+Source is integrated directly in `main` at `c9471fe3`; all seven issues are
+closed with guard/archive evidence. Fresh hosted core 38442809595, browser
+38442809908, Python 3.14 pair 38442809327 and notebooks 38442809271 remain
+receiving; Ruff already succeeds. The independent experimental Qt run is
+38442809292. Official source conclusions stay distinct from local split coverage.
 This work does not declare a frozen 0.25.0 candidate,
 installed artifact qualification or either 1.0 publication.
 

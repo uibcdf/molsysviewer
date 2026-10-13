@@ -2,7 +2,7 @@
   "date": "2026-10-13",
   "scope": "Development source receiving: real Python/AnyWidget transport and drawing Mol*/Chromium endpoints. Not installed-artifact qualification.",
   "source_parent": "76c8cee1b2f00821820e05975609262844b27224",
-  "integrated_source_commit": null,
+  "integrated_source_commit": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
   "issues": [
     234,
     235,
@@ -272,5 +272,96 @@
     "sha256": "d7e3a770bb6f63d2518038325cf693801a95f6cfe08489a478c7a1f78c669088",
     "package_version_metadata_changed": false,
     "scope": "Runtime generated from reviewed TypeScript; not a published package."
+  },
+  "issue_board": {
+    "state": "closed",
+    "issues": [
+      234,
+      235,
+      236,
+      237,
+      238,
+      241,
+      243
+    ],
+    "verification": "gh issue close completed for all seven, each with commit/guard/archive evidence."
+  },
+  "source_ci_receiving": {
+    "observed_at_utc": "2026-10-13T17:57:30Z",
+    "runs": [
+      {
+        "conclusion": "",
+        "createdAt": "2026-10-13T17:57:13Z",
+        "databaseId": 38442809908,
+        "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+        "status": "queued",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809908",
+        "workflowName": "CI_e2e"
+      },
+      {
+        "conclusion": "",
+        "createdAt": "2026-10-13T17:57:13Z",
+        "databaseId": 38442809595,
+        "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+        "status": "queued",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809595",
+        "workflowName": "CI"
+      },
+      {
+        "conclusion": "",
+        "createdAt": "2026-10-13T17:57:13Z",
+        "databaseId": 38442810308,
+        "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+        "status": "queued",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442810308",
+        "workflowName": "Conda publication governance"
+      },
+      {
+        "conclusion": "",
+        "createdAt": "2026-10-13T17:57:13Z",
+        "databaseId": 38442810175,
+        "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+        "status": "queued",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442810175",
+        "workflowName": "MolSysSuite policy"
+      },
+      {
+        "conclusion": "",
+        "createdAt": "2026-10-13T17:57:12Z",
+        "databaseId": 38442809271,
+        "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809271",
+        "workflowName": "Documentation notebooks"
+      },
+      {
+        "conclusion": "",
+        "createdAt": "2026-10-13T17:57:12Z",
+        "databaseId": 38442809292,
+        "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+        "status": "queued",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809292",
+        "workflowName": "Experimental Qt diagnostics"
+      },
+      {
+        "conclusion": "",
+        "createdAt": "2026-10-13T17:57:12Z",
+        "databaseId": 38442809327,
+        "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+        "status": "queued",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809327",
+        "workflowName": "Python 3.14 source pair"
+      },
+      {
+        "conclusion": "success",
+        "createdAt": "2026-10-13T17:57:12Z",
+        "databaseId": 38442809246,
+        "headSha": "c9471fe383ab6d20dd922053c2bf17603221aa6d",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/38442809246",
+        "workflowName": "Ruff Lint"
+      }
+    ],
+    "scope": "Official fresh source conclusions remain pending except Ruff. Local split coverage does not replace this canonical hosted gate; experimental Qt remains separately scoped. No candidate/artifact/publication qualification."
   }
 }
