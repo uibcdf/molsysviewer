@@ -217,3 +217,27 @@ an installed canonical pair. Seven unrelated pre-existing `pip check` conflicts
 in the large suite environment are unchanged; this is not a clean solver gate.
 The final global source campaigns and hosted exact-source receiving retain their
 own outcomes in the receipt. Live PHMT/Jupyter is postponed and publication paused.
+
+## Approved SMonitor receiving — 2026-10-14
+
+The required `molsyssuite@uibcdf_3.14` development environment now uses public
+SMonitor **0.21.0 build 2**. Its downloaded SHA-256 and all 41 installed package
+files match the canonical Conda archive. Only SMonitor was updated; DepDigest
+remains 0.15.1. The development recipe now requires `smonitor>=0.21.0`.
+
+Existing consumer checks pass **191 tests**, with 14 intentional skips for
+catalog templates without placeholders: application-policy preservation across
+cold imports/reloads, catalog emission and reconstruction, profiling/signals,
+public argument digestion and dependency metadata. The
+[receiving receipt](support_library_receiving_20261014.json) preserves the
+provider identity, native test logs and environment provenance. The seven
+pre-existing unrelated `pip check` conflicts remain unchanged; the scientific
+backend is a development checkout, not a clean installed pair.
+
+The new metadata templates and support identity bundles are opt-in and have not
+been adopted by MolSysViewer. Existing APIs do not require a new runtime floor,
+so `smonitor>=0.13.0` remains the public/recipe minimum. The centrally synchronized
+guide is preserved as delivered. Earlier full source/browser campaigns retain
+their original dependency scope; this bounded receiving does not replace them.
+Hosted checks retain their separate outcomes. Manual PHMT/Jupyter remains
+postponed, the 0.25.0 producer unfrozen and both 1.0 publications paused.

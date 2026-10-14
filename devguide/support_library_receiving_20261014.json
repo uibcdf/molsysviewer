@@ -1,0 +1,124 @@
+{
+  "schema": "molsysviewer.support_library_receiving@1",
+  "date": "2026-10-14",
+  "status": "bounded_published_support_checks_pass",
+  "scope": "Existing MolSysViewer consumer behavior with public SMonitor 0.21.0 build 2 in the required Linux/Python 3.14 development environment; no clean solver or installed Viewer pair qualification.",
+  "viewer_base_commit": "8bc951f69261e4153b02f544c62960db15285140",
+  "provider": {
+    "version": "0.21.0",
+    "build": "py_2",
+    "source_commit": "066b69cad8896cdc126d5586fd53268af4ea6490",
+    "url": "https://conda.anaconda.org/uibcdf/noarch/smonitor-0.21.0-py_2.tar.bz2",
+    "sha256": "62b6cbae37f7fa06374af87923792f00253020955d000294b1a7d37eb9d04e56",
+    "archive_bytes": 57219,
+    "verified_package_files": 41,
+    "import_path": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/lib/python3.14/site-packages/smonitor",
+    "editable": false,
+    "producer_direct_url": {
+      "dir_info": {},
+      "url": "file:///home/runner/micromamba/envs/build/conda-bld/smonitor_1791960671533/work"
+    },
+    "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+    "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "depdigest": "0.15.1",
+    "molsysmt": {
+      "distribution_version": "0.22.4+24.g42b487869",
+      "import_path": "/home/diego/repos@uibcdf/molsysmt/molsysmt/__init__.py"
+    },
+    "pip_check": {
+      "exit_code": 1,
+      "unchanged": true,
+      "diagnostics": [
+        "packmol-memgen 2026.3.25 requires pdb2pqr, which is not installed.",
+        "proprep 1.0.0 requires pdb2pqr, which is not installed.",
+        "ndfes 3.6.5 has requirement numpy<2, but you have numpy 2.4.6.",
+        "fetkutils 3.6.5 has requirement numpy<2, but you have numpy 2.4.6.",
+        "edgembar 3.6.5 has requirement numpy<2, but you have numpy 2.4.6.",
+        "proprep 1.0.0 has requirement biopython<1.86,>=1.83, but you have biopython 1.88.",
+        "proprep 1.0.0 has requirement numpy<2.0,>=1.26, but you have numpy 2.4.6."
+      ]
+    }
+  },
+  "provider_release": "https://github.com/uibcdf/smonitor/releases/tag/0.21.0",
+  "provider_evidence": {
+    "source_matrix": "https://github.com/uibcdf/smonitor/actions/runs/38524363789",
+    "installed_matrix": "https://github.com/uibcdf/smonitor/actions/runs/38525100772",
+    "promotion": "https://github.com/uibcdf/smonitor/actions/runs/38525755012",
+    "scope": "Provider-owned evidence reviewed for identity; not counted as Viewer tests."
+  },
+  "receiving_tests": [
+    {
+      "selectors": [
+        "tests/test_smonitor_integration.py"
+      ],
+      "command": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python -m pytest tests/test_smonitor_integration.py -x -q",
+      "exit_code": 0,
+      "passed": 12,
+      "skipped": 0,
+      "failed": 0,
+      "errors": 0,
+      "log_sha256": "9622fd561f664a93f56616c699b3e3b1a664e5ddf7dd338d5823f01af15d1152",
+      "native_log": "............                                                             [100%]\n=============================== warnings summary ===============================\ntests/test_smonitor_integration.py::test_public_wrappers_emit_signal_timeline_entries\n  /home/diego/repos@uibcdf/molsysmt/molsysmt/form/molsysmt_H5MSMFileHandler/to_molsysmt_H5MSMFileHandler.py:44: LegacyH5MSMWarning: H5MSM 0.4 is deprecated; reading remains supported. Convert a copy to H5MSM 0.5 with molsysmt.h5msm.migrate_to_05(source, output). Docs: https://www.uibcdf.org/MolSysMT\n    tmp_item = H5MSMFileHandler(str(item))\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n"
+    },
+    {
+      "selectors": [
+        "tests/test_smonitor_application_policy.py",
+        "tests/test_catalog_warning_round_trip.py",
+        "tests/test_catalog_templates_render.py",
+        "tests/test_smonitor_signal_passthrough.py",
+        "tests/test_support_integrations.py",
+        "tests/test_argdigest_public_api.py",
+        "tests/test_dependency_contract.py"
+      ],
+      "command": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python -m pytest tests/test_smonitor_application_policy.py tests/test_catalog_warning_round_trip.py tests/test_catalog_templates_render.py tests/test_smonitor_signal_passthrough.py tests/test_support_integrations.py tests/test_argdigest_public_api.py tests/test_dependency_contract.py -x -q",
+      "exit_code": 0,
+      "passed": 179,
+      "skipped": 14,
+      "failed": 0,
+      "errors": 0,
+      "log_sha256": "7780259d062123c9af3e8387e59a3e48ecaa6e9ec002d4593931eb0e207c54c2",
+      "native_log": "........................................................................ [ 37%]\n............................s.ss..s..ss..sss.ss...s..............ss..... [ 74%]\n.................................................                        [100%]\n=============================== warnings summary ===============================\ntests/test_support_integrations.py::test_scoped_wrappers_pass_skip_digestion_through_instead_of_forcing_it\ntests/test_support_integrations.py::test_skipping_digestion_also_skips_the_renaming\ntests/test_argdigest_public_api.py::test_core_public_api_does_not_emit_missing_digester_warnings\ntests/test_argdigest_public_api.py::test_shape_helpers_do_not_emit_missing_digester_warnings\n  /home/diego/repos@uibcdf/molsysmt/molsysmt/form/molsysmt_H5MSMFileHandler/to_molsysmt_H5MSMFileHandler.py:44: LegacyH5MSMWarning: H5MSM 0.4 is deprecated; reading remains supported. Convert a copy to H5MSM 0.5 with molsysmt.h5msm.migrate_to_05(source, output). Docs: https://www.uibcdf.org/MolSysMT\n    tmp_item = H5MSMFileHandler(str(item))\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n"
+    }
+  ],
+  "skip_reason": "14 catalog templates have no placeholders; tests/test_catalog_templates_render.py explicitly skips the placeholder-expansion case.",
+  "capability_review": {
+    "opt_in_not_adopted": [
+      "metadata_messages / metadata_hints",
+      "collect_identity_bundle / export_identity_bundle"
+    ],
+    "upstream_fixes": [
+      "Immediate event-buffer resizing including zero",
+      "Handler-degradation diagnostics under warnings-as-errors with continued delivery",
+      "Guarded argument repr",
+      "Read-only synchronization audit and version-freeze failure handling"
+    ],
+    "consumer_runtime_changes": false,
+    "public_smonitor_floor": ">=0.13.0",
+    "development_smonitor_floor": ">=0.21.0",
+    "synchronized_guide": "The centrally owned SMONITOR_GUIDE.md is preserved as delivered; it is not manually updated by this receiving."
+  },
+  "scientific_backend": {
+    "commit": "bb175ca74c457a1ecfad2e76ce0416098bfbfe4a",
+    "clean": true,
+    "scope": "MolSysMT development checkout; distribution metadata is not a canonical installed package identity."
+  },
+  "limits": {
+    "full_source_suite_this_receiving": "Not run; bounded existing consumer checks qualify this dependency baseline change. Previous exact-source evidence retains its original dependencies and scope.",
+    "hosted_ci": "Automatic applicable checks to be inspected after the receiving commit is pushed; no new passing hosted result claimed here.",
+    "manual_phmt_jupyter": "Postponed by maintainer",
+    "viewer_025_producer": "Unfrozen",
+    "both_10_publications": "Paused"
+  },
+  "guidance_validation": {
+    "selectors": [
+      "tests/test_reporting_protocol.py",
+      "tests/test_devguide_links.py"
+    ],
+    "passed": 255,
+    "skipped": 0,
+    "failed": 0,
+    "exit_code": 0,
+    "junit_sha256": "9090109a9e411f1094f90bac19627f70be2ecd9e8012883510633ee88785e60c",
+    "generated_indexes": "up_to_date"
+  }
+}

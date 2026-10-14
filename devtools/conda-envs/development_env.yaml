@@ -16,7 +16,7 @@ dependencies:
   - argdigest>=0.13.0
   - depdigest>=0.15.1
   - packaging>=23
-  - smonitor>=0.20.0
+  - smonitor>=0.21.0
   - traitlets>=5
   - pyyaml
 

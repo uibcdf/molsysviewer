@@ -1,5 +1,14 @@
 # Path to 1.0.0 (Unified Release Plan)
 
+**Latest support receiving — 2026-10-14:** approved public SMonitor 0.21.0
+build 2 replaces 0.20.0 in development, with canonical archive/file verification
+and 191 passing existing consumer checks (14 intentional template skips).
+See the [receiving receipt](support_library_receiving_20261014.json).
+This changes the development baseline, retaining the public dependency floor
+and the original scope of prior full source qualification. No new runtime feature
+is introduced. Manual PHMT/Jupyter remains postponed, the 0.25.0 producer
+unfrozen and both 1.0 publications paused.
+
 **Latest hardening — 2026-10-13:** #233/#242 and the newly found #246 are
 implemented with passing targeted import/diagnostic/compiler/browser guards.
 The locked graph has zero registry advisories without a Mol* upgrade. Approved

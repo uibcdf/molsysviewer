@@ -1,5 +1,15 @@
 # Development checkpoint
 
+**Latest support receiving — 2026-10-14:** public SMonitor 0.21.0 build 2 is
+installed in `molsyssuite@uibcdf_3.14`; archive SHA-256 and all 41 package files
+match. The development minimum is now 0.21.0. Existing diagnostic/application
+policy, catalog, signal, argument and dependency guards pass 191 tests with
+14 intentional template skips. See the [bounded receiving receipt](support_library_receiving_20261014.json)
+and [adoption record](python_ecosystem_policy_adoption.md#approved-smonitor-receiving--2026-10-14).
+No runtime feature or public dependency floor changes. Earlier full hosted source
+qualification keeps its original dependency scope; new hosted results are separate.
+Manual PHMT/Jupyter remains postponed, 0.25.0 unfrozen and both 1.0 publications paused.
+
 **Latest authorized hardening — 2026-10-13:** #233 separates public type exports
 from effective addon discovery and passes 14 fresh-process real-metadata/import/clear cases.
 #242 repairs all nine advisories while preserving Mol* 5.4.1; clean npm ci/audit
