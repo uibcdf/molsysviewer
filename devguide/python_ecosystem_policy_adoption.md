@@ -239,5 +239,27 @@ been adopted by MolSysViewer. Existing APIs do not require a new runtime floor,
 so `smonitor>=0.13.0` remains the public/recipe minimum. The centrally synchronized
 guide is preserved as delivered. Earlier full source/browser campaigns retain
 their original dependency scope; this bounded receiving does not replace them.
-Hosted checks retain their separate outcomes. Manual PHMT/Jupyter remains
-postponed, the 0.25.0 producer unfrozen and both 1.0 publications paused.
+
+**Hosted CI follow-up is closed** on `85d30478`:
+[scientific CI 38527473201](https://github.com/uibcdf/molsysviewer/actions/runs/38527473201)
+executes all six Linux/macOS Python 3.11–3.13 cells successfully. Each Linux cell
+passes 3,130 tests with 24 skips; each macOS cell passes 3,103 with 51 skips.
+Each deselects the 12 experimental Qt cases. Native package records show public
+SMonitor 0.21.0 build 2 and MolSysMT 0.23.0. Ubuntu/Python 3.13 JS unit and coverage
+invocations each pass 330 tests.
+[Core E2E 38527472800](https://github.com/uibcdf/molsysviewer/actions/runs/38527472800)
+passes all 43 suites and its required npm audit has zero findings. Policy
+38527473264 and Conda governance 38527473587 pass. These are Viewer source checks
+against installed providers, not an installed Viewer candidate pair.
+
+[Experimental Qt 38527472807](https://github.com/uibcdf/molsysviewer/actions/runs/38527472807)
+retains two bridge/WebGL failures and ten passing offscreen checks. The receptor's
+compact DBus diagnostic does not settle a singular root cause; native assertions
+are preserved in the receipt. Scheduled follow-ups 38560659121, 38561429301 and
+38563784576 only executed backlog checks, with scientific/browser/Qt jobs skipped.
+Their successful workflow conclusions are not test passes or a Qt recovery.
+This corrects the earlier conversational characterization of the later Qt success.
+The archived-release monitor 38560373232 does not publish this development source.
+
+Broad public documentation is next. Manual PHMT/Jupyter remains postponed, the
+0.25.0 producer unfrozen and both 1.0 publications paused.

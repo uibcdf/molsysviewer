@@ -1,7 +1,7 @@
 {
   "schema": "molsysviewer.support_library_receiving@1",
   "date": "2026-10-14",
-  "status": "bounded_published_support_checks_pass",
+  "status": "bounded_published_support_checks_pass; hosted_scientific_core_pass; experimental_qt_fails",
   "scope": "Existing MolSysViewer consumer behavior with public SMonitor 0.21.0 build 2 in the required Linux/Python 3.14 development environment; no clean solver or installed Viewer pair qualification.",
   "viewer_base_commit": "8bc951f69261e4153b02f544c62960db15285140",
   "provider": {
@@ -104,7 +104,7 @@
   },
   "limits": {
     "full_source_suite_this_receiving": "Not run; bounded existing consumer checks qualify this dependency baseline change. Previous exact-source evidence retains its original dependencies and scope.",
-    "hosted_ci": "Automatic applicable checks to be inspected after the receiving commit is pushed; no new passing hosted result claimed here.",
+    "hosted_ci": "Reviewed and closed: original six-cell source matrix and core browser pass on 85d30478. Experimental Qt fails; later scheduled successes executed only backlog checks.",
     "manual_phmt_jupyter": "Postponed by maintainer",
     "viewer_025_producer": "Unfrozen",
     "both_10_publications": "Paused"
@@ -120,5 +120,532 @@
     "exit_code": 0,
     "junit_sha256": "9090109a9e411f1094f90bac19627f70be2ecd9e8012883510633ee88785e60c",
     "generated_indexes": "up_to_date"
+  },
+  "hosted_followup": {
+    "reviewed_at_utc": "2026-10-14T13:03:35.515660+00:00",
+    "source_commit": "85d30478c3b213a5b518e81642d7d1c3437f3c42",
+    "scope": "Viewer source on public support/backend packages; no frozen Viewer artifact or installed candidate-pair qualification.",
+    "verification": {
+      "receptor_version": "1.1.1",
+      "native_records": "Run identity and native job/step records cross-checked with retained logs; original files remain under /tmp/msv-ci-closure-20261014, with SHA-256 recorded per run.",
+      "counts": "Native pytest-receptor summaries in successful Run tests steps; no skipped or deselected cases counted as passes."
+    },
+    "runs": {
+      "38527473201": {
+        "id": 38527473201,
+        "name": "CI",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "head_sha": "85d30478c3b213a5b518e81642d7d1c3437f3c42",
+        "created_at": "2026-10-14T07:18:29Z",
+        "updated_at": "2026-10-14T07:34:57Z",
+        "html_url": "https://github.com/uibcdf/molsysviewer/actions/runs/38527473201",
+        "jobs": [
+          {
+            "id": 115731132059,
+            "name": "Test on ubuntu-latest, Python 3.11",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 115731132066,
+            "name": "Test on macos-15, Python 3.12",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 115731132193,
+            "name": "Test on ubuntu-latest, Python 3.12",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 115731132195,
+            "name": "Test on macos-15, Python 3.13",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 115731132252,
+            "name": "Test on macos-15, Python 3.11",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 115731132264,
+            "name": "Test on ubuntu-latest, Python 3.13",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 115731133711,
+            "name": "Check skipped-commit backlog",
+            "status": "completed",
+            "conclusion": "skipped"
+          },
+          {
+            "id": 115736897827,
+            "name": "PR full suite",
+            "status": "completed",
+            "conclusion": "skipped"
+          }
+        ],
+        "native_sha256": {
+          "run.json": "644e85538ea0d30be3e9b095b4eb8b70803e85f4d5e0b6d2e4c1ecbbecfb371d",
+          "jobs.json": "baa0d119a823ec5dfa46e15a53c0555355a12ab4d4386112f9bdc5986d288029",
+          "native.log": "a12300938369e6b2a8fab6841828f80bb8996524764533368f867633919ceeed"
+        },
+        "receptor_report": "PASS conclusion=success | profile=ci | roles=test:6,other:2 | jobs=6/8 | artifacts=0 | uibcdf/molsysviewer run=38527473201\n"
+      },
+      "38527472800": {
+        "id": 38527472800,
+        "name": "CI_e2e",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "head_sha": "85d30478c3b213a5b518e81642d7d1c3437f3c42",
+        "created_at": "2026-10-14T07:18:29Z",
+        "updated_at": "2026-10-14T07:39:38Z",
+        "html_url": "https://github.com/uibcdf/molsysviewer/actions/runs/38527472800",
+        "jobs": [
+          {
+            "id": 115731129837,
+            "name": "Core E2E",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 115731130874,
+            "name": "Check skipped-commit backlog",
+            "status": "completed",
+            "conclusion": "skipped"
+          }
+        ],
+        "native_sha256": {
+          "run.json": "bb3890efac79c863c80a834f522fca47823f72184f8cf670acd24b55f030bc06",
+          "jobs.json": "ce03f09e0d0345df524122c64f9a4d91f0387920e24c59edebd67493af07813e",
+          "native.log": "5917b4d6c0ae6ddc8cca5adca92721fa3d9139a8d90fb14f7719aca78d4bd584"
+        },
+        "receptor_report": "PASS conclusion=success | profile=ci | roles=test:1,other:1 | jobs=1/2 | artifacts=0 | uibcdf/molsysviewer run=38527472800\n"
+      },
+      "38527472807": {
+        "id": 38527472807,
+        "name": "Experimental Qt diagnostics",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "run_attempt": 1,
+        "head_sha": "85d30478c3b213a5b518e81642d7d1c3437f3c42",
+        "created_at": "2026-10-14T07:18:29Z",
+        "updated_at": "2026-10-14T07:21:14Z",
+        "html_url": "https://github.com/uibcdf/molsysviewer/actions/runs/38527472807",
+        "jobs": [
+          {
+            "id": 115731130342,
+            "name": "Qt pipeline completes (Xvfb, software WebGL)",
+            "status": "completed",
+            "conclusion": "failure"
+          },
+          {
+            "id": 115731131655,
+            "name": "Check skipped-commit backlog",
+            "status": "completed",
+            "conclusion": "skipped"
+          }
+        ],
+        "native_sha256": {
+          "run.json": "ba94650a2cfd8e63555d0be8adddb317ceab3eefe17fb5d5382629181b57cb9d",
+          "jobs.json": "cc64c049e070dc2554f66fa79a64c1bbeccd3603359259e86897f4bac8f6c09b",
+          "native.log": "b195b3320b33511257d4b633c032c5390e3ea363929a1d3eeb1335900e9a6aea"
+        },
+        "receptor_report": "FAIL conclusion=failure status=completed | uibcdf/molsysviewer | run=38527472807 attempt=1 | profile=ci\nworkflow: .github/workflows/CI_qt_experimental.yaml | jobs: 2 (failure=1, skipped=1)\nfailed groups (1, 1 jobs):\n- Qt pipeline completes (Xvfb, software WebGL) | failure | steps: Qt transport round-trip in a real Qt process, The structure finishes loading through WebGL\nci roles: test=1(failure:1); other=1(skipped:1)\nroot causes (1):\n[1] [4602:4639:1014/072004.847213:ERROR:../../../src/3rdparty/chromium/dbus/bus.cc:408] Failed to connect to the bus: Failed to connect to socket /home/runner/micromamba/envs/test/var/run/dbus/system_bus_socket: No such file or directory | jobs=1\n    evidence: 0_Qt pipeline completes (Xvfb, software WebGL).txt:1404\nartifacts (1): experimental-qt-results\nrun: https://github.com/uibcdf/molsysviewer/actions/runs/38527472807\n"
+      },
+      "38527473264": {
+        "id": 38527473264,
+        "name": "MolSysSuite policy",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "head_sha": "85d30478c3b213a5b518e81642d7d1c3437f3c42",
+        "created_at": "2026-10-14T07:18:30Z",
+        "updated_at": "2026-10-14T07:18:50Z",
+        "html_url": "https://github.com/uibcdf/molsysviewer/actions/runs/38527473264",
+        "jobs": [
+          {
+            "id": 115731131270,
+            "name": "Dependency metadata audit",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 115731131652,
+            "name": "policy / conformance",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ],
+        "native_sha256": {
+          "run.json": "3f7fc3edc3ff0629abb75cccc1eb87922f89de4b4ee12062063605cb2f93d729",
+          "jobs.json": "c3011e656f1336581f6dc5834416c2c4efbdebc9267614c4d16611b85926a486"
+        },
+        "receptor_report": "PASS conclusion=success | profile=generic | jobs=2/2 | artifacts=0 | uibcdf/molsysviewer run=38527473264\n"
+      },
+      "38527473587": {
+        "id": 38527473587,
+        "name": "Conda publication governance",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "head_sha": "85d30478c3b213a5b518e81642d7d1c3437f3c42",
+        "created_at": "2026-10-14T07:18:30Z",
+        "updated_at": "2026-10-14T07:18:45Z",
+        "html_url": "https://github.com/uibcdf/molsysviewer/actions/runs/38527473587",
+        "jobs": [
+          {
+            "id": 115731133082,
+            "name": "publication / check",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ],
+        "native_sha256": {
+          "run.json": "10e935d9e193e92e048e39772e1e1da36e1697eb2c7969dcb8d0e6ea1303940d",
+          "jobs.json": "ee5f4de2c17daabf662c5a92cbe2ac209326964081cff62559485f2582741e5e"
+        },
+        "receptor_report": "PASS conclusion=success | profile=generic | jobs=1/1 | artifacts=0 | uibcdf/molsysviewer run=38527473587\n"
+      },
+      "38560659121": {
+        "id": 38560659121,
+        "name": "CI",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "head_sha": "85d30478c3b213a5b518e81642d7d1c3437f3c42",
+        "created_at": "2026-10-14T12:00:49Z",
+        "updated_at": "2026-10-14T12:01:09Z",
+        "html_url": "https://github.com/uibcdf/molsysviewer/actions/runs/38560659121",
+        "jobs": [
+          {
+            "id": 115840616050,
+            "name": "Check skipped-commit backlog",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 115840756749,
+            "name": "PR full suite",
+            "status": "completed",
+            "conclusion": "skipped"
+          },
+          {
+            "id": 115840757146,
+            "name": "Test on ${{ matrix.cfg.os }}, Python ${{ matrix.cfg.python-version }}",
+            "status": "completed",
+            "conclusion": "skipped"
+          }
+        ],
+        "native_sha256": {
+          "run.json": "b9e359d51d7237316cb9cddb4cf0ec89fe56d27231c9501a83aacdd040f6c5c4",
+          "jobs.json": "b812346569ac73683bf6a997ea63e1ca77a9aa187d27e88e8683374b42d068d9"
+        },
+        "receptor_report": "PASS conclusion=success | profile=ci | roles=test:1,other:2 | jobs=1/3 | artifacts=0 | uibcdf/molsysviewer run=38560659121\n"
+      },
+      "38561429301": {
+        "id": 38561429301,
+        "name": "CI_e2e",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "head_sha": "85d30478c3b213a5b518e81642d7d1c3437f3c42",
+        "created_at": "2026-10-14T12:07:06Z",
+        "updated_at": "2026-10-14T12:07:29Z",
+        "html_url": "https://github.com/uibcdf/molsysviewer/actions/runs/38561429301",
+        "jobs": [
+          {
+            "id": 115843182540,
+            "name": "Check skipped-commit backlog",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 115843323467,
+            "name": "Core E2E",
+            "status": "completed",
+            "conclusion": "skipped"
+          }
+        ],
+        "native_sha256": {
+          "run.json": "e0dbd48a06eeaf5b67eab9f3a2260d45a302e95ad71c4b11c1bc23ee9f509b30",
+          "jobs.json": "bbf441e7b5101dec1ed5ec33550781c5b653b776503f8db9943e8d146ffbe81f"
+        },
+        "receptor_report": "PASS conclusion=success | profile=ci | roles=test:1,other:1 | jobs=1/2 | artifacts=0 | uibcdf/molsysviewer run=38561429301\n"
+      },
+      "38563784576": {
+        "id": 38563784576,
+        "name": "Experimental Qt diagnostics",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "head_sha": "85d30478c3b213a5b518e81642d7d1c3437f3c42",
+        "created_at": "2026-10-14T12:26:16Z",
+        "updated_at": "2026-10-14T12:26:32Z",
+        "html_url": "https://github.com/uibcdf/molsysviewer/actions/runs/38563784576",
+        "jobs": [
+          {
+            "id": 115851200373,
+            "name": "Check skipped-commit backlog",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 115851309341,
+            "name": "Qt pipeline completes (Xvfb, software WebGL)",
+            "status": "completed",
+            "conclusion": "skipped"
+          }
+        ],
+        "native_sha256": {
+          "run.json": "f96a3884e4dfc320dc09578592b81d2e2fa982f169d92cbadc4bba85eacd321a",
+          "jobs.json": "2cfed3588094813dcda6a4fd6e5bfe89a8d3a8e476b724fc4d185ffae3e9858a"
+        },
+        "receptor_report": "PASS conclusion=success | profile=ci | roles=test:1,other:1 | jobs=1/2 | artifacts=0 | uibcdf/molsysviewer run=38563784576\n"
+      },
+      "38560373232": {
+        "id": 38560373232,
+        "name": "Verify Zenodo release",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "head_sha": "85d30478c3b213a5b518e81642d7d1c3437f3c42",
+        "created_at": "2026-10-14T11:58:28Z",
+        "updated_at": "2026-10-14T11:58:43Z",
+        "html_url": "https://github.com/uibcdf/molsysviewer/actions/runs/38560373232",
+        "jobs": [
+          {
+            "id": 115839675596,
+            "name": "Probe archived releases / verify",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ],
+        "native_sha256": {
+          "run.json": "0812fe4db752c2a889df2dd3c1a866b5a6e68fcace48a9c5f5675745627b5cff",
+          "jobs.json": "62e7efd3bb471e5d4cd757824bb6f97f3dc5d7991a9a932cc6ceb1666b68a790"
+        },
+        "receptor_report": "PASS conclusion=success | release | event=schedule | ref=main | sha=85d30478c3b213a5b518e81642d7d1c3437f3c42 | tag=unverified | phases=other:2 | registry=not_observed | archive=not_observed | artifacts=1 | uibcdf/molsysviewer run=38560373232\n"
+      }
+    },
+    "scientific_matrix": [
+      {
+        "job_id": 115731132059,
+        "name": "Test on ubuntu-latest, Python 3.11",
+        "passed": 3130,
+        "skipped": 24,
+        "qt_deselected": 12,
+        "pytest_step": {
+          "name": "Run tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-14T07:19:34Z",
+          "completed_at": "2026-10-14T07:31:10Z"
+        },
+        "native_pytest_summary": "Test on ubuntu-latest, Python 3.11\tUNKNOWN STEP\t2026-10-14T07:31:08.6672357Z PASS exit=0 | 3130 passed, 24 skipped, 12 deselected | 692.52s | 1155 warnings",
+        "installed_smonitor_record": "Test on ubuntu-latest, Python 3.11\tUNKNOWN STEP\t2026-10-14T07:19:20.6427348Z   smonitor                   0.21.0        py_2                     uibcdf     ",
+        "installed_molsysmt_record": "Test on ubuntu-latest, Python 3.11\tUNKNOWN STEP\t2026-10-14T07:19:20.6397867Z   molsysmt                   0.23.0        pyabi3h03bb3b7_0         uibcdf     "
+      },
+      {
+        "job_id": 115731132066,
+        "name": "Test on macos-15, Python 3.12",
+        "passed": 3103,
+        "skipped": 51,
+        "qt_deselected": 12,
+        "pytest_step": {
+          "name": "Run tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-14T07:20:19Z",
+          "completed_at": "2026-10-14T07:34:43Z"
+        },
+        "native_pytest_summary": "Test on macos-15, Python 3.12\tUNKNOWN STEP\t2026-10-14T07:34:39.8705540Z PASS exit=0 | 3103 passed, 51 skipped, 12 deselected | 857.59s | 1590 warnings",
+        "installed_smonitor_record": "Test on macos-15, Python 3.12\tUNKNOWN STEP\t2026-10-14T07:20:02.7859530Z   smonitor                   0.21.0        py_2                     uibcdf     ",
+        "installed_molsysmt_record": "Test on macos-15, Python 3.12\tUNKNOWN STEP\t2026-10-14T07:20:02.7810230Z   molsysmt                   0.23.0        pyabi3ha0bc463_0         uibcdf     "
+      },
+      {
+        "job_id": 115731132193,
+        "name": "Test on ubuntu-latest, Python 3.12",
+        "passed": 3130,
+        "skipped": 24,
+        "qt_deselected": 12,
+        "pytest_step": {
+          "name": "Run tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-14T07:19:48Z",
+          "completed_at": "2026-10-14T07:31:34Z"
+        },
+        "native_pytest_summary": "Test on ubuntu-latest, Python 3.12\tUNKNOWN STEP\t2026-10-14T07:31:31.9040922Z PASS exit=0 | 3130 passed, 24 skipped, 12 deselected | 701.22s | 1678 warnings",
+        "installed_smonitor_record": "Test on ubuntu-latest, Python 3.12\tUNKNOWN STEP\t2026-10-14T07:19:35.5709763Z   smonitor                   0.21.0        py_2                     uibcdf     ",
+        "installed_molsysmt_record": "Test on ubuntu-latest, Python 3.12\tUNKNOWN STEP\t2026-10-14T07:19:35.5676282Z   molsysmt                   0.23.0        pyabi3h03bb3b7_0         uibcdf     "
+      },
+      {
+        "job_id": 115731132195,
+        "name": "Test on macos-15, Python 3.13",
+        "passed": 3103,
+        "skipped": 51,
+        "qt_deselected": 12,
+        "pytest_step": {
+          "name": "Run tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-14T07:20:19Z",
+          "completed_at": "2026-10-14T07:32:18Z"
+        },
+        "native_pytest_summary": "Test on macos-15, Python 3.13\tUNKNOWN STEP\t2026-10-14T07:32:15.4429940Z PASS exit=0 | 3103 passed, 51 skipped, 12 deselected | 714.30s | 1590 warnings",
+        "installed_smonitor_record": "Test on macos-15, Python 3.13\tUNKNOWN STEP\t2026-10-14T07:20:02.0164110Z   smonitor                   0.21.0        py_2                     uibcdf     ",
+        "installed_molsysmt_record": "Test on macos-15, Python 3.13\tUNKNOWN STEP\t2026-10-14T07:20:02.0137960Z   molsysmt                   0.23.0        pyabi3ha0bc463_0         uibcdf     "
+      },
+      {
+        "job_id": 115731132252,
+        "name": "Test on macos-15, Python 3.11",
+        "passed": 3103,
+        "skipped": 51,
+        "qt_deselected": 12,
+        "pytest_step": {
+          "name": "Run tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-14T07:20:25Z",
+          "completed_at": "2026-10-14T07:33:13Z"
+        },
+        "native_pytest_summary": "Test on macos-15, Python 3.11\tUNKNOWN STEP\t2026-10-14T07:33:10.7948270Z PASS exit=0 | 3103 passed, 51 skipped, 12 deselected | 763.09s | 1131 warnings",
+        "installed_smonitor_record": "Test on macos-15, Python 3.11\tUNKNOWN STEP\t2026-10-14T07:20:06.6472750Z   smonitor                   0.21.0        py_2                     uibcdf     ",
+        "installed_molsysmt_record": "Test on macos-15, Python 3.11\tUNKNOWN STEP\t2026-10-14T07:20:06.6448130Z   molsysmt                   0.23.0        pyabi3ha0bc463_0         uibcdf     "
+      },
+      {
+        "job_id": 115731132264,
+        "name": "Test on ubuntu-latest, Python 3.13",
+        "passed": 3130,
+        "skipped": 24,
+        "qt_deselected": 12,
+        "pytest_step": {
+          "name": "Run tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-14T07:19:44Z",
+          "completed_at": "2026-10-14T07:28:16Z"
+        },
+        "native_pytest_summary": "Test on ubuntu-latest, Python 3.13\tUNKNOWN STEP\t2026-10-14T07:28:14.5282412Z PASS exit=0 | 3130 passed, 24 skipped, 12 deselected | 508.36s | 1678 warnings",
+        "installed_smonitor_record": "Test on ubuntu-latest, Python 3.13\tUNKNOWN STEP\t2026-10-14T07:19:31.5203356Z   smonitor                   0.21.0        py_2                     uibcdf     ",
+        "installed_molsysmt_record": "Test on ubuntu-latest, Python 3.13\tUNKNOWN STEP\t2026-10-14T07:19:31.5182123Z   molsysmt                   0.23.0        pyabi3h03bb3b7_0         uibcdf     "
+      }
+    ],
+    "javascript_units": {
+      "scope": "Ubuntu/Python 3.13 JS unit and coverage invocations",
+      "passed_per_invocation": 330,
+      "failed": 0,
+      "skipped": 0,
+      "native_proof": [
+        "Test on ubuntu-latest, Python 3.13\tUNKNOWN STEP\t2026-10-14T07:28:26.7513246Z # tests 330",
+        "Test on ubuntu-latest, Python 3.13\tUNKNOWN STEP\t2026-10-14T07:28:26.7541624Z # pass 330",
+        "Test on ubuntu-latest, Python 3.13\tUNKNOWN STEP\t2026-10-14T07:28:26.7544509Z # fail 0",
+        "Test on ubuntu-latest, Python 3.13\tUNKNOWN STEP\t2026-10-14T07:28:26.7545105Z # skipped 0",
+        "Test on ubuntu-latest, Python 3.13\tUNKNOWN STEP\t2026-10-14T07:28:36.3691025Z # tests 330",
+        "Test on ubuntu-latest, Python 3.13\tUNKNOWN STEP\t2026-10-14T07:28:36.3691518Z # pass 330",
+        "Test on ubuntu-latest, Python 3.13\tUNKNOWN STEP\t2026-10-14T07:28:36.3691750Z # fail 0",
+        "Test on ubuntu-latest, Python 3.13\tUNKNOWN STEP\t2026-10-14T07:28:36.3692224Z # skipped 0"
+      ]
+    },
+    "browser_core": {
+      "passed_suites": 43,
+      "total_suites": 43,
+      "required_steps": [
+        {
+          "name": "Audit locked JS dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-14T07:19:29Z",
+          "completed_at": "2026-10-14T07:19:29Z"
+        },
+        {
+          "name": "Run core E2E tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-14T07:19:34Z",
+          "completed_at": "2026-10-14T07:39:36Z"
+        }
+      ],
+      "native_summary": "Core E2E\tUNKNOWN STEP\t2026-10-14T07:39:36.4295807Z [E2E runner:--lane=core] 43/43 suites passed",
+      "native_audit": [
+        "Core E2E\tUNKNOWN STEP\t2026-10-14T07:19:29.1435115Z found 0 vulnerabilities",
+        "Core E2E\tUNKNOWN STEP\t2026-10-14T07:19:29.9217574Z found 0 vulnerabilities"
+      ]
+    },
+    "experimental_qt": {
+      "conclusion": "failure",
+      "required_for_core": false,
+      "failed_selectors": [
+        "tests/test_standalone.py::test_qt_live_model_smoke_real_window",
+        "tests/test_standalone.py::test_qt_live_model_full_render_gpu"
+      ],
+      "offscreen_passed": 10,
+      "native_diagnostics": [
+        "Qt pipeline completes (Xvfb, software WebGL)\tUNKNOWN STEP\t2026-10-14T07:19:56.7532212Z FAIL exit=1 | 1 failed, 3165 deselected | 14.11s | 1 warnings | 1 root cause",
+        "Qt pipeline completes (Xvfb, software WebGL)\tUNKNOWN STEP\t2026-10-14T07:19:56.7534826Z     AssertionError: Qt message bridge failed to become ready. Status: Frontend error: Exported scene has no WebGL canvas.",
+        "Qt pipeline completes (Xvfb, software WebGL)\tUNKNOWN STEP\t2026-10-14T07:20:35.9027337Z FAIL exit=1 | 1 failed, 3165 deselected | 35.87s | 1 warnings | 1 root cause",
+        "Qt pipeline completes (Xvfb, software WebGL)\tUNKNOWN STEP\t2026-10-14T07:20:35.9029716Z     AssertionError: bridge never became ready. Status: Loading molecular system...",
+        "Qt pipeline completes (Xvfb, software WebGL)\tUNKNOWN STEP\t2026-10-14T07:21:11.0784289Z PASS exit=0 | 10 passed, 3156 deselected | 32.51s"
+      ],
+      "receptor_limit": "Compact report selected a DBus socket diagnostic; native test assertions establish bridge/WebGL failures. A singular environmental root cause is not established.",
+      "tracking": [
+        "uibcdf/molsysviewer#109",
+        "uibcdf/molsysviewer#113"
+      ],
+      "human_observation": "No real-window/GPU or PHMT/Jupyter observation inferred."
+    },
+    "scheduled_checks": {
+      "run_ids": [
+        38560659121,
+        38561429301,
+        38563784576
+      ],
+      "meaning": "Only skipped-commit backlog checks executed. Scientific, browser and Qt jobs were skipped; these green workflow conclusions are not new test passes or recoveries.",
+      "correction": "The earlier conversational characterization of the later Qt success as a new execution was imprecise; native job records confirm that the diagnostic job did not execute."
+    },
+    "zenodo_monitor": {
+      "run_id": 38560373232,
+      "meaning": "Existing archived-release monitor succeeded; this is not publication or archival of the current development source."
+    },
+    "disposition": "CI tracking closed for this source receiving; required scientific/browser checks pass. Experimental Qt failure and future installed-candidate/human gates remain explicit.",
+    "guidance_validation": {
+      "selectors": [
+        "tests/test_reporting_protocol.py",
+        "tests/test_devguide_links.py"
+      ],
+      "passed": 255,
+      "skipped": 0,
+      "failed": 0,
+      "errors": 0,
+      "exit_code": 0,
+      "junit_sha256": "cb76882c354090f42cce2257281e7b354bf48cc4ccf7ae1625eaa88bd0af9751",
+      "generated_indexes": "up_to_date"
+    },
+    "handoff_scope": "Documentation/evidence-only closure. Python/TypeScript runtime, npm lock, dependency recipe and workflows remain those of reviewed source 85d30478. Applicable full source CI is retained at that SHA; the handoff commit is not a new producer or a new installed qualification."
   }
 }

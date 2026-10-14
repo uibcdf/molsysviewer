@@ -41,7 +41,7 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- [Latest support receiving](support_library_receiving_20261014.json): public SMonitor 0.21.0 build 2 is verified in the required development environment; 191 existing consumer checks pass with 14 intentional template skips. The development minimum is updated, with no new runtime feature or public floor change; prior full source evidence retains its original dependencies and scope.
+- [Latest support receiving — CI follow-up closed](support_library_receiving_20261014.json): SMonitor 0.21.0 build 2 is verified in development; 191 consumer checks pass with 14 intentional skips. Exact 85d30478 hosted scientific 6/6, core browser 43/43, JS unit/coverage, policy and Conda governance pass. Qt retains two bridge/WebGL failures; later scheduled successes only checked backlog and skipped testing. Broad public documentation is next; manual PHMT/Jupyter remains postponed, 0.25.0 unfrozen and both 1.0 publications paused.
 
 - [Latest source hardening](addon_discovery_dependency_validation_20261013.json): #233/#242/#246 fixes pass focused guards, the clean locked npm graph has zero advisories with Mol* 5.4.1 preserved, and published SMonitor 0.20.0 / DepDigest 0.15.1 are received in development. The full local Python run retains three clear-related failures; 27 final affected checks and the final popup guard pass after correction. Browser core passes 43/43 before that final Python correction. Exact 4d15a410 required hosted source qualification passes six Python cells, all three Python 3.14 hosts, core 43/43 and notebooks 25/25; Qt fails in its separate experimental lane; manual Jupyter and publication remain paused.
 

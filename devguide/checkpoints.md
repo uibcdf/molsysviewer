@@ -6,8 +6,16 @@ match. The development minimum is now 0.21.0. Existing diagnostic/application
 policy, catalog, signal, argument and dependency guards pass 191 tests with
 14 intentional template skips. See the [bounded receiving receipt](support_library_receiving_20261014.json)
 and [adoption record](python_ecosystem_policy_adoption.md#approved-smonitor-receiving--2026-10-14).
-No runtime feature or public dependency floor changes. Earlier full hosted source
-qualification keeps its original dependency scope; new hosted results are separate.
+
+**CI follow-up is closed** on exact source `85d30478`: six Linux/macOS
+Python 3.11–3.13 regression cells and core browser 43/43 pass with public
+SMonitor 0.21.0 build 2 / MolSysMT 0.23.0. JS unit/coverage invocations each pass
+330 tests; live npm audit reports zero findings. Policy and Conda governance pass.
+Qt 38527472807 fails its two bridge/WebGL observations while ten offscreen checks
+pass. Later scheduled scientific/browser/Qt workflows only checked backlog and
+skipped testing; their success does not replace those outcomes. No runtime feature
+or public dependency floor changes. Earlier Python 3.14 source-pair/notebook
+qualification keeps its original dependency scope. Broad public documentation is next.
 Manual PHMT/Jupyter remains postponed, 0.25.0 unfrozen and both 1.0 publications paused.
 
 **Latest authorized hardening — 2026-10-13:** #233 separates public type exports
@@ -1795,7 +1803,15 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current session priority (2026-10-13):** #245/#239 and their exact required
+**Current session priority (2026-10-14):** the SMonitor receiving follow-up is
+closed at `85d30478`: six scientific cells, core browser 43/43, JS unit/coverage,
+policy and Conda governance pass. Qt's original failure remains; scheduled
+backlog-only successes are not retests. The
+[receiving receipt](support_library_receiving_20261014.json) preserves exact
+identities, native step outcomes, counts, logs/digests and the distinction from
+future installed-candidate qualification. Proceed to broad public documentation.
+
+#245/#239 and their exact required
 source qualification are complete on 19d92c25; the
 [board reconciliation](open_issue_reconciliation_20261013.md) now matches all 29
 remaining open issues to local records after #233/#242/#246 closure.

@@ -5,7 +5,11 @@ build 2 replaces 0.20.0 in development, with canonical archive/file verification
 and 191 passing existing consumer checks (14 intentional template skips).
 See the [receiving receipt](support_library_receiving_20261014.json).
 This changes the development baseline, retaining the public dependency floor
-and the original scope of prior full source qualification. No new runtime feature
+and the original scope of prior full source qualification. **CI follow-up is closed**
+on `85d30478`: six scientific cells, core browser 43/43, JS unit/coverage, policy
+and Conda governance pass. Qt's two bridge/WebGL failures remain experimental;
+ten offscreen checks pass. Later scheduled successes only checked backlog and
+skipped the test jobs. Proceed to broad public documentation. No new runtime feature
 is introduced. Manual PHMT/Jupyter remains postponed, the 0.25.0 producer
 unfrozen and both 1.0 publications paused.
 
