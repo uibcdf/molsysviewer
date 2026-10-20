@@ -189,5 +189,16 @@
       "cdp-default-context-permission.log": "453dd5b1b0750557b223107482b3758733a7577710609a42f8cbad2cca283ec1"
     }
   },
-  "followup": "Decide fallback versus optional Window Management integration; guard both setup orders and validate on the human two-display setup."
+  "followup": "Continue exploratory dogfooding; no implementation planned for this observation.",
+  "status": "closed_without_runtime_change",
+  "decision": {
+    "date": "2026-10-20",
+    "approved_by": "Diego, principal maintainer",
+    "disposition": "Evaluation concluded; proposed runtime intervention withdrawn.",
+    "reason": "Existing canvas Fullscreen button already restores the desired arrangement; extra controls and permissions would add unnecessary complexity.",
+    "normative": "devguide/canvas_popup_contract.md#browser-fullscreen-boundaries",
+    "runtime_changes": false,
+    "blocks_1_0": false,
+    "causation_limit": "Exact browser exit was not reproduced in isolated probes; this closure does not claim a browser-policy fix."
+  }
 }

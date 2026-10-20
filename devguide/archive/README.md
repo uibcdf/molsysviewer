@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Studio popout/fullscreen ordering](studio_popup_exits_canvas_fullscreen.md) — #249 closes without runtime changes; browser-controlled fullscreen loss is accepted with recovery through the existing button.
+
 - [Initial Welcome human retest](initial_welcome_human_retest.md) — #247 closes after Diego confirms the flash is gone; earlier persistence remains unexplained.
 
 - [Initial molecular Welcome](welcome_card_flashes_on_initial_molecular_view.md) — #247 retains the initial guarded fix, reopening evidence and subsequent human acceptance.

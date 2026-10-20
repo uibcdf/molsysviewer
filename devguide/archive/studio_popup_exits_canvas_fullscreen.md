@@ -1,14 +1,14 @@
 ---
 summary: Studio popout from fullscreen canvas loses fullscreen depending on preparation order
 issue: uibcdf/molsysviewer#249
-status: open
+status: withdrawn
 opened: 2026-10-20
-closed:
+closed: 2026-10-20
 severity: low
 verification: inspected
 area: [popup, fullscreen, ui]
 guard:
-normative:
+normative: devguide/canvas_popup_contract.md
 blocked_by: []
 supersedes: []
 ---
@@ -83,3 +83,18 @@ permission/secure-context checks, unsupported/denied/blocked fallbacks and
 physical two-screen receiving. Do not silently move windows or promise universal
 retention. Cover both preparation orders in original and external canvas before
 closing a future implementation. Candidate/publication pauses remain.
+
+## Resolution — 2026-10-20
+
+Diego accepts retaining the existing behavior and closing this evaluation
+without code changes. The existing Fullscreen button is sufficient to recover
+the intended two-screen arrangement; another control or permission flow would
+add complexity without sufficient benefit. No new recovery notification,
+automatic re-entry or screen-placement integration is planned for 1.0.
+
+Status `withdrawn` means the proposed runtime intervention is declined; it does
+not claim that the observed browser behavior was repaired or reproduced in the
+virtual diagnostics. The accepted boundary is recorded in
+[the popup contract](../canvas_popup_contract.md#browser-fullscreen-boundaries).
+This observation is not a 1.0 blocker. No new behavioral guard or scientific
+qualification is claimed for this documentation-only disposition.

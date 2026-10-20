@@ -1,6 +1,6 @@
 # Development checkpoint
 
-**Current dogfooding finding — 2026-10-20:** [Studio popout/fullscreen #249](pending_bugs/studio_popup_exits_canvas_fullscreen.md) records preparation-order loss on Chrome/Chromium Linux. No application exit call was found; browser destination-screen policy is consistent with the observation, but virtual probes did not reproduce it. Audit only; fallback/optional screen-placement decision and physical receiving remain.
+**Accepted without runtime changes — 2026-10-20:** [Studio popout/fullscreen #249](archive/studio_popup_exits_canvas_fullscreen.md) closes by maintainer decision. The existing Fullscreen button provides sufficient recovery; no extra control, notification, permission flow or automatic re-entry is planned for 1.0. Browser-policy causation remains qualified by the audit limits. This is not a 1.0 blocker; continue TcTIM dogfooding.
 
 **Confirmed resolved — 2026-10-20:** [#247 human retest](archive/initial_welcome_human_retest.md) confirms Welcome no longer flashes. The preceding failing retest had included kernel restart and notebook cache reload; its cause remains unknown. Existing guarded source fix and actual-Jupyter receiving stand, without another runtime change. Continue TcTIM dogfooding; #248 remains closed.
 

@@ -89,6 +89,22 @@ depending on user activation surviving a later message handler. A panel-only
 window owns its split shell and never projects that local layout back into the
 notebook's panel style. It has no canvas controls or welcome card.
 
+## Browser fullscreen boundaries
+
+Studio popout and canvas fullscreen can be used together. Retaining fullscreen
+while a new external window opens is subject to browser policy; MolSysViewer
+does not guarantee identical results for both preparation orders. If opening
+Studio exits canvas fullscreen, use the existing canvas Fullscreen button to
+restore it. Alternatively, place Studio on its intended screen before entering
+canvas fullscreen.
+
+For 1.0, keep that existing interaction without an extra recovery control,
+notification, automatic fullscreen re-entry or Window Management permission flow.
+The maintainer accepted this boundary in `uibcdf/molsysviewer#249`: the ordinary
+button provides sufficient recovery, so the audit closes without a runtime fix.
+The browser-policy explanation remains consistent with the human observation,
+not an exact reproduction of its cause on the reporter's browser version.
+
 ## Guard and qualification
 
 `molsysviewer/js/tests/e2e/controls-visibility.e2e.ts` is the bounded core guard.
