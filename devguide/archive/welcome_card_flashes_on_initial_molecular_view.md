@@ -131,6 +131,14 @@ both Python classes and the page-global runtime cache.
 Diego reports that Welcome still flashes. #247 has been reopened; the original
 source changes and passing scoped guards above remain historical evidence,
 not confirmation that the human observation is resolved. The
-[active follow-up](../pending_bugs/initial_welcome_human_retest.md) records a new
+[active follow-up](initial_welcome_human_retest.md) records a new
 actual-Jupyter clean-kernel check, which renders 3,983 TcTIM atoms without any
 Welcome-show call, and the still-unidentified difference with the human setup.
+
+## Dated acceptance — 2026-10-20
+
+Diego now confirms the flash is gone. He had already restarted the kernel and
+reloaded the notebook cache in the preceding failing retest; its cause remains
+unidentified. #247 closes again with the existing guarded fix and human
+acceptance. The follow-up link above was relocated mechanically when archiving
+that report; the earlier investigation evidence is unchanged.

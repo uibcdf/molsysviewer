@@ -1,6 +1,8 @@
 # Archived implementation plans
 
-- [Initial molecular Welcome](welcome_card_flashes_on_initial_molecular_view.md) — #247 retains the initial source fix and guards; reopened after human retest, with a dated correction and active follow-up.
+- [Initial Welcome human retest](initial_welcome_human_retest.md) — #247 closes after Diego confirms the flash is gone; earlier persistence remains unexplained.
+
+- [Initial molecular Welcome](welcome_card_flashes_on_initial_molecular_view.md) — #247 retains the initial guarded fix, reopening evidence and subsequent human acceptance.
 - [README provider status](readme_pharmacophore_addon_status.md) — #248 reports PharmacophoreMT's declared minimal status verbatim and corrects shared-vocabulary prose, with installed-provider table guards.
 
 - [Addon entry-point import order](addon_entrypoint_partial_initialization.md) — #233 separates type declarations from discovery and retries only initializing providers; real metadata/import/lifecycle guards preserve invalid-contract diagnostics.

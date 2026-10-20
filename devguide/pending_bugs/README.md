@@ -19,10 +19,6 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (1)
-
-- [`initial_welcome_human_retest.md`](initial_welcome_human_retest.md) — [#247](https://github.com/uibcdf/molsysviewer/issues/247) — Initial molecular Welcome still flashes during human notebook retest *(low, asserted)*
-
 ### Partially done (1)
 
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*

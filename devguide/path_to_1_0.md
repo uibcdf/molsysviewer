@@ -1,6 +1,6 @@
 # Path to 1.0.0 (Unified Release Plan)
 
-**Reopened — 2026-10-20:** [#247 human retest](pending_bugs/initial_welcome_human_retest.md) still reports the initial Welcome flash. Actual Jupyter with a new required-environment kernel loads 3,983 atoms without a Welcome-show call; the difference is not identified. Previous source closure below is superseded as a current status claim. #248 remains closed. Confirm the restart/runtime identity before another product change or closure.
+**Confirmed resolved — 2026-10-20:** [#247 human retest](archive/initial_welcome_human_retest.md) confirms Welcome no longer flashes. The preceding failing retest had included kernel restart and notebook cache reload; its cause remains unknown. Existing guarded source fix and actual-Jupyter receiving stand, without another runtime change. Continue TcTIM dogfooding; #248 remains closed.
 
 **Current priority — 2026-10-20:** Diego and Liliana's exploratory TcTIM / PDB
 1TCD dogfooding precedes broad public documentation and candidate freezing.

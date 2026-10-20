@@ -2,7 +2,7 @@
   "schema": "molsysviewer.initial_welcome_receiving@1",
   "date": "2026-10-20",
   "issue": "uibcdf/molsysviewer#247",
-  "status": "reopened_after_human_retest; diagnosis_pending",
+  "status": "human_retest_accepted; hosted_receiving_separate",
   "source_base": "4a4082213eb3cc6acfba7da1520e92613442a2db",
   "recorded_at_utc": "2026-10-20T18:38:14.682458+00:00",
   "scope": "Source correction and rebuilt runtime; not a frozen producer or installed package qualification.",
@@ -318,7 +318,7 @@
   },
   "human_retest_followup": {
     "date": "2026-10-20",
-    "issue_state": "reopened",
+    "issue_state": "resolved",
     "human_result": "Welcome still flashes; restart sequence and loaded bytes pending confirmation",
     "source": "ace8a80ced55cd9830f52280eabbd2a1aa2a6dca",
     "actual_jupyter": {
@@ -339,7 +339,7 @@
         "notebook.png": "1f2829c941cf3acb0e80319edfc3e97096cf56b4be0df10a8b2791761aa9d595"
       }
     },
-    "next_action": "Confirm reporter restart sequence and loaded runtime identity; no speculative source changes.",
+    "next_action": "Continue exploratory dogfooding; hosted CI receiving remains independently scoped.",
     "guidance_check": {
       "selectors": [
         "tests/test_reporting_protocol.py",
@@ -349,6 +349,13 @@
       "log_sha256": "f1bac951ee6cdcb45a1f85f38af0fa732bc050b6fee51fb555a5acab8700064c",
       "prior_failure": "New report initially untracked; clean-checkout link guard failed as designed. Staging owned report repaired it."
     },
-    "cleanup": "Own Jupyter server stopped through /api/shutdown, including its one kernel. User server/notebooks untouched."
+    "cleanup": "Own Jupyter server stopped through /api/shutdown, including its one kernel. User server/notebooks untouched.",
+    "human_acceptance": {
+      "date": "2026-10-20",
+      "result": "Diego confirms Welcome no longer appears and considers it solved.",
+      "clarification": "Earlier failing retest had already included kernel restart and notebook cache reload.",
+      "earlier_persistence_cause": "unidentified; stale-runtime hypothesis is not established",
+      "additional_runtime_changes": false
+    }
   }
 }

@@ -1,13 +1,13 @@
 ---
 summary: Initial molecular Welcome still flashes during human notebook retest
 issue: uibcdf/molsysviewer#247
-status: active
+status: resolved
 opened: 2026-10-20
-closed:
+closed: 2026-10-20
 severity: low
 verification: asserted
 area: [loading, ui, lifecycle]
-guard:
+guard: molsysviewer/js/tests/e2e/initial-welcome.e2e.ts
 normative:
 blocked_by: []
 supersedes: []
@@ -28,7 +28,7 @@ reproduced failure of the corrected runtime.
 
 ## How
 
-The previous [source closure](../archive/welcome_card_flashes_on_initial_molecular_view.md)
+The previous [source closure](welcome_card_flashes_on_initial_molecular_view.md)
 and its passed adapter-based checks are preserved. A new, isolated actual
 Jupyter Notebook 7.6.3 / JupyterLab 4.6.4 server was launched with the required
 Python 3.14 interpreter. Chromium executed the exact one-cell import/new-view/
@@ -66,3 +66,18 @@ Confirm kernel restart plus page refresh and identify the reporter's interpreter
 source path, initial-intent trait and runtime bytes if the observation persists.
 Preserve previous test outcomes without rerunning the full Python suite or
 changing the product speculatively. Candidate/publication pauses remain.
+
+## Resolution — 2026-10-20
+
+Diego confirms that Welcome no longer appears and considers the problem solved.
+He also clarifies that the earlier failing retest had already included a kernel
+restart and notebook cache reload. The reason for that earlier persistence is
+unidentified; stale runtime remains an unproven hypothesis, not a diagnosis.
+
+Close #247 with the existing source fix `92aef7d74212342df7678756f1735a9a36405269`,
+the earlier binary/JSON first-draw guard and actual-Jupyter observation, and this
+new human acceptance. No further runtime change or repeated scientific test run
+was needed. Guard `molsysviewer/js/tests/e2e/initial-welcome.e2e.ts` observes
+Welcome insertions before controller construction through molecular drawing and
+checks empty/failure controls. Hosted CI and release qualification retain their
+separate scopes in the maintained receiving receipt.
