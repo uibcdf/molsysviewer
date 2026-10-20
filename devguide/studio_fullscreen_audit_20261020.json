@@ -1,0 +1,193 @@
+{
+  "schema": "molsysviewer.studio_fullscreen_audit@1",
+  "date": "2026-10-20",
+  "issue": "uibcdf/molsysviewer#249",
+  "source": "6c49c6bc",
+  "scope": "Audit only; no product/runtime modification or new release qualification.",
+  "reporter_platform": "Chrome/Chromium on Linux, two physical displays; exact version not recorded.",
+  "finding": "No application fullscreen exit in the popout path; Chromium destination-screen security policy is consistent with the human observation. Exact reproduction unresolved.",
+  "diagnostics": {
+    "headless": {
+      "browser": "155.0.8059.84",
+      "scope": "Browser-only diagnostic. Headless, not physical dual-monitor qualification.",
+      "scenarios": [
+        {
+          "scenario": "plain",
+          "fullscreen": true,
+          "trace": [
+            {
+              "event": "entered",
+              "fullscreen": true
+            },
+            {
+              "event": "fullscreenchange",
+              "fullscreen": true
+            },
+            {
+              "event": "beforeOpen",
+              "fullscreen": true
+            },
+            {
+              "event": "afterOpen",
+              "fullscreen": true,
+              "active": false
+            }
+          ],
+          "features": "width=400,height=500",
+          "popupPosition": {
+            "left": 0,
+            "top": 0
+          },
+          "active": true
+        },
+        {
+          "scenario": "permission-same-screen",
+          "fullscreen": true,
+          "trace": [
+            {
+              "event": "entered",
+              "fullscreen": true
+            },
+            {
+              "event": "fullscreenchange",
+              "fullscreen": true
+            },
+            {
+              "event": "beforeOpen",
+              "fullscreen": true
+            },
+            {
+              "event": "afterOpen",
+              "fullscreen": true,
+              "active": false
+            }
+          ],
+          "features": "width=400,height=500",
+          "popupPosition": {
+            "left": 0,
+            "top": 0
+          },
+          "active": true
+        },
+        {
+          "scenario": "permission-other-screen",
+          "fullscreen": true,
+          "trace": [
+            {
+              "event": "entered",
+              "fullscreen": true
+            },
+            {
+              "event": "fullscreenchange",
+              "fullscreen": true
+            },
+            {
+              "event": "beforeOpen",
+              "fullscreen": true
+            },
+            {
+              "event": "afterOpen",
+              "fullscreen": true,
+              "active": false
+            }
+          ],
+          "features": "width=400,height=500,left=1600,top=0",
+          "popupPosition": {
+            "left": 1600,
+            "top": 0
+          },
+          "active": true
+        }
+      ],
+      "secondScreen": {
+        "left": 1600,
+        "top": 0,
+        "width": 1200,
+        "height": 900,
+        "availLeft": 1600,
+        "availTop": 0,
+        "availWidth": 1200,
+        "availHeight": 900,
+        "devicePixelRatio": 1,
+        "orientation": {
+          "type": "landscapePrimary",
+          "angle": 0
+        },
+        "colorDepth": 24,
+        "isExtended": true,
+        "isInternal": false,
+        "isPrimary": false,
+        "label": "Audit second screen",
+        "id": "2300000001"
+      },
+      "screens": {
+        "screens": [
+          {
+            "left": 0,
+            "top": 0,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "left": 1600,
+            "top": 0,
+            "width": 1200,
+            "height": 900
+          }
+        ],
+        "current": {
+          "left": 0,
+          "top": 0
+        }
+      }
+    },
+    "headed_virtual_display": {
+      "browser": "155.0.8059.84",
+      "scope": "Browser-only diagnostic. Headed Chromium on an isolated Xvfb display, not physical dual-monitor qualification.",
+      "scenarios": [
+        {
+          "scenario": "plain",
+          "fullscreen": true,
+          "trace": [
+            {
+              "event": "entered",
+              "fullscreen": true
+            },
+            {
+              "event": "fullscreenchange",
+              "fullscreen": true
+            },
+            {
+              "event": "beforeOpen",
+              "fullscreen": true
+            },
+            {
+              "event": "afterOpen",
+              "fullscreen": true,
+              "active": false
+            }
+          ],
+          "features": "width=400,height=500",
+          "popupPosition": {
+            "left": 0,
+            "top": 0
+          },
+          "active": true
+        }
+      ],
+      "secondScreenError": "Error: cdpSession.send: Protocol error (Emulation.addScreen): Method is only available in headless mode"
+    },
+    "interpretation": "Both probes retained DOM fullscreen, including same-screen baseline. These do not reproduce the human symptom or qualify physical dual-screen retention. User activation sampled through Playwright evaluate is not evidence of activation available to application callbacks.",
+    "logs": {
+      "probe.mjs": "fa197def91783e4a8ed9ea1c0ea1d5a87a1e4062b7405535048b470795c52fca",
+      "probe.log": "7090eb756bc1ae5835d3f0573e7f8f3b7aeff42a3faba373fa963dbf2a3c4ed0",
+      "results.json": "5d313c2534b2d8811f9b642d3a8c9342653cbaa643e9e0e11a9d4e2bd5793547",
+      "headed-probe.mjs": "0151244119d510c09f3a2c16cb212e60a433b0778b25bbd43fa2b3b544f085fb",
+      "headed-probe.log": "7a2d9a4895d69d26bde2237117f2adf5cb331e5b1622f7ab09a896046305277b",
+      "headed-results.json": "2e0dc84b5973a0a50f47990e6cff98596d7f38a234d2daf43aa56dd103ab08c6",
+      "playwright-permission-adapter.log": "797539f8285efbdf25710d568405860b73e80655c246ee8e05b3a172080340af",
+      "cdp-default-context-permission.log": "453dd5b1b0750557b223107482b3758733a7577710609a42f8cbad2cca283ec1"
+    }
+  },
+  "followup": "Decide fallback versus optional Window Management integration; guard both setup orders and validate on the human two-display setup."
+}

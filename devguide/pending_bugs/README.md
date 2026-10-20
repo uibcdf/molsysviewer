@@ -23,6 +23,10 @@ list.
 
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*
 
+### Open (1)
+
+- [`studio_popup_exits_canvas_fullscreen.md`](studio_popup_exits_canvas_fullscreen.md) — [#249](https://github.com/uibcdf/molsysviewer/issues/249) — Studio popout from fullscreen canvas loses fullscreen depending on preparation order *(low, inspected)*
+
 ### Deferred until after 1.0 (1)
 
 - [`standalone_qt_movie_camera_snapshot.md`](post_1.0/standalone_qt_movie_camera_snapshot.md) — [#36](https://github.com/uibcdf/molsysviewer/issues/36) — Movie export in the Qt host fails because the camera snapshot is never mirrored back.
