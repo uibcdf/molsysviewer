@@ -1,5 +1,7 @@
 # Development checkpoint
 
+**Reopened — 2026-10-20:** [#247 human retest](pending_bugs/initial_welcome_human_retest.md) still reports the initial Welcome flash. Actual Jupyter with a new required-environment kernel loads 3,983 atoms without a Welcome-show call; the difference is not identified. Previous source closure below is superseded as a current status claim. #248 remains closed. Confirm the restart/runtime identity before another product change or closure.
+
 **Current priority — 2026-10-20:** Diego and Liliana are conducting exploratory
 pre-1.0 dogfooding around a real TcTIM / PDB 1TCD workflow before broad public
 documentation. Check open and closed reports for each observation before filing

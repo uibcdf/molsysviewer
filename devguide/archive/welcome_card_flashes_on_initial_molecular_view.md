@@ -125,3 +125,12 @@ these scopes and subsequent hosted results separately. This is source receiving,
 not an installed-candidate, standalone-GPU or new public-release qualification.
 Human notebook receiving requires kernel restart and page refresh to replace
 both Python classes and the page-global runtime cache.
+
+## Dated correction — 2026-10-20 human retest
+
+Diego reports that Welcome still flashes. #247 has been reopened; the original
+source changes and passing scoped guards above remain historical evidence,
+not confirmation that the human observation is resolved. The
+[active follow-up](../pending_bugs/initial_welcome_human_retest.md) records a new
+actual-Jupyter clean-kernel check, which renders 3,983 TcTIM atoms without any
+Welcome-show call, and the still-unidentified difference with the human setup.

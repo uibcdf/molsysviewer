@@ -1,6 +1,6 @@
 # Archived implementation plans
 
-- [Initial molecular Welcome](welcome_card_flashes_on_initial_molecular_view.md) — #247 declares prepared molecular input before ready, suppresses Welcome through widget setup, and guards real TcTIM first draw, both transports and empty/failure controls.
+- [Initial molecular Welcome](welcome_card_flashes_on_initial_molecular_view.md) — #247 retains the initial source fix and guards; reopened after human retest, with a dated correction and active follow-up.
 - [README provider status](readme_pharmacophore_addon_status.md) — #248 reports PharmacophoreMT's declared minimal status verbatim and corrects shared-vocabulary prose, with installed-provider table guards.
 
 - [Addon entry-point import order](addon_entrypoint_partial_initialization.md) — #233 separates type declarations from discovery and retries only initializing providers; real metadata/import/lifecycle guards preserve invalid-contract diagnostics.

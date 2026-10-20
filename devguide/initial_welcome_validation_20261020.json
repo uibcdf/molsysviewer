@@ -2,7 +2,7 @@
   "schema": "molsysviewer.initial_welcome_receiving@1",
   "date": "2026-10-20",
   "issue": "uibcdf/molsysviewer#247",
-  "status": "local_receiving_complete; hosted_pending",
+  "status": "reopened_after_human_retest; diagnosis_pending",
   "source_base": "4a4082213eb3cc6acfba7da1520e92613442a2db",
   "recorded_at_utc": "2026-10-20T18:38:14.682458+00:00",
   "scope": "Source correction and rebuilt runtime; not a frozen producer or installed package qualification.",
@@ -315,5 +315,40 @@
     "scope": "Exact source CI dispatched automatically once on push. Scientific core queued and browser/source-pair/notebooks/experimental Qt in progress at observation; policy, Conda governance and Ruff pass. No complete hosted or installed-pair qualification claimed.",
     "next_action": "Inspect completed native job/step outcomes and logs on this same SHA; update this maintained receipt without changing preserved local outcomes.",
     "no_duplicate_dispatch": true
+  },
+  "human_retest_followup": {
+    "date": "2026-10-20",
+    "issue_state": "reopened",
+    "human_result": "Welcome still flashes; restart sequence and loaded bytes pending confirmation",
+    "source": "ace8a80ced55cd9830f52280eabbd2a1aa2a6dca",
+    "actual_jupyter": {
+      "notebook": "7.6.3",
+      "jupyterlab": "4.6.4",
+      "kernelspec_interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+      "workflow": "import molsysviewer as msv; view = msv.new_view('1TCD'); view",
+      "transport": "actual Jupyter widget manager and kernel, not the E2E comm adapter",
+      "initial_hint": true,
+      "factory_has_initial_structures": true,
+      "atoms": 3983,
+      "welcome_show_calls": 0,
+      "remaining_cards": 0,
+      "page_error": "TypeError: Cannot read properties of undefined (reading schema); widget rendered",
+      "logs": {
+        "probe.mjs": "9584a24f8851ae0b8619c65c26a99fa2741efa002268782d629503772bdf66e5",
+        "probe.log": "f72018179f749526884ca857407a414098044e0b1dc1e92fa45217b5a6ce12b7",
+        "notebook.png": "1f2829c941cf3acb0e80319edfc3e97096cf56b4be0df10a8b2791761aa9d595"
+      }
+    },
+    "next_action": "Confirm reporter restart sequence and loaded runtime identity; no speculative source changes.",
+    "guidance_check": {
+      "selectors": [
+        "tests/test_reporting_protocol.py",
+        "tests/test_devguide_links.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "f1bac951ee6cdcb45a1f85f38af0fa732bc050b6fee51fb555a5acab8700064c",
+      "prior_failure": "New report initially untracked; clean-checkout link guard failed as designed. Staging owned report repaired it."
+    },
+    "cleanup": "Own Jupyter server stopped through /api/shutdown, including its one kernel. User server/notebooks untouched."
   }
 }
