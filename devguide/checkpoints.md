@@ -14,7 +14,9 @@ pass. #247 is resolved in source. The [new receipt](initial_welcome_validation_2
 retains the single full Python run (3,138 passed, two corrected inventory/README
 failures, 21 skips and 12 Qt deselections) and the final affected 14/14 pass.
 #248 separately corrects the provider-declared README status. Hosted qualification
-remains pending; no second clean local full run is claimed. Human retest requires
+on `92aef7d7` remains pending; policy, Conda governance and Ruff pass while
+scientific/browser/Python-3.14/notebook campaigns await completion. Both issues
+are closed with their guards. No second clean local full run is claimed. Human retest requires
 both kernel restart and notebook-page refresh.
 Candidate freezing and both 1.0 publications remain paused.
 

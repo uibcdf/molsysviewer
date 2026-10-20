@@ -122,7 +122,7 @@
       "junit_sha256": "c5220c97aaef81db9083723b9246afd0e83360afd1dd60c5d7bdf6c540d536fb",
       "interpretation": "Single full run retained two failures; E2E inventory updated from 46 to 47 and provider README drift corrected under #248. No second global pass claimed."
     },
-    "hosted": "not dispatched yet",
+    "hosted": "Automatic source runs recorded; required scientific/browser/source-pair receiving pending.",
     "final_affected": {
       "selectors": [
         "tests/test_e2e_reliability.py",
@@ -238,5 +238,82 @@
     "standalone_Qt": "Experimental; no new visible-window evidence claimed.",
     "publications": "Both 1.0 publications paused; 0.25.0 producer remains unfrozen."
   },
-  "additional_issue": "uibcdf/molsysviewer#248"
+  "additional_issue": "uibcdf/molsysviewer#248",
+  "source_fix_commit": "92aef7d74212342df7678756f1735a9a36405269",
+  "issue_closures": {
+    "uibcdf/molsysviewer#247": "closed after source integration and passing guards",
+    "uibcdf/molsysviewer#248": "closed after source integration and passing installed-provider guard"
+  },
+  "hosted_observation": {
+    "observed_at_utc": "2026-10-20T18:55:25.587859+00:00",
+    "runs": [
+      {
+        "conclusion": "",
+        "databaseId": 39478599300,
+        "headSha": "92aef7d74212342df7678756f1735a9a36405269",
+        "name": "CI",
+        "status": "queued",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39478599300"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 39478599295,
+        "headSha": "92aef7d74212342df7678756f1735a9a36405269",
+        "name": "CI_e2e",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39478599295"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 39478599344,
+        "headSha": "92aef7d74212342df7678756f1735a9a36405269",
+        "name": "Documentation notebooks",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39478599344"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 39478599924,
+        "headSha": "92aef7d74212342df7678756f1735a9a36405269",
+        "name": "Conda publication governance",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39478599924"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 39478599691,
+        "headSha": "92aef7d74212342df7678756f1735a9a36405269",
+        "name": "Experimental Qt diagnostics",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39478599691"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 39478599955,
+        "headSha": "92aef7d74212342df7678756f1735a9a36405269",
+        "name": "MolSysSuite policy",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39478599955"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 39478599131,
+        "headSha": "92aef7d74212342df7678756f1735a9a36405269",
+        "name": "Python 3.14 source pair",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39478599131"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 39478599115,
+        "headSha": "92aef7d74212342df7678756f1735a9a36405269",
+        "name": "Ruff Lint",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39478599115"
+      }
+    ],
+    "scope": "Exact source CI dispatched automatically once on push. Scientific core queued and browser/source-pair/notebooks/experimental Qt in progress at observation; policy, Conda governance and Ruff pass. No complete hosted or installed-pair qualification claimed.",
+    "next_action": "Inspect completed native job/step outcomes and logs on this same SHA; update this maintained receipt without changing preserved local outcomes.",
+    "no_duplicate_dispatch": true
+  }
 }
