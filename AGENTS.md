@@ -215,6 +215,14 @@ These guides are required reading for anyone developing this library. They descr
 - `PYTEST_RECEPTOR_GUIDE.md` — Required guide for compact, truth-preserving pytest output
   in local and hosted development.
 
+## Public release titles
+
+When preparing, publishing or intentionally editing a public GitHub Release, use
+exactly `X.Y.Z` as its title/name, matching the canonical tag and package/project
+version. Put descriptions in the body/notes. Read
+[the local release-title guide](devguide/release_titles.md) and
+[the canonical rule](MOLSYSSUITE_GUIDE.md#github-release-titles).
+
 ## Modular reusable tools
 
 Before adding a feature, inspect existing tools and identify the owning module or
