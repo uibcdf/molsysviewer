@@ -3,10 +3,19 @@
 **Current priority — 2026-10-20:** Diego and Liliana are conducting exploratory
 pre-1.0 dogfooding around a real TcTIM / PDB 1TCD workflow before broad public
 documentation. Check open and closed reports for each observation before filing
-a distinct issue. The first observation is [#247](pending_bugs/welcome_card_flashes_on_initial_molecular_view.md):
+a distinct issue. The first observation is [#247](archive/welcome_card_flashes_on_initial_molecular_view.md):
 Welcome flashes during the initial `new_view('1TCD')` display. It is distinct
-from #164's completed progressive-rebuild correction. The symptom is human-reported,
-source inspection is recorded, and automated initial-load capture/fix remain pending.
+from #164's completed progressive-rebuild correction. Its source correction now
+declares prepared molecular input before `ready` and keeps Welcome suppressed
+through controller setup. Both real TcTIM transports and direct `new_view('1TCD')`
+pass the new browser guard, including first-draw DOM observation and empty/failure
+controls. Progressive loading, shape-only/popup guards, JS 330/330 and TypeScript
+pass. #247 is resolved in source. The [new receipt](initial_welcome_validation_20261020.json)
+retains the single full Python run (3,138 passed, two corrected inventory/README
+failures, 21 skips and 12 Qt deselections) and the final affected 14/14 pass.
+#248 separately corrects the provider-declared README status. Hosted qualification
+remains pending; no second clean local full run is claimed. Human retest requires
+both kernel restart and notebook-page refresh.
 Candidate freezing and both 1.0 publications remain paused.
 
 **Latest support receiving — 2026-10-14:** public SMonitor 0.21.0 build 2 is
@@ -1814,8 +1823,10 @@ Resume toward **1.0** in this order:
 
 **Current session priority (2026-10-20):** exploratory TcTIM / 1TCD dogfooding
 with Diego and Liliana precedes broad public documentation. Record each
-observation after checking open/closed issues; first-load Welcome #247 is open.
-No runtime fix is included in that report. The SMonitor receiving follow-up is
+observation after checking open/closed issues; first-load Welcome #247 and
+the related README drift #248 are resolved with local guards and archived records.
+The new core inventory has 44 suites; exact hosted receiving remains separate.
+The SMonitor receiving follow-up is
 closed at `85d30478`: six scientific cells, core browser 43/43, JS unit/coverage,
 policy and Conda governance pass. Qt's original failure remains; scheduled
 backlog-only successes are not retests. The

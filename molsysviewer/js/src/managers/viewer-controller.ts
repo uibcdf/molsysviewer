@@ -1043,6 +1043,11 @@ export class MolSysViewerController {
     private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void, canvasHost?: HTMLDivElement, private readonly initOptions?: { panelModeStyle?: string, viewerMode?: string, controlsMode?: string, isAmbient?: boolean, isSplit?: boolean, model?: any, isPanelOnly?: boolean, onPanelPopClick?: () => void, hasInitialStructures?: boolean, hasAuthority?: boolean }) {
         this.model = initOptions?.model;
         this.isPanelOnly = !!initOptions?.isPanelOnly;
+        // Initial scene replay starts after controller/panel setup. Its molecular
+        // input is already known, so every empty-state update in that interval
+        // belongs to a pending load. Loader cleanup (or explicit clear) releases
+        // the state on success/failure, just as for later system replacements.
+        this.structureLoadPending = !!initOptions?.hasInitialStructures;
         if (initOptions?.viewerMode) {
             this.localViewerMode = initOptions.viewerMode;
         }
@@ -1794,7 +1799,7 @@ export class MolSysViewerController {
 
         this.refreshNavigatePanel();
         this.refreshAddonsPanel();
-        this.updateWelcomeState(true);
+        this.updateWelcomeState();
     }
 
     private handleShapeRenderStatus(status: TrajectoryShapeRenderStatus): void {
@@ -4086,7 +4091,7 @@ export class MolSysViewerController {
         this.updateWelcomeState();
     }
 
-    private updateWelcomeState(isInitPhase = false): void {
+    private updateWelcomeState(): void {
         // A panel-only endpoint (the popped-out Studio/Add-ons window) has its
         // canvas hidden and never loads a structure: the panel snapshot carries
         // UI state and deliberately no geometry. "No structure" is therefore its
@@ -4103,9 +4108,6 @@ export class MolSysViewerController {
         if (workspaceOpen || this.getStructureData() || this.state.hasSceneContent()) {
             this.hideWelcomeCard();
         } else {
-            if (isInitPhase && this.initOptions?.hasInitialStructures) {
-                return;
-            }
             this.showWelcomeCard();
         }
     }

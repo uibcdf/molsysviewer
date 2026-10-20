@@ -41,7 +41,7 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- **Current priority: TcTIM / 1TCD pre-1.0 dogfooding with Diego and Liliana.** [Initial-load Welcome #247](pending_bugs/welcome_card_flashes_on_initial_molecular_view.md) is the first reported observation; the related #164 progressive-load case is closed and has a different guard scope. Source corrections and broad public documentation follow the exploratory findings; no candidate freeze or publication is authorized.
+- **Current priority: TcTIM / 1TCD pre-1.0 dogfooding with Diego and Liliana.** [Initial-load Welcome #247](archive/welcome_card_flashes_on_initial_molecular_view.md) is resolved with real bundled/direct-PDB first-draw, binary/JSON and empty/failure guards; progressive/shape-only/popup guards and JS 330/330 pass. [#248](archive/readme_pharmacophore_addon_status.md) corrects the provider-declared README status. [The receipt](initial_welcome_validation_20261020.json) retains the original two global Python failures and final 14/14 affected pass; hosted 44-suite core receiving remains pending. No candidate freeze or publication is authorized.
 
 - [Latest support receiving — CI follow-up closed](support_library_receiving_20261014.json): SMonitor 0.21.0 build 2 is verified in development; 191 consumer checks pass with 14 intentional skips. Exact 85d30478 hosted scientific 6/6, core browser 43/43, JS unit/coverage, policy and Conda governance pass. Qt retains two bridge/WebGL failures; later scheduled successes only checked backlog and skipped testing. Broad public documentation is next; manual PHMT/Jupyter remains postponed, 0.25.0 unfrozen and both 1.0 publications paused.
 

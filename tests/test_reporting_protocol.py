@@ -41,6 +41,7 @@ GUARD_POLICY_EFFECTIVE_DATE = "2026-09-20"
 PYTEST_ROOTS = (PurePosixPath("tests"), PurePosixPath("devtools/tests"))
 INTERACTIONS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/interactions-calculation.e2e.ts"
 COMPOSITE_LOAD_BROWSER_GUARD = "molsysviewer/js/tests/e2e/composite-load.e2e.ts"
+INITIAL_WELCOME_BROWSER_GUARD = "molsysviewer/js/tests/e2e/initial-welcome.e2e.ts"
 MOVIE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/movie-playback.e2e.ts"
 CONTEXT_MENU_BROWSER_GUARD = "molsysviewer/js/tests/e2e/context-menu.e2e.ts"
 CONTROLS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/controls-visibility.e2e.ts"
@@ -73,6 +74,7 @@ def validate_guard(root: Path, selector: str) -> list[str]:
     if selector not in (
         INTERACTIONS_BROWSER_GUARD,
         COMPOSITE_LOAD_BROWSER_GUARD,
+        INITIAL_WELCOME_BROWSER_GUARD,
         MOVIE_BROWSER_GUARD,
         CONTEXT_MENU_BROWSER_GUARD,
         CONTROLS_BROWSER_GUARD,
@@ -111,6 +113,18 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             "await checkProgressiveWelcome(page, fixture);" in entry,
             "run().catch(" in entry,
             (js_root / "tests/e2e/composite-load-bridge.py").is_file(),
+        )
+    elif selector == INITIAL_WELCOME_BROWSER_GUARD:
+        requirements += (
+            'import { PythonFixtureBridge } from "./python-fixture-bridge";' in entry,
+            "beforeRender: observeInitialRender" in entry,
+            "new MutationObserver(count)" in entry,
+            "canvas3d.didDraw.subscribe" in entry,
+            '"--invalid"' in entry,
+            '"--empty"' in entry,
+            'withFixtureWorkspace("initial-welcome", run).catch(' in entry,
+            (js_root / "tests/e2e/initial_welcome_fixture.py").is_file(),
+            (js_root / "tests/e2e/canvas-popup-fixture.ts").is_file(),
         )
     elif selector == CONTEXT_MENU_BROWSER_GUARD:
         requirements += (
@@ -490,6 +504,7 @@ def test_newly_resolved_archive_guards_are_addressable(path: Path) -> None:
 def test_browser_guard_resolves_its_build_entrypoint_and_core_lane() -> None:
     assert validate_guard(ROOT, INTERACTIONS_BROWSER_GUARD) == []
     assert validate_guard(ROOT, COMPOSITE_LOAD_BROWSER_GUARD) == []
+    assert validate_guard(ROOT, INITIAL_WELCOME_BROWSER_GUARD) == []
     assert validate_guard(ROOT, MOVIE_BROWSER_GUARD) == []
     assert validate_guard(ROOT, CONTEXT_MENU_BROWSER_GUARD) == []
     assert validate_guard(ROOT, CONTROLS_BROWSER_GUARD) == []
@@ -507,6 +522,8 @@ def test_group_panel_unit_guard_is_bounded_and_registered() -> None:
 def test_browser_guard_rejects_missing_or_unadopted_targets(tmp_path: Path) -> None:
     assert validate_guard(tmp_path, INTERACTIONS_BROWSER_GUARD)
     assert validate_guard(tmp_path, COMPOSITE_LOAD_BROWSER_GUARD)
+    assert validate_guard(tmp_path, INITIAL_WELCOME_BROWSER_GUARD)
+    assert validate_guard(ROOT, INITIAL_WELCOME_BROWSER_GUARD + "::checkInitialView")
     assert validate_guard(tmp_path, MOVIE_BROWSER_GUARD)
     assert validate_guard(tmp_path, CONTROLS_BROWSER_GUARD)
     assert validate_guard(tmp_path, WORKSPACE_BROWSER_GUARD)

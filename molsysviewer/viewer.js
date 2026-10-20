@@ -166168,6 +166168,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.frameRequestToken = 0;
     this.model = initOptions?.model;
     this.isPanelOnly = !!initOptions?.isPanelOnly;
+    this.structureLoadPending = !!initOptions?.hasInitialStructures;
     if (initOptions?.viewerMode) {
       this.localViewerMode = initOptions.viewerMode;
     }
@@ -166882,7 +166883,7 @@ var MolSysViewerController = class _MolSysViewerController {
     plugin.canvas3dContext?.contextRestored?.subscribe(() => this.handleWebGLContextRestored());
     this.refreshNavigatePanel();
     this.refreshAddonsPanel();
-    this.updateWelcomeState(true);
+    this.updateWelcomeState();
   }
   registerAddonListener(addonName, eventName, cb2) {
     if (!this.addonListeners.has(addonName)) {
@@ -169389,7 +169390,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.structureLoadPending = pending;
     this.updateWelcomeState();
   }
-  updateWelcomeState(isInitPhase = false) {
+  updateWelcomeState() {
     if (this.isPanelOnly || this.structureLoadPending) {
       this.hideWelcomeCard();
       return;
@@ -169398,9 +169399,6 @@ var MolSysViewerController = class _MolSysViewerController {
     if (workspaceOpen || this.getStructureData() || this.state.hasSceneContent()) {
       this.hideWelcomeCard();
     } else {
-      if (isInitPhase && this.initOptions?.hasInitialStructures) {
-        return;
-      }
       this.showWelcomeCard();
     }
   }
@@ -174156,7 +174154,7 @@ function makeMissingAuthorityReporter(el) {
   };
 }
 function reportSceneRuntimeMismatch(el, sceneVersion) {
-  const runtimeVersion = true ? "0.24.0+15.gf23d6226.dirty" : "";
+  const runtimeVersion = true ? "0.24.0+97.gdf4bf477.dirty" : "";
   if (typeof sceneVersion !== "string" || !sceneVersion || !runtimeVersion) return;
   const release = (version) => version.split("+")[0].split(".dev")[0];
   if (release(sceneVersion) === release(runtimeVersion)) return;
@@ -174779,7 +174777,7 @@ function render({ model, el, runtimeSource }) {
   }, void 0, {
     panelModeStyle,
     model,
-    hasInitialStructures: trajInfo.hasStructures,
+    hasInitialStructures: trajInfo.hasStructures || model.get("has_molecular_system") === true,
     onPanelPopClick: enablePopout ? () => openPanelPopup() : void 0
   });
   const arrayNativeStream = new ArrayNativeStreamReceiver(

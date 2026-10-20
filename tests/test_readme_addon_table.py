@@ -33,6 +33,7 @@ PERMITTED_MATURITY = {
     "stable",  # the vocabulary
     "skeleton",
     "alpha",  # what four add-ons said before it
+    "minimal",  # PharmacophoreMT's own bounded integration description
     "undeclared",  # TopoMT, which declares nothing
 }
 

@@ -159,6 +159,21 @@ final screenshot cannot cover. Explicit clear and failed loading provide empty
 viewer controls. Unicode card text and actions guard source-region naming.
 Other browser targets still require explicit adoption.
 
+### Initial molecular Welcome browser guard profile
+
+The bounded selector `molsysviewer/js/tests/e2e/initial-welcome.e2e.ts` is
+accepted without suffixes, globs or commands. From `molsysviewer/js`, run
+`npm run test:e2e:initial-welcome`; the same entry is built by `build:e2e:all`
+and executed by `test:e2e:core`. Normal browser/WebGL errors fail the guard.
+It observes the actual widget bootstrap with a live Python authority, with a
+DOM observer installed before runtime/controller creation and a real Mol*
+`didDraw` observation after molecular representations exist. The default fixture
+uses bundled TcTIM via the public demo/new-view owner; optional receiving with
+`E2E_INITIAL_WELCOME_PDB_ID=1` uses `new_view('1TCD')` directly. Both typed-buffer
+and JSON loading, explicit clear, failed initial loading and genuinely empty
+widgets are checked. The validator resolves this exact entry, fixture and core
+registration; it does not replace the behavioral receiving result.
+
 **Archive, never delete.** A repository that deletes a closed entry breaks every reference
 into it.
 

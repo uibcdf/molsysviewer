@@ -353,6 +353,7 @@ class HistoryMixin:
     def _send(self, msg: dict) -> None:
         if msg.get("op") in self._MOLECULAR_LOAD_OPS:
             self._current_molecular_projection = msg
+            self.widget.has_molecular_system = True
         self._record_shape_message(msg)
         self._record_annotation_message(msg)
         self._record_measurement_message(msg)
@@ -369,6 +370,7 @@ class HistoryMixin:
     def _send_replay(self, msg: dict) -> None:
         if msg.get("op") in self._MOLECULAR_LOAD_OPS:
             self._current_molecular_projection = msg
+            self.widget.has_molecular_system = True
         if self._ready:
             self._deliver_transport_message(msg)
         self._sync_scene_object_summaries_for_message(msg)

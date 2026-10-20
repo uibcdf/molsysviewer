@@ -8,10 +8,12 @@ const activeFixtures = new WeakMap<Page, PythonFixtureBridge>();
 
 /** Only the notebook comm/trait transport is adapted; the Python authority is real. */
 export async function mountCanvasPopupFixture(page: Page, bridge: PythonFixtureBridge,
-    options: { trajectoryLabel?: string | null } = {}) {
+    options: { trajectoryLabel?: string | null, beforeRender?: (page: Page) => Promise<void> } = {}) {
         const fixture = await bridge.request();
         await page.goto("about:blank");
         await page.setContent('<div id="notebook" style="width:850px;height:600px"></div>');
+        // Observers installed here see controller creation as well as replay.
+        await options.beforeRender?.(page);
         activeFixtures.set(page, bridge);
         if (!boundPages.has(page)) {
             await page.exposeFunction("__popupFixtureRequest", (message: unknown) => {

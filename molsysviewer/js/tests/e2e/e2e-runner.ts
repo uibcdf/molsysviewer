@@ -22,6 +22,7 @@ const SUITES = [
     "panel-popup-welcome",
     "structure-data-relay",
     "widget-seam",
+    "initial-welcome",
     "broken-anchors",
     "export-replay",
     "exported-page-colour",

@@ -84,6 +84,9 @@ class MolSysViewerWidget(anywidget.AnyWidget):
     _esm = _WIDGET_BOOTSTRAP_ESM
 
     initial_messages = T.List(default_value=[]).tag(sync=True)
+    # Initial molecular data may arrive only after the frontend's ready event.
+    # This small hint distinguishes that prepared load from an empty widget.
+    has_molecular_system = T.Bool(default_value=False).tag(sync=True)
     show_controls = T.Bool(default_value=True).tag(sync=True)
     enable_popout = T.Bool(default_value=True).tag(sync=True)
     runtime_viewer_id = T.Unicode(default_value="").tag(sync=True)

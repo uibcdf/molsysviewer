@@ -25,6 +25,17 @@ Loader cleanup releases this state, including failed array-native decoding.
 Panel-only endpoints never show Welcome. Empty-state detection reads the
 actual Mol* structure hierarchy, rather than cached references to deleted nodes.
 
+The live widget's synced `has_molecular_system` boolean declares that Python has
+prepared a molecular load. It does not carry coordinates or certify frontend
+rendering. `initial_messages` can be empty because the molecular data is delivered
+only after `ready`; the boolean lets a newly attached controller keep Welcome
+hidden throughout its setup and that handshake. Molecular projection/replay sets
+the hint, and resetting the Python view clears it. Initial replay messages also
+declare molecular intent when present. The controller enters the existing pending
+load state before panel setup and releases it on loader success/failure or an
+explicit clear. A genuinely empty widget retains Welcome without an artificial
+delay. These rules also apply when rebuilding an endpoint from the same Python view.
+
 Region enablement uses `set_region_enabled` with `tag` and boolean `enabled`.
 `create_region` accepts optional `enabled` (default true); Python creation and
 snapshot messages include false for suspended regions. Region summaries carry

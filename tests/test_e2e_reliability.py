@@ -90,7 +90,8 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
     # 44: controls reveal policy and Cinema lifetime in a real export/popup.
     # 45: native Studio usability and real browser PNG/HTML downloads.
     # 46: saved-list filtering, atomic marked batches and secondary drafts.
-    assert len(expected) == 46
+    # 47: initial molecular Welcome suppression through the real ready handshake.
+    assert len(expected) == 47
     assert declared == expected
     build_command = package["scripts"]["build:e2e:all"]
     compiled = set(re.findall(r"tests/e2e/([^ ]+)\.e2e\.ts", build_command))

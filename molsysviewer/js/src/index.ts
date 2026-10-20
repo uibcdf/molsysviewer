@@ -1033,7 +1033,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
         }, undefined, {
             panelModeStyle, 
             model,
-            hasInitialStructures: trajInfo.hasStructures,
+            hasInitialStructures: trajInfo.hasStructures || model.get("has_molecular_system") === true,
             onPanelPopClick: enablePopout ? () => openPanelPopup() : undefined
         });
         const arrayNativeStream = new ArrayNativeStreamReceiver(

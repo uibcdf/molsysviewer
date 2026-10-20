@@ -1,0 +1,242 @@
+{
+  "schema": "molsysviewer.initial_welcome_receiving@1",
+  "date": "2026-10-20",
+  "issue": "uibcdf/molsysviewer#247",
+  "status": "local_receiving_complete; hosted_pending",
+  "source_base": "4a4082213eb3cc6acfba7da1520e92613442a2db",
+  "recorded_at_utc": "2026-10-20T18:38:14.682458+00:00",
+  "scope": "Source correction and rebuilt runtime; not a frozen producer or installed package qualification.",
+  "mechanism": "Initial messages are empty in a real prepared widget; molecular data waits for ready. The new Python hint establishes pending-load state before controller/panel setup.",
+  "provider_provenance": {
+    "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+    "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "providers": {
+      "molsysmt": {
+        "version": "0.23.0+93.g48aba006f",
+        "direct_url": {
+          "dir_info": {
+            "editable": true
+          },
+          "url": "file:///home/diego/repos%40uibcdf/molsysmt"
+        },
+        "source_sha": "81be3ec739ce38a5674a7feae97085b44747de76"
+      },
+      "smonitor": {
+        "version": "0.21.0+1.gd6b2394",
+        "direct_url": {
+          "dir_info": {
+            "editable": true
+          },
+          "url": "file:///home/diego/repos%40uibcdf/smonitor"
+        },
+        "source_sha": "d6b2394f52cde7296b6b444f3aedf38e6e4064a6"
+      },
+      "depdigest": {
+        "version": "0.15.1+3.ga27172b",
+        "direct_url": {
+          "dir_info": {
+            "editable": true
+          },
+          "url": "file:///home/diego/repos%40uibcdf/depdigest"
+        },
+        "source_sha": "a27172ba383ab90ed885ce49a6a761db92437f1c"
+      },
+      "argdigest": {
+        "version": "0.16.0+1.g6dabaf7",
+        "direct_url": {
+          "dir_info": {
+            "editable": true
+          },
+          "url": "file:///home/diego/repos%40uibcdf/argdigest"
+        },
+        "source_sha": "6dabaf709b8af2f2695a6198288d54d3876bfb65"
+      },
+      "pyunitwizard": {
+        "version": "0.28.1+15.g6c62ca6",
+        "direct_url": {
+          "dir_info": {
+            "editable": true
+          },
+          "url": "file:///home/diego/repos%40uibcdf/pyunitwizard"
+        }
+      },
+      "pytest-receptor": {
+        "version": "1.2.1+22.g00a31c4",
+        "direct_url": {
+          "dir_info": {
+            "editable": true
+          },
+          "url": "file:///home/diego/repos%40uibcdf/pytest-receptor"
+        },
+        "source_sha": "00a31c46104b20a10c07f98fdbd53254931a1e04"
+      }
+    },
+    "runtime_sha256": "4d593b4cfa2a3e5fc34cfab8f24daf45629bf5241c6f66b62ecd73e5607d8b46"
+  },
+  "checks": {
+    "python_target": {
+      "selector": "tests/test_initial_welcome.py",
+      "passed": 1,
+      "failed": 0
+    },
+    "initial_browser": {
+      "bundled_TcTIM": 4,
+      "direct_new_view_1TCD": 4,
+      "scope": "Binary and JSON startup through first real Mol* draw; explicit clear, failed reference decode and genuinely empty widgets.",
+      "welcome_insertions_before_molecular_draw": 0
+    },
+    "existing_browser_guards": {
+      "composite-load": "passed; progressive load, Studio, source regions, sessions/extraction/coordinates",
+      "panel-popup-welcome": "passed; empty/shape-only workspace, panel/canvas popups, addon Render/Clear/remount"
+    },
+    "javascript_units": {
+      "passed": 330,
+      "failed": 0,
+      "skipped": 0
+    },
+    "typescript": "passed",
+    "ruff": "passed on all modified Python sources/fixtures/tests, including final inventory and README guards",
+    "python_full_core": {
+      "command": "python -B -m pytest tests/ -m \"not qt_runtime\" -q -o addopts=--doctest-modules --tb=short",
+      "exit_code": 1,
+      "qt_deselected": 12,
+      "counts": {
+        "tests": 3161,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 21,
+        "passed": 3138
+      },
+      "failures": [
+        {
+          "class": "tests.test_e2e_reliability",
+          "name": "test_e2e_runner_inventory_matches_every_scientific_suite",
+          "traceback": "tests/test_e2e_reliability.py:93: in test_e2e_runner_inventory_matches_every_scientific_suite\n    assert len(expected) == 46\nE   AssertionError: assert 47 == 46\nE    +  where 47 = len({'annotations-interaction', 'annotations-subpanel', 'array-native-load', 'bioassembly-chain-identity', 'broken-anchors', 'composite-load', ...})"
+        },
+        {
+          "class": "tests.test_readme_addon_table",
+          "name": "test_the_reported_level_is_the_one_the_addon_declares[molsysviewer_pharmacophoremt]",
+          "traceback": "tests/test_readme_addon_table.py:94: in test_the_reported_level_is_the_one_the_addon_declares\n    assert _table_rows()[module] == declared, (\nE   AssertionError: the README reports 'skeleton' for molsysviewer_pharmacophoremt, which declares 'minimal'\nE   assert 'skeleton' == 'minimal'\nE     \nE     - minimal\nE     + skeleton"
+        }
+      ],
+      "junit_sha256": "c5220c97aaef81db9083723b9246afd0e83360afd1dd60c5d7bdf6c540d536fb",
+      "interpretation": "Single full run retained two failures; E2E inventory updated from 46 to 47 and provider README drift corrected under #248. No second global pass claimed."
+    },
+    "hosted": "not dispatched yet",
+    "final_affected": {
+      "selectors": [
+        "tests/test_e2e_reliability.py",
+        "tests/test_readme_addon_table.py",
+        "tests/test_initial_welcome.py"
+      ],
+      "exit_code": 0,
+      "counts": {
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "passed": 14
+      },
+      "failures": [],
+      "junit_sha256": "69e1304b9c216c3c7302bbf52e60bb8671c9fcb4d00dd7ca0b125d4c10a4a6eb"
+    },
+    "e2e_inventory": {
+      "all_suites": 47,
+      "required_core_suites": 44,
+      "remote_preview_suites": 3
+    },
+    "guidance": {
+      "passed": 257,
+      "failed": 0,
+      "skipped": 0,
+      "junit_sha256": "b28f8ccc2dc3d92e99dbeeacc6854649ac671b9b6b13e9aa9b4e94d049a62498",
+      "generated_indexes": "up_to_date"
+    }
+  },
+  "logs": {
+    "initial-welcome-browser.txt": {
+      "sha256": "c3345eb99d781adce56d70f7e6ad7b5f6e2b960a61fc15fadfa33be79e5675d6",
+      "result_lines": [
+        "[E2E initial Welcome] molecular bundled TcTIM / binary: passed",
+        "[E2E initial Welcome] molecular --json: passed",
+        "[E2E initial Welcome] failed --invalid: passed",
+        "[E2E initial Welcome] empty --empty: passed"
+      ]
+    },
+    "pdb-id-browser.txt": {
+      "sha256": "d63874b27f7e0217c0141b37fc4ad73795a3b50dbb981f9da4d2d3bd42641805",
+      "result_lines": [
+        "[E2E initial Welcome] molecular --pdb-id: passed",
+        "[E2E initial Welcome] molecular --pdb-id --json: passed",
+        "[E2E initial Welcome] failed --invalid: passed",
+        "[E2E initial Welcome] empty --empty: passed"
+      ]
+    },
+    "composite-browser.txt": {
+      "sha256": "be1116be9d1d6344d7a69d2a8dcb3708d6ffc1978124ae77706cca348602c6af",
+      "result_lines": [
+        "[E2E load usability] no transient Welcome; Unicode cards/actions; clear and failed-load controls passed",
+        "[E2E Studio loading] empty entry, mixed batch, retry/add/replace, complementary forms, append and trajectory pairing passed",
+        "[E2E regions] real-demo Studio/API hide, suspension, colors, session and independent Whole/regions passed",
+        "[E2E composite-load] loading, session reopening, extraction, coordinates and source visibility passed"
+      ]
+    },
+    "panel-popup-browser.txt": {
+      "sha256": "9b6b7f97731baa97263ef674c3a0ca0a95dc70fd570e3846d3b172508d7e64c5",
+      "result_lines": [
+        "[E2E panel-popup-welcome] Scenario: panel-only endpoint shows no welcome card",
+        "[E2E panel-popup-welcome]   panel window opens with width=600,height=560",
+        "[E2E shape-only workspace] empty widget and canvas popup received",
+        "[E2E shape-only workspace] native content and molecular prerequisites received",
+        "[E2E shape-only workspace] Render/Clear/remount and caller ownership received",
+        "[E2E shape-only workspace] PASS: empty, hidden/deleted shapes, addon-first, Render/Clear/remount, ownership, canvas/panel popups, molecular loading",
+        "[E2E panel-popup-welcome] PASS"
+      ]
+    },
+    "typescript-final.txt": {
+      "sha256": "06022ea9b98fdc111ef5fffba33d80b66e9799b846dd828f625c68a6bcb792c2",
+      "result_lines": []
+    },
+    "javascript-units.txt": {
+      "sha256": "4c2adb1fc94193d63bca86b46dee02ba1199f649ba4ccb8dea0944e061754da1",
+      "result_lines": [
+        "\u2139 tests 330",
+        "\u2139 pass 330",
+        "\u2139 fail 0",
+        "\u2139 skipped 0"
+      ]
+    },
+    "ruff.txt": {
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "result_lines": [
+        "All checks passed!"
+      ]
+    },
+    "initial-welcome-pytest.txt": {
+      "sha256": "6ea03c71b378b785bc982fb9535a221660b7cf85b43c879ea99d4f6e7c890fc0",
+      "result_lines": [
+        "1 passed, 1 warning in 2.66s"
+      ]
+    },
+    "python-core.txt": {
+      "sha256": "f985fd8aadf45adea0af598ecc20c998190cfcf3e061d7bbedfa61bfa3e5be75",
+      "result_lines": [
+        "FAILED tests/test_e2e_reliability.py::test_e2e_runner_inventory_matches_every_scientific_suite",
+        "FAILED tests/test_readme_addon_table.py::test_the_reported_level_is_the_one_the_addon_declares[molsysviewer_pharmacophoremt]",
+        "2 failed, 3138 passed, 21 skipped, 12 deselected, 1155 warnings in 656.11s (0:10:56)"
+      ]
+    },
+    "final-affected.txt": {
+      "sha256": "5410e99c46f299f343c107bc83785887bdd6c79195e450711bf5e576aab71126",
+      "result_lines": [
+        "14 passed, 1 warning in 2.61s"
+      ]
+    }
+  },
+  "limits": {
+    "manual_human_retest": "Pending after kernel restart and notebook-page refresh. Both are required to replace Python classes and the page-global cached runtime.",
+    "standalone_Qt": "Experimental; no new visible-window evidence claimed.",
+    "publications": "Both 1.0 publications paused; 0.25.0 producer remains unfrozen."
+  },
+  "additional_issue": "uibcdf/molsysviewer#248"
+}

@@ -1,5 +1,8 @@
 # Archived implementation plans
 
+- [Initial molecular Welcome](welcome_card_flashes_on_initial_molecular_view.md) — #247 declares prepared molecular input before ready, suppresses Welcome through widget setup, and guards real TcTIM first draw, both transports and empty/failure controls.
+- [README provider status](readme_pharmacophore_addon_status.md) — #248 reports PharmacophoreMT's declared minimal status verbatim and corrects shared-vocabulary prose, with installed-provider table guards.
+
 - [Addon entry-point import order](addon_entrypoint_partial_initialization.md) — #233 separates type declarations from discovery and retries only initializing providers; real metadata/import/lifecycle guards preserve invalid-contract diagnostics.
 - [JavaScript advisory remediation](locked_javascript_dependency_advisories.md) — #242 repairs nine transitive advisories without changing Mol* 5.4.1 and adds offline range guards plus live registry gates.
 - [Panel popup controller access](panel_popup_private_controller_access.md) — #246 uses the public message route and preserves popup ordering; real TypeScript and popup browser guards pass.

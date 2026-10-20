@@ -3,10 +3,16 @@
 **Current priority — 2026-10-20:** Diego and Liliana's exploratory TcTIM / PDB
 1TCD dogfooding precedes broad public documentation and candidate freezing.
 Check existing open/closed issues for every observation. The first new report,
-[#247](pending_bugs/welcome_card_flashes_on_initial_molecular_view.md), concerns
+[#247](archive/welcome_card_flashes_on_initial_molecular_view.md), concerns
 Welcome flashing during the first molecular display; #164's completed guard
-covers later progressive rebuilding. The report records the human observation
-and source-inspection lead, with reproduction and correction still pending.
+covers later progressive rebuilding. The source correction and initial browser
+receiving now pass for bundled TcTIM and direct `new_view('1TCD')`, both transports,
+first draw and empty/failure controls. Existing progressive/shape-only/popup,
+JS 330/330 and TypeScript guards pass. #247 is resolved; #248 separately fixes a
+provider-status README mismatch. The single full Python run retains 3,138 passes
+and two corrected failures, with the final affected modules passing 14/14.
+Hosted receiving of the 44-suite core remains pending in the
+[receiving receipt](initial_welcome_validation_20261020.json).
 Both 1.0 publications remain paused.
 
 **Latest support receiving — 2026-10-14:** approved public SMonitor 0.21.0

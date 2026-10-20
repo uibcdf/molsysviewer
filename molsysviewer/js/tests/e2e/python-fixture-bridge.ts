@@ -10,8 +10,10 @@ export class PythonFixtureBridge {
     private stopped = false;
     private readonly pending = new Map<number, { resolve: (value: any) => void; reject: (error: Error) => void; timer: NodeJS.Timeout }>();
 
-    constructor(script: string, cwd: string, private readonly timeoutMs = 90000) {
-        this.child = spawn(process.env.PYTHON || "python", [script, "--serve"], { cwd, stdio: ["pipe", "pipe", "pipe"] });
+    constructor(script: string, cwd: string, private readonly timeoutMs = 90000,
+        options: { args?: readonly string[], env?: NodeJS.ProcessEnv } = {}) {
+        this.child = spawn(process.env.PYTHON || "python", [script, "--serve", ...(options.args ?? [])],
+            { cwd, env: options.env, stdio: ["pipe", "pipe", "pipe"] });
         this.lines = createInterface({ input: this.child.stdout });
         this.child.stderr.on("data", chunk => { this.stderr = (this.stderr + chunk).slice(-65536); });
         this.child.on("error", error => this.fail(error));

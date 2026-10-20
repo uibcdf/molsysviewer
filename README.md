@@ -167,13 +167,14 @@ The table below lists optional module names known to the host.
 |---|---|---|---|
 | `molsysviewer_topomt` | TopoMT | Pocket detection and topography visualisation | undeclared |
 | `molsysviewer_elastnetmt` | ElastNetMT | GNM/ANM elastic network modes and contact network overlays | skeleton |
-| `molsysviewer_pharmacophoremt` | PharmacophoresMT | Structure-based pharmacophore glyph overlays | skeleton |
+| `molsysviewer_pharmacophoremt` | PharmacophoresMT | Structure-based pharmacophore glyph overlays | minimal |
 
 **Maturity is what each add-on declares about itself**, so the column reports rather than
-grades. The shared vocabulary is two words — `experimental` and `stable` — defined in
+grades. The shared vocabulary is `experimental`, `development`, `beta` and `stable`, decided in
 [`devguide/archive/addon_maturity_and_ownership.md`](devguide/archive/addon_maturity_and_ownership.md);
-the values above predate it, and each toolkit adopts it when it re-declares. Until then,
-read both `skeleton` and `alpha` as `experimental`, and `undeclared` as exactly that.
+each toolkit adopts it when it re-declares. Provider-specific terms such as
+`skeleton` and `minimal` are reproduced verbatim and retain their provider's meaning.
+`undeclared` indicates that the add-on supplies no status.
 
 MolSysMT is a required backend of MolSysViewer. Loading, selection and interaction
 calculations use it through the core API; you do not need a MolSysMT addon. The table
