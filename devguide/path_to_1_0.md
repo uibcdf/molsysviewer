@@ -1,5 +1,14 @@
 # Path to 1.0.0 (Unified Release Plan)
 
+**Current priority — 2026-10-20:** Diego and Liliana's exploratory TcTIM / PDB
+1TCD dogfooding precedes broad public documentation and candidate freezing.
+Check existing open/closed issues for every observation. The first new report,
+[#247](pending_bugs/welcome_card_flashes_on_initial_molecular_view.md), concerns
+Welcome flashing during the first molecular display; #164's completed guard
+covers later progressive rebuilding. The report records the human observation
+and source-inspection lead, with reproduction and correction still pending.
+Both 1.0 publications remain paused.
+
 **Latest support receiving — 2026-10-14:** approved public SMonitor 0.21.0
 build 2 replaces 0.20.0 in development, with canonical archive/file verification
 and 191 passing existing consumer checks (14 intentional template skips).

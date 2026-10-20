@@ -1,5 +1,14 @@
 # Development checkpoint
 
+**Current priority — 2026-10-20:** Diego and Liliana are conducting exploratory
+pre-1.0 dogfooding around a real TcTIM / PDB 1TCD workflow before broad public
+documentation. Check open and closed reports for each observation before filing
+a distinct issue. The first observation is [#247](pending_bugs/welcome_card_flashes_on_initial_molecular_view.md):
+Welcome flashes during the initial `new_view('1TCD')` display. It is distinct
+from #164's completed progressive-rebuild correction. The symptom is human-reported,
+source inspection is recorded, and automated initial-load capture/fix remain pending.
+Candidate freezing and both 1.0 publications remain paused.
+
 **Latest support receiving — 2026-10-14:** public SMonitor 0.21.0 build 2 is
 installed in `molsyssuite@uibcdf_3.14`; archive SHA-256 and all 41 package files
 match. The development minimum is now 0.21.0. Existing diagnostic/application
@@ -1803,13 +1812,17 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current session priority (2026-10-14):** the SMonitor receiving follow-up is
+**Current session priority (2026-10-20):** exploratory TcTIM / 1TCD dogfooding
+with Diego and Liliana precedes broad public documentation. Record each
+observation after checking open/closed issues; first-load Welcome #247 is open.
+No runtime fix is included in that report. The SMonitor receiving follow-up is
 closed at `85d30478`: six scientific cells, core browser 43/43, JS unit/coverage,
 policy and Conda governance pass. Qt's original failure remains; scheduled
 backlog-only successes are not retests. The
 [receiving receipt](support_library_receiving_20261014.json) preserves exact
 identities, native step outcomes, counts, logs/digests and the distinction from
-future installed-candidate qualification. Proceed to broad public documentation.
+future installed-candidate qualification. Resume broad public documentation
+after the exploratory phase and its agreed corrections.
 
 #245/#239 and their exact required
 source qualification are complete on 19d92c25; the
