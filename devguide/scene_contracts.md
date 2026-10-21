@@ -2038,6 +2038,16 @@ static HTML export is the deliberate exception: Python requests and captures the
 current camera while the host still exists, then embeds it after the canonical
 scene projection because the exported artifact has no host to query later.
 
+**Shape-only framing — 2026-10-21 (#257).** Camera authority also makes the host
+responsible for initial absolute geometry without a molecular system. New
+geometry is framed while no deliberate viewpoint exists; a user-adjusted or
+explicitly applied camera is preserved. Mol* 5.4.1 exposes cached bounding-sphere
+objects: their first radius can remain zero until resolving a reset evaluates
+the underlying scene bounds. Commit the new renderables and request that first
+reset without waiting for the cached radius. Native refs alone are insufficient
+evidence: the shape-only browser guard must require an on-screen GPU pick in
+both canvases, alongside Render/Clear ownership and viewpoint preservation.
+
 Mol\* derives state from the scene *as it currently stands*, and some of what it
 derives is **not recoverable** once the scene is complete again. Any moment in
 which our scene is transiently empty or half-built is therefore not a cosmetic

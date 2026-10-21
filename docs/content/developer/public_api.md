@@ -734,22 +734,24 @@ you must validate the docs-lite output.
 
 ## Canvas UX modes
 
-`MolSysView` accepts two experimental constructor arguments:
+`viewer_mode="standard"` is the default; `viewer_mode="cinema"` hides the
+controls until needed. Explicit overrides remain available:
 
 ```python
-view = MolSysView(controls_mode="minimal", panel_mode_style="floating")
+view = MolSysView(controls_mode="compact", panel_mode_style="floating")
 ```
 
-- `controls_mode="classic"` (default): six text buttons (Reset, Full, Bg, Spin, Swing, Pop).
-- `controls_mode="minimal"`: three SVG icon cluster (panel / fullscreen / popup) plus a `?` help
-  button. Scene actions (reset view, toggle background, toggle spin/swing) move to the empty-canvas
-  context menu. Keyboard shortcuts: `H` toggles the help overlay, `N`/`W` open Navigate/Workbench.
+- `controls_mode="compact"`: compact panel, fullscreen, popup and Help icons.
+  Scene actions are under **View** in the canvas context menu.
+- `controls_mode="cinema"`: unobstructed canvas with keyboard and reveal access.
+- `panel_mode_style` independently chooses drawers or the shared floating/docked
+  panel architecture; its default follows `viewer_mode`.
 
-- `panel_mode_style="drawer"` (default): Navigate panel 560 px left, Workbench 240 px right.
-- `panel_mode_style="floating"`: centered overlay card (~72 % × 68 % of canvas), backdrop-click-to-close, zero viewport shift.
-
-Both `"classic"` / `"drawer"` remain the defaults until at least one scientific workflow
-has been validated with the new design (`0.16.x → 0.17.x` horizon).
+Classic text controls and the Classic viewer preset are retired before 1.0.
+New public calls reject `"classic"` and the former viewer/controls names
+`"integrated"`/`"minimal"`. Historical frontend UI projections and stale
+configuration normalize to the current standard/compact experience. Independent
+panel-layout choices, including `"drawer"` and `"integrated"`, remain available.
 
 ## Panel Mode
 

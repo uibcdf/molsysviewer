@@ -73,8 +73,8 @@ but cannot run. Inputs and dropdowns keep their normal keyboard behavior.
 
 ## View modes and discovering controls
 
-**View** offers Reset View, background, rotation, swing and Classic, Integrated
-or Cinema mode. Undo/Redo follows the available scene history. **Open Studio**
+**View** offers Reset View, background, rotation, swing and Standard or Cinema
+mode. Undo/Redo follows the available scene history. **Open Studio**
 opens the section appropriate to your target; **Help** opens canvas help.
 
 By default, canvas buttons appear near their area and hide when you leave it.

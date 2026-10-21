@@ -19,6 +19,7 @@ from smonitor.integrations import context_extra, emit_from_catalog
 
 from .. import config
 from .._private.argdigest import digest
+from .._private.argdigest.argument.controls_mode import digest_controls_mode
 from .._private.argdigest.argument.viewer_mode import digest_viewer_mode
 from .._private.smonitor import CATALOG, META, PACKAGE_ROOT
 from .._private.smonitor.warnings import StructureStreamFallbackWarning, warn
@@ -412,13 +413,12 @@ class MolSysView(
     ) -> None:
 
         # Resolve viewer_mode, controls_mode, and panel_mode_style presets.
-        # viewer_mode is intentionally limited to three high-level presets. The
+        # viewer_mode offers the Standard canvas or Cinema. The
         # ambient/split layouts that older presets exposed are still reachable
         # at runtime through panel_mode_style and the floating panel lock/dock
-        # buttons; they are fused into "integrated", not separate viewer modes.
+        # buttons; they share the same panel shell, not separate viewer modes.
         presets = {
-            "classic": ("classic", "drawer"),
-            "integrated": ("minimal", "integrated"),
+            "standard": ("compact", "integrated"),
             "cinema": ("cinema", "integrated"),
         }
 
@@ -426,30 +426,30 @@ class MolSysView(
         # the sentinels were `"classic"` and `"drawer"`, which are also legitimate
         # answers, so a user who configured either got the preset's value instead
         # and had no way to ask for them at all.
-        cfg_viewer_mode = getattr(config, "viewer_mode", "classic")
+        cfg_viewer_mode = getattr(config, "viewer_mode", "standard")
         cfg_controls_mode = getattr(config, "controls_mode", None)
         cfg_panel_mode_style = getattr(config, "panel_mode_style", None)
 
         # 1. Resolve viewer_mode. An explicitly requested viewer_mode is validated
         # strictly (removed presets raise instead of silently coercing); a stale or
-        # unknown config value falls back to "classic" defensively.
+        # historical config value falls back to "standard" defensively.
         if viewer_mode is not None:
             viewer_mode = digest_viewer_mode(viewer_mode)
         v_mode = viewer_mode if viewer_mode is not None else cfg_viewer_mode
         if v_mode not in presets:
-            v_mode = "classic"
+            v_mode = "standard"
 
         preset_controls, preset_panel = presets[v_mode]
 
         # 2. Resolve controls_mode (explicit constructor/method arg > customized config > preset default)
         if controls_mode is not None:
-            c_mode = controls_mode
+            c_mode = digest_controls_mode(controls_mode)
         elif viewer_mode is not None:
             c_mode = preset_controls
         else:
             c_mode = cfg_controls_mode if cfg_controls_mode is not None else preset_controls
 
-        c_mode_valid = c_mode if c_mode in ("classic", "minimal", "cinema") else "classic"
+        c_mode_valid = c_mode if c_mode in ("compact", "cinema") else "compact"
 
         # 3. Resolve panel_mode_style (explicit constructor/method arg > customized config > preset default)
         if panel_mode_style is not None:
@@ -3510,12 +3510,12 @@ class MolSysView(
             "show_controls": bool(include_controls),
             "autohide_controls": bool(getattr(self.widget, "autohide_controls", False)),
             "autohide_scope": str(getattr(self.widget, "autohide_scope", "controls")),
-            "viewer_mode": str(getattr(self.widget, "viewer_mode", "integrated")),
+            "viewer_mode": str(getattr(self.widget, "viewer_mode", "standard")),
             "controls_position": list(getattr(self.widget, "controls_position", ["top", "right"])),
             "controls_position_fullscreen": list(
                 getattr(self.widget, "controls_position_fullscreen", ["bottom", "right"])
             ),
-            "controls_mode": str(getattr(self.widget, "controls_mode", "classic")),
+            "controls_mode": str(getattr(self.widget, "controls_mode", "compact")),
             "panel_mode_style": str(getattr(self.widget, "panel_mode_style", "drawer")),
             "enable_popout": bool(include_popout),
             "debug_js": bool(getattr(self.widget, "debug_js", False)),

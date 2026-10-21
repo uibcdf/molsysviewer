@@ -210,7 +210,7 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
         // continue to use the existing trait projection guard.
         for (const canvas of [peer, page]) {
             await canvas.bringToFront();
-            await canvas.getByRole("button", { name: "Panel", exact: true }).click();
+            await canvas.getByTitle("Panel mode (N / W)", { exact: true }).click();
             await canvas.getByTitle("Dock panel (Split)", { exact: true }).click();
             assert.equal(await canvas.evaluate(() => (window as any).__mirrorController.sharedShell.isSplit), true);
             const other = canvas === peer ? page : peer;
@@ -226,8 +226,10 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
         });
         await fixture("show");
         await fixture("fps", { fps: 8 });
+        // Compact controls intentionally omit the Classic FPS field. Verify the
+        // playback engine's actual rate in each endpoint, including while live.
         for (const endpoint of [page, peer]) await endpoint.waitForFunction(() =>
-            (document.querySelector('input[title="FPS"]') as HTMLInputElement)?.value === "8");
+            (window as any).__mirrorController.trajectory.getTrajectoryState().fps === 8);
 
         // With derived geometry in flight, stop must leave both actual frames
         // and each set's frame-specific geometry at the authority's final frame.
@@ -238,7 +240,7 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
             await fixture("fps", { fps: 12 });
             for (const endpoint of [page, peer]) await endpoint.waitForFunction(() =>
                 (window as any).__mirrorController.trajectory.getTrajectoryState().isPlaying
-                && (document.querySelector('input[title="FPS"]') as HTMLInputElement)?.value === "12");
+                && (window as any).__mirrorController.trajectory.getTrajectoryState().fps === 12);
             await canvas.locator('[data-molsysviewer-trajectory-playback="play"]').click();
             for (const endpoint of [page, peer]) await endpoint.waitForFunction(() => !(window as any).__mirrorController.trajectory.getTrajectoryState().isPlaying);
             await page.evaluate(() => (window as any).__popupFixtureDrain());

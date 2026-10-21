@@ -153,21 +153,20 @@ Panel mode is one of the most important bridges between:
 That is why the project treats it as a shared runtime concept, not as a
 notebook-only convenience.
 
-## Experimental layout modes
+## Canvas layout preferences
 
-Two constructor arguments let you try alternative canvas layouts:
+Two constructor arguments let you choose the controls and panel layout:
 
 ```python
 view = mv.MolSysView(
-    controls_mode="minimal",
+    controls_mode="compact",
     panel_mode_style="floating",
 )
 ```
 
 `controls_mode`:
 
-- `"classic"` — six text buttons at the bottom of the canvas.
-- `"minimal"` — three SVG icons (panel / fullscreen / popup) plus a `?` help button.
+- `"compact"` — three SVG icons (panel / fullscreen / popup) plus a `?` help button.
   Scene actions (reset view, background, spin, swing) are available under **View**
   in the context menu, including when you right-click an object.
   Keyboard shortcuts: `H` help overlay, `N` Navigate, `W` Workbench.
@@ -182,9 +181,8 @@ view = mv.MolSysView(
 - `"ambient"` and `"split"` — the unified shell laid out beside the canvas.
 
 **You rarely need either.** Both follow from `viewer_mode`, which is the one knob
-worth knowing: `"classic"` gives you `classic` + `drawer`, `"integrated"` (the
-default) gives `minimal` + `integrated`, and `"cinema"` gives `cinema` +
-`integrated`. Setting `controls_mode` or `panel_mode_style` overrides that pair
+worth knowing: `"standard"` (the default) gives `compact` + `integrated`,
+and `"cinema"` gives `cinema` + `integrated`. Setting `controls_mode` or `panel_mode_style` overrides that pair
 for one of the two.
 
 To fix a preference for every view, set it in `molsysviewer.config`:
@@ -192,15 +190,19 @@ To fix a preference for every view, set it in `molsysviewer.config`:
 ```python
 import molsysviewer as mv
 
-mv.config.viewer_mode = "classic"        # or set the two below individually
+mv.config.viewer_mode = "standard"     # or set the two below individually
 mv.config.panel_mode_style = "drawer"
 ```
 
-Leaving a configuration value as `None` — which is how it ships — means *follow
-whatever `viewer_mode` implies*. That distinction matters: until 2026-08-06 the
-defaults `"classic"` and `"drawer"` doubled as "not chosen", so configuring
-either of them asked for the classic surface and quietly got the preset's
-instead. They are requestable now.
+Leaving `controls_mode` or `panel_mode_style` as `None` means *follow the
+viewer-mode preset*. Classic text controls and the Classic viewer preset are
+retired before 1.0. New calls reject `"classic"`; historical UI projections and
+stale configuration use the compact controls instead. The previous names
+`viewer_mode="integrated"` and `controls_mode="minimal"` are also retired
+for new calls. Stored UI projections and existing configuration normalize to
+`standard` and `compact`. The separate `panel_mode_style="integrated"`
+layout name is unchanged. Use
+`panel_mode_style="drawer"` if you prefer drawers with the current controls.
 
 ## See also
 

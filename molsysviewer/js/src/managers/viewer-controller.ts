@@ -12,7 +12,8 @@ import { PluginCommands } from "molstar/lib/mol-plugin/commands";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { ButtonsType } from "molstar/lib/mol-util/input/input-observer";
-import { Vec2 } from "molstar/lib/mol-math/linear-algebra";
+import { Vec2, Vec3 } from "molstar/lib/mol-math/linear-algebra";
+import { normalizeControlsMode, normalizeViewerMode } from "../ui/local-ui-model";
 
 import { VARELA_ROUND_WOFF2_DATA_URL } from "../assets/varela-round/font-data";
 import { disposeControls } from "../ui/controls";
@@ -868,15 +869,15 @@ export class MolSysViewerController {
     private structureLoadPending = false;
     private readonly model?: any;
 
-    private localViewerMode = "integrated";
-    private localControlsMode = "classic";
+    private localViewerMode = "standard";
+    private localControlsMode = "compact";
     private localPanelModeStyle = "drawer";
 
     getViewerMode(): string {
-        return this.model ? (this.model.get("viewer_mode") || "integrated") : this.localViewerMode;
+        return normalizeViewerMode(this.model ? this.model.get("viewer_mode") : this.localViewerMode);
     }
     getControlsMode(): string {
-        return this.model ? (this.model.get("controls_mode") || "classic") : this.localControlsMode;
+        return normalizeControlsMode(this.model ? this.model.get("controls_mode") : this.localControlsMode);
     }
     /** Initial UI projection for another canvas of this session. */
     getCanvasUiState(): Record<string, unknown> {
@@ -987,8 +988,9 @@ export class MolSysViewerController {
     }
 
     setViewerMode(mode: string) {
+        if (mode === "classic" || mode === "integrated") mode = "standard"; // Historical projections only.
         const presets: Record<string, [string, string]> = {
-            classic: ["classic", "drawer"], integrated: ["minimal", "integrated"], cinema: ["cinema", "integrated"],
+            standard: ["compact", "integrated"], cinema: ["cinema", "integrated"],
         };
         if (!presets[mode]) return;
         if (this.model) {
@@ -1001,6 +1003,7 @@ export class MolSysViewerController {
         this.setControlsMode(presets[mode][0]);
     }
     setControlsMode(mode: string) {
+        mode = normalizeControlsMode(mode);
         if (this.model) {
             this.model.set("controls_mode", mode);
             this.model.save_changes();
@@ -3192,6 +3195,14 @@ export class MolSysViewerController {
             if (refreshTargets.includes("addons")) this.refreshAddonsPanel(false);
             if (refreshTargets.length > 0) this.refreshPanelWorkspaceChrome();
             this.syncStripOverlaysForMessage(msg);
+            // Absolute geometry is also a complete scene. Camera authority
+            // disables Mol*'s automatic first framing, so addon-first workspaces
+            // must receive it here just as molecular loads do. Follow additions
+            // only until the user explicitly chooses a viewpoint.
+            if (typeof msg.op === "string" && msg.op.startsWith("add_") && !this.getStructureData()
+                && !this.state.hasIntentionalViewpoint() && this.state.hasSceneContent()) {
+                await this.frameLoadedStructure(10000, true);
+            }
         } catch (error) {
             console.error("[MolSysViewer] Error handling message:", msg, error);
             if (options.throwOnError) throw error;
@@ -3297,11 +3308,15 @@ export class MolSysViewerController {
      * (`canvas3d.js:691`, not gated by `manualReset`), so framing and the camera
      * bound are established by the same call and cannot disagree.
      */
-    private async frameLoadedStructure(timeoutMs = 10000): Promise<void> {
+    private async frameLoadedStructure(timeoutMs = 10000, forceInitialGeometry = false): Promise<void> {
         const canvas3d: any = this.plugin.canvas3d;
         if (!canvas3d) return;
         const token = ++this.frameRequestToken;
         const deadline = Date.now() + timeoutMs;
+        // State transforms can finish before Canvas3D commits their renderables.
+        // Commit the first absolute geometry before reading its scene bounds.
+        if (forceInitialGeometry) canvas3d.commit?.(true);
+        let requested = !forceInitialGeometry;
 
         const sceneHasContent = () => (canvas3d.boundingSphere?.radius ?? 0) > 0;
 
@@ -3311,7 +3326,13 @@ export class MolSysViewerController {
         const request = () => {
             canvas3d.requestCameraReset?.({ durationMs: 0 });
             canvas3d.requestDraw?.();
+            requested = true;
         };
+        // Mol* 5.4.1 exposes cached sphere objects. With manualReset enabled,
+        // the first all-scene bounds may still be zero until resolving a reset
+        // asks the scene to calculate them. Waiting for that cache first would
+        // deadlock the first shape-only frame.
+        if (forceInitialGeometry) request();
 
         // "Did it land?" cannot be `radiusMax > 0`: Mol*'s *default* is 10
         // (`camera.js:230`), so that test passes on a camera that has never framed
@@ -3319,6 +3340,12 @@ export class MolSysViewerController {
         // initial position. `resolveCameraReset` sets `radiusMax = getSceneRadius()`,
         // so agreeing with the scene radius is what actually distinguishes them.
         const framed = () => {
+            if (!requested) return false;
+            if (forceInitialGeometry) {
+                const state = canvas3d.camera?.state;
+                const bounds = canvas3d.boundingSphereVisible;
+                if (!(state?.radius > 0) || !bounds || Vec3.distance(state.target, bounds.center) > 0.01) return false;
+            }
             const radiusMax = canvas3d.camera?.state?.radiusMax ?? 0;
             const sceneRadius = (canvas3d.boundingSphere?.radius ?? 0)
                 * (canvas3d.props?.sceneRadiusFactor ?? 1);
@@ -3333,8 +3360,10 @@ export class MolSysViewerController {
         // own, which is a regression the user would see as a late jump.
         while (Date.now() < deadline) {
             if (token !== this.frameRequestToken) return;
+            if (forceInitialGeometry && this.state.hasIntentionalViewpoint()) return;
             if (framed()) return;
             if (sceneHasContent()) request();
+            else canvas3d.requestDraw?.();
             await new Promise(resolve => setTimeout(resolve, 16));
         }
     }

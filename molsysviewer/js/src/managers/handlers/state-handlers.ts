@@ -1362,6 +1362,10 @@ export class StateHandlers {
         this.intentionalViewpoint = true;
     }
 
+    hasIntentionalViewpoint(): boolean {
+        return this.intentionalViewpoint;
+    }
+
     ensureCameraInputTracking(): void {
         if (this.cameraInputTracked) return;
         const input = (this.plugin as any).canvas3d?.input;

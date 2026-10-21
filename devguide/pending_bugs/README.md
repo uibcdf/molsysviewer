@@ -19,8 +19,9 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Partially done (1)
+### Partially done (2)
 
+- [`shape_only_geometry_not_visible.md`](shape_only_geometry_not_visible.md) — [#257](https://github.com/uibcdf/molsysviewer/issues/257) — Shape-only live Jupyter Render creates geometry that remains invisible *(high, reproduced)*
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*
 
 ### Open (1)

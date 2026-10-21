@@ -66,8 +66,8 @@ export async function bootRemoteRenderedClient(options: RemoteRenderedClientOpti
         debug_js: false,
         enable_popout: false,
         panel_mode_style: "drawer",
-        controls_mode: "classic",
-        viewer_mode: "integrated",
+        controls_mode: "compact",
+        viewer_mode: "standard",
         autohide_controls: true,
     };
     const model = {

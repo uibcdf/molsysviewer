@@ -270,6 +270,8 @@ print(json.dumps({"page": str(output), "single": str(single)}))
             await page.mouse.click(host.x + host.width - 20, host.y + host.height / 2, { button: "right" });
             const menu = page.locator('[data-molsysviewer-context-menu="true"]');
             await menu.locator('[data-molsysviewer-context-submenu="View"]').click();
+            assert.equal(await menu.getByRole("menuitem", { name: /^Classic(?: ✓)?$/ }).count(), 0,
+                "retired Classic controls must not be offered in the context menu");
             await menu.getByRole("menuitem", { name: new RegExp(`^${mode}(?: ✓)?$`) }).click();
         };
         for (let iteration = 0; iteration < 3; iteration++) {
@@ -291,9 +293,7 @@ print(json.dumps({"page": str(output), "single": str(single)}))
             assert.equal(await page.locator(".molsysviewer-help-card").count(), 1);
             assert.equal(await page.locator(".molsysviewer-help-card").isVisible(), true);
             await page.keyboard.press("h");
-            await selectMode("Classic");
-            assert.equal(await controls.count(), 1);
-            await selectMode("Integrated");
+            await selectMode("Standard");
             assert.equal(await controls.count(), 1);
             if (iteration === 0) {
                 await away();

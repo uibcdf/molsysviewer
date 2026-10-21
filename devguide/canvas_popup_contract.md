@@ -4,8 +4,9 @@ The notebook canvas and its external popup are two rendering endpoints of the
 same session. Both mount `ui/controls.ts` and the same Mol* controller UI:
 controls, trajectory widgets, Help, context menu, Studio and Workbench.
 The notebook's **Open popup** action becomes **Close popup** in the external
-window; it never recursively opens another canvas window. Classic's text label
-may consequently occupy a different width.
+window; it never recursively opens another canvas window. Both endpoints use
+the current compact controls or Cinema. Historical Classic preferences normalize
+to compact controls; Classic is no longer a public mode choice (#258).
 
 ## Runtime and initial state
 
@@ -135,7 +136,8 @@ uses the actual AnyWidget bootstrap and a persistent real Python molecular
 authority through `canvas-popup-bridge.py`. Only the notebook comm/trait
 transport is adapted for Playwright; molecular operations use the real view.
 
-Assertions cover first-mount Classic inheritance, stale legacy-source isolation,
+Assertions cover first-mount compact controls, migration of historical Classic
+projections, stale legacy-source isolation,
 matching controls/styles, mode changes in both directions, reveal behavior,
 Help, keyboard, fullscreen, Studio, panel popout, preferences and single-step
 trajectory convergence. Browser/WebGL failures are errors. Source/browser
@@ -151,3 +153,11 @@ observes the real factories; it does not replace rendering or calculations.
 The export scenario also receives context rotation and bidirectional selections
 without Python. Earlier controls-only evidence for #232 does not qualify these
 later scientific mirror changes.
+
+## Canonical mode names — 2026-10-21
+
+Current viewer presets are `standard` and `cinema`; controls are `compact` and
+`cinema`. Historical UI projections with integrated/minimal or Classic normalize
+to standard/compact before use. Panel-layout names remain independent, including
+`panel_mode_style="integrated"`. New Python calls reject the retired mode names.
+Both canvas windows offer the same Standard/Cinema context-menu choices.

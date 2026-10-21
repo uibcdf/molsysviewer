@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Modern canvas controls](retire_classic_canvas_controls.md) — #258 retires Classic and adopts Standard/Cinema viewer modes and Compact/Cinema controls, with legacy UI normalization.
+
 - [Canvas popup text caret](canvas_popup_blinking_text_caret.md) — #251 prevents default text-selection on the controls-reveal rectangle while preserving keyboard focus.
 - [Studio background contrast](studio_background_contrast.md) — #254 records the contrast experiment and its subsequent maintainer-requested restoration of the original opacity cycle.
 - [Studio proportional dimensions](studio_proportional_dimensions.md) — #255 enlarges default cards, reserves canvas-control space and preserves deliberate geometry.

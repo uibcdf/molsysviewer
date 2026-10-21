@@ -537,7 +537,7 @@ export class ViewerContextMenu {
             view.appendChild(this.makeActionButton(scene?.isDarkMode ? "Use Light Background" : "Use Dark Background", "toggle_background", { mode: scene?.isDarkMode ? "light" : "dark" }));
             view.appendChild(this.makeActionButton(scene?.isSpinActive ? "Stop Automatic Rotation" : "Start Automatic Rotation", "toggle_spin", { enabled: !scene?.isSpinActive }));
             view.appendChild(this.makeActionButton(scene?.isSwingActive ? "Stop Swing" : "Start Swing", "toggle_swing", { enabled: !scene?.isSwingActive }));
-            for (const mode of ["classic", "integrated", "cinema"]) {
+            for (const mode of ["standard", "cinema"]) {
                 const label = mode[0].toUpperCase() + mode.slice(1);
                 view.appendChild(this.makeActionButton(`${label}${scene?.currentViewerMode === mode ? " ✓" : ""}`, "set_viewer_mode", { text: mode }));
             }

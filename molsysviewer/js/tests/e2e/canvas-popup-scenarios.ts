@@ -75,24 +75,32 @@ export async function checkNotebookCanvasPopup(page: Page, dir: string) {
             const observer = new MutationObserver(() => {
                 const controls = document.querySelector(".molsysviewer-controls");
                 if (!controls?.querySelector("button")) return;
-                (window as any).__firstPopupButtons = controls.textContent;
+                (window as any).__firstPopupButtons = [...controls.querySelectorAll("button")].map(b => b.title);
                 observer.disconnect();
             });
             observer.observe(document, { childList: true, subtree: true });
         });
         await popup.waitForFunction(() => document.querySelector('[data-molsysviewer-trajectory-label="true"]')?.textContent === "1 / 3");
         await popup.locator("#molsysviewer-loading").waitFor({ state: "hidden" });
-        await page.mouse.move(700, 400);
-        await popup.mouse.move(700, 400);
+        // Opening the popup leaves its source button focused. Compare matching
+        // idle states, after the compact buttons' focus/hover transitions settle.
+        for (const endpoint of [page, popup]) {
+            await endpoint.bringToFront();
+            await endpoint.mouse.move(700, 400);
+            await endpoint.evaluate(() => (document.activeElement as HTMLElement)?.blur());
+            await endpoint.waitForFunction(() => [...document.querySelectorAll(".molsysviewer-controls button")]
+                .every(button => !button.matches(":hover, :focus")
+                    && button.getAnimations().every(animation => animation.playState === "finished")));
+        }
         // Position right:auto may resolve differently with the larger window.
         const host = await signature(page), external = await signature(popup);
-        assert.ok((await popup.evaluate(() => (window as any).__firstPopupButtons))?.includes("Reset"),
-            "the first controls mount must inherit Classic before asynchronous scene sync");
+        assert.ok((await popup.evaluate(() => (window as any).__firstPopupButtons))?.includes("Help (H)"),
+            "the first controls mount must inherit compact controls before asynchronous scene sync");
         assert.deepEqual(external.buttons, host.buttons, "popup buttons and computed styles match the notebook");
         assert.equal(external.trajectory, host.trajectory, "the trajectory widgets match exactly");
         assert.equal(external.position.left, host.position.left);
         assert.equal(external.position.top, host.position.top);
-        await page.evaluate(() => (window as any).__popupWidgetModel.set("controls_mode", "minimal"));
+        await page.evaluate(() => (window as any).__popupWidgetModel.set("controls_mode", "compact"));
         // Clicking the empty reveal rectangle must focus a control, not create
         // a text-caret selection in its empty DIV (TcTIM dogfooding #251).
         await page.evaluate(() => (window as any).__popupWidgetModel.set("autohide_controls", true));
@@ -215,20 +223,21 @@ export async function checkNotebookCanvasPopup(page: Page, dir: string) {
         await menu.getByText("Cinema", { exact: true }).click();
         await page.waitForFunction(() => (window as any).__popupWidgetModel.get("controls_mode") === "cinema");
         // Every mode is projected into the existing popup through notebook traits.
-        for (const mode of ["classic", "minimal", "cinema", "minimal"]) {
+        for (const mode of ["compact", "cinema", "minimal", "classic", "compact"]) {
             await page.evaluate(mode => (window as any).__popupWidgetModel.set("controls_mode", mode), mode);
             if (mode === "cinema") {
                 await popup.waitForFunction(() => !document.querySelector(".molsysviewer-controls"));
                 assert.equal(await popup.locator('[data-molsysviewer-trajectory-controls="true"]').count(), 1);
             } else {
-                await popup.waitForFunction(mode => {
+                await popup.waitForFunction(() => {
                     const control = document.querySelector(".molsysviewer-controls");
-                    return mode === "classic" ? control?.textContent?.includes("Reset") : !!control?.querySelector('button[title="Help (H)"]');
-                }, mode);
+                    return !!control?.querySelector('button[title="Help (H)"]')
+                        && !control.textContent?.includes("Reset");
+                });
                 await page.mouse.move(700, 400);
                 await popup.mouse.move(700, 400);
                 const expected = await signature(page), actual = await signature(popup);
-                // Classic Pop/Close labels identify the window-specific operation.
+                // Popup identity is window-local even when its controls are mirrored.
                 for (const entry of [expected, actual]) for (const button of entry.buttons) {
                     if (button.title === "Popup") { button.text = "Popup"; button.icon = "Popup"; }
                 }

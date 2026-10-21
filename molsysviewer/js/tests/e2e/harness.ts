@@ -2147,9 +2147,9 @@ export async function probeWidgetSeam(): Promise<{
         debug_js: false,
         show_controls: false,
         autohide_controls: true,
-        controls_mode: "classic",
+        controls_mode: "compact",
         panel_mode_style: "drawer",
-        viewer_mode: "integrated",
+        viewer_mode: "standard",
         controls_position: ["top", "right"],
         addon_states: {},
     };
@@ -2302,9 +2302,9 @@ export async function probePanelHierarchyRefreshAtWidgetSeam(): Promise<string[]
         debug_js: false,
         show_controls: false,
         autohide_controls: true,
-        controls_mode: "classic",
+        controls_mode: "compact",
         panel_mode_style: "drawer",
-        viewer_mode: "integrated",
+        viewer_mode: "standard",
         controls_position: ["top", "right"],
         addon_states: {},
     };

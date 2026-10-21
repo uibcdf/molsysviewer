@@ -1,12 +1,4 @@
-"""Configuring a view mode must be able to ask for the default one.
-
-`_apply_view_modes` resolves three knobs — `viewer_mode`, `controls_mode`,
-`panel_mode_style` — from an explicit argument, then the user's configuration,
-then the preset implied by `viewer_mode`. Until 2026-08-06 the middle step used
-`"classic"` and `"drawer"` as sentinels for "not chosen", and those are also
-legitimate answers: a user who configured either got the preset's value instead,
-with nothing to say so. A sentinel has to be a value nobody can want.
-"""
+"""Public modern presets, configuration precedence and retired-mode rejection."""
 
 import pytest
 
@@ -36,7 +28,7 @@ def test_every_panel_style_can_be_configured(style):
     assert _view().widget.panel_mode_style == style
 
 
-@pytest.mark.parametrize("mode", ["classic", "minimal", "cinema"])
+@pytest.mark.parametrize("mode", ["compact", "cinema"])
 def test_every_controls_mode_can_be_configured(mode):
     config.controls_mode = mode
 
@@ -47,11 +39,11 @@ def test_unset_configuration_follows_the_viewer_mode_preset():
     """The default path, which is what the sentinel was protecting."""
     config.controls_mode = None
     config.panel_mode_style = None
-    config.viewer_mode = "integrated"
+    config.viewer_mode = "standard"
 
     view = _view()
 
-    assert view.widget.controls_mode == "minimal"
+    assert view.widget.controls_mode == "compact"
     assert view.widget.panel_mode_style == "integrated"
 
 
@@ -61,10 +53,61 @@ def test_an_explicit_argument_still_beats_configuration():
     assert _view(panel_mode_style="drawer").widget.panel_mode_style == "drawer"
 
 
-def test_the_classic_viewer_mode_still_implies_its_own_pair():
-    config.controls_mode = None
-    config.panel_mode_style = None
+@pytest.mark.parametrize("argument", ["viewer_mode", "controls_mode"])
+@pytest.mark.parametrize("entrypoint", ["constructor", "show", "show_without_digest"])
+def test_classic_is_rejected_for_new_calls(argument, entrypoint):
+    from molsysviewer._private.exceptions import ArgumentError
 
-    view = _view(viewer_mode="classic")
+    if entrypoint == "constructor":
+        with pytest.raises(ArgumentError):
+            _view(**{argument: "classic"})
+        return
+    view = _view()
+    try:
+        before = (view.widget.viewer_mode, view.widget.controls_mode)
+        with pytest.raises(ArgumentError):
+            view.show(**{argument: "classic"}, skip_digestion=entrypoint == "show_without_digest")
+        assert (view.widget.viewer_mode, view.widget.controls_mode) == before
+    finally:
+        view.close()
 
-    assert (view.widget.controls_mode, view.widget.panel_mode_style) == ("classic", "drawer")
+
+def test_stale_configuration_cannot_restore_classic_controls():
+    config.viewer_mode = "classic"
+    config.controls_mode = "classic"
+    view = _view()
+    try:
+        assert (view.widget.viewer_mode, view.widget.controls_mode) == ("standard", "compact")
+    finally:
+        view.close()
+
+
+@pytest.mark.parametrize("argument, retired", [("viewer_mode", "integrated"), ("controls_mode", "minimal")])
+@pytest.mark.parametrize("entrypoint", ["constructor", "show", "show_without_digest"])
+def test_renamed_modes_are_rejected_for_new_calls(argument, retired, entrypoint):
+    from molsysviewer._private.exceptions import ArgumentError
+
+    if entrypoint == "constructor":
+        with pytest.raises(ArgumentError):
+            _view(**{argument: retired})
+        return
+    view = _view()
+    try:
+        before = (view.widget.viewer_mode, view.widget.controls_mode)
+        with pytest.raises(ArgumentError):
+            view.show(**{argument: retired}, skip_digestion=entrypoint == "show_without_digest")
+        assert (view.widget.viewer_mode, view.widget.controls_mode) == before
+    finally:
+        view.close()
+
+
+def test_existing_configuration_is_canonicalized_without_changing_panel_layout():
+    config.viewer_mode = "integrated"
+    config.controls_mode = "minimal"
+    config.panel_mode_style = "integrated"
+    view = _view()
+    try:
+        assert (view.widget.viewer_mode, view.widget.controls_mode) == ("standard", "compact")
+        assert view.widget.panel_mode_style == "integrated"
+    finally:
+        view.close()

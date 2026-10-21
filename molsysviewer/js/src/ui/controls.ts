@@ -2,6 +2,7 @@ import type { MolSysViewerController } from "../managers/viewer-controller";
 import { ViewerMessage } from "../messages/viewer-messages";
 import { HelpOverlay } from "./help-overlay";
 import { ControlsVisibility } from "./controls-visibility";
+import { normalizeControlsMode } from "./local-ui-model";
 import {
     makeViewportIconButton,
     VIEWPORT_ICON_EXIT_FULLSCREEN,
@@ -420,9 +421,9 @@ export const buildControls = (
         release.push(() => model.off?.(event, callback));
     };
     let refreshVisibility = () => {};
-    const controlsMode = (model.get("controls_mode") as string) || "classic";
+    const controlsMode = normalizeControlsMode(model.get("controls_mode"));
     const isCinema = controlsMode === "cinema";
-    const isMinimal = controlsMode === "minimal" || isCinema;
+    const isMinimal = controlsMode === "compact" || isCinema;
 
     const helpOverlay = new HelpOverlay(container);
     release.push(() => helpOverlay.dispose());
@@ -730,7 +731,7 @@ export const buildControls = (
 
     let fullscreenBtn: HTMLButtonElement | null = null;
 
-    if (controlsMode === "minimal" && overlay) {
+    if (controlsMode === "compact" && overlay) {
         const mkIcon = (svgInner: string, title: string, handler: () => void) => {
             const btn = makeViewportIconButton(svgInner, title, handler);
             overlay!.appendChild(btn);
@@ -901,7 +902,7 @@ export const buildControls = (
     const updateFullscreenButtonState = () => {
         const isFullscreen = !!document.fullscreenElement;
         if (fullscreenBtn) {
-            if (controlsMode === "minimal") {
+            if (controlsMode === "compact") {
                 const svg = fullscreenBtn.querySelector("svg");
                 if (svg) {
                     const path = isFullscreen ? VIEWPORT_ICON_EXIT_FULLSCREEN : VIEWPORT_ICON_FULLSCREEN;

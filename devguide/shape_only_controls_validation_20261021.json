@@ -1,0 +1,177 @@
+{
+  "date": "2026-10-21",
+  "source_parent": "7b3bec46ab6085e243156067bb44f27e64d445c3",
+  "issues": [
+    "uibcdf/molsysviewer#257",
+    "uibcdf/molsysviewer#258"
+  ],
+  "scope": "Local development source receiving. Actual PHMT/Jupyter visual retest and new hosted CI remain separate. No artifact, release or publication qualification.",
+  "environment": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+  "changes": {
+    "initial_absolute_geometry": "Native commit and unconditional first camera-reset request avoid waiting on Mol* 5.4.1 cached zero bounds. No molecular dummy; deliberate viewpoints are preserved.",
+    "public_modes": {
+      "viewer_mode": [
+        "standard",
+        "cinema"
+      ],
+      "controls_mode": [
+        "compact",
+        "cinema"
+      ],
+      "retired_new_calls": [
+        "viewer_mode=classic",
+        "controls_mode=classic",
+        "viewer_mode=integrated",
+        "controls_mode=minimal"
+      ],
+      "legacy": "Historical UI projections and stale config normalize to standard/compact. The independent panel_mode_style=integrated identifier remains unchanged."
+    }
+  },
+  "runtime_sha256": "8b6855458bfc7d91960e61aa03e9da037739d22e633eda1194b200fe7e50659d",
+  "specific_python": {
+    "passed": 26,
+    "exit_code": 0,
+    "log_sha256": "3ef4b8cb397d5dd81a773df5acf3938c35aafb05887cb75fb9583890cbd3b8ed"
+  },
+  "typescript": {
+    "exit_code": 0,
+    "log_sha256": "06022ea9b98fdc111ef5fffba33d80b66e9799b846dd828f625c68a6bcb792c2"
+  },
+  "javascript": {
+    "passed": 332,
+    "failures": 0,
+    "skipped": 0,
+    "exit_code": 0,
+    "log_sha256": "1bf120266d3579c6f3c319cf80f0cf221388a4574462336bd6c248034b21ec9f",
+    "runner": "node --test tests/unit/dist-index.js outside the restricted-stream sandbox. The sandbox wrapper reported only the file count (1), not 332 case results; that output does not establish case counts."
+  },
+  "real_provider_python": {
+    "source": "f0d96ae0dd6d22152bc4422fd3e0ec125353e168",
+    "rendered_sites": 2,
+    "cleared_sites": 2,
+    "caller_shape_preserved": true,
+    "molsys": null,
+    "exit_code": 0,
+    "browser_rendering": "Not claimed by this Python receiving."
+  },
+  "development_attempts": [
+    "The first regression test incorrectly supplied skip_digestion to the constructor; corrected to validate the actual constructor and show(..., skip_digestion=True) entrypoints.",
+    "TypeScript requires narrowing the unknown operation before startsWith; corrected.",
+    "The first camera implementation still waited on cached zero bounds; native probe and failing GPU-pick guard identified this deadlock; unconditional initial reset fixes it.",
+    "Compact-button parity initially compared a focused source button with an idle popup button; matching native idle interaction states retain the style comparison.",
+    "Legacy Classic projection assertion still expected a text label; it now requires the modern Help icon and absence of Reset text.",
+    "Scientific mirror still selected the removed text Panel button; selector now targets the modern Panel mode control.",
+    "Scientific mirror timeout was an absent Classic-only FPS input, not a visibility propagation defect. Both endpoints had hidden=True. The guard now verifies the playback engine FPS in both canvases while stopped and playing.",
+    "The first temporary diagnostic bundling command invoked the esbuild ELF through Node; corrected to the executable. No product change.",
+    "Final naming run passed context-menu and all three controls scenarios, then the strengthened shape-only guard compared radiusMax as a viewpoint property and failed when it expanded from 8.799 to 584.648. All other camera fields were unchanged. Mol* CameraManager.setSnapshot requests a reset; resolveCameraReset derives radiusMax from the current scene. The corrected guard retains exact comparison of every other field and rejects bound collapse; no runtime change was required. Scene-contracts was not executed in that interrupted run."
+  ],
+  "previous_ci": "The completed d126c5a1 source CI does not qualify these new changes.",
+  "human_retest": "Pending; previous view closed before the Studio-occlusion check. Reload page and restart kernel for the new runtime.",
+  "evidence_directory": "/tmp/msv-shape-only-review-20261021",
+  "publication_authorized": false,
+  "environment_observed_after_python_core": {
+    "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+    "libraries": {
+      "molsysviewer": {
+        "file": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/__init__.py",
+        "module_version": "0.24.0+97.gdf4bf477.dirty",
+        "distribution_version": "0.24.0+97.gdf4bf477.dirty",
+        "source_commit": "7b3bec46ab6085e243156067bb44f27e64d445c3"
+      },
+      "molsysmt": {
+        "file": "/home/diego/repos@uibcdf/molsysmt/molsysmt/__init__.py",
+        "module_version": "0.23.0+93.g48aba006f",
+        "distribution_version": "0.23.0+93.g48aba006f",
+        "source_commit": "85b8b038008de4b6ac05e6f6c3e5028935bd3f85"
+      },
+      "argdigest": {
+        "file": "/home/diego/repos@uibcdf/argdigest/argdigest/__init__.py",
+        "module_version": "0.16.0+1.g6dabaf7",
+        "distribution_version": "0.16.0+1.g6dabaf7",
+        "source_commit": "6dabaf709b8af2f2695a6198288d54d3876bfb65"
+      },
+      "smonitor": {
+        "file": "/home/diego/repos@uibcdf/smonitor/smonitor/__init__.py",
+        "module_version": "0.21.0+1.gd6b2394",
+        "distribution_version": "0.21.0+1.gd6b2394",
+        "source_commit": "d6b2394f52cde7296b6b444f3aedf38e6e4064a6"
+      },
+      "depdigest": {
+        "file": "/home/diego/repos@uibcdf/depdigest/depdigest/__init__.py",
+        "module_version": "0.15.1+3.ga27172b",
+        "distribution_version": "0.15.1+3.ga27172b",
+        "source_commit": "a27172ba383ab90ed885ce49a6a761db92437f1c"
+      },
+      "anywidget": {
+        "file": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/lib/python3.14/site-packages/anywidget/__init__.py",
+        "module_version": "0.11.0",
+        "distribution_version": "0.11.0"
+      }
+    }
+  },
+  "environment_scope": "Shared editable development environment, not a clean installed artifact qualification. Checkout HEADs were observed after the core run; distribution metadata can lag checkouts.",
+  "python_core_before_final_mode_rename": {
+    "passed": 3161,
+    "skipped": 21,
+    "qt_deselected": 12,
+    "failures": 0,
+    "errors": 0,
+    "exit_code": 0,
+    "junit_sha256": "e6e53a82d8df0639b11e4a436c69f64e8679ee6e1f324f4ff8b873b8f3d2ab1d",
+    "scope": "Single complete local core run after shape framing and Classic retirement, before the final integrated/minimal to standard/compact rename. Final naming receiving is the 26 focused Python cases and final browser/unit runs. No second complete core run."
+  },
+  "final_browser": {
+    "status": "passed",
+    "passed_suites": [
+      "context-menu",
+      "controls-visibility",
+      "panel-popup-welcome",
+      "scene-contracts"
+    ],
+    "scope": "Four affected real Mol*/Chromium suites across two retained runs, not all 44 core suites. controls-visibility includes all three export/widget/scientific scenarios.",
+    "campaigns": [
+      {
+        "log_sha256": "61726fdaa008e63480a1fa0eada784c3beb101d2436d059cd6306db0df5f64cb",
+        "exit_code": 1,
+        "passed_suites": [
+          "context-menu",
+          "controls-visibility"
+        ],
+        "failed_suite": "panel-popup-welcome",
+        "diagnosis": "Only radiusMax expanded after adding distant geometry; corrected overly strict test, preserving exact pose assertions and a non-collapsing bound assertion.",
+        "not_executed": [
+          "scene-contracts"
+        ]
+      },
+      {
+        "log_sha256": "05017188c3031dd62631906f5ffe6a4dc5decb130a9c3229f67f469a32968e52",
+        "exit_code": 0,
+        "passed_suites": [
+          "panel-popup-welcome",
+          "scene-contracts"
+        ]
+      }
+    ]
+  },
+  "hosted_ci": "New source qualification pending; previous d126c5a1 campaigns retain their original scope.",
+  "ruff": {
+    "exit_code": 0,
+    "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+  },
+  "guide_checks": {
+    "passed": 273,
+    "exit_code": 0,
+    "log_sha256": "5ed0fce29f4191a024e582258077f9813d9bdafb2dabda05381544c3c0ef1bb3",
+    "modules": [
+      "tests/test_reporting_protocol.py",
+      "tests/test_devguide_links.py"
+    ]
+  },
+  "runtime_build": {
+    "exit_code": 0,
+    "log_sha256": "ac6249ede4118293b0df44109e13061b28941fc3585b59ebf828f89c72b6f571",
+    "command": "npm run build:runtime"
+  },
+  "temporary_resources": "Keep the task evidence and isolated provider checkout for the pending human notebook retest. Browser fixture workspaces clean themselves. Human notebook outputs and unrelated sandbox experiments remain unstaged."
+}

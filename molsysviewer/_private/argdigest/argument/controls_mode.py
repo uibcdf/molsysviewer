@@ -6,6 +6,6 @@ def digest_controls_mode(controls_mode, caller=None):
         return None
     if isinstance(controls_mode, str):
         val = controls_mode.strip().lower()
-        if val in {"classic", "minimal", "cinema"}:
+        if val in {"compact", "cinema"}:
             return val
     raise ArgumentError("controls_mode", value=controls_mode, caller=caller, message="Invalid controls_mode preset")

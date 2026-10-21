@@ -186,8 +186,8 @@ export const bootPopup = async (loadedModule?: any) => {
     let applyingHostState = false;
     let pendingUiSave = false;
     const uiModel = createLocalUiModel({
-        viewer_mode: initOptions.viewerMode || "integrated",
-        controls_mode: initOptions.controlsMode || "minimal",
+        viewer_mode: initOptions.viewerMode || "standard",
+        controls_mode: initOptions.controlsMode || "compact",
         panel_mode_style: initOptions.panelModeStyle || "integrated",
         ...initOptions.uiState,
         // A separate Studio window always uses its own split shell.

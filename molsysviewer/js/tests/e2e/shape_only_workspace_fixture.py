@@ -55,6 +55,8 @@ def fixture_event(view, event):
         view.shapes.delete("caller-sphere")
     elif action == "hide-caller":
         view.shapes["caller-sphere"].hide()
+    elif action == "distant-shape":
+        view.shapes.add_sphere(center="[100,0,0] nm", radius="0.3 nm", tag="distant-sphere")
     elif action == "load-molecule":
         view.load(msv.demo["dialanine"].molsys)
         view.player.set_fps(17)
@@ -77,7 +79,7 @@ def main():
             ),
         )
     )
-    view = msv.MolSysView(viewer_mode="integrated", controls_mode="classic")
+    view = msv.MolSysView(viewer_mode="standard", controls_mode="compact")
     # Start genuinely empty; registration/activation is tested after mounting.
     runpy.run_path(str(Path(__file__).with_name("canvas-popup-bridge.py")))["serve"](view, fixture_event)
 

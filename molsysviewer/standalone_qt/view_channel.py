@@ -53,9 +53,9 @@ class QtViewChannel:
         self.debug_js = False
         self.controls_position = ["top", "right"]
         self.controls_position_fullscreen = ["top", "right"]
-        self.controls_mode = "classic"
+        self.controls_mode = "compact"
         self.panel_mode_style = "drawer"
-        self.viewer_mode = "integrated"
+        self.viewer_mode = "standard"
         self.addon_states: dict = {}
         self.model_id = "molsysviewer-qt"
         self._model_name = "MolSysViewerModel"

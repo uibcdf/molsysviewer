@@ -1,5 +1,7 @@
 # Path to 1.0.0 (Unified Release Plan)
 
+**Shape-only receiving and canonical modes — 2026-10-21:** the PHMT/Jupyter smoke exposed [#257](pending_bugs/shape_only_geometry_not_visible.md): native shape-only geometry existed but the initial camera never framed it. The source correction now commits geometry and requests the first reset without waiting on cached zero Mol* bounds; deliberate viewpoints remain preserved. Actual PHMT Python Render/Clear passes; human browser retest remains pending. Under [#258](archive/retire_classic_canvas_controls.md), Classic is retired and Diego approves `viewer_mode=standard|cinema` and `controls_mode=compact|cinema`, with legacy UI normalization and independent panel-layout names retained. [Receiving](shape_only_controls_validation_20261021.json) separates local checks, prior source CI and new hosted/manual qualification. Finish this retest before #93; no candidate freeze or publication.
+
 **Required source CI completed — 2026-10-21:** accepted source d126c5a1 passes all required gates in the [final receipt](final_source_ci_20261021.json), including six Python 3.11–3.13 cells, all three Python 3.14 hosts and 44/44 core browser suites. Qt remains experimental with its recorded failures. Resume the actual PHMT/Jupyter smoke next, then reconcile #93 against central admission; the new immutable policy reference is still needed for caller/badge refresh. [#256](pending_bugs/ci_jobs_ignore_cancellation.md) tracks cancellation-resistant jobs separately from the successful source qualification. Broad documentation and later exact artifact qualification remain before release; 0.25.0 is unfrozen and both 1.0 publications remain paused.
 
 **Before-documentation review — 2026-10-21:** opacity 98/90/80 is human-accepted. The [board/CI receipt](pre_documentation_review_20261021.json) identifies remaining source CI receiving, the explicitly postponed PHMT/Jupyter smoke and administrative #93 reconciliation against central Python 3.14 admission. No new notebook-core implementation defect is identified. Public documentation can proceed alongside these closures; exact candidate/artifact qualification and separate publication authorization still come later.
@@ -313,7 +315,7 @@ Work done against the `0.18.0` tag.
 | 3 | Update `changes_notes.md` with entries post-2026-04-26 | Claude | ✅ 2026-04-28 |
 | 4 | Fill 3 placeholder doc pages (`demo_systems/catalog`, `demo_systems/index`, `scene_management/visibility`) | Claude | ✅ 2026-04-28 |
 | 5 | Manual smoke test — 14-step flow in `devguide/smoke_test.md` | Diego | — |
-| 6 | Visual smoke of `controls_mode="minimal"` + `panel_mode_style="floating"` in a real notebook | Diego | — |
+| 6 | Visual smoke of `controls_mode="compact"` + `panel_mode_style="floating"` in a real notebook | Diego | — |
 | 7 | Publish conda + npm packages | Diego | Viewer 0.23.4 is on npm and the public `uibcdf` Conda channel; the exact public installed-pair matrix passed 20/20 with MolSysMT 0.22.4 on 2026-09-25. This is a pre-1.0 distribution milestone, not a Phase 7/E2E sign-off. See `docs/content/developer/releasing.md` and `checkpoints.md`. |
 
 ---

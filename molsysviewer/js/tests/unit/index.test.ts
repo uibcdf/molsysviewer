@@ -41,3 +41,5 @@ import "./remote-file-controls.test";
 import "./remote-surface-controls.test";
 import "./font-assets.test";
 import "./runtime-action-manifest.test";
+
+import "./local-ui-model.test";

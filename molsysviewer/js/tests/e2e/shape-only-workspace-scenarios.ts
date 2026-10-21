@@ -31,6 +31,23 @@ export async function checkShapeOnlyWorkspace(page: Page, dir: string) {
             && (c.state.resolveObjectLoci("shape", tag) !== null) === present;
     }, {tag, present});
     const geometryControl = (endpoint: Page, id: string) => endpoint.locator(`[data-workspace-geometry="${id}"]`);
+    const visibleShape = async (endpoint: Page, tag: string, position: number[]) => {
+        await endpoint.bringToFront();
+        await endpoint.waitForFunction(({tag, position}) => {
+            const c = (window as any).__mirrorController;
+            const canvas = c.plugin.canvas3dContext.canvas;
+            const gpu = c.plugin.canvas3d;
+            const projected = gpu.camera.project([0, 0, 0, 0], position);
+            const rect = canvas.getBoundingClientRect();
+            const x = projected[0] * rect.width / canvas.width;
+            const y = (canvas.height - projected[1]) * rect.height / canvas.height;
+            if (!(x > 0 && x < rect.width && y > 0 && y < rect.height)) return false;
+            const hit = gpu.identify([x, y]);
+            const loci = hit && gpu.getLoci(hit.id).loci;
+            const owner = loci?.shape && c.state.findShapeOwner(loci.shape.sourceData);
+            return owner?.kind === "shape" && owner.tag === tag;
+        }, {tag, position});
+    };
     const panelToggle = (endpoint: Page) => endpoint.locator(".molsysviewer-controls")
         .getByRole("button", {name:/^(Panel|Panel mode \(N \/ W\))$/});
     const openPanels = async (endpoint: Page) => {
@@ -67,6 +84,7 @@ export async function checkShapeOnlyWorkspace(page: Page, dir: string) {
         await fixture("caller-shape");
         for (const endpoint of [page, popup]) {
             await hasShape(endpoint, "caller-sphere", true);
+            await visibleShape(endpoint, "caller-sphere", [0, 0, 0]);
             assert.equal(await welcome(endpoint).count(), 0, "shape-only scene has no welcome overlay");
             assert.equal(await endpoint.evaluate(() => !!(window as any).__mirrorController.getStructureData()), false);
         }
@@ -96,8 +114,15 @@ export async function checkShapeOnlyWorkspace(page: Page, dir: string) {
             "a panel message for another owner cannot reach this widget's listeners");
         await geometryControl(page, "render").click();
         await drain();
-        for (const endpoint of [page, popup]) await hasShape(endpoint, "workspace-sphere", true);
+        for (const endpoint of [page, popup]) {
+            await hasShape(endpoint, "workspace-sphere", true);
+            await visibleShape(endpoint, "workspace-sphere", [10, 0, 0]);
+        }
         await fixture("caller-shape");
+        for (const endpoint of [page, popup]) {
+            await visibleShape(endpoint, "workspace-sphere", [10, 0, 0]);
+            await visibleShape(endpoint, "caller-sphere", [0, 0, 0]);
+        }
         await geometryControl(page, "clear").click();
         await drain();
         for (const endpoint of [page, popup]) {
@@ -148,6 +173,24 @@ export async function checkShapeOnlyWorkspace(page: Page, dir: string) {
         await drain();
         await geometryControl(popup, "render").click(); await drain();
         await hasShape(page, "workspace-sphere", true);
+        await visibleShape(page, "workspace-sphere", [10, 0, 0]);
+        await visibleShape(popup, "workspace-sphere", [10, 0, 0]);
+        // Adding geometry must not override a deliberately chosen camera.
+        const chosen = await page.evaluate(async () => {
+            const c = (window as any).__mirrorController;
+            const snapshot = c.getCameraSnapshot();
+            await c.handleMessage({op: "set_camera_snapshot", snapshot});
+            return snapshot;
+        });
+        await fixture("distant-shape");
+        const current = await page.evaluate(() => (window as any).__mirrorController.getCameraSnapshot());
+        // Mol* resolves SetSnapshot through requestCameraReset, deriving radiusMax
+        // from the scene at that time. A later scene bound may expand; the chosen
+        // pose, framing radius and every other camera preference must not change.
+        const { radiusMax: chosenBound, ...chosenView } = chosen;
+        const { radiusMax: currentBound, ...currentView } = current;
+        assert.deepEqual(currentView, chosenView);
+        assert.ok(currentBound >= chosenBound, "new geometry must not collapse the camera bound");
         await fixture("load-molecule");
         for (const endpoint of [page, popup]) {
             await endpoint.waitForFunction(() => !!(window as any).__mirrorController.getStructureData());

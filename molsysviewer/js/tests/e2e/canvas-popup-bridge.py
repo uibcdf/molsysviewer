@@ -15,7 +15,7 @@ import molsysviewer as msv
 
 def serve(view=None, fixture_event_handler=None):
     if view is None:
-        view = msv.new_view(msv.demo["pentalanine"].molsys, structure_indices=[0, 8, 3], controls_mode="classic")
+        view = msv.new_view(msv.demo["pentalanine"].molsys, structure_indices=[0, 8, 3], controls_mode="compact")
     view.set_controls_visible(True, autohide=False, position=["top", "left"])
     sent = []
 

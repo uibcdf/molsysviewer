@@ -834,6 +834,16 @@ What remains decided at the canvas level, and is not up for rediscovery:
   stay out of that cluster;
 - the same panel model works in the notebook canvas and in the popup.
 
+## Pre-1.0 naming and retirement — 2026-10-21
+
+The dated implementation table above records the 2026-08-06 state. Under #258,
+Classic is retired. New public calls accept `viewer_mode="standard"` or
+`"cinema"`, and `controls_mode="compact"` or `"cinema"`. Standard selects compact
+controls and the integrated panel layout. Stored UI projections and stale
+configuration normalize the former integrated/minimal names to standard/compact;
+new calls reject the retired names. `panel_mode_style="integrated"` remains the
+independent layout identifier. The context menu offers Standard and Cinema.
+
 ## Documentation Rule
 
 When this UX direction evolves, update this file by preserving three separate
