@@ -1004,11 +1004,15 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
         const enablePopout = !!model.get("enable_popout");
         const openPanelPopup = (preopenedWindow?: Window | null, panel?: "navigate" | "addons") => {
             controllerPromise.then(async c => {
-                c.saveHostPanelState();
-                if (panel) await c.handleMessage({ op: "set_panel_mode", panel, expanded: true });
-                if (c.canvasHost.style.display === "none") c.setCanvasVisibility(true);
-                c.sharedShell?.setVisible(false);
-                void popupMgr.open("panel", preopenedWindow);
+                // A reserved window came from the external canvas, which owns
+                // its own shell handoff. Do not move the notebook's local UI.
+                if (!preopenedWindow) {
+                    c.saveHostPanelState();
+                    if (panel) await c.handleMessage({ op: "set_panel_mode", panel, expanded: true });
+                    if (c.canvasHost.style.display === "none") c.setCanvasVisibility(true);
+                    c.sharedShell?.setVisible(false);
+                }
+                void popupMgr.open("panel", preopenedWindow, { panel, restoreHostPanel: !preopenedWindow });
             });
         };
 

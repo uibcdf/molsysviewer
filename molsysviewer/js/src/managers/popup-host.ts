@@ -118,7 +118,8 @@ export class PopupHostManager {
         return this.panelWin && !this.panelWin.closed;
     }
 
-    async open(mode: "canvas" | "panel" = "canvas", preopenedWindow?: Window | null) {
+    async open(mode: "canvas" | "panel" = "canvas", preopenedWindow?: Window | null,
+        panelOptions: { panel?: "navigate" | "addons"; restoreHostPanel?: boolean } = {}) {
         const isOpen = mode === "canvas" ? this.isCanvasOpen : this.isPanelOpen;
         if (isOpen) {
             preopenedWindow?.close();
@@ -182,7 +183,7 @@ export class PopupHostManager {
                 isAmbient: this.controller.sharedShell?.isAmbient,
                 isSplit: this.controller.sharedShell?.isSplit,
                 isPanelOnly: mode === "panel",
-                activePanel: this.controller.getActivePanel() || "navigate",
+                activePanel: panelOptions.panel ?? this.controller.getActivePanel() ?? "navigate",
                 enablePanelPopout: this.controller.canPopoutPanel?.() ?? false,
                 hasAuthority: this.controller.hasPythonAuthority?.() ?? true,
             };
@@ -297,8 +298,9 @@ export class PopupHostManager {
                     if (current?.popupEndpointId === channel.popupEndpointId) {
                         this.onEndpointClosed?.("panel", channel.popupEndpointId);
                     }
-                    // Automatically restore host card when panel window is closed
-                    if (this.controller) {
+                    // A preopened panel can belong to a different canvas endpoint.
+                    // That endpoint owns restoring its shell, not this notebook.
+                    if (this.controller && panelOptions.restoreHostPanel !== false) {
                         this.controller.restoreHostPanelState();
                     }
                 }

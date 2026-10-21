@@ -89,6 +89,15 @@ depending on user activation surviving a later message handler. A panel-only
 window owns its split shell and never projects that local layout back into the
 notebook's panel style. It has no canvas controls or welcome card.
 
+When Studio is popped out from the external canvas, that initiating endpoint
+hides its own shell after successful window reservation. Closing the Studio
+window restores the source panel and its local Dock/Float/active-panel state.
+The notebook supplies the panel runtime/channel without changing or restoring
+its own shell for that handoff. A blocked popup leaves the source Studio visible.
+The source endpoint owns its panel-return observer and releases it on pagehide;
+its ordinary Panel control can close the detached window. Scientific scene
+ownership and browser fullscreen policy are unchanged (`uibcdf/molsysviewer#250`).
+
 ## Browser fullscreen boundaries
 
 Studio popout and canvas fullscreen can be used together. Retaining fullscreen

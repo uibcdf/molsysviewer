@@ -69,6 +69,8 @@ export async function checkNotebookCanvasPopup(page: Page, dir: string) {
         await page.waitForFunction(() => (window as any).__popupWidgetModel.get("autohide_controls") === true);
         await autohide.click();
         await page.waitForFunction(() => (window as any).__popupWidgetModel.get("autohide_controls") === false);
+        const notebookPopoutButton = page.getByTitle("Popout panel to external window", { exact: true });
+        const notebookStudioVisible = await notebookPopoutButton.isVisible();
         const panelPending = popup.waitForEvent("popup");
         await popup.getByTitle("Popout panel to external window", { exact: true }).click();
         const panelPopup = await panelPending;
@@ -76,7 +78,51 @@ export async function checkNotebookCanvasPopup(page: Page, dir: string) {
         await panelPopup.locator('[data-molsysviewer-group-panel-tab="regions"]').waitFor({ state: "visible" });
         assert.equal(await panelPopup.locator(".molsysviewer-controls").count(), 0);
         assert.equal(await panelPopup.locator('[data-molsysviewer-welcome-card="true"]').count(), 0);
+        const sourcePopoutButton = popup.getByTitle("Popout panel to external window", { exact: true });
+        await sourcePopoutButton.waitFor({ state: "hidden" });
+        assert.equal(await popup.locator('[data-molsysviewer-group-panel-tab="regions"]').isVisible(), false,
+            "Studio leaves the canvas that initiated its popout (#250)");
+        assert.equal(await popup.locator("canvas").isVisible(), true, "the molecular canvas remains available");
+        assert.equal(await notebookPopoutButton.isVisible(), notebookStudioVisible,
+            "detaching Studio from the external canvas preserves notebook layout");
         await panelPopup.close();
+        await sourcePopoutButton.waitFor({ state: "visible" });
+        assert.ok(await autohide.isVisible(),
+            "closing external Studio restores the originating Settings editor");
+        assert.equal(await notebookPopoutButton.isVisible(), notebookStudioVisible,
+            "returning Studio does not open a second panel in the notebook");
+
+        // Browser popup blocking is a transport condition, not scientific data.
+        await popup.evaluate(() => {
+            (window as any).__unblockedWindowOpen = window.open;
+            window.open = () => null;
+        });
+        try {
+            await sourcePopoutButton.click();
+            assert.equal(await sourcePopoutButton.isVisible(), true,
+                "a blocked popout keeps the source Studio accessible");
+        } finally {
+            await popup.evaluate(() => {
+                window.open = (window as any).__unblockedWindowOpen;
+                delete (window as any).__unblockedWindowOpen;
+            });
+        }
+        // A second handoff exercises a docked source and the ordinary panel control.
+        await popup.getByTitle("Dock panel (Split)", { exact: true }).click();
+        const secondPanelPending = popup.waitForEvent("popup");
+        await sourcePopoutButton.click();
+        const secondPanel = await secondPanelPending;
+        secondPanel.on("pageerror", error => errors.push(String(error)));
+        await secondPanel.locator('[data-molsysviewer-group-panel-tab="regions"]').waitFor({ state: "visible" });
+        await sourcePopoutButton.waitFor({ state: "hidden" });
+        await popup.locator("#molsysviewer-pop").focus();
+        const secondPanelClosed = secondPanel.waitForEvent("close");
+        await popup.getByTitle("Panel mode (N / W)", { exact: true }).click();
+        await secondPanelClosed;
+        await sourcePopoutButton.waitFor({ state: "visible" });
+        assert.ok(await popup.getByTitle("Float panel", { exact: true }).isVisible(),
+            "returning Studio preserves the originating docked layout");
+        await popup.getByTitle("Float panel", { exact: true }).click();
         await popup.locator("#molsysviewer-pop").focus();
         await popup.keyboard.press("v");
         await popup.waitForFunction(() => document.querySelector("canvas")?.parentElement?.style.display === "none");

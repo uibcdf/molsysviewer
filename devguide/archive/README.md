@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Studio handoff from canvas popup](studio_remains_in_canvas_popup_after_popout.md) — #250 hides/restores the source panel, preserves notebook layout, and guards blocking and docked repetition.
+
 - [Studio popout/fullscreen ordering](studio_popup_exits_canvas_fullscreen.md) — #249 closes without runtime changes; browser-controlled fullscreen loss is accepted with recovery through the existing button.
 
 - [Initial Welcome human retest](initial_welcome_human_retest.md) — #247 closes after Diego confirms the flash is gone; earlier persistence remains unexplained.

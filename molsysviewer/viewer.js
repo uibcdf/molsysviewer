@@ -170923,6 +170923,13 @@ var bootPopup = async (loadedModule) => {
       controlsPositionFullscreen: "controls_position_fullscreen"
     })) if (data[field2] !== void 0) uiModel.set(trait, data[field2]);
   };
+  let detachedPanelWindow = null;
+  let panelReturnTimer;
+  const stopPanelReturnObserver = () => {
+    if (panelReturnTimer !== void 0) window.clearInterval(panelReturnTimer);
+    panelReturnTimer = void 0;
+    detachedPanelWindow = null;
+  };
   const popControllerPromise = (async () => {
     await new Promise((r) => setTimeout(r, 100));
     const ctrl3 = await MolSysViewerController2.create(container, (msg) => {
@@ -170937,16 +170944,33 @@ var bootPopup = async (loadedModule) => {
       onPanelPopClick: initOptions.enablePanelPopout && !initOptions.isPanelOnly ? () => {
         if (openerWin.closed) return;
         const size4 = ctrl3.getPanelPopupSize();
-        window.__molsysviewer_pending_panel_window = window.open(
+        const reserved = window.open(
           "",
           "_blank",
           `width=${size4.width},height=${size4.height}`
         );
+        if (!reserved) return;
+        stopPanelReturnObserver();
+        detachedPanelWindow = reserved;
+        ctrl3.saveHostPanelState();
+        ctrl3.setCanvasVisibility(true);
+        ctrl3.sharedShell?.setVisible(false);
+        panelReturnTimer = window.setInterval(() => {
+          if (!reserved.closed) return;
+          stopPanelReturnObserver();
+          ctrl3.restoreHostPanelState();
+        }, 1e3);
+        window.__molsysviewer_pending_panel_window = reserved;
         sendToHost("molsysviewer-popup-panel", { panel: ctrl3.getActivePanel() });
       } : void 0
     });
     ctrl3.setCameraMotionFollower?.(true);
     ctrl3.setTrajectoryFollower?.(true);
+    ctrl3.onTogglePanelModeOverride = () => {
+      if (!detachedPanelWindow || detachedPanelWindow.closed) return false;
+      detachedPanelWindow.close();
+      return true;
+    };
     if (initOptions.isPanelOnly) {
       ctrl3.setCanvasVisibility(false);
       if (ctrl3.sharedShell) {
@@ -171102,6 +171126,7 @@ var bootPopup = async (loadedModule) => {
   );
   window.addEventListener("pagehide", () => {
     sceneReady = false;
+    stopPanelReturnObserver();
     cameraSync?.dispose();
     if (wheelTimeout) clearTimeout(wheelTimeout);
     window.clearTimeout(revealTimer);
@@ -171172,7 +171197,7 @@ var PopupHostManager = class {
   get isPanelOpen() {
     return this.panelWin && !this.panelWin.closed;
   }
-  async open(mode = "canvas", preopenedWindow) {
+  async open(mode = "canvas", preopenedWindow, panelOptions = {}) {
     const isOpen = mode === "canvas" ? this.isCanvasOpen : this.isPanelOpen;
     if (isOpen) {
       preopenedWindow?.close();
@@ -171226,7 +171251,7 @@ var PopupHostManager = class {
         isAmbient: this.controller.sharedShell?.isAmbient,
         isSplit: this.controller.sharedShell?.isSplit,
         isPanelOnly: mode === "panel",
-        activePanel: this.controller.getActivePanel() || "navigate",
+        activePanel: panelOptions.panel ?? this.controller.getActivePanel() ?? "navigate",
         enablePanelPopout: this.controller.canPopoutPanel?.() ?? false,
         hasAuthority: this.controller.hasPythonAuthority?.() ?? true
       };
@@ -171333,7 +171358,7 @@ var PopupHostManager = class {
           if (current2?.popupEndpointId === channel.popupEndpointId) {
             this.onEndpointClosed?.("panel", channel.popupEndpointId);
           }
-          if (this.controller) {
+          if (this.controller && panelOptions.restoreHostPanel !== false) {
             this.controller.restoreHostPanelState();
           }
         }
@@ -174754,11 +174779,13 @@ function render({ model, el, runtimeSource }) {
   const enablePopout = !!model.get("enable_popout");
   const openPanelPopup = (preopenedWindow, panel) => {
     controllerPromise.then(async (c8) => {
-      c8.saveHostPanelState();
-      if (panel) await c8.handleMessage({ op: "set_panel_mode", panel, expanded: true });
-      if (c8.canvasHost.style.display === "none") c8.setCanvasVisibility(true);
-      c8.sharedShell?.setVisible(false);
-      void popupMgr.open("panel", preopenedWindow);
+      if (!preopenedWindow) {
+        c8.saveHostPanelState();
+        if (panel) await c8.handleMessage({ op: "set_panel_mode", panel, expanded: true });
+        if (c8.canvasHost.style.display === "none") c8.setCanvasVisibility(true);
+        c8.sharedShell?.setVisible(false);
+      }
+      void popupMgr.open("panel", preopenedWindow, { panel, restoreHostPanel: !preopenedWindow });
     });
   };
   const panelModeStyle = model.get("panel_mode_style") || "drawer";

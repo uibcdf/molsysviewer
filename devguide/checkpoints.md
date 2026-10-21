@@ -1,5 +1,7 @@
 # Development checkpoint
 
+**Studio handoff corrected — 2026-10-20:** [#250](archive/studio_remains_in_canvas_popup_after_popout.md) hides Studio in the initiating canvas popup and restores it on close, retaining local Settings/Dock and notebook layout. Blocked popups keep the source panel available; source disposal releases its observer. [Receiving](studio_panel_handoff_validation_20261020.json) separates local guards from hosted/manual/installed qualification. Continue TcTIM dogfooding; #249's accepted fullscreen boundary is unchanged.
+
 **Accepted without runtime changes — 2026-10-20:** [Studio popout/fullscreen #249](archive/studio_popup_exits_canvas_fullscreen.md) closes by maintainer decision. The existing Fullscreen button provides sufficient recovery; no extra control, notification, permission flow or automatic re-entry is planned for 1.0. Browser-policy causation remains qualified by the audit limits. This is not a 1.0 blocker; continue TcTIM dogfooding.
 
 **Confirmed resolved — 2026-10-20:** [#247 human retest](archive/initial_welcome_human_retest.md) confirms Welcome no longer flashes. The preceding failing retest had included kernel restart and notebook cache reload; its cause remains unknown. Existing guarded source fix and actual-Jupyter receiving stand, without another runtime change. Continue TcTIM dogfooding; #248 remains closed.

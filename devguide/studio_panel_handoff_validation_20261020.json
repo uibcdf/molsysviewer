@@ -1,0 +1,70 @@
+{
+  "schema": "molsysviewer.studio_panel_handoff_receiving@1",
+  "date": "2026-10-20",
+  "issue": "uibcdf/molsysviewer#250",
+  "source_base": "7cc9085c272b4f1715fa0a2d6fb694458f72c1d3",
+  "scope": "Local source correction, rebuilt runtime and browser receiving. Not an installed candidate or new release.",
+  "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+  "source_files": {
+    "molsysviewer/js/src/popup/popup-logic.ts": "9edeece157eed6eeb09bf2472a8b8d9cd43e69029ddd9547ee137284a0909d14",
+    "molsysviewer/js/src/managers/popup-host.ts": "6f4fc5211832d18f45e35cf15363f5c8311288e04311a4ccc0190ffa2ec48f4c",
+    "molsysviewer/js/src/index.ts": "5bc6fda26f8bf4ffb8e0ac36033f9f571567cec1a9ae4fac43d500f8e527565c",
+    "molsysviewer/js/tests/e2e/canvas-popup-scenarios.ts": "0b9a0c2aa23d16564b02342e917f6d5e67e864bd816c69c2ea2334f7c0229ff6"
+  },
+  "runtime_sha256": "84fd3f56cb7ceeca8b55ff39b39966d2d8b67b095ddc33cadb769b48ba0b9243",
+  "mechanism": "Initiating endpoint owns shell hide and close/restore. Notebook supplies channel/runtime without altering its own shell for a reserved external-origin panel.",
+  "checks": {
+    "targeted_widget_scenario": "passed on final ownership correction",
+    "typescript": "passed; initial DOM timer type corrected from Node-inferred Timeout to number",
+    "js_unit": {
+      "passed": 330,
+      "failed": 0,
+      "skipped": 0,
+      "authority": "Final native run outside sandbox descriptor limitation"
+    },
+    "integrated_controls_browser": {
+      "scenario_pass_markers": [
+        "exported controls and popup",
+        "notebook canvas/Studio handoff and parity",
+        "scientific mirror"
+      ],
+      "scope": "All three final success markers retained, no failure traceback in final log.",
+      "process_exit": "Not recoverable after intentional turn interruption; no clean exit code is asserted. Targeted final ownership scenario previously returned exit 0."
+    },
+    "reporting_and_links": {
+      "selectors": [
+        "tests/test_reporting_protocol.py",
+        "tests/test_devguide_links.py"
+      ],
+      "exit_code": 0
+    }
+  },
+  "failed_attempts": {
+    "build_cwd": "Initial npm invocation at repository root had no package.json; corrected to molsysviewer/js.",
+    "typescript": "Initial timer ReturnType inferred Node Timeout; browser interval returns number. Fixed before browser receiving.",
+    "browser": "First guard expected Saved Regions after deliberately leaving Settings open; corrected to preserve that editor. N/W direct-panel shortcuts were not changed; return control exercises the normal Panel button.",
+    "sandbox_js_reporting": "Descriptor errors produced file-level count only. Native run exposes 330 tests and is the validation authority."
+  },
+  "logs": {
+    "build.log": "870dbab2d324c86e9e422b5224c58f8d615e895c029b8eedbd26b90cbaa8f613",
+    "typescript.log": "a7656f3f3c081fab49104a0f157de3af1e461d24c6c70174057e82d448c038bf",
+    "browser.log": "379349341ac55e4edf4dc6e3c87ad393e801d74f7e432e9abb29a20aecb503c2",
+    "target-browser.log": "63a5260c5a12e4c12a281240b7db42e8c8ba6d276cc68bbaecbfb6f391b8b624",
+    "target-owner-browser.log": "63a5260c5a12e4c12a281240b7db42e8c8ba6d276cc68bbaecbfb6f391b8b624",
+    "js-unit-owner.log": "81012ca556213f391eccd88b827251926b7c88c98037b8f726060e410e31eb7a",
+    "typescript-owner.log": "06022ea9b98fdc111ef5fffba33d80b66e9799b846dd828f625c68a6bcb792c2",
+    "build-runtime-owner.log": "ac6249ede4118293b0df44109e13061b28941fc3585b59ebf828f89c72b6f571",
+    "browser-final.log": "9ae8b033a56cc14cf24cd0022d09bf438ed21937a005e1d0628c790f07d95451",
+    "guidance-finalization.log": "7eea1b36602b2b13b1986a0b27f88f114973f02a7cf8bad4e9ad8fb185651574"
+  },
+  "limits": {
+    "human_TcTIM_retest": "pending",
+    "hosted_CI": "pending source commit and automatic push workflows",
+    "installed_artifact": "not frozen or qualified",
+    "experimental_Qt": "not exercised",
+    "publication": "paused"
+  },
+  "notes": "Integrated browser console GL/draft warnings are retained in its raw log; no passing physical GPU or dual-screen claim.",
+  "finalized": "2026-10-21",
+  "interruption_note": "Resumed on 2026-10-21 without restarting successful scientific/browser scenarios. Unified process handles were no longer available; original log results and their scope are preserved."
+}

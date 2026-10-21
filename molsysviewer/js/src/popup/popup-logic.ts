@@ -211,6 +211,15 @@ export const bootPopup = async (loadedModule?: any) => {
             controlsPosition: "controls_position", controlsPositionFullscreen: "controls_position_fullscreen",
         })) if (data[field] !== undefined) uiModel.set(trait, data[field]);
     };
+    // The notebook adopts the panel window, but this canvas owns the shell
+    // being detached. Its return observer must have this endpoint's lifetime.
+    let detachedPanelWindow: Window | null = null;
+    let panelReturnTimer: number | undefined;
+    const stopPanelReturnObserver = () => {
+        if (panelReturnTimer !== undefined) window.clearInterval(panelReturnTimer);
+        panelReturnTimer = undefined;
+        detachedPanelWindow = null;
+    };
     // Create a new instance of MolSysViewerController for the popout
     const popControllerPromise = (async () => {
         // Wait a tick to ensure DOM is ready
@@ -230,14 +239,31 @@ export const bootPopup = async (loadedModule?: any) => {
                     const size = ctrl.getPanelPopupSize();
                     // Reserve on the click itself; a later postMessage handler
                     // cannot rely on the browser retaining user activation.
-                    (window as any).__molsysviewer_pending_panel_window = window.open(
+                    const reserved = window.open(
                         "", "_blank", `width=${size.width},height=${size.height}`);
+                    if (!reserved) return; // A blocked popup must leave Studio usable.
+                    stopPanelReturnObserver();
+                    detachedPanelWindow = reserved;
+                    ctrl.saveHostPanelState();
+                    ctrl.setCanvasVisibility(true);
+                    ctrl.sharedShell?.setVisible(false);
+                    panelReturnTimer = window.setInterval(() => {
+                        if (!reserved.closed) return;
+                        stopPanelReturnObserver();
+                        ctrl.restoreHostPanelState();
+                    }, 1000);
+                    (window as any).__molsysviewer_pending_panel_window = reserved;
                     sendToHost("molsysviewer-popup-panel", { panel: ctrl.getActivePanel() });
                 } : undefined,
         });
 
         ctrl.setCameraMotionFollower?.(true);
         ctrl.setTrajectoryFollower?.(true);
+        ctrl.onTogglePanelModeOverride = () => {
+            if (!detachedPanelWindow || detachedPanelWindow.closed) return false;
+            detachedPanelWindow.close();
+            return true;
+        };
         if (initOptions.isPanelOnly) {
             ctrl.setCanvasVisibility(false);
             if (ctrl.sharedShell) {
@@ -424,6 +450,7 @@ export const bootPopup = async (loadedModule?: any) => {
         { popupButtonTitle: "Close popup" });
     window.addEventListener("pagehide", () => {
         sceneReady = false;
+        stopPanelReturnObserver();
         cameraSync?.dispose();
         if (wheelTimeout) clearTimeout(wheelTimeout);
         window.clearTimeout(revealTimer);
