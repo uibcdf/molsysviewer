@@ -180,7 +180,7 @@ export class FloatingPanelShell {
 
         // Floating card
         this.panel = document.createElement("div");
-        this.panel.style.opacity = "0.99";
+        this.panel.style.opacity = "0.98";
         Object.assign(this.panel.style, {
             pointerEvents: "auto",
             display: "flex",
@@ -486,7 +486,7 @@ export class FloatingPanelShell {
         opacityButton.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
-            const states = [0.99, 0.90, 0.70];
+            const states = [0.98, 0.85, 0.70];
             const currentOpacity = parseFloat(this.panel.style.opacity) || states[0];
             let idx = states.indexOf(currentOpacity);
             if (idx === -1) {

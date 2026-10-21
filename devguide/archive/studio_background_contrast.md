@@ -83,3 +83,11 @@ whole-card transparency mechanism, cursor correction and larger geometry
 are retained. The existing browser guard checks the revised three-click cycle
 and retained opacity across Dock/Float. The [receiving ledger](../studio_opacity_restoration_20261021.json)
 keeps the preceding trials separate from this three-level revision.
+
+## Three-level refinement — 2026-10-21
+
+Diego requests trying 0.98/0.85/0.70, with 0.98 initially, superseding the
+0.99/0.90/0.70 trial. The same gray and whole-card opacity mechanism are
+retained. The existing browser guard checks this cycle, its wrap to the
+default and retention across Dock/Float. The [receiving ledger](../studio_opacity_restoration_20261021.json)
+records this refinement separately from the preceding trials.

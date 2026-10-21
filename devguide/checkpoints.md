@@ -1,5 +1,7 @@
 # Development checkpoint
 
+**Latest opacity trial — 2026-10-21:** Diego requests 0.98/0.85/0.70, with 0.98 initially, superseding the preceding 0.99/0.90/0.70 trial. Gray and whole-card mechanism are unchanged. #254 and the [receiving ledger](studio_opacity_restoration_20261021.json) retain the sequence; continue visual dogfooding.
+
 **Revised opacity range — 2026-10-21:** after reviewing the most transparent level, Diego selects three whole-card opacities: 0.99/0.90/0.70, with 0.99 initially. The gray and mechanism are retained; 0.97/0.45 are retired. #254 and the [receiving ledger](studio_opacity_restoration_20261021.json) record this revision separately from earlier trials. Continue visual dogfooding; no freeze/publication.
 
 **Approved fourth opacity level — 2026-10-21:** Diego retains the original whole-card mechanism and approves 0.97/0.90/0.70/0.45, with 0.97 as the initial level. #254 records this extension; the [receiving ledger](studio_opacity_restoration_20261021.json) retains the earlier restoration separately from the four-level follow-up. Continue visual dogfooding; no freeze/publication.

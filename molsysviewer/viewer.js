@@ -162813,7 +162813,7 @@ var FloatingPanelShell = class {
       zIndex: "18"
     });
     this.panel = document.createElement("div");
-    this.panel.style.opacity = "0.99";
+    this.panel.style.opacity = "0.98";
     Object.assign(this.panel.style, {
       pointerEvents: "auto",
       display: "flex",
@@ -163108,7 +163108,7 @@ var FloatingPanelShell = class {
     opacityButton.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      const states = [0.99, 0.9, 0.7];
+      const states = [0.98, 0.85, 0.7];
       const currentOpacity = parseFloat(this.panel.style.opacity) || states[0];
       let idx = states.indexOf(currentOpacity);
       if (idx === -1) {
