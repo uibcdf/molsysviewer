@@ -59,12 +59,70 @@
   },
   "limits": {
     "human_TcTIM_retest": "pending",
-    "hosted_CI": "pending source commit and automatic push workflows",
+    "hosted_CI": "exact-source runs observed in progress; full completion not claimed",
     "installed_artifact": "not frozen or qualified",
     "experimental_Qt": "not exercised",
     "publication": "paused"
   },
   "notes": "Integrated browser console GL/draft warnings are retained in its raw log; no passing physical GPU or dual-screen claim.",
   "finalized": "2026-10-21",
-  "interruption_note": "Resumed on 2026-10-21 without restarting successful scientific/browser scenarios. Unified process handles were no longer available; original log results and their scope are preserved."
+  "interruption_note": "Resumed on 2026-10-21 without restarting successful scientific/browser scenarios. Unified process handles were no longer available; original log results and their scope are preserved.",
+  "source_fix_commit": "53bab5ed3b7fa0fad0a6c086566e7f2d4365a264",
+  "hosted_receiving": {
+    "observed_at_utc": "2026-10-21T17:01:25.590094+00:00",
+    "runs": [
+      {
+        "conclusion": "",
+        "databaseId": 39639892863,
+        "name": "CI_e2e",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39639892863"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 39639892664,
+        "name": "Python 3.14 source pair",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39639892664"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 39639892649,
+        "name": "Experimental Qt diagnostics",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39639892649"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 39639892854,
+        "name": "Documentation notebooks",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39639892854"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 39639893994,
+        "name": "Conda publication governance",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39639893994"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 39639892856,
+        "name": "CI",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39639892856"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 39639894076,
+        "name": "MolSysSuite policy",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39639894076"
+      }
+    ],
+    "scope": "Automatic exact-source campaigns observed, not yet complete; Qt remains experimental and separate. No duplicate dispatch.",
+    "next_action": "Inspect native outcomes for these exact runs when complete."
+  },
+  "issue_state": "closed with guarded source fix; human retest pending"
 }
