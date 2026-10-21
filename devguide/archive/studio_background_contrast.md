@@ -64,3 +64,13 @@ restored cycle and its retention across Dock/Float.
 [Restoration receiving](../studio_opacity_restoration_20261021.json) records
 final local results and their scope. Human visual retest of this reversal is
 still pending; no release or candidate freeze is authorized.
+
+## Fourth level approved — 2026-10-21
+
+Diego accepts the restored whole-card transparency mechanism and explicitly
+approves extending its cycle to 0.97/0.90/0.70/0.45, with 0.97 initially.
+The background, compositing mechanism and three existing values are preserved.
+The real-browser guard now checks all four clicks, return to the initial level
+and opacity retention across Dock/Float. The [receiving ledger](../studio_opacity_restoration_20261021.json)
+records the four-level follow-up separately; visual acceptance of this new level
+is pending. No release or candidate freeze is authorized.

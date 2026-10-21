@@ -15,18 +15,19 @@ export async function checkStudioCardDefaults(page: Page) {
     assert.ok(Math.abs(initial.width - initial.hostWidth * 0.86) < 1);
     assert.ok(Math.abs(initial.height - Math.min(initial.hostHeight * 0.88, initial.hostHeight - 96)) < 1);
     assert.equal(initial.background, "rgba(18, 18, 22, 0.92)");
-    assert.equal(initial.opacity, "0.9");
-    for (const opacity of [0.70, 0.45, 0.90]) {
+    assert.equal(initial.opacity, "0.97");
+    for (const opacity of [0.90, 0.70, 0.45, 0.97]) {
         await page.getByTitle("Toggle opacity", { exact: true }).click();
         const current = await state();
         assert.equal(current.background, initial.background);
-        assert.equal(current.opacity, String(opacity), "Restore the original whole-card opacity cycle");
+        assert.equal(current.opacity, String(opacity), "Cycle all four whole-card opacity levels and return to the default");
     }
     await page.getByTitle("Toggle opacity", { exact: true }).click();
     await page.getByTitle("Dock panel (Split)", { exact: true }).click();
-    assert.equal((await state()).opacity, "0.7");
+    assert.equal((await state()).opacity, "0.9");
     await page.getByTitle("Float panel", { exact: true }).click();
-    assert.equal((await state()).opacity, "0.7");
+    assert.equal((await state()).opacity, "0.9");
+    await page.getByTitle("Toggle opacity", { exact: true }).click();
     await page.getByTitle("Toggle opacity", { exact: true }).click();
     await page.getByTitle("Toggle opacity", { exact: true }).click();
 
