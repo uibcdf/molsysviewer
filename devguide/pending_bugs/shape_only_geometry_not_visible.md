@@ -71,3 +71,12 @@ directory. Reload the notebook page and restart the kernel before retesting so
 the page-level runtime cache cannot retain the preceding bundle. After Render,
 close Studio to inspect the entire scene, then reopen it for Clear and the
 independent-window steps. No automatic panel closing is added.
+
+## Hosted follow-up — 2026-10-21
+
+The [exact-source receipt](../canonical_modes_source_ci_20261021.json) closes
+required CI for 90ebad6d: six main Python cells, three Python 3.14 hosts,
+44/44 core browser suites in both browser lanes and 25/25 notebooks in both
+notebook lanes pass. The isolated real provider Python checks and the generic
+addon browser guards retain their own scopes. This remains partial pending
+Diego's actual PHMT/Jupyter visual receiving; CI does not replace it.

@@ -154,7 +154,7 @@
       }
     ]
   },
-  "hosted_ci": "New source qualification pending; previous d126c5a1 campaigns retain their original scope.",
+  "hosted_ci": "Initial local receiving preceded hosted qualification. See hosted_followup for the completed exact-source campaign; the preceding d126c5a1 results retain their own scope.",
   "ruff": {
     "exit_code": 0,
     "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
@@ -173,5 +173,12 @@
     "log_sha256": "ac6249ede4118293b0df44109e13061b28941fc3585b59ebf828f89c72b6f571",
     "command": "npm run build:runtime"
   },
-  "temporary_resources": "Keep the task evidence and isolated provider checkout for the pending human notebook retest. Browser fixture workspaces clean themselves. Human notebook outputs and unrelated sandbox experiments remain unstaged."
+  "temporary_resources": "Keep the task evidence and isolated provider checkout for the pending human notebook retest. Browser fixture workspaces clean themselves. Human notebook outputs and unrelated sandbox experiments remain unstaged.",
+  "hosted_followup": {
+    "source_commit": "90ebad6d7b2eccf182e6caf912d20c44c2e05c4f",
+    "status": "required_source_gates_pass",
+    "receipt": "devguide/canonical_modes_source_ci_20261021.json",
+    "experimental_qt": "failure, kept separate",
+    "human_visual_retest": "Still pending under #257."
+  }
 }
