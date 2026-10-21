@@ -157,10 +157,75 @@
     ]
   },
   "hosted_ci": {
-    "status": "pending source push; local validation does not replace hosted CI"
+    "observed_at_utc": "2026-10-21T19:25:11.208328+00:00",
+    "runs": [
+      {
+        "conclusion": "success",
+        "databaseId": 39661342967,
+        "headSha": "7ac97495411ae42970f20d917a1c43e89abb0d5e",
+        "name": "Conda publication governance",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39661342967"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 39661342372,
+        "headSha": "7ac97495411ae42970f20d917a1c43e89abb0d5e",
+        "name": "Experimental Qt diagnostics",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39661342372"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 39661342273,
+        "headSha": "7ac97495411ae42970f20d917a1c43e89abb0d5e",
+        "name": "Documentation notebooks",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39661342273"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 39661342387,
+        "headSha": "7ac97495411ae42970f20d917a1c43e89abb0d5e",
+        "name": "Python 3.14 source pair",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39661342387"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 39661342278,
+        "headSha": "7ac97495411ae42970f20d917a1c43e89abb0d5e",
+        "name": "CI_e2e",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39661342278"
+      },
+      {
+        "conclusion": "",
+        "databaseId": 39661342285,
+        "headSha": "7ac97495411ae42970f20d917a1c43e89abb0d5e",
+        "name": "CI",
+        "status": "in_progress",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39661342285"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 39661342805,
+        "headSha": "7ac97495411ae42970f20d917a1c43e89abb0d5e",
+        "name": "MolSysSuite policy",
+        "status": "completed",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39661342805"
+      }
+    ],
+    "scope": "Automatic runs on the exact source commit. In-progress/queued status is not a passing gate. No duplicate dispatch."
   },
   "full_python_suite": "Not run for this TypeScript-only task.",
   "installed_artifacts": "Not qualified by these source tests.",
   "publication_authorized": false,
-  "evidence_directory": "/tmp/msv-studio-refinement-20261021"
+  "evidence_directory": "/tmp/msv-studio-refinement-20261021",
+  "source_commit": "7ac97495411ae42970f20d917a1c43e89abb0d5e",
+  "issues_closed_in_source": [
+    251,
+    254,
+    255
+  ]
 }
