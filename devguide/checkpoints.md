@@ -1,5 +1,7 @@
 # Development checkpoint
 
+**Revised opacity range — 2026-10-21:** after reviewing the most transparent level, Diego selects three whole-card opacities: 0.99/0.90/0.70, with 0.99 initially. The gray and mechanism are retained; 0.97/0.45 are retired. #254 and the [receiving ledger](studio_opacity_restoration_20261021.json) record this revision separately from earlier trials. Continue visual dogfooding; no freeze/publication.
+
 **Approved fourth opacity level — 2026-10-21:** Diego retains the original whole-card mechanism and approves 0.97/0.90/0.70/0.45, with 0.97 as the initial level. #254 records this extension; the [receiving ledger](studio_opacity_restoration_20261021.json) retains the earlier restoration separately from the four-level follow-up. Continue visual dogfooding; no freeze/publication.
 
 **Human retest / opacity restoration — 2026-10-21:** Diego confirms the popup cursor is gone (#251) and Studio is larger (#255). He rejects the revised background-only levels and requests restoration of the original whole-card opacity cycle (0.90/0.70/0.45) under #254. [Follow-up receiving](studio_opacity_restoration_20261021.json) records this bounded change; the accepted cursor/size code stays in place. Continue dogfooding; no freeze or publication.

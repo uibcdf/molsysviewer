@@ -74,3 +74,12 @@ The real-browser guard now checks all four clicks, return to the initial level
 and opacity retention across Dock/Float. The [receiving ledger](../studio_opacity_restoration_20261021.json)
 records the four-level follow-up separately; visual acceptance of this new level
 is pending. No release or candidate freeze is authorized.
+
+## Three-level revision approved — 2026-10-21
+
+After discussing the most transparent level, Diego selects 0.99/0.90/0.70,
+with 0.99 initially. The 0.97 and 0.45 trial values are retired. The gray,
+whole-card transparency mechanism, cursor correction and larger geometry
+are retained. The existing browser guard checks the revised three-click cycle
+and retained opacity across Dock/Float. The [receiving ledger](../studio_opacity_restoration_20261021.json)
+keeps the preceding trials separate from this three-level revision.
