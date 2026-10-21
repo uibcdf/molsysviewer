@@ -91,3 +91,11 @@ Diego requests trying 0.98/0.85/0.70, with 0.98 initially, superseding the
 retained. The existing browser guard checks this cycle, its wrap to the
 default and retention across Dock/Float. The [receiving ledger](../studio_opacity_restoration_20261021.json)
 records this refinement separately from the preceding trials.
+
+## More opaque range requested — 2026-10-21
+
+Diego requests trying 0.98/0.90/0.80, retaining 0.98 initially and replacing
+the middle/lower 0.85/0.70 trial. The gray and whole-card mechanism are
+unchanged. The retained browser guard checks the cycle, return to the default
+and Dock/Float retention; [receiving](../studio_opacity_restoration_20261021.json)
+keeps this trial separate from previous ranges.

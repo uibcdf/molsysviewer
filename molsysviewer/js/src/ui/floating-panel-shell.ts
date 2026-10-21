@@ -486,7 +486,7 @@ export class FloatingPanelShell {
         opacityButton.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
-            const states = [0.98, 0.85, 0.70];
+            const states = [0.98, 0.90, 0.80];
             const currentOpacity = parseFloat(this.panel.style.opacity) || states[0];
             let idx = states.indexOf(currentOpacity);
             if (idx === -1) {

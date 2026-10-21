@@ -103,8 +103,8 @@
   },
   "current_opacity_levels": [
     0.98,
-    0.85,
-    0.7
+    0.9,
+    0.8
   ],
   "current_default_opacity": 0.98,
   "three_level_revision": {
@@ -182,7 +182,46 @@
       }
     },
     "broader_testing": "No full Studio/core-browser/Python rerun for this constants-only adjustment; preceding results retain their original source scopes.",
-    "human_visual_retest": "Pending 0.98/0.85/0.70 trial.",
+    "human_visual_retest": "Superseded by Diego's 0.98/0.90/0.80 trial.",
+    "hosted_ci": "Automatic source CI follows push; no hosted passing gate claimed."
+  },
+  "trial_98_90_80": {
+    "date": "2026-10-21",
+    "source_base_commit": "87602e20563ab8e604d3b19d79cdde03eac528d4",
+    "requested_opacity_levels": [
+      0.98,
+      0.9,
+      0.8
+    ],
+    "default_opacity": 0.98,
+    "gray_and_mechanism": "Unchanged fixed gray and whole-card opacity.",
+    "runtime_sha256": "2518d37cb91ac04addbff1918aa01196ff31a1e8d68ceacf6ff728918c80275d",
+    "validation": {
+      "targeted_card": {
+        "exit_code": 0,
+        "log": {
+          "path": "/tmp/msv-studio-opacity-98-90-80-20261021/card.log",
+          "sha256": "ed6942f133952a26b1ec7df3c9ee8252ff2f34b5964f0b21617e81777bd876b9"
+        },
+        "scope": "Retained Studio-card helper, real Python/Mol*/Chromium: initial opacity, cycle/wrap, fixed gray, Dock/Float retention and geometry."
+      },
+      "typescript": {
+        "exit_code": 0,
+        "log": {
+          "path": "/tmp/msv-studio-opacity-98-90-80-20261021/types.log",
+          "sha256": "06022ea9b98fdc111ef5fffba33d80b66e9799b846dd828f625c68a6bcb792c2"
+        }
+      },
+      "guidance": {
+        "exit_code": 0,
+        "log": {
+          "path": "/tmp/msv-studio-opacity-98-90-80-20261021/guidance.log",
+          "sha256": "9870fe3334aac7cc5980d944d86ef6ec8c0b927a18aac43b2bab40ab3b955890"
+        }
+      }
+    },
+    "broader_testing": "No full Studio/core-browser/Python rerun for this constants-only trial. Earlier results retain their original source scopes.",
+    "human_visual_retest": "Pending this range.",
     "hosted_ci": "Automatic source CI follows push; no hosted passing gate claimed."
   }
 }

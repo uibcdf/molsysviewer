@@ -163108,7 +163108,7 @@ var FloatingPanelShell = class {
     opacityButton.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      const states = [0.98, 0.85, 0.7];
+      const states = [0.98, 0.9, 0.8];
       const currentOpacity = parseFloat(this.panel.style.opacity) || states[0];
       let idx = states.indexOf(currentOpacity);
       if (idx === -1) {

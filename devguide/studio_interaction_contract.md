@@ -29,7 +29,7 @@ chrome, minimum window size and screen limits remain popup concerns. A panel-onl
 Studio fills its own window. Displaying a non-minimized card never restores
 an older height (`uibcdf/molsysviewer#255`).
 
-The opacity button cycles whole-card opacity levels 0.98, 0.85, 0.70,
+The opacity button cycles whole-card opacity levels 0.98, 0.90, 0.80,
 starting at 0.98. Earlier trial values are retained only as historical evidence.
 Floating and docked cards retain the fixed background
 `rgba(18,18,22,0.92)`; text and controls participate in the card's transparency.
