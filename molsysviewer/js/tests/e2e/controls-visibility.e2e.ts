@@ -172,9 +172,20 @@ print(json.dumps({"page": str(output), "single": str(single)}))
         await lockBackground.waitFor({ state: "visible" });
         const beforeStudioDrag = await page.evaluate(() =>
             (window as any).__molsysviewerDocsController.getCameraSnapshot().position);
-        await page.mouse.move(host.x + 20, host.y + host.height - 20);
+        // Use the live canvas and hit-test the whole path: mode/layout changes
+        // and a larger Studio card invalidate the earlier cached rectangle.
+        const gesture = await page.evaluate(() => {
+            const canvas = document.querySelector("canvas")!, rect = canvas.getBoundingClientRect();
+            for (const x of [rect.left + 8, rect.right - 8]) {
+                const from = rect.top + rect.height * 0.4, to = rect.top + rect.height * 0.6;
+                if (Array.from({ length: 9 }, (_, i) => from + (to - from) * i / 8)
+                    .every(y => document.elementFromPoint(x, y) === canvas)) return { x, from, to };
+            }
+            throw new Error(`No exposed canvas rotation strip: ${JSON.stringify(rect.toJSON())}`);
+        });
+        await page.mouse.move(gesture.x, gesture.from);
         await page.mouse.down();
-        await page.mouse.move(host.x + 100, host.y + host.height - 45, { steps: 8 });
+        await page.mouse.move(gesture.x, gesture.to, { steps: 8 });
         await page.mouse.up();
         await page.waitForFunction(before => {
             const after = (window as any).__molsysviewerDocsController.getCameraSnapshot().position;

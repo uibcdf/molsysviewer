@@ -19,6 +19,9 @@ export class ControlsVisibility {
         hotspot.setAttribute("data-molsysviewer-controls-hotspot", "true");
         hotspot.setAttribute("role", "button");
         hotspot.setAttribute("aria-label", "Show canvas controls");
+        // This empty focusable control is not an editing surface. Chromium can
+        // otherwise place a text caret here when its surrounding area is clicked.
+        hotspot.style.userSelect = "none";
         const listen = (target: EventTarget, event: string, callback: EventListener) => {
             target.addEventListener(event, callback);
             this.release.push(() => target.removeEventListener(event, callback));
@@ -42,6 +45,7 @@ export class ControlsVisibility {
             this.refresh();
         });
         listen(hotspot, "pointerdown", event => {
+            event.preventDefault(); // Suppress text-caret placement; focus is owned below.
             event.stopPropagation();
             this.keyboardFocus = false;
             this.touchRevealed = (event as PointerEvent).pointerType === "touch";

@@ -23,6 +23,11 @@ in normal/fullscreen views. `PopupHostManager` injects it before creation,
 so the first mounted controls already use the correct settings, including slow
 molecular bootstraps. Shared controls own all their CSS and `H`/`V` shortcuts;
 the popup canvas can receive keyboard focus like the notebook canvas.
+The empty controls-reveal rectangle is a nontext control: a pointer press
+prevents default caret placement and focuses that control explicitly. Its
+text-selection suppression is scoped to the rectangle. Enter/Space still
+transfer focus into the real controls; Studio editors keep their normal carets
+(`uibcdf/molsysviewer#251`).
 
 ## State and actions
 

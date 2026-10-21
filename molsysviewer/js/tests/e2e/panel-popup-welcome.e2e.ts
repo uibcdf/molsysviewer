@@ -97,9 +97,9 @@ async function run() {
             panelAddonsVisible: (panel as any).addonsPanel?.isVisible?.() ?? null,
             // The pop-out window should open at the size of the panel it came out
             // of. The viewer host here is 800x600, so the floating panel's own rule
-            // gives 800 * 0.75 = 600 wide.
+            // uses the shared proportional floating-card size.
             popupSize: (viewer as any).getPanelPopupSize?.() ?? null,
-            floatingWidthRule: Math.min(800 * 0.75, 950),
+            floatingWidthRule: 800 * 0.86,
             screenWidth: window.screen?.availWidth ?? null,
         };
     });

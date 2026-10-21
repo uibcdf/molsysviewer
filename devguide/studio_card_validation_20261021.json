@@ -1,0 +1,166 @@
+{
+  "date": "2026-10-21",
+  "issues": [
+    251,
+    254,
+    255
+  ],
+  "source_base_commit": "20b50486f594fd1337732c6026ff6cd45fc3004b",
+  "runtime_sha256": "b3fc9ebd715ca2a6b5f9798c193348f3f4faad85c17462965f3c261284fcd7a9",
+  "environment": {
+    "name": "molsyssuite@uibcdf_3.14",
+    "python": "3.14.7",
+    "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "browser": "Google Chrome 155.0.8059.84",
+    "rendering": "real Mol*/Chromium; Swiftshader"
+  },
+  "local": {
+    "specific_card": {
+      "exit_code": 0,
+      "log": {
+        "path": "/tmp/msv-studio-refinement-20261021/card-target-verified.log",
+        "bytes": 39,
+        "sha256": "ed6942f133952a26b1ec7df3c9ee8252ff2f34b5964f0b21617e81777bd876b9"
+      }
+    },
+    "specific_popup": {
+      "exit_code": 0,
+      "log": {
+        "path": "/tmp/msv-studio-refinement-20261021/popup-target-final.log",
+        "bytes": 202,
+        "sha256": "63a5260c5a12e4c12a281240b7db42e8c8ba6d276cc68bbaecbfb6f391b8b624"
+      }
+    },
+    "unit": {
+      "exit_code": 0,
+      "passed": 330,
+      "failed": 0,
+      "skipped": 0,
+      "log": {
+        "path": "/tmp/msv-studio-refinement-20261021/unit-verified.log",
+        "bytes": 30917,
+        "sha256": "948d8fe8a697fcd1cd24fe80352699cca93fb727324cdf0fb9f6bf7db9c085b2"
+      }
+    },
+    "typescript": {
+      "exit_code": 0,
+      "log": {
+        "path": "/tmp/msv-studio-refinement-20261021/types-final.log",
+        "bytes": 77,
+        "sha256": "06022ea9b98fdc111ef5fffba33d80b66e9799b846dd828f625c68a6bcb792c2"
+      }
+    },
+    "panel_popup": {
+      "exit_code": 0,
+      "log": {
+        "path": "/tmp/msv-studio-refinement-20261021/panel-verified.log",
+        "bytes": 553,
+        "sha256": "b597abfa1b790d5f8fdeff5e0f2f3f95a3e4b46db137b33dc8fc547e2d91139b"
+      }
+    },
+    "integrated_controls": {
+      "exit_code": 0,
+      "scenarios": 3,
+      "log": {
+        "path": "/tmp/msv-studio-refinement-20261021/controls-verified.log",
+        "bytes": 1299,
+        "sha256": "2cd3217ee2ae34e6529797dbd32f43e5b6f881435c2aa72b2165820f6190dc82"
+      },
+      "scope": "Python export plus actual widget/popup/camera/selection/native picks/playback/frame-specific hbonds; exact-click caret and proportional normal/fullscreen Studio checks."
+    },
+    "studio_workflows": {
+      "exit_code": 0,
+      "log": {
+        "path": "/tmp/msv-studio-refinement-20261021/studio-complete.log",
+        "bytes": 144,
+        "sha256": "e29210bb0292cccfd6522b34f68affe09c658228c9bedd6410838f018752d1a5"
+      },
+      "scope": "Full Studio usability owner, including revised initial/host-resized geometry, three background levels, foreground contrast, manual bounds and existing PNG/HTML/scientific workflows."
+    },
+    "guidance": {
+      "exit_code": 0,
+      "log": {
+        "path": "/tmp/msv-studio-refinement-20261021/guidance.log",
+        "bytes": 320,
+        "sha256": "9870fe3334aac7cc5980d944d86ef6ec8c0b927a18aac43b2bab40ab3b955890"
+      },
+      "modules": [
+        "tests/test_reporting_protocol.py",
+        "tests/test_devguide_links.py"
+      ]
+    }
+  },
+  "intermediate_failures": [
+    {
+      "log": {
+        "path": "/tmp/msv-studio-refinement-20261021/controls.log",
+        "bytes": 319,
+        "sha256": "d2095824975a722dc613299d12f4dc2b09bb2760648609eb52d5d848991d5964"
+      },
+      "cause": "Old rotation gesture ended inside the larger Studio card; guard now hit-tests a live exposed canvas path."
+    },
+    {
+      "log": {
+        "path": "/tmp/msv-studio-refinement-20261021/controls-final.log",
+        "bytes": 494,
+        "sha256": "fbbeaae622121e8f7daa876bb4da2d20fa59ab22d97d79360b1c1a3593891534"
+      },
+      "cause": "Cached canvas rectangle was stale after mode/layout changes; live hit-testing replaces it."
+    },
+    {
+      "log": {
+        "path": "/tmp/msv-studio-refinement-20261021/controls-final2.log",
+        "bytes": 1062,
+        "sha256": "12d04370fbf6a07cea12411f55d9bca687a1d5ac4e591270110b146d95aef948"
+      },
+      "cause": "Fullscreen-size guard measured Studio after Escape had closed it; guard reopens it before measurement."
+    },
+    {
+      "log": {
+        "path": "/tmp/msv-studio-refinement-20261021/popup-target.log",
+        "bytes": 1857,
+        "sha256": "ee0562e7b88db643189cdd1249c9722f7e3ec5e936a9251a1681137d20248dba"
+      },
+      "cause": "Real regression: larger card covered Exit Fullscreen; shared sizing now reserves toolbar clearance and ordinary button clicks pass."
+    },
+    {
+      "log": {
+        "path": "/tmp/msv-studio-refinement-20261021/studio-verified.log",
+        "bytes": 315,
+        "sha256": "146ecab12c06af4ef26282aa78e7dc93d20ad5eb2e2cb8b9106f3c713e41f310"
+      },
+      "cause": "Expected-height arithmetic lacked parentheses after the reserved margin was introduced; specific corrected guard passes."
+    }
+  ],
+  "additional_fixed_mechanism": "setMinimized(false) overwrote the calculated height even without a minimized-to-expanded transition; saved height now restores only on that transition.",
+  "caret": {
+    "human_trigger": "Click rectangle surrounding auto-hiding buttons, canvas popup only.",
+    "before": "Collapsed Caret selection anchored in empty reveal DIV in both disposable preference profiles.",
+    "after": "Selection None, same DIV focused; registered popup guard also checks Enter transfers focus into controls.",
+    "scope": "DOM selection mechanism reproduced, not independent pixel-level certification of the human intermittent blink.",
+    "partial_diagnostic": {
+      "log": {
+        "path": "/tmp/msv-studio-refinement-20261021/hotspot-fixed.log",
+        "bytes": 2267,
+        "sha256": "30d9e81575127e727caef61b18ec88d17142456269e77281d44aaa766a74c7d3"
+      },
+      "exit_code": 1,
+      "scope": "Targeted click shows correction; later unrelated auto-hidden Panel click timed out. Not counted as full successful receiving."
+    }
+  },
+  "human_retest": {
+    "status": "pending",
+    "checks": [
+      "Click reveal rectangle in canvas popup",
+      "Three Studio background levels",
+      "Initial size in notebook/fullscreen/popup, manual resize and restore"
+    ]
+  },
+  "hosted_ci": {
+    "status": "pending source push; local validation does not replace hosted CI"
+  },
+  "full_python_suite": "Not run for this TypeScript-only task.",
+  "installed_artifacts": "Not qualified by these source tests.",
+  "publication_authorized": false,
+  "evidence_directory": "/tmp/msv-studio-refinement-20261021"
+}

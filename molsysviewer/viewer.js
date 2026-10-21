@@ -1478,6 +1478,14 @@ var require_dist = __commonJS({
   }
 });
 
+// src/ui/floating-panel-layout.ts
+function getFloatingPanelSize(hostWidth, hostHeight, fullscreen = false) {
+  return {
+    width: Math.max(0, Math.min(hostWidth * 0.86, 1200, hostWidth - 20)),
+    height: Math.max(0, Math.min(hostHeight * 0.88, 940, hostHeight - 2 * Math.min(fullscreen ? 72 : 48, hostHeight * 0.2)))
+  };
+}
+
 // node_modules/molstar/lib/mol-util/produce.js
 var import_dist = __toESM(require_dist());
 function produce(base, recipe) {
@@ -140389,6 +140397,7 @@ var ControlsVisibility = class {
     hotspot.setAttribute("data-molsysviewer-controls-hotspot", "true");
     hotspot.setAttribute("role", "button");
     hotspot.setAttribute("aria-label", "Show canvas controls");
+    hotspot.style.userSelect = "none";
     const listen = (target, event, callback) => {
       target.addEventListener(event, callback);
       this.release.push(() => target.removeEventListener(event, callback));
@@ -140415,6 +140424,7 @@ var ControlsVisibility = class {
       this.refresh();
     });
     listen(hotspot, "pointerdown", (event) => {
+      event.preventDefault();
       event.stopPropagation();
       this.keyboardFocus = false;
       this.touchRevealed = event.pointerType === "touch";
@@ -162784,6 +162794,8 @@ var FloatingPanelShell = class {
     this.savedMinHeight = "";
     this.workspaceMenuOpen = false;
     this.floatingInitialized = false;
+    this.backgroundLevel = 0;
+    this.backgroundAlphas = [0.97, 0.82, 0.64];
     this.isSplit = false;
     this.isAmbient = true;
     this.lastSplitState = false;
@@ -162803,7 +162815,7 @@ var FloatingPanelShell = class {
       zIndex: "18"
     });
     this.panel = document.createElement("div");
-    this.panel.style.opacity = "0.90";
+    this.panel.style.opacity = "1";
     Object.assign(this.panel.style, {
       pointerEvents: "auto",
       display: "flex",
@@ -163074,6 +163086,7 @@ var FloatingPanelShell = class {
     const opacityButton = document.createElement("button");
     opacityButton.type = "button";
     opacityButton.title = "Toggle opacity";
+    opacityButton.setAttribute("aria-label", "Change background transparency");
     opacityButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 2v12a6 6 0 0 0 0-12z" fill="currentColor"/></svg>`;
     Object.assign(opacityButton.style, {
       background: "transparent",
@@ -163097,22 +163110,8 @@ var FloatingPanelShell = class {
     opacityButton.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      const states = [0.9, 0.7, 0.45];
-      const currentOpacity = parseFloat(this.panel.style.opacity) || states[0];
-      let idx = states.indexOf(currentOpacity);
-      if (idx === -1) {
-        let minDiff = Infinity;
-        idx = 0;
-        for (let i = 0; i < states.length; i++) {
-          const diff = Math.abs(states[i] - currentOpacity);
-          if (diff < minDiff) {
-            minDiff = diff;
-            idx = i;
-          }
-        }
-      }
-      const nextIdx = (idx + 1) % states.length;
-      this.panel.style.opacity = String(states[nextIdx]);
+      this.backgroundLevel = (this.backgroundLevel + 1) % this.backgroundAlphas.length;
+      this.updateBackground();
     });
     if (!this.isPanelOnly) {
       this.headerElement.appendChild(this.dockButton);
@@ -163260,11 +163259,17 @@ var FloatingPanelShell = class {
     });
     this.hostResizeObserver = new ResizeObserver(() => {
       if (this.visible && this.expanded) {
-        if (!this.floatingInitialized) this.centerPanel();
-        else this.clampPosition();
+        this.updateFloatingGeometry();
       }
     });
     this.hostResizeObserver.observe(host);
+    if (!this.isPanelOnly) {
+      const updateFullscreenGeometry = () => {
+        if (this.visible && this.expanded) this.updateFloatingGeometry();
+      };
+      document.addEventListener("fullscreenchange", updateFullscreenGeometry);
+      this.releaseFullscreenListener = () => document.removeEventListener("fullscreenchange", updateFullscreenGeometry);
+    }
     this.updateLayout();
     host.appendChild(this.root);
   }
@@ -163311,17 +163316,22 @@ var FloatingPanelShell = class {
     this.panel.style.left = `${currentLeft}px`;
     this.panel.style.top = `${currentTop}px`;
   }
+  updateFloatingGeometry() {
+    const bounds = this.automaticBounds;
+    const automatic = bounds && bounds.left === this.panel.style.left && bounds.top === this.panel.style.top && bounds.width === this.panel.style.width && bounds.height === (this.minimized ? this.savedHeight : this.panel.style.height);
+    if (!this.floatingInitialized || automatic) this.centerPanel();
+    else this.clampPosition();
+  }
+  updateBackground() {
+    this.panel.style.background = this.isPanelOnly ? "#121216" : `rgba(18, 18, 22, ${this.backgroundAlphas[this.backgroundLevel]})`;
+  }
   centerPanel() {
     if (this.isPanelOnly || this.isSplit) return;
     const hostWidth = this.host.clientWidth;
     const hostHeight = this.host.clientHeight;
     if (!hostWidth || !hostHeight) return;
     this.floatingInitialized = true;
-    const isFullscreen = !!document.fullscreenElement;
-    const maxWidth = isFullscreen ? 1100 : 950;
-    const maxHeight = isFullscreen ? 850 : 780;
-    const panelWidth = Math.min(hostWidth * 0.75, maxWidth);
-    const panelHeight = Math.min(hostHeight * 0.8, maxHeight);
+    const { width: panelWidth, height: panelHeight } = getFloatingPanelSize(hostWidth, hostHeight, !!document.fullscreenElement?.contains(this.host));
     const left = Math.max(10, (hostWidth - panelWidth) / 2);
     const top = Math.max(10, (hostHeight - panelHeight) / 2);
     this.panel.style.left = `${left}px`;
@@ -163334,6 +163344,12 @@ var FloatingPanelShell = class {
     } else {
       this.panel.style.height = `${panelHeight}px`;
     }
+    this.automaticBounds = {
+      left: this.panel.style.left,
+      top: this.panel.style.top,
+      width: this.panel.style.width,
+      height: this.minimized ? this.savedHeight : this.panel.style.height
+    };
   }
   updateLayout() {
     const isSplit = this.isSplit;
@@ -163408,25 +163424,23 @@ var FloatingPanelShell = class {
         borderRadius: "14px",
         border: "1px solid rgba(255,255,255,0.12)",
         boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
-        background: "rgba(18, 18, 22, 0.92)",
         resize: "horizontal"
       });
       this.panelResizeObserver?.observe(this.panel);
     } else {
       this.panelResizeObserver?.unobserve(this.panel);
-      if (!this.floatingInitialized) this.centerPanel();
-      else this.clampPosition();
+      this.updateFloatingGeometry();
       Object.assign(this.panel.style, {
         borderRadius: "16px",
         border: "1px solid rgba(255,255,255,0.12)",
         boxShadow: "0 24px 64px rgba(0,0,0,0.45)",
-        background: "rgba(18, 18, 22, 0.92)",
         backdropFilter: "blur(20px)",
         webkitBackdropFilter: "blur(20px)",
         resize: "both"
       });
       this.headerElement.style.cursor = "move";
     }
+    this.updateBackground();
     if (this.dockButton) {
       this.dockButton.title = isSplit ? "Float panel" : "Dock panel (Split)";
       this.dockButton.innerHTML = isSplit ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="1.5"/><rect x="5" y="5" width="6" height="6" rx="0.5"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="2" x2="4" y2="14"/><line x1="4" y1="8" x2="12" y2="8"/></svg>`;
@@ -163453,6 +163467,7 @@ var FloatingPanelShell = class {
     return w;
   }
   setMinimized(minimized) {
+    const wasMinimized = this.minimized;
     this.minimized = minimized;
     if (minimized) {
       if (this.panel.style.height && this.panel.style.height !== "auto") {
@@ -163471,8 +163486,10 @@ var FloatingPanelShell = class {
         this.minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="10" height="10" rx="1"/></svg>`;
       }
     } else {
-      this.panel.style.height = this.savedHeight || (this.isSplit ? "calc(100% - 20px)" : "min(68%, 700px)");
-      this.panel.style.minHeight = this.savedMinHeight || "0";
+      if (wasMinimized) {
+        this.panel.style.height = this.savedHeight;
+        this.panel.style.minHeight = this.savedMinHeight || "0";
+      }
       this.content.style.display = "flex";
       this.root.style.background = this.isAmbient || this.isSplit ? "transparent" : "rgba(0,0,0,0.32)";
       this.root.style.pointerEvents = this.isAmbient || this.isSplit ? "none" : "auto";
@@ -163504,7 +163521,7 @@ var FloatingPanelShell = class {
       this.workspaceMenuOpen = false;
       this.applyWorkspaceMenuState();
     } else {
-      this.centerPanel();
+      this.updateFloatingGeometry();
     }
     this.scheduleDisplayUpdate();
     this.onLayoutChange?.({
@@ -163520,7 +163537,7 @@ var FloatingPanelShell = class {
   setExpanded(expanded) {
     this.expanded = expanded;
     if (expanded) {
-      this.centerPanel();
+      this.updateFloatingGeometry();
     }
     this.scheduleDisplayUpdate();
     this.onLayoutChange?.({
@@ -167147,15 +167164,8 @@ var MolSysViewerController = class _MolSysViewerController {
   /**
    * How large a popped-out panel window should open.
    *
-   * Reported by hand on 2026-08-01: the panel popup opened at a fixed 450x800,
-   * roughly half the width of the floating panel it is a pop-out *of*, so the
-   * same content arrived in a shape it was not laid out for.
-   *
-   * Uses the floating panel's own sizing rule rather than a second set of
-   * numbers — `FloatingPanelShell.centerPanel` sizes itself to
-   * `min(host * 0.75, 950)` by `min(host * 0.80, 780)`, so a popup built the
-   * same way opens looking like what the user just popped out. Two sets of
-   * constants meant to agree and nothing forcing them to is how they drift.
+   * Uses the shell's proportional sizing operation so popup and floating
+   * defaults cannot drift into separate sets of constants.
    *
    * Clamped to the screen, with a floor, so a small or oddly-shaped widget
    * cannot produce a window too cramped to use.
@@ -167163,8 +167173,9 @@ var MolSysViewerController = class _MolSysViewerController {
   getPanelPopupSize() {
     const hostWidth = this.host.clientWidth || 0;
     const hostHeight = this.host.clientHeight || 0;
-    const preferredWidth = hostWidth > 0 ? Math.min(hostWidth * 0.75, 950) : 950;
-    const preferredHeight = (hostHeight > 0 ? Math.min(hostHeight * 0.8, 780) : 780) + 60;
+    const preferred = getFloatingPanelSize(hostWidth || 1400, hostHeight || 1e3, !!document.fullscreenElement?.contains(this.host));
+    const preferredWidth = preferred.width;
+    const preferredHeight = preferred.height + 60;
     const screenWidth = window.screen?.availWidth ?? preferredWidth;
     const screenHeight = window.screen?.availHeight ?? preferredHeight;
     return {

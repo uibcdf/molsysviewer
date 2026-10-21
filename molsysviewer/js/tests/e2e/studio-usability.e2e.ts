@@ -1,3 +1,4 @@
+import { checkStudioCardDefaults } from "./studio-card-scenarios";
 import assert from "node:assert/strict";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -29,6 +30,7 @@ async function run() {
         await apply(fixture.initial_messages);
         await page.waitForFunction(() => (window as any).__controller.plugin.canvas3d?.reprCount.value > 0);
         await page.evaluate(() => (window as any).__controller.setPanelMode("navigate", true));
+        await checkStudioCardDefaults(page);
         assert.match((await page.locator('[data-molsysviewer-group-panel-tab="export"]').getAttribute("title"))!, /PNG.*HTML/);
         assert.match((await page.locator('[data-molsysviewer-group-panel-tab="layers"]').getAttribute("title"))!, /visibility/);
         assert.match((await page.locator('[data-molsysviewer-group-settings-btn]').getAttribute("title"))!, /controls hide automatically/);
@@ -286,7 +288,22 @@ async function run() {
             const panel = (window as any).__controller.sharedShell.panel;
             return { left: panel.style.left, top: panel.style.top, width: panel.style.width, height: panel.style.height };
         });
+        // Native CSS resize is a deliberate geometry choice, too.
+        const card = await page.evaluate(() => {
+            const rect = (window as any).__controller.sharedShell.panel.getBoundingClientRect();
+            return { x: rect.right - 3, y: rect.bottom - 3 };
+        });
+        await page.mouse.move(card.x, card.y); await page.mouse.down();
+        await page.mouse.move(card.x - 40, card.y - 30); await page.mouse.up();
         const floating = await bounds();
+        await page.evaluate(() => {
+            const c = (window as any).__controller;
+            c.setPanelMode("navigate", false); c.setPanelMode("navigate", true);
+        });
+        assert.deepEqual(await bounds(), floating, "Reopening must retain deliberately placed/resized geometry");
+        if (await page.getByTitle("Lock background", { exact: true }).isVisible()) {
+            await page.getByTitle("Lock background", { exact: true }).click();
+        }
         await page.getByTitle("Unlock background (Ambient)", { exact: true }).click(); assert.deepEqual(await bounds(), floating);
         await page.getByTitle("Lock background", { exact: true }).click(); assert.deepEqual(await bounds(), floating);
         await page.getByTitle("Minimize", { exact: true }).click();

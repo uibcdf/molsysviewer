@@ -1,5 +1,7 @@
 # Path to 1.0.0 (Unified Release Plan)
 
+**Latest dogfooding — 2026-10-21:** [Card/caret source receiving](studio_card_validation_20261021.json) covers #251/#254/#255: the reveal rectangle no longer acquires a caret selection; Studio has a darker three-level background and larger host-relative defaults with room for fullscreen controls. Manual geometry survives local transitions. Human retest remains next; no candidate freeze or publication is authorized.
+
 **Confirmed resolved — 2026-10-20:** [#247 human retest](archive/initial_welcome_human_retest.md) confirms Welcome no longer flashes. The preceding failing retest had included kernel restart and notebook cache reload; its cause remains unknown. Existing guarded source fix and actual-Jupyter receiving stand, without another runtime change. Continue TcTIM dogfooding; #248 remains closed.
 
 **Current priority — 2026-10-20:** Diego and Liliana's exploratory TcTIM / PDB

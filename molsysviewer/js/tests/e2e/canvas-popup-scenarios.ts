@@ -4,6 +4,20 @@ import type { Page } from "playwright";
 import { PythonFixtureBridge } from "./python-fixture-bridge";
 import { mountCanvasPopupFixture } from "./canvas-popup-fixture";
 
+async function checkProportionalStudio(canvas: Page) {
+    await canvas.waitForFunction(() => {
+        const button = document.querySelector<HTMLButtonElement>('button[title="Popout panel to external window"]');
+        const panel = button?.parentElement?.parentElement;
+        const host = panel?.parentElement?.parentElement;
+        if (!panel || !host) return false;
+        const rect = panel.getBoundingClientRect();
+        const margin = document.fullscreenElement?.contains(host) ? 72 : 48;
+        return Math.abs(rect.width - Math.min(host.clientWidth * 0.86, 1200, host.clientWidth - 20)) < 1
+            && Math.abs(rect.height - Math.min(host.clientHeight * 0.88, 940, host.clientHeight - 2 * Math.min(margin, host.clientHeight * 0.2))) < 1
+            && getComputedStyle(panel).opacity === "1";
+    });
+}
+
 async function checkStudioFullscreen(panel: Page, otherWindows: Page[]) {
     const button = panel.locator('[data-molsysviewer-panel-fullscreen="true"]');
     await button.waitFor({ state: "visible" });
@@ -79,6 +93,25 @@ export async function checkNotebookCanvasPopup(page: Page, dir: string) {
         assert.equal(external.position.left, host.position.left);
         assert.equal(external.position.top, host.position.top);
         await page.evaluate(() => (window as any).__popupWidgetModel.set("controls_mode", "minimal"));
+        // Clicking the empty reveal rectangle must focus a control, not create
+        // a text-caret selection in its empty DIV (TcTIM dogfooding #251).
+        await page.evaluate(() => (window as any).__popupWidgetModel.set("autohide_controls", true));
+        const reveal = popup.getByRole("button", { name: "Show canvas controls", exact: true });
+        await reveal.waitFor({ state: "visible" });
+        const revealPoint = await reveal.evaluate(element => {
+            const rect = element.getBoundingClientRect();
+            for (const y of [rect.y + 2, rect.bottom - 2]) for (const x of [rect.x + 2, rect.right - 2]) {
+                if (document.elementFromPoint(x, y) === element) return { x, y };
+            }
+            throw new Error("No exposed reveal-control corner");
+        });
+        await popup.mouse.click(revealPoint.x, revealPoint.y);
+        assert.ok(await reveal.evaluate(element => element === document.activeElement));
+        assert.ok(await reveal.evaluate(element => !element.contains(getSelection()?.anchorNode ?? null)),
+            "The reveal control must not acquire a text caret when clicked");
+        await popup.keyboard.press("Enter");
+        await popup.waitForFunction(() => document.querySelector(".molsysviewer-controls")?.contains(document.activeElement));
+        await page.evaluate(() => (window as any).__popupWidgetModel.set("autohide_controls", false));
         await popup.getByTitle("Help (H)", { exact: true }).waitFor({ state: "visible" });
         await popup.getByTitle("Help (H)", { exact: true }).click();
         assert.ok(await popup.getByText("Keyboard", { exact: false }).first().isVisible());
@@ -86,6 +119,7 @@ export async function checkNotebookCanvasPopup(page: Page, dir: string) {
         await popup.keyboard.press("Escape");
         await popup.locator(".molsysviewer-help-card").waitFor({ state: "hidden" });
         await popup.getByTitle("Panel mode (N / W)", { exact: true }).click();
+        await checkProportionalStudio(popup);
         assert.ok(await popup.getByTitle("Lock background", { exact: true }).isVisible(),
             "the canvas popup inherits the unlocked initial Studio state");
         assert.ok(await popup.locator('[data-molsysviewer-group-panel-tab="regions"]').isVisible());
@@ -159,10 +193,19 @@ export async function checkNotebookCanvasPopup(page: Page, dir: string) {
         await popup.waitForFunction(() => document.querySelector("canvas")?.parentElement?.style.display === "block");
         await popup.keyboard.press("Escape");
         await popup.waitForFunction(() => document.querySelector<HTMLElement>(".molsysviewer-controls")?.style.visibility === "visible");
+        // Escape above closed Studio. Reopen it before measuring its drawn
+        // fullscreen dimensions, with the background available to controls.
+        await popup.getByTitle("Panel mode (N / W)", { exact: true }).click();
+        if (await popup.getByTitle("Unlock background (Ambient)", { exact: true }).isVisible()) {
+            await popup.getByTitle("Unlock background (Ambient)", { exact: true }).click();
+        }
+        await checkProportionalStudio(popup);
         await popup.getByTitle("Fullscreen", { exact: true }).click();
         await popup.waitForFunction(() => !!document.fullscreenElement);
+        await checkProportionalStudio(popup);
         await popup.getByTitle("Exit Fullscreen", { exact: true }).click();
         await popup.waitForFunction(() => !document.fullscreenElement);
+        await checkProportionalStudio(popup);
         const canvas = await popup.locator("canvas").boundingBox();
         assert.ok(canvas);
         await popup.mouse.click(canvas.x + 30, canvas.y + canvas.height - 30, { button: "right" });

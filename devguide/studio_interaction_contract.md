@@ -15,8 +15,26 @@ and a deliberate user lock survive hiding/reopening the same panel; this is
 an initial default, not a forced unlock on each display. Lock/Dock choices
 remain window-local (`uibcdf/molsysviewer#252`).
 
-Floating geometry survives background lock, minimize/restore and dock/float.
-Resizing the host clamps existing bounds instead of recentering the card.
+Floating Studio starts at 86% of its own host's width and 88% of its height,
+capped at 1200×940 px, with 10 px horizontal clearance and at least
+48 px vertical clearance (72 px when its own host is fullscreen) for canvas
+controls. On tiny hosts, reserved vertical clearance is limited to 20% per
+side. This rule uses actual canvas geometry in embedded, fullscreen and external
+canvases. Untouched default
+bounds follow host resizing. Deliberate drag/resize opts into manual geometry:
+lock, close/reopen, minimize/restore and Dock/Float preserve those bounds;
+host resizing clamps them instead of resetting or enlarging them. The shell
+and independent-window default consume `ui/floating-panel-layout.ts`; window
+chrome, minimum window size and screen limits remain popup concerns. A panel-only
+Studio fills its own window. Displaying a non-minimized card never restores
+an older height (`uibcdf/molsysviewer#255`).
+
+The background button cycles three dark-gray transparencies (0.97, 0.82,
+0.64 alpha), beginning with the darkest. It changes the card background only;
+foreground text and controls retain their contrast. The chosen level survives
+local layout transitions. An independent Studio window stays opaque because
+there is no molecular canvas behind it (`uibcdf/molsysviewer#254`).
+
 Disposal disconnects host/panel observers and active global drag listeners.
 
 Below 480 px of card body width, an owned native selector replaces the sidebar.
