@@ -1,5 +1,7 @@
 # Path to 1.0.0 (Unified Release Plan)
 
+**Before-documentation review — 2026-10-21:** opacity 98/90/80 is human-accepted. The [board/CI receipt](pre_documentation_review_20261021.json) identifies remaining source CI receiving, the explicitly postponed PHMT/Jupyter smoke and administrative #93 reconciliation against central Python 3.14 admission. No new notebook-core implementation defect is identified. Public documentation can proceed alongside these closures; exact candidate/artifact qualification and separate publication authorization still come later.
+
 **Human follow-up — 2026-10-21:** cursor #251 and larger card #255 are confirmed. The original transparency mechanism is retained under #254, with the latest requested cycle 0.98/0.90/0.80 and 0.98 initially; [receiving](studio_opacity_restoration_20261021.json) supersedes the preceding background-only design. Continue dogfooding without a candidate freeze or publication.
 
 **Latest dogfooding — 2026-10-21:** [Card/caret source receiving](studio_card_validation_20261021.json) covers #251/#254/#255: the reveal rectangle no longer acquires a caret selection; Studio has a darker three-level background and larger host-relative defaults with room for fullscreen controls. Manual geometry survives local transitions. Human retest remains next; no candidate freeze or publication is authorized.

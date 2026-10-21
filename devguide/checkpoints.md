@@ -1,5 +1,7 @@
 # Development checkpoint
 
+**Accepted UI / before-documentation review — 2026-10-21:** Diego accepts opacity 0.98/0.90/0.80 (0.98 initially); the opacity trial is closed. [Current board/CI review](pre_documentation_review_20261021.json) identifies no new notebook-core defect. Finish exact-source CI receiving and the postponed PHMT/Jupyter smoke for core signoff; reconcile #93 against the now-admitted central registry. These checks can accompany documentation. Qt/remotes retain separate experimental/post-1.0 scope; freeze/publication remain unauthorized.
+
 **Latest opacity trial — 2026-10-21:** Diego requests 0.98/0.90/0.80, with 0.98 initially, superseding 0.98/0.85/0.70. Gray and whole-card mechanism are unchanged. #254 and the [receiving ledger](studio_opacity_restoration_20261021.json) retain this visual refinement; no freeze/publication.
 
 **Latest opacity trial — 2026-10-21:** Diego requests 0.98/0.85/0.70, with 0.98 initially, superseding the preceding 0.99/0.90/0.70 trial. Gray and whole-card mechanism are unchanged. #254 and the [receiving ledger](studio_opacity_restoration_20261021.json) retain the sequence; continue visual dogfooding.

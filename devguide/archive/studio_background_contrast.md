@@ -99,3 +99,9 @@ the middle/lower 0.85/0.70 trial. The gray and whole-card mechanism are
 unchanged. The retained browser guard checks the cycle, return to the default
 and Dock/Float retention; [receiving](../studio_opacity_restoration_20261021.json)
 keeps this trial separate from previous ranges.
+
+## Human acceptance — 2026-10-21
+
+Diego accepts 0.98/0.90/0.80 with 0.98 initially: "me gusta así, así se va a
+quedar". This closes the opacity exploration; the gray and whole-card mechanism
+remain unchanged. Source CI and other release checks retain their separate scope.

@@ -14,6 +14,16 @@ supersedes: []
 
 # Extend MolSysViewer Python support to 3.14 alongside MolSysMT
 
+**Current review — 2026-10-21:** the frozen central registry at
+`uibcdf/molsyssuite@4e6cee88a3c60cffa7b596f790f2d213bcc20cd3` now marks
+Viewer `admitted`, with compatibility for `policy-v1.5.7` / `policy-v1.5.4`.
+MolSysMT is also admitted. The [receiving receipt](../pre_documentation_review_20261021.json)
+retains the exact registry blob and current issue state. #93 remains open for
+administrative closure reconciliation, not missing support implementation;
+the October 7 authorized-only observation below has been superseded by that
+central change. No provider modification or new publication is needed merely
+to acknowledge this admission. Final new-candidate qualification remains separate.
+
 **Current review — 2026-10-07:** Viewer 0.24.0 build 1 / MolSysMT 0.23.0
 build 0 passes all sixteen public installed cells and exact source Python 3.14
 integration. The central remote `suite.toml` still records Viewer and MolSysMT

@@ -1,0 +1,407 @@
+{
+  "date": "2026-10-21",
+  "observed_at_utc": "2026-10-21T20:13:15.618051+00:00",
+  "source_commit": "d126c5a1c349929d1fdb62157ebe011b6180e03a",
+  "human_acceptance": {
+    "issue": 254,
+    "opacity_levels": [
+      0.98,
+      0.9,
+      0.8
+    ],
+    "default_opacity": 0.98,
+    "decision": "Accepted by Diego; keep this range."
+  },
+  "open_issue_count": 29,
+  "open_issues": [
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 226,
+      "title": "Evaluate copying equivalent Python code from Studio"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 115,
+      "title": "Update the Mol* dependency after 1.0"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 113,
+      "title": "Evaluate aligned PySide6/Qt for a future supported standalone host"
+    },
+    {
+      "milestone": null,
+      "number": 109,
+      "title": "Migrate optional Qt host to canonical PySide6 6.11.2"
+    },
+    {
+      "milestone": null,
+      "number": 100,
+      "title": "Define reproducible browser and render-worker E2E evidence lanes"
+    },
+    {
+      "milestone": null,
+      "number": 93,
+      "title": "Coordinate MolSysViewer Python 3.14 support with MolSysMT"
+    },
+    {
+      "milestone": null,
+      "number": 80,
+      "title": "Report upstream to pytest-xdist: an import in the receiver thread can end the session"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 59,
+      "title": "Advanced representations for pockets, voids, channels and interfaces"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 58,
+      "title": "View a scene as pixels in a terminal"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 57,
+      "title": "Generated typing contract for MolSysView mixins"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 56,
+      "title": "Studio subpanel for Interactions"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 55,
+      "title": "Structure windowing and lazy materialization"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 54,
+      "title": "Post-1.0 performance architecture"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 53,
+      "title": "Move the structure barrier to the receiver"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 52,
+      "title": "Automate the Qt render check on a GPU runner"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 51,
+      "title": "Popout parity in the Qt standalone host"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 50,
+      "title": "Idea inventory from an external terminal viewer"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 49,
+      "title": "Multi-view split-screen viewport synchronization"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 48,
+      "title": "An Interactions domain for derived atom-atom relations"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 47,
+      "title": "Rough edges of the 2026-08 export rework, to review cold"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 46,
+      "title": "Preserve enriched chemical metadata from SDF and MOL2"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 45,
+      "title": "Configurable canvas picking granularity via the context menu"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 44,
+      "title": "Advanced annotations on Mol*'s MVS machinery"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 43,
+      "title": "Study the token cost of non-pytest test output for agent consumers"
+    },
+    {
+      "milestone": null,
+      "number": 42,
+      "title": "Adopt MolSysMT's explicit source-form hint once it exists"
+    },
+    {
+      "milestone": null,
+      "number": 41,
+      "title": "Offer MolSysMT a read of their documentation pipeline at the scale it is reaching"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 39,
+      "title": "Build the runtime as a classic script so exported views open from a disk"
+    },
+    {
+      "milestone": {
+        "number": 1,
+        "title": "post-1.0",
+        "description": "Deferred until after the 1.0 release. Not a release gate.",
+        "dueOn": null
+      },
+      "number": 36,
+      "title": "Standalone Qt movie export lacks a camera snapshot"
+    },
+    {
+      "milestone": null,
+      "number": 35,
+      "title": "Standalone Qt: live demo replacement does not update the scene"
+    }
+  ],
+  "central_admission": {
+    "repository": "uibcdf/molsyssuite",
+    "commit": "4e6cee88a3c60cffa7b596f790f2d213bcc20cd3",
+    "suite_blob": "6721ba5ac0688b1545e7b84396676fc1fdb8b9fe",
+    "suite_sha256": "b3fbb188ae2089751b1fb7146278b0250252d730d2b01518635f2ae407901ece",
+    "records": [
+      {
+        "name": "molsysmt",
+        "issue": "uibcdf/molsysmt#237",
+        "state": "admitted",
+        "compatible-policy-releases": [
+          "policy-v1.5.4"
+        ]
+      },
+      {
+        "name": "molsysviewer",
+        "issue": "uibcdf/molsysviewer#93",
+        "state": "admitted",
+        "compatible-policy-releases": [
+          "policy-v1.5.7",
+          "policy-v1.5.4"
+        ]
+      }
+    ],
+    "viewer_issue_93": "Still open; reconcile closure against central admission. No missing 3.14 support implementation identified."
+  },
+  "current_source_ci": [
+    {
+      "conclusion": "",
+      "databaseId": 39667615213,
+      "headSha": "d126c5a1c349929d1fdb62157ebe011b6180e03a",
+      "name": "Documentation notebooks",
+      "status": "queued",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39667615213"
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39667615447,
+      "headSha": "d126c5a1c349929d1fdb62157ebe011b6180e03a",
+      "name": "Conda publication governance",
+      "status": "queued",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39667615447"
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39667615115,
+      "headSha": "d126c5a1c349929d1fdb62157ebe011b6180e03a",
+      "name": "CI_e2e",
+      "status": "queued",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39667615115"
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39667615568,
+      "headSha": "d126c5a1c349929d1fdb62157ebe011b6180e03a",
+      "name": "MolSysSuite policy",
+      "status": "queued",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39667615568"
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39667614949,
+      "headSha": "d126c5a1c349929d1fdb62157ebe011b6180e03a",
+      "name": "CI",
+      "status": "queued",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39667614949"
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39667614914,
+      "headSha": "d126c5a1c349929d1fdb62157ebe011b6180e03a",
+      "name": "Experimental Qt diagnostics",
+      "status": "queued",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39667614914"
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39667614740,
+      "headSha": "d126c5a1c349929d1fdb62157ebe011b6180e03a",
+      "name": "Python 3.14 source pair",
+      "status": "in_progress",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39667614740"
+    }
+  ],
+  "previous_receiving": {
+    "notebook_failure": {
+      "run": 39663527539,
+      "scope": "c8b323ed",
+      "cause": "Quickstart kernel did not respond within 60 seconds."
+    },
+    "later_notebook_pass": {
+      "run": 39665151675,
+      "scope": "8b967fff",
+      "receptor_exit_code": 0
+    },
+    "later_real_core_browser_pass": {
+      "run": 39665151643,
+      "scope": "8b967fff",
+      "receptor_exit_code": 0,
+      "native_step": "Core E2E / Run core E2E tests: success; backlog-only job skipped."
+    }
+  },
+  "before_core_signoff": [
+    "Review applicable exact-source CI after queue completes.",
+    "Resume the maintainer-postponed actual PharmacophoreMT/Jupyter shape-only smoke: Render/Clear, independent navigation, and Render from canvas popup after closing Studio popup."
+  ],
+  "nonblocking_open_work": {
+    "qt": [
+      35,
+      36,
+      109,
+      113
+    ],
+    "remotes": 100,
+    "post_1_0_or_advisory": "All remaining open records have accepted experimental, post-1.0, provider-improvement or advisory scope; no new notebook-core defect found by this board/receipt audit."
+  },
+  "documentation": "Can proceed while final CI completes. The audit does not certify installed artifacts or a full new exploratory scientific round.",
+  "later_release_work": [
+    "Finish public documentation",
+    "Review and explicitly freeze 0.25.0",
+    "Qualify exact staged artifacts and installed pair",
+    "Installed first contact; separate authorization for publication"
+  ],
+  "publication_authorized": false,
+  "evidence_directory": "/tmp/msv-before-docs-review-20261021",
+  "guide_validation": {
+    "exit_code": 0,
+    "modules": [
+      "tests/test_reporting_protocol.py",
+      "tests/test_devguide_links.py"
+    ],
+    "log": "/tmp/msv-before-docs-review-20261021/guidance.log",
+    "sha256": "9870fe3334aac7cc5980d944d86ef6ec8c0b927a18aac43b2bab40ab3b955890"
+  }
+}

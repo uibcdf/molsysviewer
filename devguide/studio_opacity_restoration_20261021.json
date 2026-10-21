@@ -221,7 +221,17 @@
       }
     },
     "broader_testing": "No full Studio/core-browser/Python rerun for this constants-only trial. Earlier results retain their original source scopes.",
-    "human_visual_retest": "Pending this range.",
+    "human_visual_retest": "Accepted by Diego: me gusta as\u00ed, as\u00ed se va a quedar.",
     "hosted_ci": "Automatic source CI follows push; no hosted passing gate claimed."
+  },
+  "current_opacity_acceptance": {
+    "date": "2026-10-21",
+    "opacity_levels": [
+      0.98,
+      0.9,
+      0.8
+    ],
+    "default_opacity": 0.98,
+    "status": "accepted"
   }
 }
