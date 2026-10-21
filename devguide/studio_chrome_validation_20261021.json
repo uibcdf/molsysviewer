@@ -1,0 +1,215 @@
+{
+  "schema": "molsysviewer.studio_chrome_receiving@1",
+  "date": "2026-10-21",
+  "source_base": "d1f6ccec3191ea76dce22f57bb3558da35eea97f",
+  "scope": "Local source/UI receiving; not a frozen artifact or public release.",
+  "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+  "issues": {
+    "251": "open, human symptom unreproduced; no speculative fix",
+    "252": "implemented unlocked initial default, explicit lock choices retained",
+    "253": "implemented window-local panel-only fullscreen header control",
+    "250": "human acceptance received"
+  },
+  "source_files": {
+    "molsysviewer/js/src/ui/floating-panel-shell.ts": "aee9fb89e27b7ef56c8e15e3c20a6207d37c99145e575e498f43d0ea5d5b609d",
+    "molsysviewer/js/src/managers/viewer-controller.ts": "166734f002ac34715b51f99ebe8b5a12be0bcc882a925b705062fb3badfee87b",
+    "molsysviewer/js/tests/e2e/controls-visibility.e2e.ts": "82a364f9c851b5823bf6b173c06d102d26a7762ac515ce39c05dec00e0caa807",
+    "molsysviewer/js/tests/e2e/canvas-popup-scenarios.ts": "78e7d478b0fe3cda25145aefb394417842ea80a8db9059fe5cfd889315d73291"
+  },
+  "runtime_sha256": "e6fa51f49c6e67d7972d335a77eed5daf5bb545415aad7428ca3e5dd3fd087a2",
+  "checks": {
+    "typescript_exit": 0,
+    "js_unit": {
+      "passed": 330,
+      "failed": 0,
+      "skipped": 0,
+      "exit": 0
+    },
+    "integrated_browser": {
+      "exit": 0,
+      "scenarios": [
+        "exported controls, actual rotation with unlocked Studio, manual lock retention",
+        "actual widget and both Studio popout origins, keyboard/API fullscreen, locality, #250 handoff regression",
+        "scientific camera/selection/picks/layout/playback/interactions mirror"
+      ]
+    },
+    "guidance": {
+      "selectors": [
+        "tests/test_reporting_protocol.py",
+        "tests/test_devguide_links.py"
+      ],
+      "exit": 0
+    }
+  },
+  "caret_diagnostics": [
+    {
+      "scope": "Diagnostic only; not reproduction of the human blinking pixels.",
+      "browser": "155.0.8059.84",
+      "caretFlagRequested": false,
+      "snapshots": [
+        {
+          "stage": "loaded",
+          "focus": {
+            "tag": "BODY",
+            "id": "",
+            "title": "",
+            "editable": false
+          },
+          "hasFocus": true,
+          "fullscreen": false,
+          "selection": {
+            "type": "None",
+            "anchorOffset": 0
+          },
+          "visibleEditors": [
+            {
+              "tag": "INPUT",
+              "title": "",
+              "focused": false
+            }
+          ]
+        },
+        {
+          "stage": "canvas fullscreen",
+          "focus": {
+            "tag": "BUTTON",
+            "id": "",
+            "title": "Fullscreen",
+            "editable": false
+          },
+          "hasFocus": true,
+          "fullscreen": true,
+          "selection": {
+            "type": "None",
+            "anchorOffset": 0
+          },
+          "visibleEditors": [
+            {
+              "tag": "INPUT",
+              "title": "",
+              "focused": false
+            }
+          ]
+        },
+        {
+          "stage": "Studio detached",
+          "focus": {
+            "tag": "BODY",
+            "id": "",
+            "title": "",
+            "editable": false
+          },
+          "hasFocus": true,
+          "fullscreen": true,
+          "selection": {
+            "type": "None",
+            "anchorOffset": 0
+          },
+          "visibleEditors": [
+            {
+              "tag": "INPUT",
+              "title": "",
+              "focused": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scope": "Diagnostic only; not reproduction of the human blinking pixels.",
+      "browser": "155.0.8059.84",
+      "caretFlagRequested": true,
+      "snapshots": [
+        {
+          "stage": "loaded",
+          "focus": {
+            "tag": "BODY",
+            "id": "",
+            "title": "",
+            "editable": false
+          },
+          "hasFocus": true,
+          "fullscreen": false,
+          "selection": {
+            "type": "None",
+            "anchorOffset": 0
+          },
+          "visibleEditors": [
+            {
+              "tag": "INPUT",
+              "title": "",
+              "focused": false
+            }
+          ]
+        },
+        {
+          "stage": "canvas fullscreen",
+          "focus": {
+            "tag": "BUTTON",
+            "id": "",
+            "title": "Fullscreen",
+            "editable": false
+          },
+          "hasFocus": true,
+          "fullscreen": true,
+          "selection": {
+            "type": "None",
+            "anchorOffset": 0
+          },
+          "visibleEditors": [
+            {
+              "tag": "INPUT",
+              "title": "",
+              "focused": false
+            }
+          ]
+        },
+        {
+          "stage": "Studio detached",
+          "focus": {
+            "tag": "BODY",
+            "id": "",
+            "title": "",
+            "editable": false
+          },
+          "hasFocus": true,
+          "fullscreen": true,
+          "selection": {
+            "type": "None",
+            "anchorOffset": 0
+          },
+          "visibleEditors": [
+            {
+              "tag": "INPUT",
+              "title": "",
+              "focused": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "caret_limit": "No reproduction of the blinking pixels or exact user browser environment. No DOM selection or focused editable field in either run. Flag requested is not a diagnosis of the reporter setting.",
+  "logs": {
+    "build-runtime.log": "ac6249ede4118293b0df44109e13061b28941fc3585b59ebf828f89c72b6f571",
+    "typescript.log": "06022ea9b98fdc111ef5fffba33d80b66e9799b846dd828f625c68a6bcb792c2",
+    "js-unit.log": "30aa3ea5f90f616307ec2ba7e0d749eade550c2b65ce3c515a51d15349c740ec",
+    "browser.log": "7b44e851f44a7eb6e89cc663489994afac97011b45e12f6f443929b41684f5ae",
+    "caret-probe.ts": "d2a03f805835a88b3f40e190c2f08738b1553f012717a156467c86610c4b0668",
+    "caret-0.log": "5e887359d4ad0c88b57b3e48c2d1c119a5d4a1d399df3f93c9f36f804c3ac6e2",
+    "caret-1.log": "49d18da35575bb3c04268b65cac34a69b5989dc1db022873e650e2abc7b673f0",
+    "caret-0.json": "03575295be2773c921129b8cc55ed0a5c4666f0513036f71a628d55f6bd564f2",
+    "caret-1.json": "72f2b6cd55c6c43d45cd0e15b024be5829adbddfbbaaa86c9e48605b14319d5b",
+    "caret-0.png": "75d892260c26bb48e2650572e3031a6428c1eb1e6f5942e875917aad268e05b5",
+    "caret-1.png": "9ae3d301e281c57b8e5e10953e52d621b0403c3f0d429c80a5625fe8110a50bb",
+    "guidance.log": "934948ce9d59c84d88dbd73b0a7025977d6f78292997ff91599884b9e9e4868c"
+  },
+  "provisioning_note": "Initial npm build was invoked at repository root without package.json; corrected to molsysviewer/js. No test failure or source workaround.",
+  "limits": {
+    "human_retest_252_253": "pending",
+    "hosted_CI": "pending source push",
+    "installed_artifacts": "unfrozen/unqualified",
+    "experimental_Qt": "not exercised",
+    "publication": "paused"
+  }
+}

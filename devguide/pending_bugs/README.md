@@ -23,6 +23,10 @@ list.
 
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*
 
+### Open (1)
+
+- [`canvas_popup_blinking_text_caret.md`](canvas_popup_blinking_text_caret.md) — [#251](https://github.com/uibcdf/molsysviewer/issues/251) — Intermittent text caret appears near canvas-popup controls *(low, asserted)*
+
 ### Deferred until after 1.0 (1)
 
 - [`standalone_qt_movie_camera_snapshot.md`](post_1.0/standalone_qt_movie_camera_snapshot.md) — [#36](https://github.com/uibcdf/molsysviewer/issues/36) — Movie export in the Qt host fails because the camera snapshot is never mirrored back.

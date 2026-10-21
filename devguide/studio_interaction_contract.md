@@ -9,6 +9,12 @@ with the scientific owner and the existing explicit system-edit/loading contract
 
 ## Card and navigation
 
+New floating Studio shells start with background unlocked, so gestures outside
+the card can rotate the molecular canvas. An explicitly inherited lock state
+and a deliberate user lock survive hiding/reopening the same panel; this is
+an initial default, not a forced unlock on each display. Lock/Dock choices
+remain window-local (`uibcdf/molsysviewer#252`).
+
 Floating geometry survives background lock, minimize/restore and dock/float.
 Resizing the host clamps existing bounds instead of recentering the card.
 Disposal disconnects host/panel observers and active global drag listeners.

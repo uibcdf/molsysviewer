@@ -162785,13 +162785,12 @@ var FloatingPanelShell = class {
     this.workspaceMenuOpen = false;
     this.floatingInitialized = false;
     this.isSplit = false;
-    this.isAmbient = false;
+    this.isAmbient = true;
     this.lastSplitState = false;
     this.isCanvasHidden = false;
     this.isPanelOnly = !!options.isPanelOnly;
     const style = options.panelModeStyle || "floating";
     this.panelModeStyle = style;
-    this.isAmbient = style === "ambient";
     this.isSplit = style === "split";
     this.lastSplitState = this.isSplit;
     this.root = document.createElement("div");
@@ -163205,6 +163204,34 @@ var FloatingPanelShell = class {
     this.toggleButton.addEventListener("mouseleave", () => {
       this.toggleButton.style.color = "rgba(255,255,255,0.45)";
     });
+    if (this.isPanelOnly && options.onFullscreenClick) {
+      const fullscreenButton = document.createElement("button");
+      fullscreenButton.type = "button";
+      fullscreenButton.style.cssText = this.toggleButton.style.cssText;
+      fullscreenButton.setAttribute("data-molsysviewer-panel-fullscreen", "true");
+      const updateFullscreenButton = () => {
+        const active = !!document.fullscreenElement;
+        fullscreenButton.title = active ? "Exit Fullscreen" : "Fullscreen";
+        fullscreenButton.setAttribute("aria-label", fullscreenButton.title);
+        fullscreenButton.setAttribute("aria-pressed", String(active));
+        setViewportIcon(fullscreenButton, active ? VIEWPORT_ICON_EXIT_FULLSCREEN : VIEWPORT_ICON_FULLSCREEN);
+      };
+      fullscreenButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        options.onFullscreenClick();
+      });
+      fullscreenButton.addEventListener("mouseenter", () => {
+        fullscreenButton.style.color = "rgba(255,255,255,0.9)";
+      });
+      fullscreenButton.addEventListener("mouseleave", () => {
+        fullscreenButton.style.color = "rgba(255,255,255,0.45)";
+      });
+      document.addEventListener("fullscreenchange", updateFullscreenButton);
+      this.releaseFullscreenListener = () => document.removeEventListener("fullscreenchange", updateFullscreenButton);
+      updateFullscreenButton();
+      this.headerElement.appendChild(fullscreenButton);
+    }
     this.headerElement.appendChild(this.toggleButton);
     this.content = document.createElement("div");
     Object.assign(this.content.style, {
@@ -163685,6 +163712,7 @@ var FloatingPanelShell = class {
     this.workspaceGroupElement.setAttribute("data-molsysviewer-panel-workspace-launcher-open", this.workspaceMenuOpen ? "true" : "false");
   }
   dispose() {
+    this.releaseFullscreenListener?.();
     this.endDrag?.();
     this.hostResizeObserver?.disconnect();
     this.panelResizeObserver?.disconnect();
@@ -166265,6 +166293,9 @@ var MolSysViewerController = class _MolSysViewerController {
         title: "Studio",
         panelModeStyle: initOptions?.panelModeStyle,
         onPanelPopClick: initOptions?.onPanelPopClick,
+        onFullscreenClick: () => {
+          void this.toggleFullscreen();
+        },
         isPanelOnly: this.isPanelOnly
       });
       if (this.isPanelOnly) {

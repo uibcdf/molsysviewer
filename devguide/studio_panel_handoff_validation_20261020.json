@@ -58,7 +58,7 @@
     "guidance-finalization.log": "7eea1b36602b2b13b1986a0b27f88f114973f02a7cf8bad4e9ad8fb185651574"
   },
   "limits": {
-    "human_TcTIM_retest": "pending",
+    "human_TcTIM_retest": "confirmed by Diego on 2026-10-21: works adequately",
     "hosted_CI": "exact-source runs observed in progress; full completion not claimed",
     "installed_artifact": "not frozen or qualified",
     "experimental_Qt": "not exercised",
@@ -124,5 +124,5 @@
     "scope": "Automatic exact-source campaigns observed, not yet complete; Qt remains experimental and separate. No duplicate dispatch.",
     "next_action": "Inspect native outcomes for these exact runs when complete."
   },
-  "issue_state": "closed with guarded source fix; human retest pending"
+  "issue_state": "closed with guarded source fix and human acceptance"
 }

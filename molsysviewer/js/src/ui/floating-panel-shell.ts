@@ -1,8 +1,11 @@
+import { setViewportIcon, VIEWPORT_ICON_FULLSCREEN, VIEWPORT_ICON_EXIT_FULLSCREEN } from "./viewport-icon-button";
+
 type FloatingPanelShellOptions = {
     title: string;
     navButtonLabel?: string;
     panelModeStyle?: string;
     onPanelPopClick?: () => void;
+    onFullscreenClick?: () => void;
     isPanelOnly?: boolean;
 };
 
@@ -65,10 +68,11 @@ export class FloatingPanelShell {
     private floatingInitialized = false;
     private floatingBounds?: { left: string; top: string; width: string; height: string };
     public isSplit = false;
-    public isAmbient = false;
+    public isAmbient = true;
     private lastSplitState = false;
     private dockButton?: HTMLButtonElement;
     private lockButton?: HTMLButtonElement;
+    private releaseFullscreenListener?: () => void;
 
     public onLayoutChange?: (state: { isSplit: boolean, isAmbient: boolean, visible: boolean, expanded: boolean }) => void;
     private isCanvasHidden = false;
@@ -151,7 +155,6 @@ export class FloatingPanelShell {
         this.isPanelOnly = !!options.isPanelOnly;
         const style = options.panelModeStyle || "floating";
         this.panelModeStyle = style;
-        this.isAmbient = style === "ambient";
         this.isSplit = style === "split";
         this.lastSplitState = this.isSplit;
 
@@ -573,6 +576,30 @@ export class FloatingPanelShell {
         });
         this.toggleButton.addEventListener("mouseenter", () => { this.toggleButton.style.color = "rgba(255,255,255,0.9)"; });
         this.toggleButton.addEventListener("mouseleave", () => { this.toggleButton.style.color = "rgba(255,255,255,0.45)"; });
+        if (this.isPanelOnly && options.onFullscreenClick) {
+            const fullscreenButton = document.createElement("button");
+            fullscreenButton.type = "button";
+            fullscreenButton.style.cssText = this.toggleButton.style.cssText;
+            fullscreenButton.setAttribute("data-molsysviewer-panel-fullscreen", "true");
+            const updateFullscreenButton = () => {
+                const active = !!document.fullscreenElement;
+                fullscreenButton.title = active ? "Exit Fullscreen" : "Fullscreen";
+                fullscreenButton.setAttribute("aria-label", fullscreenButton.title);
+                fullscreenButton.setAttribute("aria-pressed", String(active));
+                setViewportIcon(fullscreenButton, active ? VIEWPORT_ICON_EXIT_FULLSCREEN : VIEWPORT_ICON_FULLSCREEN);
+            };
+            fullscreenButton.addEventListener("click", event => {
+                event.preventDefault();
+                event.stopPropagation();
+                options.onFullscreenClick!();
+            });
+            fullscreenButton.addEventListener("mouseenter", () => { fullscreenButton.style.color = "rgba(255,255,255,0.9)"; });
+            fullscreenButton.addEventListener("mouseleave", () => { fullscreenButton.style.color = "rgba(255,255,255,0.45)"; });
+            document.addEventListener("fullscreenchange", updateFullscreenButton);
+            this.releaseFullscreenListener = () => document.removeEventListener("fullscreenchange", updateFullscreenButton);
+            updateFullscreenButton();
+            this.headerElement.appendChild(fullscreenButton);
+        }
         this.headerElement.appendChild(this.toggleButton);
 
         // Content area
@@ -1042,6 +1069,7 @@ export class FloatingPanelShell {
     }
 
     dispose(): void {
+        this.releaseFullscreenListener?.();
         this.endDrag?.();
         this.hostResizeObserver?.disconnect();
         this.panelResizeObserver?.disconnect();

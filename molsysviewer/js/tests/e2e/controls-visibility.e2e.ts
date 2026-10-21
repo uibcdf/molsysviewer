@@ -168,6 +168,26 @@ print(json.dumps({"page": str(output), "single": str(single)}))
         await hidden();
         await reveal();
         await controls.locator('[title="Panel mode (N / W)"]').click();
+        const lockBackground = page.getByTitle("Lock background", { exact: true });
+        await lockBackground.waitFor({ state: "visible" });
+        const beforeStudioDrag = await page.evaluate(() =>
+            (window as any).__molsysviewerDocsController.getCameraSnapshot().position);
+        await page.mouse.move(host.x + 20, host.y + host.height - 20);
+        await page.mouse.down();
+        await page.mouse.move(host.x + 100, host.y + host.height - 45, { steps: 8 });
+        await page.mouse.up();
+        await page.waitForFunction(before => {
+            const after = (window as any).__molsysviewerDocsController.getCameraSnapshot().position;
+            return after.some((value: number, index: number) => Math.abs(value - before[index]) > 0.001);
+        }, beforeStudioDrag);
+        await lockBackground.click();
+        const unlockBackground = page.getByTitle("Unlock background (Ambient)", { exact: true });
+        await unlockBackground.waitFor({ state: "visible" });
+        await page.getByTitle("Close (Esc)", { exact: true }).click();
+        await reveal();
+        await controls.locator('[title="Panel mode (N / W)"]').click();
+        assert.ok(await unlockBackground.isVisible(), "reopening Studio preserves an explicit lock choice");
+        await unlockBackground.click();
         await page.locator('[data-molsysviewer-group-settings-btn="true"]').click();
         const autohideSwitch = page.getByRole("switch", { name: "Autohide Controls", exact: true });
         await autohideSwitch.focus();

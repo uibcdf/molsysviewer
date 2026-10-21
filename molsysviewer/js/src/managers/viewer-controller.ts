@@ -1149,6 +1149,7 @@ export class MolSysViewerController {
                 title: "Studio", 
                 panelModeStyle: initOptions?.panelModeStyle,
                 onPanelPopClick: initOptions?.onPanelPopClick,
+                onFullscreenClick: () => { void this.toggleFullscreen(); },
                 isPanelOnly: this.isPanelOnly,
             });
             if (this.isPanelOnly) {

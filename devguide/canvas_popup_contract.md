@@ -98,6 +98,14 @@ The source endpoint owns its panel-return observer and releases it on pagehide;
 its ordinary Panel control can close the detached window. Scientific scene
 ownership and browser fullscreen policy are unchanged (`uibcdf/molsysviewer#250`).
 
+The independent Studio window has a header Fullscreen/Exit Fullscreen button.
+It uses the existing local controller action and shared icon vocabulary;
+`fullscreenchange` updates its accessible name, icon and pressed state, and
+shell disposal releases the listener. Enter/Space activate the native button.
+This control exists only in panel-only windows, does not add canvas controls,
+and does not request fullscreen in the notebook or other canvas
+(`uibcdf/molsysviewer#253`). Browser fullscreen-exit policy remains applicable.
+
 ## Browser fullscreen boundaries
 
 Studio popout and canvas fullscreen can be used together. Retaining fullscreen

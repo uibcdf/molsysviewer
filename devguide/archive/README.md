@@ -1,5 +1,8 @@
 # Archived implementation plans
 
+- [Studio unlocked default](studio_default_unlocked_background.md) — #252 allows background rotation initially and preserves explicit lock choices.
+- [Studio popup fullscreen](studio_popup_fullscreen_control.md) — #253 adds a local, keyboard-accessible header action with event-driven state and listener disposal.
+
 - [Studio handoff from canvas popup](studio_remains_in_canvas_popup_after_popout.md) — #250 hides/restores the source panel, preserves notebook layout, and guards blocking and docked repetition.
 
 - [Studio popout/fullscreen ordering](studio_popup_exits_canvas_fullscreen.md) — #249 closes without runtime changes; browser-controlled fullscreen loss is accepted with recovery through the existing button.

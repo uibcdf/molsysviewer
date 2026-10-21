@@ -103,3 +103,7 @@ the integrated browser result, initial guard-assertion diagnosis and other
 validation scopes. No repeated full Python suite, experimental Qt/physical
 dual-screen result or installed/release qualification is claimed. Human TcTIM
 receiving and exact hosted CI remain separate from local source validation.
+
+## Human acceptance — 2026-10-21
+
+Diego confirms that the corrected handoff works adequately in his real notebook/popup workflow. The subsequent caret, initial lock and Studio fullscreen observations are separate issues #251–#253.

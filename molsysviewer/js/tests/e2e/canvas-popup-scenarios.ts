@@ -4,6 +4,32 @@ import type { Page } from "playwright";
 import { PythonFixtureBridge } from "./python-fixture-bridge";
 import { mountCanvasPopupFixture } from "./canvas-popup-fixture";
 
+async function checkStudioFullscreen(panel: Page, otherWindows: Page[]) {
+    const button = panel.locator('[data-molsysviewer-panel-fullscreen="true"]');
+    await button.waitFor({ state: "visible" });
+    assert.equal(await button.getAttribute("title"), "Fullscreen");
+    await button.focus();
+    await panel.keyboard.press("Enter");
+    await panel.waitForFunction(() => !!document.fullscreenElement
+        && document.querySelector('[data-molsysviewer-panel-fullscreen="true"]')?.getAttribute("title") === "Exit Fullscreen");
+    assert.equal(await button.getAttribute("title"), "Exit Fullscreen");
+    assert.equal(await button.getAttribute("aria-pressed"), "true");
+    for (const other of otherWindows) {
+        assert.equal(await other.evaluate(() => !!document.fullscreenElement), false,
+            "Studio fullscreen is local to its window");
+    }
+    await button.focus();
+    await panel.keyboard.press("Space");
+    await panel.waitForFunction(() => !document.fullscreenElement);
+    await button.click();
+    await panel.waitForFunction(() => !!document.fullscreenElement);
+    // A browser-originated exit emits the same fullscreenchange notification.
+    await panel.evaluate(() => document.exitFullscreen());
+    await panel.waitForFunction(() =>
+        document.querySelector('[data-molsysviewer-panel-fullscreen="true"]')?.getAttribute("title") === "Fullscreen");
+    assert.equal(await button.getAttribute("aria-pressed"), "false");
+}
+
 /** Actual Python widget bootstrap, runtime-source handshake and popup snapshot. */
 export async function checkNotebookCanvasPopup(page: Page, dir: string) {
     const bridge = new PythonFixtureBridge(resolve(dir, "canvas-popup-bridge.py"), resolve(dir, "../../../.."));
@@ -60,6 +86,8 @@ export async function checkNotebookCanvasPopup(page: Page, dir: string) {
         await popup.keyboard.press("Escape");
         await popup.locator(".molsysviewer-help-card").waitFor({ state: "hidden" });
         await popup.getByTitle("Panel mode (N / W)", { exact: true }).click();
+        assert.ok(await popup.getByTitle("Lock background", { exact: true }).isVisible(),
+            "the canvas popup inherits the unlocked initial Studio state");
         assert.ok(await popup.locator('[data-molsysviewer-group-panel-tab="regions"]').isVisible());
         await popup.locator('[data-molsysviewer-group-panel-tab="regions"]').click();
         assert.ok(await popup.getByText("Saved Regions", { exact: true }).isVisible());
@@ -78,6 +106,7 @@ export async function checkNotebookCanvasPopup(page: Page, dir: string) {
         await panelPopup.locator('[data-molsysviewer-group-panel-tab="regions"]').waitFor({ state: "visible" });
         assert.equal(await panelPopup.locator(".molsysviewer-controls").count(), 0);
         assert.equal(await panelPopup.locator('[data-molsysviewer-welcome-card="true"]').count(), 0);
+        await checkStudioFullscreen(panelPopup, [page, popup]);
         const sourcePopoutButton = popup.getByTitle("Popout panel to external window", { exact: true });
         await sourcePopoutButton.waitFor({ state: "hidden" });
         assert.equal(await popup.locator('[data-molsysviewer-group-panel-tab="regions"]').isVisible(), false,
@@ -174,6 +203,16 @@ export async function checkNotebookCanvasPopup(page: Page, dir: string) {
         });
         await closed;
         assert.ok(popup.isClosed());
+        // The same Studio header also serves a popout from the notebook itself.
+        await page.getByTitle("Panel mode (N / W)", { exact: true }).click();
+        assert.ok(await page.getByTitle("Lock background", { exact: true }).isVisible());
+        const notebookPanelPending = page.waitForEvent("popup");
+        await notebookPopoutButton.click();
+        const notebookPanel = await notebookPanelPending;
+        notebookPanel.on("pageerror", error => errors.push(String(error)));
+        await checkStudioFullscreen(notebookPanel, [page]);
+        await notebookPanel.close();
+        await notebookPopoutButton.waitFor({ state: "visible" });
         // Keep the original canvas shortcut working in notebook shadow hosts.
         await page.evaluate(() => {
             const target = document.querySelector("canvas")!.parentElement!.parentElement!;
