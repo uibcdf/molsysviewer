@@ -49,3 +49,18 @@ normal fullscreen button clicks for #255. The source fix is ready for human
 retest; the original intermittent blinking pixels are not independently certified
 by a headless screenshot. [The receiving receipt](../studio_card_validation_20261021.json)
 separates targeted, integrated, hosted and manual scopes. No release is authorized.
+
+## Human design revision — 2026-10-21
+
+Diego confirms the cursor fix (#251) and larger card (#255), but rejects the
+new transparent darkness levels and requests the previous behavior. #254 is
+reopened for that bounded reversal. Restore whole-card opacity 0.90/0.70/0.45,
+starting at 0.90, over the original fixed gray background. The earlier
+background-only "wrong owner" assessment belongs to the rejected experiment
+and is not the accepted design rule. The cursor and proportional sizing
+corrections remain in place. The existing browser guard now protects the
+restored cycle and its retention across Dock/Float.
+
+[Restoration receiving](../studio_opacity_restoration_20261021.json) records
+final local results and their scope. Human visual retest of this reversal is
+still pending; no release or candidate freeze is authorized.

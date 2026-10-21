@@ -1,7 +1,7 @@
 # Archived implementation plans
 
 - [Canvas popup text caret](canvas_popup_blinking_text_caret.md) — #251 prevents default text-selection on the controls-reveal rectangle while preserving keyboard focus.
-- [Studio background contrast](studio_background_contrast.md) — #254 keeps three background levels with a darker default and full foreground contrast.
+- [Studio background contrast](studio_background_contrast.md) — #254 records the contrast experiment and its subsequent maintainer-requested restoration of the original opacity cycle.
 - [Studio proportional dimensions](studio_proportional_dimensions.md) — #255 enlarges default cards, reserves canvas-control space and preserves deliberate geometry.
 
 - [Studio unlocked default](studio_default_unlocked_background.md) — #252 allows background rotation initially and preserves explicit lock choices.

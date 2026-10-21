@@ -94,3 +94,7 @@ normal fullscreen button clicks for #255. The source fix is ready for human
 retest; the original intermittent blinking pixels are not independently certified
 by a headless screenshot. [The receiving receipt](../studio_card_validation_20261021.json)
 separates targeted, integrated, hosted and manual scopes. No release is authorized.
+
+## Human retest — 2026-10-21
+
+Diego confirms that the cursor has disappeared.

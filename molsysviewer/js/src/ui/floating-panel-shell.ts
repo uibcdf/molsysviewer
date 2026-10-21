@@ -68,8 +68,6 @@ export class FloatingPanelShell {
     private endDrag?: () => void;
     private floatingInitialized = false;
     private automaticBounds?: { left: string; top: string; width: string; height: string };
-    private backgroundLevel = 0;
-    private readonly backgroundAlphas = [0.97, 0.82, 0.64];
     private floatingBounds?: { left: string; top: string; width: string; height: string };
     public isSplit = false;
     public isAmbient = true;
@@ -136,11 +134,6 @@ export class FloatingPanelShell {
         else this.clampPosition();
     }
 
-    private updateBackground(): void {
-        this.panel.style.background = this.isPanelOnly ? "#121216"
-            : `rgba(18, 18, 22, ${this.backgroundAlphas[this.backgroundLevel]})`;
-    }
-
     public centerPanel(): void {
         if (this.isPanelOnly || this.isSplit) return;
         const hostWidth = this.host.clientWidth;
@@ -187,7 +180,7 @@ export class FloatingPanelShell {
 
         // Floating card
         this.panel = document.createElement("div");
-        this.panel.style.opacity = "1";
+        this.panel.style.opacity = "0.90";
         Object.assign(this.panel.style, {
             pointerEvents: "auto",
             display: "flex",
@@ -473,7 +466,7 @@ export class FloatingPanelShell {
         const opacityButton = document.createElement("button");
         opacityButton.type = "button";
         opacityButton.title = "Toggle opacity";
-        opacityButton.setAttribute("aria-label", "Change background transparency");
+        opacityButton.setAttribute("aria-label", "Toggle opacity");
         opacityButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 2v12a6 6 0 0 0 0-12z" fill="currentColor"/></svg>`;
         Object.assign(opacityButton.style, {
             background: "transparent",
@@ -493,8 +486,22 @@ export class FloatingPanelShell {
         opacityButton.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
-            this.backgroundLevel = (this.backgroundLevel + 1) % this.backgroundAlphas.length;
-            this.updateBackground();
+            const states = [0.90, 0.70, 0.45];
+            const currentOpacity = parseFloat(this.panel.style.opacity) || states[0];
+            let idx = states.indexOf(currentOpacity);
+            if (idx === -1) {
+                let minDiff = Infinity;
+                idx = 0;
+                for (let i = 0; i < states.length; i++) {
+                    const diff = Math.abs(states[i] - currentOpacity);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        idx = i;
+                    }
+                }
+            }
+            const nextIdx = (idx + 1) % states.length;
+            this.panel.style.opacity = String(states[nextIdx]);
         });
 
         if (!this.isPanelOnly) {
@@ -742,6 +749,7 @@ export class FloatingPanelShell {
                 borderRadius: "14px",
                 border: "1px solid rgba(255,255,255,0.12)",
                 boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
+                background: "rgba(18, 18, 22, 0.92)",
                 resize: "horizontal",
             });
             this.panelResizeObserver?.observe(this.panel);
@@ -754,14 +762,13 @@ export class FloatingPanelShell {
                 borderRadius: "16px",
                 border: "1px solid rgba(255,255,255,0.12)",
                 boxShadow: "0 24px 64px rgba(0,0,0,0.45)",
+                background: "rgba(18, 18, 22, 0.92)",
                 backdropFilter: "blur(20px)",
                 webkitBackdropFilter: "blur(20px)",
                 resize: "both",
             });
             this.headerElement.style.cursor = "move";
         }
-
-        this.updateBackground();
 
         // 3. Update button icons/titles
         if (this.dockButton) {

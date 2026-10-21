@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import type { Page } from "playwright";
 
-/** Real shell geometry and foreground contrast; controller/rendering are not replaced. */
+/** Real shell geometry and the accepted opacity cycle; rendering is not replaced. */
 export async function checkStudioCardDefaults(page: Page) {
     const state = () => page.evaluate(() => {
         const shell = (window as any).__controller.sharedShell;
@@ -9,27 +9,24 @@ export async function checkStudioCardDefaults(page: Page) {
         const style = getComputedStyle(panel);
         return { width: panel.getBoundingClientRect().width, height: panel.getBoundingClientRect().height,
             hostWidth: host.clientWidth, hostHeight: host.clientHeight,
-            background: style.backgroundColor, opacity: style.opacity,
-            textOpacity: getComputedStyle(shell.titleElement).opacity,
-            textColor: getComputedStyle(shell.titleElement).color };
+            background: style.backgroundColor, opacity: style.opacity };
     });
     const initial = await state();
     assert.ok(Math.abs(initial.width - initial.hostWidth * 0.86) < 1);
     assert.ok(Math.abs(initial.height - Math.min(initial.hostHeight * 0.88, initial.hostHeight - 96)) < 1);
-    assert.equal(initial.background, "rgba(18, 18, 22, 0.97)");
-    for (const alpha of [0.82, 0.64, 0.97]) {
+    assert.equal(initial.background, "rgba(18, 18, 22, 0.92)");
+    assert.equal(initial.opacity, "0.9");
+    for (const opacity of [0.70, 0.45, 0.90]) {
         await page.getByTitle("Toggle opacity", { exact: true }).click();
         const current = await state();
-        assert.equal(current.background, `rgba(18, 18, 22, ${alpha})`);
-        assert.equal(current.opacity, "1", "Background controls must not attenuate the entire card");
-        assert.equal(current.textOpacity, initial.textOpacity);
-        assert.equal(current.textColor, initial.textColor);
+        assert.equal(current.background, initial.background);
+        assert.equal(current.opacity, String(opacity), "Restore the original whole-card opacity cycle");
     }
     await page.getByTitle("Toggle opacity", { exact: true }).click();
     await page.getByTitle("Dock panel (Split)", { exact: true }).click();
-    assert.equal((await state()).background, "rgba(18, 18, 22, 0.82)");
+    assert.equal((await state()).opacity, "0.7");
     await page.getByTitle("Float panel", { exact: true }).click();
-    assert.equal((await state()).background, "rgba(18, 18, 22, 0.82)");
+    assert.equal((await state()).opacity, "0.7");
     await page.getByTitle("Toggle opacity", { exact: true }).click();
     await page.getByTitle("Toggle opacity", { exact: true }).click();
 

@@ -29,11 +29,12 @@ chrome, minimum window size and screen limits remain popup concerns. A panel-onl
 Studio fills its own window. Displaying a non-minimized card never restores
 an older height (`uibcdf/molsysviewer#255`).
 
-The background button cycles three dark-gray transparencies (0.97, 0.82,
-0.64 alpha), beginning with the darkest. It changes the card background only;
-foreground text and controls retain their contrast. The chosen level survives
-local layout transitions. An independent Studio window stays opaque because
-there is no molecular canvas behind it (`uibcdf/molsysviewer#254`).
+The opacity button cycles the original whole-card opacity levels 0.90, 0.70,
+0.45, starting at 0.90. Floating and docked cards retain the fixed background
+`rgba(18,18,22,0.92)`; text and controls participate in the card's transparency.
+The selected opacity survives local layout transitions. Panel-only Studio keeps
+its opaque backing. The background-only alternative was rejected at human retest
+and reverted at Diego's request (`uibcdf/molsysviewer#254`).
 
 Disposal disconnects host/panel observers and active global drag listeners.
 

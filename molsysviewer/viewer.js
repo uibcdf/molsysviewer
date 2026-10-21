@@ -162794,8 +162794,6 @@ var FloatingPanelShell = class {
     this.savedMinHeight = "";
     this.workspaceMenuOpen = false;
     this.floatingInitialized = false;
-    this.backgroundLevel = 0;
-    this.backgroundAlphas = [0.97, 0.82, 0.64];
     this.isSplit = false;
     this.isAmbient = true;
     this.lastSplitState = false;
@@ -162815,7 +162813,7 @@ var FloatingPanelShell = class {
       zIndex: "18"
     });
     this.panel = document.createElement("div");
-    this.panel.style.opacity = "1";
+    this.panel.style.opacity = "0.90";
     Object.assign(this.panel.style, {
       pointerEvents: "auto",
       display: "flex",
@@ -163086,7 +163084,7 @@ var FloatingPanelShell = class {
     const opacityButton = document.createElement("button");
     opacityButton.type = "button";
     opacityButton.title = "Toggle opacity";
-    opacityButton.setAttribute("aria-label", "Change background transparency");
+    opacityButton.setAttribute("aria-label", "Toggle opacity");
     opacityButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 2v12a6 6 0 0 0 0-12z" fill="currentColor"/></svg>`;
     Object.assign(opacityButton.style, {
       background: "transparent",
@@ -163110,8 +163108,22 @@ var FloatingPanelShell = class {
     opacityButton.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      this.backgroundLevel = (this.backgroundLevel + 1) % this.backgroundAlphas.length;
-      this.updateBackground();
+      const states = [0.9, 0.7, 0.45];
+      const currentOpacity = parseFloat(this.panel.style.opacity) || states[0];
+      let idx = states.indexOf(currentOpacity);
+      if (idx === -1) {
+        let minDiff = Infinity;
+        idx = 0;
+        for (let i = 0; i < states.length; i++) {
+          const diff = Math.abs(states[i] - currentOpacity);
+          if (diff < minDiff) {
+            minDiff = diff;
+            idx = i;
+          }
+        }
+      }
+      const nextIdx = (idx + 1) % states.length;
+      this.panel.style.opacity = String(states[nextIdx]);
     });
     if (!this.isPanelOnly) {
       this.headerElement.appendChild(this.dockButton);
@@ -163322,9 +163334,6 @@ var FloatingPanelShell = class {
     if (!this.floatingInitialized || automatic) this.centerPanel();
     else this.clampPosition();
   }
-  updateBackground() {
-    this.panel.style.background = this.isPanelOnly ? "#121216" : `rgba(18, 18, 22, ${this.backgroundAlphas[this.backgroundLevel]})`;
-  }
   centerPanel() {
     if (this.isPanelOnly || this.isSplit) return;
     const hostWidth = this.host.clientWidth;
@@ -163424,6 +163433,7 @@ var FloatingPanelShell = class {
         borderRadius: "14px",
         border: "1px solid rgba(255,255,255,0.12)",
         boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
+        background: "rgba(18, 18, 22, 0.92)",
         resize: "horizontal"
       });
       this.panelResizeObserver?.observe(this.panel);
@@ -163434,13 +163444,13 @@ var FloatingPanelShell = class {
         borderRadius: "16px",
         border: "1px solid rgba(255,255,255,0.12)",
         boxShadow: "0 24px 64px rgba(0,0,0,0.45)",
+        background: "rgba(18, 18, 22, 0.92)",
         backdropFilter: "blur(20px)",
         webkitBackdropFilter: "blur(20px)",
         resize: "both"
       });
       this.headerElement.style.cursor = "move";
     }
-    this.updateBackground();
     if (this.dockButton) {
       this.dockButton.title = isSplit ? "Float panel" : "Dock panel (Split)";
       this.dockButton.innerHTML = isSplit ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="1.5"/><rect x="5" y="5" width="6" height="6" rx="0.5"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="2" x2="4" y2="14"/><line x1="4" y1="8" x2="12" y2="8"/></svg>`;

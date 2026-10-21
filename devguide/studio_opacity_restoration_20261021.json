@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-21",
+  "issue": "uibcdf/molsysviewer#254",
+  "source_base_commit": "e57a22560b2c35a9bf9bea2a1789ddfe39c753b8",
+  "human_feedback": {
+    "251": "Cursor disappeared; confirmed by Diego.",
+    "255": "Card is larger; confirmed by Diego.",
+    "254": "New transparent darkness levels rejected; restore previous behavior."
+  },
+  "restoration": {
+    "opacity_levels": [
+      0.9,
+      0.7,
+      0.45
+    ],
+    "default_opacity": 0.9,
+    "scope": "Whole card, including foreground, matching the original behavior.",
+    "floating_and_docked_background": "rgba(18,18,22,0.92)",
+    "cursor_and_sizing": "Previous accepted source corrections retained."
+  },
+  "runtime_sha256": "b0a4a8f04d93176101b39ef10f4d6511cf24cae9d3e0e325cf27342aab1f8e61",
+  "environment": {
+    "python": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "browser": "Chrome 155.0.8059.84 / real Mol*"
+  },
+  "validation": {
+    "targeted_card": {
+      "exit_code": 0,
+      "log": {
+        "path": "/tmp/msv-studio-opacity-restoration-20261021/target.log",
+        "sha256": "ed6942f133952a26b1ec7df3c9ee8252ff2f34b5964f0b21617e81777bd876b9"
+      }
+    },
+    "typescript": {
+      "exit_code": 0,
+      "log": {
+        "path": "/tmp/msv-studio-opacity-restoration-20261021/types.log",
+        "sha256": "06022ea9b98fdc111ef5fffba33d80b66e9799b846dd828f625c68a6bcb792c2"
+      }
+    },
+    "studio_workflows": {
+      "exit_code": 0,
+      "log": {
+        "path": "/tmp/msv-studio-opacity-restoration-20261021/studio.log",
+        "sha256": "e29210bb0292cccfd6522b34f68affe09c658228c9bedd6410838f018752d1a5"
+      }
+    },
+    "guidance": {
+      "exit_code": 0,
+      "log": {
+        "path": "/tmp/msv-studio-opacity-restoration-20261021/guidance.log",
+        "sha256": "9870fe3334aac7cc5980d944d86ef6ec8c0b927a18aac43b2bab40ab3b955890"
+      }
+    }
+  },
+  "scope": "Source UI receiving; no full Python/core browser rerun, installed qualification, candidate freeze or publication.",
+  "human_visual_retest_of_restoration": "pending",
+  "hosted_ci": "Automatic source CI follows the push; this local receipt does not claim a hosted passing gate."
+}

@@ -14,7 +14,7 @@ async function checkProportionalStudio(canvas: Page) {
         const margin = document.fullscreenElement?.contains(host) ? 72 : 48;
         return Math.abs(rect.width - Math.min(host.clientWidth * 0.86, 1200, host.clientWidth - 20)) < 1
             && Math.abs(rect.height - Math.min(host.clientHeight * 0.88, 940, host.clientHeight - 2 * Math.min(margin, host.clientHeight * 0.2))) < 1
-            && getComputedStyle(panel).opacity === "1";
+            && getComputedStyle(panel).opacity === "0.9";
     });
 }
 
