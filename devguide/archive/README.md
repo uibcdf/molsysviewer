@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Complete issue-board receiving](devguide_issue_board_truncation.md) — #261 replaces the 200-item window with paginated, issue-only state/label receiving and verifies the full live queue.
+
 - [CI cancellation](ci_jobs_ignore_cancellation.md) — #256 makes test/PR/Qt diagnostic gates cancellation-aware, guarded locally and received through three ordinary hosted cancellations without force.
 - [Current CI watermark](ci_backlog_retired_python313_cell.md) — #260 accepts the real eight-cell 3.14 receipt, rejects incomplete evidence and retains independent recovery watermarks.
 

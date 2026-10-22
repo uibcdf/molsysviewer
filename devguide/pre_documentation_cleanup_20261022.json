@@ -5,7 +5,8 @@
   "issues": [
     "uibcdf/molsysviewer#256",
     "uibcdf/molsysviewer#260",
-    "uibcdf/molsysviewer#259"
+    "uibcdf/molsysviewer#259",
+    "uibcdf/molsysviewer#261"
   ],
   "status": "implementation_and_operational_receiving_complete",
   "changes": [
@@ -318,9 +319,10 @@
   "publication_authorized": false,
   "evidence_directory": "/tmp/msv-pre-docs-20261022",
   "final_guide_validation": {
-    "passed": 271,
+    "passed": 274,
     "exit_code": 0,
-    "log_sha256": "28f62c83ea9ebc5424611904e9121a3551160780e2f5500ea2bebab7b532b6ec",
+    "log_sha256": "4bde718f3d3a0dad2972fe534a803012524b1da86f17e1f5a55a3db11d149c82",
+    "scope": "Pagination tool plus reporting and link guards after #261 archival.",
     "generated_indexes": "current",
     "staged_diff_check": "pass"
   },
@@ -330,5 +332,35 @@
     "scope": "Read-only central guide delivery changes policy-version lookup prose only; no workflow/runtime/tests change. Existing receiving retains its recorded source identity.",
     "latest_central_policy_tag": "policy-v1.5.9",
     "new_immutable_admission_snapshot_delivered": false
+  },
+  "pagination_followup": {
+    "issue": "uibcdf/molsysviewer#261",
+    "cause": "Fixed 200-item query omitted 17 existing older issues.",
+    "fix": "Read all REST pages, exclude PRs, normalize issue state and retain label-only synchronization.",
+    "focused_tests": {
+      "passed": 2,
+      "exit_code": 0,
+      "log_sha256": "b6293205d8def5e103289438a49a94a57ae6323cf3ebe791a2e14a11765ba479"
+    },
+    "live_read_only_receiving": {
+      "exit_code": 0,
+      "documents": 31,
+      "scope": "Before archiving this final tool report; no board mutations by the check.",
+      "log_sha256": "7147013fb8285a851d8c4103fdb25d23f6e8db9f17c6eb08476263c1d33aba44"
+    },
+    "native_page_sizes": [
+      100,
+      100,
+      59
+    ],
+    "scope": "Administrative tool follow-up after the one complete e4f8c7c5 core run. Only focused tool/reporting checks are added; no second full core or scientific/browser campaign is claimed.",
+    "tool_sha256": "c979598cb225098f353761c1219b5b156860f0dbdfbaf7b472c33d072ba8bac0"
+  },
+  "pre_pagination_guide_validation": {
+    "passed": 271,
+    "exit_code": 0,
+    "log_sha256": "28f62c83ea9ebc5424611904e9121a3551160780e2f5500ea2bebab7b532b6ec",
+    "generated_indexes": "current",
+    "staged_diff_check": "pass"
   }
 }

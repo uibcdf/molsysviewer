@@ -76,21 +76,27 @@ def _documents() -> list[tuple[Path, dict[str, str]]]:
 
 
 def _board() -> dict[int, dict]:
-    payload = json.loads(
+    pages = json.loads(
         _gh(
-            "issue",
-            "list",
-            "--repo",
-            "uibcdf/molsysviewer",
-            "--state",
-            "all",
-            "--limit",
-            "200",
-            "--json",
-            "number,state,labels,milestone",
+            "api",
+            "--paginate",
+            "--slurp",
+            "repos/uibcdf/molsysviewer/issues?state=all&per_page=100",
         )
     )
-    return {item["number"]: item for item in payload}
+    # REST includes pull requests and lower-case states. Preserve the existing
+    # issue-only shape expected by sync(), across every returned page.
+    return {
+        item["number"]: {
+            "number": item["number"],
+            "state": item["state"].upper(),
+            "labels": item["labels"],
+            "milestone": item["milestone"],
+        }
+        for page in pages
+        for item in page
+        if "pull_request" not in item
+    }
 
 
 def sync(check: bool) -> int:

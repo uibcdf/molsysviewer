@@ -1,0 +1,65 @@
+{
+  "repository": "uibcdf/molsysviewer",
+  "endpoint": "repos/uibcdf/molsysviewer/issues?state=all&per_page=100",
+  "scope": "Bounded field/item projection preserving the original native page positions; issue bodies omitted.",
+  "native_page_sizes": [
+    100,
+    100,
+    59
+  ],
+  "pull_request_number": 135,
+  "pages": [
+    [
+      {
+        "number": 259,
+        "state": "open",
+        "milestone": null,
+        "labels": [
+          {
+            "name": "proposal"
+          },
+          {
+            "name": "blocked"
+          },
+          {
+            "name": "component:molsysmt"
+          }
+        ]
+      },
+      {
+        "number": 256,
+        "state": "closed",
+        "milestone": null,
+        "labels": [
+          {
+            "name": "bug"
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "number": 135,
+        "state": "closed",
+        "milestone": null,
+        "labels": [],
+        "pull_request": {}
+      }
+    ],
+    [
+      {
+        "number": 35,
+        "state": "open",
+        "milestone": null,
+        "labels": [
+          {
+            "name": "bug"
+          },
+          {
+            "name": "partial"
+          }
+        ]
+      }
+    ]
+  ]
+}

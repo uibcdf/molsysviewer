@@ -45,7 +45,9 @@ documents, and historical audits.
   resolved with local guards, three actual ordinary-cancellation probes and
   current-matrix watermark receiving. The single full local core passes 3,224
   cases; [receiving](pre_documentation_cleanup_20261022.json) keeps operational
-  and prior scientific source scopes separate. Both handoff anchors are current.
+  and prior scientific source scopes separate. #261 repairs the final board
+  verifier's truncated inventory; complete live reconciliation passes. Both
+  handoff anchors are current.
   [#259](pending_proposals/native_copy_contract_receiving.md) remains scoped
   provider receiving; #93 waits for immutable policy/caller/badge adoption.
   Next: broad public documentation. No candidate freeze or publication.
