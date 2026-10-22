@@ -1,9 +1,9 @@
 ---
 summary: Shape-only live Jupyter Render creates geometry that remains invisible
 issue: uibcdf/molsysviewer#257
-status: partial
+status: resolved
 opened: 2026-10-21
-closed:
+closed: 2026-10-21
 severity: high
 verification: reproduced
 area: [shapes, camera, notebook, addons]
@@ -56,13 +56,13 @@ The user-edited notebook is retained; no outputs are overwritten. Diagnostic
 work belongs to `/tmp/msv-shape-only-review-20261021/`. The previous exact-source
 CI success keeps its tested scope and does not certify this human observation.
 
-## Source correction and remaining human receiving
+## Source correction before human receiving
 
 The strengthened shape-only guard and scene contracts pass. Actual isolated
 PharmacophoreMT f0d96ae0 Python helpers render and clear two sites while retaining
 the caller sphere and no MolSys. This is not a browser observation of that
-specific provider. The source correction is delivered; the report remains
-partial until Diego confirms the live PHMT/Jupyter visual retest. His previous
+specific provider. The source correction was delivered; at this stage the report remained
+partial pending Diego's live PHMT/Jupyter visual retest. His previous
 view was closed before the separate Studio-occlusion question could be checked.
 
 The notebook now requests compact controls under #258. Its original human
@@ -78,5 +78,25 @@ The [exact-source receipt](../canonical_modes_source_ci_20261021.json) closes
 required CI for 90ebad6d: six main Python cells, three Python 3.14 hosts,
 44/44 core browser suites in both browser lanes and 25/25 notebooks in both
 notebook lanes pass. The isolated real provider Python checks and the generic
-addon browser guards retain their own scopes. This remains partial pending
-Diego's actual PHMT/Jupyter visual receiving; CI does not replace it.
+addon browser guards retain their own scopes. At this stage the report remained partial pending
+Diego's actual PHMT/Jupyter visual receiving; CI did not replace it.
+
+## Human confirmation and closure — 2026-10-21
+
+Diego confirms the actual notebook now works: Render visibly draws the two
+pharmacophore sites; Clear removes them and leaves the independent sphere
+visible. This supplies the missing real-provider/Jupyter visual receiving for
+the initial framing defect and verifies Clear's ownership behavior.
+
+The source fix is 90ebad6d; the subsequent 9eba3c1a checkpoint only records CI
+and manual instructions. The guard remains
+`molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts`: actual GPU picks require
+on-screen geometry after first addition and addon Render, coexistence with
+caller geometry, correct Clear ownership and preservation of a deliberate
+viewpoint. It passes in both 44-suite hosted core lanes.
+
+[Human receiving](../pharmacophore_manual_receiving_20261021.json) records the
+user's exact observation. The latest response does not explicitly describe the
+independent-window section; its manual outcome is requested separately. Native
+browser popup guards retain their completed scope. No further runtime change or
+scientific rerun is required for this closure.

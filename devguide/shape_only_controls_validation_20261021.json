@@ -66,7 +66,7 @@
     "Final naming run passed context-menu and all three controls scenarios, then the strengthened shape-only guard compared radiusMax as a viewpoint property and failed when it expanded from 8.799 to 584.648. All other camera fields were unchanged. Mol* CameraManager.setSnapshot requests a reset; resolveCameraReset derives radiusMax from the current scene. The corrected guard retains exact comparison of every other field and rejects bound collapse; no runtime change was required. Scene-contracts was not executed in that interrupted run."
   ],
   "previous_ci": "The completed d126c5a1 source CI does not qualify these new changes.",
-  "human_retest": "Pending; previous view closed before the Studio-occlusion check. Reload page and restart kernel for the new runtime.",
+  "human_retest": "Diego confirms actual notebook Render shows both pharmacophore sites and Clear removes them while preserving the independent sphere. Independent-window manual confirmation is requested separately.",
   "evidence_directory": "/tmp/msv-shape-only-review-20261021",
   "publication_authorized": false,
   "environment_observed_after_python_core": {
@@ -179,6 +179,11 @@
     "status": "required_source_gates_pass",
     "receipt": "devguide/canonical_modes_source_ci_20261021.json",
     "experimental_qt": "failure, kept separate",
-    "human_visual_retest": "Still pending under #257."
+    "human_visual_retest": "Confirmed for Render/Clear and caller sphere under #257."
+  },
+  "human_followup": {
+    "receipt": "devguide/pharmacophore_manual_receiving_20261021.json",
+    "issue_status": "resolved",
+    "scope": "Maintainer-reported actual Jupyter/PHMT visual receiving; popup section not explicitly described."
   }
 }

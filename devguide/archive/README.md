@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Visible shape-only geometry](shape_only_geometry_not_visible.md) — #257 frames initial geometry; Diego confirms real PHMT Render/Clear and caller-sphere preservation after hosted core guards pass.
+
 - [Modern canvas controls](retire_classic_canvas_controls.md) — #258 retires Classic and adopts Standard/Cinema viewer modes and Compact/Cinema controls, with legacy UI normalization.
 
 - [Canvas popup text caret](canvas_popup_blinking_text_caret.md) — #251 prevents default text-selection on the controls-reveal rectangle while preserving keyboard focus.
