@@ -1,18 +1,41 @@
 ---
 summary: Extend MolSysViewer Python support to 3.14 alongside MolSysMT.
 issue: uibcdf/molsysviewer#93
-status: active
+status: partial
 opened: 2026-09-22
 closed:
 verification: measured
 area: [packaging, ci, deps]
 guard:
 normative:
-blocked_by: []
+blocked_by: [uibcdf/molsyssuite#29]
 supersedes: []
 ---
 
 # Extend MolSysViewer Python support to 3.14 alongside MolSysMT
+
+**Administrative reconciliation — 2026-10-21:** the core implementation, public
+package and central admission are complete. Latest exact-source CI and actual
+PHMT/Jupyter sections 1–3 also pass in their respective scopes. This issue is
+partial for two explicit remainders, recorded in the
+[reconciliation receipt](../python314_reconciliation_20261021.json):
+
+- Current central main admits Viewer, but the current caller `policy-v1.5.7`
+  and latest published tag `policy-v1.5.9` still freeze `authorized`. Wait for
+  the central owner's new immutable policy snapshot before updating the caller
+  and generated badge; a moving main reference is not a substitute.
+- Local development already uses `molsyssuite@uibcdf_3.14`. The maintained rich
+  and docs recipes and the single-version CI recommendation still select 3.13.
+  Their existing bounded transition remains owned here, review by 2026-12-31.
+  Migrate that routine route coherently; the required three-host 3.14 source-pair
+  gate already passes and is not missing implementation evidence.
+
+The original `molsysmt>=0.22.0`, caller 1.5.4 and earlier environment directions
+below are dated history; the current runtime floor is `molsysmt>=0.23.0` and
+the current caller is 1.5.7. Qt retains #35/#109/#113 ownership. No scientific
+suite is rerun merely to acknowledge the delivered central admission. Do not
+close this record or change its badge until the remaining route is disposed
+and the policy adoption is reconciled.
 
 **Current review — 2026-10-21:** the frozen central registry at
 `uibcdf/molsyssuite@4e6cee88a3c60cffa7b596f790f2d213bcc20cd3` now marks

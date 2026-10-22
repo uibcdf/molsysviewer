@@ -12,7 +12,7 @@
     "clear_removes_sites": true,
     "independent_sphere_remains_visible": true
   },
-  "manual_popup_section": "Not explicitly described in this response; confirmation requested separately. Existing automated popup guards retain their scope.",
+  "manual_popup_section": "Confirmed: Diego reports all six independent-window steps work correctly.",
   "exact_manual_runtime_identity": "No fresh version/hash output supplied in this response; source fix and preceding checkpoint identify the delivered correction, not a new immutable environment qualification.",
   "guard": "molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts",
   "hosted_evidence": "devguide/canonical_modes_source_ci_20261021.json",
@@ -21,7 +21,7 @@
     "Qt remains experimental with its recorded failures.",
     "No candidate freeze, release, tag, promotion or 1.0 publication."
   ],
-  "temporary_resources": "Existing task evidence and isolated provider checkout remain available for the independent-window follow-up; human notebook outputs remain preserved.",
+  "temporary_resources": "Retain existing evidence and isolated provider checkout for the still-open human notebook and reproducibility. Do not remove resources supporting the active human view; review at dogfooding closeout.",
   "guide_validation": {
     "modules": [
       "tests/test_reporting_protocol.py",
@@ -30,5 +30,27 @@
     "passed": 270,
     "exit_code": 0,
     "log_sha256": "002dddc8bb636cea5b53c41bbd05104b762faf2f04a657d29ff37bc5ba73d2db"
+  },
+  "earlier_popup_scope_at_render_clear_confirmation": "Not explicitly described in this response; confirmation requested separately. Existing automated popup guards retain their scope.",
+  "popup_followup": {
+    "user_observation": "todo esto funciona bien",
+    "context": "Response to the six exact section-3 popup steps reproduced in the conversation.",
+    "confirmed_steps": [
+      "Render from canvas popup appears in both canvases",
+      "Clear/Render from popup survives original navigation to Core/Studio",
+      "Studio-popup Clear removes sites in both canvases and preserves independent sphere",
+      "Render from canvas popup works after closing only Studio popup",
+      "Leaving and returning to the addon workspace preserves site list and Render/Clear",
+      "Original Render/Clear still works after canvas popup closes"
+    ]
+  },
+  "popup_followup_guide_validation": {
+    "passed": 270,
+    "exit_code": 0,
+    "modules": [
+      "tests/test_reporting_protocol.py",
+      "tests/test_devguide_links.py"
+    ],
+    "log_sha256": "5ddab3aeb31c874bfe1e3abc612719243c818da1da91e0e937d5e7f85d3a7f39"
   }
 }

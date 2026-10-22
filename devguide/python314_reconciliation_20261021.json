@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-21",
+  "issue": "uibcdf/molsysviewer#93",
+  "status": "partial",
+  "core_admission": "admitted",
+  "central_commit": "4e6cee88a3c60cffa7b596f790f2d213bcc20cd3",
+  "central_registry_blob": "6721ba5ac0688b1545e7b84396676fc1fdb8b9fe",
+  "central_evidence": "https://github.com/uibcdf/molsyssuite/issues/29#issuecomment-6325291710",
+  "admission_scope": "Public core Conda 0.24.0 build 1, original immutable source/file and sixteen public installed pair cells; separate from later source changes and Qt.",
+  "frozen_policy_state": {
+    "policy-v1.5.9": {
+      "commit": "3116b7d9f1fa9ba4d09b81a8f24a22b749805f9f",
+      "viewer_state": "authorized",
+      "registry_sha256": "5f55eba0d2f02029d80a50812ec6e5dfacbc1b046fb63ea5fc8840214eacec95"
+    },
+    "policy-v1.5.7": {
+      "commit": "f1ae1a043720e33493024d8afcab1e45375e42a2",
+      "viewer_state": "authorized",
+      "registry_sha256": "a0bc2ded58a2fd1f6284d1a3941424cb6dfcd4525d4c950f26035f2ff1f6736e"
+    }
+  },
+  "routine_route": {
+    "actual_local_interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "actual_local_python": "3.14.7",
+    "required_local_environment": "molsyssuite@uibcdf_3.14",
+    "rich_recipe_python": "3.13",
+    "docs_recipe_python": "3.13",
+    "main_ci_and_single_cell_jobs": "Python 3.11–3.13, coverage/JS cell on 3.13",
+    "required_source_pair": "Python 3.14 on Linux/macOS/Windows already passes; Linux browser/notebook gates included.",
+    "existing_exception_owner": "uibcdf/molsysviewer#93",
+    "review_by": "2026-12-31",
+    "remaining": "Migrate the maintained routine recipe and single-version job recommendation coherently; preserve supported comparison minors and experimental Qt scope."
+  },
+  "not_done": [
+    "No caller pin or badge changed before the central owner selects a new immutable policy snapshot containing admission.",
+    "Routine recipes and job selectors have not been changed by this administrative reconciliation."
+  ],
+  "source_evidence": "devguide/canonical_modes_source_ci_20261021.json",
+  "manual_evidence": "devguide/pharmacophore_manual_receiving_20261021.json",
+  "science_rerun_for_admission": false,
+  "publication_authorized": false,
+  "guide_validation": {
+    "passed": 270,
+    "exit_code": 0,
+    "modules": [
+      "tests/test_reporting_protocol.py",
+      "tests/test_devguide_links.py"
+    ],
+    "log_sha256": "5ddab3aeb31c874bfe1e3abc612719243c818da1da91e0e937d5e7f85d3a7f39"
+  }
+}

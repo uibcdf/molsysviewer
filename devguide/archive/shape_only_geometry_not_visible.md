@@ -100,3 +100,14 @@ user's exact observation. The latest response does not explicitly describe the
 independent-window section; its manual outcome is requested separately. Native
 browser popup guards retain their completed scope. No further runtime change or
 scientific rerun is required for this closure.
+
+## Additional human receiving — 2026-10-21
+
+After the six exact section-3 steps were reproduced in the conversation, Diego
+confirms all of them work. This adds actual PHMT/Jupyter receiving for both
+popups, shared Render/Clear, caller-sphere preservation, navigation/remount and
+Render after closing only Studio popup. It supersedes the limited popup scope
+recorded at closure above; the original Render/Clear confirmation remains valid.
+The [human receipt](../pharmacophore_manual_receiving_20261021.json) records both
+observations. The manual sections 1–3 are complete; the optional molecular-load
+section is not inferred from these responses.
