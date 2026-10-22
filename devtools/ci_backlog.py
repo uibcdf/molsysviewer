@@ -21,7 +21,7 @@ SKIP_MARKER = re.compile(
     r"|^skip-checks:\s*true\s*$",
     re.IGNORECASE | re.MULTILINE,
 )
-PYTHON_VERSIONS = ("3.11", "3.12", "3.13")
+PYTHON_VERSIONS = ("3.11", "3.12", "3.13", "3.14")
 WORKFLOWS = {"ci": "CI.yaml", "e2e": "CI_e2e.yaml", "qt": "CI_qt_experimental.yaml"}
 
 
@@ -86,7 +86,7 @@ def lane_passed(repository: str, run_id: int, token: str, lane: str) -> bool:
             job = successful.get(f"Test on {os_name}, Python {version}")
             if job is None or not step_passed(job, "Run tests"):
                 return False
-            if os_name == "ubuntu-latest" and version == "3.13":
+            if os_name == "ubuntu-latest" and version == "3.14":
                 if not step_passed(job, "JS unit tests (Node)"):
                     return False
     return True

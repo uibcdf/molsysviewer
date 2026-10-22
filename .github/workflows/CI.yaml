@@ -74,7 +74,7 @@ jobs:
     name: Test on ${{ matrix.cfg.os }}, Python ${{ matrix.cfg.python-version }}
     needs: nightly-decision
     if: >-
-      always() && inputs.probe_backlog != true
+      !cancelled() && inputs.probe_backlog != true
       && (needs.nightly-decision.result != 'success' || needs.nightly-decision.outputs.run_full == 'true')
       && !(github.event_name == 'push' && contains(github.event.head_commit.message, '[skip ci]'))
     runs-on: ${{ matrix.cfg.os }}
@@ -232,7 +232,7 @@ jobs:
   pr-gate:
     name: PR full suite
     needs: [test]
-    if: always() && github.event_name == 'pull_request'
+    if: ${{ !cancelled() && github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Require all core Python and JS jobs

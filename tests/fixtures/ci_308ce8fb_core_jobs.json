@@ -1,0 +1,131 @@
+{
+  "repository": "uibcdf/molsysviewer",
+  "run_id": 39704459739,
+  "source_commit": "308ce8fb5d5b500aa05bc808cb15fcdadb71713c",
+  "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459739",
+  "scope": "Bounded native job/step metadata from the completed eight-cell run; no fabricated scientific results.",
+  "jobs": [
+    {
+      "name": "Test on macos-15, Python 3.12",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Run tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "JS unit tests (Node)",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "name": "Test on ubuntu-latest, Python 3.11",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Run tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "JS unit tests (Node)",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "name": "Test on ubuntu-latest, Python 3.14",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Run tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "JS unit tests (Node)",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "Test on macos-15, Python 3.13",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Run tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "JS unit tests (Node)",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "name": "Test on ubuntu-latest, Python 3.12",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Run tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "JS unit tests (Node)",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "name": "Test on macos-15, Python 3.11",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Run tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "JS unit tests (Node)",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "name": "Test on macos-15, Python 3.14",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Run tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "JS unit tests (Node)",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "name": "Test on ubuntu-latest, Python 3.13",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Run tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "JS unit tests (Node)",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "name": "Check skipped-commit backlog",
+      "conclusion": "skipped",
+      "steps": []
+    },
+    {
+      "name": "PR full suite",
+      "conclusion": "skipped",
+      "steps": []
+    }
+  ]
+}

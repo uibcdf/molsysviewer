@@ -78,7 +78,7 @@ jobs:
     name: Qt pipeline completes (Xvfb, software WebGL)
     needs: nightly-decision
     if: >-
-      always() && inputs.probe_backlog != true
+      !cancelled() && inputs.probe_backlog != true
       && (needs.nightly-decision.result != 'success' || needs.nightly-decision.outputs.run_full == 'true')
       && !(github.event_name == 'push' && contains(github.event.head_commit.message, '[skip ci]'))
     runs-on: ubuntu-latest
@@ -153,13 +153,13 @@ jobs:
         sudo apt-get install -y xvfb libgl1 libegl1
 
     - name: Qt transport round-trip in a real Qt process
-      if: always() && steps.install-viewer.outcome == 'success' && steps.configure-gl.outcome == 'success'
+      if: ${{ !cancelled() && steps.install-viewer.outcome == 'success' && steps.configure-gl.outcome == 'success' }}
       shell: bash -l {0}
       run: |
         xvfb-run -a python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci -m qt_runtime -k qt_live_model_smoke_real_window --junitxml=qt-window.xml -v --no-header
 
     - name: The structure finishes loading through WebGL
-      if: always() && steps.install-viewer.outcome == 'success' && steps.configure-gl.outcome == 'success'
+      if: ${{ !cancelled() && steps.install-viewer.outcome == 'success' && steps.configure-gl.outcome == 'success' }}
       shell: bash -l {0}
       env:
         MOLSYSVIEWER_QT_GPU_TEST: "1"
@@ -168,7 +168,7 @@ jobs:
         xvfb-run -a python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci -m qt_runtime -k full_render_gpu --junitxml=qt-render.xml -v --no-header
 
     - name: Qt offscreen transport and resource probes
-      if: always() && steps.install-viewer.outcome == 'success' && steps.configure-gl.outcome == 'success'
+      if: ${{ !cancelled() && steps.install-viewer.outcome == 'success' && steps.configure-gl.outcome == 'success' }}
       shell: bash -l {0}
       run: |
         xvfb-run -a python -m pytest -m qt_runtime -k "not qt_live_model_smoke_real_window and not full_render_gpu" -o receptor_rerun_command="python -m pytest" --receptor=ci --junitxml=qt-probes.xml

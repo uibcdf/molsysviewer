@@ -33,9 +33,10 @@ archived documents link there; its location does not reopen its release scope.
 
 - [`extend_python_support_to_3_14.md`](extend_python_support_to_3_14.md) — [#93](https://github.com/uibcdf/molsysviewer/issues/93) — Extend MolSysViewer Python support to 3.14 alongside MolSysMT. *(measured)*
 
-### Blocked (1)
+### Blocked (2)
 
 - [`molsysmt_known_source_form_and_large_string_detection.md`](molsysmt_known_source_form_and_large_string_detection.md) — [#42](https://github.com/uibcdf/molsysviewer/issues/42) — Adopt a public source-form hint when MolSysMT provides it; historical extension detection is repaired. *(measured)* — waiting on uibcdf/molsysmt#151
+- [`native_copy_contract_receiving.md`](native_copy_contract_receiving.md) — [#259](https://github.com/uibcdf/molsysviewer/issues/259) — Qualify view and analysis independence against the native MolSysMT copy contract. *(inspected)* — waiting on uibcdf/molsysmt#121
 
 ### Open (3)
 

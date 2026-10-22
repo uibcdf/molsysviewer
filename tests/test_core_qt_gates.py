@@ -80,7 +80,8 @@ def test_workflows_use_the_same_scope_and_keep_qt_failure_visible():
     assert len(diagnostics) == 3
     for step in diagnostics:
         assert "-m qt_runtime" in step["run"]
-        assert "always()" in step["if"]
+        assert "!cancelled()" in step["if"]
+        assert "always()" not in step["if"]
         assert step.get("continue-on-error", "false") == "false"
         assert "|| true" not in step["run"]
 
@@ -90,7 +91,7 @@ def test_unknown_failed_job_never_becomes_an_experimental_exemption(monkeypatch)
     for os_name in ("ubuntu-latest", "macos-15"):
         for version in ci_backlog.PYTHON_VERSIONS:
             steps = [{"name": "Run tests", "conclusion": "success"}]
-            if os_name == "ubuntu-latest" and version == "3.13":
+            if os_name == "ubuntu-latest" and version == "3.14":
                 steps.append({"name": "JS unit tests (Node)", "conclusion": "success"})
             jobs.append({"name": f"Test on {os_name}, Python {version}", "conclusion": "success", "steps": steps})
     jobs.append({"name": "Qt pipeline completes (Xvfb, software WebGL)", "conclusion": "failure", "steps": []})

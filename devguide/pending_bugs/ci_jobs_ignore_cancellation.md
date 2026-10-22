@@ -1,7 +1,7 @@
 ---
 summary: Core CI jobs keep running after ordinary workflow cancellation
 issue: uibcdf/molsysviewer#256
-status: open
+status: active
 opened: 2026-10-21
 closed:
 severity: medium
@@ -64,3 +64,18 @@ runs became cancelled before a force request was needed. All eight selected
 superseded campaigns are cancelled; none supplies passing qualification.
 The final d126c5a1 campaigns remain untouched. This operator recovery does not
 resolve the workflow-condition defect.
+
+## Correction in progress — 2026-10-22
+
+Main CI, core E2E and experimental Qt test-job conditions now use the explicit
+status function `!cancelled()` in place of `always()`. This still overrides the
+implicit success check for skipped/failed nightly dependencies and preserves
+ordinary push/PR/dispatch and fail-open nightly recovery. The PR result gate
+also stops on workflow cancellation; temporary-tag cleanup steps retain
+`always()` because cleanup has a different owner and purpose.
+
+The guard evaluates the actual bounded test-job expressions for push, PR,
+dispatch, skip marker, explicit backlog probe, nightly debt/no-debt and decision
+failure, with each case both cancelled and non-cancelled. It is not a GitHub
+scheduler emulation. Hosted ordinary-cancellation receiving is recorded
+separately; cancelled probes cannot qualify scientific/browser results.

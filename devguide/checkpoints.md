@@ -361,21 +361,27 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-Start with the [October 13 board reconciliation](open_issue_reconciliation_20261013.md):
-addon-window source qualification is complete. The #233/#242/#246 corrections
-now have passing focused guards and the [new receiving scope](addon_discovery_dependency_validation_20261013.json);
-their final required hosted source campaigns pass at `4d15a410`; broad
-documentation remains before the candidate freeze; exact installed qualification
-follows that freeze and precedes publication. The PHMT/Jupyter manual smoke is deliberately postponed, not passed.
+The required source gates on `308ce8fb` are complete: eight Linux/macOS
+Python 3.11–3.14 cells, three independent 3.14 hosts, 44/44 browser suites in
+both lanes and 25/25 notebooks. The [migration receipt](routine_python314_migration_20261021.json)
+separates exact hosted evidence from the shared local environment. Diego has
+completed actual PHMT/Jupyter Render/Clear, caller-sphere preservation and all
+six popup steps; [manual receiving](pharmacophore_manual_receiving_20261021.json)
+is complete. Do not request those observations again without a concrete regression.
 
-The [core/Qt scope](core_qt_qualification.md) and its
-[receiving receipt](core_qt_qualification_20261013.json) are the current gate
-alignment handoff. Prior f272e384 required hosted checks have completed.
-The [Studio/API coverage source round](studio_coverage_20261010.md),
-#223–#225/#227, is closed with applicable hosted gates and fresh browser flows passing.
-Human final installed first contact and exact candidate gates remain before release;
-0.25.0 stays unfrozen and #226 stays post-1.0. Both 1.0
-publications remain paused. The public baseline below retains its original scope.
+Before broad documentation, complete the bounded CI cleanup under
+uibcdf/molsysviewer#256 and #260. [#259 receiving](pending_proposals/native_copy_contract_receiving.md)
+is scoped and blocked on uibcdf/molsysmt#121; it is not a new core defect or
+release blocker. #93 remains partial only for the central immutable admission
+snapshot and its reviewed caller/badge adoption. Central acknowledgement accepts
+the routine transition; no scientific rerun is needed for that administrative step.
+
+Then finish public documentation, freeze the agreed 0.25.0 candidate explicitly,
+qualify its exact installed files and complete human installed first contact
+before separately authorized publication. Existing 0.24.0 public evidence below
+retains its original scope; it does not qualify a new artifact. Qt remains
+experimental with its separate failures. #226 Copy Python remains post-1.0.
+Both 1.0 publications remain paused.
 
 **0.24.0 stabilization published (2026-10-07): public pair 16/16 verified.**
 Viewer **`1a4c97a58b68b69f3a836546c9e4ac6187c3efa2`**, noarch **build 1**, pairs
@@ -1859,31 +1865,23 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current session priority (2026-10-20):** exploratory TcTIM / 1TCD dogfooding
-with Diego and Liliana precedes broad public documentation. Record each
-observation after checking open/closed issues; first-load Welcome #247 and
-the related README drift #248 are resolved with local guards and archived records.
-The new core inventory has 44 suites; exact hosted receiving remains separate.
-The SMonitor receiving follow-up is
-closed at `85d30478`: six scientific cells, core browser 43/43, JS unit/coverage,
-policy and Conda governance pass. Qt's original failure remains; scheduled
-backlog-only successes are not retests. The
-[receiving receipt](support_library_receiving_20261014.json) preserves exact
-identities, native step outcomes, counts, logs/digests and the distinction from
-future installed-candidate qualification. Resume broad public documentation
-after the exploratory phase and its agreed corrections.
+**Current order — 2026-10-22:**
 
-#245/#239 and their exact required
-source qualification are complete on 19d92c25; the
-[board reconciliation](open_issue_reconciliation_20261013.md) now matches all 29
-remaining open issues to local records after #233/#242/#246 closure.
-#233/#242/#246 are closed at `4d15a410` with final required source receiving
-complete: six regression cells, three Python 3.14 hosts, core 43/43 and notebooks
-25/25. Complete broad documentation, then explicitly freeze the agreed candidate
-and qualify its installed artifacts before publication. The prepared PHMT/Jupyter observation is postponed
-by the maintainer. #232/#231 source checks are complete on their own sources;
-native Qt retains a separate failed outcome. Broad docs, exact candidate
-qualification and human installed first contact still precede publication.
+1. Finish the cancellation-aware CI correction (#256) and the discovered stale
+   3.13 backlog watermark (#260), retaining applicable validation and separate
+   cancelled-probe outcomes. #259 is scoped in its
+   [provider-receiving record](pending_proposals/native_copy_contract_receiving.md);
+   do not adopt an unpublished complete-system copy API.
+2. Begin broad public documentation. Actual PHMT/Jupyter receiving and source
+   qualification are complete; their dated older "postponed" observations are
+   historical. Use the 3.14 development/docs route and the generated capability
+   inventory when writing public claims.
+3. Adopt the central immutable policy/caller/badge reference for #93 when
+   delivered, then validate, archive and close that issue. This administrative
+   step requires no repeat scientific campaign.
+4. After documentation and explicit candidate freeze, qualify the new exact
+   installed artifacts and conduct human installed first contact. Publication
+   and both 1.0 versions remain separately paused.
 
 **Delivered design/source rounds (2026-10-10):** the accepted context-menu and
 controls work is complete under #179/#180. Studio refinements and their

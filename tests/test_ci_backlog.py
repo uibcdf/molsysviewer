@@ -2,10 +2,15 @@
 
 from __future__ import annotations
 
+import copy
+import json
+import re
 import subprocess
 from pathlib import Path
+from types import SimpleNamespace
 from urllib.error import URLError
 
+import pytest
 import yaml
 from devtools import ci_backlog
 
@@ -49,7 +54,7 @@ def test_only_executed_complete_lanes_clear_backlog(monkeypatch):
         for os_name in ("ubuntu-latest", "macos-15"):
             for version in ci_backlog.PYTHON_VERSIONS:
                 steps = [{"name": "Run tests", "conclusion": "success"}]
-                if os_name == "ubuntu-latest" and version == "3.13":
+                if os_name == "ubuntu-latest" and version == "3.14":
                     steps.append(
                         {
                             "name": "JS unit tests (Node)",
@@ -150,3 +155,76 @@ def test_pr_gates_and_nightly_recovery_are_wired():
         assert "pull_request" not in job["if"]
         assert "run_full" in job["if"]
         assert "probe_backlog" in job["if"]
+
+
+@pytest.mark.parametrize(
+    "workflow,job_name",
+    [("CI.yaml", "test"), ("CI_e2e.yaml", "e2e"), ("CI_qt_experimental.yaml", "qt-pipeline")],
+)
+@pytest.mark.parametrize("cancelled", [False, True])
+@pytest.mark.parametrize(
+    "event,decision,run_full,probe,message,expected",
+    [
+        ("push", "skipped", "", False, "normal commit", True),
+        ("push", "skipped", "", False, "docs [skip ci]", False),
+        ("pull_request", "skipped", "", False, "", True),
+        ("workflow_dispatch", "skipped", "", False, "", True),
+        ("workflow_dispatch", "success", "true", True, "", False),
+        ("schedule", "success", "true", False, "", True),
+        ("schedule", "success", "false", False, "", False),
+        ("schedule", "failure", "", False, "", True),
+    ],
+)
+def test_test_jobs_stop_on_cancellation_without_losing_recovery_routes(
+    workflow, job_name, cancelled, event, decision, run_full, probe, message, expected
+):
+    """Evaluate the actual bounded workflow expression against route/status cases.
+
+    This is a local expression oracle, not an emulation of GitHub's scheduler.
+    Explicit status functions override the implicit success check when the
+    nightly dependency is skipped; hosted cancellation is received separately.
+    """
+    data = yaml.load((ROOT / ".github/workflows" / workflow).read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
+    condition = data["jobs"][job_name]["if"]
+    assert "cancelled()" in condition
+    assert "always()" not in condition
+    expression = re.sub(r"!(?!=)", " not ", condition).replace("&&", " and ").replace("||", " or ")
+    context = {
+        "cancelled": lambda: cancelled,
+        "inputs": SimpleNamespace(probe_backlog=probe),
+        "needs": SimpleNamespace(
+            **{"nightly-decision": SimpleNamespace(result=decision, outputs=SimpleNamespace(run_full=run_full))}
+        ),
+        "github": SimpleNamespace(
+            event_name=event, event=SimpleNamespace(head_commit=SimpleNamespace(message=message))
+        ),
+        "true": True,
+        "contains": lambda text, part: part.casefold() in text.casefold(),
+    }
+    # GitHub permits hyphens in property names; Python requires an identifier.
+    expression = expression.replace("nightly-decision", "nightly_decision")
+    context["needs"].nightly_decision = getattr(context["needs"], "nightly-decision")
+    assert eval(expression.strip(), {"__builtins__": {}}, context) is (expected and not cancelled)
+
+
+def test_pr_gate_is_cancellable_and_still_receives_test_failures():
+    data = yaml.load((ROOT / ".github/workflows/CI.yaml").read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
+    gate = data["jobs"]["pr-gate"]
+    assert gate["if"] == "${{ !cancelled() && github.event_name == 'pull_request' }}"
+    assert gate["steps"][0]["env"]["TEST_RESULT"] == "${{ needs.test.result }}"
+    assert 'test "$TEST_RESULT" = success' in gate["steps"][0]["run"]
+
+
+@pytest.mark.parametrize("omission", [None, "linux314", "macos314", "js314", "python314"])
+def test_current_native_eight_cell_receipt_controls_core_watermark(monkeypatch, omission):
+    receipt = json.loads((ROOT / "tests/fixtures/ci_308ce8fb_core_jobs.json").read_text(encoding="utf-8"))
+    jobs = copy.deepcopy(receipt["jobs"])
+    if omission in {"linux314", "macos314"}:
+        os_name = "ubuntu-latest" if omission == "linux314" else "macos-15"
+        jobs = [job for job in jobs if job["name"] != f"Test on {os_name}, Python 3.14"]
+    elif omission:
+        job = next(job for job in jobs if job["name"] == "Test on ubuntu-latest, Python 3.14")
+        step_name = "JS unit tests (Node)" if omission == "js314" else "Run tests"
+        next(step for step in job["steps"] if step["name"] == step_name)["conclusion"] = "skipped"
+    monkeypatch.setattr(ci_backlog, "api_json", lambda *_: {"jobs": jobs})
+    assert ci_backlog.lane_passed("uibcdf/molsysviewer", receipt["run_id"], "unused", "ci") is (omission is None)
