@@ -410,6 +410,7 @@ def test_every_supported_version_is_tested_on_linux_and_macos_with_windows_314()
     Pinned separately because the counts can agree while a cell is missing: dropping one
     macOS row leaves the set of versions unchanged.
     """
+
     def cells(workflow):
         text = (ROOT / ".github" / "workflows" / workflow).read_text(encoding="utf-8")
         return set(re.findall(r'os:\s*(\S+?),\s*python-version:\s*"(3\.\d+)"', text))
@@ -419,10 +420,7 @@ def test_every_supported_version_is_tested_on_linux_and_macos_with_windows_314()
         for operating_system in ("ubuntu-latest", "macos-15")
         for version in SUPPORTED_PYTHON_VERSIONS
     }
-    expected_pair = {
-        (operating_system, "3.14")
-        for operating_system in ("ubuntu-latest", "macos-15", "windows-2025")
-    }
+    expected_pair = {(operating_system, "3.14") for operating_system in ("ubuntu-latest", "macos-15", "windows-2025")}
     # Assert each owner separately: the source pair must not conceal a missing
     # regular Linux/macOS 3.14 cell.
     assert cells("CI.yaml") == expected_main
