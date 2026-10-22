@@ -113,5 +113,8 @@ boundary. They are not implementation instructions.
 For every new capability, document its scene/add-on owner, scientific effects
 and current availability. Explain the boundary in the user introduction and
 add-on guide. Keep planned examples visibly distinct from implemented features.
-The detailed plans remain in [the integration review](studio_molsysmt_integration_plan.md)
-and [the reconciliation review](linked_molecular_edits_design.md).
+The withdrawn native-Studio expansion plan was removed at the maintainer's
+request; Git retains its history. The [operation inventory](studio_molsysmt_operation_inventory.md)
+and [reconciliation review](linked_molecular_edits_design.md) remain design
+inputs. A separate implementation plan for the redesigned MolSysMT tools
+add-on still needs to be agreed; the retired plan is not that implementation plan.

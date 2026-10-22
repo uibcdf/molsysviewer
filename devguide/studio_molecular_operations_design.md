@@ -5,8 +5,7 @@
 belong to add-on/scientific interfaces; the earlier native-Studio placements
 in this proposal require reassessment. Visual calculation conveniences retain
 their scene owners. General automatic edit observation is no longer required.
-This document develops the
-[approved product direction](studio_molsysmt_integration_plan.md) using the
+This document is a technical review input under that product boundary, using the
 [169-export / 77-group inventory](studio_molsysmt_operation_inventory.md).
 It is a design for review, not implemented behavior, a new public API or an
 approved change to existing contracts. No runtime or provider qualification is

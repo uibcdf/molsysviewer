@@ -367,8 +367,8 @@ previous qualification records retain their original candidate and environment.
 [core/add-on boundary](core_and_addon_boundary.md) gives core visualization and
 exploration, including qualified calculations for visual content. Additional
 molecular editing/preparation/general analysis belongs to tools/add-on
-interfaces. The [revised integration plan](studio_molsysmt_integration_plan.md)
-reopens a redesigned MolSysMT tools add-on; no replacement runtime exists yet,
+interfaces. The native-Studio expansion plan is withdrawn and removed. A
+redesigned MolSysMT tools add-on needs its own implementation plan; no replacement runtime exists yet,
 the legacy integration remains refused and MolSysMT stays required as backend.
 Python remains primary and headless. The
 [reconciliation review](linked_molecular_edits_design.md) uses explicit
@@ -404,7 +404,7 @@ is complete. Do not request those observations again without a concrete regressi
 
 The bounded CI cleanup under uibcdf/molsysviewer#256 and #260 is complete;
 [receiving](pre_documentation_cleanup_20261022.json) preserves its scope. Broad
-documentation now follows the newly agreed Studio / MolSysMT work.
+documentation follows actual capabilities and the accepted core/add-on boundary; new add-on scope remains to be agreed.
 [#259 receiving](pending_proposals/native_copy_contract_receiving.md)
 remains scoped consumer receiving after upstream uibcdf/molsysmt#121 closed; it is not a new core defect or
 release blocker. #93 remains partial only for the central immutable admission
@@ -1902,23 +1902,19 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-10-22:**
 
-1. Apply the [core/add-on boundary](core_and_addon_boundary.md) and revised
-   [Studio / MolSysMT plan](studio_molsysmt_integration_plan.md):
-   use the completed [source inventory](studio_molsysmt_operation_inventory.md)
-   to design individual operation contracts and qualify unified molecular/scene
-   recovery, validate navigation and saving, and scope concrete
-   implementation issues. Review the
-   [narrow/wide prototype and proposed decisions](studio_task_design_review.md)
-   before changing public integration contracts or storage policies. Receive
-   the [explicit reconciliation boundary](linked_molecular_edits_design.md);
-   the general request in uibcdf/molsysmt#413 is withdrawn. Current-contract
-   #262 is fixed and guarded. Reuse
-   general tools and selection owners; composed journeys test those tools.
-   No implementation begins from this planning record
-   alone. Broad public documentation follows the integrated workflows.
-   The CI cleanup (#256/#260), actual PHMT/Jupyter receiving and applicable
-   baseline source qualification remain complete for their original scope.
-   Use the 3.14 development/docs route and capability inventory for claims.
+1. Apply the [core/add-on boundary](core_and_addon_boundary.md). The former
+   native-Studio expansion plan is withdrawn and removed. Agree a new, scoped
+   MolSysMT tools add-on implementation plan before building its wrappers or
+   panels. Reuse the [source inventory](studio_molsysmt_operation_inventory.md)
+   and [reconciliation review](linked_molecular_edits_design.md) as design
+   inputs, with explicit update/batching, correspondence and recovery limits.
+   The old [native-layout prototype](studio_task_design_review.md) is comparison
+   material, not the approved add-on layout or a list of mandatory 1.0 tasks.
+   The general request in uibcdf/molsysmt#413 is withdrawn; current-contract
+   #262 is fixed and guarded. Continue documentation for actual capabilities
+   without describing proposed add-on functions as available. The CI cleanup
+   (#256/#260), PHMT/Jupyter receiving and baseline source evidence retain
+   their original scope. No implementation begins from withdrawn plans.
 2. Receive the central immutable policy/caller/badge reference for #93 when
    delivered, validate, archive and close. This administrative step needs no
    repeat scientific campaign. #259 remains scoped

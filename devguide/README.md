@@ -58,8 +58,9 @@ documents, and historical audits.
   needs operation-level qualification, deferred-update safety and optional
   recovery contracts. [#262](archive/replacement_load_retains_scene_history.md)
   is fixed independently; the pre-existing box-fixture issue is #263.
-  The [revised integration plan](studio_molsysmt_integration_plan.md),
-  [source inventory](studio_molsysmt_operation_inventory.md),
+  The withdrawn native-Studio expansion plan has been removed at the
+  maintainer's request; a new add-on implementation plan remains to be agreed.
+  The [source inventory](studio_molsysmt_operation_inventory.md),
   [operation/recovery proposal](studio_molecular_operations_design.md) and
   [six acceptance scenarios](studio_foundation_workflow_contracts.md) remain
   design inputs. Earlier native-Studio layouts in the
@@ -79,8 +80,8 @@ documents, and historical audits.
   handoff anchors are current.
   [#259](pending_proposals/native_copy_contract_receiving.md) remains scoped
   provider receiving; #93 waits for immutable policy/caller/badge adoption.
-  These gates cover the existing baseline; the Studio integration plan now
-  precedes broad public documentation. No candidate freeze or publication.
+  These gates cover the existing baseline. The former Studio expansion plan
+  is withdrawn; new add-on scope needs its own review. No candidate freeze or publication.
 
 - **Routine Python 3.14 migration completed — 2026-10-21:** source `308ce8fb` passes all eight Linux/macOS 3.11–3.14 cells, the three-host 3.14 source pair and both 44/44 core-browser lanes. API resolution and JS unit/coverage (332/332 in each invocation) execute on Linux 3.14. [Receiving](routine_python314_migration_20261021.json) preserves the local 3,163-pass run, both public recipe dry runs, Sphinx and notebook provenance. The prior routine 3.13 transition is complete. #93 remains partial only for the central immutable admission snapshot and its caller/badge adoption. Qt retains two experimental live failures and ten passing offscreen probes; no freeze or publication.
 

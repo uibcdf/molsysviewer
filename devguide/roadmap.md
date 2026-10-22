@@ -4,8 +4,9 @@
 [core/add-on boundary](core_and_addon_boundary.md). Core provides visualization
 and exploration, including qualified calculations for visual content. General
 molecular preparation/editing/analysis belongs to tools/add-on interfaces.
-The [integration plan](studio_molsysmt_integration_plan.md) reopens a redesigned
-MolSysMT tools add-on; its API/layout/update policy remain proposed. The backend
+The native-Studio expansion plan is withdrawn and removed. A redesigned
+MolSysMT tools add-on needs its own implementation plan; API/layout/update
+policy remain proposed. The backend
 stays required and the legacy add-on remains refused by current runtime.
 The [reconciliation design](linked_molecular_edits_design.md) uses explicit
 reconciliation and coordinated integrated operations; general automatic native

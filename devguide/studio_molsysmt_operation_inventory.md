@@ -8,8 +8,10 @@ proposed add-on interface, with qualified visual conveniences in scene domains.
 No latest-provider behavior is inferred from this historical source snapshot.
 
 **Status: proposed — source inventory completed on 2026-10-22; workflow
-contracts and implementation remain pending.** This is the first deliverable
-of the [approved integration plan](studio_molsysmt_integration_plan.md).
+contracts and implementation remain pending.** This inventory was prepared
+for the now-withdrawn native-Studio expansion. It remains a capability/source
+reference under the [accepted product boundary](core_and_addon_boundary.md),
+not an approved implementation or panel-expansion plan.
 Python remains the primary API. General operations, explicit selections and
 parameters organize integration; panel names are presentation, not new Python
 namespaces or one wrapper per button. Related rows and composed acceptance

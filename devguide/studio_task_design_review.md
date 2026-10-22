@@ -7,9 +7,10 @@ observations and toy recovery only as comparison inputs for add-on/tool design.
 The artifact has not been rewritten or requalified for the revised placement;
 its hashes and original visual review retain their original scope.
 
-**Status: proposed — 2026-10-22.** Product direction is accepted in the
-[integration plan](studio_molsysmt_integration_plan.md); the detailed choices
-below and the prototype remain for review. No Python/TypeScript runtime,
+**Status: comparison material — 2026-10-22.** The native-Studio expansion plan
+has been withdrawn and removed. Detailed choices below and the prototype are
+review inputs under the accepted core/add-on boundary, not an implementation
+plan for the new add-on. No Python/TypeScript runtime,
 scientific execution, compatibility contract, package floor or release changes
 are implemented by this document.
 

@@ -5,8 +5,9 @@
 and explores, including qualified scientific calculations for visual content;
 additional preparation/editing/general analysis belongs to add-on/scientific
 tools. MolSysMT remains required; its redesigned tools add-on is proposed and
-the legacy runtime refusal remains. The [integration plan](studio_molsysmt_integration_plan.md)
-and [reconciliation review](linked_molecular_edits_design.md) now use explicit
+the legacy runtime refusal remains. The native-Studio expansion plan is
+withdrawn and removed; the new add-on needs its own agreed implementation plan.
+The [reconciliation review](linked_molecular_edits_design.md) considers explicit
 reconciliation or coordinated tool operations. The consumer withdrew the general
 observer request in uibcdf/molsysmt#413 and told the provider it may close it.
 The [operation inventory](studio_molsysmt_operation_inventory.md),
@@ -18,7 +19,7 @@ pre-existing fixture failure. Define scoped implementation and qualification
 before making availability claims. Python remains primary, 0.25.0 is unfrozen
 and both 1.0 publications remain paused.
 
-**Baseline cleanup complete — 2026-10-22:** the [bounded CI cleanup](pre_documentation_cleanup_20261022.json) closes #256/#260 and the final board-verifier defect #261, with the actual PHMT/Jupyter smoke and applicable core source receiving already complete. #259 remains consumer receiving after upstream #121 closed; #93 awaits central immutable policy/caller/badge adoption. Broad documentation now follows the planned Studio integration, before candidate freeze, exact installed qualification and human installed first contact. Both 1.0 publications remain paused.
+**Baseline cleanup complete — 2026-10-22:** the [bounded CI cleanup](pre_documentation_cleanup_20261022.json) closes #256/#260 and the final board-verifier defect #261, with the actual PHMT/Jupyter smoke and applicable core source receiving already complete. #259 remains consumer receiving after upstream #121 closed; #93 awaits central immutable policy/caller/badge adoption. Broad documentation and any newly agreed add-on work precede candidate freeze, exact installed qualification and human installed first contact. Both 1.0 publications remain paused.
 
 **Routine Python 3.14 migration completed — 2026-10-21:** source `308ce8fb` passes all eight Linux/macOS 3.11–3.14 cells, the three-host 3.14 source pair and both 44/44 core-browser lanes. API resolution and JS unit/coverage (332/332 in each invocation) execute on Linux 3.14. [Receiving](routine_python314_migration_20261021.json) preserves the local 3,163-pass run, both public recipe dry runs, Sphinx and notebook provenance. The prior routine 3.13 transition is complete. #93 remains partial only for the central immutable admission snapshot and its caller/badge adoption. Qt retains two experimental live failures and ten passing offscreen probes; no freeze or publication.
 

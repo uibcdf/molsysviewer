@@ -7,7 +7,7 @@ general editing/preparation/analysis to tools/add-on interfaces. Earlier native
 Studio placements below are comparison proposals to reassess, not approved
 panel ownership. Visual scientific conveniences can retain their core scene
 owner. The automatic-observer requirement is superseded.
-This develops the [product plan](studio_molsysmt_integration_plan.md),
+This retains scenario inputs under the approved product boundary, with the
 [operation inventory](studio_molsysmt_operation_inventory.md) and
 [operation/recovery proposal](studio_molecular_operations_design.md).
 These six groups exercise reusable general tools and their composition. The
