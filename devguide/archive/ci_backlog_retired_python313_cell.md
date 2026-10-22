@@ -1,13 +1,13 @@
 ---
 summary: CI backlog verifier requires the retired Python 3.13 JavaScript cell.
 issue: uibcdf/molsysviewer#260
-status: active
+status: resolved
 opened: 2026-10-22
-closed:
+closed: 2026-10-22
 severity: medium
-verification: inspected
+verification: reproduced
 area: [ci, workflows]
-guard:
+guard: tests/test_ci_backlog.py::test_current_native_eight_cell_receipt_controls_core_watermark
 normative:
 blocked_by: []
 supersedes: []
@@ -41,6 +41,20 @@ not a failure of the approved scientific/browser campaign. Historical six-cell
 receipts retain their original qualification scope but cannot clear the new
 eight-cell requirement.
 
-## Resolution
 
-Implementation and receiving in progress alongside uibcdf/molsysviewer#256.
+## Resolution — 2026-10-22
+
+Resolved in `e4f8c7c5`. The watermark requires all eight Linux/macOS
+3.11–3.14 cells and JavaScript on Linux 3.14. The selected regression guard
+uses the actual native 39704459739 receipt and rejects missing Linux/macOS
+3.14 cells or omitted required Python/JS steps. An offline replay confirms
+that the old code rejects this receipt while the corrected code accepts it.
+
+Hosted control-only probe 39709750593 recognizes `308ce8fb` as the complete
+core watermark and correctly reports the two subsequent skipped commits.
+It does not claim that this remaining CI debt was cleared. E2E/Qt probes
+39709753576/39709756446 retain independent watermarks; their test jobs are
+skipped, not newly qualified. Exact-source policy passes, as do 58 backlog
+checks, three core/Qt guards and the single complete local core run
+(3,224 passed, 21 skipped, 12 Qt deselected).
+See [receiving](../pre_documentation_cleanup_20261022.json).

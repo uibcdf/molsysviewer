@@ -1,13 +1,13 @@
 ---
 summary: Core CI jobs keep running after ordinary workflow cancellation
 issue: uibcdf/molsysviewer#256
-status: active
+status: resolved
 opened: 2026-10-21
-closed:
+closed: 2026-10-22
 severity: medium
 verification: reproduced
 area: [ci, workflows]
-guard:
+guard: tests/test_ci_backlog.py::test_test_jobs_stop_on_cancellation_without_losing_recovery_routes
 normative:
 blocked_by: []
 supersedes: []
@@ -79,3 +79,22 @@ dispatch, skip marker, explicit backlog probe, nightly debt/no-debt and decision
 failure, with each case both cancelled and non-cancelled. It is not a GitHub
 scheduler emulation. Hosted ordinary-cancellation receiving is recorded
 separately; cancelled probes cannot qualify scientific/browser results.
+
+## Resolution — 2026-10-22
+
+Resolved in `e4f8c7c5`. Test jobs and the PR result gate now use
+`!cancelled()`; Qt diagnostic steps stop on cancellation while retaining
+execution after an earlier test failure. Short temporary-tag cleanup and result
+preservation retain their distinct `always()` ownership.
+
+The selected guard evaluates all three actual job expressions across eight
+push/PR/dispatch/backlog/recovery scenarios, each cancelled and non-cancelled
+(48 cases). The remaining backlog module and core/Qt guards pass as well.
+Hosted ordinary-cancellation runs 39709607361, 39709610393 and 39709613748
+observed all eight matrix jobs, core E2E and Qt actively running, then all
+cancelled after one ordinary request per workflow. No force cancellation was
+used. These intentional cancellations are not passing scientific/Qt results.
+Three control-only backlog probes and exact-source policy pass; the once-run
+local core passes 3,224 tests, with 21 skips and 12 Qt deselections.
+See [receiving](../pre_documentation_cleanup_20261022.json) for native identities,
+before/after summaries, hashes and retained source-qualification limits.

@@ -19,11 +19,6 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (2)
-
-- [`ci_backlog_retired_python313_cell.md`](ci_backlog_retired_python313_cell.md) — [#260](https://github.com/uibcdf/molsysviewer/issues/260) — CI backlog verifier requires the retired Python 3.13 JavaScript cell. *(medium, inspected)*
-- [`ci_jobs_ignore_cancellation.md`](ci_jobs_ignore_cancellation.md) — [#256](https://github.com/uibcdf/molsysviewer/issues/256) — Core CI jobs keep running after ordinary workflow cancellation *(medium, reproduced)*
-
 ### Partially done (1)
 
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*

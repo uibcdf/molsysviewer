@@ -41,12 +41,14 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- **Before-documentation cleanup — 2026-10-22:** finish cancellation #256 and
-  current-matrix backlog #260; [#259](pending_proposals/native_copy_contract_receiving.md)
-  is scoped provider receiving, not a new core blocker. PHMT/Jupyter and current
-  core source qualification are complete. The central owner accepts routine 3.14
-  receiving; #93 waits only for immutable policy/caller/badge adoption. Both
-  [handoff anchors](checkpoints.md#resume-in-one-page) now reflect that order.
+- **Before-documentation cleanup completed — 2026-10-22:** #256 and #260 are
+  resolved with local guards, three actual ordinary-cancellation probes and
+  current-matrix watermark receiving. The single full local core passes 3,224
+  cases; [receiving](pre_documentation_cleanup_20261022.json) keeps operational
+  and prior scientific source scopes separate. Both handoff anchors are current.
+  [#259](pending_proposals/native_copy_contract_receiving.md) remains scoped
+  provider receiving; #93 waits for immutable policy/caller/badge adoption.
+  Next: broad public documentation. No candidate freeze or publication.
 
 - **Routine Python 3.14 migration completed — 2026-10-21:** source `308ce8fb` passes all eight Linux/macOS 3.11–3.14 cells, the three-host 3.14 source pair and both 44/44 core-browser lanes. API resolution and JS unit/coverage (332/332 in each invocation) execute on Linux 3.14. [Receiving](routine_python314_migration_20261021.json) preserves the local 3,163-pass run, both public recipe dry runs, Sphinx and notebook provenance. The prior routine 3.13 transition is complete. #93 remains partial only for the central immutable admission snapshot and its caller/badge adoption. Qt retains two experimental live failures and ten passing offscreen probes; no freeze or publication.
 
@@ -58,7 +60,7 @@ documents, and historical audits.
 
 - **Shape-only receiving and canonical modes — 2026-10-21:** the PHMT/Jupyter smoke exposed [#257](archive/shape_only_geometry_not_visible.md): native shape-only geometry existed but the initial camera never framed it. The source correction now commits geometry and requests the first reset without waiting on cached zero Mol* bounds; deliberate viewpoints remain preserved. Actual PHMT Python Render/Clear passes; human browser retest remains pending. Under [#258](archive/retire_classic_canvas_controls.md), Classic is retired and Diego approves `viewer_mode=standard|cinema` and `controls_mode=compact|cinema`, with legacy UI normalization and independent panel-layout names retained. [Receiving](shape_only_controls_validation_20261021.json) separates local checks, prior source CI and new hosted/manual qualification. Finish this retest before #93; no candidate freeze or publication.
 
-- [Final-source CI — 2026-10-21](final_source_ci_20261021.json): accepted source d126c5a1 passes six Python 3.11–3.13 cells, all three Python 3.14 hosts, core browser 44/44, JS unit/coverage 330/330, notebooks 25/25, policy and Conda governance. Qt separately retains two bridge/WebGL failures and ten passing offscreen checks. Next, resume the real PHMT/Jupyter smoke, then reconcile #93 with central admission; the new immutable policy reference is still awaited for caller/badge refresh. [#256](pending_bugs/ci_jobs_ignore_cancellation.md) tracks a newly reproduced workflow-cancellation defect; superseded runs were cancelled without touching final receiving. Candidate freeze and publication remain unauthorized.
+- [Final-source CI — 2026-10-21](final_source_ci_20261021.json): accepted source d126c5a1 passes six Python 3.11–3.13 cells, all three Python 3.14 hosts, core browser 44/44, JS unit/coverage 330/330, notebooks 25/25, policy and Conda governance. Qt separately retains two bridge/WebGL failures and ten passing offscreen checks. Next, resume the real PHMT/Jupyter smoke, then reconcile #93 with central admission; the new immutable policy reference is still awaited for caller/badge refresh. [#256](archive/ci_jobs_ignore_cancellation.md) tracks a newly reproduced workflow-cancellation defect; superseded runs were cancelled without touching final receiving. Candidate freeze and publication remain unauthorized.
 
 - [Before-documentation review — 2026-10-21](pre_documentation_review_20261021.json): the initial 29-issue audit identifies no new notebook-core defect. Its queued CI snapshot is superseded by the final-source receipt above. Opacity 98/90/80 is human-accepted; broad documentation follows the requested CI → manual PHMT/Jupyter → #93 sequence.
 

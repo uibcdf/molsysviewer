@@ -1,5 +1,7 @@
 # Development checkpoint
 
+**Before-documentation cleanup completed — 2026-10-22:** [#256](archive/ci_jobs_ignore_cancellation.md) and [#260](archive/ci_backlog_retired_python313_cell.md) are resolved with ordinary hosted cancellation and current-matrix watermark guards. [Receiving](pre_documentation_cleanup_20261022.json) records 3,224 local passes and the exact operational/policy probes without relabeling cancelled tests as green. Actual PHMT/Jupyter receiving is complete. Begin broad documentation; #259 remains provider-blocked receiving and #93 awaits the central immutable policy/caller/badge reference. No freeze or publication.
+
 **Routine Python 3.14 migration completed — 2026-10-21:** source `308ce8fb` passes all eight Linux/macOS 3.11–3.14 cells, the three-host 3.14 source pair and both 44/44 core-browser lanes. API resolution and JS unit/coverage (332/332 in each invocation) execute on Linux 3.14. [Receiving](routine_python314_migration_20261021.json) preserves the local 3,163-pass run, both public recipe dry runs, Sphinx and notebook provenance. The prior routine 3.13 transition is complete. #93 remains partial only for the central immutable admission snapshot and its caller/badge adoption. Qt retains two experimental live failures and ten passing offscreen probes; no freeze or publication.
 
 **Routine Python 3.14 migration implemented — 2026-10-21:** recipes, browser/docs jobs and the main Linux/macOS matrix now use 3.14 for routine work, with all 3.11–3.13 comparison cells retained. JS/coverage and API checks move to Linux 3.14. [Local receiving](routine_python314_migration_20261021.json) passes focused guards, both public recipe dry runs and Sphinx on 3.14; exact migrated-source CI remains pending. #93 stays partial until that receiving and the central immutable caller/badge delivery are reconciled. Qt and artifact routes retain their own scope; no freeze or publication.
@@ -12,7 +14,7 @@
 
 **Shape-only receiving and canonical modes — 2026-10-21:** the PHMT/Jupyter smoke exposed [#257](archive/shape_only_geometry_not_visible.md): native shape-only geometry existed but the initial camera never framed it. The source correction now commits geometry and requests the first reset without waiting on cached zero Mol* bounds; deliberate viewpoints remain preserved. Actual PHMT Python Render/Clear passes; human browser retest remains pending. Under [#258](archive/retire_classic_canvas_controls.md), Classic is retired and Diego approves `viewer_mode=standard|cinema` and `controls_mode=compact|cinema`, with legacy UI normalization and independent panel-layout names retained. [Receiving](shape_only_controls_validation_20261021.json) separates local checks, prior source CI and new hosted/manual qualification. Finish this retest before #93; no candidate freeze or publication.
 
-**Exact-source CI completed — 2026-10-21:** [d126c5a1 receiving](final_source_ci_20261021.json) passes all required source gates: six Python 3.11–3.13 cells, three Python 3.14 hosts, core browser 44/44, JS unit/coverage 330/330, notebooks 25/25, policy and Conda governance. The Python 3.14 source pair uses fixed MolSysMT 0.23.0 / 46ef28eb; this is not new artifact qualification. Qt retains its two experimental bridge/WebGL failures and ten passing offscreen checks. Superseded campaigns are cancelled; [#256](pending_bugs/ci_jobs_ignore_cancellation.md) keeps the underlying cancellation condition open. Diego's sequence is now the actual PHMT/Jupyter smoke, then #93 reconciliation with central admission and the routine environment transition. Await the immutable policy reference for caller/badge refresh. No candidate freeze or publication.
+**Exact-source CI completed — 2026-10-21:** [d126c5a1 receiving](final_source_ci_20261021.json) passes all required source gates: six Python 3.11–3.13 cells, three Python 3.14 hosts, core browser 44/44, JS unit/coverage 330/330, notebooks 25/25, policy and Conda governance. The Python 3.14 source pair uses fixed MolSysMT 0.23.0 / 46ef28eb; this is not new artifact qualification. Qt retains its two experimental bridge/WebGL failures and ten passing offscreen checks. Superseded campaigns are cancelled; [#256](archive/ci_jobs_ignore_cancellation.md) keeps the underlying cancellation condition open. Diego's sequence is now the actual PHMT/Jupyter smoke, then #93 reconciliation with central admission and the routine environment transition. Await the immutable policy reference for caller/badge refresh. No candidate freeze or publication.
 
 **Accepted UI / before-documentation review — 2026-10-21:** Diego accepts opacity 0.98/0.90/0.80 (0.98 initially); the opacity trial is closed. [Current board/CI review](pre_documentation_review_20261021.json) identifies no new notebook-core defect. Finish exact-source CI receiving and the postponed PHMT/Jupyter smoke for core signoff; reconcile #93 against the now-admitted central registry. These checks can accompany documentation. Qt/remotes retain separate experimental/post-1.0 scope; freeze/publication remain unauthorized.
 
@@ -369,8 +371,9 @@ completed actual PHMT/Jupyter Render/Clear, caller-sphere preservation and all
 six popup steps; [manual receiving](pharmacophore_manual_receiving_20261021.json)
 is complete. Do not request those observations again without a concrete regression.
 
-Before broad documentation, complete the bounded CI cleanup under
-uibcdf/molsysviewer#256 and #260. [#259 receiving](pending_proposals/native_copy_contract_receiving.md)
+The bounded CI cleanup under uibcdf/molsysviewer#256 and #260 is complete;
+[receiving](pre_documentation_cleanup_20261022.json) preserves its scope. Begin
+broad documentation now. [#259 receiving](pending_proposals/native_copy_contract_receiving.md)
 is scoped and blocked on uibcdf/molsysmt#121; it is not a new core defect or
 release blocker. #93 remains partial only for the central immutable admission
 snapshot and its reviewed caller/badge adoption. Central acknowledgement accepts
@@ -1867,19 +1870,17 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-10-22:**
 
-1. Finish the cancellation-aware CI correction (#256) and the discovered stale
-   3.13 backlog watermark (#260), retaining applicable validation and separate
-   cancelled-probe outcomes. #259 is scoped in its
-   [provider-receiving record](pending_proposals/native_copy_contract_receiving.md);
-   do not adopt an unpublished complete-system copy API.
-2. Begin broad public documentation. Actual PHMT/Jupyter receiving and source
-   qualification are complete; their dated older "postponed" observations are
-   historical. Use the 3.14 development/docs route and the generated capability
-   inventory when writing public claims.
-3. Adopt the central immutable policy/caller/badge reference for #93 when
-   delivered, then validate, archive and close that issue. This administrative
-   step requires no repeat scientific campaign.
-4. After documentation and explicit candidate freeze, qualify the new exact
+1. Begin broad public documentation. The CI cleanup (#256/#260), actual
+   PHMT/Jupyter receiving and applicable source qualification are complete.
+   Their earlier "postponed"/"open" observations are dated history. Use the
+   3.14 development/docs route and generated capability inventory for claims.
+2. Receive the central immutable policy/caller/badge reference for #93 when
+   delivered, validate, archive and close. This administrative step needs no
+   repeat scientific campaign. #259 remains scoped
+   [provider receiving](pending_proposals/native_copy_contract_receiving.md),
+   blocked on uibcdf/molsysmt#121 without an added release blocker or migration
+   to an unpublished complete-system copy API.
+3. After documentation and explicit candidate freeze, qualify the new exact
    installed artifacts and conduct human installed first contact. Publication
    and both 1.0 versions remain separately paused.
 

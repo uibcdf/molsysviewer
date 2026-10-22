@@ -1,0 +1,334 @@
+{
+  "date": "2026-10-22",
+  "source_commit": "e4f8c7c56b998fb8d6d1b5517527aca6cde7f15f",
+  "parent": "a3546405",
+  "issues": [
+    "uibcdf/molsysviewer#256",
+    "uibcdf/molsysviewer#260",
+    "uibcdf/molsysviewer#259"
+  ],
+  "status": "implementation_and_operational_receiving_complete",
+  "changes": [
+    "Cancellation-aware main/E2E/Qt test jobs and PR result gate.",
+    "Qt diagnostic steps still run after failures but stop on cancellation; bounded tag cleanup and artifact preservation retain always().",
+    "Core watermark requires all eight 3.11–3.14 cells and JS on Linux 3.14.",
+    "Current devguide handoff/next actions acknowledge completed actual PHMT/Jupyter smoke and routine 3.14 receiving."
+  ],
+  "focused_checks": {
+    "backlog": {
+      "passed": 58,
+      "log_sha256": "94c79438160be382c9235f349be98808009b95aca98faa5e60656b292cbf2de9"
+    },
+    "core_qt_scope": {
+      "passed": 3,
+      "log_sha256": "c54153859985855910afd75e6118f12c7c5e17c7ac95d1967edad7514b8306f2"
+    },
+    "guide_before_closure": {
+      "passed": 277,
+      "log_sha256": "70fed6f8fe8a3d879ce74ca3db6003f88e914889d0d82c584289fbcb726830c7"
+    },
+    "ruff_lint_and_format": "pass"
+  },
+  "full_local_core": {
+    "exit_code": 0,
+    "tests": 3245,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 21,
+    "passed": 3224,
+    "qt_deselected": 12,
+    "junit_sha256": "cf2b0ed82e5201ced3b4697949eab4e949c4de6e96383e1b8af029cf709f303b",
+    "log_sha256": "c97c197ce079cee65633798c2ba3c54ea5774193f645ed9ac9232d2ce8586f61",
+    "scope": "One complete local core run in molsyssuite@uibcdf_3.14 with committed implementation code and preserved unrelated human sandbox work. Not installed-artifact or clean-environment qualification.",
+    "python": "3.14.7"
+  },
+  "native_backlog_replay": {
+    "run": 39704459739,
+    "native_receipt_source": "308ce8fb5d5b500aa05bc808cb15fcdadb71713c",
+    "old_source": "a3546405",
+    "old_accepts": false,
+    "corrected_accepts": true,
+    "scope": "Offline replay of actual native metadata; no new scientific execution."
+  },
+  "ordinary_cancellation_receiving": [
+    {
+      "run": 39709607361,
+      "workflow": "CI.yaml",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39709607361",
+      "requested_at": "2026-10-22T02:08:18.414198+00:00",
+      "terminal_observed_at": "2026-10-22T02:09:15.718470+00:00",
+      "conclusion": "cancelled",
+      "force_cancel": false,
+      "running_before": [
+        {
+          "name": "Test on ubuntu-latest, Python 3.13",
+          "active_steps": [
+            "Install package"
+          ]
+        },
+        {
+          "name": "Test on macos-15, Python 3.12",
+          "active_steps": [
+            "Setup conda env"
+          ]
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.11",
+          "active_steps": [
+            "Install JS build dependencies for Python distribution tests"
+          ]
+        },
+        {
+          "name": "Test on macos-15, Python 3.14",
+          "active_steps": [
+            "Setup conda env"
+          ]
+        },
+        {
+          "name": "Test on macos-15, Python 3.13",
+          "active_steps": [
+            "Setup conda env"
+          ]
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.12",
+          "active_steps": [
+            "Install package"
+          ]
+        },
+        {
+          "name": "Test on macos-15, Python 3.11",
+          "active_steps": [
+            "Setup conda env"
+          ]
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.14",
+          "active_steps": [
+            "Info conda"
+          ]
+        }
+      ],
+      "jobs_after": [
+        {
+          "name": "Test on ubuntu-latest, Python 3.13",
+          "conclusion": "cancelled"
+        },
+        {
+          "name": "Test on macos-15, Python 3.12",
+          "conclusion": "cancelled"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.11",
+          "conclusion": "cancelled"
+        },
+        {
+          "name": "Test on macos-15, Python 3.14",
+          "conclusion": "cancelled"
+        },
+        {
+          "name": "Test on macos-15, Python 3.13",
+          "conclusion": "cancelled"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.12",
+          "conclusion": "cancelled"
+        },
+        {
+          "name": "Test on macos-15, Python 3.11",
+          "conclusion": "cancelled"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.14",
+          "conclusion": "cancelled"
+        },
+        {
+          "name": "Check skipped-commit backlog",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "PR full suite",
+          "conclusion": "cancelled"
+        }
+      ],
+      "scope": "Intentional operational cancellation, not a passing scientific/browser/Qt result."
+    },
+    {
+      "run": 39709610393,
+      "workflow": "CI_e2e.yaml",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39709610393",
+      "requested_at": "2026-10-22T02:08:19.663389+00:00",
+      "terminal_observed_at": "2026-10-22T02:09:15.720612+00:00",
+      "conclusion": "cancelled",
+      "force_cancel": false,
+      "running_before": [
+        {
+          "name": "Core E2E",
+          "active_steps": [
+            "Install package"
+          ]
+        }
+      ],
+      "jobs_after": [
+        {
+          "name": "Core E2E",
+          "conclusion": "cancelled"
+        },
+        {
+          "name": "Check skipped-commit backlog",
+          "conclusion": "skipped"
+        }
+      ],
+      "scope": "Intentional operational cancellation, not a passing scientific/browser/Qt result."
+    },
+    {
+      "run": 39709613748,
+      "workflow": "CI_qt_experimental.yaml",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39709613748",
+      "requested_at": "2026-10-22T02:08:20.995162+00:00",
+      "terminal_observed_at": "2026-10-22T02:09:15.721681+00:00",
+      "conclusion": "cancelled",
+      "force_cancel": false,
+      "running_before": [
+        {
+          "name": "Qt pipeline completes (Xvfb, software WebGL)",
+          "active_steps": [
+            "Install package"
+          ]
+        }
+      ],
+      "jobs_after": [
+        {
+          "name": "Qt pipeline completes (Xvfb, software WebGL)",
+          "conclusion": "cancelled"
+        },
+        {
+          "name": "Check skipped-commit backlog",
+          "conclusion": "skipped"
+        }
+      ],
+      "scope": "Intentional operational cancellation, not a passing scientific/browser/Qt result."
+    }
+  ],
+  "cancellation_raw_receipt_sha256": "fa0181b36593e3dbc6b4596cafe4ed29069542d8ba61baf27a4dd33edccfad50",
+  "hosted_controls_and_policy": [
+    {
+      "run": 39709750593,
+      "workflow": "CI.yaml",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39709750593",
+      "conclusion": "success",
+      "scope": "Backlog control only; test jobs skipped, not scientific qualification",
+      "metadata_sha256": "4ec86a95e2ae80733cad43524ba3b813ea2fab1717b2725b9fc82fc064b82fa3",
+      "log_sha256": "6bd6f742fb5bd31085b196996f1b0670127fa6c169d7122a4aaebe725a75cdb4",
+      "jobs": [
+        {
+          "name": "Check skipped-commit backlog",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on ${{ matrix.cfg.os }}, Python ${{ matrix.cfg.python-version }}",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "PR full suite",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "run": 39709753576,
+      "workflow": "CI_e2e.yaml",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39709753576",
+      "conclusion": "success",
+      "scope": "Backlog control only; test jobs skipped, not scientific qualification",
+      "metadata_sha256": "8317b6288f9ed911128f363ee734441b3b4e919d318ec748475bc625dd5d6055",
+      "log_sha256": "d839d009707805de70855881729da9af8e8706e7a6129706437fc4568384476e",
+      "jobs": [
+        {
+          "name": "Check skipped-commit backlog",
+          "conclusion": "success"
+        },
+        {
+          "name": "Core E2E",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "run": 39709756446,
+      "workflow": "CI_qt_experimental.yaml",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39709756446",
+      "conclusion": "success",
+      "scope": "Backlog control only; test jobs skipped, not scientific qualification",
+      "metadata_sha256": "bdc59da383c0de5a5d3a968d4038a27d8998a0210867f46b0bdb3f3390224614",
+      "log_sha256": "28cafe1c354c755fa9f31130a416eb6acb5d38afb16509c65f01fd60addd9d0e",
+      "jobs": [
+        {
+          "name": "Check skipped-commit backlog",
+          "conclusion": "success"
+        },
+        {
+          "name": "Qt pipeline completes (Xvfb, software WebGL)",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "run": 39709759652,
+      "workflow": "molsyssuite-policy.yml",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39709759652",
+      "conclusion": "success",
+      "scope": "Policy audit",
+      "metadata_sha256": "262a440b64141167de3cb707c818882ea2fa4dc6b016407ea9f7d5f09473f02c",
+      "log_sha256": "2624abe035f2bf18646a90ed65eea76993d331d550c63b9e764b460426306744",
+      "jobs": [
+        {
+          "name": "Dependency metadata audit",
+          "conclusion": "success"
+        },
+        {
+          "name": "policy / conformance",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "prior_scientific_receiving": {
+    "source": "308ce8fb5d5b500aa05bc808cb15fcdadb71713c",
+    "receipt": "devguide/routine_python314_migration_20261021.json",
+    "byte_identical_git_objects": {
+      "molsysviewer": "8519620a1ae0eb4d3f5731457564bc4bdc2c9c23",
+      "docs": "781326fe153f5ba0c32eea3e3ca39f5ddbca7ff7",
+      "devtools/conda-envs": "13e807e7a047458bf231e2d0df844afb47ee6eab"
+    },
+    "scope": "Runtime/docs/recipes unchanged; prior eight-cell, three-host, browser and notebook receiving retains its original source scope. Cancelled/control-only probes are not new full campaigns."
+  },
+  "copy_contract_triage": {
+    "issue": "uibcdf/molsysviewer#259",
+    "state": "blocked",
+    "provider_owner": "uibcdf/molsysmt#121",
+    "coordination": "uibcdf/molsyssuite#122",
+    "provider_analysis_checkpoint": "85b8b038008de4b6ac05e6f6c3e5028935bd3f85",
+    "provider_checkpoint_scope": "Reported analysis-only source checkpoint, not locally qualified here.",
+    "current_public_copy": "msm.copy; no migration to Python copy.copy(MolSys) or complete-system deferred-copy API.",
+    "new_dependency_floor": false,
+    "additional_release_blocker": false
+  },
+  "remaining": "#93 awaits the central immutable admission snapshot and caller/badge adoption. Proceed with broad documentation; later exact-candidate and installed qualification remain separate.",
+  "publication_authorized": false,
+  "evidence_directory": "/tmp/msv-pre-docs-20261022",
+  "final_guide_validation": {
+    "passed": 271,
+    "exit_code": 0,
+    "log_sha256": "28f62c83ea9ebc5424611904e9121a3551160780e2f5500ea2bebab7b532b6ec",
+    "generated_indexes": "current",
+    "staged_diff_check": "pass"
+  },
+  "upstream_guide_sync": {
+    "commit": "355f2ef35e253dff01a333c374d38bc211b2b8a8",
+    "path": "MOLSYSSUITE_GUIDE.md",
+    "scope": "Read-only central guide delivery changes policy-version lookup prose only; no workflow/runtime/tests change. Existing receiving retains its recorded source identity.",
+    "latest_central_policy_tag": "policy-v1.5.9",
+    "new_immutable_admission_snapshot_delivered": false
+  }
+}

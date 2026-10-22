@@ -1,5 +1,8 @@
 # Archived implementation plans
 
+- [CI cancellation](ci_jobs_ignore_cancellation.md) — #256 makes test/PR/Qt diagnostic gates cancellation-aware, guarded locally and received through three ordinary hosted cancellations without force.
+- [Current CI watermark](ci_backlog_retired_python313_cell.md) — #260 accepts the real eight-cell 3.14 receipt, rejects incomplete evidence and retains independent recovery watermarks.
+
 - [Visible shape-only geometry](shape_only_geometry_not_visible.md) — #257 frames initial geometry; Diego confirms real PHMT Render/Clear and caller-sphere preservation after hosted core guards pass.
 
 - [Modern canvas controls](retire_classic_canvas_controls.md) — #258 retires Classic and adopts Standard/Cinema viewer modes and Compact/Cinema controls, with legacy UI normalization.
