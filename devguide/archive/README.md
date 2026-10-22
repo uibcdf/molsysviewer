@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Molecular load history boundary](replacement_load_retains_scene_history.md) — #262 clears stale Undo/Redo on successful molecular load/reset, preserves rejected loads and retains first-load shapes.
+
 - [Complete issue-board receiving](devguide_issue_board_truncation.md) — #261 replaces the 200-item window with paginated, issue-only state/label receiving and verifies the full live queue.
 
 - [CI cancellation](ci_jobs_ignore_cancellation.md) — #256 makes test/PR/Qt diagnostic gates cancellation-aware, guarded locally and received through three ordinary hosted cancellations without force.

@@ -633,6 +633,9 @@ class SceneMixin:
         self._current_figure_spec = None
         self._current_structure_index = 0
         self._reset_load_blocks()
+        # Retired scene objects must not be recoverable over an empty or later
+        # replacement system through the scene-only history.
+        self.history.clear()
 
         self._send(
             {

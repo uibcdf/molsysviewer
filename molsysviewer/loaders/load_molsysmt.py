@@ -106,6 +106,10 @@ def _commit_molsysmt_load(view, prepared, *, label=None):
     view.interactions._system_changed()
     view._molsys = converted_molsys
     view._invalidate_system_identity()
+    # Scene snapshots cannot restore molecular data. Even an initial load into
+    # a shape-only view starts a new index space; keep its objects, not its old
+    # Undo/Redo checkpoints. Preparation failures never reach this boundary.
+    view.history.clear()
     view._send(view._new_lazy_molecular_projection(label=label))
     return view
 

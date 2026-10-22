@@ -570,6 +570,20 @@ Regions subpanel therefore defaults its Create control to **Inherit**, not
 
 ---
 
+## Scene history at molecular load and reset boundaries
+
+Scene Undo/Redo stores visual state, not molecular data. Successful molecular
+loading and `apply_system_edit` invalidate that history; `reset_viewer` clears
+it together with the scene. A replacement must not restore previous scene
+objects over the replacement molecular system through Undo or Redo.
+
+Input conversion/composition failures before adoption preserve the existing
+system, scene and both history stacks. The first molecular load into a
+shape-only view retains its scene objects but starts a new history domain.
+Subsequent scene edits remain undoable. These boundaries do not provide
+molecular Undo or automatic observation of direct MolSys mutations. Guard:
+`tests/test_load_history_boundary.py` (uibcdf/molsysviewer#262).
+
 ## Contract B — Colour is layered and owned
 
 ### B.1 The model
