@@ -344,11 +344,11 @@ def test_every_publicly_exported_name_resolves():
 
 
 SUPPORTED_PYTHON_VERSIONS = ("3.11", "3.12", "3.13", "3.14")
-#: The badge remains at the centrally admitted public range until the
-#: coordinated 0.24.0 release passes the independent installed-pair gate.
+#: Core 0.24.0 build 1 is centrally admitted. The badge still follows the frozen
+#: policy caller until the central owner publishes the new immutable snapshot.
 PUBLIC_PYTHON_VERSIONS = ("3.11", "3.12", "3.13")
-#: The routine development version remains 3.13 during the suite transition.
-RECOMMENDED_PYTHON_VERSION = "3.13"
+#: Routine development and single-version jobs follow the suite target.
+RECOMMENDED_PYTHON_VERSION = "3.14"
 
 
 def _matrix_versions(workflow: str, pattern: str) -> set[str]:
@@ -383,7 +383,9 @@ def test_the_published_python_matrix_is_the_one_we_actually_test():
     assert project["requires-python"] == f">={min(SUPPORTED_PYTHON_VERSIONS)},<{ceiling}"
 
     tested = _matrix_versions("CI.yaml", r'python-version:\s*"(3\.\d+)"')
-    tested |= _matrix_versions("ci-python-314-source-pair.yaml", r'python-version:\s*"(3\.\d+)"')
+    # Routine installed-dependency CI covers every minor itself. A separate
+    # source-pair feasibility lane cannot stand in for its 3.14 cells.
+    assert _matrix_versions("ci-python-314-source-pair.yaml", r'python-version:\s*"(3\.\d+)"') == {"3.14"}
     assert tested == set(SUPPORTED_PYTHON_VERSIONS), (
         f"the test matrices run {sorted(tested)} against candidate {sorted(SUPPORTED_PYTHON_VERSIONS)}"
     )
@@ -408,20 +410,23 @@ def test_every_supported_version_is_tested_on_linux_and_macos_with_windows_314()
     Pinned separately because the counts can agree while a cell is missing: dropping one
     macOS row leaves the set of versions unchanged.
     """
-    text = "\n".join(
-        (ROOT / ".github" / "workflows" / workflow).read_text(encoding="utf-8")
-        for workflow in ("CI.yaml", "ci-python-314-source-pair.yaml")
-    )
-    cells = set(re.findall(r'os:\s*(\S+?),\s*python-version:\s*"(3\.\d+)"', text))
+    def cells(workflow):
+        text = (ROOT / ".github" / "workflows" / workflow).read_text(encoding="utf-8")
+        return set(re.findall(r'os:\s*(\S+?),\s*python-version:\s*"(3\.\d+)"', text))
 
-    expected = {
+    expected_main = {
         (operating_system, version)
         for operating_system in ("ubuntu-latest", "macos-15")
         for version in SUPPORTED_PYTHON_VERSIONS
     }
-    expected.add(("windows-2025", "3.14"))
-
-    assert cells == expected, f"missing cells: {sorted(expected - cells)}"
+    expected_pair = {
+        (operating_system, "3.14")
+        for operating_system in ("ubuntu-latest", "macos-15", "windows-2025")
+    }
+    # Assert each owner separately: the source pair must not conceal a missing
+    # regular Linux/macOS 3.14 cell.
+    assert cells("CI.yaml") == expected_main
+    assert cells("ci-python-314-source-pair.yaml") == expected_pair
 
 
 def test_python_314_source_pair_uses_exact_provider_commit_without_metadata_bypass():

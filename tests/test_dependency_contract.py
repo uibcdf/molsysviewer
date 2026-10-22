@@ -117,7 +117,7 @@ def test_real_undeclared_or_duplicate_source_checkouts_remain_rejected(tree, fau
         ("devtools/conda-build/meta.yaml", "argdigest >=0.13.0", "argdigest >=0.14.0", "violates"),
         ("devtools/conda-envs/test_env.yaml", "  - smonitor>=0.13.0\n", "", "missing smonitor"),
         ("devtools/conda-envs/docs_env.yaml", "pyunitwizard>=0.25.0", "pyunitwizard>=0.24.0", "violates"),
-        ("devtools/conda-envs/development_env.yaml", "python=3.13", "python=3.15", "violates python"),
+        ("devtools/conda-envs/development_env.yaml", "python=3.14", "python=3.15", "violates python"),
         ("devtools/conda-envs/test_env.yaml", "python>=3.11,<3.15", "python>=3.11,<3.16", "violates python"),
         ("devtools/conda-envs/test_env.yaml", "argdigest>=0.13.0", "argdigest", "violates"),
         ("devtools/conda-envs/test_env.yaml", "  - numpy\n", "  - numpy\n  - numpy\n", "duplicate"),

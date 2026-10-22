@@ -1,0 +1,107 @@
+{
+  "date": "2026-10-21",
+  "issue": "uibcdf/molsysviewer#93",
+  "source_parent": "e5f574ea095683590e2205646356c79efed80456",
+  "status": "local_validation_pass_hosted_ci_pending",
+  "changes": {
+    "routine_python": "3.14",
+    "main_matrix": "Linux and macOS 3.11, 3.12, 3.13, 3.14; eight test cells",
+    "single_version_jobs": "API resolver, JS unit/coverage and Codecov upload move to Linux 3.14",
+    "recipes": [
+      "devtools/conda-envs/development_env.yaml",
+      "devtools/conda-envs/docs_env.yaml"
+    ],
+    "browser_and_documentation_jobs": "Core browser, notebook execution and Sphinx recipe use Python 3.14",
+    "preexisting_recipe_defect": "Correct the unavailable conda name jupyterlab_git to the registry-confirmed jupyterlab-git. The first failed solver result is retained locally."
+  },
+  "unchanged_boundaries": [
+    "Package Python range remains >=3.11,<3.15.",
+    "Exact-source three-host 3.14 pair keeps its own public 0.23.0 MolSysMT baseline.",
+    "Qt remains experimental; no new visible-host qualification.",
+    "Caller and badge remain on the current frozen policy pending central immutable snapshot.",
+    "Packaging/promotion and isolated artifact-qualification interpreter provenance retain their own scope.",
+    "No runtime/TypeScript changes, tag, package, public docs deployment, candidate freeze or publication."
+  ],
+  "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+  "python": "3.14.7",
+  "solver_results": {
+    "docs": {
+      "python": "3.14.8",
+      "n_packages": 329,
+      "mode": "dry-run, not installed",
+      "sha256": "a050ea4d31ee353ba5e484733a6d887073cbcaa53836cd6594c17c6769e80bfd",
+      "channels": [
+        "uibcdf",
+        "conda-forge"
+      ],
+      "strict_channel_priority": true,
+      "selected_packages": {
+        "molsysmt": "0.23.0",
+        "molsysviewer": "0.24.0",
+        "pyside6": "6.11.2"
+      }
+    },
+    "development": {
+      "python": "3.14.8",
+      "n_packages": 382,
+      "mode": "dry-run, not installed",
+      "sha256": "4b1fd554ac5897480c2057c76aa2a03b0ad3bb6bea320f82c7d6c32e47b5a108",
+      "channels": [
+        "uibcdf",
+        "conda-forge"
+      ],
+      "strict_channel_priority": true,
+      "selected_packages": {
+        "molsysmt": "0.23.0",
+        "molsysviewer": "0.24.0",
+        "jupyterlab-git": "0.55.0",
+        "pyside6": "6.11.2",
+        "qt6-webengine": "6.11.2",
+        "qt6-positioning": "6.11.2"
+      }
+    }
+  },
+  "sphinx": {
+    "exit_code": 0,
+    "version": "9.1.0",
+    "python": "3.14.7",
+    "source_pages": 230,
+    "source": "Copy of docs with current authored sources; original sources and human notebook outputs untouched.",
+    "notebook_execution": "off, as configured",
+    "deployment": false,
+    "log_sha256": "1bb4fd5045ef8b709558305d79d5cbcbaf58070230b90bb6bac32cc792ea3582"
+  },
+  "focused_checks": {
+    "distribution": {
+      "passed": 20,
+      "exit_code": 0,
+      "log_sha256": "89a8b2a7e49ab1fb09d21f522141e400d81ea21a04acf0bbca8a86daef6717e0"
+    },
+    "dependency_workflow_backlog": {
+      "passed": 47,
+      "exit_code": 0,
+      "log_sha256": "23ab1bd72727f58b2aefd81d892561e137dd397070e60b3c8e7e5bbbe7ad1070"
+    },
+    "ruff": "pass",
+    "dependency_metadata_audit": "pass",
+    "matrix_owner_guard": {
+      "passed": 1,
+      "exit_code": 0,
+      "log_sha256": "e819c87dfdd6b3bd4d2d0bf46059e05bf80e3a86150261fdb6a430be2115ac52"
+    },
+    "guide": {
+      "passed": 270,
+      "exit_code": 0,
+      "log_sha256": "002dddc8bb636cea5b53c41bbd05104b762faf2f04a657d29ff37bc5ba73d2db"
+    }
+  },
+  "shared_environment": {
+    "pip_check_exit_code": 1,
+    "log_sha256": "9d76fc3ea1361a1e7e934d914ac8f122aa5a1375236f0969d9066dd3b3506db1",
+    "scope": "Existing unsatisfied declared requirements in the shared multi-project environment; raw local output is not published. No shared packages modified. This does not qualify the environment as clean. Hosted CI and solver probes have separate provenance."
+  },
+  "full_local_python": "Not yet run for this migration. Prior runtime qualification is preserved separately.",
+  "hosted_ci": "Pending exact migration commit; no prior source result is relabeled as testing the new job selectors.",
+  "evidence_directory": "/tmp/msv-routine-py314-20261021",
+  "publication_authorized": false
+}

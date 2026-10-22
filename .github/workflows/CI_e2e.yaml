@@ -91,7 +91,7 @@ jobs:
               - ambermd
             channel_priority: strict
           create-args: >-
-            python=3.13
+            python=3.14
             ${{ inputs.use_staging && '--override-channels --channel uibcdf/label/staging --channel uibcdf --channel conda-forge --channel ambermd' || '' }}
             ${{ inputs.use_staging && format('molsysmt={0}', inputs.molsysmt_version) || '' }}
 

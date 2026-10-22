@@ -85,9 +85,11 @@ jobs:
           - { os: ubuntu-latest, python-version: "3.11"}
           - { os: ubuntu-latest, python-version: "3.12"}
           - { os: ubuntu-latest, python-version: "3.13"}
+          - { os: ubuntu-latest, python-version: "3.14"}
           - { os: macos-15,  python-version: "3.11"}
           - { os: macos-15,  python-version: "3.12"}
           - { os: macos-15,  python-version: "3.13"}
+          - { os: macos-15,  python-version: "3.14"}
 
     steps:
     - uses: actions/checkout@v4
@@ -182,7 +184,7 @@ jobs:
         python -c 'import molsysviewer; print("Version of the package: {}".format(molsysviewer.__version__))'
 
     - name: Resolve documented Python API calls
-      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.13'
+      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.14'
       shell: bash -l {0}
       run: python scripts/api_resolver.py docs/
 
@@ -193,7 +195,7 @@ jobs:
         python -m pytest -m "not qt_runtime" -o receptor_rerun_command="python -m pytest" --receptor=ci -v --cov-config=.coveragerc --cov=molsysviewer --cov-report=xml --junitxml=junit.xml --color=yes
 
     - name: JS unit tests (Node)
-      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.13'
+      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.14'
       shell: bash -l {0}
       run: |
         cd molsysviewer/js
@@ -210,7 +212,7 @@ jobs:
         fi
 
     - name: Upload coverage reports to Codecov
-      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.13'
+      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.14'
       uses: codecov/codecov-action@v4
       with:
         verbose: true
@@ -222,7 +224,7 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
 
     - name: Upload test results to Codecov
-      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.13' && ${{ !cancelled() }}
+      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.14' && ${{ !cancelled() }}
       uses: codecov/test-results-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}

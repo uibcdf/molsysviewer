@@ -14,6 +14,25 @@ supersedes: []
 
 # Extend MolSysViewer Python support to 3.14 alongside MolSysMT
 
+**Routine-route implementation — 2026-10-21:** the maintained development and
+docs recipes now select 3.14, as do core browser and Sphinx jobs. Main CI adds
+Linux/macOS 3.14 cells while retaining 3.11–3.13; its API resolver, JS/coverage
+and upload selectors move to Linux 3.14. The independent source-pair and
+experimental Qt boundaries remain unchanged. The recommended-version guard
+now requires the main matrix itself to cover all four minors.
+
+[Migration receiving](../routine_python314_migration_20261021.json) records
+20 distribution checks, 47 dependency/workflow/backlog checks, both successful
+public-channel solver dry runs and a 230-page Sphinx build on 3.14. A pre-existing
+invalid JupyterLab Git package identifier was corrected after the solver's
+missing-package diagnosis. The shared workspace's unrelated dependency metadata
+conflicts are recorded separately; no shared environment is changed or described
+as clean. Exact migrated-source CI and the local full-suite check remain
+pending at this implementation checkpoint. The previous 3.13 transition is not
+closed by configuration edits alone. Caller/badge still await the central
+owner's immutable admission snapshot. No scientific rerun is performed merely
+for central admission; the applicable checks here validate the changed routes.
+
 **Administrative reconciliation — 2026-10-21:** the core implementation, public
 package and central admission are complete. Latest exact-source CI and actual
 PHMT/Jupyter sections 1–3 also pass in their respective scopes. This issue is

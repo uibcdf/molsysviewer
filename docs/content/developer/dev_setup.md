@@ -5,19 +5,19 @@ MolSysViewer has two toolchains:
 1. Python (the `molsysviewer/` package, demos, and tests).
 2. Node.js (the `molsysviewer/js/` TypeScript runtime and tests).
 
-You keep them separate on purpose.
-You do not install Node.js inside conda.
+The maintained Conda recipes provide both toolchains. You can also use a
+system Node.js installation when it meets the requirements below.
 
 ## Requirements
 
-You need these installed at the system level:
+Use these tools (the Conda recipe supplies Python, Node.js and npm):
 
-- Python >= 3.10
+- Python 3.14 for development; the package supports Python 3.11–3.14
 - Node.js >= 18
 - npm >= 9
 - Git
 
-## Recommended Node installation (NVM)
+## Optional system Node installation (NVM)
 
 ### Linux / macOS arm64
 
@@ -37,14 +37,28 @@ Use nvm-windows:
 
 ## Python environment
 
-You can use conda/mamba.
-An environment definition exists at `devtools/conda-envs/development_env.yaml`.
+For routine Linux development in MolSysSuite, activate the qualified shared
+`molsyssuite@uibcdf_3.14` environment. Its canonical recipe and eligibility rules
+are maintained by MolSysSuite; see `MOLSYSSUITE_GUIDE.md` at the repository root.
 
-Install the project in editable mode:
+For an isolated component environment, use the maintained Python 3.14 recipe:
 
 ```bash
-pip install -e .[dev]
+conda env create -n molsysviewer-dev -f devtools/conda-envs/development_env.yaml
+conda activate molsysviewer-dev
 ```
+
+Install the checkout with Conda supplying dependencies:
+
+```bash
+python -m pip install --no-deps --editable .
+python -m pip check
+```
+
+Use that interpreter for tests (`python -m pytest --receptor=llm`). The main
+Linux/macOS matrix retains Python 3.11–3.13 comparison cells and adds 3.14;
+JS/coverage, documentation and core browser jobs use 3.14. The exact-source
+three-host 3.14 pair and experimental Qt lane keep their separate scopes.
 
 ### Standalone Qt host note
 
@@ -79,7 +93,7 @@ npm install
 Build the widget bundle when you need to test TypeScript changes locally:
 
 ```bash
-npm run build
+npm run build:runtime
 ```
 
 This produces `molsysviewer/viewer.js` and `molsysviewer/viewer.js.map`.

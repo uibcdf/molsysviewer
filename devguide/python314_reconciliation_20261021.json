@@ -47,5 +47,13 @@
       "tests/test_devguide_links.py"
     ],
     "log_sha256": "5ddab3aeb31c874bfe1e3abc612719243c818da1da91e0e937d5e7f85d3a7f39"
+  },
+  "routine_migration_followup": {
+    "receipt": "devguide/routine_python314_migration_20261021.json",
+    "state": "implemented, pending exact-source qualification",
+    "configuration_python": "3.14",
+    "main_ci_cells": 8,
+    "source_pair_scope": "unchanged",
+    "earlier_routine_route": "The routine_route inventory above records the pre-migration observation."
   }
 }

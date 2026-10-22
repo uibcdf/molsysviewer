@@ -4,7 +4,7 @@ channels:
 
 dependencies:
   # --- Python base ---
-  - python=3.13
+  - python=3.14
   - pip
   - versioningit
 
@@ -38,7 +38,7 @@ dependencies:
 
   # --- Optional but helpful for interactive debugging ---
   - jupyterlab_code_formatter
-  - jupyterlab_git
+  - jupyterlab-git
 
   # --- NodeJS for JS development and esbuild ---
   - nodejs>=18
