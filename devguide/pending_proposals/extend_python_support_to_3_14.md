@@ -14,29 +14,36 @@ supersedes: []
 
 # Extend MolSysViewer Python support to 3.14 alongside MolSysMT
 
-**Routine-route implementation — 2026-10-21:** the maintained development and
-docs recipes now select 3.14, as do core browser and Sphinx jobs. Main CI adds
-Linux/macOS 3.14 cells while retaining 3.11–3.13; its API resolver, JS/coverage
-and upload selectors move to Linux 3.14. The independent source-pair and
-experimental Qt boundaries remain unchanged. The recommended-version guard
-now requires the main matrix itself to cover all four minors.
+**Routine-route receiving completed — 2026-10-21:** the maintained development
+and docs recipes select 3.14, as do core browser and Sphinx jobs. Main CI now
+passes all eight Linux/macOS 3.11–3.14 cells on exact source `308ce8fb`; its
+API resolver, JS unit/coverage and upload steps pass on Linux 3.14. The independent
+source pair passes all three 3.14 hosts and Linux's 44/44 browser suites; the
+canonical browser lane also passes 44/44. The previous routine 3.13 transition
+is complete, including its bounded exception's exit condition.
 
-[Migration receiving](../routine_python314_migration_20261021.json) records
+[Migration receiving](../routine_python314_migration_20261021.json) preserves
 20 distribution checks, 47 dependency/workflow/backlog checks, both successful
-public-channel solver dry runs and a 230-page Sphinx build on 3.14. A pre-existing
-invalid JupyterLab Git package identifier was corrected after the solver's
-missing-package diagnosis. The shared workspace's unrelated dependency metadata
-conflicts are recorded separately; no shared environment is changed or described
-as clean. Exact migrated-source CI and the local full-suite check remain
-pending at this implementation checkpoint. The previous 3.13 transition is not
-closed by configuration edits alone. Caller/badge still await the central
-owner's immutable admission snapshot. No scientific rerun is performed merely
-for central admission; the applicable checks here validate the changed routes.
+public-channel recipe dry runs and a 230-page Sphinx build on 3.14. The single
+full local run passes 3,163 cases with 21 skips and 12 Qt deselections; it began
+on the implementation commit before an AST-equivalent formatting change and
+is not claimed as a clean immutable-head run. Exact hosted qualification covers
+the final source separately. Notebook reuse is scoped to byte-identical inputs;
+Linux's exact-source pair independently executes all 25 notebooks.
 
-**Administrative reconciliation — 2026-10-21:** the core implementation, public
+The pre-existing invalid JupyterLab Git package identifier was corrected after
+the solver's missing-package diagnosis. Shared-workspace dependency metadata
+conflicts remain separately recorded; no shared environment is modified or
+described as clean. Qt retains its separate experimental ownership and failures.
+Caller/badge alone await the central owner's immutable admission snapshot.
+Keep this issue partial until that delivery and reviewed adoption are complete.
+No new scientific campaign is required merely to acknowledge central admission;
+these checks validate the changed development/CI routes. No publication occurs.
+
+**Earlier administrative reconciliation — 2026-10-21:** the core implementation, public
 package and central admission are complete. Latest exact-source CI and actual
 PHMT/Jupyter sections 1–3 also pass in their respective scopes. This issue is
-partial for two explicit remainders, recorded in the
+partial at that checkpoint for two explicit remainders, recorded in the
 [reconciliation receipt](../python314_reconciliation_20261021.json):
 
 - Current central main admits Viewer, but the current caller `policy-v1.5.7`
@@ -45,7 +52,7 @@ partial for two explicit remainders, recorded in the
   and generated badge; a moving main reference is not a substitute.
 - Local development already uses `molsyssuite@uibcdf_3.14`. The maintained rich
   and docs recipes and the single-version CI recommendation still select 3.13.
-  Their existing bounded transition remains owned here, review by 2026-12-31.
+  That pre-migration inventory is superseded by the completed receiving above.
   Migrate that routine route coherently; the required three-host 3.14 source-pair
   gate already passes and is not missing implementation evidence.
 
@@ -111,8 +118,11 @@ availability on Windows.
 Extend the tested Python interval to 3.11–3.14 for the core MolSysViewer
 package and its noarch Conda artifact, coordinated with MolSysMT's extension
 and hard dependency. The 0.23.4/0.22.4 public pair delivered this core
-installation milestone; the active remainder is optional host evidence,
-broader workflows and central admission under `uibcdf/molsyssuite#29`.
+installation milestone; the later public 0.24.0 build 1 admission and routine
+3.14 migration are now complete. The remaining core scope is the immutable
+central policy snapshot and caller/badge adoption under
+`uibcdf/molsyssuite#29`. Optional Qt has its own owners and is not a missing
+core-admission requirement.
 
 ## How — original plan, with core-pair publication completed
 

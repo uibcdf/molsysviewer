@@ -2,7 +2,7 @@
   "date": "2026-10-21",
   "issue": "uibcdf/molsysviewer#93",
   "source_parent": "e5f574ea095683590e2205646356c79efed80456",
-  "status": "local_validation_pass_hosted_ci_pending",
+  "status": "required_source_gates_pass",
   "changes": {
     "routine_python": "3.14",
     "main_matrix": "Linux and macOS 3.11, 3.12, 3.13, 3.14; eight test cells",
@@ -100,8 +100,691 @@
     "log_sha256": "9d76fc3ea1361a1e7e934d914ac8f122aa5a1375236f0969d9066dd3b3506db1",
     "scope": "Existing unsatisfied declared requirements in the shared multi-project environment; raw local output is not published. No shared packages modified. This does not qualify the environment as clean. Hosted CI and solver probes have separate provenance."
   },
-  "full_local_python": "Not yet run for this migration. Prior runtime qualification is preserved separately.",
-  "hosted_ci": "Pending exact migration commit; no prior source result is relabeled as testing the new job selectors.",
+  "full_local_python": {
+    "exit_code": 0,
+    "passed": 3163,
+    "skipped": 21,
+    "qt_deselected": 12,
+    "duration_seconds": 651.21,
+    "log_sha256": "8af8bec1d090675b1d49b9c804ca910680d1bebb406f95337cffd5e272dcb712",
+    "junit_sha256": "9ac253117feeb3f3158606c6f4e035d8a9e4cc1c040a0bc8773919db37467a26",
+    "provenance": "Single full local run began on 5d7b830c in the shared editable workspace; test-file formatting changed during execution. AST equivalence is verified. This is not a clean immutable-head run; hosted runs qualify 308ce8fb separately.",
+    "format_equivalence": {
+      "file": "tests/test_distribution_artifact.py",
+      "before_sha256": "b1872acfa40a11151c7c95ec9e3013ba1c31d1828e3d22adf9fc9184bcb0e37c",
+      "after_sha256": "572aa634b7730d5971f0dcca2ec6bcd5e2e887d74d4e11ac98a248981f291b0c",
+      "ast_equal_ignoring_locations": true,
+      "ast_sha256": "e66619cf171f4fea8e4d3b53572df014ae2d68703d31a7c6f768bf81ef95bacc"
+    }
+  },
+  "hosted_ci": [
+    {
+      "lane": "main",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459739",
+      "head_sha": "308ce8fb5d5b500aa05bc808cb15fcdadb71713c",
+      "status": "completed",
+      "conclusion": "success",
+      "native_metadata_sha256": "5339b414c64f184d1fd227fa0c8ee7b00c42a9f0e326b440f06301e0fc8a3b86",
+      "log_sha256": "6611e6ce2dc4b79550c742941f24a5b4843704ad1b9a52364bd58710c82857eb",
+      "jobs": [
+        {
+          "name": "Test on macos-15, Python 3.12",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459739/job/119581093778",
+          "steps": {
+            "Set up job": "success",
+            "Run actions/checkout@v4": "success",
+            "Additional info about the build": "success",
+            "Set up Python": "success",
+            "Setup conda env": "success",
+            "Validate and locally tag the staged Viewer candidate": "skipped",
+            "Info conda": "success",
+            "Record published pytest tool versions": "success",
+            "Install package": "success",
+            "Remove the temporary Viewer tag after installation": "skipped",
+            "Install JS build dependencies for Python distribution tests": "success",
+            "Test import module": "success",
+            "Resolve documented Python API calls": "skipped",
+            "Run tests": "success",
+            "JS unit tests (Node)": "skipped",
+            "Check coverage": "success",
+            "Upload coverage reports to Codecov": "skipped",
+            "Upload test results to Codecov": "success",
+            "Post Setup conda env": "success",
+            "Post Set up Python": "success",
+            "Post Run actions/checkout@v4": "success",
+            "Complete job": "success"
+          }
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.11",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459739/job/119581093999",
+          "steps": {
+            "Set up job": "success",
+            "Run actions/checkout@v4": "success",
+            "Additional info about the build": "success",
+            "Set up Python": "success",
+            "Setup conda env": "success",
+            "Validate and locally tag the staged Viewer candidate": "skipped",
+            "Info conda": "success",
+            "Record published pytest tool versions": "success",
+            "Install package": "success",
+            "Remove the temporary Viewer tag after installation": "skipped",
+            "Install JS build dependencies for Python distribution tests": "success",
+            "Test import module": "success",
+            "Resolve documented Python API calls": "skipped",
+            "Run tests": "success",
+            "JS unit tests (Node)": "skipped",
+            "Check coverage": "success",
+            "Upload coverage reports to Codecov": "skipped",
+            "Upload test results to Codecov": "success",
+            "Post Setup conda env": "success",
+            "Post Set up Python": "success",
+            "Post Run actions/checkout@v4": "success",
+            "Complete job": "success"
+          }
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.14",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459739/job/119581094034",
+          "steps": {
+            "Set up job": "success",
+            "Run actions/checkout@v4": "success",
+            "Additional info about the build": "success",
+            "Set up Python": "success",
+            "Setup conda env": "success",
+            "Validate and locally tag the staged Viewer candidate": "skipped",
+            "Info conda": "success",
+            "Record published pytest tool versions": "success",
+            "Install package": "success",
+            "Remove the temporary Viewer tag after installation": "skipped",
+            "Install JS build dependencies for Python distribution tests": "success",
+            "Test import module": "success",
+            "Resolve documented Python API calls": "success",
+            "Run tests": "success",
+            "JS unit tests (Node)": "success",
+            "Check coverage": "success",
+            "Upload coverage reports to Codecov": "success",
+            "Upload test results to Codecov": "success",
+            "Post Setup conda env": "success",
+            "Post Set up Python": "success",
+            "Post Run actions/checkout@v4": "success",
+            "Complete job": "success"
+          }
+        },
+        {
+          "name": "Test on macos-15, Python 3.13",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459739/job/119581094106",
+          "steps": {
+            "Set up job": "success",
+            "Run actions/checkout@v4": "success",
+            "Additional info about the build": "success",
+            "Set up Python": "success",
+            "Setup conda env": "success",
+            "Validate and locally tag the staged Viewer candidate": "skipped",
+            "Info conda": "success",
+            "Record published pytest tool versions": "success",
+            "Install package": "success",
+            "Remove the temporary Viewer tag after installation": "skipped",
+            "Install JS build dependencies for Python distribution tests": "success",
+            "Test import module": "success",
+            "Resolve documented Python API calls": "skipped",
+            "Run tests": "success",
+            "JS unit tests (Node)": "skipped",
+            "Check coverage": "success",
+            "Upload coverage reports to Codecov": "skipped",
+            "Upload test results to Codecov": "success",
+            "Post Setup conda env": "success",
+            "Post Set up Python": "success",
+            "Post Run actions/checkout@v4": "success",
+            "Complete job": "success"
+          }
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.12",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459739/job/119581094150",
+          "steps": {
+            "Set up job": "success",
+            "Run actions/checkout@v4": "success",
+            "Additional info about the build": "success",
+            "Set up Python": "success",
+            "Setup conda env": "success",
+            "Validate and locally tag the staged Viewer candidate": "skipped",
+            "Info conda": "success",
+            "Record published pytest tool versions": "success",
+            "Install package": "success",
+            "Remove the temporary Viewer tag after installation": "skipped",
+            "Install JS build dependencies for Python distribution tests": "success",
+            "Test import module": "success",
+            "Resolve documented Python API calls": "skipped",
+            "Run tests": "success",
+            "JS unit tests (Node)": "skipped",
+            "Check coverage": "success",
+            "Upload coverage reports to Codecov": "skipped",
+            "Upload test results to Codecov": "success",
+            "Post Setup conda env": "success",
+            "Post Set up Python": "success",
+            "Post Run actions/checkout@v4": "success",
+            "Complete job": "success"
+          }
+        },
+        {
+          "name": "Test on macos-15, Python 3.11",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459739/job/119581094166",
+          "steps": {
+            "Set up job": "success",
+            "Run actions/checkout@v4": "success",
+            "Additional info about the build": "success",
+            "Set up Python": "success",
+            "Setup conda env": "success",
+            "Validate and locally tag the staged Viewer candidate": "skipped",
+            "Info conda": "success",
+            "Record published pytest tool versions": "success",
+            "Install package": "success",
+            "Remove the temporary Viewer tag after installation": "skipped",
+            "Install JS build dependencies for Python distribution tests": "success",
+            "Test import module": "success",
+            "Resolve documented Python API calls": "skipped",
+            "Run tests": "success",
+            "JS unit tests (Node)": "skipped",
+            "Check coverage": "success",
+            "Upload coverage reports to Codecov": "skipped",
+            "Upload test results to Codecov": "success",
+            "Post Setup conda env": "success",
+            "Post Set up Python": "success",
+            "Post Run actions/checkout@v4": "success",
+            "Complete job": "success"
+          }
+        },
+        {
+          "name": "Test on macos-15, Python 3.14",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459739/job/119581094182",
+          "steps": {
+            "Set up job": "success",
+            "Run actions/checkout@v4": "success",
+            "Additional info about the build": "success",
+            "Set up Python": "success",
+            "Setup conda env": "success",
+            "Validate and locally tag the staged Viewer candidate": "skipped",
+            "Info conda": "success",
+            "Record published pytest tool versions": "success",
+            "Install package": "success",
+            "Remove the temporary Viewer tag after installation": "skipped",
+            "Install JS build dependencies for Python distribution tests": "success",
+            "Test import module": "success",
+            "Resolve documented Python API calls": "skipped",
+            "Run tests": "success",
+            "JS unit tests (Node)": "skipped",
+            "Check coverage": "success",
+            "Upload coverage reports to Codecov": "skipped",
+            "Upload test results to Codecov": "success",
+            "Post Setup conda env": "success",
+            "Post Set up Python": "success",
+            "Post Run actions/checkout@v4": "success",
+            "Complete job": "success"
+          }
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.13",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459739/job/119581094192",
+          "steps": {
+            "Set up job": "success",
+            "Run actions/checkout@v4": "success",
+            "Additional info about the build": "success",
+            "Set up Python": "success",
+            "Setup conda env": "success",
+            "Validate and locally tag the staged Viewer candidate": "skipped",
+            "Info conda": "success",
+            "Record published pytest tool versions": "success",
+            "Install package": "success",
+            "Remove the temporary Viewer tag after installation": "skipped",
+            "Install JS build dependencies for Python distribution tests": "success",
+            "Test import module": "success",
+            "Resolve documented Python API calls": "skipped",
+            "Run tests": "success",
+            "JS unit tests (Node)": "skipped",
+            "Check coverage": "success",
+            "Upload coverage reports to Codecov": "skipped",
+            "Upload test results to Codecov": "success",
+            "Post Setup conda env": "success",
+            "Post Set up Python": "success",
+            "Post Run actions/checkout@v4": "success",
+            "Complete job": "success"
+          }
+        },
+        {
+          "name": "Check skipped-commit backlog",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459739/job/119581094934",
+          "steps": {}
+        },
+        {
+          "name": "PR full suite",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459739/job/119585336944",
+          "steps": {}
+        }
+      ]
+    },
+    {
+      "lane": "core",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459812",
+      "head_sha": "308ce8fb5d5b500aa05bc808cb15fcdadb71713c",
+      "status": "completed",
+      "conclusion": "success",
+      "native_metadata_sha256": "21106fe7624b7dc2f7a5e56b5344bc2db1c9606e8e4cf3e148a40f1f3ab17128",
+      "log_sha256": "1ecd6393951420f9bacad1a595322aa057e174cb27c315640a44ec2429a99085",
+      "jobs": [
+        {
+          "name": "Core E2E",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459812/job/119581094241",
+          "steps": {
+            "Set up job": "success",
+            "Run actions/checkout@v4": "success",
+            "Setup conda env": "success",
+            "Validate and locally tag the exact Viewer source candidate": "skipped",
+            "Install package": "success",
+            "Remove the temporary Viewer tag after installation": "skipped",
+            "Install JS deps": "success",
+            "Audit locked JS dependencies": "success",
+            "Build harness and bundle": "success",
+            "Verify hosted Chrome": "success",
+            "Run core E2E tests": "success",
+            "Run remote preview E2E diagnostics": "skipped",
+            "Post Setup conda env": "success",
+            "Post Run actions/checkout@v4": "success",
+            "Complete job": "success"
+          }
+        },
+        {
+          "name": "Check skipped-commit backlog",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459812/job/119581095333",
+          "steps": {}
+        }
+      ]
+    },
+    {
+      "lane": "pair",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459733",
+      "head_sha": "308ce8fb5d5b500aa05bc808cb15fcdadb71713c",
+      "status": "completed",
+      "conclusion": "success",
+      "native_metadata_sha256": "f1179d682de1c1ddca73f8618c8b745b81fae98c80fc6cc45f14fb687b5eff7a",
+      "log_sha256": "de6fce8870f7a9600c5b496a14cd1439710c46d5f5ef98f1858cd8f0965ce2ee",
+      "jobs": [
+        {
+          "name": "Source pair on macos-15, Python 3.14",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459733/job/119581092822",
+          "steps": {
+            "Set up job": "success",
+            "Check out MolSysViewer": "success",
+            "Check out the exact MolSysMT source candidate": "success",
+            "Require an exact MolSysMT commit": "success",
+            "Select MolSysMT's pinned Rust toolchain": "success",
+            "Create the Python 3.14 source-pair environment": "success",
+            "Validate and locally tag the exact Viewer source candidate": "skipped",
+            "Locally tag the exact MolSysMT candidate version": "success",
+            "Install both exact source candidates": "success",
+            "Remove the temporary Viewer tag after installation": "skipped",
+            "Remove the temporary MolSysMT tag after installation": "skipped",
+            "Install JavaScript test dependencies": "success",
+            "Synchronize the development runtime before source validation": "success",
+            "Audit dependency routes and the installed exact source provider": "success",
+            "Check installed Rust and viewer resources": "success",
+            "Record published pytest tool versions": "success",
+            "Guard native MolSysMT paths in the installed pair": "success",
+            "Test MolSysMT integration against the installed pair": "success",
+            "Run MolSysViewer Python tests": "success",
+            "Register the exact source-pair notebook kernel": "skipped",
+            "Build the source-pair browser runtime and harness": "skipped",
+            "Verify the hosted source-pair browser": "skipped",
+            "Run all core browser suites against the exact source pair": "skipped",
+            "Execute every documented notebook against the exact source pair": "skipped",
+            "Preserve source-pair notebook failure logs": "skipped",
+            "Post Create the Python 3.14 source-pair environment": "success",
+            "Post Check out the exact MolSysMT source candidate": "success",
+            "Post Check out MolSysViewer": "success",
+            "Complete job": "success"
+          }
+        },
+        {
+          "name": "Source pair on windows-2025, Python 3.14",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459733/job/119581093088",
+          "steps": {
+            "Set up job": "success",
+            "Check out MolSysViewer": "success",
+            "Check out the exact MolSysMT source candidate": "success",
+            "Require an exact MolSysMT commit": "success",
+            "Select MolSysMT's pinned Rust toolchain": "success",
+            "Create the Python 3.14 source-pair environment": "success",
+            "Validate and locally tag the exact Viewer source candidate": "skipped",
+            "Locally tag the exact MolSysMT candidate version": "success",
+            "Install both exact source candidates": "success",
+            "Remove the temporary Viewer tag after installation": "skipped",
+            "Remove the temporary MolSysMT tag after installation": "skipped",
+            "Install JavaScript test dependencies": "success",
+            "Synchronize the development runtime before source validation": "success",
+            "Audit dependency routes and the installed exact source provider": "success",
+            "Check installed Rust and viewer resources": "success",
+            "Record published pytest tool versions": "success",
+            "Guard native MolSysMT paths in the installed pair": "success",
+            "Test MolSysMT integration against the installed pair": "success",
+            "Run MolSysViewer Python tests": "success",
+            "Register the exact source-pair notebook kernel": "skipped",
+            "Build the source-pair browser runtime and harness": "skipped",
+            "Verify the hosted source-pair browser": "skipped",
+            "Run all core browser suites against the exact source pair": "skipped",
+            "Execute every documented notebook against the exact source pair": "skipped",
+            "Preserve source-pair notebook failure logs": "skipped",
+            "Post Create the Python 3.14 source-pair environment": "success",
+            "Post Check out the exact MolSysMT source candidate": "success",
+            "Post Check out MolSysViewer": "success",
+            "Complete job": "success"
+          }
+        },
+        {
+          "name": "Source pair on ubuntu-latest, Python 3.14",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459733/job/119581093139",
+          "steps": {
+            "Set up job": "success",
+            "Check out MolSysViewer": "success",
+            "Check out the exact MolSysMT source candidate": "success",
+            "Require an exact MolSysMT commit": "success",
+            "Select MolSysMT's pinned Rust toolchain": "success",
+            "Create the Python 3.14 source-pair environment": "success",
+            "Validate and locally tag the exact Viewer source candidate": "skipped",
+            "Locally tag the exact MolSysMT candidate version": "success",
+            "Install both exact source candidates": "success",
+            "Remove the temporary Viewer tag after installation": "skipped",
+            "Remove the temporary MolSysMT tag after installation": "skipped",
+            "Install JavaScript test dependencies": "success",
+            "Synchronize the development runtime before source validation": "success",
+            "Audit dependency routes and the installed exact source provider": "success",
+            "Check installed Rust and viewer resources": "success",
+            "Record published pytest tool versions": "success",
+            "Guard native MolSysMT paths in the installed pair": "success",
+            "Test MolSysMT integration against the installed pair": "success",
+            "Run MolSysViewer Python tests": "success",
+            "Register the exact source-pair notebook kernel": "success",
+            "Build the source-pair browser runtime and harness": "success",
+            "Verify the hosted source-pair browser": "success",
+            "Run all core browser suites against the exact source pair": "success",
+            "Execute every documented notebook against the exact source pair": "success",
+            "Preserve source-pair notebook failure logs": "skipped",
+            "Post Create the Python 3.14 source-pair environment": "success",
+            "Post Check out the exact MolSysMT source candidate": "success",
+            "Post Check out MolSysViewer": "success",
+            "Complete job": "success"
+          }
+        }
+      ]
+    },
+    {
+      "lane": "policy",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704460205",
+      "head_sha": "308ce8fb5d5b500aa05bc808cb15fcdadb71713c",
+      "status": "completed",
+      "conclusion": "success",
+      "native_metadata_sha256": "aede010d50f136529a4227f19d391bc82dcf3346257e446b82ac07e37d90faa0",
+      "log_sha256": "3dc8625990d8a6f73b477d660b4466829b9f4e73c6ece3a08ba100c70202ced0",
+      "jobs": [
+        {
+          "name": "Dependency metadata audit",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704460205/job/119581094544",
+          "steps": {
+            "Set up job": "success",
+            "Run actions/checkout@v4": "success",
+            "Run actions/setup-python@v5": "success",
+            "Install metadata readers": "success",
+            "Audit dependency metadata without importing the viewer": "success",
+            "Post Run actions/setup-python@v5": "success",
+            "Post Run actions/checkout@v4": "success",
+            "Complete job": "success"
+          }
+        },
+        {
+          "name": "policy / conformance",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704460205/job/119581094793",
+          "steps": {
+            "Set up job": "success",
+            "Check out member repository": "success",
+            "Set up policy Python": "success",
+            "Check out MolSysSuite policy": "success",
+            "Validate immutable admission input": "skipped",
+            "Check out central admission data": "skipped",
+            "Install the workflow parser": "success",
+            "Check repository conformance": "success",
+            "Install the policy Ruff version": "success",
+            "Check Python lint and imports": "success",
+            "Check Python formatting": "success",
+            "Post Check out MolSysSuite policy": "success",
+            "Post Set up policy Python": "success",
+            "Post Check out member repository": "success",
+            "Complete job": "success"
+          }
+        }
+      ]
+    },
+    {
+      "lane": "conda",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704460195",
+      "head_sha": "308ce8fb5d5b500aa05bc808cb15fcdadb71713c",
+      "status": "completed",
+      "conclusion": "success",
+      "native_metadata_sha256": "bec9c16233edd8f6e942c9d4eb2f869ff37e5863fc66d1fcdf7bf60f93ac3d2d",
+      "log_sha256": "5926c982729a04ff13e1ce970096244e1c56d1cc87ce33d5e82b263400ee272a",
+      "jobs": [
+        {
+          "name": "publication / check",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704460195/job/119581094806",
+          "steps": {
+            "Set up job": "success",
+            "Run actions/checkout@v4": "success",
+            "Run actions/setup-python@v5": "success",
+            "Run python -m pip install --disable-pip-version-check PyYAML==6.0.3": "success",
+            "Check publication workflow controls": "success",
+            "Post Run actions/setup-python@v5": "success",
+            "Post Run actions/checkout@v4": "success",
+            "Complete job": "success"
+          }
+        }
+      ]
+    },
+    {
+      "lane": "qt",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459667",
+      "head_sha": "308ce8fb5d5b500aa05bc808cb15fcdadb71713c",
+      "status": "completed",
+      "conclusion": "failure",
+      "native_metadata_sha256": "e1a427b63ecaed09f48ac495dd643a454451d4fdfbb4caa8d18c1ac51203f2b8",
+      "log_sha256": "dd8d216f1c8478ede9225c62073f25e9dd02e1cf6482e3f7d9ba785bac256987",
+      "jobs": [
+        {
+          "name": "Qt pipeline completes (Xvfb, software WebGL)",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459667/job/119581093634",
+          "steps": {
+            "Set up job": "success",
+            "Run actions/checkout@v4": "success",
+            "Setup conda env with the Qt stack": "success",
+            "Validate and locally tag the staged Viewer candidate": "skipped",
+            "Record published pytest tool versions": "success",
+            "Install package": "success",
+            "Remove the temporary Viewer tag after installation": "skipped",
+            "Xvfb and the software GL stack": "success",
+            "Qt transport round-trip in a real Qt process": "failure",
+            "The structure finishes loading through WebGL": "failure",
+            "Qt offscreen transport and resource probes": "success",
+            "Preserve experimental Qt results": "success",
+            "Post Setup conda env with the Qt stack": "success",
+            "Post Run actions/checkout@v4": "success",
+            "Complete job": "success"
+          }
+        },
+        {
+          "name": "Check skipped-commit backlog",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704459667/job/119581094607",
+          "steps": {}
+        }
+      ]
+    },
+    {
+      "lane": "notebooks",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704174722",
+      "head_sha": "5d7b830cc688e83f6882c285d93dfd7c2be771cc",
+      "status": "completed",
+      "conclusion": "success",
+      "native_metadata_sha256": "2bb5b9f8641820bed818ce1f6873f1522abc52c33aab6f5fcb6df0a1ecec08fc",
+      "log_sha256": "6174200775b6a048e0a191fe260e6e52f9462b366490c50d14713ae0e88f45b0",
+      "jobs": [
+        {
+          "name": "Execute the documented notebooks",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/39704174722/job/119580174194",
+          "steps": {
+            "Set up job": "success",
+            "Run actions/checkout@v4": "success",
+            "Setup conda env": "success",
+            "Install MolSysViewer": "success",
+            "Execute every documented notebook": "success",
+            "Collect the failure logs": "skipped",
+            "Post Setup conda env": "success",
+            "Post Run actions/checkout@v4": "success",
+            "Complete job": "success"
+          }
+        }
+      ]
+    }
+  ],
   "evidence_directory": "/tmp/msv-routine-py314-20261021",
-  "publication_authorized": false
+  "publication_authorized": false,
+  "source_commit": "308ce8fb5d5b500aa05bc808cb15fcdadb71713c",
+  "implementation_commit": "5d7b830cc688e83f6882c285d93dfd7c2be771cc",
+  "notebook_unchanged_input_reuse": {
+    "old_source": "5d7b830cc688e83f6882c285d93dfd7c2be771cc",
+    "new_source": "308ce8fb5d5b500aa05bc808cb15fcdadb71713c",
+    "identical_git_objects": {
+      "molsysviewer": "8519620a1ae0eb4d3f5731457564bc4bdc2c9c23",
+      "docs": "781326fe153f5ba0c32eea3e3ca39f5ddbca7ff7",
+      ".github/workflows/docs-notebooks.yaml": "538c4930fa304088abcf25d940c653b0988ed83a",
+      "devtools/conda-envs/docs_env.yaml": "2db59bd544c44106cfc9588715e8842b37b4b374"
+    },
+    "scope": "Reuse only the earlier notebook lane for unchanged module/docs/recipe/workflow inputs; it is not represented as an execution on the new SHA. Development version labels can differ."
+  },
+  "source_pair": {
+    "molsysmt_version": "0.23.0",
+    "molsysmt_sha": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+    "source_only": true
+  },
+  "qt_scope": {
+    "experimental": true,
+    "live_failures": 2,
+    "offscreen_passed": 10,
+    "failures": [
+      "Qt message bridge did not become ready; exported scene has no WebGL canvas.",
+      "Structure never finished loading through the Qt/WebGL bridge."
+    ],
+    "diagnostic_limit": "The compact receptor selected a concurrent DBus error. Native failed-step logs establish the two assertion failures above, without establishing DBus as their cause.",
+    "core_gate": false,
+    "visible_host_qualification": false
+  },
+  "superseded": {
+    "source": "5d7b830cc688e83f6882c285d93dfd7c2be771cc",
+    "policy_run": 39704174998,
+    "policy_conclusion": "failure",
+    "cause": "Ruff formatting only, diagnosed and corrected without AST changes.",
+    "campaigns": [
+      {
+        "run": 39704174590,
+        "conclusion": "cancelled",
+        "forced": true
+      },
+      {
+        "run": 39704174631,
+        "conclusion": "cancelled",
+        "forced": true
+      },
+      {
+        "run": 39704174552,
+        "conclusion": "cancelled",
+        "forced": false
+      }
+    ],
+    "scope": "Known cancellation condition remains owned by uibcdf/molsysviewer#256; no fix claimed."
+  },
+  "routine_transition": "Completed by source changes and required exact-source CI; prior 3.13 transition under #93 is disposed.",
+  "issue_93_remaining": "Central immutable admission snapshot, then reviewed caller update and generated badge; current 1.5.7 and latest published 1.5.9 still freeze authorized. No central tag delivered at final check.",
+  "main_ci_summary": {
+    "eight_python_311_314_cells": "success",
+    "python_results": {
+      "Test on macos-15, Python 3.12": "PASS exit=0 | 3131 passed, 51 skipped, 12 deselected | 543.39s | 1591 warnings",
+      "Test on ubuntu-latest, Python 3.11": "PASS exit=0 | 3158 passed, 24 skipped, 12 deselected | 712.06s | 1156 warnings",
+      "Test on ubuntu-latest, Python 3.14": "PASS exit=0 | 3158 passed, 24 skipped, 12 deselected | 456.38s | 1679 warnings",
+      "Test on macos-15, Python 3.13": "PASS exit=0 | 3131 passed, 51 skipped, 12 deselected | 581.22s | 1591 warnings",
+      "Test on ubuntu-latest, Python 3.12": "PASS exit=0 | 3158 passed, 24 skipped, 12 deselected | 645.17s | 1679 warnings",
+      "Test on macos-15, Python 3.11": "PASS exit=0 | 3131 passed, 51 skipped, 12 deselected | 593.27s | 1132 warnings",
+      "Test on macos-15, Python 3.14": "PASS exit=0 | 3131 passed, 51 skipped, 12 deselected | 367.05s | 1591 warnings",
+      "Test on ubuntu-latest, Python 3.13": "PASS exit=0 | 3158 passed, 24 skipped, 12 deselected | 498.17s | 1679 warnings"
+    },
+    "javascript_units_and_coverage": "332 passed, zero failures in each of two invocations",
+    "api_and_coverage_routing": "All five selected API/JS/coverage/upload steps pass on Linux 3.14."
+  },
+  "browser_summary": {
+    "canonical_core": "44/44 suites passed on the Python 3.14 recipe",
+    "exact_source_pair_linux_core": "44/44 suites passed"
+  },
+  "notebook_summary": {
+    "exact_source_pair_linux": "25/25 executed, zero failures",
+    "documentation_workflow": "25/25 executed, zero failures on 5d7b830c; byte-identical input reuse for 308ce8fb recorded separately."
+  },
+  "final_central_snapshot_check": {
+    "latest_tag": "policy-v1.5.9",
+    "commit": "3116b7d9f1fa9ba4d09b81a8f24a22b749805f9f",
+    "new_immutable_admission_snapshot_delivered": false
+  },
+  "final_guide_validation": {
+    "passed": 270,
+    "exit_code": 0,
+    "log_sha256": "77f09a33d52f871259a5818db067872590f00333c9d6fa067c0cb15b383461c6",
+    "generated_indexes": "current",
+    "staged_diff_check": "pass"
+  },
+  "receiving_checkpoint_scope": "Follow-up commit changes devguide only and reuses the recorded exact-source qualification of 308ce8fb; no new runtime, tests, workflow, recipe, package or tag changes."
 }

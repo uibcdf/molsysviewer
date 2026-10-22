@@ -50,10 +50,13 @@
   },
   "routine_migration_followup": {
     "receipt": "devguide/routine_python314_migration_20261021.json",
-    "state": "implemented, pending exact-source qualification",
+    "state": "completed; required exact-source gates pass",
     "configuration_python": "3.14",
     "main_ci_cells": 8,
     "source_pair_scope": "unchanged",
-    "earlier_routine_route": "The routine_route inventory above records the pre-migration observation."
-  }
+    "earlier_routine_route": "The routine_route inventory above records the pre-migration observation.",
+    "source_commit": "308ce8fb5d5b500aa05bc808cb15fcdadb71713c",
+    "exception_disposition": "The bounded routine 3.13 transition is complete. Earlier observations above are retained as dated pre-migration evidence."
+  },
+  "remaining": "Central immutable admission snapshot, then reviewed caller and generated badge adoption; #93 stays partial."
 }
