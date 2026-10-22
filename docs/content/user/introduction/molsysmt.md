@@ -10,6 +10,23 @@ MolSysViewer does not invent its own definition of a molecular system. Instead, 
 - When you write selections, MolSysViewer relies on MolSysMT to parse and evaluate them.
 - When you ask the whole or a region about the system — `view.whole.get(...)`, `view.whole.info(...)`, `view.whole.select(...)`, and their `region` counterparts — you are using MolSysMT concepts through a viewer-oriented API.
 
+## Backend and optional tools
+
+MolSysMT is required for the core viewer, including its native scientific
+visualization tools. You do not enable an add-on to load a system or display
+supported calculated interactions. Additional molecular preparation, editing
+and general analysis tools belong to the scientific library and its add-on
+interface. See {doc}`what` for this boundary and {doc}`addons` for current
+extension availability. The redesigned MolSysMT tools add-on is still planned;
+the current runtime rejects its retired legacy integration.
+
+Direct Python edits of the mutable system held by `view.molsys` do not promise
+automatic scene updates. The advanced `view.apply_system_edit(...)` boundary
+reconciles an explicitly supplied system and requires appropriate atom maps for
+index-changing edits. It currently clears scene Undo/Redo and invalidates
+interaction coverage by default. Follow its documented contract; it is not a
+molecular Undo or general rollback mechanism.
+
 ## Asking MolSysMT questions about a view
 
 The whole and every region expose MolSysMT-backed `get`, `info`, `select`, and `convert`

@@ -5,14 +5,23 @@ functionality arrives through optional add-ons. The direction matters most for
 future integration with `TopoMT`, `PharmacophoreMT`, `ElastNetMT` and other
 MolSysSuite packages carrying their own scientific semantics.
 
-**Direction update (2026-10-09):** MolSysMT is the required native scientific
-backend. The separate MolSysMT addon is retired under uibcdf/molsysviewer#186:
+**Accepted product boundary (2026-10-22):** follow
+[core visualization and add-on tools](core_and_addon_boundary.md). Core serves
+visualization/exploration, including qualified calculations directly producing
+visual content. Additional scientific analysis, molecular preparation/editing
+and specialized domain models belong to add-on/scientific tools. This reopens a
+redesigned MolSysMT tools add-on; its API, batching/update behavior, discovery
+and panel layout still need qualification. It supersedes the proposal to put
+general molecular editing in native Studio or require general automatic edit
+observation. MolSysMT remains the required backend in either design.
+
+**Current runtime (retirement on 2026-10-09):** the old MolSysMT addon is retired under uibcdf/molsysviewer#186:
 automatic discovery ignores its legacy entry point before loading, and explicit
 legacy registration is rejected. Loading, selection, interactions calculation,
 H5MSM analysis loading and index-aware scene reconciliation use native workflows.
 This does not mirror every MolSysMT function in the viewer. Optional domain
-packages retain the addon model. Consumers of `view.addons.molsysmt.basic.*`
-calculate molecular edits with MolSysMT and reload the result or reconcile it
+packages retain the addon model. Code using the former `view.addons.molsysmt.basic.*`
+must calculate molecular edits with MolSysMT and reload the result or reconcile it
 through `view.apply_system_edit(...)` with explicit maps.
 
 ## Core Position
@@ -32,7 +41,9 @@ foundation, and the reproducible Python ↔ TypeScript scene/state contract.
 
 ## What Should Prefer Add-Ons
 
-Anything domain-specific: topography and cavity analysis workflows,
+Additional molecular preparation/editing and general scientific analysis tools,
+including the proposed redesigned MolSysMT tools interface. Also domain-specific
+topography and cavity analysis workflows,
 pharmacophore feature models and controls, elastic-network and allostery overlays
 and actions, plus domain-specific figure helpers, panels and workbench summaries,
 context-menu actions and tool modes. This keeps the core thin while MolSysViewer

@@ -17,6 +17,10 @@ the deferred version/dogfooding decision is `uibcdf/molsysviewer#113`.
 The shared Linux Python 3.14 development recipe is maintained by
 `uibcdf/molsyssuite#52`.
 
+For feature placement and product scope, first apply
+[`core_and_addon_boundary.md`](core_and_addon_boundary.md). It is normative for
+the core visualization/add-on tools boundary; runtime availability is separate.
+
 Use these documents in this order:
 
 1. [`scene_contracts.md`](scene_contracts.md) is normative for scene state,
@@ -41,6 +45,31 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Core/add-on product boundary approved — 2026-10-22:**
+  [the normative decision](core_and_addon_boundary.md) defines core as molecular
+  visualization/exploration, including qualified calculations directly creating
+  visual content. Additional preparation, editing, general analysis and domain
+  tools belong to add-on/scientific interfaces. A redesigned MolSysMT tools
+  add-on is proposed; the backend remains required and the legacy addon remains
+  refused by current runtime. Python remains the primary headless foundation.
+  General automatic edit observation is no longer required; the consumer
+  request in uibcdf/molsysmt#413 is withdrawn and the provider may close it.
+  [Explicit reconciliation/tool coordination](linked_molecular_edits_design.md)
+  needs operation-level qualification, deferred-update safety and optional
+  recovery contracts. [#262](archive/replacement_load_retains_scene_history.md)
+  is fixed independently; the pre-existing box-fixture issue is #263.
+  The [revised integration plan](studio_molsysmt_integration_plan.md),
+  [source inventory](studio_molsysmt_operation_inventory.md),
+  [operation/recovery proposal](studio_molecular_operations_design.md) and
+  [six acceptance scenarios](studio_foundation_workflow_contracts.md) remain
+  design inputs. Earlier native-Studio layouts in the
+  [prototype review](studio_task_design_review.md) need reassessment; their
+  existing evidence does not qualify the new layout. No add-on implementation,
+  public API removal, candidate freeze or publication is claimed.
+  Validation: 273 offline link/reporting checks pass, the documentation builds,
+  all 174 fixed-source inventory hashes match, and original prototype hashes
+  remain unchanged. These checks do not qualify new runtime behavior.
+
 - **Before-documentation cleanup completed — 2026-10-22:** #256 and #260 are
   resolved with local guards, three actual ordinary-cancellation probes and
   current-matrix watermark receiving. The single full local core passes 3,224
@@ -50,7 +79,8 @@ documents, and historical audits.
   handoff anchors are current.
   [#259](pending_proposals/native_copy_contract_receiving.md) remains scoped
   provider receiving; #93 waits for immutable policy/caller/badge adoption.
-  Next: broad public documentation. No candidate freeze or publication.
+  These gates cover the existing baseline; the Studio integration plan now
+  precedes broad public documentation. No candidate freeze or publication.
 
 - **Routine Python 3.14 migration completed — 2026-10-21:** source `308ce8fb` passes all eight Linux/macOS 3.11–3.14 cells, the three-host 3.14 source pair and both 44/44 core-browser lanes. API resolution and JS unit/coverage (332/332 in each invocation) execute on Linux 3.14. [Receiving](routine_python314_migration_20261021.json) preserves the local 3,163-pass run, both public recipe dry runs, Sphinx and notebook provenance. The prior routine 3.13 transition is complete. #93 remains partial only for the central immutable admission snapshot and its caller/badge adoption. Qt retains two experimental live failures and ten passing offscreen probes; no freeze or publication.
 

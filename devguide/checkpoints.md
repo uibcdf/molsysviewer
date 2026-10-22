@@ -363,6 +363,37 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Current priority — 2026-10-22:** the approved
+[core/add-on boundary](core_and_addon_boundary.md) gives core visualization and
+exploration, including qualified calculations for visual content. Additional
+molecular editing/preparation/general analysis belongs to tools/add-on
+interfaces. The [revised integration plan](studio_molsysmt_integration_plan.md)
+reopens a redesigned MolSysMT tools add-on; no replacement runtime exists yet,
+the legacy integration remains refused and MolSysMT stays required as backend.
+Python remains primary and headless. The
+[reconciliation review](linked_molecular_edits_design.md) uses explicit
+reconciliation or coordinated integrated operations. General automatic native
+observation is no longer required; the consumer withdrew that request in
+uibcdf/molsysmt#413 and told the provider it may close the issue without a new
+deliverable. Operation-specific gaps will be reported separately.
+
+Reassess placement and contracts in the
+[source inventory](studio_molsysmt_operation_inventory.md),
+[technical proposal](studio_molecular_operations_design.md),
+[six scenarios](studio_foundation_workflow_contracts.md) and
+[earlier native-Studio prototype](studio_task_design_review.md). Its existing
+visual evidence does not qualify a revised add-on layout. Deferred updates
+need explicit pending-state/map/safe-interaction semantics; molecular recovery
+needs pre-edit retention and measured resources. No implementation begins from
+an old layout or an unreviewed wrapper boolean.
+
+[#262](archive/replacement_load_retains_scene_history.md) is fixed: load/reset
+clears stale scene history and rejected loads preserve Undo/Redo. Its isolated
+fix passes 283 regression/link/reporting checks; the once-run full suite has
+3,230 passed, 21 skipped and two failures (pre-existing box fixture #263 and
+untracked local planning links). The isolated tracked fix resolves the link
+failure; do not describe that full run as passing. No freeze or publication.
+
 The required source gates on `308ce8fb` are complete: eight Linux/macOS
 Python 3.11–3.14 cells, three independent 3.14 hosts, 44/44 browser suites in
 both lanes and 25/25 notebooks. The [migration receipt](routine_python314_migration_20261021.json)
@@ -372,14 +403,15 @@ six popup steps; [manual receiving](pharmacophore_manual_receiving_20261021.json
 is complete. Do not request those observations again without a concrete regression.
 
 The bounded CI cleanup under uibcdf/molsysviewer#256 and #260 is complete;
-[receiving](pre_documentation_cleanup_20261022.json) preserves its scope. Begin
-broad documentation now. [#259 receiving](pending_proposals/native_copy_contract_receiving.md)
-is scoped and blocked on uibcdf/molsysmt#121; it is not a new core defect or
+[receiving](pre_documentation_cleanup_20261022.json) preserves its scope. Broad
+documentation now follows the newly agreed Studio / MolSysMT work.
+[#259 receiving](pending_proposals/native_copy_contract_receiving.md)
+remains scoped consumer receiving after upstream uibcdf/molsysmt#121 closed; it is not a new core defect or
 release blocker. #93 remains partial only for the central immutable admission
 snapshot and its reviewed caller/badge adoption. Central acknowledgement accepts
 the routine transition; no scientific rerun is needed for that administrative step.
 
-Then finish public documentation, freeze the agreed 0.25.0 candidate explicitly,
+After the integration and public documentation, freeze the agreed 0.25.0 candidate explicitly,
 qualify its exact installed files and complete human installed first contact
 before separately authorized publication. Existing 0.24.0 public evidence below
 retains its original scope; it does not qualify a new artifact. Qt remains
@@ -1870,16 +1902,29 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-10-22:**
 
-1. Begin broad public documentation. The CI cleanup (#256/#260), actual
-   PHMT/Jupyter receiving and applicable source qualification are complete.
-   Their earlier "postponed"/"open" observations are dated history. Use the
-   3.14 development/docs route and generated capability inventory for claims.
+1. Apply the [core/add-on boundary](core_and_addon_boundary.md) and revised
+   [Studio / MolSysMT plan](studio_molsysmt_integration_plan.md):
+   use the completed [source inventory](studio_molsysmt_operation_inventory.md)
+   to design individual operation contracts and qualify unified molecular/scene
+   recovery, validate navigation and saving, and scope concrete
+   implementation issues. Review the
+   [narrow/wide prototype and proposed decisions](studio_task_design_review.md)
+   before changing public integration contracts or storage policies. Receive
+   the [explicit reconciliation boundary](linked_molecular_edits_design.md);
+   the general request in uibcdf/molsysmt#413 is withdrawn. Current-contract
+   #262 is fixed and guarded. Reuse
+   general tools and selection owners; composed journeys test those tools.
+   No implementation begins from this planning record
+   alone. Broad public documentation follows the integrated workflows.
+   The CI cleanup (#256/#260), actual PHMT/Jupyter receiving and applicable
+   baseline source qualification remain complete for their original scope.
+   Use the 3.14 development/docs route and capability inventory for claims.
 2. Receive the central immutable policy/caller/badge reference for #93 when
    delivered, validate, archive and close. This administrative step needs no
    repeat scientific campaign. #259 remains scoped
-   [provider receiving](pending_proposals/native_copy_contract_receiving.md),
-   blocked on uibcdf/molsysmt#121 without an added release blocker or migration
-   to an unpublished complete-system copy API.
+   [consumer receiving](pending_proposals/native_copy_contract_receiving.md):
+   upstream uibcdf/molsysmt#121 is now closed, but Viewer qualification remains
+   pending. No new dependency floor or migration is adopted by that closure.
 3. After documentation and explicit candidate freeze, qualify the new exact
    installed artifacts and conduct human installed first contact. Publication
    and both 1.0 versions remain separately paused.

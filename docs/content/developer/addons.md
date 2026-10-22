@@ -4,6 +4,22 @@ MolSysViewer exposes an explicit add-on platform aimed at the broader MolSysSuit
 
 This page is the centralized source of truth for downstream teams implementing MolSysViewer add-ons.
 
+## Core and add-on responsibilities
+
+The core serves molecular visualization and exploration. It may offer qualified
+scientific calculations directly to create or configure visual content, such as
+displaying calculated hydrogen bonds. Additional analysis, molecular preparation
+and editing tools, and specialized scientific models belong to the owning
+add-on/library. Classify by user intent and scientific effects, rather than by
+which provider module contains an algorithm or whether its output can be plotted.
+
+Keep scientific options explicit and reuse public provider tools. A visual action
+must not silently repair, protonate or transform a molecular system. Results and
+representations retain separate lifetimes; removing a visual object must not
+implicitly delete scientific data. Python remains the headless, composable
+foundation shared by Studio and add-on panels. The user explanation is
+{doc}`../user/introduction/what`.
+
 ---
 
 ## Mental Model: Host vs View
@@ -56,11 +72,19 @@ presents it, and MolSysViewer never has to be edited to add one.
 An external add-on is free to be its own distribution. The pattern above is what the
 MolSysSuite toolkits do, not a requirement of the host contract.
 
-MolSysMT is the required native backend, not an addon. The former
+MolSysMT is the required native backend. In the current runtime, the former
 `molsysviewer_molsysmt` entry point is ignored before loading; explicit registration
 of that module or the reserved `molsysmt` namespace is rejected. Native loading,
 selection, interactions and H5MSM workflows remain available without registration.
 Optional domain extensions keep this addon contract. See uibcdf/molsysviewer#186.
+
+The accepted product direction reopens a redesigned MolSysMT tools add-on for
+additional molecular operations. Its function wrappers, panel organization,
+batching/update and recovery semantics still need design and qualification.
+This direction does not lift the current legacy refusal or make
+`view.addons.molsysmt` available. General automatic observation of arbitrary
+external molecular edits is not required; integrated tools coordinate their own
+edits through the shared Viewer reconciliation boundary.
 
 ## How the host finds it
 

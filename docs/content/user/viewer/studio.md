@@ -5,6 +5,13 @@ Use Studio to organize your molecular scene and inspect the objects you have
 created. Open it with the canvas panel button or **Open Studio…** in the
 {doc}`context_menu`.
 
+Studio is the core visualization and exploration workspace. Supported visual
+requests can include a scientific calculation, such as displaying hydrogen
+bonds. Additional molecular preparation, editing and general analysis tools
+belong to scientific add-on interfaces. See {doc}`../introduction/what` for
+the boundary and {doc}`../introduction/addons` for current availability; the
+redesigned MolSysMT tools add-on is still planned.
+
 ## Choosing a section
 
 The sidebar contains the native tools. In a narrow card, a **Studio section**

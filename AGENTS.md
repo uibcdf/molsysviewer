@@ -223,6 +223,18 @@ version. Put descriptions in the body/notes. Read
 [the local release-title guide](devguide/release_titles.md) and
 [the canonical rule](MOLSYSSUITE_GUIDE.md#github-release-titles).
 
+## Core visualization and add-on ownership
+
+Apply [the product boundary](devguide/core_and_addon_boundary.md) when designing
+features, public APIs, Studio controls or add-ons. Core serves visualization and
+exploration, including qualified calculations that directly create/configure
+visual content. Additional scientific analysis, preparation and molecular editing
+tools belong to the owning add-on/scientific library. Keep scientific parameters
+explicit, results separate from representations and Python APIs headless and
+composable. Do not introduce hidden molecular preparation or infer automatic
+observation of arbitrary MolSys edits. Document ownership, effects and actual
+availability; proposed add-on restoration is not current runtime support.
+
 ## Modular reusable tools
 
 Before adding a feature, inspect existing tools and identify the owning module or

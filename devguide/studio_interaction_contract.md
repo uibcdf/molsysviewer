@@ -1,5 +1,16 @@
 # Studio interaction contract
 
+## Product boundary
+
+Apply [core visualization and add-on ownership](core_and_addon_boundary.md).
+Native Studio organizes visual intent, scene objects and exploration. A
+qualified visual operation may request a scientific calculation, including the
+existing Interactions route. Additional molecular editing/preparation and
+general analysis tools belong to add-on/scientific interfaces. User intent and
+effects determine placement; a drawable output alone does not make a specialized
+workflow core. The redesigned MolSysMT tools add-on remains proposed, and the
+current legacy refusal below remains implemented behavior.
+
 Studio presents the native scene domains; optional domain extensions use the
 Add-ons surface. MolSysMT is the required scientific backend. Its former addon
 is retired: automatic discovery skips its legacy entry point before import,

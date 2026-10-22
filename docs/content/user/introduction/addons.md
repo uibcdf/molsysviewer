@@ -2,17 +2,26 @@
 
 MolSysViewer can grow with optional **add-ons**.
 
-The core viewer should stay focused on:
+The core viewer provides visualization and exploration without add-ons:
 
 - molecular systems and trajectories
 - navigation and workbench state
 - shapes, annotations, measurements, and styles
 - reproducible scene/export behavior
 
-Optional scientific domains can then extend that core without inflating it for
-everyone.
+It can also calculate supported scientific results directly for visual use,
+such as hydrogen bonds in experimental Interactions. Selection, structure scope and method
+remain explicit. Scientific results can outlive their representations; hiding
+an overlay does not remove its data.
 
-Examples include future add-ons for:
+Add-ons extend this with additional analysis, molecular preparation and editing
+tools, and specialized scientific models. The distinction follows your intent:
+coloring a system by a calculated property is visual; changing its chemical
+composition or fitting its coordinates is a molecular operation. Being able to
+draw a result does not move an entire specialized workflow into the core.
+See {doc}`what` for the product boundary.
+
+Domain extensions include tools for:
 
 - topography and cavities
 - pharmacophores
@@ -21,18 +30,14 @@ Examples include future add-ons for:
 
 ## Installation model
 
-The expected installation pattern is:
+MolSysSuite toolkits normally ship their Viewer integration inside their own
+package, for example the `molsysviewer_pharmacophoremt` module supplied by
+PharmacophoreMT. Follow that toolkit's installation instructions. External
+add-ons can also use a separate distribution. The scientific library remains
+usable independently of its Viewer panels.
 
-- a scientific/domain package
-- plus an optional MolSysViewer integration package
-
-For example:
-
-- `topomt`
-- `molsysviewer-topomt`
-
-This keeps the scientific library usable on its own while making the viewer
-integration optional.
+MolSysMT itself remains a required backend even when you use no add-ons.
+An optional tools interface and the backend dependency have different roles.
 
 ## Discovery model
 
@@ -44,8 +49,9 @@ import molsysviewer
 molsysviewer.addons.discover()
 ```
 
-Discovery currently checks a small maintained list of recognized add-on
-modules. Missing add-ons are ignored without error.
+Discovery uses declared package entry points and a maintained list of recognized
+integration modules. Manual registration is also available. Missing optional
+add-ons are ignored without error.
 
 If an add-on is available in the environment, a view can use it without
 re-registering it manually for every viewer instance.
@@ -63,7 +69,7 @@ default before new views are created.
 
 ## What a user should expect
 
-When add-ons become available, they should normally appear as:
+Available add-ons normally contribute:
 
 - optional new panels
 - optional workbench contributions
@@ -75,7 +81,14 @@ noise to the canvas.
 
 ## Current status
 
-The add-on platform now exists in the API and internal tests.
+The add-on platform is implemented. Each toolkit documents the availability and
+limits of its integration; a generic shape renderer does not imply a complete
+scientific workflow. The {doc}`../../showcase/addons` catalogue records current
+provider status.
 
-Real user-facing MolSysSuite add-ons are still a next step, but `1.0` is being
-shaped so that those add-ons can attach cleanly when they arrive.
+A redesigned MolSysMT tools add-on is planned for additional molecular tools.
+Its supported functions, update behavior and installation are still being
+designed. The old `molsysviewer_molsysmt` integration is retired and rejected by
+the current runtime; there is no supported `view.addons.molsysmt` interface yet.
+Current loading, selections, Interactions and explicit Python integration
+remain available through their documented APIs.

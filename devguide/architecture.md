@@ -210,6 +210,13 @@ and advanced callers can also drive this primitive. The separate MolSysMT addon 
 The native backend remains required; the viewer does not mirror every provider
 namespace. See `molsyssuite_addon_direction.md` for the boundary.
 
+The [accepted product boundary](core_and_addon_boundary.md) keeps visualization
+and exploration in core, including qualified calculations for visual content.
+Additional molecular tools belong to add-on/scientific interfaces. A redesigned
+MolSysMT tools add-on is now proposed; the legacy retirement above describes
+current runtime behavior. This does not introduce automatic edit observation,
+change the backend dependency or replace the existing reconciliation contract.
+
 When `apply_system_edit` runs:
 
 - the reconciled MolSysMT object becomes the viewer's current molecular state;

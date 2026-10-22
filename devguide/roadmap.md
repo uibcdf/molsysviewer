@@ -1,5 +1,26 @@
 # Development roadmap
 
+**Current priority — 2026-10-22:** apply the approved
+[core/add-on boundary](core_and_addon_boundary.md). Core provides visualization
+and exploration, including qualified calculations for visual content. General
+molecular preparation/editing/analysis belongs to tools/add-on interfaces.
+The [integration plan](studio_molsysmt_integration_plan.md) reopens a redesigned
+MolSysMT tools add-on; its API/layout/update policy remain proposed. The backend
+stays required and the legacy add-on remains refused by current runtime.
+The [reconciliation design](linked_molecular_edits_design.md) uses explicit
+reconciliation and coordinated integrated operations; general automatic native
+observation is no longer required. The consumer request in uibcdf/molsysmt#413
+is withdrawn, with provider-side closure requested. Reassess the
+[inventory](studio_molsysmt_operation_inventory.md),
+[recovery proposal](studio_molecular_operations_design.md),
+[acceptance scenarios](studio_foundation_workflow_contracts.md) and
+[old native-layout prototype](studio_task_design_review.md) against this boundary.
+Receive copy/edit/map contracts (#259), design deferred-update safety and scope
+concrete implementation. #262 is fixed independently; #263 tracks the separate
+pre-existing box-test setup failure. Keep user documentation explicit about
+current versus proposed tools. No new runtime/artifact qualification, candidate
+freeze or publication is claimed; both 1.0 publications remain paused.
+
 **Current receiving review — 2026-10-13:** the scientific
 [canvas mirror](canvas_popup_contract.md) implements #234–#238/#241/#243
 with native object picks, frame-specific geometry and one motion/playback clock.

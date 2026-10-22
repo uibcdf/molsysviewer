@@ -1,0 +1,34 @@
+{
+  "scope": "Standalone design prototype only; no scientific/runtime/popup qualification",
+  "checks": [
+    "Two layouts render",
+    "General remove operation with category selection, retained metal, stale review rejection",
+    "Shared toy Undo/Redo",
+    "Arbitrary current atom indices, retention, invalid targets and no-op preserve Redo",
+    "Active, saved, source and chain selections use the same operation",
+    "Water shortcut/manual equivalence; expressions require real provider resolution",
+    "Complete removal and recovery of illustrative content",
+    "Sparse order without zero filling; canonical geometric and physchem editors",
+    "Ligand route hides protein pH and has no unqualified Apply",
+    "Nine families, four modes, named analysis separate from visual set",
+    "Output scope independent of calculation filters; local/remote/unknown destinations",
+    "Keyboard tab navigation",
+    "390 px viewport without horizontal content overflow",
+    "No browser errors or network requests"
+  ],
+  "browserErrors": [],
+  "networkRequests": [],
+  "overflow": {
+    "width": 390,
+    "document": 390,
+    "panel": 360,
+    "content": 360
+  },
+  "design_revision": "General operations, reusable selections and parameters; shortcuts prefill the same editor.",
+  "checked_at": "2026-10-22T21:20:40.664561+00:00",
+  "browser": "Google Chrome 155.0.8059.84",
+  "artifacts": {
+    "studio-task-prototype.html": "6c39eeef63d6214fe7f9cc6e18961c9e151aabfb57ff37de772d3a2740e21293",
+    "studio-task-prototype.png": "0147786c83475de3922cfe9c2fcb1baed6818ae934e661aca1d7c576ca6fd1b9"
+  }
+}

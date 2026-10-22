@@ -57,11 +57,35 @@ Here are the main things you will do in day-to-day use:
 - **Export reproducible views** as lightweight HTML with `view.export.html(..., shared_runtime=...)`,
   which is especially useful for documentation, reports, and sharing results.
 
-## What MolSysViewer is not
+## Where visualization ends and add-ons begin
 
-MolSysViewer is not a molecular simulation engine, a force-field toolkit, or a structure
-preparation pipeline. It is focused on visualization and on making visual results easy
-to reproduce and communicate.
+You can use MolSysViewer without add-ons to visualize and explore molecular
+systems, manage scene objects and share reproducible views. MolSysMT supplies
+the scientific backend; you do not register an add-on to load a system or use
+the native scene tools.
+
+Visualization can include a calculation. For example, the experimental Interactions
+tools can calculate supported hydrogen bonds and display them. A request such
+as coloring groups by solvent-accessible surface area (SASA) also fits this
+visual purpose, but that convenience workflow is not currently implemented.
+Each tool's documentation describes its actual availability and scientific
+options.
+
+Add-ons provide additional analysis, molecular preparation and editing tools,
+and specialized domain models. Hiding waters changes the scene; removing their
+atoms edits the system. Displaying principal axes adds a visual aid; aligning
+molecular coordinates to them edits the system. Those edits belong to the
+scientific tools and their integration with the view.
+
+A visual request must not silently protonate, repair or align your system.
+You choose the relevant scientific parameters and any preparation explicitly.
+Scientific results and their representations are separate: hiding an
+interaction set does not delete its analysis or require another calculation
+when you show it again.
+
+See {doc}`addons` for extension availability and {doc}`molsysmt` for the backend
+and Python integration. A redesigned MolSysMT tools add-on is planned; the
+retired legacy add-on is not supported by the current runtime.
 
 ## Try it (first contact)
 

@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio general molecular tools — design prototype</title>
+<style>
+:root { color-scheme: light; font: 15px/1.5 system-ui, sans-serif; color: #252631; background: #ececf1; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: default; opacity: .45; }
+:focus-visible { outline: 3px solid #bca8ff; outline-offset: 2px; }
+.review-bar { padding: 20px 28px; background: white; border-bottom: 1px solid #d6d7df; }
+.review-bar h1 { font-size: 20px; margin: 0 0 5px; font-weight: 650; }
+.review-bar p { margin: 0 0 14px; max-width: 90ch; color: #555766; }
+.review-tools { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; }
+.review-tools label { display: flex; align-items: center; gap: 8px; }
+.review-tools select, .review-tools button { background: #fafafe; border: 1px solid #c7c7d4; border-radius: 7px; padding: 6px 10px; color: #303140; }
+.prototypes { display: flex; justify-content: center; align-items: flex-start; gap: 24px; padding: 24px; overflow: auto; }
+.prototype { flex: 0 0 auto; min-width: 0; }
+.prototype > h2 { font-size: 13px; font-weight: 500; color: #626473; margin: 0 0 8px; }
+.prototype.hidden { display: none; }
+.studio { width: 940px; height: 830px; max-height: calc(100vh - 230px); min-height: 580px; background: #1e1f27; color: #eeedf3; border: 1px solid #444651; border-radius: 13px; display: flex; flex-direction: column; box-shadow: 0 10px 32px #25263422; font-size: 13px; color-scheme: dark; overflow: hidden; }
+.narrow .studio { width: 420px; }
+.studio-header { display: flex; align-items: center; justify-content: space-between; padding: 13px 17px; border-bottom: 1px solid #3b3c47; gap: 10px; }
+.brand { font-size: 16px; font-weight: 650; }
+.badge { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; border: 1px solid #6b5c92; border-radius: 5px; color: #d5c8f3; padding: 3px 5px; margin-left: 6px; }
+.history { display: flex; gap: 6px; }
+.studio button { border: 1px solid #50515f; border-radius: 7px; padding: 7px 11px; color: #f0edf7; background: #30313d; line-height: 1.3; }
+.studio button:hover:not(:disabled) { background: #414252; }
+.studio button.primary { background: #7560ac; border-color: #9e88d2; }
+.studio button.primary:hover { background: #846dbd; }
+.studio button.quiet { background: transparent; }
+.context { padding: 9px 17px; background: #262731; color: #bfc0cc; display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; }
+.context strong { color: #ecebf4; font-weight: 500; }
+.studio-body { display: flex; flex: 1; min-height: 0; }
+.navigation { width: 163px; flex-shrink: 0; border-right: 1px solid #3b3c47; padding: 17px 10px; overflow-y: auto; }
+.navigation p { font-size: 10px; letter-spacing: .07em; color: #aba8bc; margin: 0 7px 10px; text-transform: uppercase; }
+.navigation button { display: block; width: 100%; text-align: left; border: 0; background: transparent; margin: 2px 0; padding: 8px; }
+.navigation button[aria-current="page"] { background: #40374f; color: #e4d7ff; }
+.navigation .retained { border-top: 1px solid #3b3c47; padding-top: 15px; margin-top: 18px; font-size: 11px; color: #b6b4c4; }
+.navigation .retained summary { cursor: pointer; }
+.navigation .retained p { text-transform: none; letter-spacing: 0; margin: 8px 0; line-height: 1.6; }
+.editor { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.mobile-nav { display: none; padding: 12px 17px 0; }
+.narrow .navigation { display: none; }
+.narrow .mobile-nav { display: block; }
+.panel-heading { padding: 18px 23px 0; }
+.panel-heading h2 { font-size: 19px; font-weight: 550; margin: 0 0 4px; }
+.panel-heading p { color: #b8b6c7; margin: 0 0 16px; font-size: 12px; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid #44424e; }
+.studio .tabs button { background: transparent; border: 0; border-radius: 5px 5px 0 0; color: #bcb8ca; padding: 8px 11px 10px; border-bottom: 2px solid transparent; }
+.studio .tabs button[aria-selected="true"] { color: #e4d9ff; border-bottom-color: #b49adf; background: #302c3c; }
+.panel-content { padding: 20px 23px 30px; overflow: auto; flex: 1; min-height: 0; }
+.narrow .panel-heading { padding: 16px 17px 0; }
+.narrow .panel-content { padding: 18px 17px 28px; }
+.stack { display: grid; gap: 16px; }
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.narrow .split { grid-template-columns: 1fr; }
+.studio h3 { font-size: 14px; margin: 0 0 7px; font-weight: 550; }
+.studio p { margin-top: 0; }
+.hint { font-size: 12px; color: #b8b5c8; margin: 5px 0 0; }
+.label { display: block; color: #d1cddc; font-size: 12px; margin-bottom: 5px; }
+.studio input:not([type="checkbox"]), .studio select { display: block; width: 100%; min-width: 0; border: 1px solid #555361; border-radius: 6px; background: #282933; color: #f0edf7; padding: 8px 9px; }
+.studio input[type="checkbox"] { accent-color: #aa8ad4; width: 16px; height: 16px; flex-shrink: 0; }
+.check { display: flex; align-items: flex-start; gap: 10px; border: 1px solid #46434f; border-radius: 8px; padding: 10px; margin: 7px 0; }
+.check small { display: block; color: #b6b2c3; margin-top: 2px; }
+.box { border: 1px solid #494452; border-radius: 9px; padding: 14px; background: #25252f; }
+.note { border-left: 2px solid #a08cbd; padding: 9px 12px; background: #2d2937; color: #d8cfe7; font-size: 12px; margin: 0; }
+.actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 3px; }
+.review { margin-top: 20px; background: #302a3c; border: 1px solid #8c76b0; border-radius: 9px; padding: 15px; }
+.review h3 { color: #e2d3f7; }
+.review ul { padding-left: 19px; margin: 9px 0 15px; color: #d4cede; }
+.review li { margin: 5px 0; }
+.review.stale { border-color: #c3a06e; }
+.message { color: #d6c0a2; font-size: 12px; padding: 10px 0; }
+.result-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.result-table th, .result-table td { padding: 9px 6px; text-align: left; border-bottom: 1px solid #45414e; }
+.result-table th { color: #b9b3c7; font-weight: 500; }
+.result-table caption { text-align: left; color: #bfb9cd; padding-bottom: 9px; }
+.metric { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid #413d4c; }
+.chip { display: inline-block; padding: 2px 7px; border-radius: 4px; background: #383145; color: #d5c4ec; font-size: 11px; }
+.studio-footer { padding: 9px 17px; border-top: 1px solid #3d3b47; color: #bfb8cc; font-size: 11px; min-height: 35px; }
+.empty { color: #c8c3d3; border: 1px dashed #595165; padding: 17px; border-radius: 8px; }
+.sequence { color: #b9c8cd; font-family: monospace; letter-spacing: .13em; word-break: break-all; line-height: 2; }
+.scope { font-size: 12px; background: #272530; padding: 9px 11px; border-radius: 6px; color: #c9c1d6; }
+@media(max-width: 650px) { .review-bar { padding: 15px; } .prototypes { justify-content: flex-start; padding: 14px; } .narrow .studio { width: min(420px, calc(100vw - 28px)); } .review-tools { align-items: flex-start; flex-direction: column; gap: 8px; } }
+</style>
+</head>
+<body>
+<header class="review-bar">
+  <h1>Studio · general molecular tools</h1>
+  <p>Interactive design study. All molecules, counts, reports and results below are illustrative. No MolSysMT calculations, molecular rendering, file writes or actual window synchronization run here.</p>
+  <div class="review-tools">
+    <label>Layout <select id="layout"><option value="compare">Compare both sizes</option><option value="narrow">Notebook card</option><option value="wide">Wide window</option></select></label>
+    <label>Destination scenario <select id="environment"><option value="local">Local</option><option value="remote">Identified remote</option><option value="unknown">Unknown / tunnel</option></select></label>
+    <button id="reset">Reset illustrative session</button>
+  </div>
+</header>
+<main class="prototypes" id="prototypes"></main>
+<script>
+'use strict';
+// Presentation prototype only. The toy shared state is NOT a proposed runtime owner,
+// scientific data model, persistence format, or recovery implementation.
+const panels = {
+  system: { title: 'System', description: 'Explore, load and edit the molecular content.', tabs: ['Contents', 'Load', 'Edit'] },
+  topology: { title: 'Topology', description: 'Inspect connectivity, chemical assignments and atom correspondence.', tabs: ['Connectivity', 'Chemistry', 'Correspondence'] },
+  structure: { title: 'Structure', description: 'Work with coordinates, references and periodic geometry.', tabs: ['Transform', 'Align', 'Analyze', 'PBC'] },
+  build: { title: 'Build', description: 'Inspect preparation needs and choose a supported repair.', tabs: ['Inspect', 'Repair', 'Construct'] },
+  properties: { title: 'Properties', description: 'Inspect properties and keep scientific results with their context.', tabs: ['Inspect', 'Calculate', 'Results'] },
+  interactions: { title: 'Interactions', description: 'Calculate or load analyses, then choose what to display.', tabs: ['Calculate', 'Results', 'Display'] },
+  save: { title: 'Save & Export', description: 'Choose the content and the file you want to create.', tabs: ['Molecular system', 'Work', 'Figure'] },
+};
+const familyOptions = ['Hydrogen bonds', 'Disulfide candidates', 'Ionic contacts', 'Pi–pi interactions', 'Cation–pi interactions', 'Halogen bonds', 'Hydrophobic contacts', 'Metal coordination candidates', 'Water-mediated hydrogen bonds'];
+const initial = () => ({ atomIds: Array.from({length: 8002}, (_, i) => i), hydrogens: false, alignmentEdits: 0, box: '8 nm cubic', periodicEdits: 0, results: [], analyses: [], displayed: [] });
+let state = initial(), past = [], future = [], generation = 0, status = 'Illustrative ensemble · no scientific engine connected';
+const views = [];
+const esc = v => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const copy = v => JSON.parse(JSON.stringify(v));
+const count = () => state.atomIds.length;
+const atomCount = (lo, hi) => state.atomIds.filter(i => i >= lo && i < hi).length;
+const options = (values, selected) => values.map(v => `<option${v === selected ? ' selected' : ''}>${esc(v)}</option>`).join('');
+function field(v, key, label, values, fallback, help = '') {
+  const value = v.draft[key] ?? fallback;
+  const id = `${v.narrow ? 'narrow' : 'wide'}-${key}`;
+  const accessibility = `aria-labelledby="${id}-label"${help ? ` aria-describedby="${id}-help"` : ''}`;
+  return `<label><span class="label" id="${id}-label">${label}</span>${Array.isArray(values)
+    ? `<select data-field="${key}" ${accessibility}>${options(values, value)}</select>`
+    : `<input data-field="${key}" ${accessibility} value="${esc(value)}" ${values || ''}>`}${help ? `<span class="hint" id="${id}-help">${help}</span>` : ''}</label>`;
+}
+function check(v, key, label, help = '') {
+  return `<label class="check"><input type="checkbox" data-field="${key}"${v.draft[key] ? ' checked' : ''}><span>${label}${help ? `<small>${help}</small>` : ''}</span></label>`;
+}
+const button = (action, label, primary = false) => `<button data-action="${action}"${primary ? ' class="primary"' : ''}>${label}</button>`;
+const preview = (action, label = 'Review change') => `<div class="actions">${button(action, label, true)}</div><p class="hint">This prototype will only simulate the reviewed outcome.</p>`;
+const frames = v => field(v, 'frames', 'Structures', ['Current · index 0', 'All · 12 structures', 'Indices · 0, 8, 3'], 'Current · index 0');
+const target = v => field(v, 'target', 'Atoms', ['Protein · source A', 'Active selection · 100 atoms', 'Whole system'], 'Protein · source A');
+const frameList = v => (v.draft.frames ?? 'Current · index 0').startsWith('Indices') ? [0, 8, 3] : (v.draft.frames ?? '').startsWith('All') ? Array.from({length: 12}, (_, i) => i) : [0];
+function resolveEditSelection(v) {
+  const mode = v.draft.editSelectionMode ?? 'Active selection';
+  let ids = [], description = mode, error = '';
+  if (mode === 'Whole system') ids = state.atomIds.slice();
+  if (mode === 'Active selection') ids = state.atomIds.filter(i => i < 100);
+  if (mode === 'Saved selection') { ids = state.atomIds.filter(i => i >= 100 && i < 200); description = 'Saved selection · protein example'; }
+  if (mode === 'Region or source') {
+    const protein = (v.draft.editSource ?? 'Source A · protein').startsWith('Source A');
+    ids = state.atomIds.filter(i => protein ? i < 6200 : i >= 6200);
+    description = v.draft.editSource ?? 'Source A · protein';
+  }
+  if (mode === 'Chain or group') {
+    const group = (v.draft.editGroup ?? 'Chain A · illustrative').startsWith('Group');
+    ids = state.atomIds.filter(i => group ? i >= 120 && i < 130 : i < 3100);
+    description = v.draft.editGroup ?? 'Chain A · illustrative';
+  }
+  if (mode === 'Molecular categories') {
+    ids = state.atomIds.filter(i => (v.draft.water && i >= 6200 && i < 8000) || (v.draft.sodium && i === 8000) || (v.draft.magnesium && i === 8001));
+    description = ['water','sodium','magnesium'].filter(k => v.draft[k]).join(' + ') || 'No category selected';
+  }
+  if (mode === 'Atom indices') {
+    const raw = (v.draft.editIndices ?? '0, 8, 3').trim();
+    if (raw && !/^\d+(\s*,\s*\d+)*$/.test(raw)) error = 'Enter nonnegative atom indices separated by commas.';
+    else {
+      const indices = raw ? [...new Set(raw.split(',').map(Number))] : [];
+      if (indices.some(i => !Number.isSafeInteger(i) || i >= count())) error = 'An atom index is outside the current example system.';
+      else ids = indices.map(i => state.atomIds[i]);
+    }
+    description = `Current atom indices: ${raw || '(empty)'}`;
+  }
+  if (mode === 'Selection expression') return {ids: [], description: 'Expression requires the provider selector', unresolved: true};
+  return {ids, description, error};
+}
+function editSelectionForm(v) {
+  const mode = v.draft.editSelectionMode ?? 'Active selection';
+  let detail = '';
+  if (mode === 'Molecular categories') detail = `<div><p class="hint">Choose categories or individual ions. Nothing is selected as dispensable automatically.</p>
+    ${check(v, 'water', `Water · ${atomCount(6200,8000).toLocaleString('en-US')} atoms`, 'Source B · illustrative classification')}
+    ${check(v, 'sodium', `Sodium · ${atomCount(8000,8001)} atom`, 'Source B · inspect its role before removal')}
+    ${check(v, 'magnesium', `Magnesium · ${atomCount(8001,8002)} atom`, 'Source B · individual optional inclusion')}</div>`;
+  if (mode === 'Region or source') detail = field(v, 'editSource', 'Region or source', ['Source A · protein', 'Source B · solvent and ions'], 'Source A · protein');
+  if (mode === 'Chain or group') detail = field(v, 'editGroup', 'Chain or group', ['Chain A · illustrative', 'Group A:10 · illustrative'], 'Chain A · illustrative');
+  if (mode === 'Saved selection') detail = '<div class="scope">Saved selection: protein example · original example atoms 100–199.</div>';
+  if (mode === 'Active selection') detail = '<div class="scope">Active selection: surviving atoms from the example’s first 100 protein atoms. The real product uses the existing mouse-selection owner.</div>';
+  if (mode === 'Atom indices') detail = field(v, 'editIndices', 'Atom indices', '', '0, 8, 3', 'Zero-based indices of the current atom axis; independent of structure indices.');
+  if (mode === 'Selection expression') detail = field(v, 'editExpression', 'MolSysMT selection expression', '', "molecule_type=='water'", 'The product evaluates expressions through MolSysMT. This offline mockup intentionally does not implement a selection language.');
+  return `${field(v, 'editSelectionMode', 'Select atoms by', ['Active selection', 'Saved selection', 'Region or source', 'Chain or group', 'Molecular categories', 'Atom indices', 'Selection expression', 'Whole system'], 'Active selection')}${detail}`;
+}
+function seriesForm(v, geometry) {
+  return `<div class="stack"><h3>${geometry ? 'Radius of gyration' : 'Solvent-accessible surface area'}</h3>${target(v)}${frames(v)}
+    ${field(v, geometry ? 'geometryResultName' : 'propertyResultName', 'Result name', '', geometry ? 'protein-size' : 'protein-sasa')}
+    <details open><summary>Scientific definition</summary><p class="hint">${geometry ? 'Equal geometric weights; mass weighting is a separate explicit choice. This example does not apply mass weighting.' : 'Whole-system occlusion before filtering the selected output. The native engine uses supplied boxes; method, probe, sampling and box context must be retained with the result.'}</p></details>
+    ${preview('review-property', 'Review calculation')}</div>`;
+}
+function resultTable(result) {
+  return `<div class="box"><h3>${esc(result.name)} <span class="chip">illustrative</span></h3>
+    <p class="hint">${esc(result.method)} · ${esc(result.scope)} · ${result.valid ? 'Associated with current input' : 'Historical input · not projected onto current atoms'}</p>
+    <table class="result-table"><caption>Values demonstrate indexing only; they are not calculated.</caption><thead><tr><th scope="col">Structure index</th><th scope="col">${esc(result.unit)}</th></tr></thead><tbody>${result.frames.map((f, i) => `<tr><td>${f}</td><td>${(2.10 + i * .07).toFixed(2)}</td></tr>`).join('')}</tbody></table>
+    <p class="hint">Unqueried structures have no value. No zero filling or interpolation is implied.</p></div>`;
+}
+function renderContent(v) {
+  const tab = v.tab;
+  if (v.panel === 'system' && tab === 'Contents') return `<div class="stack">
+    <div class="box"><h3>Ensemble A <span class="chip">example data</span></h3><div class="metric"><span>Atoms</span><strong>${count().toLocaleString('en-US')}</strong></div><div class="metric"><span>Structures</span><strong>12</strong></div><div class="metric"><span>Sources</span><strong>A · protein / B · solvent</strong></div><p class="hint">The example is not an inventory of PDB 1TCD.</p></div>
+    <div><h3>Molecular hierarchy</h3><details open class="box"><summary>Source A · protein · 2 chains</summary><details open><summary>Chain A · groups</summary><div class="sequence">APRKFFVGGNWKMNGDKKSL</div><p class="hint">Sequence, hierarchy, selection and contextual actions remain here. This excerpt is an illustrative sequence strip.</p></details></details>
+    <details class="box"><summary>Source B · solvent and ions</summary><p class="hint">Water: ${atomCount(6200,8000)} atoms · sodium: ${atomCount(8000,8001)} atom · magnesium: ${atomCount(8001,8002)} atom</p></details></div>
+    <div class="actions">${button('go-remove', 'Edit molecular content…')}${button('shortcut-water', 'Select waters for removal…')}${button('go-save', 'Save molecular system…')}</div></div>`;
+  if (v.panel === 'system' && tab === 'Load') return `<div class="stack">
+    ${field(v, 'sourceKind', 'Source', ['PDB identifier', 'Browser file', 'Python host path'], 'PDB identifier')}
+    ${field(v, 'source', 'Identifier or source description', '', '1TCD', 'Browser file selection and host paths are distinct inputs; this prototype accepts descriptive text only.')}
+    ${field(v, 'loadMode', 'Load as', ['Add an independent system', 'Replace the current system', 'Append compatible structures'], 'Add an independent system')}
+    <p class="note">Independent sources become one molecular system with a source region each. Structure compatibility, box policy and attribute losses need explicit validation.</p>
+    <div class="box"><h3>Several sources</h3><p class="hint">The same task will accept a source list, including mixed formats. It must not infer trajectory concatenation from a list of independent molecules.</p></div>
+    ${button('explain-load', 'Review loading contract')}</div>`;
+  if (v.panel === 'system' && tab === 'Edit') return `<div class="stack">
+    ${field(v, 'edit', 'Operation', ['Remove atoms', 'Keep selected atoms'], 'Remove atoms')}
+    ${editSelectionForm(v)}
+    <div class="scope">Atom-domain edits apply across all 12 structures. Visibility does not select atoms for deletion.</div>
+    <p class="hint">Water, a protein group and arbitrary indices use the same operation. Review captures the target against this revision.</p>
+    ${preview('review-remove')}</div>`;
+  if (v.panel === 'build' && tab === 'Inspect') return `<div class="stack">${target(v)}${field(v, 'state', 'Chemical state', ['Reference state', 'Choose a declared state…'], 'Reference state')}${field(v, 'inspectFrame', 'Structure for inspection', ['Current · index 0'], 'Current · index 0')}
+    <div class="box"><h3>Preparation report <span class="chip">illustrative</span></h3><div class="metric"><span>Connectivity</span><span>Present</span></div><div class="metric"><span>Explicit hydrogens</span><span>${state.hydrogens ? 'Added in this example' : 'Partial'}</span></div><div class="metric"><span>Formal charges</span><span>Unassessed</span></div><p class="hint">Inspection distinguishes present, missing, conflicting and unassessed information. It does not certify universal chemical readiness.</p></div>
+    ${button('go-repair', 'Review hydrogen preparation…')}</div>`;
+  if (v.panel === 'build' && tab === 'Repair') return `<div class="stack">
+    <h3>Add missing hydrogens</h3><p class="hint">One explicit scientific operation. It does not also remove conflicting H, normalize chemistry or minimize coordinates.</p>
+    ${field(v, 'repair', 'Preparation route', ['Protein · supported pH rules', 'Isolated ligand · declared chemical state'], 'Protein · supported pH rules')}
+    ${(v.draft.repair ?? '').startsWith('Isolated') ? `${field(v, 'ligandState', 'Declared chemical state', ['Reference state'], 'Reference state')}<div class="scope">Engine: RDKit · fixed chemical state. One isolated component and one structure; pH is not used.</div>` : `${field(v, 'pH', 'Protein target pH', 'type="number" min="0" max="14" step="0.1"', '7.4')}${field(v, 'engine', 'Engine', ['MolSysMT · protein templates', 'OpenMM · optional protein route'], 'MolSysMT · protein templates')}`}
+    <div class="note">Protein rules use supported templates and pKa approximations. Adding missing H does not remove conflicting H automatically. Fixed-state ligand placement requires one isolated component, one structure and complete chemical assignments.</div>
+    <div class="scope">This example has 12 structures. A one-structure repair cannot silently add atoms to every structure; review a supported all-structure route or create a separate one-structure system.</div>
+    ${preview('review-hydrogens', 'Review prerequisites')}</div>`;
+  if (v.panel === 'build' && tab === 'Construct') return `<div class="stack"><h3>Construction workflow review</h3><p>Solvation, supported native construction and reconstruction remain in the operation inventory.</p><p class="note">No universal builder is implied by the Build panel. Each route needs its own chemistry, box, engine, atom mapping and recovery contract.</p>${button('go-inspect', 'Start with inspection')}</div>`;
+  if (v.panel === 'topology') return `<div class="stack">
+    ${target(v)}${field(v, 'state', 'Chemical state', ['Reference state'], 'Reference state')}
+    <div class="box"><h3>${tab === 'Connectivity' ? 'Declared bonds and connected components' : tab === 'Chemistry' ? 'Chemical assignments and coverage' : 'Atom correspondence'}</h3>
+      <p class="hint">${tab === 'Connectivity' ? 'Inspect atom/group identity, bond order and connected components. A geometric contact is not an assigned covalent bond.' : tab === 'Chemistry' ? 'Read charges, aromaticity, valence and H inventory with declared/missing/unassessed coverage.' : 'Map explicit moving/reference atom populations. Equal counts alone do not establish identity; ambiguous matches need a decision.'}</p></div>
+    ${button(tab === 'Chemistry' ? 'go-inspect' : 'go-align', tab === 'Chemistry' ? 'Open preparation inspection…' : 'Open coordinate alignment…')}
+    <p class="hint">This mockup reviews the handoff. Graph and chemistry editors need their own detailed prototypes.</p></div>`;
+  if (v.panel === 'structure' && tab === 'Align') return `<div class="stack">
+    ${field(v, 'moving', 'Coordinates to move', ['Whole system', 'Protein · source A', 'Active selection · 100 atoms'], 'Whole system')}
+    <div class="split">${field(v, 'fit', 'Atoms used to fit', ['Matched protein backbone', 'Matched active selection'], 'Matched protein backbone')}${field(v, 'reference', 'Reference', ['Source A · structure 0', 'Choose another loaded source…'], 'Source A · structure 0')}</div>
+    ${frames(v)}
+    <div class="box"><h3>Correspondence</h3><p class="hint">Example: 180 matched backbone atoms; ordered pairs established before fitting. At least three noncollinear anchors are required in both inputs.</p></div>
+    <p class="note">Fitting atoms and moving atoms are different scopes. Alignment changes coordinates; it is not merely a camera operation.</p>${preview('review-align')}</div>`;
+  if (v.panel === 'structure' && tab === 'PBC') return `<div class="stack">
+    ${field(v, 'pbcAction', 'Action', ['Assign a periodic box', 'Wrap connected components', 'Unwrap a trajectory'], 'Assign a periodic box')}
+    ${frames(v)}${field(v, 'box', 'Box source / demonstration', ['Three row vectors · nm', 'Another loaded source', 'Supported box file'], 'Three row vectors · nm')}
+    <div class="box"><h3>Box vectors in this example · nm</h3><p class="hint">a = (6, 0, 0)<br>b = (0, 6, 0)<br>c = (0, 0, 6)</p></div>
+    <p class="note">Assigning a box does not move atoms. Wrapping moves coordinates. Temporal unwrapping does not reconstruct a molecule split within one frame.</p>${preview('review-pbc')}</div>`;
+  if (v.panel === 'structure' && tab === 'Analyze') return `<div class="stack">${seriesForm(v, true)}<h3>Saved geometric results</h3>${state.results.filter(r => r.domain === 'geometry').map(resultTable).join('') || '<p class="hint">No geometric results in this example yet.</p>'}<p class="hint">RMSD, RMSF and other geometric tasks belong here with their own definitions. Chemical/physical quantities stay in Properties.</p></div>`;
+  if (v.panel === 'structure' && tab === 'Transform') return `<div class="stack"><h3>Coordinate transformations</h3><p>Translation and rotation change the molecular coordinates. Camera movement stays in Viewport.</p><p class="note">These tasks reuse the same target, structure scope, review and recovery contract. No coordinate transform is executed by this design study.</p>${button('go-align', 'Review an alignment workflow')}</div>`;
+  if (v.panel === 'properties' && tab === 'Inspect') return `<div class="stack">${target(v)}<div class="box"><h3>Declared and derived properties</h3><p class="hint">Keep topology-only properties distinct from geometry-derived quantities, with units and chemical-state coverage. Missing assignments are not numeric zero.</p></div>${button('go-properties', 'Calculate a structure series…')}</div>`;
+  if (v.panel === 'properties' && tab === 'Calculate') return seriesForm(v, false);
+  if (v.panel === 'properties' && tab === 'Results') return `<div class="stack">${state.results.some(r => r.domain === 'physchem') ? state.results.filter(r => r.domain === 'physchem').map(resultTable).join('') : '<div class="empty">No saved physical/chemical results in this example. Calculate SASA to review indexed output.</div>'}${button('go-properties', 'New calculation…')}<p class="hint">Persistence and plotting must retain explicit structure identities. Work/checkpoint support for a new result type needs qualification. Geometric analyses have their canonical editor in Structure → Analyze.</p></div>`;
+  if (v.panel === 'interactions' && tab === 'Calculate') return `<div class="stack">
+    ${field(v, 'family', 'Interaction family', familyOptions, 'Hydrogen bonds')}
+    ${field(v, 'analysisName', 'New analysis name', '', 'protein-hbonds')}${target(v)}${frames(v)}
+    ${field(v, 'relationMode', 'Participation', ['At least one selected atom', 'All participants within selection', 'Crossing selection boundary', 'Between two selections'], 'All participants within selection')}
+    ${(v.draft.relationMode ?? '').startsWith('Between') ? field(v, 'targetB', 'Second atom population', ['Active selection B · 200 atoms', 'Source B · solvent and ions'], 'Active selection B · 200 atoms') : ''}
+    ${(v.draft.family ?? 'Hydrogen bonds') === 'Hydrogen bonds' ? field(v, 'method', 'Method', ['Baker–Hubbard', 'Buch', 'Luzard–Chandler'], 'Baker–Hubbard') : '<div class="scope">This family keeps its own provider method/profile and parameters. Their detailed controls are outside this prototype.</div>'}
+    ${check(v, 'usePbc', 'Use periodic geometry', 'Requires valid boxes and provider image evidence. Initially off; no silent default change.')}
+    <p class="note">A disulfide or metal-coordination candidate is not an assigned covalent bond. The provider and detection families retain their experimental classification.</p>${preview('review-interactions', 'Review calculation')}</div>`;
+  if (v.panel === 'interactions' && tab === 'Results') return `<div class="stack">${state.analyses.length ? state.analyses.map(a => `<div class="box"><h3>${esc(a.name)} <span class="chip">illustrative</span></h3><p>${esc(a.family)}</p><p class="hint">${a.valid ? 'Current input' : 'Historical input'} · evaluated structures: ${a.frames.join(', ')}<br>Evaluated-empty and not-evaluated are distinct states.<br>Occurrence references belong to this analysis version.</p></div>`).join('') : '<div class="empty">No named analyses. Calculate one or import an existing H5MSM analysis with explicit correspondence.</div>'}<div class="actions">${button('go-calculate-interactions', 'New calculation…')}${button('import-analysis', 'Review file import…')}${button('go-display', 'Display settings…')}</div></div>`;
+  if (v.panel === 'interactions' && tab === 'Display') return `<div class="stack">${state.analyses.length ? `${field(v, 'displayAnalysis', 'Analysis', state.analyses.map(a => a.name), state.analyses[0].name)}${field(v, 'displayFrames', 'Display structures', ['Visible structure', 'Indices · 0, 8, 3'], 'Visible structure')}<p class="note">This filter changes drawing, not which structures were evaluated. Named analysis storage and a visual interaction set are separate.</p>${button('display-analysis', 'Simulate adding a visual set', true)}` : '<div class="empty">Calculate or import an analysis before creating a visual set.</div>'}<p class="hint">Visual sets in this example: ${state.displayed.length ? state.displayed.map(esc).join(', ') : 'none'}</p></div>`;
+  if (v.panel === 'save' && tab === 'Molecular system') return `<div class="stack">${field(v, 'saveAtoms', 'Atoms', ['Whole system', 'Protein · source A', 'Active selection · 100 atoms'], 'Whole system')}${field(v, 'saveFrames', 'Structures', ['All · 12 structures', 'Current · index 0', 'Indices · 0, 8, 3'], 'All · 12 structures')}
+    ${field(v, 'format', 'File format', ['H5MSM · recommended', 'PDB · interchange example'], 'H5MSM · recommended')}
+    ${field(v, 'filename', 'File name', '', 'ensemble-edited.h5msm')}
+    ${destination(v)}
+    <p class="note">H5MSM preserves its supported molecular domains and named interactions. It is not a complete Viewer work file. Other formats need a writer-specific loss report; unsupported output is not silently offered.</p>
+    ${button('review-save', 'Review output', true)}</div>`;
+  if (v.panel === 'save' && tab === 'Work') return `<div class="stack"><h3>Save resumable work</h3><p>Retain molecular content, scene definitions and supported results with their provenance.</p>${destination(v)}<p class="note">A durable checkpoint is distinct from temporary Undo history. Supported codecs and restoration must be qualified; arbitrary results are not assumed serializable.</p>${button('review-work', 'Review work contents')}</div>`;
+  if (v.panel === 'save' && tab === 'Figure') return `<div class="stack">${field(v, 'figureFormat', 'Output', ['PNG figure', 'Portable HTML'], 'PNG figure')}<p>Figures capture an appearance. Portable HTML has its own interaction and data capability limits; neither is a molecular editing backup.</p>${destination(v)}${button('review-figure', 'Review figure output')}</div>`;
+  return '';
+}
+function destination(v) {
+  const env = document.getElementById('environment').value;
+  if (env === 'remote') return field(v, 'destination', 'Destination', ['Download in this browser', 'Save on the Python host'], 'Download in this browser', 'Only shown after remote use is identified or explicitly declared.');
+  if (env === 'unknown') return '<div class="box"><h3>Download in this browser</h3><p class="hint">Connection context is unknown. A localhost address can be an SSH tunnel; do not infer local execution. Advanced settings must allow an explicit connection declaration.</p></div>';
+  return '<div class="scope">Destination: download in this browser.</div>';
+}
+function render(v) {
+  const panel = panels[v.panel];
+  const focus = v.root.querySelector(':focus')?.dataset.field;
+  const scroll = v.root.querySelector('.panel-content')?.scrollTop || 0;
+  v.root.innerHTML = `<h2>${v.narrow ? 'Notebook card · 420 px' : 'Wide Studio window · 940 px'}</h2><section class="studio" aria-label="${v.narrow ? 'Notebook' : 'Wide'} Studio prototype">
+    <header class="studio-header"><div><span class="brand">Studio</span><span class="badge">design</span></div><div class="history"><button data-action="undo" ${past.length ? '' : 'disabled'} title="${esc(past.length ? 'Undo: ' + past.at(-1).label : 'No previous step')}">Undo</button><button data-action="redo" ${future.length ? '' : 'disabled'} title="${esc(future.length ? 'Redo: ' + future.at(-1).label : 'No next step')}">Redo</button></div></header>
+    <div class="context"><span><strong>Ensemble A</strong> · illustrative</span><span>${count().toLocaleString('en-US')} atoms · 12 structures</span><span>Structure 0 · revision ${generation}</span></div>
+    <div class="studio-body"><nav class="navigation" aria-label="Studio panels"><p>Molecular system</p>${Object.entries(panels).filter(([k]) => k !== 'save').map(([k, p]) => `<button data-panel="${k}" ${v.panel === k ? 'aria-current="page"' : ''}>${p.title}</button>`).join('')}<button data-panel="save" style="margin-top:20px" ${v.panel === 'save' ? 'aria-current="page"' : ''}>Save &amp; Export</button><details class="retained"><summary>Retained panels</summary><p>Selections · Whole · Regions · Measures · Annotations · Shapes · Layers · Viewport · Settings · optional add-ons</p><p>Outside this task prototype; existing capabilities must be retained.</p></details></nav>
+    <section class="editor" aria-label="${panel.title}"><div class="mobile-nav"><label><span class="label">Studio panel</span><select data-navigation>${Object.entries(panels).map(([k, p]) => `<option value="${k}"${k === v.panel ? ' selected' : ''}>${p.title}</option>`).join('')}</select></label></div>
+    <div class="panel-heading"><h2>${panel.title}</h2><p>${panel.description}</p><div class="tabs" role="tablist" aria-label="${panel.title} sections">${panel.tabs.map(t => `<button role="tab" data-tab="${t}" aria-selected="${t === v.tab}" tabindex="${t === v.tab ? 0 : -1}">${t}</button>`).join('')}</div></div>
+    <div class="panel-content" role="tabpanel" aria-label="${v.tab}"><div>${renderContent(v)}</div>${v.error ? `<div class="message" role="alert">${esc(v.error)}</div>` : ''}${reviewHtml(v)}</div></section></div>
+    <footer class="studio-footer" aria-live="polite">${esc(status)}</footer></section>`;
+  const content = v.root.querySelector('.panel-content');
+  content.scrollTop = v.resetScroll ? 0 : scroll;
+  v.resetScroll = false;
+  if (focus) v.root.querySelector(`[data-field="${focus}"]`)?.focus({preventScroll: true});
+}
+function reviewHtml(v) {
+  if (!v.review) return '';
+  const r = v.review, stale = r.generation !== generation;
+  return `<section class="review${stale ? ' stale' : ''}" aria-label="Effect review"><h3>${esc(r.title)}</h3><ul>${r.lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>${stale ? '<p class="message">The example changed after this review. Review again before applying.</p>' : ''}<div class="actions"><button data-action="apply" class="primary"${stale ? ' disabled' : ''}>${r.apply ? 'Apply simulated change' : 'Close review'}</button>${button('cancel-review', 'Cancel')}</div></section>`;
+}
+function showReview(v, title, lines, apply) {
+  v.error = '';
+  v.review = {title, lines, apply, generation};
+  render(v);
+  const review = v.root.querySelector('.review');
+  review.scrollIntoView({block: 'nearest', behavior: 'instant'});
+  review.querySelector('button')?.focus({preventScroll: true});
+}
+function navigate(v, panel, tab) {
+  v.tabs[v.panel] = v.tab;
+  v.panel = panel;
+  v.tab = tab || v.tabs[panel] || panels[panel].tabs[0];
+  v.review = null; v.error = ''; v.resetScroll = true;
+  render(v);
+}
+function commit(label, update) {
+  const before = copy(state);
+  update();
+  if (JSON.stringify(before) === JSON.stringify(state)) { status = 'No change · no history step added'; renderAll(); return; }
+  past.push({label, before, after: copy(state)}); future = []; generation++;
+  status = `${label} · simulated · Undo available`;
+  renderAll();
+}
+function invalidate() { [...state.results, ...state.analyses].forEach(r => r.valid = false); state.displayed = []; }
+function act(v, action) {
+  v.error = '';
+  const jumps = { 'go-remove': ['system','Edit'], 'go-save': ['save','Molecular system'], 'go-repair': ['build','Repair'], 'go-inspect': ['build','Inspect'], 'go-align': ['structure','Align'], 'go-properties': ['properties','Calculate'], 'go-calculate-interactions': ['interactions','Calculate'], 'go-display': ['interactions','Display'] };
+  if (jumps[action]) { navigate(v, ...jumps[action]); return; }
+  if (action === 'shortcut-water') {
+    Object.assign(v.draft, {edit: 'Remove atoms', editSelectionMode: 'Molecular categories', water: true, sodium: false, magnesium: false});
+    navigate(v, 'system', 'Edit'); return;
+  }
+  if (action === 'undo' && past.length) { const s = past.pop(); state = copy(s.before); future.push(s); generation++; status = `Undid ${s.label.toLowerCase()} · example content restored`; renderAll(); return; }
+  if (action === 'redo' && future.length) { const s = future.pop(); state = copy(s.after); past.push(s); generation++; status = `Redid ${s.label.toLowerCase()} · no calculation rerun`; renderAll(); return; }
+  if (action === 'cancel-review') { v.review = null; render(v); return; }
+  if (action === 'apply') {
+    const r = v.review;
+    if (!r || r.generation !== generation) return;
+    v.review = null;
+    if (r.apply) r.apply(); else render(v);
+    return;
+  }
+  if (action === 'review-remove') {
+    const selection = resolveEditSelection(v);
+    if (selection.error) { v.error = selection.error; render(v); return; }
+    if (selection.unresolved) { showReview(v, 'Expression selection contract', ['The actual MolSysMT selector must resolve this expression against the current system before review.', 'The same remove/retain operation then consumes those resolved atoms; no water-specific algorithm is required.', 'This prototype performs no expression evaluation and cannot apply this unresolved target.'], null); return; }
+    const keep = v.draft.edit === 'Keep selected atoms', selected = new Set(selection.ids);
+    const retained = state.atomIds.filter(i => keep ? selected.has(i) : !selected.has(i));
+    const same = retained.length === state.atomIds.length;
+    const title = keep ? 'Keep selected atoms' : 'Remove atoms';
+    showReview(v, title, [`Selection: ${selection.description} · ${selected.size.toLocaleString('en-US')} atoms.`, `Remove ${(count()-retained.length).toLocaleString('en-US')} atoms from all 12 structures; retain ${retained.length.toLocaleString('en-US')}.`, `Magnesium ${retained.includes(8001) ? 'is retained' : atomCount(8001,8002) ? 'will be removed' : 'was already absent'}.`, retained.length ? 'Reconcile source regions and surviving atom anchors; report affected objects/results.' : 'The molecular system becomes empty; scene-only content and recovery must remain coherent.', same ? 'No change: history, scientific results and Redo stay unchanged.' : 'One recovery step; affected example results become historical. No extra scientific operation is added.'], () => commit(title, () => { if (!same) { state.atomIds = retained; invalidate(); } })); return;
+  }
+  if (action === 'review-hydrogens') {
+    const fixed = (v.draft.repair ?? '').startsWith('Isolated');
+    const pH = Number(v.draft.pH ?? 7.4);
+    if (!fixed && (!Number.isFinite(pH) || pH < 0 || pH > 14)) { v.error = 'The protein route needs a valid pH.'; render(v); return; }
+    showReview(v, 'Hydrogen preparation prerequisites', [fixed ? 'Extract one isolated component and one structure with authoritative source maps.' : 'Inspect supported protein templates and pH rules before proposing any atoms.', 'This illustrative 12-structure system needs a qualified atom-axis/coordinate plan. No all-frame support is inferred.', 'Reinsertion, chemistry and preparation reports must be qualified before an in-view Apply is offered.', 'This branch intentionally has no Apply: these prerequisites are still design/receiving work.'], null); return;
+  }
+  if (action === 'review-align') {
+    if ((v.draft.reference ?? '').startsWith('Choose')) { v.error = 'An actual reference and ordered correspondence must be resolved first.'; render(v); return; }
+    const scope = v.draft.frames ?? 'Current · index 0';
+    showReview(v, 'Align molecular coordinates', [`Move: ${v.draft.moving ?? 'Whole system'}; fit: ${v.draft.fit ?? 'Matched protein backbone'}.`, `Reference: source A, structure 0; target: ${scope}.`, 'Keep source/frame identities; geometry-derived results need dependency-specific reconciliation.', 'In production this is a real coordinate edit, recoverable without rerunning the fit.'], () => commit('Aligned coordinates', () => { state.alignmentEdits++; invalidate(); })); return;
+  }
+  if (action === 'review-pbc') {
+    const which = v.draft.pbcAction ?? 'Assign a periodic box';
+    if (which === 'Unwrap a trajectory' && frameList(v).length === 1) { v.error = 'Temporal unwrapping needs an explicitly ordered trajectory, not one structure.'; render(v); return; }
+    if (which === 'Unwrap a trajectory' && (v.draft.frames ?? '').startsWith('Indices')) { v.error = 'Indices 0, 8, 3 are a valid query order but not a reviewed temporal trajectory order.'; render(v); return; }
+    if (which === 'Assign a periodic box' && (v.draft.box ?? 'Three row vectors · nm') !== 'Three row vectors · nm') { v.error = 'Resolve the actual external box source before reviewing its values.'; render(v); return; }
+    showReview(v, which, [which === 'Assign a periodic box' ? 'Assign the shown row-vector box in nm; do not move coordinates.' : 'Coordinates change; keep atom/frame identity and report affected geometry results.', `Structures: ${v.draft.frames ?? 'Current · index 0'}.`, 'Initialization/removal and incompatible box series require explicit full-axis policy.'], () => commit(which, () => { state.periodicEdits++; if (which === 'Assign a periodic box') state.box = '6 nm cubic on reviewed structures'; invalidate(); })); return;
+  }
+  if (action === 'review-property') {
+    const geometry = v.panel === 'structure';
+    const name = (geometry ? (v.draft.geometryResultName ?? 'protein-size') : (v.draft.propertyResultName ?? 'protein-sasa')).trim();
+    if (!name || state.results.some(r => r.name === name)) { v.error = 'Use a nonempty, new result name; replacement requires a separate reviewed action.'; render(v); return; }
+    const quantity = geometry ? 'Radius of gyration' : 'Solvent-accessible surface area', selectedFrames = frameList(v);
+    const result = {name, domain: geometry ? 'geometry' : 'physchem', method: quantity, frames: selectedFrames, scope: v.draft.target ?? 'Protein · source A', unit: geometry ? 'Radius · nm' : 'Area · nm²', valid: true};
+    showReview(v, 'Save a calculated result', [`${quantity}; structures in requested order: ${selectedFrames.join(', ')}.`, geometry ? 'Equal geometric weights in this example; no implied mass weighting.' : 'Whole-system occlusion context, selected output, explicit units and native box behavior.', 'Only illustrative values will be created. Keep method, scope and explicit frame indices with the result.'], () => { commit('Saved analysis result', () => state.results.push(result)); navigate(v, geometry ? 'structure' : 'properties', geometry ? 'Analyze' : 'Results'); }); return;
+  }
+  if (action === 'review-interactions') {
+    const name = (v.draft.analysisName ?? 'protein-hbonds').trim();
+    if (!name || state.analyses.some(a => a.name === name)) { v.error = 'Use a new nonempty analysis name. Existing results are not replaced implicitly.'; render(v); return; }
+    const a = {name, family: v.draft.family ?? 'Hydrogen bonds', frames: frameList(v), valid: true};
+    showReview(v, 'Create a named interaction analysis', [`${a.family}; evaluated structures: ${a.frames.join(', ')}.`, `Periodic geometry: ${v.draft.usePbc ? 'requested; box/image prerequisites must pass' : 'off'}.`, 'Retain evaluated-empty coverage, compound participants, roles, units and actual method/provenance.', 'Store the analysis separately from visual sets. This simulation creates metadata, not detected interactions.'], () => { commit('Saved interaction analysis', () => state.analyses.push(a)); navigate(v, 'interactions', 'Results'); }); return;
+  }
+  if (action === 'display-analysis') {
+    const name = v.draft.displayAnalysis ?? state.analyses[0]?.name;
+    if (!state.analyses.some(a => a.name === name && a.valid)) { v.error = 'This analysis belongs to a historical input. Restore compatible content or calculate explicitly.'; render(v); return; }
+    commit('Added visual interaction set', () => { if (!state.displayed.includes(name)) state.displayed.push(name); }); return;
+  }
+  if (action === 'review-save' || action === 'review-work' || action === 'review-figure') {
+    const env = document.getElementById('environment').value;
+    const destination = env === 'remote' ? (v.draft.destination ?? 'Download in this browser') : 'Download in this browser';
+    showReview(v, 'Review output · no file will be written', [`Content: ${v.tab}. Destination: ${destination}.`, v.tab === 'Molecular system' ? `Atoms: ${v.draft.saveAtoms ?? 'Whole system'}; structures: ${v.draft.saveFrames ?? 'All · 12 structures'}; ${v.draft.format ?? 'H5MSM · recommended'}.` : 'Capture one coherent work revision and report the actual format capabilities.', 'A production writer must show format-specific losses before writing, including unsupported domains.', 'Saving files is separate from session Undo. Existing files require an explicit overwrite policy.'], null); return;
+  }
+  if (action === 'import-analysis') { showReview(v, 'Load an existing analysis', ['Choose a full or interactions-only H5MSM file through a supported public route.', 'For an independent analysis, require explicit correspondence to the current atom/frame order.', 'source_id records provenance; it does not authenticate molecular identity.', 'Preview named analyses and their coverage before attaching. No file is read here.'], null); return; }
+  if (action === 'explain-load') { showReview(v, 'Loading review', ['Resolve the actual source list and the chosen add/replace/append semantics.', 'Preserve source identity and report box, structure and attribute-policy conflicts.', 'A successful managed load is recoverable; failed validation preserves current work.', 'No source is fetched or loaded by this prototype.'], null); return; }
+}
+function renderAll() { views.forEach(render); }
+for (const narrow of [true, false]) {
+  const root = document.createElement('article'); root.className = `prototype ${narrow ? 'narrow' : 'wide'}`;
+  document.getElementById('prototypes').append(root);
+  const v = {root, narrow, panel: 'system', tab: 'Edit', tabs: {}, draft: {}, review: null, error: ''};
+  views.push(v);
+  root.addEventListener('input', event => { const el = event.target; if (el.dataset.field) { v.draft[el.dataset.field] = el.type === 'checkbox' ? el.checked : el.value; if (v.review) { v.review = null; render(v); } } });
+  root.addEventListener('change', event => {
+    if (event.target.matches('[data-navigation]')) navigate(v, event.target.value);
+    else if (['edit','editSelectionMode','editSource','editGroup','water','sodium','magnesium','repair','family','relationMode'].includes(event.target.dataset.field)) render(v);
+  });
+  root.addEventListener('click', event => { const b = event.target.closest('button'); if (!b || b.disabled) return; if (b.dataset.panel) navigate(v, b.dataset.panel); else if (b.dataset.tab) navigate(v, v.panel, b.dataset.tab); else if (b.dataset.action) act(v, b.dataset.action); });
+  root.addEventListener('keydown', event => {
+    if (!event.target.matches('[role="tab"]') || !['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
+    event.preventDefault(); const tabs = panels[v.panel].tabs, current = tabs.indexOf(v.tab);
+    const i = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length-1 : (current + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+    navigate(v, v.panel, tabs[i]); v.root.querySelector('[role="tab"][aria-selected="true"]').focus();
+  });
+}
+document.getElementById('layout').addEventListener('change', event => views.forEach(v => v.root.classList.toggle('hidden', event.target.value !== 'compare' && event.target.value !== (v.narrow ? 'narrow' : 'wide'))));
+document.getElementById('environment').addEventListener('change', () => { views.forEach(v => { if (v.panel === 'save') v.review = null; }); renderAll(); });
+document.getElementById('reset').addEventListener('click', () => { state = initial(); past = []; future = []; generation++; status = 'Illustrative session reset'; views.forEach(v => { v.draft = {}; v.review = null; v.error = ''; }); renderAll(); });
+renderAll();
+</script>
+</body>
+</html>
