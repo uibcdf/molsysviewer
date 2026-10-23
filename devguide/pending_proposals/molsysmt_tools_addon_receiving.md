@@ -20,8 +20,9 @@ supersedes: []
 and actionable state-factory failures are delivered for initial read-tool source
 receiving. Explicit retained-structure maps now extend live adoption and
 independent extraction. Retained-axis removal, coordinate/box setting,
-copy/conversion/preflight and synchronization now have source receiving; other
-edit families, task panels and installed qualification remain pending.
+copy/conversion/preflight, composition/comparison readers and synchronization
+now have source receiving; other edit families, task panels and installed
+qualification remain pending.
 
 ## What
 
@@ -296,3 +297,37 @@ logs name both no exported WebGL canvas and loading readiness timeouts, alongsid
 Vulkan/D-Bus diagnostics. D-Bus alone does not identify the cause. Keep the
 existing uibcdf/molsysviewer#35 and uibcdf/gh-run-receptor#62 tracking; this is not
 green core evidence. No tag, release, package or 1.0 publication is produced.
+
+
+## Composition and explicit-reference comparison — 2026-10-23
+
+MolSysMT `5911dace61c667138e0596ff631dc628d9b85ac1` adds native bound
+`contains`, `is_composed_of` and `compare(redefine_indices=False)`, including
+root aliases and exact signatures minus the primary system. The second system
+and its separate atom/structure selectors remain explicit. These calls reuse
+the serialized reader, including for pending scientific data, without scene
+projection or attached results. Auxiliary systems remain caller-owned; this
+is not a two-view transaction or automatic cross-view lock.
+
+The native `redefine_indices=True` branch rebuilds topology in both inputs and
+stays unreceived, rejected before writes even for trusted calls. The provider
+re-scopes its existing ArgDigest alias table before forwarding defaults;
+`attributes_type` works without converting a wrapper default into an explicit
+user argument, while an actual alias/canonical collision still fails, including
+canonical None. There is no independent scientific comparator or alias registry.
+
+The provider receipt under uibcdf/molsysmt#421 records 33 focused cases, 157
+addon/packaging/route regression cases, all seven guide blocks and unchanged
+course Module 14 code/outputs. Source/wheel/sdist metadata guards include the
+new normalization source (13 addon Python files). Clean-checkout devguide
+validation passes. Hosted predicate receiving is newly activated; installed
+compatibility and wider scientific/GUI coverage remain pending. No host runtime,
+frontend, message schema, public package or release changes in this block.
+
+The previous exact host `4b5a0888` has successful policy 39997487212 and browser
+39997486583 gates. Source pair 39997486648 reports only the three known strict
+documentation failures from public MolSysMT/pandas (uibcdf/molsysmt#431); its
+storage-variant guard no longer fails. Experimental Qt 39997486452 still reports
+no WebGL canvas / loading readiness failures under its separate #35 scope.
+Do not describe either failed campaign as globally green or infer D-Bus as the
+cause from the receptor's bounded summary alone.

@@ -4,11 +4,11 @@
 2026-10-22.** The maintainer authorizes the Viewer development effort to implement
 the integration in the owning MolSysMT repository. This is a new plan under
 [the core/add-on boundary](core_and_addon_boundary.md). The withdrawn native
-Studio expansion plan remains removed. An initial experimental source delivery
-now provides six bound `basic` queries, native molecular extraction, managed
-native removal, coordinates/box setting, independent copies, conversion/preflight
-and their root aliases, with synchronization controls. Broader runtime
-coverage, installed compatibility, dependency floors and release remain separate.
+Studio expansion plan remains removed. The experimental source integration provides bound `basic` queries and read-only
+comparison, independent extraction/copies/conversion and preflight, managed
+retained-axis removal and coordinates/box setting, with root aliases and
+synchronization controls. Broader runtime coverage, installed compatibility,
+dependency floors and release remain separate.
 
 ## Accepted requirements
 

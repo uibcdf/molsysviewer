@@ -264,3 +264,19 @@ structures, preflight destination-byte preservation, independent outputs,
 full-axis live-reference policy, pending reads, replacement and closed-view
 rejection. Native forms/H5MSM receiving does not qualify optional converters.
 No new host runtime/API or frontend transport is needed for these reader routes.
+
+
+## Composition and comparison readers — 2026-10-23
+
+The provider adds `contains`, `is_composed_of` and the non-mutating comparison
+route through the existing serialized reader. Comparison binds only its first
+system: the second system and its atom/structure selectors remain explicit and
+caller-owned. No cross-view locking or implicit molecular preparation follows
+from binding a primary system.
+
+Native `compare(redefine_indices=True)` rebuilds topology in both inputs and is
+not received as a reader. Reject it before writes, even for trusted digestion
+bypass; a future adapter must qualify both systems' effects and reconciliation.
+The provider reuses its ArgDigest alias declarations before wrapper defaults are
+forwarded, retaining native duplicate-name rejection. No new host runtime,
+frontend transport or scientific comparison algorithm is introduced here.

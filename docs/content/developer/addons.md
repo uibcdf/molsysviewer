@@ -97,10 +97,11 @@ uses `molsysviewer_molsysmt.tools`, with `molsysmt` as its view namespace. Nativ
 selection, interactions and H5MSM workflows remain available without registration.
 Optional domain extensions keep this addon contract. See uibcdf/molsysviewer#186.
 
-The experimental source integration provides six bound `basic` queries,
-independent extraction, managed native removal and coordinates/box setting with
-synchronization controls. The provider owns their usage reference. Broader scientific coverage, other edit
-families, panels and installed-package compatibility remain pending. The new route does
+The experimental source integration provides qualified bound queries,
+independent molecular outputs and retained-axis edits with synchronization
+controls. The provider owns the exact capability inventory and usage reference.
+Broader scientific coverage, other edit families, panels and installed-package
+compatibility remain pending. The new route does
 not enable retired packages. General automatic observation of arbitrary
 external molecular edits is not required; integrated tools coordinate their own
 edits through the shared Viewer reconciliation boundary.
