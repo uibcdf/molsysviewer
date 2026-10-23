@@ -18,7 +18,7 @@ Viewer notifications or universal tracking of mutable arrays/tables.
 | Case | Direction / current limit |
 | --- | --- |
 | Direct supported MolSysMT edits of `view.molsys` | Caller requests explicit qualified reconciliation after the edit sequence. The exact same-object contract still needs receiving. |
-| Edit through the proposed MolSysMT tools add-on | The integrated operation can coordinate scientific editing and scene update; wrapper arguments and batching are not frozen. |
+| Edit through the planned MolSysMT tools add-on | Preserve native mutation/return semantics and synchronize edits of the bound system by default; independent results are not automatically adopted. Deferred synchronization requires qualified maps and safe pending state. |
 | Independent result from extraction/copy/calculation | Return the result with provider semantics; incorporation into this view is explicit. |
 | Raw array/table/alias mutation | No general observation or validity guarantee. Advanced callers retain explicit invalidation/reconciliation responsibilities. |
 | Camera, frame or display-only change | Existing scene/navigation contracts; no molecular mutation or scientific rerun. |
@@ -51,9 +51,10 @@ private integration services; this does not require observing external calls.
 The consumer has now withdrawn the general observer request and told the
 provider uibcdf/molsysmt#413 may close without a new deliverable. The
 [consumer decision](https://github.com/uibcdf/molsysmt/issues/413#issuecomment-6353744305)
-keeps operation-specific receiving separate. No observer API or final wrapper
-contract is delivered. Scientific invalidation and visual synchronization
-remain distinct.
+keeps operation-specific receiving separate. No observer API or runtime wrapper
+is delivered. The subsequent accepted wrapper policy is recorded in the
+[addon plan](molsysmt_tools_addon_plan.md); scientific invalidation and visual
+synchronization remain distinct.
 
 ## What current source actually supplies
 
@@ -98,10 +99,12 @@ Viewer #259 remains separate receiving of copy/edit ownership.
    explicit unknown-correspondence policy. Preserve known nonconsecutive and
    repeated structure mappings where admitted. Counts and source labels do not
    prove identity.
-3. **Deferred update safety.** A proposed `update_view` boolean or batch operation
-   must define pending synchronization, accumulated maps, allowed scene actions,
-   stale visual selections, completion and failures. It cannot merely suppress
-   redraw and silently leave old indices active. Decide the API after review.
+3. **Deferred update safety.** The accepted addon policy defers only visual
+   synchronization, preserving native mutation semantics. Its receiving API
+   must define pending state, accumulated maps, allowed scene actions, stale
+   visual selections, completion and failures. It cannot merely suppress redraw
+   and silently leave old indices active. Follow the addon plan for the accepted
+   policy; qualify the exact resynchronization API before implementation.
 4. **Scientific applicability and failure.** Retain provider invalidation and
    distinguish rejection, no-op, committed change and possible partial writes.
    Current `apply_system_edit` conservatively invalidates analyses by default;
@@ -128,7 +131,8 @@ Viewer #259 remains separate receiving of copy/edit ownership.
 3. Qualify same-object coordinate/box/attribute reconciliation and separately
    admit axis-changing edits. Review invalidation, stale handles, errors,
    repeated/nonconsecutive structure maps and pending-update interaction.
-4. Design the MolSysMT tools add-on API/panels and wrapper return/update policy.
+4. Implement the accepted MolSysMT tools add-on API/return/update policy after
+   specifying its receiving contracts; design the panels over that API.
    Classify each operation under the accepted core/add-on boundary before
    implementation. Reuse scientific tools; no public wrapper per shortcut.
 5. Qualify actual widget/popups, headless Python and exact installed artifacts.
