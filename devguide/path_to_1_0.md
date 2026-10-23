@@ -7,11 +7,14 @@ additional preparation/editing/general analysis belongs to add-on/scientific
 tools. MolSysMT remains required; its redesigned tools add-on is proposed and
 the legacy runtime refusal remains. The native-Studio expansion plan is
 withdrawn and removed. The separate [add-on plan](molsysmt_tools_addon_plan.md)
-records accepted expert API/GUI requirements and the proposed implementation
-sequence; the edit/update contract remains to be agreed before mutating wrappers.
+records accepted expert API/GUI and edit/update policy with the implementation
+sequence. [Technical receiving](molsysmt_addon_receiving_contract.md) under
+uibcdf/molsysviewer#264 and uibcdf/molsysmt#421 must qualify the proposed protocol
+before mutating wrappers. The provider ledger covers 267 tracked-scope exports,
+including aliases/support; these counts do not establish implemented coverage.
 The [reconciliation review](linked_molecular_edits_design.md) considers explicit
 reconciliation or coordinated tool operations. The consumer withdrew the general
-observer request in uibcdf/molsysmt#413 and told the provider it may close it.
+observer request in uibcdf/molsysmt#413, which is now withdrawn and closed.
 The [operation inventory](studio_molsysmt_operation_inventory.md),
 [recovery design](studio_molecular_operations_design.md),
 [acceptance scenarios](studio_foundation_workflow_contracts.md) and

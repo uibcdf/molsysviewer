@@ -41,6 +41,12 @@ where required and the existing scene domains. The implementation can be done
 by this development effort in both repositories under the maintainer's direction.
 Keep MolSysMT's ordinary import/use independent of Viewer or a browser.
 
+Implementation tracking is now open: uibcdf/molsysmt#421 owns the provider
+addon and source ledger; uibcdf/molsysviewer#264 owns host and molecular-edit
+receiving. The [technical receiving draft](molsysmt_addon_receiving_contract.md)
+specifies the proposed integration controls/state model and acceptance cases.
+These records do not restore runtime support.
+
 Provider source was inspected at `35a9fc4919485dd0da987134cb5ec9a867d77916`
 and Viewer at `697649d82419116d93715d37245e1e279b6e7e5c`. The previous integration
 was removed by provider `dfdb31489c3a7dce921fa7b1df9e3fcd24c1f4f6`
@@ -291,6 +297,10 @@ ownership does not require a particular URL or separate hosting site.
    failure, lifecycle and authoritative maps/outcomes before mutating wrappers.
    Create fresh provider/consumer implementation issues before source changes;
    keep the withdrawn general observer request uibcdf/molsysmt#413 separate.
+   Tracking is filed as uibcdf/molsysmt#421 and uibcdf/molsysviewer#264. The first
+   source ledger covers all 267 tracked-scope exports at provider `fe5036c1`;
+   per-function effect qualification and untracked-namespace disposition remain
+   pending. Counts include aliases and support objects, not 267 algorithms.
 2. **Restore qualified platform integration.** Reintroduce the integration
    package/spec, entry point, state factory and lifecycle in MolSysMT; qualify
    an explicit compatibility route in Viewer. Both current repositories guard

@@ -53,7 +53,7 @@ documents, and historical audits.
   add-on is proposed; the backend remains required and the legacy addon remains
   refused by current runtime. Python remains the primary headless foundation.
   General automatic edit observation is no longer required; the consumer
-  request in uibcdf/molsysmt#413 is withdrawn and the provider may close it.
+  request in uibcdf/molsysmt#413 is withdrawn and closed.
   [Explicit reconciliation/tool coordination](linked_molecular_edits_design.md)
   needs operation-level qualification, deferred-update safety and optional
   recovery contracts. [#262](archive/replacement_load_retains_scene_history.md)
@@ -62,9 +62,13 @@ documents, and historical audits.
   maintainer's request. The new [MolSysMT tools add-on plan](molsysmt_tools_addon_plan.md)
   records accepted requirements: broad expert module/function mirroring,
   implicit current `view.molsys`, thin scientific wrappers and independent
-  task-oriented GUI design. `view.addons` is confirmed; the edit/update control
-  still needs agreement. Implementation is owned by the provider repository
-  and will be undertaken by this development effort.
+  task-oriented GUI design. Native mutation/return semantics are preserved;
+  admitted bound edits synchronize by default and independent results require
+  explicit adoption. [Technical receiving](molsysmt_addon_receiving_contract.md)
+  is now tracked in uibcdf/molsysviewer#264 and uibcdf/molsysmt#421. The provider
+  source ledger accounts for 267 tracked exports, including aliases/support;
+  effect review and runtime qualification remain pending. Implementation is
+  owned by the provider repository and undertaken by this development effort.
   The [source inventory](studio_molsysmt_operation_inventory.md),
   [operation/recovery proposal](studio_molecular_operations_design.md) and
   [six acceptance scenarios](studio_foundation_workflow_contracts.md) remain
