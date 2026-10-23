@@ -21,10 +21,12 @@ and actionable state-factory failures are delivered for initial read-tool source
 receiving. Explicit retained-structure maps now extend live adoption and
 independent extraction. Retained-axis removal, coordinate/box setting,
 copy/conversion/preflight, composition/comparison/identity readers, all eleven
-current topology readers, six structure calculations and synchronization now
+current topology readers, ten structure calculations and synchronization now
 have source receiving; other namespaces/edit families, task panels and installed
 qualification remain pending. Native scientific limitations stay visible,
-including uibcdf/molsysmt#439 and uibcdf/molsysmt#440 / uibcdf/molsysmt#441.
+including uibcdf/molsysmt#439, uibcdf/molsysmt#440, uibcdf/molsysmt#441 and
+uibcdf/molsysmt#442. The maintainer requires waiting for the owning team on
+uibcdf/molsysmt#441; independent readers continue without an addon workaround.
 
 ## What
 
@@ -483,3 +485,52 @@ The structure commit's provider smoke 40016357086 is active. Its Ruff,
 dependency-contract, policy, publication-governance and devguide gates pass.
 The host documentation update passes 276 reporting/link guards and the generated
 queue-index check. These checks do not replace the pending scientific smoke.
+
+
+## Independent comparison readers while waiting for MolSysMT — 2026-10-23
+
+The maintainer explicitly requires waiting for the MolSysMT development team
+on uibcdf/molsysmt#441. This task neither fixes that scientific implementation
+nor provides a hidden routing/formula alternative. Min/max distances, contacts
+and neighbors remain pending. Reviewed direct RMSD, minimum RMSD, principal axes
+and least-squares plane routes avoid the defective matrix in the exercised
+numeric/property-selection scenarios; rich selectors and optional engines keep
+their native dependencies.
+
+Provider `b236c6e1206f791cfdedd2d44b9587d02bc79405` receives those four explicit
+wrappers. They bind the current primary and reuse the same host reader, without
+changing either coordinate domain, attaching analyses, creating shapes or
+projecting a scene update. References remain caller-owned/stable. Minimum RMSD
+is a scientific value, not an in-place coordinate fit. Native missing RMSD skip
+control receives an addon-only keyword that is not forwarded. Axes/moments keep
+native arrays and conventions; plane results keep source memberships, typed
+empty scopes, physical quantity fields and normal-sign semantics.
+
+The provider receipt under uibcdf/molsysmt#421 records 36 focused cases and one
+400-case applicable regression (305 addon, 30 packaging, 11 dependency-route,
+54 devguide). All seventeen guide examples and twenty-six native-docstring
+examples pass, with Ruff and clean-checkout devguide validation. NumPy norms,
+SVD/Kabsch, weighted covariance and plane residuals protect actual numbers in
+addition to native parity. Source inventory remains fifteen addon Python files.
+Module 16 receives availability/limitation prose only; its code/output and
+protected native transformation topics remain unchanged. Concurrent PDBQT work,
+including its shared manifest change, is preserved outside this commit.
+
+A separate native RMSF forced-unit discrepancy was reproduced without Viewer,
+filed with explicit authorization as uibcdf/molsysmt#442 and left to the scientific
+team. RMSF remains unreceived. The structure inventory now accounts for ten
+received and eighteen pending exports; no optional-GPU, arbitrary selector,
+universal RAM or clean installed-artifact qualification is claimed.
+
+Previous structure smoke 40016357086 passes on provider 8ebb1b4d5, covering the
+first six readers. It does not qualify this new four-reader commit; exact-head
+hosted receiving remains pending. Viewer 3b908582 policy/governance pass;
+browser 40016645007 was still active at the last inspection. Overall receiving
+under uibcdf/molsysviewer#264 and uibcdf/molsysmt#421 stays partial. Other
+namespaces/edits, panels, installed compatibility, freeze and publication remain
+outside this delivered scope.
+
+Exact-provider smoke 40018415983 is active; Ruff and dependency-contract gates
+pass, while other hosted gates remain pending. The host documentation update
+passes 276 reporting/link guards and the generated queue-index check. These
+results do not replace the pending source smoke or qualify an installed package.

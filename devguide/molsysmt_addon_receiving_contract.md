@@ -379,3 +379,31 @@ change mode or units to repair them. The owning scientific fixes need separate
 receiving before clearing those scopes. No generic constant-memory promise,
 optional GPU qualification or remaining structure coverage follows from these
 six wrappers.
+
+
+## Independent RMSD, axes and plane receiving — 2026-10-23
+
+The provider adds raw RMSD, minimum RMSD, principal axes and least-squares planes
+through current-primary serialized reads. References and their selectors/index
+remain explicit, caller-stable inputs. No auxiliary-view transaction, chemical
+correspondence inference or periodic coordinate reconstruction is introduced.
+Raw RMSD uses the supplied coordinate frame; minimum RMSD optimizes the comparison
+without fitting either input in place. Its quantity result is separate from any
+coordinate edit, scene alignment or measurement. Native RMSD lacks a declared
+skip control: the addon-only keyword is not forwarded, and native public validation
+still runs.
+
+Axes/moments retain native numeric arrays, row basis, eigenvalue ordering and
+sign/degenerate-subspace conventions. Plane dictionaries retain sparse memberships,
+structure order/typed empties, physical centers/deviations and numeric normals.
+They do not create shapes, infer aromaticity or move the molecular system.
+No host runtime, public API, frontend protocol or new molecule copy is added by
+the wrappers; native calculation/cache ownership remains native.
+
+The reviewed direct metric routes and numeric/property selectors avoid the
+get_distances path affected by uibcdf/molsysmt#441. Rich selectors/optional engines
+retain their own dependencies; this is a bounded receiving claim. The maintainer
+requires waiting for the MolSysMT scientific team on that issue, keeping min/max,
+contact and neighbor wrappers pending. No alternative distance implementation
+or hidden mode change is introduced. RMSF remains unreceived after native
+forced-unit discrepancy uibcdf/molsysmt#442; the scientific team owns that fix too.

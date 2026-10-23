@@ -9,12 +9,16 @@ comparison, independent extraction/copies/conversion and preflight, managed
 retained-axis removal and coordinates/box setting, with root aliases and
 synchronization controls. All eleven current native `topology` exports now have
 explicit source wrappers, including chemical-graph and sequence analyses.
-Six initial `structure` calculations now reuse the same host serialized reader;
-22 other structure exports remain pending. Native scientific limits stay visible:
+Ten `structure` calculations now reuse the same host serialized reader;
+18 other structure exports remain pending. The added raw/minimum RMSD, axes and
+plane readers use reviewed paths independent of the affected distance route.
+The maintainer requires waiting for the MolSysMT team on uibcdf/molsysmt#441;
+no scientific fix or hidden routing alternative is implemented by the addon.
+Native scientific limits stay visible:
 uibcdf/molsysmt#439 for sequence identity and uibcdf/molsysmt#440 /
 uibcdf/molsysmt#441 for affected heavy-mode geometry routes. No new host runtime
-is needed. Broader runtime coverage,
-installed compatibility, dependency floors and release remain separate.
+is needed. RMSF remains unreceived under uibcdf/molsysmt#442. Broader runtime
+coverage, installed compatibility, dependency floors and release remain separate.
 
 ## Accepted requirements
 

@@ -51,7 +51,7 @@ documents, and historical audits.
   visual content. Additional preparation, editing, general analysis and domain
   tools belong to add-on/scientific interfaces. A redesigned MolSysMT tools
   add-on has experimental source `basic` readers, independent outputs,
-  retained-axis edits/synchronization, eleven `topology` readers and six
+  retained-axis edits/synchronization, eleven `topology` readers and ten
   `structure` calculations; the
   [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md) names
   exact scope and tests. The backend remains required and legacy addon routes
