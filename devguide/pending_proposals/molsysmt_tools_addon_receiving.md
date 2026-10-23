@@ -20,9 +20,10 @@ supersedes: []
 and actionable state-factory failures are delivered for initial read-tool source
 receiving. Explicit retained-structure maps now extend live adoption and
 independent extraction. Retained-axis removal, coordinate/box setting,
-copy/conversion/preflight, composition/comparison/identity readers, four topology
-readers and synchronization now have source receiving; other edit families, task panels and installed
-qualification remain pending.
+copy/conversion/preflight, composition/comparison/identity readers, all eleven
+current topology readers and synchronization now have source receiving; other
+namespaces/edit families, task panels and installed qualification remain pending.
+Native scientific limitations remain visible, including uibcdf/molsysmt#439.
 
 ## What
 
@@ -402,3 +403,39 @@ indexes are current. Existing
 public-backend pandas documentation failures (uibcdf/molsysmt#431) and Qt #35
 retain their separate scope. No host runtime change, candidate freeze, package,
 tag or release is part of this delivery.
+
+
+## Topology namespace mirror completed in source — 2026-10-23
+
+Provider `5dab4fa005ac54621db668e47cfd6ef112c8cc2c` receives the seven remaining
+baseline topology exports: rings, rigid fragments, rotatable bonds, SMARTS,
+atom correspondences, sequence alignment and sequence identity. All eleven
+functions now have explicit native signatures and current-primary binding.
+The host serialized reader is reused without new public API or frontend logic.
+
+The provider's completion receipt under uibcdf/molsysmt#421 records 39 focused
+cases and a single 310-case applicable regression (215 addon, 30 packaging,
+11 dependency-route, 54 devguide). All eleven guide examples and 37 docstring
+examples pass, as do Ruff and clean-checkout devguide validation. The 14-file
+addon packaging inventory remains unchanged. Module 13 gains availability and
+limit prose only; executable cells and outputs are preserved. Concurrent
+provider stereo/documentation changes were preserved and excluded from this
+commit; the working-source checks do not qualify a frozen full-provider or
+solver-installed artifact pair.
+
+Native self-comparison of capped pentalanine reports 71.428571 percent and
+shifted group indices although alignment returns identical five-letter strings.
+The maintainer authorized its native report, now uibcdf/molsysmt#439. This is
+independent of Viewer. The wrapper preserves native output and documents the
+explicit amino-acid selection route; the defect remains open without a local
+scientific workaround. Native quantity-warning issue #435 has since been fixed
+in source by provider `3c43a9554`; this does not qualify a corrected public package.
+
+The earlier topology smoke 40012474771 was cancelled on main advancement, not
+passed. New exact-provider smoke 40014485194 is active; hosted receiving remains
+pending. Viewer `4b58da6b` policy 40012719594 and governance 40012719690 pass;
+its browser run 40012719491 was still active at the last inspection. Other
+namespaces/effects, general edits, lazy utilities, GUI and installed compatibility
+remain pending. #264/#421 stay partial; no freeze, tag or release is introduced.
+The host documentation update passes 276 reporting/link guards and the generated
+queue-index check; unrelated local notebook and #259 work remains preserved.

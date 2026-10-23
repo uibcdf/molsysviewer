@@ -6,7 +6,7 @@ and explores, including qualified scientific calculations for visual content;
 additional preparation/editing/general analysis belongs to add-on/scientific
 tools. MolSysMT remains required; its redesigned tools add-on has experimental
 source basic readers/independent outputs, retained-axis edits/synchronization and
-four topology readers. Legacy root declarations remain refused. Broader
+eleven topology readers. Legacy root declarations remain refused. Broader
 namespaces/edits, panels and installed qualification remain pending. The
 native-Studio expansion plan is withdrawn and removed. The separate
 [add-on plan](molsysmt_tools_addon_plan.md)

@@ -7,10 +7,11 @@ the integration in the owning MolSysMT repository. This is a new plan under
 Studio expansion plan remains removed. The experimental source integration provides bound `basic` queries and read-only
 comparison, independent extraction/copies/conversion and preflight, managed
 retained-axis removal and coordinates/box setting, with root aliases and
-synchronization controls. Four native `topology` readers now have source
-receiving without new host runtime: bond graphs, covalent blocks/paths and
-dihedral quartets. Broader runtime coverage, installed compatibility,
-dependency floors and release remain separate.
+synchronization controls. All eleven current native `topology` exports now have
+explicit source wrappers, including chemical-graph and sequence analyses,
+without new host runtime. Native scientific limits remain visible, including
+uibcdf/molsysmt#439 for capped/mixed sequence identity. Broader runtime coverage,
+installed compatibility, dependency floors and release remain separate.
 
 ## Accepted requirements
 

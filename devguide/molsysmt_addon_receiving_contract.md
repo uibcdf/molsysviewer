@@ -326,5 +326,31 @@ functions, so the addon does not invent them.
 Bond-graph/block helpers forward their declared native skip_digestion flag.
 Path/quartet helpers have no declared native flag: their keyword-only addon
 control governs addon digestion and is never inserted into scientific kwargs.
-Native validation still runs. Other topology functions, lazy lifetimes and
-mutating routes need separate receiving; the namespace is not complete.
+Native validation still runs. The additional graph/sequence receiving below
+extends this initial four-function slice. Lazy lifetimes and mutating routes
+still need separate receiving.
+
+
+## Chemical-graph and sequence readers — 2026-10-23
+
+The provider also receives rings, rigid fragments, rotatable bonds, SMARTS
+matches, atom correspondences, sequence alignment and sequence identity. This
+completes the explicit mirror of the eleven current topology exports at the
+reviewed baseline. It does not establish scientific correctness for all inputs,
+optional engines or unreceived namespaces.
+
+The same serialized reader binds only the current primary system. References,
+reference selections/states, scientific patterns, anchors/candidates and search
+limits remain native and explicit. Auxiliary inputs are caller-stable; no
+auxiliary-view lock, atom-order adoption or coordinate fit is implied. Missing
+chemical declarations raise rather than triggering hidden preparation. Native
+optional dependency gates remain lazy. Ring/fragment memberships, source bond
+indices, query-column order, empty matrices, search evidence and prettyprint
+stdout/None behavior are preserved without scene projection or attachment.
+
+Sequence identity has no declared native skip parameter; its addon-only keyword
+is never forwarded. The native sequence/group-axis mismatch on capped or mixed
+systems remains uibcdf/molsysmt#439. The addon documents it and preserves native
+results without implementing a second identity formula. Explicit contributing
+group selections exercise a valid native route; they are not hidden filtering.
+No new host runtime/API, graphical panel or wire message is required here.
