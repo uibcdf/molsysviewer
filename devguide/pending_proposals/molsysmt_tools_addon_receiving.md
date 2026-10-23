@@ -111,3 +111,12 @@ remain visible. Development editable metadata now exposes the actual new entry
 point, observed with a real dialanine view; this is not clean solver or release
 artifact qualification. Preserved concurrent provider changes remain explicit
 in the receipt's provenance.
+
+The initial provider delivery is published in MolSysMT commit
+`fa2f3aa9232372e5fa7db8bbf4ebd9e2ad481056`, tracked by uibcdf/molsysmt#421.
+Its routine Viewer source pin is `7449675aa8407e94136357f11da1256188e46183`;
+that formatting-only follow-up has the same Python AST as the tested host logic.
+Provider developer-guide validation passes on a clean checkout of the delivery.
+Both issues remain partial: scientific edits, synchronization and task panels
+still require implementation and qualification. No package publication follows
+from this source delivery.
