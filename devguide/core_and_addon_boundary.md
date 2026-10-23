@@ -109,6 +109,27 @@ during receiving will be reported separately.
 Do not infer new provider notification APIs or remove Viewer setters from this
 decision.
 
+## Add-on documentation and catalogue ownership
+
+MolSysViewer owns documentation of what addons are, discovery, registration,
+activation/deactivation, configuration, compatibility and lifecycle. It also
+owns the guide for creating an addon against its public extension contracts and
+a maintained catalogue linking to the owning components.
+
+Each component documents what its addon offers and how to use it: the expert
+API, graphical tools, scientific methods, prerequisites, examples and limits.
+Link to that reference from Viewer instead of duplicating it. Viewer tutorials
+may use addons within a visualization workflow, linking scientific details to
+the owner. This division applies to suite components and independent providers.
+
+Third-party authors request catalogue inclusion through a MolSysViewer issue,
+with the addon name, purpose, maintainer, package/source, documentation,
+installation route and declared compatible versions. Catalogue maintenance is
+an editorial task, separate from runtime discovery/registration and installed
+qualification. Adding a listing does not require adding a hardcoded discovery
+module. The public catalogue explains this request route and links the creation
+guide; providers keep their usage documentation in their own projects.
+
 ## Supersession and documentation
 
 This decision supersedes the earlier proposal to put general molecular editing,

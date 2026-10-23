@@ -267,13 +267,13 @@ Deleting a visual object does not delete its underlying scientific result.
 
 ## Documentation ownership
 
-Document the ecosystem in both projects, with one authoritative owner for each
-topic rather than duplicate full references. Viewer owns discovery/activation,
-host lifecycle and compatibility, the core/addon boundary, a maintained addon
-catalog and extension-author guidance. Each provider owns its addon reference:
-expert API, task panels, scientific prerequisites, method/engine limits,
-examples and migration notes. MolSysMT therefore owns the complete reference
-for `view.addons.molsysmt`, alongside its ordinary scientific API documentation.
+Follow [the documentation ownership rule](core_and_addon_boundary.md#add-on-documentation-and-catalogue-ownership).
+MolSysMT owns the complete reference for `view.addons.molsysmt`, alongside its
+ordinary scientific API documentation: what the addon offers, expert API,
+graphical use, scientific prerequisites, method/engine limits, examples and
+migration notes. Viewer owns general addon management, the creation guide and
+the catalogue with the third-party inclusion-request route. Do not duplicate the
+complete provider reference in Viewer.
 
 Viewer tutorials may demonstrate addons in a complete visualization workflow;
 link provider parameter/method documentation instead of copying signatures and

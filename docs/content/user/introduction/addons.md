@@ -1,3 +1,4 @@
+(User_Addons)=
 # Add-ons
 
 MolSysViewer can grow with optional **add-ons**.
@@ -38,6 +39,17 @@ usable independently of its Viewer panels.
 
 MolSysMT itself remains a required backend even when you use no add-ons.
 An optional tools interface and the backend dependency have different roles.
+
+## Finding tools and their documentation
+
+Browse the {doc}`../../showcase/addons` catalogue to find an add-on and its
+owning project. That project's documentation explains what the add-on offers,
+how to use its Python API and graphical tools, installation requirements and
+scientific limits.
+
+The MolSysViewer guide explains the shared host: discovery, registration,
+activation, configuration and lifecycle. If you want to create your own add-on,
+start with {doc}`../../developer/addons`.
 
 ## Discovery model
 

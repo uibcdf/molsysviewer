@@ -1,23 +1,42 @@
-# Ecosystem add-ons
+(Addon_Catalogue)=
+# Add-on catalogue
 
-MolSysViewer is being shaped as the shared visual workbench of MolSysSuite.
+Find add-on projects here, then follow the owning component's documentation for
+installation, available tools, Python and graphical use, and compatible versions.
+MolSysViewer documents the shared
+{doc}`discovery and management model <../user/introduction/addons>` and
+{doc}`how to create an add-on <../developer/addons>`.
 
-That means the core viewer should stay strong and reusable, while
-domain-specific capabilities can arrive as optional add-ons.
+## Projects and integrations
 
-This showcase page is a placeholder for future add-on-shaped scientific
-stories, such as:
+| Project | Scientific area | Documentation and availability |
+| --- | --- | --- |
+| TopoMT | Molecular topography | [TopoMT documentation](https://www.uibcdf.org/topomt). Consult the provider for the scope of `molsysviewer_topomt` and its compatible versions. |
+| PharmacophoreMT | Pharmacophores | [PharmacophoreMT documentation](https://www.uibcdf.org/pharmacophoremt). Consult the provider for the scope of `molsysviewer_pharmacophoremt` and its compatible versions. |
+| ElastNetMT | Elastic networks | [ElastNetMT documentation](https://www.uibcdf.org/elastnetmt). Consult the provider for the scope of `molsysviewer_elastnetmt` and its compatible versions. |
+| MolSysMT tools | Additional molecular analysis, preparation and editing | **Planned redesign; not currently available.** The retired integration is rejected by the current Viewer. Follow {doc}`../user/introduction/molsysmt` for current backend integration. |
 
-- `TopoMT` panels for cavities, channels, and topographic accidents
-- `PharmacophoreMT` overlays and pharmacophore workbench flows
-- `ElastNetMT` network or elastic-model overlays
+A catalogue entry identifies the project; it does not certify every scientific
+workflow or package/version combination. Follow each provider's published
+availability and compatibility information.
 
-The important product direction is already fixed:
+## Requesting an entry
 
-- the resting canvas should stay clean
-- add-ons should mainly surface themselves through panel/workbench growth
-- users who do not need those domains should not have to carry their visual
-  complexity
+If you develop an independent add-on, request inclusion by opening an issue in
+the [MolSysViewer issue tracker](https://github.com/uibcdf/molsysviewer/issues/new).
+Include:
+
+- its name, purpose and maintainer;
+- package/source and installation instructions;
+- the documentation explaining its tools and use;
+- declared compatible MolSysViewer versions and any platform requirements.
+
+The maintainers review the request and add the documentation link to this
+catalogue. Listing is independent of runtime discovery: use package entry points
+or explicit registration as described in the creation guide. The catalogue
+does not install or activate packages.
+
+## Creating an add-on
 
 Teams that want to start now already have a starter pack:
 
@@ -48,5 +67,6 @@ starting point for discussions:
 - one short recipe that shows how that workspace actually sits inside the shared
   workbench
 
-As real MolSysSuite add-ons arrive, this section should become a gallery of
-focused scientific workflows built on top of the same MolSysViewer core.
+Keep the add-on's usage guide in the owning project's documentation. Viewer
+showcases can illustrate complete visualization workflows and link to that
+guide for the add-on's API and scientific options.

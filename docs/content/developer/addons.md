@@ -1,8 +1,26 @@
+(Developer_Addons)=
 # Add-ons
 
 MolSysViewer exposes an explicit add-on platform aimed at the broader MolSysSuite ecosystem.
 
 This page is the centralized source of truth for downstream teams implementing MolSysViewer add-ons.
+
+## Documentation responsibilities
+
+Use this guide to create an add-on against the public host API. MolSysViewer
+documents the shared concepts, discovery, registration, activation,
+configuration, lifecycle and extension contracts. The user introduction is
+{doc}`../user/introduction/addons`.
+
+Keep documentation of your add-on's capabilities and use in its owning project:
+the Python API, graphical tools, installation requirements, scientific methods,
+examples and limitations. Link to that reference from the Viewer catalogue;
+avoid maintaining a second copy of signatures and scientific options here.
+
+Independent authors can request inclusion in the
+{doc}`../showcase/addons` catalogue through a MolSysViewer issue. Catalogue
+inclusion is separate from package discovery: prefer the entry-point mechanism
+below for installed discovery, or document explicit registration.
 
 ## Core and add-on responsibilities
 

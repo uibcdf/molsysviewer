@@ -238,6 +238,10 @@ For the MolSysMT tools add-on, follow the accepted expert-API requirements in
 [its separate plan](devguide/molsysmt_tools_addon_plan.md): mirror scientific
 module/function paths with the current primary MolSys implicit; design GUI
 tasks for nonprogrammers without narrowing the expert API.
+Keep addon usage/capability references in the owning component. Viewer documents
+addon management, creation and the catalogue; independent authors request
+catalogue inclusion through a Viewer issue. Follow
+[the documentation ownership rule](devguide/core_and_addon_boundary.md#add-on-documentation-and-catalogue-ownership).
 
 ## Modular reusable tools
 
