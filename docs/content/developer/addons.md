@@ -97,9 +97,10 @@ uses `molsysviewer_molsysmt.tools`, with `molsysmt` as its view namespace. Nativ
 selection, interactions and H5MSM workflows remain available without registration.
 Optional domain extensions keep this addon contract. See uibcdf/molsysviewer#186.
 
-The initial experimental source integration provides six bound `basic` queries;
-the provider owns their usage reference. Broader scientific coverage, editing,
-panels and installed-package compatibility remain pending. The new route does
+The experimental source integration provides six bound `basic` queries,
+independent extraction and managed native removal with synchronization controls;
+the provider owns their usage reference. Broader scientific coverage, other edit
+families, panels and installed-package compatibility remain pending. The new route does
 not enable retired packages. General automatic observation of arbitrary
 external molecular edits is not required; integrated tools coordinate their own
 edits through the shared Viewer reconciliation boundary.
@@ -110,6 +111,33 @@ namespace. A later access retries initialization; successful creation clears
 that failure record. Addons without a factory still receive an empty namespace.
 Use `view.closed` to reject bound operations after explicit view closure;
 closing a popup alone does not close the view.
+
+### Coordinating scientific edits
+
+`view.addons.manager.system_edits` is a host integration service shared by
+addons. A reviewed provider adapter passes `execute(callback, name=...,
+update_view=True)` a read-only preparation callback on the bound target. Its
+plan declares the native `run` callable, whether science changes the target,
+operation-relative retained atom/structure correspondence, interaction validity
+and any qualified atomic-rejection guarantee. Scientific semantics and map
+correctness remain the provider's responsibility. `read(callback)` serializes
+readers against managed writes while preserving native values and aliasing.
+
+`update_view=False` defers projection only. Compatible edits compose their maps;
+old-index scene actions are rejected at Python and paused in live windows.
+`get_status()` returns detached metadata. `synchronize()` rebuilds from retained
+scene metadata without repeating science. A synchronization failure after
+science exposes `SystemEditSyncError.science_completed`, `operation_id` and
+`scientific_result`; providers should propagate it and instruct callers to retry
+synchronization. A potentially partial scientific write instead needs explicit
+recovery through `replace(molecular_system)`, which discards pending scene
+reconciliation without undoing the scientific mutation.
+
+Initial receiving supports retained nonempty axes. It does not certify new
+atoms/structures, arbitrary provider mutators, raw external writes or molecular
+Undo. Coordinate/analysis arrays and arbitrary user extension attributes are not
+copied into its scene checkpoint. Ordinary `view.load` cannot discard unresolved
+managed edits silently. Scientific usage belongs in the provider documentation.
 
 ## How the host finds it
 

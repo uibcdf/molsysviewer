@@ -19,7 +19,8 @@ supersedes: []
 **Status:** partial implementation: the new discovery route, closed-view boundary
 and actionable state-factory failures are delivered for initial read-tool source
 receiving. Explicit retained-structure maps now extend live adoption and
-independent extraction. Managed editing/synchronization and installed
+independent extraction. Retained-axis native removal and synchronization now
+have source receiving; other edit families, task panels and installed
 qualification remain pending.
 
 ## What
@@ -153,3 +154,48 @@ warning-strict documentation pages and deprecated native pandas `inplace`
 operations, reported to uibcdf/molsysmt#431. Do not hide that receiving gap by
 suppressing the warnings or treating the local source environment as the same
 installed dependency composition.
+
+
+## Managed removal source receiving — 2026-10-22
+
+The provider now admits native `basic.remove` with its False default and
+independent result; True mutates the actual bound MolSys and retains native
+None. The keyword-only `update_view` controls projection only. The shared host
+service composes retained atom/structure maps and preserves existing handles;
+`get_sync_status` and `sync_view` expose state and projection-only retry.
+Provider preparation uses owned selection/index validation and the qualified
+native candidate-publication contract. Other writers are not silently admitted.
+
+Pending/failed edits block old-index commands before digestion/history and at
+the frontend event authority, including notebook calls with skip_digestion=True.
+A state sheet disables canvas/panel input and offers Update view. A newly
+requested popup receives a correlated state-only snapshot; closing it does not
+cancel science. The source metadata checkpoint excludes molecular domains,
+coordinate/analysis arrays and arbitrary extension attributes. On failed rebuild,
+it restores scene metadata before applying maps again, preventing double remaps.
+Uncertain scientific writes require explicit replacement; ordinary load cannot
+silently discard them. Native reads remain available against pending data.
+
+Receiving tests exposed two existing remapping gaps: active atom picks retained
+old indices/hierarchy metadata, and region queries supplied as explicit atom
+lists were reevaluated as new indices. Rebuild now resolves active metadata and
+remaps explicit region lists/provenance; textual region queries retain their
+intentional reevaluation behavior. Actual native subset tests protect this
+without changing that established textual-query contract.
+
+Provider receiving has 17 remove/control cases, 20 prior read/extract cases and
+30 packaging guards passing. The host has six coordinator cases, including
+actual coordinate writes, conflict rejection, uncertain recovery and correlated
+popup requests. JS units pass 332 cases. The coordinate-edits browser lane uses
+real Mol*/Chromium and a persistent Python owner to receive an Update view
+command from a later second controller. This is not an independent qualification
+of the complete popup bootstrap/relay stack or live Jupyter.
+
+The once-run full core has 3,266 pass, 21 skips and two failures: the generated
+capability inventory and a TypeScript playback-action literal. Both are corrected
+and their focused guards pass; the full run is retained as failed, not relabelled
+or rerun. The managed receiver has its own experimental capability row, rather
+than inheriting a stable label from the existing addon navigation group.
+See [the source receipt](../molsysmt_addon_remove_receiving_20261022.json).
+Other edit families, full namespace coverage, graphical task panels and installed
+artifacts remain pending. Neither 1.0 publication is authorized.

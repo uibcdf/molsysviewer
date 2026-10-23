@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-22",
+  "status": "partial-source-receiving",
+  "viewer_issue": "uibcdf/molsysviewer#264",
+  "provider_issue": "uibcdf/molsysmt#421",
+  "scope": "Generic managed retained-axis receiver and native addon basic.remove; no wider writer, task panel, installed artifact or publication qualification.",
+  "environment": "molsyssuite@uibcdf_3.14",
+  "python": "3.14.7",
+  "base_commits": {
+    "viewer": "65e53eb4f90276c3a79c67480b4c37ab93688341",
+    "provider": "ed211624df7fed22b1783e6a9bbfdb8a730e5aaa"
+  },
+  "provenance": "Working sources with unrelated local work preserved. Provider main advanced concurrently; source hashes identify the reviewed receiving paths. Not a frozen clean candidate or solver installation.",
+  "checks": {
+    "provider_remove": {
+      "passed": 17,
+      "failed": 0
+    },
+    "provider_reads_extract": {
+      "passed": 20,
+      "failed": 0
+    },
+    "provider_packaging": {
+      "passed": 30,
+      "failed": 0
+    },
+    "host_coordinator": {
+      "passed": 6,
+      "failed": 0
+    },
+    "host_rebuild_region_selection_structure_popup": {
+      "passed": 76,
+      "failed": 0
+    },
+    "public_api": {
+      "callables": 732,
+      "digested": 732,
+      "declared_digesters": 444,
+      "missing_digesters": 0
+    },
+    "javascript_units": {
+      "passed": 332,
+      "failed": 0
+    },
+    "chromium_coordinate_edits_and_managed_state": {
+      "exit_code": 0,
+      "limits": "Real Mol* rendering, public native coordinate edit, two controllers and Python Update view authority; not live Jupyter or an independent popup bootstrap/relay campaign."
+    },
+    "full_viewer_core": {
+      "passed": 3266,
+      "failed": 2,
+      "skipped": 21,
+      "green": false,
+      "seconds": 116.55,
+      "command": "python -m pytest --receptor=llm tests/ -m 'not qt_runtime' -n 8 --junitxml=/tmp/molsysviewer-managed-edits-core.xml",
+      "failures": [
+        "tests/test_capability_audit.py::test_the_generated_document_is_current",
+        "tests/test_panel_popup_controller_contract.py::test_runtime_sources_pass_real_typescript_access_checks"
+      ],
+      "resolution": "Regenerated the capability inventory, classified the new receiver separately as experimental and corrected the playback action to stop. No full-suite rerun."
+    },
+    "corrected_capability_and_typescript_guards": {
+      "passed": 217,
+      "failed": 0
+    },
+    "provider_guide_python_blocks": {
+      "executed": 3,
+      "exit_code": 0
+    },
+    "reporting_links_and_coordinator": {
+      "passed": 286,
+      "failed": 0
+    }
+  },
+  "source_sha256": {
+    "viewer": {
+      "molsysviewer/system_edits.py": "f3d805cf72c9f5b82bd2610c6361f57d7aebea33598f0fa42d26904d09d00df0",
+      "molsysviewer/viewer/core.py": "d02463ac2c0d6ebb75664fab110f916e753dcf68471821dc47748ae7ec2bcdd0",
+      "molsysviewer/_private/argdigest/digest.py": "eb7a7fcf31aa01930dfb85ca0de94dcd26ae7f36fe45a5bd8e224758e4a530a7",
+      "molsysviewer/scene_history.py": "3b956c7425409e8f07c4df8bb83624f31ffb07c0e41964f678114439df9c9bd0",
+      "molsysviewer/js/src/ui/system-sync-overlay.ts": "144585ae0922b47085ff01cb105821e51496b5f5ac542082ee9c43d0c1341a3b",
+      "molsysviewer/js/src/managers/viewer-controller.ts": "b86241a95a064b394e544dc831feff029d6c710fbe9edf064467c9bb569d91a5",
+      "tests/test_managed_system_edits.py": "6b988f574dc09c3bd7ecd5938dc1018eeb19f8ead9ec77dc0674b7e640fe1d1d"
+    },
+    "provider": {
+      "molsysviewer_molsysmt/_api.py": "f43fc89cb993c54c6430b8b59c15a6754a1de3dc223d78915b0287be4137c7e2",
+      "molsysviewer_molsysmt/_basic.py": "14d3b7aa2fb162b3e646ab036044b918a9d6e20c1a4fe7ae49861044748e5cc3",
+      "molsysviewer_molsysmt/_private/argument/update_view.py": "cd3adeb8b4a7611232bf3bcd2833318980e156715f2a0a554833ab6b84388cf5",
+      "molsysmt/basic/remove.py": "023292d198c971ac712ba112367db0b908298a7f4011dc4070875a5dab1c0060",
+      "molsysmt/native/_subset.py": "93d56dac9d154fcbf5649c0ef9ecaf04c0547a1b5e9c2a18b78e2c3c09f8e38a",
+      "tests/molsysviewer_molsysmt/test_remove_tools.py": "38f199b8d6f8add7bfa2a7e3a636f3b14a5dabf9873fe72477e6f74bd3cfb1e8"
+    }
+  },
+  "remaining": [
+    "Other scientific effect families and broad expert API",
+    "Graphical addon task panels",
+    "Hosted exact-source gates",
+    "Installed package pair qualification",
+    "Live Jupyter receiving and complete managed-edit popup relay campaign"
+  ],
+  "publication_authorized": false
+}

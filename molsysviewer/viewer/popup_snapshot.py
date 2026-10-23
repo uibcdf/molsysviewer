@@ -64,9 +64,9 @@ class PopupSnapshotMixin:
         (D4), so the same scene is not also carried as JSON.
         """
         if mode == "canvas":
-            return self._build_canvas_snapshot(include_molecular=include_molecular)
+            return [*self._build_canvas_snapshot(include_molecular=include_molecular), self._system_edits._message()]
         if mode == "panel":
-            return self._build_panel_snapshot()
+            return [*self._build_panel_snapshot(), self._system_edits._message()]
         raise ValueError(f"popup snapshot mode must be 'canvas' or 'panel', got {mode!r}")
 
     # -- canvas ---------------------------------------------------------------
@@ -331,6 +331,7 @@ class PopupSnapshotMixin:
         messages.extend(
             message for message in self._build_panel_snapshot() if message.get("op") not in _PANEL_OPS_ALREADY_IN_CANVAS
         )
+        messages.append(self._system_edits._message())
         return messages
 
     # -- helpers --------------------------------------------------------------

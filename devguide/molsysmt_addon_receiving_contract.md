@@ -1,12 +1,13 @@
-# MolSysMT tools addon — receiving contract draft
+# MolSysMT tools addon — receiving contract
 
-**Status: proposed technical contract — 2026-10-22.** The product direction and
+**Status: partial source implementation — 2026-10-22.** The product direction and
 edit/update policy are approved in the [implementation plan](molsysmt_tools_addon_plan.md).
-This draft specifies the next receiving work under uibcdf/molsysviewer#264 and
-uibcdf/molsysmt#421. None of the new controls below exists in the current runtime.
-API names and error ownership require implementation review before qualification.
+This contract tracks receiving under uibcdf/molsysviewer#264 and
+uibcdf/molsysmt#421. Source implements managed native removal, synchronization
+controls and a generic host service. Other effect families, task panels and
+installed compatibility remain unqualified; no release follows from this work.
 
-## Bound calls and planned integration controls
+## Bound calls and integration controls
 
 `tools = view.addons.molsysmt` is a view-bound facade, not a saved MolSys snapshot.
 Resolve the current target once when a call starts. Keep provider scientific
@@ -15,9 +16,9 @@ inputs remain explicit. Readers, factories and pure quantity tools receive no
 invented molecular input. Collection tools require individual ordered-input
 contracts; their exposed signatures must not silently prepend the current system.
 
-Two proposed facade controls complement the scientific module hierarchy:
+Two facade controls complement the scientific module hierarchy:
 
-| Planned control | Contract |
+| Control | Contract |
 | --- | --- |
 | `tools.get_sync_status(*, skip_digestion=False)` | Return detached metadata about this view's coordinated synchronization state. No scientific arrays, full-system copy or scientific calculation. |
 | `tools.sync_view(*, skip_digestion=False)` | Reconcile admitted pending completed edits without repeating science; return `None` on success. No-op when already synchronized. Reject uncertain or replaced-target state requiring explicit recovery. |
@@ -46,6 +47,12 @@ addon operations only, not unannounced native calls or raw array writes.
 | `uncertain` | A scientific exception may have left partial writes or correspondence cannot be certified. Do not resume edits or declare synchronization successful automatically. |
 | `closed` | Owning view is closed. Bound scientific calls fail before doing work. Closing only a popup does not close the view. |
 
+`editing` and `syncing` are transient guarded states. Conflicting scene calls
+are rejected before digestion/history, including `skip_digestion=True`. Browser
+interaction pauses through a shared state projection; camera-only Python
+snapshot/reset/mode calls remain available. A popup request during pending work
+receives state only, never a lazy old-index molecular payload.
+
 The status record contains state, operation identifier, target/integration
 revision, pending operation count and a diagnostic/recovery reason where
 applicable. It does not retain large completed return values by default. An
@@ -72,7 +79,7 @@ or permanently prevent other endpoints from receiving canonical state.
    completed bound edit, record correspondence and reconcile immediately by
    default, or enter `pending` when qualified deferral was requested.
 5. A scene rebuild/transport failure after successful science must identify the
-   separate failure. A proposed integration exception exposes `science_completed`,
+   separate failure. The host integration exception exposes `science_completed`,
    `operation_id` and `scientific_result` (including native `None`) and chains
    the synchronization cause. It must not masquerade as scientific rejection.
    Ordinary successful returns are unchanged; result access is through the
@@ -134,6 +141,45 @@ existing scene-history boundary; automatic molecular Undo and complete trajector
 copies are outside this receiving requirement.
 
 ## First executed acceptance cases
+
+### Implemented source receiver
+
+`view.addons.manager.system_edits` is the generic host service. `read(callback)`
+serializes bound readers with managed writes, without copying native returns.
+`execute(callback, name=..., update_view=True)` receives a read-only provider
+preparation callback returning a plan: `run`, explicit `changed`, optional
+operation-relative retained atom/structure maps, `interactions_policy` and a
+reviewed optional `failure_atomic` declaration. The native operation runs once.
+The provider remains responsible for scientific validation and the truth of
+these declarations. Initial receiving rejects added/unknown origins and an empty
+atom/structure result before native execution; independent outputs remain native.
+
+The host composes retained maps across deferral, checkpoints only scene metadata
+and preserves existing handle objects. Retry restores that metadata before
+applying the composed maps, avoiding a second remapping of already edited scene
+indices. Molecular domains, coordinate/analysis arrays and arbitrary user
+extensions are not copied into the checkpoint. Molecular Undo is not provided.
+
+`synchronize()` retries projection only. `replace(molecular_system)` is the
+explicit recovery route: it discards pending reconciliation and loads a new
+system, without undoing the old scientific mutation. Ordinary `view.load` is
+blocked while managed work is unresolved. Raw external edits are not observed.
+
+The first provider writer is native `basic.remove`: its native False default
+returns an independent result; True edits the bound MolSys and retains native
+None. Its native candidate-publication contract plus unchanged state-dictionary
+identity qualifies an atomic rejection. Other scientific exceptions are
+uncertain even if atom/structure counts are unchanged.
+
+Host guards: `tests/test_managed_system_edits.py`; provider receiving:
+`tests/molsysviewer_molsysmt/test_remove_tools.py` in MolSysMT. The existing
+`coordinate-edits.e2e.ts` lane includes actual public MolSysMT coordinate edits,
+pending-state interaction blocking, a later second Mol* endpoint and a
+browser-generated Update view request consumed by the persistent Python owner.
+That two-controller check does not independently qualify popup bootstrap/relay;
+the established popup lanes retain that responsibility.
+
+### Remaining effect-family acceptance
 
 Use bundled real systems with at least three structures where required:
 

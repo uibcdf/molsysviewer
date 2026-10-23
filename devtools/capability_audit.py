@@ -387,7 +387,23 @@ CAPABILITIES: tuple[Capability, ...] = (
         unit=("test_addons.py", "test_readme_addon_table.py"),
         e2e=("panel-popup-welcome",),
         note="MolSysViewer owns the host contract; each toolkit owns and ships its "
-        "integration. Maturity is declared per add-on.",
+        "integration. Maturity is declared per add-on. The managed-edit source "
+        "receiver is experimental and is classified separately below.",
+    ),
+    Capability(
+        name="Managed system edits",
+        api=("view.addons.manager.system_edits.",),
+        anchor="molsysviewer/system_edits.py",
+        provenance=PYTHON,
+        docs="docs/content/developer/addons.md",
+        unit=("test_managed_system_edits.py",),
+        e2e=("coordinate-edits",),
+        status="experimental",
+        note="Source receiving for provider-owned retained-axis edits, map composition, "
+        "pending-state gates and projection retry. This does not qualify every "
+        "provider writer or a published package pair; molecular Undo and raw external "
+        "write observation are outside the contract. Capability rows can overlap: "
+        "the Add-ons navigation prefix also reaches these five controls.",
     ),
     Capability(
         name="MolSysMT integration",

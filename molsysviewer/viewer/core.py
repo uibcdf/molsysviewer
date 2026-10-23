@@ -51,6 +51,7 @@ from ..scene_history import SceneHistory, records_scene_history
 from ..selections import Selection, SelectionsManager
 from ..shapes import ShapesManager
 from ..styles import StylesManager
+from ..system_edits import SystemEditsManager
 from ..tags import TagsManager
 from ..trajectory_plot import TrajectoryPlotManager
 from ..transport import (
@@ -175,6 +176,7 @@ class MolSysView(
         transport: Any = None,
     ) -> None:
         self._closed = False
+        self._system_edits = SystemEditsManager(self)
         # `transport` lets a non-Jupyter host (e.g. the standalone Qt shell) inject
         # its own widget-like channel (see standalone_qt.QtViewChannel). It must
         # implement the small surface the view uses: send/on_msg, config attrs and
@@ -1343,7 +1345,8 @@ class MolSysView(
         # a spare copy. Only then is the JSON load left out of the snapshot.
         binary_delivered = False
         if (
-            mode == "canvas"
+            not self._system_edits._blocked()
+            and mode == "canvas"
             and isinstance(popup_endpoint_id, str)
             and popup_endpoint_id
             and self._current_molecular_projection is not None
@@ -1353,11 +1356,16 @@ class MolSysView(
                 target_endpoint_id=popup_endpoint_id,
             )
         try:
-            messages = self.build_popup_scene_snapshot(
-                mode,
-                endpoint=popup_endpoint_id,
-                include_molecular=not binary_delivered,
-            )
+            if mode not in {"canvas", "panel"}:
+                raise ValueError(f"popup snapshot mode must be 'canvas' or 'panel', got {mode!r}")
+            if self._system_edits._blocked():
+                messages = [self._system_edits._message()]
+            else:
+                messages = self.build_popup_scene_snapshot(
+                    mode,
+                    endpoint=popup_endpoint_id,
+                    include_molecular=not binary_delivered,
+                )
         except ValueError as exc:
             emit_suppressed_exception(
                 "MolSysView._answer_popup_scene_snapshot",
@@ -1408,7 +1416,39 @@ class MolSysView(
                 )
 
     def _handle_frontend_event(self, content: Mapping[str, Any]) -> None:
+        with self._system_edits._locked():
+            self._handle_frontend_event_guarded(content)
+
+    def _handle_frontend_event_guarded(self, content: Mapping[str, Any]) -> None:
         event = content.get("event")
+        if self._system_edits._blocked():
+            if event == "interaction_context_action" and content.get("action") == "sync_system_edits":
+                try:
+                    self._system_edits.synchronize()
+                except Exception as exc:
+                    self._send_backend_error_ack(content, exc)
+                return
+            if event == "ready":
+                capabilities = content.get("capabilities")
+                self._frontend_capabilities = dict(capabilities) if isinstance(capabilities, Mapping) else {}
+                self._ready = True
+                self._system_edits._notify(self)
+                return
+            if event not in {
+                "widget_resize",
+                "popup_endpoint_closed",
+                "request_widget_runtime_source",
+                "request_popup_source",
+                "structure_data_begin_ack",
+                "structure_data_chunk_ack",
+                "structure_data_complete",
+                "structure_data_error",
+                "camera_snapshot",
+                "panel_unmount",
+                "js_log",
+            }:
+                self._system_edits._notify(self)
+                return
         if event == "widget_resize":
             height = content.get("height")
             width = content.get("width")
@@ -2395,6 +2435,7 @@ class MolSysView(
         if self._molsys is None:
             raise ValueError("No molecular system loaded. Load a system before mutating the view.")
         isolated_region = self._show_only_region()
+        active_atoms = list((self._last_active_selection_event or {}).get("atom_indices") or [])
 
         for obj in self.interactions._objects():
             if atom_index_map is not None:
@@ -2416,6 +2457,17 @@ class MolSysView(
         for tag, region in list(self._regions.items()):
             if region.atom_indices is None:
                 continue
+            provenance = dict(region.provenance)
+            if atom_index_map is not None:
+                if provenance.get("kind") == "query" and not isinstance(provenance.get("expression"), str):
+                    # Explicit atom lists are identities in the old system,
+                    # unlike a textual query that is deliberately reevaluated.
+                    provenance["expression"] = self._remap_indices(provenance.get("expression", []), atom_index_map)
+                    region.selection = list(provenance["expression"])
+                    region._set_provenance(provenance)
+                elif provenance.get("kind") == "active_selection":
+                    provenance["atom_indices"] = self._remap_indices(provenance.get("atom_indices", []), atom_index_map)
+                    region._set_provenance(provenance)
             evaluated_atom_indices = None
             if Region._is_reevaluable_provenance(dict(region.provenance)):  # noqa: SLF001
                 evaluated_atom_indices = self._evaluate_region_provenance(region)
@@ -2543,6 +2595,12 @@ class MolSysView(
             for tag, selection in self._selections.items()
             if any(record.get("tag") == tag for record in self._selection_history)
         }
+
+        if atom_index_map is not None and active_atoms:
+            # Active picks also carry hierarchy indices. Resolve those against
+            # the new topology, without creating molecular Undo snapshots.
+            with self.history.suspended(skip_digestion=True):
+                self.active_selection.set(self._remap_indices(active_atoms, atom_index_map), skip_digestion=True)
 
         for msg in self._scene_look.values():
             self._send_replay(dict(msg))

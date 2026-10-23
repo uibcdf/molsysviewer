@@ -17,6 +17,11 @@ from .whole import HANDLERS as WHOLE_HANDLERS
 
 PanelActionHandler = Callable[[Any, Mapping[str, Any]], None]
 
+
+def _sync_system_edits(view, content):
+    view.addons.manager.system_edits.synchronize()
+
+
 STUDIO_RESULT_DOMAINS = {
     "save_work_file": "export",
     "restore_work_file": "export",
@@ -39,7 +44,11 @@ def _build_handlers() -> dict[str, PanelActionHandler]:
     for domain in (
         ADDON_HANDLERS,
         INTERACTION_HANDLERS,
-        {"load_systems": load_systems, "batch_scene_objects": batch_scene_objects},
+        {
+            "load_systems": load_systems,
+            "batch_scene_objects": batch_scene_objects,
+            "sync_system_edits": _sync_system_edits,
+        },
         SELECTION_HANDLERS,
         REGION_HANDLERS,
         SCENE_OBJECT_HANDLERS,

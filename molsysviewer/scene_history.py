@@ -52,6 +52,12 @@ def records_scene_history(fn):
 
     @wraps(fn)
     def wrapper(self, *args, **kwargs):
+        from .system_edits import _scene_call_guard
+
+        with _scene_call_guard((self,), {}, fn.__name__):
+            return record(self, *args, **kwargs)
+
+    def record(self, *args, **kwargs):
         view = self if hasattr(self, "history") else getattr(self, "_view", None)
         history = getattr(view, "history", None)
         if history is None:

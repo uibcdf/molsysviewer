@@ -15,6 +15,16 @@ import {
 } from "../shapes";
 import { MolSysPayload } from "../plugin/structure";
 
+export type SystemSyncStateMessage = {
+    op: "set_system_sync_state";
+    state: "synchronized" | "editing" | "syncing" | "pending" | "sync_failed" | "uncertain" | "closed";
+    operation_id: string | null;
+    target_revision: number;
+    integration_revision: number;
+    pending_operations: number;
+    reason: string | null;
+};
+
 export type AddSphereMessage = {
     op: "add_sphere";
     tag?: string;
@@ -907,6 +917,7 @@ export type PartialCoordinatesUpdateMessage = {
 export type KnownViewerMessage =
     PartialCoordinatesUpdateMessage |
     SetAtomColorsMessage |
+    SystemSyncStateMessage |
     ClearAtomColorsMessage |
     SetSectionsMessage |
     SetSectionSummariesMessage |

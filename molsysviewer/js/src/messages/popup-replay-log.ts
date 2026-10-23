@@ -11,6 +11,7 @@ const STRUCTURE_LOAD_OPS = new Set([
 ]);
 
 const PANEL_PROJECTION_OPS = new Set([
+    "set_system_sync_state",
     "set_region_summaries",
     "set_layer_summaries",
     "set_annotation_summaries",
@@ -35,6 +36,7 @@ const PANEL_PROJECTION_OPS = new Set([
 ]);
 
 const LAST_WRITE_WINS_OPS = new Set([
+    "set_system_sync_state",
     "set_trajectory_frame",
     "set_trajectory_playback",
     "set_region_summaries",

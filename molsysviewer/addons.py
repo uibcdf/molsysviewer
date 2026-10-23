@@ -1122,10 +1122,15 @@ class _AddonsManagerProxy:
     def __getattr__(self, name: str) -> Any:
         return getattr(self._manager, name)
 
+    @property
+    def system_edits(self):
+        """Generic scientific-edit coordination shared by this view's addons."""
+        return self._manager._view._system_edits
+
     def __dir__(self) -> list[str]:
         # Show the management surface defined on the manager class; per-add-on
         # namespaces (resolved via __getattr__) are intentionally not listed here.
-        return sorted({a for a in dir(type(self._manager)) if not a.startswith("_")})
+        return sorted({"system_edits", *(a for a in dir(type(self._manager)) if not a.startswith("_"))})
 
 
 class ViewAddonsManager(_AddonAggregationMixin):

@@ -35,6 +35,7 @@ import { ToolStatusOverlay } from "../ui/tool-status";
 import { LegendOverlay } from "../ui/legend-overlay";
 import { TrajectoryPlotOverlay } from "../ui/trajectory-plot-overlay";
 import { WebGLStatusOverlay } from "../ui/webgl-status-overlay";
+import { SystemSyncOverlay } from "../ui/system-sync-overlay";
 import { ActiveSelectionController, ActiveSelectionItem, buildGroupItemsFromStructure, getContextScopeAvailability, type ContextScopeAvailability, type GroupSelectionItem, lociToGroupItems } from "./active-selection";
 import type { ActiveSelectionPayload } from "./active-selection";
 import {
@@ -587,6 +588,7 @@ export class MolSysViewerController {
     private readonly legendOverlay: LegendOverlay;
     private readonly trajectoryPlotOverlay: TrajectoryPlotOverlay;
     private readonly webglStatusOverlay: WebGLStatusOverlay;
+    private readonly systemSyncOverlay: SystemSyncOverlay;
     private webglContextLost = false;
     private readonly groupPanel: GroupPanel;
     private readonly addonsPanel: AddonsPanel;
@@ -1097,6 +1099,9 @@ export class MolSysViewerController {
             void this.trajectory.setTrajectoryFrame(frame);
         }, undefined, tag => this.notify?.({ event: "trajectory_plot_hidden", tag }));
         this.webglStatusOverlay = new WebGLStatusOverlay(host);
+        this.systemSyncOverlay = new SystemSyncOverlay(host, () => this.notify?.({
+            event: "interaction_context_action", action: "sync_system_edits",
+        }));
         new HoverTooltip(host, plugin);
         this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent, async ({ action, picks_atom_indices, endpoint_policy }) => {
             const tag = this.nextMeasurementTag();
@@ -1843,6 +1848,7 @@ export class MolSysViewerController {
         this.toolStatusOverlay.dispose();
         this.legendOverlay.dispose();
         this.webglStatusOverlay.dispose();
+        this.systemSyncOverlay.dispose();
         this.groupPanel.dispose();
         this.addonsPanel.dispose();
         this.sharedShell?.dispose();
@@ -2816,6 +2822,12 @@ export class MolSysViewerController {
                     this.showToast(`Region '${tag}' frozen to static: too slow to follow frames${timing}`);
                     break;
                 }
+                case "set_system_sync_state":
+                    this.systemSyncOverlay.setState(msg as any);
+                    if ((msg as any).state !== "synchronized") {
+                        await this.trajectory.setTrajectoryPlayback({ op: "set_trajectory_playback", action: "stop" });
+                    }
+                    break;
                 case "set_history_state":
                     this.contextHistoryState = {
                         canUndo: Boolean((msg as any).can_undo),

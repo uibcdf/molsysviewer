@@ -3,6 +3,7 @@ import { spawnSync } from "node:child_process";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "./e2e-browser";
+import { checkManagedSystemEdits } from "./managed-system-edits-scenarios";
 
 const dir = dirname(fileURLToPath(import.meta.url));
 async function run() {
@@ -74,7 +75,8 @@ async function run() {
                 close(await atom(frame), fixture.stages[1].after[frame][2]);
             }
         }
-        console.log("[E2E coordinate-edits] passed");
+        await checkManagedSystemEdits(page.context());
+        console.log("[E2E coordinate-edits] passed, including managed scientific edits");
     } finally { await browser.close(); }
 }
 run().catch(error => { console.error(error); process.exit(1); });

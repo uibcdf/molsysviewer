@@ -17,6 +17,7 @@
  * dispatcher and the Python `core.py` handlers.
  */
 export type PanelAction =
+    | "sync_system_edits"
     | "focus_annotation"
     | "save_work_file"
     | "restore_work_file"

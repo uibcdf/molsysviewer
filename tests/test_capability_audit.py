@@ -57,6 +57,7 @@ REQUIRED_CAPABILITIES = {
     "Remote sessions",
     "Standalone (Qt host)",
     "Add-ons",
+    "Managed system edits",
     "MolSysMT integration",
     "Units",
 }

@@ -151969,6 +151969,90 @@ var WebGLStatusOverlay = class {
   }
 };
 
+// src/ui/system-sync-overlay.ts
+var SystemSyncOverlay = class {
+  constructor(host, onUpdate) {
+    this.host = host;
+    this.root = document.createElement("div");
+    this.text = document.createElement("p");
+    this.update = document.createElement("button");
+    this.previousInert = /* @__PURE__ */ new Map();
+    this.previousFocus = null;
+    this.guardKey = (event) => {
+      if (this.root.style.display !== "none" && this.host.contains(event.target)) {
+        event.stopImmediatePropagation();
+      }
+    };
+    this.root.setAttribute("data-molsysviewer-system-sync", "true");
+    this.root.setAttribute("role", "status");
+    this.root.setAttribute("aria-live", "polite");
+    Object.assign(this.root.style, {
+      display: "none",
+      position: "absolute",
+      inset: "0",
+      zIndex: "1000",
+      alignItems: "center",
+      justifyContent: "center",
+      flexDirection: "column",
+      padding: "24px",
+      boxSizing: "border-box",
+      textAlign: "center",
+      background: "rgba(25, 28, 32, 0.88)",
+      color: "#f3f4f6",
+      fontFamily: "system-ui, sans-serif",
+      fontSize: "14px",
+      gap: "12px"
+    });
+    this.root.tabIndex = -1;
+    this.update.textContent = "Update view";
+    this.update.type = "button";
+    this.update.addEventListener("click", () => {
+      this.update.disabled = true;
+      onUpdate();
+    });
+    this.root.append(this.text, this.update);
+    this.host.appendChild(this.root);
+    for (const name of ["keydown", "keyup", "keypress"]) window.addEventListener(name, this.guardKey, true);
+  }
+  setState(message) {
+    const state = message.state;
+    if (state === "synchronized") {
+      this.root.style.display = "none";
+      this.restoreInteraction();
+      return;
+    }
+    if (this.root.style.display === "none") {
+      this.previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    }
+    for (const child of Array.from(this.host.children)) {
+      if (!(child instanceof HTMLElement) || child === this.root) continue;
+      if (!this.previousInert.has(child)) this.previousInert.set(child, child.inert);
+      child.inert = true;
+    }
+    this.root.style.display = "flex";
+    const retry = state === "pending" || state === "sync_failed";
+    this.text.textContent = state === "pending" ? "The molecular system has changed. Update the view to continue." : state === "sync_failed" ? "The molecular edit is complete. Retry the view update to continue." : state === "uncertain" ? "The edit could not be verified. Replace the system explicitly to continue." : state === "closed" ? "This view is closed." : "Updating the molecular system\u2026";
+    this.update.style.display = retry ? "block" : "none";
+    this.update.disabled = !retry;
+    if (this.previousFocus && this.host.contains(this.previousFocus) && !this.root.contains(document.activeElement)) {
+      (retry ? this.update : this.root).focus({ preventScroll: true });
+    }
+  }
+  restoreInteraction() {
+    for (const [element, previous] of this.previousInert) element.inert = previous;
+    this.previousInert.clear();
+    if (this.root.contains(document.activeElement) && this.previousFocus?.isConnected) {
+      this.previousFocus.focus({ preventScroll: true });
+    }
+    this.previousFocus = null;
+  }
+  dispose() {
+    for (const name of ["keydown", "keyup", "keypress"]) window.removeEventListener(name, this.guardKey, true);
+    this.restoreInteraction();
+    this.root.remove();
+  }
+};
+
 // src/managers/active-selection.ts
 var scopeMembershipCache = /* @__PURE__ */ new WeakMap();
 function getContextScopeAvailability(structure, atomIndices) {
@@ -166325,6 +166409,10 @@ var MolSysViewerController = class _MolSysViewerController {
       void this.trajectory.setTrajectoryFrame(frame);
     }, void 0, (tag) => this.notify?.({ event: "trajectory_plot_hidden", tag }));
     this.webglStatusOverlay = new WebGLStatusOverlay(host);
+    this.systemSyncOverlay = new SystemSyncOverlay(host, () => this.notify?.({
+      event: "interaction_context_action",
+      action: "sync_system_edits"
+    }));
     new HoverTooltip(host, plugin);
     this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent, async ({ action, picks_atom_indices, endpoint_policy }) => {
       const tag = this.nextMeasurementTag();
@@ -167372,6 +167460,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.toolStatusOverlay.dispose();
     this.legendOverlay.dispose();
     this.webglStatusOverlay.dispose();
+    this.systemSyncOverlay.dispose();
     this.groupPanel.dispose();
     this.addonsPanel.dispose();
     this.sharedShell?.dispose();
@@ -168349,6 +168438,12 @@ var MolSysViewerController = class _MolSysViewerController {
           this.showToast(`Region '${tag}' frozen to static: too slow to follow frames${timing}`);
           break;
         }
+        case "set_system_sync_state":
+          this.systemSyncOverlay.setState(msg);
+          if (msg.state !== "synchronized") {
+            await this.trajectory.setTrajectoryPlayback({ op: "set_trajectory_playback", action: "stop" });
+          }
+          break;
         case "set_history_state":
           this.contextHistoryState = {
             canUndo: Boolean(msg.can_undo),
@@ -171644,6 +171739,7 @@ var STRUCTURE_LOAD_OPS = /* @__PURE__ */ new Set([
   "load_pdb_id"
 ]);
 var PANEL_PROJECTION_OPS = /* @__PURE__ */ new Set([
+  "set_system_sync_state",
   "set_region_summaries",
   "set_layer_summaries",
   "set_annotation_summaries",
@@ -171667,6 +171763,7 @@ var PANEL_PROJECTION_OPS = /* @__PURE__ */ new Set([
   "set_workspace_panel"
 ]);
 var LAST_WRITE_WINS_OPS = /* @__PURE__ */ new Set([
+  "set_system_sync_state",
   "set_trajectory_frame",
   "set_trajectory_playback",
   "set_region_summaries",

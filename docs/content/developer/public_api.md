@@ -137,11 +137,13 @@ Pure molecular-system reads should use `view.whole.*`, `region.*`, or `molsysmt.
 Advanced molecular adoption/reconciliation uses `view.apply_system_edit(...)`;
 existing coordinate/cell setters retain their documented contracts. General
 preparation and editing belong to the scientific tools and their add-on
-integration. A redesigned MolSysMT tools add-on is planned, not available in
-the current runtime. Calculate interactions through explicit family methods,
+integration. The redesigned experimental MolSysMT source addon provides bound
+queries, extraction and managed removal through `view.addons.molsysmt` when
+installed with a compatible host; published-package qualification is separate.
+Calculate interactions through explicit family methods,
 such as `view.interactions.hbonds.get_buch_hbonds(...)`. MolSysMT is the
-scientific backend; the current runtime does not expose a built-in MolSysMT
-addon namespace. See {doc}`addons` for the accepted direction and current limits.
+scientific backend; automatic metadata discovery supplies its addon namespace,
+without a hardcoded built-in registration. See {doc}`addons` for current limits.
 
 The user-facing translation table is in
 {doc}`../user/introduction/migrating_to_0_22`.
@@ -184,6 +186,15 @@ The user-facing translation table is in
   - does not define molecular edit semantics; those belong to MolSysMT or an
     add-on
 - `convert(...)`
+- `addons.manager.system_edits`
+  - generic provider integration service: `read(callback)`,
+    `execute(callback, name=..., update_view=True)`, `get_status()`,
+    `synchronize()` and explicit recovery `replace(molecular_system)`
+  - provider adapters own scientific execution and correspondence declarations;
+    the host composes retained maps, guards old-index scene actions and retries
+    scene synchronization without repeating science
+  - unresolved managed edits block ordinary scene actions and load; raw external
+    MolSysMT calls/array edits are not observed automatically
 - `extract(...)` — returns a new **view** of a structural subset, with the scene migrated
 - `info(output_type="styler" | "dataframe" | "dictionary")`
   - **the scene**: one row per scene object across whole, loads, styles, regions,
