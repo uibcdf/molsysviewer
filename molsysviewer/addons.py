@@ -841,8 +841,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         module_name = module if isinstance(module, str) else module.__name__
         if module_name.split(".", 1)[0] == "molsysviewer_molsysmt" and module_name != "molsysviewer_molsysmt.tools":
             raise ValueError(
-                "The legacy MolSysMT addon has been retired. "
-                "The redesigned integration is molsysviewer_molsysmt.tools."
+                "The legacy MolSysMT addon has been retired. The redesigned integration is molsysviewer_molsysmt.tools."
             )
         imported = import_module(module) if isinstance(module, str) else module
         addon = self.register(
