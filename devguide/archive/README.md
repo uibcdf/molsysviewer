@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Box-analysis fixture ordering](box_assignment_fixture_invalidates_analysis.md) — #263 initializes the cell before fresh analysis and retains selective invalidation and visible-edge assertions.
+
 - [Molecular load history boundary](replacement_load_retains_scene_history.md) — #262 clears stale Undo/Redo on successful molecular load/reset, preserves rejected loads and retains first-load shapes.
 
 - [Complete issue-board receiving](devguide_issue_board_truncation.md) — #261 replaces the 200-item window with paginated, issue-only state/label receiving and verifies the full live queue.

@@ -11,14 +11,17 @@ from molsysviewer import pyunitwizard as puw
 
 
 @pytest.fixture
-def view():
+def view(request):
     system = msm.extract(
         msv.demo["pentalanine"].molsys,
         selection=list(range(10)),
         structure_indices=[0, 8, 3],
         to_form="molsysmt.MolSys",
     )
-    msm.set(system, box=None, time=None)
+    initial_box = None
+    if getattr(request, "param", None) == "initialized_cell":
+        initial_box = puw.quantity(np.broadcast_to(np.eye(3), (3, 3, 3)).copy(), "nm")
+    msm.set(system, box=initial_box, time=None)
     view = msv.new_view(system, debug_js=True)
     result = msm.Interactions.from_records(
         [
@@ -103,10 +106,9 @@ def test_assignment_and_removal_preserve_coordinates_sources_and_regions(view):
     assert _box(view) is None  # Later sources do not introduce a cell.
 
 
+@pytest.mark.parametrize("view", ["initialized_cell"], indirect=True)
 def test_subset_invalidates_only_edited_frames_and_refreshes_visible_edges(view):
-    # Initialize through the scientific provider before attaching a fresh analysis.
-    view.molsys.structures.set_box(value=puw.quantity(np.broadcast_to(np.eye(3), (3, 3, 3)).copy(), "nm"))
-    view._source_binding_memo = None
+    # The fixture initializes the cell before attaching fresh evaluated evidence.
     view.show_box(color="red", width=0.2, alpha=0.7)
     binding = view._source_state_binding()
     original = view.interactions.get_analysis("contacts")
