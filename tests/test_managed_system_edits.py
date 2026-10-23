@@ -114,6 +114,31 @@ def test_atomic_rejection_retains_previous_pending_state_and_native_exception(vi
     assert manager.get_status()["target_revision"] == 0
 
 
+@pytest.mark.parametrize("write", [False, True])
+def test_nested_state_rejection_predicate_overrides_unchanged_molsys_dictionary(view, write):
+    manager = view.addons.manager.system_edits
+    target = view.molsys
+    state = vars(target)
+    before = msm.get(target, element="atom", structure_indices=[0], coordinates=True)
+
+    def prepare(system):
+        def run():
+            if write:
+                msm.set(system, structure_indices=[0], coordinates=before + msm.pyunitwizard.quantity(0.1, "nm"))
+            raise ValueError("receiving native rejection")
+
+        # This receiving fixture performs actual science when write=True. A
+        # dictionary-identity check alone cannot prove that nested data survived.
+        return {"run": run, "changed": True}
+
+    with pytest.raises(ValueError, match="receiving native rejection"):
+        manager.execute(
+            prepare, name="receiving.nested", rejection_check=lambda system: id(system.structures._coordinates)
+        )
+    assert vars(target) is state
+    assert manager.get_status()["state"] == ("uncertain" if write else "synchronized")
+
+
 @pytest.mark.parametrize("mode", ["canvas", "panel"])
 def test_pending_popup_request_is_correlated_state_only_and_closing_it_keeps_the_edit(view, mode):
     manager = view.addons.manager.system_edits

@@ -6,7 +6,8 @@ the integration in the owning MolSysMT repository. This is a new plan under
 [the core/add-on boundary](core_and_addon_boundary.md). The withdrawn native
 Studio expansion plan remains removed. An initial experimental source delivery
 now provides six bound `basic` queries, native molecular extraction, managed
-native removal and their root aliases, with synchronization controls. Broader runtime
+native removal, coordinates/box setting and their root aliases, with
+synchronization controls. Broader runtime
 coverage, installed compatibility, dependency floors and release remain separate.
 
 ## Accepted requirements

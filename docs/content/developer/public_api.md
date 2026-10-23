@@ -138,7 +138,7 @@ Advanced molecular adoption/reconciliation uses `view.apply_system_edit(...)`;
 existing coordinate/cell setters retain their documented contracts. General
 preparation and editing belong to the scientific tools and their add-on
 integration. The redesigned experimental MolSysMT source addon provides bound
-queries, extraction and managed removal through `view.addons.molsysmt` when
+queries, extraction, managed removal and coordinates/box setting through `view.addons.molsysmt` when
 installed with a compatible host; published-package qualification is separate.
 Calculate interactions through explicit family methods,
 such as `view.interactions.hbonds.get_buch_hbonds(...)`. MolSysMT is the
@@ -188,7 +188,7 @@ The user-facing translation table is in
 - `convert(...)`
 - `addons.manager.system_edits`
   - generic provider integration service: `read(callback)`,
-    `execute(callback, name=..., update_view=True)`, `get_status()`,
+    `execute(callback, name=..., update_view=True, rejection_check=None)`, `get_status()`,
     `synchronize()` and explicit recovery `replace(molecular_system)`
   - provider adapters own scientific execution and correspondence declarations;
     the host composes retained maps, guards old-index scene actions and retries

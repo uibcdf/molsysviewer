@@ -292,17 +292,23 @@ class SystemEditsManager:
 
     @signal(tags=["edit"])
     @digest()
-    def execute(self, callback, *, name, update_view=True, skip_digestion=False):
+    def execute(self, callback, *, name, update_view=True, rejection_check=None, skip_digestion=False):
         """Execute one admitted native edit and optionally reconcile its scene.
 
         ``callback`` prepares a plan without mutating the target. The ``run``
         callable must execute science exactly once, returning the native result.
         A native atomic-failure declaration is trusted only while the target's
         state dictionary is still the very same object after an exception.
+        An optional read-only ``rejection_check(target)`` returns an immutable
+        family-owned token before execution and after rejection. It must also
+        remain equal to certify nested-state preservation. An older host rejects
+        this explicit keyword before science rather than ignoring a plan field.
         Other exceptions enter uncertain state and require explicit replacement.
         """
         if not isinstance(update_view, bool):
             raise TypeError("update_view must be a boolean.")
+        if rejection_check is not None and not callable(rejection_check):
+            raise TypeError("rejection_check must be a read-only token callable or None.")
         with self._locked():
             view = self._view()
             if self._state not in {"synchronized", "pending"}:
@@ -329,6 +335,7 @@ class SystemEditsManager:
                     raise ValueError("Unsupported interaction validity policy.")
                 atoms, frames, atom_count, frame_count = self._prepare_maps(view, target, plan)
                 checkpoint = self._checkpoint or _SceneCheckpoint(view)
+                before_rejection = None if rejection_check is None else rejection_check(target)
                 if view.closed or view.molsys is not target:
                     raise RuntimeError("The view closed or its target changed during edit preparation.")
             except BaseException:
@@ -341,7 +348,18 @@ class SystemEditsManager:
             try:
                 result = plan["run"]()
             except BaseException:
-                if plan.get("failure_atomic") is True and vars(target) is original_state:
+                unchanged = vars(target) is original_state and (
+                    plan.get("failure_atomic") is True or rejection_check is not None
+                )
+                if unchanged and rejection_check is not None:
+                    try:
+                        unchanged = (rejection_check(target) == before_rejection) is True
+                    except Exception as exc:
+                        from ._private.smonitor_emit import emit_suppressed_exception
+
+                        unchanged = False
+                        emit_suppressed_exception("SystemEditsManager.rejection_check", exc)
+                if unchanged:
                     self._state = prior_state
                     if not self._pending:
                         self._target = None

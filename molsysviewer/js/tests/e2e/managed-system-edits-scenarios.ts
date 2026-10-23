@@ -55,6 +55,26 @@ export async function checkManagedSystemEdits(browser: any): Promise<void> {
                 .filter(child => !child.hasAttribute("data-molsysviewer-system-sync"))
                 .every(child => !(child as HTMLElement).inert)), true);
         }
+        const boxPending = await bridge.request([], "defer_box");
+        assert.equal(boxPending.status.state, "pending");
+        for (const page of [first, late]) await apply(page, boxPending.messages);
+        await first.evaluate(() => (window as any).__messages.length = 0);
+        await overlay(first).getByRole("button", { name: "Update view" }).click();
+        const boxEvents = await first.evaluate(() => (window as any).__messages.filter((event: any) =>
+            event.event === "interaction_context_action" && event.action === "sync_system_edits"));
+        assert.equal(boxEvents.length, 1);
+        const boxUpdated = await bridge.request(boxEvents);
+        assert.equal(boxUpdated.status.target_revision, 2);
+        for (const page of [first, late]) {
+            await apply(page, boxUpdated.messages);
+            assert.equal(await overlay(page).isVisible(), false);
+            const size = await page.evaluate(() => {
+                const structure = (window as any).__controller.getStructureData();
+                return Array.from(structure.units[0].model._staticPropertyData.model_symmetry.spacegroup.cell.size);
+            });
+            assert.deepEqual(size, [30, 40, 50]);
+        }
+        console.log(`[managed-edits] coordinate/box receiving, addon setter=${Boolean(boxUpdated.addon_set)}`);
     } finally {
         await first.close();
         await late.close();

@@ -4,7 +4,8 @@
 edit/update policy are approved in the [implementation plan](molsysmt_tools_addon_plan.md).
 This contract tracks receiving under uibcdf/molsysviewer#264 and
 uibcdf/molsysmt#421. Source implements managed native removal, synchronization
-controls and a generic host service. Other effect families, task panels and
+controls, the coordinates/box routes of `basic.set`, and a generic host service.
+Other effect families, task panels and
 installed compatibility remain unqualified; no release follows from this work.
 
 ## Bound calls and integration controls
@@ -146,7 +147,7 @@ copies are outside this receiving requirement.
 
 `view.addons.manager.system_edits` is the generic host service. `read(callback)`
 serializes bound readers with managed writes, without copying native returns.
-`execute(callback, name=..., update_view=True)` receives a read-only provider
+`execute(callback, name=..., update_view=True, rejection_check=None)` receives a read-only provider
 preparation callback returning a plan: `run`, explicit `changed`, optional
 operation-relative retained atom/structure maps, `interactions_policy` and a
 reviewed optional `failure_atomic` declaration. The native operation runs once.
@@ -207,3 +208,42 @@ Passing these cases does not certify all functions. Receive each effect family
 and optional route against the provider ledger before expanding coverage or
 claiming installed compatibility. The source baseline and publication remain
 separate; neither 1.0 release is authorized by this work.
+
+
+## Geometry setting receiver — 2026-10-23
+
+The provider's initial `basic.set` slice receives coordinates and box with the
+current nonempty axes retained. Scientific signatures/defaults, units, order,
+repeated-index write behavior and None return remain native. Unsupported effect
+families are rejected before execution. Native setters own affected-structure
+invalidation; host reconciliation uses preserve for the already-updated analyses.
+A valid empty atom/structure selection is a native no-op, not new coverage.
+
+`rejection_check(target)` is an optional explicit argument of the generic host
+executor. The provider returns an immutable token before science and again on
+rejection. Together with target/state-dictionary identity, an unchanged reviewed
+token can certify no target writes; it does not declare a multi-attribute call
+atomic. A changed token or failed token read instead enters uncertain state and
+preserves the scientific exception. Old hosts reject this keyword before science;
+an unrecognized plan field cannot silently disable the check. The provider's
+geometry token covers protected coordinate/box storage and analysis snapshots.
+No molecular data are copied or permanently retained to calculate that token.
+
+Native attribute-name admission is reused through ArgDigest before integration
+effect checks. Preflight uses provider units/selectors and rejects mismatched
+retained axes, partial missing-box initialization and unsupported routes before
+any write. No broadcasting, automatic chemistry, detector rerun or molecular Undo
+is introduced. Coordinate clearing/initializing new axes needs separate receiving.
+
+Current synchronize rebuilds the scene projection, even for a small geometry
+edit. Native storage replaces affected blocks, but this integration does not yet
+promise a scoped browser refresh or bounded trajectory transfer. Existing
+incremental visual tools remain separate; optimize this receiver through their
+projection owners after profiling, without repeating scientific setters.
+
+Provider guards include actual Buch calculations and retained observations,
+unchanged old snapshots, evaluated coverage, deferred edits and a real connector
+failure followed by projection-only retry. Host guards test nested mutations
+under an unchanged MolSys dictionary. The browser lane exercises the addon when
+available and explicitly reports that route; the published-backend lane keeps
+its generic host fixture and cannot count as addon qualification.

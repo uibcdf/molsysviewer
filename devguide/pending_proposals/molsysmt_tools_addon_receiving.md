@@ -230,3 +230,30 @@ Keep this with the existing experimental Qt investigation (uibcdf/molsysviewer#3
 and the compact-diagnostic limitation (uibcdf/gh-run-receptor#62), not as a green
 core or a demonstrated new molecular-edit regression. No tags, packages or
 publications were produced by these source checkpoints.
+
+
+## Geometry setter receiving — 2026-10-23
+
+The source adds the coordinates/box subset of native `basic.set` with its native
+signature/None result plus keyword-only update_view. Native validation remains
+owned by MolSysMT; its attribute catalogue is reused by addon ArgDigest before
+checking received effects. Other attributes/axis initialization are explicitly
+unreceived, not silently forwarded as unknown mutations. Named analyses retain
+native invalidation only on edited structures; no detector runs automatically.
+
+The host executor now accepts an explicit rejection_check token reader. A nested
+geometry edit can change protected storage and analysis snapshots without a new
+MolSys dictionary. Comparing those family-owned tokens distinguishes unchanged
+rejection from potentially partial writes, without claiming multi-attribute
+atomicity. An older executor rejects the keyword before native execution.
+Full-scene synchronization and broader effect-family qualification remain open;
+no scoped trajectory-transfer guarantee follows from this delivery.
+
+The [geometry source receipt](../molsysmt_addon_set_receiving_20261023.json)
+records 23 setter cases, 37 existing addon read/remove cases, 30 packaging
+guards, eight host coordinator cases and the once-run Viewer core result
+(3,278 passed, 21 skipped). Real Chromium receives addon coordinates and box
+in two controllers. These are source checks; full popup/Jupyter and installed
+artifact qualification remain separate. The prior Viewer checkpoint cef99ec6
+now has successful core/browser runs 39948407994 and 39948928788; those runs
+do not qualify the new setter implementation.

@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-23",
+  "status": "partial-source-receiving",
+  "viewer_issue": "uibcdf/molsysviewer#264",
+  "provider_issue": "uibcdf/molsysmt#421",
+  "scope": "Bound native basic.set for coordinates and box with retained axes; explicit provider rejection tokens and retryable scene projection. Broader scientific effects and panels remain pending.",
+  "environment": "molsyssuite@uibcdf_3.14",
+  "python": "3.14.7",
+  "base_commits": {
+    "viewer": "cef99ec677fce35d9db02477db226c13a759d6d8",
+    "provider": "86a2094fadd1e37a9dba1ba42739f552381b0e42"
+  },
+  "provenance": "Working sources with unrelated changes preserved and concurrent provider main activity. Source hashes identify the tested implementation. Not a frozen candidate, installed solver environment or release qualification.",
+  "checks": {
+    "viewer_core": {
+      "passed": 3278,
+      "skipped": 21,
+      "failed": 0,
+      "errors": 0,
+      "exit_code": 0,
+      "seconds": 116.44,
+      "command": "python -m pytest --receptor=llm tests/ -m 'not qt_runtime' -n 8 --junitxml=/tmp/molsysviewer-managed-set-core.xml",
+      "junit_sha256": "7cc5a327d736c4069de5760ec02d568f13640e4cca7b8e431b2f187c552d0473",
+      "limits": "Once-run core; explicit Qt exclusion and skip reasons retained in local JUnit. Not visible-window Qt qualification."
+    },
+    "host_coordinator": {
+      "passed": 8,
+      "failed": 0
+    },
+    "provider_geometry_setter": {
+      "passed": 23,
+      "failed": 0,
+      "guard": "tests/molsysviewer_molsysmt/test_set_tools.py",
+      "scope": "Native parity; units; nonconsecutive/repeated structures; empty selections; native analysis invalidation including Buch; preflight rejection; partial-write uncertainty; connector failure and projection retry without repeating science."
+    },
+    "provider_reads_extract_remove": {
+      "passed": 37,
+      "failed": 0
+    },
+    "provider_packaging": {
+      "passed": 30,
+      "failed": 0,
+      "scope": "Native integration plus wheel/sdist source inventory guards; not built artifact installation."
+    },
+    "provider_guide_python_blocks": {
+      "executed": 4,
+      "exit_code": 0
+    },
+    "provider_course": {
+      "change": "Availability prose only in Common_Core/06_Visualizing_Anything.ipynb; all code cells and outputs unchanged."
+    },
+    "real_chromium": {
+      "exit_code": 0,
+      "addon_set": true,
+      "runner": "molsysviewer/js/tests/e2e/coordinate-edits.e2e.ts",
+      "scope": "Native source addon coordinates/box through real Mol*, two controllers and Update view from each endpoint; box cell size 30,40,50 angstrom in both. Not live Jupyter or independent full popup bootstrap/relay."
+    },
+    "previous_host_safe_rejection": {
+      "host_commit": "9da52e5500c9f8637e2f6f76eea0eb81ce783882",
+      "result": "Actual old host rejects explicit rejection_check keyword before science; original geometry storage and named analysis objects unchanged."
+    },
+    "public_api": {
+      "callables": 732,
+      "digested": 732,
+      "digesters": 445,
+      "missing_digesters": 0
+    },
+    "completed_prior_host_ci": {
+      "commit": "cef99ec677fce35d9db02477db226c13a759d6d8",
+      "core_run": 39948407994,
+      "e2e_run": 39948928788,
+      "conclusion": "success",
+      "limits": "Prior commit only; new code requires its own CI."
+    }
+  },
+  "source_sha256": {
+    "viewer": {
+      "molsysviewer/system_edits.py": "07a9a5bfc511fef0015f8820f15eca0d46cf682022f26645b1e2957cf8cbb578",
+      "molsysviewer/_private/argdigest/argument/rejection_check.py": "1bd21ba68f5d044358f828033f667cfb17817b25e1cecd3378b26beea44327d0",
+      "tests/test_managed_system_edits.py": "be830aa6956d3d0b40257c321aadf0a9689bbeee09b5d27e372564708834cf82",
+      "molsysviewer/js/tests/e2e/managed-system-edits-bridge.py": "eff1973248d71affe1756818be34caaa699d2729b281be94c3366ce82290c619",
+      "molsysviewer/js/tests/e2e/managed-system-edits-scenarios.ts": "86cd9e11017d2ecee6e60e84ba1cb152ece2fb4aa2a52415f3c7d9ae520d5f1b"
+    },
+    "provider": {
+      "molsysviewer_molsysmt/_basic.py": "acc685b592499d29bffa94497e88a1ae874081b9ec1bc6d3b631f155aff3f66a",
+      "molsysviewer_molsysmt/_geometry.py": "174188ede5bde7993ef2cb8f6bbd50bb5cc93d692aa36619d2d39e67851fa5f5",
+      "molsysviewer_molsysmt/_argdigest.py": "ada028f4ffd184ad0c7d599c7cd648fd865f4a1dd184a27d2677cad886dd9dfd",
+      "molsysviewer_molsysmt/_private/function/__init__.py": "6e27e14f2c119c17b55f9b82814014d46ba92004ca07965eaf955509e02f05d9",
+      "molsysviewer_molsysmt/_private/function/basic_set.py": "49f736297f314dbf261148673ac9017303253a3629f6766293bd90de70921926",
+      "tests/molsysviewer_molsysmt/test_set_tools.py": "3fb841baf394b70a528f38d0d2c07f8af610833a617d116cc34c93453e886e59",
+      "devtools/scripts/viewer_tools_contract.py": "cbf5ffebac15bce7548a512d8a199861fbf2e25051d470756e503ec1b261e641"
+    }
+  },
+  "remaining": [
+    "Other setter attributes and scientific effect families",
+    "Graphical addon panels",
+    "Scoped/incremental trajectory projection; synchronization currently rebuilds the full scene",
+    "Hosted gates for this new source delivery",
+    "Installed package pair and live Jupyter receiving"
+  ],
+  "publication_authorized": false
+}

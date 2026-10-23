@@ -98,8 +98,8 @@ selection, interactions and H5MSM workflows remain available without registratio
 Optional domain extensions keep this addon contract. See uibcdf/molsysviewer#186.
 
 The experimental source integration provides six bound `basic` queries,
-independent extraction and managed native removal with synchronization controls;
-the provider owns their usage reference. Broader scientific coverage, other edit
+independent extraction, managed native removal and coordinates/box setting with
+synchronization controls. The provider owns their usage reference. Broader scientific coverage, other edit
 families, panels and installed-package compatibility remain pending. The new route does
 not enable retired packages. General automatic observation of arbitrary
 external molecular edits is not required; integrated tools coordinate their own
@@ -116,7 +116,7 @@ closing a popup alone does not close the view.
 
 `view.addons.manager.system_edits` is a host integration service shared by
 addons. A reviewed provider adapter passes `execute(callback, name=...,
-update_view=True)` a read-only preparation callback on the bound target. Its
+update_view=True, rejection_check=None)` a read-only preparation callback on the bound target. Its
 plan declares the native `run` callable, whether science changes the target,
 operation-relative retained atom/structure correspondence, interaction validity
 and any qualified atomic-rejection guarantee. Scientific semantics and map
@@ -138,6 +138,14 @@ atoms/structures, arbitrary provider mutators, raw external writes or molecular
 Undo. Coordinate/analysis arrays and arbitrary user extension attributes are not
 copied into its scene checkpoint. Ordinary `view.load` cannot discard unresolved
 managed edits silently. Scientific usage belongs in the provider documentation.
+
+For nested writes, a provider may supply `rejection_check(target)` as a read-only
+immutable token reader. The host compares before/after-error tokens in addition
+to target/state identity; unchanged counts alone cannot certify rejection. This
+is an explicit executor keyword, so an old host fails before executing science.
+It does not make multi-attribute scientific operations atomic. Source receiving
+of geometry setting presently rebuilds the scene on synchronization; do not
+promise bounded or incremental trajectory transfer for that route.
 
 ## How the host finds it
 
