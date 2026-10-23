@@ -99,7 +99,8 @@ scientific workflow. The {doc}`../../showcase/addons` catalogue records current
 provider status.
 
 A redesigned MolSysMT tools add-on has an initial experimental source API with
-six `basic` queries. Its broader tools, editing and graphical panels remain in
+six `basic` queries and native molecular `basic.extract()`. Its broader tools,
+bound-system editing and graphical panels remain in
 development. Compatible installs discover the new declaration automatically;
 the old `molsysviewer_molsysmt` root declaration remains retired and rejected.
 Consult the provider reference for exact source/package availability. Current

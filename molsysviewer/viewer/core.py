@@ -24,6 +24,11 @@ from .._private.argdigest.argument.viewer_mode import digest_viewer_mode
 from .._private.smonitor import CATALOG, META, PACKAGE_ROOT
 from .._private.smonitor.warnings import StructureStreamFallbackWarning, warn
 from .._private.smonitor_emit import emit_suppressed_exception
+from .._private.structure_correspondence import (
+    apply_structure_edit,
+    normalize_structure_index_map,
+    prepare_structure_edit,
+)
 from ..active_selection import ActiveSelection, _combine, _selection_projection
 from ..addons import AddonPanelWidget, ViewAddonsManager
 from ..addons import addons as global_addons
@@ -2561,6 +2566,7 @@ class MolSysView(
         new_molsys,
         *,
         atom_index_map: dict[int, int] | None = None,
+        structure_index_map: Sequence[int] | None = None,
         label: str | None = None,
         load_blocks: str = "keep",
         appended_n_atoms: int | None = None,
@@ -2582,8 +2588,16 @@ class MolSysView(
         atom_index_map
             Optional ``{old_atom_index: new_atom_index}`` map. Use ``None`` for
             edits where atom identity and indices are unchanged. With equal
-            structure counts, the edit also declares the structure index order
-            unchanged; use extraction for an explicit frame reorder/subset.
+            structure counts and no structure map, the edit also declares the
+            structure index order unchanged.
+        structure_index_map
+            Optional new-to-old structure positions: entry ``j`` gives the old
+            structure retained at new position ``j``. Subsets, reordering and
+            repetitions such as ``[2, 0, 2]`` are supported. Every new position
+            must refer to an existing old structure; new/unknown origins cannot
+            be declared with this map. Player position selects the first retained
+            copy, while filters, shapes, source maps and plots retain all copies.
+            Attached scientific analyses must already match the new system.
         label
             Optional label for the rebuilt payload. Defaults to the current
             view label.
@@ -2618,7 +2632,16 @@ class MolSysView(
             if not 0 <= int(appended_n_atoms) <= int(new_molsys.get_n_atoms()):
                 raise ValueError("appended_n_atoms must fit within the edited system's atom count.")
 
-        self.trajectory_plot._check_structure_axis(new_molsys.structures.n_structures)
+        structure_index_map = normalize_structure_index_map(
+            structure_index_map,
+            self._load_structure_count,
+            int(new_molsys.structures.n_structures),
+        )
+        structure_edit = None
+        if structure_index_map is None:
+            self.trajectory_plot._check_structure_axis(new_molsys.structures.n_structures)
+        else:
+            structure_edit = prepare_structure_edit(self, structure_index_map)
         effective_label = self._last_label if label is None else label
         source_records = self._prepare_source_records_edit(
             new_molsys,
@@ -2626,6 +2649,7 @@ class MolSysView(
             load_blocks,
             appended_n_atoms,
             effective_label,
+            structure_index_map,
         )
         self.interactions._prepare_system_edit(new_molsys, interactions_policy)
         self.interactions._system_changed()
@@ -2635,6 +2659,8 @@ class MolSysView(
         self._replace_load_records(source_records)
         if label is not None:
             self._last_label = label
+        if structure_edit is not None:
+            apply_structure_edit(self, structure_edit)
         self._rebuild_view_from_current_molsys(
             label=effective_label,
             atom_index_map=atom_index_map,

@@ -1,0 +1,89 @@
+{
+  "schema": "molsysviewer.source_receiving@1",
+  "date": "2026-10-22",
+  "scope": "Retained structure correspondence for live adoption and independent native extraction in the provider addon",
+  "provenance": {
+    "environment": "molsyssuite@uibcdf_3.14",
+    "viewer_parent": "e37ff48673279115f1958a821a72e9287bd65563",
+    "provider_parent": "fa2f3aa9232372e5fa7db8bbf4ebd9e2ad481056",
+    "working_sources": true,
+    "provider_scientific_work_preserved": true,
+    "dependencies": {
+      "molsysmt": "0.23.0+160.gb35a29326.dirty",
+      "molsysviewer": "0.24.0+97.gdf4bf477.dirty",
+      "pandas": "2.3.3",
+      "argdigest": "0.16.0+1.g6dabaf7",
+      "smonitor": "0.21.0+1.gd6b2394"
+    }
+  },
+  "source_sha256": {
+    "molsysviewer/_private/structure_correspondence.py": "ba715d8ce295796ba42c989473f572029f7a2d051bf2ab0abec7eb929df7746d",
+    "molsysviewer/_private/argdigest/argument/structure_index_map.py": "bbec434a2f2c5ff7d8151f12eb04309e47a0e56994580b5cd8245375a9ce4a12",
+    "molsysviewer/viewer/core.py": "7c9648604c8e023e4eb7ed07f99afe863c1b9079328f8728980fa4a9d331a84a",
+    "molsysviewer/viewer/load.py": "55414b7de9249bca26c178c4fd552599d9803e47d08cc75778c4748f6ccddce3",
+    "molsysviewer/tools/basic/_scene_transfer.py": "db157644f8bff0d9cb522838a98ad1427b3a5cff7dd213f832d1883c54c8e57e",
+    "tests/test_structure_edit_correspondence.py": "c0ada1dee193a6b227c6e5df204587716a1994eaf9f1c17627c308928cbc37e4",
+    "tests/test_box_assignment.py": "4d2ddf3981ae4c39a225f59db069ce1a7d0188630ea9458a51551b5abe3aaa70",
+    "devtools/public_api_inventory_baseline.json": "024571e523805a5d2a00e2f304f0f36af7abe49f149d34be8e92b3653a33cf2c"
+  },
+  "provider_source_sha256": {
+    "molsysviewer_molsysmt/_basic.py": "c1eb1ff0d40b85e16caac5cccea7ab4fc5ca36ee066760ea2fcf67e8a17f8b4f",
+    "tests/molsysviewer_molsysmt/test_read_tools.py": "9c0f193fbcb6285d7968d7a0b02bfe39c8f43a0564b4480a678ae4216d32caea"
+  },
+  "checks": [
+    {
+      "command": "python -m pytest --receptor=llm tests/test_structure_edit_correspondence.py -x",
+      "passed": 22,
+      "failed": 0,
+      "skipped": 0,
+      "note": "The same-object fixture was then made independent of newer provider in-place semantics; its focused replacement case passes separately."
+    },
+    {
+      "command": "python -m pytest --receptor=llm tests/test_structure_edit_correspondence.py::test_same_object_structure_replacement_uses_the_previously_projected_axis -x",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "command": "python -m pytest --receptor=llm tests/test_box_assignment.py -x",
+      "passed": 44,
+      "failed": 0
+    },
+    {
+      "repository": "uibcdf/molsysmt",
+      "command": "python -m pytest --receptor=llm -p no:cacheprovider tests/molsysviewer_molsysmt/test_read_tools.py -x",
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "python -m pytest --receptor=llm tests/ -m 'not qt_runtime' -n 8 --junitxml=/tmp/molsysviewer-structure-map-core.xml",
+      "passed": 3257,
+      "failed": 2,
+      "skipped": 21,
+      "note": "Full run remains failed: new archive was not yet tracked for clean-checkout links, and the API digester total still used the old baseline. No functional failure was reported; this is not a green full-suite claim."
+    },
+    {
+      "command": "python -m pytest --receptor=llm tests/test_devguide_links.py tests/test_public_api_inventory.py -x",
+      "passed": 18,
+      "failed": 0,
+      "note": "After tracking new sources and regenerating the inventory: 727 digested public callables, 443 declared digesters, zero missing argument digesters."
+    }
+  ],
+  "hosted_prior_checkpoint": {
+    "viewer_sha": "7449675aa8407e94136357f11da1256188e46183",
+    "core_run": 39882740305,
+    "source_pair_run": 39882740307,
+    "failure": "Three warning-strict documentation pages fail on deprecated native pandas inplace operations; tracked in uibcdf/molsysmt#431. No warning suppression or source pin change is made.",
+    "qt_run": 39882740274,
+    "qt_scope": "Experimental WebGL startup failure is separate, already tracked under uibcdf/molsysviewer#35 and uibcdf/gh-run-receptor#62."
+  },
+  "not_qualified": [
+    "managed mutating addon calls",
+    "deferred synchronization and retry",
+    "new or unknown structure origins",
+    "graphical task panels",
+    "clean solver installation",
+    "new public package compatibility",
+    "release publication"
+  ]
+}

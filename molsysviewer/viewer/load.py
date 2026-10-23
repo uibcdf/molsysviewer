@@ -81,7 +81,7 @@ class LoadMixin:
         binding = {key: state["binding"][key] for key in ("n_atoms", "n_structures", "fingerprint")}
         return records if binding == self._source_state_binding() else None
 
-    def _prepare_source_records_edit(self, new_molsys, atom_map, policy, appended, label):
+    def _prepare_source_records_edit(self, new_molsys, atom_map, policy, appended, label, structure_map=None):
         records = self.load_blocks
         count = int(new_molsys.get_n_atoms())
         prior = sum(record["n_atoms"] for record in records)
@@ -104,8 +104,8 @@ class LoadMixin:
             return [_load_record(new_molsys, label=label)] if count else []
         if policy == "append" and prior + int(appended) != count:
             raise ValueError("appended_n_atoms must match the growth of the atom domain.")
-        records = _remap_source_records(records, atom_map)
-        if frames != getattr(self, "_load_structure_count", frames):
+        records = _remap_source_records(records, atom_map, structure_map)
+        if structure_map is None and frames != getattr(self, "_load_structure_count", frames):
             for record in records:
                 record["structure_map"] = {"encoding": "runs", "runs": [], "status": "unverified"}
         missing = _uncovered_atom_runs(records, count)

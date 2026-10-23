@@ -115,8 +115,14 @@ silently substitutes for preservation that the operation promises.
   equivalent relation capable of repetition. `[2, 0, 2]` cannot be represented
   by an ordinary old-to-new dictionary alone. Unknown/new structure origins are
   explicit; remap player position, visibility, sources, plots and analyses using
-  each owner's reviewed policy. Existing `apply_system_edit` cannot receive this
-  general correspondence unchanged.
+  each owner's reviewed policy. `apply_system_edit(structure_index_map=...)`
+  now receives an explicit new-to-old sequence for retained structures, including
+  repetition. It validates the sequence before adoption, remaps per-structure
+  shapes, interaction display filters, plot values/events, player and compact
+  source correspondence, and keeps scientific analysis transformation in the
+  provider. New/unknown origins and automatic scientific edits remain outside
+  this initial map contract. Clearing all structures while plot cards exist is
+  rejected before adoption; remove those cards explicitly first.
 - **Chemical-state edits:** distinguish payload changes from state-axis changes
   and structure-state association changes. Keep affected chemistry, attached
   analysis validity and rendered topology consistent. Atom/structure counts do

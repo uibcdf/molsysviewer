@@ -5,7 +5,8 @@
 the integration in the owning MolSysMT repository. This is a new plan under
 [the core/add-on boundary](core_and_addon_boundary.md). The withdrawn native
 Studio expansion plan remains removed. An initial experimental source delivery
-now provides six bound `basic` queries and their root aliases. Broader runtime
+now provides six bound `basic` queries, native molecular extraction and their
+root aliases. Broader runtime
 coverage, installed compatibility, dependency floors and release remain separate.
 
 ## Accepted requirements
@@ -146,10 +147,13 @@ authoritative maps and receiving guards before admitting each family:
 | Atom addition/removal/reordering | Authoritative old-to-new correspondence, treatment of new/deleted atoms, source accounting and remapping of regions, selections and anchored objects. |
 | Structure addition/removal/reordering/repetition | Explicit correspondence and occurrence policy, current frame/navigation, source maps, evaluated coverage and all structure-bound objects/results. Counts do not prove identity. |
 
-The current `apply_system_edit` accepts an atom map but no general structure
-map; equal structure counts declare unchanged structure order. It conservatively
-invalidates interaction coverage and clears scene history. It is not sufficient
-to certify arbitrary frame edits or serve as a generic lossless refresh.
+`apply_system_edit` accepts an atom map and an explicit new-to-old
+`structure_index_map` for retained structures, including subsets, reordering and
+repetition. Without that map, equal structure counts still declare unchanged
+structure order. New/unknown structure origins are not admitted by this first
+map contract. It conservatively invalidates interaction coverage by default
+and clears scene history. This boundary alone does not certify arbitrary
+scientific edits, pending synchronization or recovery after a failed rebuild.
 Receive required core extensions separately, reusing existing extraction/remap
 mechanisms with reviewed live-edit policies. Qualify same-object edits and
 independent adoption separately. Unknown correspondence needs an explicit safe

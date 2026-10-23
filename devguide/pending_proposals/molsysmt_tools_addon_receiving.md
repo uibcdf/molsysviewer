@@ -18,7 +18,9 @@ supersedes: []
 [addon plan](../molsysmt_tools_addon_plan.md).
 **Status:** partial implementation: the new discovery route, closed-view boundary
 and actionable state-factory failures are delivered for initial read-tool source
-receiving. Editing/synchronization and installed qualification remain pending.
+receiving. Explicit retained-structure maps now extend live adoption and
+independent extraction. Managed editing/synchronization and installed
+qualification remain pending.
 
 ## What
 
@@ -120,3 +122,34 @@ Provider developer-guide validation passes on a clean checkout of the delivery.
 Both issues remain partial: scientific edits, synchronization and task panels
 still require implementation and qualification. No package publication follows
 from this source delivery.
+
+## Retained structure correspondence
+
+`apply_system_edit` now accepts `structure_index_map`: entry `j` names the old
+structure retained at new position `j`. This supports subsets, reordering and
+repetition, unlike an injective old-to-new dictionary. Validation uses the last
+projected axis even when native science has already mutated the same MolSys.
+Invalid correspondence is rejected before adoption/invalidation, including with
+`skip_digestion=True`. Original maps remain unverified when an axis changes
+without explicit correspondence, preserving the existing default contract.
+
+Live adoption and independent extraction share structure remapping for shapes,
+interaction filters, trajectory cards/events and playhead. Source runs retain
+all mapped destinations; scientific analyses must already match the result.
+The focused guard is `tests/test_structure_edit_correspondence.py`, with actual
+MolSys extraction/removal, combined atom/structure maps and session round-trips.
+This does not implement managed scientific execution, deferral, failed-rebuild
+recovery, unknown/new structure origins or task panels. Those remain open under
+this issue and uibcdf/molsysmt#421.
+
+The [structure receiving receipt](../molsysmt_addon_structure_receiving_20261022.json)
+retains the focused source checks and the once-run full core result: 3,257 pass,
+21 skips and two administrative failures (untracked archive link and stale
+digester count). Tracking the new source and regenerating the inventory resolves
+both in an 18-case focused run; that is not a replacement green full-suite run.
+The separately reported #263 box fixture now passes its complete 44-case file.
+Prior hosted core/source-pair failures at `7449675a` instead concern three
+warning-strict documentation pages and deprecated native pandas `inplace`
+operations, reported to uibcdf/molsysmt#431. Do not hide that receiving gap by
+suppressing the warnings or treating the local source environment as the same
+installed dependency composition.

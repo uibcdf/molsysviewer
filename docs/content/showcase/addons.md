@@ -14,7 +14,7 @@ MolSysViewer documents the shared
 | TopoMT | Molecular topography | [TopoMT documentation](https://www.uibcdf.org/topomt). Consult the provider for the scope of `molsysviewer_topomt` and its compatible versions. |
 | PharmacophoreMT | Pharmacophores | [PharmacophoreMT documentation](https://www.uibcdf.org/pharmacophoremt). Consult the provider for the scope of `molsysviewer_pharmacophoremt` and its compatible versions. |
 | ElastNetMT | Elastic networks | [ElastNetMT documentation](https://www.uibcdf.org/elastnetmt). Consult the provider for the scope of `molsysviewer_elastnetmt` and its compatible versions. |
-| MolSysMT tools | Scientific tools on the view's current system | **Experimental source API:** six `basic` queries; broader tools, editing and panels pending. The [provider guide](https://www.uibcdf.org/molsysmt/content/user/tools/molsysviewer_tools.html) owns usage and availability. The retired integration remains rejected. |
+| MolSysMT tools | Scientific tools on the view's current system | **Experimental source API:** six `basic` queries and native molecular extraction; broader tools, editing and panels pending. The [provider guide](https://www.uibcdf.org/molsysmt/content/user/tools/molsysviewer_tools.html) owns usage and availability. The retired integration remains rejected. |
 
 A catalogue entry identifies the project; it does not certify every scientific
 workflow or package/version combination. Follow each provider's published

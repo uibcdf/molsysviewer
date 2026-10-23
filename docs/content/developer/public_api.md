@@ -170,11 +170,17 @@ The user-facing translation table is in
     - same atom count + no topology in the input -> `append_structures`
     - same atom count + matching topology -> `append_structures`
     - different atom count -> `add`
-- `apply_system_edit(new_molsys, atom_index_map=None, ...)`
+- `apply_system_edit(new_molsys, atom_index_map=None, structure_index_map=None, ...)`
   - advanced integration primitive for add-ons and tooling
   - replaces the view's molecular system and reconciles viewer-owned state
     (regions, selections, visibility, colors, shapes, annotations,
     measurements, layers, and index mappings)
+  - `structure_index_map[j]` declares the old structure at new position `j`,
+    including reordered/repeated positions; frame-dependent shapes, interaction
+    filters, player, plot data/events and source maps follow that relation
+  - attached analyses must already match the adopted system; default coverage
+    invalidation remains conservative, and explicit preservation is a caller
+    declaration rather than a new calculation
   - does not define molecular edit semantics; those belong to MolSysMT or an
     add-on
 - `convert(...)`

@@ -3,6 +3,12 @@
 import re
 from copy import deepcopy
 
+from ..._private.structure_correspondence import (
+    remap_current_structure,
+    remap_shape_structures,
+    remap_structure_filter,
+    remap_trajectory_cards,
+)
 from ...interactions import _analysis_signature
 from ...loaders._source_records import _remap_source_records
 
@@ -56,11 +62,8 @@ def _transfer_state(source, target, atom_map=None, frames=None, *, merge=False):
     state["regions"] = [r for r in state["regions"] if r.get("atom_indices", True) or r["uid"] in needed]
     shapes = []
     for record in state["shapes"]:
-        options = record["options"]
         if frames is not None:
-            for key, value in list(options.items()):
-                if key.startswith("structures_") and isinstance(value, list):
-                    options[key] = [value[i] for i in frames]
+            record = remap_shape_structures(record, frames)
         remapped = target._remap_shape_message(record, atom_map)
         if remapped is not None:
             shapes.append(remapped)
@@ -85,13 +88,6 @@ def _transfer_state(source, target, atom_map=None, frames=None, *, merge=False):
             selections.append(remapped)
     state["selections"] = selections
     state["active_selection"]["atom_indices"] = atoms(state["active_selection"]["atom_indices"])
-    frame_map = None
-    if frames is not None:
-        frame_map = {}
-        for new, old in enumerate(frames):
-            # A scalar current frame selects the first retained copy. Visual
-            # filters below retain every destination, including repetitions.
-            frame_map.setdefault(old, new)
     for record in state.get("interactions", []):
         scope = record["filter"]
         missing = False
@@ -100,29 +96,17 @@ def _transfer_state(source, target, atom_map=None, frames=None, *, merge=False):
             if isinstance(values, list):
                 missing |= any(i not in atom_map for i in values)
                 scope[key] = atoms(values)
-        if frame_map is not None and isinstance(scope.get("structure_indices"), list):
-            selected_frames = set(scope["structure_indices"])
-            scope["structure_indices"] = [new for new, old in enumerate(frames) if old in selected_frames]
+        if frames is not None:
+            scope["structure_indices"] = remap_structure_filter(scope.get("structure_indices"), frames)
         analysis = target._molsys.interactions.get(record["analysis_name"])
         if missing or analysis is None:
             record["broken"] = True
         else:
             record["analysis_revision"] = _analysis_signature(analysis)
-    if frame_map is not None:
+    if frames is not None:
         view = state.get("view", {})
-        view["structure_index"] = frame_map.get(view.get("structure_index", 0), 0)
-        for card in state.get("trajectory_plots", []):
-            for series in card["series"]:
-                series["values"] = [series["values"][i] for i in frames]
-            if "x" in card:
-                card["x"] = [card["x"][i] for i in frames]
-            card["events"] = [
-                dict(event, frame=new)
-                for event in card.get("events", [])
-                for new, old in enumerate(frames)
-                if event["frame"] == old
-            ]
-            card["n_frames"] = len(frames)
+        view["structure_index"] = remap_current_structure(view.get("structure_index", 0), frames)
+        state["trajectory_plots"] = remap_trajectory_cards(state.get("trajectory_plots", []), frames)
     return state
 
 
