@@ -1,7 +1,7 @@
 ---
 summary: Qualify the redesigned MolSysMT addon host and molecular-edit reconciliation.
 issue: uibcdf/molsysviewer#264
-status: active
+status: partial
 opened: 2026-10-22
 closed:
 verification: inspected
@@ -16,7 +16,9 @@ supersedes: []
 
 **Reported:** 2026-10-22, accepted maintainer direction after reviewing the
 [addon plan](../molsysmt_tools_addon_plan.md).
-**Status:** active contract preparation; no new runtime integration is delivered.
+**Status:** partial implementation: the new discovery route, closed-view boundary
+and actionable state-factory failures are delivered for initial read-tool source
+receiving. Editing/synchronization and installed qualification remain pending.
 
 ## What
 
@@ -82,3 +84,30 @@ Generic factory-failure handling must retain actionable diagnostics for every
 addon while preserving legitimate factories returning their intended values.
 Do not include unrelated local work or change legacy guards before the new
 compatibility route exists.
+
+## Initial read-tool receiving
+
+The host admits `molsysviewer_molsysmt.tools` while ignoring retired root entry
+points before loading and refusing explicit legacy-module registration. The
+provider declares the new entry point; no hardcoded known-module entry is added.
+Addon state factories now record/propagate original failures, remain retryable
+and clear their record after a successful retry. `view.closed` explicitly
+exposes view lifetime for bound expert API calls and close is idempotent.
+
+Provider `tests/molsysviewer_molsysmt/test_read_tools.py` receives actual basic
+queries, signatures/defaults/help, native result/error parity, nonconsecutive
+structure coordinates with units, replacement/cached methods, panel deactivation,
+two views, empty/closed targets and standard metadata discovery in a fresh
+process. These tests exercise the real provider and demos; they are not proof of
+new edit/map APIs, task panels or installed artifact qualification. Viewer
+`tests/test_addon_factory_failures.py` guards the failure/retry boundary and
+`tests/test_view_lifecycle.py` guards explicit closure and widget release.
+
+The [dated source receipt](../molsysmt_addon_read_receiving_20261022.json)
+records the 46 provider read/packaging checks, host focused receiving and the
+full core result: 3,235 pass, 21 skips and the known #263 fixture failure.
+That full run is not green. Both Sphinx builds complete; provider warnings
+remain visible. Development editable metadata now exposes the actual new entry
+point, observed with a real dialanine view; this is not clean solver or release
+artifact qualification. Preserved concurrent provider changes remain explicit
+in the receipt's provenance.

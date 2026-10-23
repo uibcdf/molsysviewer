@@ -4,8 +4,9 @@
 [the normative product decision](core_and_addon_boundary.md): core visualizes
 and explores, including qualified scientific calculations for visual content;
 additional preparation/editing/general analysis belongs to add-on/scientific
-tools. MolSysMT remains required; its redesigned tools add-on is proposed and
-the legacy runtime refusal remains. The native-Studio expansion plan is
+tools. MolSysMT remains required; its redesigned tools add-on initially supplies
+six experimental source queries, while legacy root declarations remain refused.
+Edits, panels and installed qualification remain pending. The native-Studio expansion plan is
 withdrawn and removed. The separate [add-on plan](molsysmt_tools_addon_plan.md)
 records accepted expert API/GUI and edit/update policy with the implementation
 sequence. [Technical receiving](molsysmt_addon_receiving_contract.md) under

@@ -21,9 +21,11 @@ def test_close_releases_a_loaded_view_and_its_registered_widgets():
     widget_ref = weakref.ref(widget)
     layout_ref = weakref.ref(layout)
 
+    assert view.closed is False
     assert len(set(_instances) - baseline_ids) == 2
 
     view.close()
+    assert view.closed is True
     view.close()
     del view
     gc.collect()

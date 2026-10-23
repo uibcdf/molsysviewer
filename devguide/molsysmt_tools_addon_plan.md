@@ -4,8 +4,9 @@
 2026-10-22.** The maintainer authorizes the Viewer development effort to implement
 the integration in the owning MolSysMT repository. This is a new plan under
 [the core/add-on boundary](core_and_addon_boundary.md). The withdrawn native
-Studio expansion plan remains removed. No runtime restoration, installed
-compatibility, new dependency floor or release is claimed here.
+Studio expansion plan remains removed. An initial experimental source delivery
+now provides six bound `basic` queries and their root aliases. Broader runtime
+coverage, installed compatibility, dependency floors and release remain separate.
 
 ## Accepted requirements
 
@@ -45,7 +46,10 @@ Implementation tracking is now open: uibcdf/molsysmt#421 owns the provider
 addon and source ledger; uibcdf/molsysviewer#264 owns host and molecular-edit
 receiving. The [technical receiving draft](molsysmt_addon_receiving_contract.md)
 specifies the proposed integration controls/state model and acceptance cases.
-These records do not restore runtime support.
+The first read-tool source implementation is tracked in these records; the
+proposed synchronization controls are not implemented by that delivery.
+See [its bounded source receipt](molsysmt_addon_read_receiving_20261022.json)
+for executed reads, lifecycle/packaging scope and the retained #263 core failure.
 
 Provider source was inspected at `35a9fc4919485dd0da987134cb5ec9a867d77916`
 and Viewer at `697649d82419116d93715d37245e1e279b6e7e5c`. The previous integration

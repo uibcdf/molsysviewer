@@ -17,8 +17,12 @@ visualization tools. You do not enable an add-on to load a system or display
 supported calculated interactions. Additional molecular preparation, editing
 and general analysis tools belong to the scientific library and its add-on
 interface. See {doc}`what` for this boundary and {doc}`addons` for current
-extension availability. The redesigned MolSysMT tools add-on is still planned;
-the current runtime rejects its retired legacy integration.
+extension availability. The redesigned MolSysMT tools add-on initially provides
+six experimental `basic` queries in compatible source installs. MolSysMT owns
+the [tools reference](https://www.uibcdf.org/molsysmt/content/user/tools/molsysviewer_tools.html).
+Broader tools and editing remain in development; the current host still rejects
+the retired legacy integration. Source support does not qualify an installed
+public package pair.
 
 Direct Python edits of the mutable system held by `view.molsys` do not promise
 automatic scene updates. The advanced `view.apply_system_edit(...)` boundary

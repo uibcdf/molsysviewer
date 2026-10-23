@@ -5,8 +5,9 @@
 The earlier requirement for automatic observation of linked MolSys edits is
 superseded. The maintainer accepts visual core ownership and additional
 molecular tools in an add-on/scientific interface. Explicit reconciliation and
-coordinated tool operations are the current design basis. No runtime add-on,
-new synchronization API, setter retirement or molecular Undo is implemented.
+coordinated tool operations are the current design basis. The initial addon
+source API provides read queries only; no new synchronization API, setter
+retirement or molecular Undo is implemented.
 
 ## Accepted responsibilities and proposed routes
 
@@ -23,9 +24,10 @@ Viewer notifications or universal tracking of mutable arrays/tables.
 | Raw array/table/alias mutation | No general observation or validity guarantee. Advanced callers retain explicit invalidation/reconciliation responsibilities. |
 | Camera, frame or display-only change | Existing scene/navigation contracts; no molecular mutation or scientific rerun. |
 
-The current public extension namespace is `view.addons`. A proposed
-`view.addons.molsysmt` tools interface is not currently available: the retired
-legacy integration remains refused under uibcdf/molsysviewer#186. The backend
+The current public extension namespace is `view.addons`. The initial
+`view.addons.molsysmt` source interface provides six experimental basic queries;
+the retired legacy integration remains refused under uibcdf/molsysviewer#186.
+Editing, broad tool coverage and installed qualification remain pending. The backend
 MolSysMT dependency remains required regardless of optional tool presentation.
 
 `view.extract()` remains a view operation returning another view; `load()`

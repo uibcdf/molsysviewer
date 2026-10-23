@@ -781,11 +781,6 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         return [(name, self._registry[name]) for name in self.enabled(skip_digestion=True)]
 
     def _validate_addon_registration(self, addon: AddonSpec) -> None:
-        if addon.name.casefold() == "molsysmt":
-            raise ValueError(
-                "MolSysMT is the native MolSysViewer backend; its former addon is no longer supported. "
-                "Use view.load(), view.interactions and the native Studio tools."
-            )
         existing = self._registry.get(addon.name)
         if existing is not None and existing is not addon:
             raise ValueError(f"Add-on namespace {addon.name!r} is already registered.")
@@ -844,8 +839,11 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
     @digest()
     def register_module(self, module: str | ModuleType, *, skip_digestion: bool = False) -> AddonSpec:
         module_name = module if isinstance(module, str) else module.__name__
-        if module_name.split(".", 1)[0] == "molsysviewer_molsysmt":
-            raise ValueError("The MolSysMT addon has been retired; MolSysMT is the native backend.")
+        if module_name.split(".", 1)[0] == "molsysviewer_molsysmt" and module_name != "molsysviewer_molsysmt.tools":
+            raise ValueError(
+                "The legacy MolSysMT addon has been retired. "
+                "The redesigned integration is molsysviewer_molsysmt.tools."
+            )
         imported = import_module(module) if isinstance(module, str) else module
         addon = self.register(
             _load_addon_spec_from_module(imported),
@@ -884,9 +882,10 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
                 module_name = _entry_point_module_name(entry_point)
                 # Older MolSysMT distributions still advertise this entry point.
                 # Skip it before loading so legacy initialization has no side effects.
-                if (module_name or "").split(".", 1)[0] == "molsysviewer_molsysmt" or str(
-                    source
-                ).casefold() == "molsysmt":
+                if module_name != "molsysviewer_molsysmt.tools" and (
+                    (module_name or "").split(".", 1)[0] == "molsysviewer_molsysmt"
+                    or str(source).casefold() == "molsysmt"
+                ):
                     continue
                 key = f"entry-point:{source}"
                 if key in seen:
@@ -1165,10 +1164,10 @@ class ViewAddonsManager(_AddonAggregationMixin):
             if callable(factory):
                 try:
                     states[name] = factory(self._view)
-                except Exception:
-                    import types as _types
-
-                    states[name] = _types.SimpleNamespace()
+                except Exception as exc:
+                    self._record_lifecycle_failure(name, "state_factory", exc)
+                    raise
+                self._lifecycle_failures.pop(f"lifecycle:{name}.state_factory", None)
             else:
                 import types as _types
 

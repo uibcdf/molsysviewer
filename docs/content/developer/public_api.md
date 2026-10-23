@@ -149,6 +149,7 @@ The user-facing translation table is in
 `MolSysView` is also explicitly growing an inspection-oriented object API beyond the minimal viewer shell. Public user-facing methods now include:
 
 - `close()`
+  - `closed` reports explicit view closure for addon and other bound-resource guards
   - explicitly releases the frontend widget and its owned resources
   - views can also be used as context managers to close them on block exit
 - `attributed_to(owner)`

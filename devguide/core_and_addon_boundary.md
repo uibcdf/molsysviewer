@@ -86,10 +86,13 @@ independent results only explicitly. Deferred synchronization requires qualified
 maps, safe pending state and recovery without repeating completed science.
 Exact receiving APIs, installation/discovery and panel layout still need
 implementation contracts and qualification.
-The current runtime still refuses the retired legacy MolSysMT add-on
-under uibcdf/molsysviewer#186; restoring that old package is not an implementation
-of this new direction. `view.addons` is the existing extension namespace, but
-`view.addons.molsysmt` is not currently promised as available.
+The runtime still refuses the retired legacy MolSysMT root entry point under
+uibcdf/molsysviewer#186. The redesigned provider-owned source integration uses
+`molsysviewer_molsysmt.tools` for discovery and initially exposes six bound
+`basic` queries under `view.addons.molsysmt`, with lazy per-view state and closed
+view guards. Broader tools, edits and panels remain pending in
+uibcdf/molsysmt#421/uibcdf/molsysviewer#264. Source receiving does not establish
+compatibility for a published package pair.
 
 General automatic observation of external MolSysMT/native writes is not a
 requirement of this direction. Direct Python edits need explicit qualified

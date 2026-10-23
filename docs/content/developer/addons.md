@@ -90,19 +90,26 @@ presents it, and MolSysViewer never has to be edited to add one.
 An external add-on is free to be its own distribution. The pattern above is what the
 MolSysSuite toolkits do, not a requirement of the host contract.
 
-MolSysMT is the required native backend. In the current runtime, the former
-`molsysviewer_molsysmt` entry point is ignored before loading; explicit registration
-of that module or the reserved `molsysmt` namespace is rejected. Native loading,
+MolSysMT is the required native backend. The former
+`molsysviewer_molsysmt` root entry point is ignored before loading and explicit
+registration of its legacy modules is rejected. The redesigned source integration
+uses `molsysviewer_molsysmt.tools`, with `molsysmt` as its view namespace. Native loading,
 selection, interactions and H5MSM workflows remain available without registration.
 Optional domain extensions keep this addon contract. See uibcdf/molsysviewer#186.
 
-The accepted product direction reopens a redesigned MolSysMT tools add-on for
-additional molecular operations. Its function wrappers, panel organization,
-batching/update and recovery semantics still need design and qualification.
-This direction does not lift the current legacy refusal or make
-`view.addons.molsysmt` available. General automatic observation of arbitrary
+The initial experimental source integration provides six bound `basic` queries;
+the provider owns their usage reference. Broader scientific coverage, editing,
+panels and installed-package compatibility remain pending. The new route does
+not enable retired packages. General automatic observation of arbitrary
 external molecular edits is not required; integrated tools coordinate their own
 edits through the shared Viewer reconciliation boundary.
+
+A `state_factory` failure is recorded in `view.addons.manager.lifecycle_failures()`
+and its original exception propagates. It does not produce an empty cached
+namespace. A later access retries initialization; successful creation clears
+that failure record. Addons without a factory still receive an empty namespace.
+Use `view.closed` to reject bound operations after explicit view closure;
+closing a popup alone does not close the view.
 
 ## How the host finds it
 

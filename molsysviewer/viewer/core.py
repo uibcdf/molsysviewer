@@ -111,6 +111,11 @@ class MolSysView(
         self.close()
         return False
 
+    @property
+    def closed(self) -> bool:
+        """Whether this view has explicitly released its transport and widgets."""
+        return self._closed
+
     @signal(tags=["viewer"])
     @digest()
     def close(self, *, skip_digestion: bool = False) -> None:
@@ -119,6 +124,9 @@ class MolSysView(
         Closing is explicit because widget registries retain open views even
         after user code drops its last reference. The operation is idempotent.
         """
+        if self._closed:
+            return
+        self._closed = True
         self._unmount_all_addon_panels()
         self.addons._close_runtime()  # noqa: SLF001
         self._cancel_binary_structure_stream("view closed")
@@ -161,6 +169,7 @@ class MolSysView(
         height: str = "480px",
         transport: Any = None,
     ) -> None:
+        self._closed = False
         # `transport` lets a non-Jupyter host (e.g. the standalone Qt shell) inject
         # its own widget-like channel (see standalone_qt.QtViewChannel). It must
         # implement the small surface the view uses: send/on_msg, config attrs and

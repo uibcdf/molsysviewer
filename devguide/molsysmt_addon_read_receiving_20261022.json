@@ -1,0 +1,80 @@
+{
+  "date": "2026-10-22",
+  "status": "partial-source-receiving",
+  "viewer_issue": "uibcdf/molsysviewer#264",
+  "provider_issue": "uibcdf/molsysmt#421",
+  "scope": "Six basic read/query wrappers and root aliases; new discovery route, closed-view guard, factory diagnostics and packaging contracts. No edits, synchronization controls or panels.",
+  "python": "3.14.7",
+  "environment": "molsyssuite@uibcdf_3.14",
+  "viewer_base_commit": "165fbfd22b91b67fb00b68a6794bafd957b14756",
+  "provider_base_commit": "b35a293269884ce6387e60266f3038785603a097",
+  "worktree_provenance": "Runtime/tests used working sources, including preserved concurrent provider changes. This is not clean exact-candidate or installed-artifact qualification.",
+  "editable_provider_version": "0.23.0+160.gb35a29326.dirty",
+  "discovery_observation": {
+    "entry_points": [
+      {
+        "name": "molsysmt-tools",
+        "value": "molsysviewer_molsysmt.tools"
+      }
+    ],
+    "n_atoms": 22,
+    "module": "molsysviewer_molsysmt._api"
+  },
+  "checks": {
+    "provider_read_and_packaging": {
+      "passed": 46,
+      "failed": 0,
+      "skipped": 0,
+      "command": "python -m pytest --receptor=llm tests/molsysviewer_molsysmt/test_read_tools.py devtools/tests/test_native_viewer_integration.py devtools/tests/test_validate_rust_wheel.py devtools/tests/test_validate_rust_sdist.py -x"
+    },
+    "host_addons_and_lifecycle": {
+      "passed": 57,
+      "failed": 0,
+      "skipped": 1,
+      "skip_reason": "Legacy MolSysMT entry point is not installed"
+    },
+    "host_factory_failure_retry": {
+      "passed": 1,
+      "failed": 0
+    },
+    "viewer_core": {
+      "exit_code": 1,
+      "passed": 3235,
+      "failed": 1,
+      "errors": 0,
+      "skipped": 21,
+      "command": "python -m pytest --receptor=llm tests/ -m 'not qt_runtime' -n 8",
+      "junit_retained_locally": "molsysviewer-addon-read-core.xml",
+      "known_failure": "uibcdf/molsysviewer#263: test_subset_invalidates_only_edited_frames_and_refreshes_visible_edges",
+      "green": false
+    },
+    "viewer_sphinx": {
+      "exit_code": 0
+    },
+    "provider_sphinx": {
+      "exit_code": 0,
+      "limits": "Existing unrelated warnings retained; build success is not a warning-free claim."
+    }
+  },
+  "source_sha256": {
+    "viewer": {
+      "molsysviewer/addons.py": "560b4cb158fcca4a20893a0d1a153ffb8387d5e6886f368787724ba73c081840",
+      "molsysviewer/viewer/core.py": "dd1f43c671245c5ba97b6ee16981cadfff8578b9977cfb4e319128e526f8d650"
+    },
+    "provider": {
+      "molsysviewer_molsysmt/__init__.py": "1665840cb208aabed8ea4e6f800c3444e3219c14abb5ed1eb90ae3bfa16ef3f0",
+      "molsysviewer_molsysmt/_api.py": "c9676af0bc86df6e9f8a2f3713f8f3aee02e398e1510f92d357d9e276cdf46f6",
+      "molsysviewer_molsysmt/_argdigest.py": "84b62797300add54514f348ad0e93a499665e26d681a43e7f8049558356d726c",
+      "molsysviewer_molsysmt/_basic.py": "3c43f4bb009d629a3852c05e7f167afeaed5e8617a575698f177235fd1c7b168",
+      "molsysviewer_molsysmt/_private/__init__.py": "74c4489d15e696378a0ba3282b53f9633369c174f4253f036da8cfa3b252061c",
+      "molsysviewer_molsysmt/_private/argument/__init__.py": "feab1b9cf10b3a2aa04c03203de7974228513342dcc2fcd378a5e2167a083432",
+      "molsysviewer_molsysmt/_private/argument/skip_digestion.py": "e62970731ce0fef0dde074f9983bb10e4cc40a61afe30649b86a9b0c85575d85",
+      "molsysviewer_molsysmt/tools.py": "bbcb52cf342cf583110cbf8147ab20734cab1727704f292db7e1e78036a12258"
+    }
+  },
+  "limits": [
+    "Development editable metadata was refreshed with pip --no-deps --no-build-isolation --editable; this is not a clean solver installation.",
+    "The native backend floor is unchanged; published compatible package floors and exact installed receiving remain pending.",
+    "No release/tag, package publication, candidate freeze or completed 1.0 is claimed."
+  ]
+}

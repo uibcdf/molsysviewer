@@ -50,8 +50,9 @@ documents, and historical audits.
   visualization/exploration, including qualified calculations directly creating
   visual content. Additional preparation, editing, general analysis and domain
   tools belong to add-on/scientific interfaces. A redesigned MolSysMT tools
-  add-on is proposed; the backend remains required and the legacy addon remains
-  refused by current runtime. Python remains the primary headless foundation.
+  add-on now has six experimental source `basic` queries and root aliases;
+  the backend remains required and legacy addon routes remain refused. Python
+  remains the primary headless foundation.
   General automatic edit observation is no longer required; the consumer
   request in uibcdf/molsysmt#413 is withdrawn and closed.
   [Explicit reconciliation/tool coordination](linked_molecular_edits_design.md)
@@ -74,8 +75,10 @@ documents, and historical audits.
   [six acceptance scenarios](studio_foundation_workflow_contracts.md) remain
   design inputs. Earlier native-Studio layouts in the
   [prototype review](studio_task_design_review.md) need reassessment; their
-  existing evidence does not qualify the new layout. No add-on implementation,
-  public API removal, candidate freeze or publication is claimed.
+  existing evidence does not qualify the new layout. The new tools entry point,
+  per-view binding and factory diagnostics have initial source receiving;
+  edits, panels, public package compatibility, freeze and publication remain
+  pending. No scientific API is removed.
   Validation: 273 offline link/reporting checks pass, the documentation builds,
   all 174 fixed-source inventory hashes match, and original prototype hashes
   remain unchanged. These checks do not qualify new runtime behavior.

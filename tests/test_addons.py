@@ -1652,8 +1652,6 @@ def test_resolve_panel_widget_returns_instance():
 def test_molsysmt_is_native_backend_and_rejects_legacy_registration():
     from molsysviewer import demo
 
-    with pytest.raises(ValueError, match="native MolSysViewer backend"):
-        addons.register(AddonSpec(name="molsysmt"))
     with pytest.raises(ValueError, match="retired"):
         addons.register_module("molsysviewer_molsysmt")
     assert not addons.contains("molsysmt")

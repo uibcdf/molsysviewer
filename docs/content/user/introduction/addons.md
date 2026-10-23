@@ -98,9 +98,11 @@ limits of its integration; a generic shape renderer does not imply a complete
 scientific workflow. The {doc}`../../showcase/addons` catalogue records current
 provider status.
 
-A redesigned MolSysMT tools add-on is planned for additional molecular tools.
-Its supported functions, update behavior and installation are still being
-designed. The old `molsysviewer_molsysmt` integration is retired and rejected by
-the current runtime; there is no supported `view.addons.molsysmt` interface yet.
+A redesigned MolSysMT tools add-on has an initial experimental source API with
+six `basic` queries. Its broader tools, editing and graphical panels remain in
+development. Compatible installs discover the new declaration automatically;
+the old `molsysviewer_molsysmt` root declaration remains retired and rejected.
+Consult the provider reference for exact source/package availability. Current
+public package compatibility is distinct from this new source integration.
 Current loading, selections, Interactions and explicit Python integration
 remain available through their documented APIs.
