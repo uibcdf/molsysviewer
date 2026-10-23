@@ -280,3 +280,26 @@ bypass; a future adapter must qualify both systems' effects and reconciliation.
 The provider reuses its ArgDigest alias declarations before wrapper defaults are
 forwarded, retaining native duplicate-name rejection. No new host runtime,
 frontend transport or scientific comparison algorithm is introduced here.
+
+
+## Identity and explicit collection utilities — 2026-10-23
+
+The provider adds bound identity and attribute-owner readers through the existing
+serialized read service. The attribute-location result preserves the native live
+item/form pair; locating its owner is not a defensive copy or an external-write
+observer. A resident-form query describes the current MolSys rather than the
+original input's provenance.
+
+The pure `are_multiple_molecular_systems` utility retains its explicit collection
+instead of inventing a single primary slot. It can validate caller-supplied inputs
+before a view loads any system, while retaining the owning view's lifetime check.
+It neither prefixes the current system nor combines/adopts items. Inputs must be
+caller-stable; no edit lock is acquired for them. Native input inspection/I/O
+remains native. This classification utility does not define source-loading or
+composition policy.
+
+Where native identity/classification helpers deliberately omit digestion, the
+addon supplies its own keyword-only skip_digestion and never forwards it or
+redecorates the native helper. The ordinary scientific escape hatch on the
+attribute-location reader remains native. No new host public API, runtime
+transport or observation of external mutations is needed for these routes.

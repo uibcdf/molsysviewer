@@ -331,3 +331,36 @@ storage-variant guard no longer fails. Experimental Qt 39997486452 still reports
 no WebGL canvas / loading readiness failures under its separate #35 scope.
 Do not describe either failed campaign as globally green or infer D-Bus as the
 cause from the receptor's bounded summary alone.
+
+
+## Identification utilities and native warning report — 2026-10-23
+
+At the maintainer's explicit request, the native quantity-downcast warning is
+now reported as uibcdf/molsysmt#435, with a reproduction that needs no Viewer.
+Structural self-comparison emits six UnitStrippedWarning entries with an always
+filter while all dictionary results remain True; coordinates-only comparison
+does not warn in that exercise. This is distinct from positional-index units
+in closed uibcdf/molsysmt#433. The report does not claim a wrong scientific result
+or include the separate pending compression-option finding.
+
+Provider `c17869f5ae57b87d1302b7a7fa408e1ecfec2ebd` receives bound get_form,
+is_a_molecular_system and where_is_attribute, plus the explicitly supplied
+are_multiple_molecular_systems utility. The first three resolve the current
+loaded target through serialized reads. The collection utility requires no
+loaded primary, never inserts the current MolSys, and leaves caller-owned inputs
+stable/unlocked. It does not choose a loading/composition policy or adopt data.
+Its owning view must remain open. Native input inspection is preserved.
+
+The three native identification/classification helpers deliberately lack
+skip_digestion. Their addon wrappers add the keyword-only boundary control but
+never pass it or add native decorators. where_is_attribute retains its ordinary
+native skip argument and its live owner/form result. Cached calls, pending reads,
+empty/closed views, input collections and native validation all have receiving.
+
+Provider evidence under uibcdf/molsysmt#421 records 28 focused cases, 239 applicable
+addon/packaging/dependency/devguide cases and eight executable guide blocks.
+Course Module 04 gains narrative only; code cells and outputs remain unchanged.
+The working-source checks preserve concurrent native namespace/documentation
+changes and do not claim an exact clean full-provider or installed artifact pair.
+There is no host runtime change; its public API and browser protocol remain intact.
+New source gates, broader namespaces/effects and GUI panels remain pending.
