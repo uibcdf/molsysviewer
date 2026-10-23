@@ -124,7 +124,12 @@ def test_nested_state_rejection_predicate_overrides_unchanged_molsys_dictionary(
     def prepare(system):
         def run():
             if write:
-                msm.set(system, selection=[0], structure_indices=[0], coordinates=before + msm.pyunitwizard.quantity(0.1, "nm"))
+                msm.set(
+                    system,
+                    selection=[0],
+                    structure_indices=[0],
+                    coordinates=before + msm.pyunitwizard.quantity(0.1, "nm"),
+                )
             raise ValueError("receiving native rejection")
 
         # This receiving fixture performs actual science when write=True. A
@@ -139,9 +144,7 @@ def test_nested_state_rejection_predicate_overrides_unchanged_molsys_dictionary(
 
     before_token = token(target)
     with pytest.raises(ValueError, match="receiving native rejection"):
-        manager.execute(
-            prepare, name="receiving.nested", rejection_check=token
-        )
+        manager.execute(prepare, name="receiving.nested", rejection_check=token)
     assert vars(target) is state
     assert (token(target) != before_token) is write
     assert manager.get_status()["state"] == ("uncertain" if write else "synchronized")
