@@ -4,15 +4,18 @@
 [the normative product decision](core_and_addon_boundary.md): core visualizes
 and explores, including qualified scientific calculations for visual content;
 additional preparation/editing/general analysis belongs to add-on/scientific
-tools. MolSysMT remains required; its redesigned tools add-on initially supplies
-six experimental source queries, while legacy root declarations remain refused.
-Edits, panels and installed qualification remain pending. The native-Studio expansion plan is
-withdrawn and removed. The separate [add-on plan](molsysmt_tools_addon_plan.md)
+tools. MolSysMT remains required; its redesigned tools add-on has experimental
+source basic readers/independent outputs, retained-axis edits/synchronization and
+four topology readers. Legacy root declarations remain refused. Broader
+namespaces/edits, panels and installed qualification remain pending. The
+native-Studio expansion plan is withdrawn and removed. The separate
+[add-on plan](molsysmt_tools_addon_plan.md)
 records accepted expert API/GUI and edit/update policy with the implementation
 sequence. [Technical receiving](molsysmt_addon_receiving_contract.md) under
-uibcdf/molsysviewer#264 and uibcdf/molsysmt#421 must qualify the proposed protocol
-before mutating wrappers. The provider ledger covers 267 tracked-scope exports,
-including aliases/support; these counts do not establish implemented coverage.
+uibcdf/molsysviewer#264 and uibcdf/molsysmt#421 records each admitted operation
+and its limits. The original ledger covers 267 tracked-scope exports; a
+2026-10-23 name-only refresh finds 271, with four new paths pending adaptation.
+Counts include aliases/support and do not establish implemented coverage.
 The [reconciliation review](linked_molecular_edits_design.md) considers explicit
 reconciliation or coordinated tool operations. The consumer withdrew the general
 observer request in uibcdf/molsysmt#413, which is now withdrawn and closed.

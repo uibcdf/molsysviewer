@@ -20,8 +20,8 @@ supersedes: []
 and actionable state-factory failures are delivered for initial read-tool source
 receiving. Explicit retained-structure maps now extend live adoption and
 independent extraction. Retained-axis removal, coordinate/box setting,
-copy/conversion/preflight, composition/comparison readers and synchronization
-now have source receiving; other edit families, task panels and installed
+copy/conversion/preflight, composition/comparison/identity readers, four topology
+readers and synchronization now have source receiving; other edit families, task panels and installed
 qualification remain pending.
 
 ## What
@@ -364,3 +364,41 @@ The working-source checks preserve concurrent native namespace/documentation
 changes and do not claim an exact clean full-provider or installed artifact pair.
 There is no host runtime change; its public API and browser protocol remain intact.
 New source gates, broader namespaces/effects and GUI panels remain pending.
+
+
+## First topology readers and inventory refresh — 2026-10-23
+
+Provider `3e799c0fc7e8c9c52480cfec0489181990087e76` receives four explicit native
+`topology` wrappers: bond graphs, covalent blocks/paths and dihedral quartets.
+They share the existing serialized reader with `basic`, bind the current primary
+and return native scientific values without edits, preparation, adoption or
+scene projection. Hypothetical graph cuts do not remove bonds. No topology root
+aliases are invented; the two native helpers without declared skip_digestion
+receive an addon-only keyword that is not forwarded into scientific kwargs.
+
+The provider receipt under uibcdf/molsysmt#421 records 32 focused cases, one
+271-case applicable regression (176 addon, 30 packaging, 11 dependency-route,
+54 devguide), nine executable guide blocks and clean-checkout devguide validation.
+Source/wheel/sdist guards include all 14 addon Python files. Course Module 13
+adds narrative only; executable cells and outputs remain unchanged. These are
+working-source checks, not clean solver-installed artifact qualification.
+
+The original 267-export AST ledger remains a dated snapshot. A name-only refresh
+at provider `2d5fbb7d5` finds 271 exported paths across the same 21 scopes, with
+no removals. New basic/root compose_atom_maps and build project_atom_names /
+merge_nonpolar_hydrogens paths remain pending adaptation: their map/collection
+inputs, preparation effects and lineage need individual review. This is not a
+new qualification of all signatures or scientific behavior. Seven other topology
+exports and broader namespaces/effects/GUI remain pending; #264 and #421 stay
+partial. Native unspecified path/quartet patterns retain current native error
+behavior rather than being silently guessed by the addon.
+
+The prior exact host `26141464` browser 40008519291, policy 40008520013 and
+publication-governance 40008519951 gates pass. New provider CI smoke 40012474771
+is active for this topology delivery; its result remains pending. Provider Ruff,
+dependency, policy, publication-governance and devguide gates pass on that exact
+commit. Viewer reporting/link/index guards pass 276 cases; generated queue
+indexes are current. Existing
+public-backend pandas documentation failures (uibcdf/molsysmt#431) and Qt #35
+retain their separate scope. No host runtime change, candidate freeze, package,
+tag or release is part of this delivery.

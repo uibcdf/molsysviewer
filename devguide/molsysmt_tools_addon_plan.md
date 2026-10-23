@@ -1,13 +1,15 @@
 # MolSysMT tools add-on — implementation plan
 
-**Status: approved implementation direction; runtime qualification pending —
-2026-10-22.** The maintainer authorizes the Viewer development effort to implement
+**Status: partial source implementation; installed qualification pending —
+2026-10-23.** The maintainer authorizes the Viewer development effort to implement
 the integration in the owning MolSysMT repository. This is a new plan under
 [the core/add-on boundary](core_and_addon_boundary.md). The withdrawn native
 Studio expansion plan remains removed. The experimental source integration provides bound `basic` queries and read-only
 comparison, independent extraction/copies/conversion and preflight, managed
 retained-axis removal and coordinates/box setting, with root aliases and
-synchronization controls. Broader runtime coverage, installed compatibility,
+synchronization controls. Four native `topology` readers now have source
+receiving without new host runtime: bond graphs, covalent blocks/paths and
+dihedral quartets. Broader runtime coverage, installed compatibility,
 dependency floors and release remain separate.
 
 ## Accepted requirements
@@ -311,6 +313,9 @@ ownership does not require a particular URL or separate hosting site.
    source ledger covers all 267 tracked-scope exports at provider `fe5036c1`;
    per-function effect qualification and untracked-namespace disposition remain
    pending. Counts include aliases and support objects, not 267 algorithms.
+   The 2026-10-23 name-only refresh at provider `2d5fbb7d5` finds 271 exports
+   across the same 21 scopes. Four newly added paths remain pending adaptation;
+   this does not refresh every signature/effect in the original ledger.
 2. **Restore qualified platform integration.** Reintroduce the integration
    package/spec, entry point, state factory and lifecycle in MolSysMT; qualify
    an explicit compatibility route in Viewer. Both current repositories guard

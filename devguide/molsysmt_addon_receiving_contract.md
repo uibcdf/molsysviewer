@@ -303,3 +303,28 @@ addon supplies its own keyword-only skip_digestion and never forwards it or
 redecorates the native helper. The ordinary scientific escape hatch on the
 attribute-location reader remains native. No new host public API, runtime
 transport or observation of external mutations is needed for these routes.
+
+
+## Stored-topology readers — 2026-10-23
+
+The provider's explicit `topology` namespace receives `get_bondgraph`,
+`get_covalent_blocks`, `get_covalent_paths` and `get_dihedral_quartets`. Native
+scientific signatures, outputs and exceptions remain authoritative. Graphs,
+sets, paths and ragged quartet/block results remain scientific values; they do
+not become regions, representations or attached analyses automatically.
+`remove_bonds` on covalent blocks computes hypothetical graph cuts without
+removing molecular bonds. A reference-state graph is not a graph per visible
+structure; only native helpers declaring state/structure selectors receive them.
+
+A common private provider delegate now serves admitted `basic` and `topology`
+readers through the existing host serialized reader. It resolves the current
+primary system, preserves pending-data access and rejects closed views; it is
+not an unrestricted module proxy. No new host runtime, public API or frontend
+transport is introduced. The native module has no root aliases for these four
+functions, so the addon does not invent them.
+
+Bond-graph/block helpers forward their declared native skip_digestion flag.
+Path/quartet helpers have no declared native flag: their keyword-only addon
+control governs addon digestion and is never inserted into scientific kwargs.
+Native validation still runs. Other topology functions, lazy lifetimes and
+mutating routes need separate receiving; the namespace is not complete.

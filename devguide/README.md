@@ -50,9 +50,11 @@ documents, and historical audits.
   visualization/exploration, including qualified calculations directly creating
   visual content. Additional preparation, editing, general analysis and domain
   tools belong to add-on/scientific interfaces. A redesigned MolSysMT tools
-  add-on now has six experimental source `basic` queries and root aliases;
-  the backend remains required and legacy addon routes remain refused. Python
-  remains the primary headless foundation.
+  add-on has experimental source `basic` readers, independent outputs,
+  retained-axis edits/synchronization and four `topology` readers; the
+  [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md) names
+  exact scope and tests. The backend remains required and legacy addon routes
+  remain refused. Python remains the primary headless foundation.
   General automatic edit observation is no longer required; the consumer
   request in uibcdf/molsysmt#413 is withdrawn and closed.
   [Explicit reconciliation/tool coordination](linked_molecular_edits_design.md)
@@ -67,9 +69,11 @@ documents, and historical audits.
   admitted bound edits synchronize by default and independent results require
   explicit adoption. [Technical receiving](molsysmt_addon_receiving_contract.md)
   is now tracked in uibcdf/molsysviewer#264 and uibcdf/molsysmt#421. The provider
-  source ledger accounts for 267 tracked exports, including aliases/support;
-  effect review and runtime qualification remain pending. Implementation is
-  owned by the provider repository and undertaken by this development effort.
+  original source ledger accounts for 267 tracked exports, including
+  aliases/support. A 2026-10-23 name-only refresh finds 271; the four new paths
+  remain pending adaptation. Broader effect review and qualification remain
+  pending. Implementation is owned by the provider repository and undertaken
+  by this development effort.
   The [source inventory](studio_molsysmt_operation_inventory.md),
   [operation/recovery proposal](studio_molecular_operations_design.md) and
   [six acceptance scenarios](studio_foundation_workflow_contracts.md) remain
@@ -77,8 +81,8 @@ documents, and historical audits.
   [prototype review](studio_task_design_review.md) need reassessment; their
   existing evidence does not qualify the new layout. The new tools entry point,
   per-view binding and factory diagnostics have initial source receiving;
-  edits, panels, public package compatibility, freeze and publication remain
-  pending. No scientific API is removed.
+  broader edits/namespaces, panels, public package compatibility, freeze and
+  publication remain pending. No scientific API is removed.
   Validation: 273 offline link/reporting checks pass, the documentation builds,
   all 174 fixed-source inventory hashes match, and original prototype hashes
   remain unchanged. These checks do not qualify new runtime behavior.
