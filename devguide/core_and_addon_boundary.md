@@ -88,9 +88,10 @@ Exact receiving APIs, installation/discovery and panel layout still need
 implementation contracts and qualification.
 The runtime still refuses the retired legacy MolSysMT root entry point under
 uibcdf/molsysviewer#186. The redesigned provider-owned source integration uses
-`molsysviewer_molsysmt.tools` for discovery and initially exposes six bound
-`basic` queries under `view.addons.molsysmt`, with lazy per-view state and closed
-view guards. Broader tools, edits and panels remain pending in
+`molsysviewer_molsysmt.tools` for discovery. Its source facade exposes bound
+`basic` queries, extraction, copies, conversion/preflight, removal and retained-axis
+coordinate/box setting under `view.addons.molsysmt`, with lazy per-view state and
+closed-view guards. Broader tools, edit families and panels remain pending in
 uibcdf/molsysmt#421/uibcdf/molsysviewer#264. Source receiving does not establish
 compatibility for a published package pair.
 

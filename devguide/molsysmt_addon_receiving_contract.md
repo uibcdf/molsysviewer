@@ -247,3 +247,20 @@ failure followed by projection-only retry. Host guards test nested mutations
 under an unchanged MolSys dictionary. The browser lane exercises the addon when
 available and explicitly reports that route; the published-backend lane keeps
 its generic host fixture and cannot count as addon qualification.
+
+
+## Independent copies, conversions and file preflight — 2026-10-23
+
+The provider extends its native `basic` mirror with `copy`, `convert` and
+`get_conversion_report`. They use the existing serialized reader and return
+native results without implicit adoption or scene projection. Converter options,
+sharing, target order, reports, scientific validation and optional dependencies
+stay native. Explicit filenames refer to the Python host; a file result is not
+a browser-download protocol. A report's audited scope/exhaustiveness remains
+explicit and does not certify all formats or atomic multi-file publication.
+
+Local receiving exercises real H5MSM named analyses, nonconsecutive/repeated
+structures, preflight destination-byte preservation, independent outputs,
+full-axis live-reference policy, pending reads, replacement and closed-view
+rejection. Native forms/H5MSM receiving does not qualify optional converters.
+No new host runtime/API or frontend transport is needed for these reader routes.

@@ -119,23 +119,31 @@ def test_nested_state_rejection_predicate_overrides_unchanged_molsys_dictionary(
     manager = view.addons.manager.system_edits
     target = view.molsys
     state = vars(target)
-    before = msm.get(target, element="atom", structure_indices=[0], coordinates=True)
+    before = msm.get(target, element="atom", selection=[0], structure_indices=[0], coordinates=True).copy()
 
     def prepare(system):
         def run():
             if write:
-                msm.set(system, structure_indices=[0], coordinates=before + msm.pyunitwizard.quantity(0.1, "nm"))
+                msm.set(system, selection=[0], structure_indices=[0], coordinates=before + msm.pyunitwizard.quantity(0.1, "nm"))
             raise ValueError("receiving native rejection")
 
         # This receiving fixture performs actual science when write=True. A
         # dictionary-identity check alone cannot prove that nested data survived.
         return {"run": run, "changed": True}
 
+    def token(system):
+        # Older public setters update storage in place; newer native storage
+        # replaces blocks. Observe the edited values rather than either layout.
+        sample = msm.get(system, element="atom", selection=[0], structure_indices=[0], coordinates=True)
+        return tuple(msm.pyunitwizard.get_value(sample, to_unit="nm").reshape(-1).tolist())
+
+    before_token = token(target)
     with pytest.raises(ValueError, match="receiving native rejection"):
         manager.execute(
-            prepare, name="receiving.nested", rejection_check=lambda system: id(system.structures._coordinates)
+            prepare, name="receiving.nested", rejection_check=token
         )
     assert vars(target) is state
+    assert (token(target) != before_token) is write
     assert manager.get_status()["state"] == ("uncertain" if write else "synchronized")
 
 

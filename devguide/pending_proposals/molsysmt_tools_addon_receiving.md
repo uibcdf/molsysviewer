@@ -19,9 +19,9 @@ supersedes: []
 **Status:** partial implementation: the new discovery route, closed-view boundary
 and actionable state-factory failures are delivered for initial read-tool source
 receiving. Explicit retained-structure maps now extend live adoption and
-independent extraction. Retained-axis native removal and synchronization now
-have source receiving; other edit families, task panels and installed
-qualification remain pending.
+independent extraction. Retained-axis removal, coordinate/box setting,
+copy/conversion/preflight and synchronization now have source receiving; other
+edit families, task panels and installed qualification remain pending.
 
 ## What
 
@@ -257,3 +257,42 @@ in two controllers. These are source checks; full popup/Jupyter and installed
 artifact qualification remain separate. The prior Viewer checkpoint cef99ec6
 now has successful core/browser runs 39948407994 and 39948928788; those runs
 do not qualify the new setter implementation.
+
+
+## Independent conversion and portability receiving — 2026-10-23
+
+MolSysMT source `7367e68ae25230bbe981efdf8a8c563126849e8f` adds bound
+`basic.copy`, `basic.convert` and `basic.get_conversion_report` with native
+signatures/root aliases. They reuse the host serialized reader: no implicit
+adoption or scene projection, including while admitted science is pending.
+Files address the Python host. Native sharing, reporting/audited scope,
+validation, optional converter dependencies and partial multi-file failures are
+not redefined. The provider's per-function effects, source hashes and dated
+receipt remain owned under uibcdf/molsysmt#421.
+
+Receiving passes the 122-case addon/packaging/route regression, then three
+file-route/option cases (one overlapping) and all six provider guide blocks.
+These cover the final conversion file's 23 cases, actual H5MSM 0.5 named analyses,
+nonconsecutive/repeated structures, destination-byte preservation at preflight,
+copy ownership, pending reads, replacement and closed-view output rejection.
+Optional file/engine qualification is not inferred. The provider source smoke
+now includes the conversion file; new hosted gates are pending.
+
+The previous exact Viewer runtime's browser run 39992310736 passes. Core
+39992310828 and source-pair 39992310747 expose three strict documentation failures
+from public MolSysMT/pandas deprecations (uibcdf/molsysmt#431) and one new fixture
+portability error: its token assumed replacement of coordinate storage, while
+0.23.0 updates in place. The generic receiver itself trusts only the provider's
+reviewed token; changing the fixture to read a bounded edited value removes
+that unjustified storage assumption. Eight coordinator guards now pass both
+with current provider source and cached public 0.23.0 build-0 runtime. This
+cached-byte check uses the selected development interpreter and PYTHONPATH;
+it is not a clean solver installation or broad package qualification.
+
+The once-run local Viewer core passes 3,278 tests with 21 skips (139.60 s).
+The pandas finding remains open rather than being muted in documentation tests.
+Experimental Qt 39992310795 separately fails bridge readiness/WebGL setup; native
+logs name both no exported WebGL canvas and loading readiness timeouts, alongside
+Vulkan/D-Bus diagnostics. D-Bus alone does not identify the cause. Keep the
+existing uibcdf/molsysviewer#35 and uibcdf/gh-run-receptor#62 tracking; this is not
+green core evidence. No tag, release, package or 1.0 publication is produced.
