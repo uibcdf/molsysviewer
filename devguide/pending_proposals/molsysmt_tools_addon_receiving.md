@@ -21,9 +21,10 @@ and actionable state-factory failures are delivered for initial read-tool source
 receiving. Explicit retained-structure maps now extend live adoption and
 independent extraction. Retained-axis removal, coordinate/box setting,
 copy/conversion/preflight, composition/comparison/identity readers, all eleven
-current topology readers and synchronization now have source receiving; other
-namespaces/edit families, task panels and installed qualification remain pending.
-Native scientific limitations remain visible, including uibcdf/molsysmt#439.
+current topology readers, six structure calculations and synchronization now
+have source receiving; other namespaces/edit families, task panels and installed
+qualification remain pending. Native scientific limitations stay visible,
+including uibcdf/molsysmt#439 and uibcdf/molsysmt#440 / uibcdf/molsysmt#441.
 
 ## What
 
@@ -439,3 +440,46 @@ namespaces/effects, general edits, lazy utilities, GUI and installed compatibili
 remain pending. #264/#421 stay partial; no freeze, tag or release is introduced.
 The host documentation update passes 276 reporting/link guards and the generated
 queue-index check; unrelated local notebook and #259 work remains preserved.
+
+
+## Six structure readers and native heavy defects — 2026-10-23
+
+Provider `8ebb1b4d5bec058e3be837a35e29ef649f0a5333` adds six explicit structure
+wrappers: distances, vectors, centers, radius of gyration, angles and dihedrals.
+The current view.molsys is implicit; secondary systems/scopes remain explicit.
+They reuse the existing serialized reader and return native scientific values
+without edits, preparation, result attachment, measurements or scene projection.
+Physical quantities, index metadata, PBC and CPU/configuration choices stay native.
+The dihedral skip flag is addon-only and never enters scientific named flags.
+
+The provider receipt under uibcdf/molsysmt#421 records 54 focused cases and a
+single 364-case applicable regression, fourteen executed guide blocks and sixteen
+native-docstring examples. Independent coordinate references check supported
+nonperiodic distances/vectors and weighted centers/radii; broader native parity
+has its own stated scope. Ruff and clean-checkout devguide validation pass.
+Wheel/sdist/source guards now require fifteen addon Python files. Course Module
+16 adds narrative only, preserving existing executable cells/outputs and all
+protected transformation/RMSD topics.
+
+Two native scientific defects were reproduced without Viewer and filed with
+explicit maintainer authorization: uibcdf/molsysmt#440 (forced radius relabels nm
+values as alternate standard units) and uibcdf/molsysmt#441 (forced same-system distances
+ignore the second atom population). These affected-route parity results are
+not scientific validation. The addon retains native options without silently
+rerouting calculations or replacing units/formulas. Native fixes remain pending.
+Owning AST discovery accounts for 28 structure exports: six received, 22 pending.
+No full-provider, clean solver-installed artifact pair, optional GPU/engine or
+universal RAM bound is claimed; concurrent native PDBQT work was preserved.
+
+The prior provider c4b71b206 topology smoke 40014551589 now passes, including
+all eleven topology wrappers. That scope does not qualify the new structure
+commit. Its new hosted receiving is pending. Viewer 9fdd8010 policy/governance
+pass; browser 40014718166 remained active at the last inspection.
+uibcdf/molsysviewer#264 and uibcdf/molsysmt#421 stay partial; other
+namespaces/edits, task panels, installed compatibility,
+freeze and publication remain pending.
+
+The structure commit's provider smoke 40016357086 is active. Its Ruff,
+dependency-contract, policy, publication-governance and devguide gates pass.
+The host documentation update passes 276 reporting/link guards and the generated
+queue-index check. These checks do not replace the pending scientific smoke.

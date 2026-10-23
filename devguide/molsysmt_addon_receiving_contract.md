@@ -354,3 +354,28 @@ systems remains uibcdf/molsysmt#439. The addon documents it and preserves native
 results without implementing a second identity formula. Explicit contributing
 group selections exercise a valid native route; they are not hidden filtering.
 No new host runtime/API, graphical panel or wire message is required here.
+
+
+## Initial structure calculations — 2026-10-23
+
+The provider's structure namespace receives get_distances, get_vectors,
+get_center, get_radius_of_gyration, get_angles and get_dihedral_angles. They
+reuse current-primary serialized reads and preserve physical quantities,
+weights, periodic choices, output/index metadata, native engine and execution
+controls. A second molecular_system_2 remains explicit with its own selectors
+and caller-stable lifetime; there is no cross-view lock or inferred pairing.
+
+Centers and angles are scientific returns, not coordinate edits or automatically
+created scene measurements. Dihedral named flags remain separate from the
+addon-only keyword skip_digestion, absent from the native signature. All other
+declared skip controls remain native; no trusted-science bypass is invented.
+No new host runtime, public API or message/scene protocol is needed.
+
+Native heavy radius under alternate length units (uibcdf/molsysmt#440) and heavy same-system
+distances with a second population (uibcdf/molsysmt#441) have reproduced scientific defects in
+uibcdf/molsysmt. Their native arguments/results remain visible and documented;
+parity tests do not qualify these affected results. The addon does not silently
+change mode or units to repair them. The owning scientific fixes need separate
+receiving before clearing those scopes. No generic constant-memory promise,
+optional GPU qualification or remaining structure coverage follows from these
+six wrappers.

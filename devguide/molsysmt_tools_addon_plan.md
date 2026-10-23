@@ -8,9 +8,12 @@ Studio expansion plan remains removed. The experimental source integration provi
 comparison, independent extraction/copies/conversion and preflight, managed
 retained-axis removal and coordinates/box setting, with root aliases and
 synchronization controls. All eleven current native `topology` exports now have
-explicit source wrappers, including chemical-graph and sequence analyses,
-without new host runtime. Native scientific limits remain visible, including
-uibcdf/molsysmt#439 for capped/mixed sequence identity. Broader runtime coverage,
+explicit source wrappers, including chemical-graph and sequence analyses.
+Six initial `structure` calculations now reuse the same host serialized reader;
+22 other structure exports remain pending. Native scientific limits stay visible:
+uibcdf/molsysmt#439 for sequence identity and uibcdf/molsysmt#440 /
+uibcdf/molsysmt#441 for affected heavy-mode geometry routes. No new host runtime
+is needed. Broader runtime coverage,
 installed compatibility, dependency floors and release remain separate.
 
 ## Accepted requirements

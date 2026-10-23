@@ -372,7 +372,8 @@ interfaces. The native-Studio expansion plan is withdrawn and removed. The new
 expert mirroring, implicit current MolSys and independently task-oriented GUI
 requirements. Native mutation semantics and default synchronization are agreed.
 Source receiving now covers basic readers/independent outputs, retained-axis
-remove and geometry set, synchronization/recovery, and eleven topology readers;
+remove and geometry set, synchronization/recovery, eleven topology readers and
+six structure calculations;
 see [the current record](pending_proposals/molsysmt_tools_addon_receiving.md).
 Broader namespaces/effects, panels and installed qualification remain pending.
 Legacy integration remains refused and MolSysMT stays required as backend.
