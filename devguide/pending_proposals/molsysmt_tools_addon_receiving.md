@@ -199,3 +199,34 @@ than inheriting a stable label from the existing addon navigation group.
 See [the source receipt](../molsysmt_addon_remove_receiving_20261022.json).
 Other edit families, full namespace coverage, graphical task panels and installed
 artifacts remain pending. Neither 1.0 publication is authorized.
+
+
+### Published source checkpoints and hosted receiving
+
+Viewer code is published at `9da52e5500c9f8637e2f6f76eea0eb81ce783882`;
+MolSysMT delivers the addon at `0629fc941f9224e9d6ac54eaeff875f49589cc74`,
+with explicit smoke receiving added in `af560ab4ba5810b2dc2bf02ef91db4d2b9dc330d`.
+Provider run 39894101759 passes on Linux/Python 3.14 with the exact Viewer pin,
+including the reader and removal receiving files; a preflight import prevents
+an optional-host skip from substituting for that receiver. Provider dependency,
+policy and publication-governance checks pass. A clean checkout of the provider
+feature commit passes developer-guide validation.
+
+Viewer run 39893548732 is not green: the observed Linux/Python 3.14 cell reports
+3,267 pass, 24 skips and four failures. Three are the existing warning-strict
+examples on the public MolSysMT 0.23.0 dependency (uibcdf/molsysmt#431). Provider
+main already contains its separate pandas correction in `128a0bbb9`, but that is
+not qualification of a corrected public package. The fourth is the capability
+inventory's generated Since value: its new anchor became `unreleased` once
+committed, whereas the pre-commit generation had said `unknown`. Regeneration
+and its specific guard correct that metadata without changing runtime code.
+The passing documentation-notebook, Ruff, policy and Conda-governance workflows
+retain their own scopes; remaining core/browser jobs require terminal inspection.
+
+Experimental Qt run 39893548672 fails while waiting for bridge readiness in the
+software-rendering host. The receptor's D-Bus line alone does not establish its
+cause; native logs also show Vulkan/Mesa diagnostics and the readiness assertion.
+Keep this with the existing experimental Qt investigation (uibcdf/molsysviewer#35)
+and the compact-diagnostic limitation (uibcdf/gh-run-receptor#62), not as a green
+core or a demonstrated new molecular-edit regression. No tags, packages or
+publications were produced by these source checkpoints.

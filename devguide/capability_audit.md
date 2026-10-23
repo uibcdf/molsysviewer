@@ -35,7 +35,7 @@ behaviour, delegates it, or merely hosts it.
 | Remote sessions | `molsysviewer.remote.` | 38 | 38 | MolSysViewer (Python authority) | [page](../docs/content/user/remote/index.md) | contract-tested, browser-observed | experimental | 0.23.0 |
 | Standalone (Qt host) | `molsysviewer.launch_standalone_qt0`, `molsysviewer.create_standalone_qt0_window` | 2 | 2 | MolSysViewer (Python authority) | [page](../docs/content/developer/standalone_surfaces.md) | contract-tested, browser-observed, benchmarked, human-observed | experimental | 0.19.0 |
 | Add-ons | `molsysviewer.addons.`, `view.addons.` | 59 | 59 | Add-on (external owner) | [page](../docs/content/developer/addons.md) | contract-tested, browser-observed | stable | 0.10.0 |
-| Managed system edits | `view.addons.manager.system_edits.` | 5 | 5 | MolSysViewer (Python authority) | [page](../docs/content/developer/addons.md) | contract-tested, browser-observed | experimental | unknown |
+| Managed system edits | `view.addons.manager.system_edits.` | 5 | 5 | MolSysViewer (Python authority) | [page](../docs/content/developer/addons.md) | contract-tested, browser-observed | experimental | unreleased |
 | MolSysMT integration | `view.extract`, `view.whole.get`, `view.whole.convert`, `view.regions[…].get`, `view.regions[…].convert` | 7 | 7 | MolSysMT (scientific authority) | [page](../docs/content/user/introduction/molsysmt.md) | contract-tested, browser-observed | stable | 0.19.0 |
 | Units | `molsysviewer.config.set_default_standard_units` | 1 | 1 | PyUnitWizard (unit authority) | [page](../docs/content/user/introduction/units.md) | contract-tested | stable | 0.5.0 |
 
