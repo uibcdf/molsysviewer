@@ -59,7 +59,12 @@ documents, and historical audits.
   recovery contracts. [#262](archive/replacement_load_retains_scene_history.md)
   is fixed independently; the pre-existing box-fixture issue is #263.
   The withdrawn native-Studio expansion plan has been removed at the
-  maintainer's request; a new add-on implementation plan remains to be agreed.
+  maintainer's request. The new [MolSysMT tools add-on plan](molsysmt_tools_addon_plan.md)
+  records accepted requirements: broad expert module/function mirroring,
+  implicit current `view.molsys`, thin scientific wrappers and independent
+  task-oriented GUI design. `view.addons` is confirmed; the edit/update control
+  still needs agreement. Implementation is owned by the provider repository
+  and will be undertaken by this development effort.
   The [source inventory](studio_molsysmt_operation_inventory.md),
   [operation/recovery proposal](studio_molecular_operations_design.md) and
   [six acceptance scenarios](studio_foundation_workflow_contracts.md) remain

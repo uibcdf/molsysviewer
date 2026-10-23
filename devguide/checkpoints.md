@@ -367,8 +367,10 @@ previous qualification records retain their original candidate and environment.
 [core/add-on boundary](core_and_addon_boundary.md) gives core visualization and
 exploration, including qualified calculations for visual content. Additional
 molecular editing/preparation/general analysis belongs to tools/add-on
-interfaces. The native-Studio expansion plan is withdrawn and removed. A
-redesigned MolSysMT tools add-on needs its own implementation plan; no replacement runtime exists yet,
+interfaces. The native-Studio expansion plan is withdrawn and removed. The new
+[MolSysMT tools add-on plan](molsysmt_tools_addon_plan.md) records accepted broad
+expert mirroring, implicit current MolSys and independently task-oriented GUI
+requirements. The additional edit/update control still needs agreement; no replacement runtime exists yet,
 the legacy integration remains refused and MolSysMT stays required as backend.
 Python remains primary and headless. The
 [reconciliation review](linked_molecular_edits_design.md) uses explicit
@@ -1903,8 +1905,9 @@ Resume toward **1.0** in this order:
 **Current order — 2026-10-22:**
 
 1. Apply the [core/add-on boundary](core_and_addon_boundary.md). The former
-   native-Studio expansion plan is withdrawn and removed. Agree a new, scoped
-   MolSysMT tools add-on implementation plan before building its wrappers or
+   native-Studio expansion plan is withdrawn and removed. Refine the new
+   [MolSysMT tools add-on plan](molsysmt_tools_addon_plan.md), settle mutation
+   versus display-update semantics, then implement its broad expert API before
    panels. Reuse the [source inventory](studio_molsysmt_operation_inventory.md)
    and [reconciliation review](linked_molecular_edits_design.md) as design
    inputs, with explicit update/batching, correspondence and recovery limits.

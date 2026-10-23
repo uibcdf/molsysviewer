@@ -234,6 +234,10 @@ explicit, results separate from representations and Python APIs headless and
 composable. Do not introduce hidden molecular preparation or infer automatic
 observation of arbitrary MolSys edits. Document ownership, effects and actual
 availability; proposed add-on restoration is not current runtime support.
+For the MolSysMT tools add-on, follow the accepted expert-API requirements in
+[its separate plan](devguide/molsysmt_tools_addon_plan.md): mirror scientific
+module/function paths with the current primary MolSys implicit; design GUI
+tasks for nonprogrammers without narrowing the expert API.
 
 ## Modular reusable tools
 

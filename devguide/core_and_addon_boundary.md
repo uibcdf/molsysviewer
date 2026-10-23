@@ -76,9 +76,13 @@ integration; private coordination must not become an alternative scientific
 implementation or a GUI-only capability. Panel placement does not prescribe
 new Python namespaces or one method per button.
 
-The accepted direction reopens a MolSysMT tools add-on. Its exact operation
-catalogue, wrapper semantics, installation/discovery and panel layout remain
-proposed. The current runtime still refuses the retired legacy MolSysMT add-on
+The accepted direction reopens a MolSysMT tools add-on. Its expert API mirrors
+the scientific module/function hierarchy, binds the primary system to the
+current `view.molsys` and aims at broad public-tool coverage. Its graphical
+interface uses understandable tasks independently of that expert hierarchy.
+See [the new add-on plan](molsysmt_tools_addon_plan.md). Detailed update/adoption
+semantics, installation/discovery and panel layout remain proposed.
+The current runtime still refuses the retired legacy MolSysMT add-on
 under uibcdf/molsysviewer#186; restoring that old package is not an implementation
 of this new direction. `view.addons` is the existing extension namespace, but
 `view.addons.molsysmt` is not currently promised as available.
@@ -116,5 +120,7 @@ add-on guide. Keep planned examples visibly distinct from implemented features.
 The withdrawn native-Studio expansion plan was removed at the maintainer's
 request; Git retains its history. The [operation inventory](studio_molsysmt_operation_inventory.md)
 and [reconciliation review](linked_molecular_edits_design.md) remain design
-inputs. A separate implementation plan for the redesigned MolSysMT tools
-add-on still needs to be agreed; the retired plan is not that implementation plan.
+inputs. The separate [MolSysMT tools add-on plan](molsysmt_tools_addon_plan.md)
+records the newly accepted API/GUI requirements and the proposed implementation
+sequence. Its remaining technical choices need review; the retired expansion
+plan is not reused as its implementation plan.

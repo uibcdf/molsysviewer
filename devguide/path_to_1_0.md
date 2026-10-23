@@ -6,7 +6,9 @@ and explores, including qualified scientific calculations for visual content;
 additional preparation/editing/general analysis belongs to add-on/scientific
 tools. MolSysMT remains required; its redesigned tools add-on is proposed and
 the legacy runtime refusal remains. The native-Studio expansion plan is
-withdrawn and removed; the new add-on needs its own agreed implementation plan.
+withdrawn and removed. The separate [add-on plan](molsysmt_tools_addon_plan.md)
+records accepted expert API/GUI requirements and the proposed implementation
+sequence; the edit/update contract remains to be agreed before mutating wrappers.
 The [reconciliation review](linked_molecular_edits_design.md) considers explicit
 reconciliation or coordinated tool operations. The consumer withdrew the general
 observer request in uibcdf/molsysmt#413 and told the provider it may close it.
