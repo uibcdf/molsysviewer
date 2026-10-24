@@ -9,16 +9,17 @@ comparison, independent extraction/copies/conversion and preflight, managed
 retained-axis removal and coordinates/box setting, with root aliases and
 synchronization controls. All eleven current native `topology` exports now have
 explicit source wrappers, including chemical-graph and sequence analyses.
-Ten `structure` calculations now reuse the same host serialized reader;
-18 other structure exports remain pending. The added raw/minimum RMSD, axes and
-plane readers use reviewed paths independent of the affected distance route.
-The maintainer requires waiting for the MolSysMT team on uibcdf/molsysmt#441;
-no scientific fix or hidden routing alternative is implemented by the addon.
-Native scientific limits stay visible:
-uibcdf/molsysmt#439 for sequence identity and uibcdf/molsysmt#440 /
-uibcdf/molsysmt#441 for affected heavy-mode geometry routes. No new host runtime
-is needed. RMSF remains unreceived under uibcdf/molsysmt#442. Broader runtime
-coverage, installed compatibility, dependency floors and release remain separate.
+Thirteen `structure` calculations now reuse the same host serialized reader;
+fifteen other structure exports remain pending. Native endpoint/unit and
+sequence-group corrections under uibcdf/molsysmt#439, uibcdf/molsysmt#440,
+uibcdf/molsysmt#441 and uibcdf/molsysmt#442 are received
+from their owning team, including the native keyword-only identity flag.
+Maxima, contacts and RMSF are now explicitly available in source. Minimum-distance
+and neighbor wrappers stay pending uibcdf/molsysmt#444 and uibcdf/molsysmt#445;
+the maintainer requests a native pytest contract matrix over the four distance/
+neighbor/extrema tools. The addon supplies no scientific formula or parameter
+substitution. No new host runtime is needed. Broader scientific coverage,
+installed compatibility, dependency floors and release remain separate.
 
 ## Accepted requirements
 

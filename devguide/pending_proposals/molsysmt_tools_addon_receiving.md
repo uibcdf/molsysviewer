@@ -21,12 +21,13 @@ and actionable state-factory failures are delivered for initial read-tool source
 receiving. Explicit retained-structure maps now extend live adoption and
 independent extraction. Retained-axis removal, coordinate/box setting,
 copy/conversion/preflight, composition/comparison/identity readers, all eleven
-current topology readers, ten structure calculations and synchronization now
+current topology readers, thirteen structure calculations and synchronization now
 have source receiving; other namespaces/edit families, task panels and installed
-qualification remain pending. Native scientific limitations stay visible,
-including uibcdf/molsysmt#439, uibcdf/molsysmt#440, uibcdf/molsysmt#441 and
-uibcdf/molsysmt#442. The maintainer requires waiting for the owning team on
-uibcdf/molsysmt#441; independent readers continue without an addon workaround.
+qualification remain pending. Native repairs under uibcdf/molsysmt#439,
+uibcdf/molsysmt#440, uibcdf/molsysmt#441 and uibcdf/molsysmt#442 are now received.
+New minimum-weight/neighbor-source defects remain with their scientific owner
+under uibcdf/molsysmt#444 and uibcdf/molsysmt#445, with the requested native
+pytest family matrix.
 
 ## What
 
@@ -534,3 +535,47 @@ Exact-provider smoke 40018415983 is active; Ruff and dependency-contract gates
 pass, while other hosted gates remain pending. The host documentation update
 passes 276 reporting/link guards and the generated queue-index check. These
 results do not replace the pending source smoke or qualify an installed package.
+
+
+## Native corrections received; relation readers extended — 2026-10-24
+
+Provider `41388ce99d02eefaab92b1dc290545f002d3a8c6` receives the scientific
+repairs from bae6d0101 and 1123eeb7d through bc2142831, plus three new explicit
+structure wrappers: maxima, contacts and RMSF. The native sequence flag is now
+declared keyword-only and forwarded; actual contributing source-group mapping,
+heavy distance populations and radius/RMSF length attribution are received.
+No addon formula, argument substitution or hidden routing correction is added.
+
+The new receipt under uibcdf/molsysmt#421 records 47 focused tests and a single
+535-case applicable regression including the three owning native repair guards,
+all addon/packaging/dependency/devguide checks. Eighteen guide blocks and 74
+native-context docstring examples pass. Ruff and clean-checkout devguide
+validation pass. Independent norms, weighted centroid/variance, thresholds and
+argmax/index calculations protect actual scientific values in nm/angstrom/pm
+and repeated structure scopes. Input science, reference ownership, saved analyses
+and scene state remain separate from returned results. The source inventory
+remains fifteen addon Python files. Course Modules 13/16 gain only current
+receiving prose; executable cells/outputs stay unchanged. Historical source
+receipts remain immutable.
+
+Two additional forwarding defects were independently reproduced without Viewer:
+minimum distances reuse first-population weights for the second center
+(uibcdf/molsysmt#444), and neighbors ignore an explicit second system in fallback
+(uibcdf/molsysmt#445). The maintainer authorized both reports and explicitly
+requested a native pytest contract matrix for all four distance/neighbor/extrema
+functions in both issues. That request covers source populations, independent
+weights, structure correspondence, PBC/units, execution modes, output/index
+metadata, errors and preservation, with numeric/index references independent of
+shared implementations. No scientific fixes are implemented here; the two new
+wrappers remain pending. The current structure inventory is thirteen received
+and fifteen pending exports, not a complete or fully scientifically certified
+module. Overall uibcdf/molsysviewer#264 / uibcdf/molsysmt#421 remain partial.
+
+Provider smoke 40123084475 passes on bc2142831 for the repaired previous readers;
+its 833-case owner qualification has its own scope. It does not qualify these
+three newly added wrappers. Exact new-head smoke 40125052535 remains active;
+dependency, guide, publication governance, Ruff and suite-policy gates pass.
+The host reconciliation passes 276 reporting/link guards and its generated
+queue-index check. This is source receiving, not clean solver-installed
+artifacts, optional-GPU qualification,
+universal RAM bounds, version freeze, tag, Release or package publication.

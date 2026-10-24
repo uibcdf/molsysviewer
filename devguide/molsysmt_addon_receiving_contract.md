@@ -348,11 +348,12 @@ optional dependency gates remain lazy. Ring/fragment memberships, source bond
 indices, query-column order, empty matrices, search evidence and prettyprint
 stdout/None behavior are preserved without scene projection or attachment.
 
-Sequence identity has no declared native skip parameter; its addon-only keyword
-is never forwarded. The native sequence/group-axis mismatch on capped or mixed
-systems remains uibcdf/molsysmt#439. The addon documents it and preserves native
-results without implementing a second identity formula. Explicit contributing
-group selections exercise a valid native route; they are not hidden filtering.
+Current sequence identity declares a keyword-only native skip parameter;
+the addon forwards it without changing historical native positional slots. The
+native contributing-group mapping under uibcdf/molsysmt#439 is repaired and
+received. Default capped self-comparison returns 100 percent and actual source
+groups. Earlier source-only limitations remain in dated receipts; the addon
+never supplied a second identity formula or hidden filtering.
 No new host runtime/API, graphical panel or wire message is required here.
 
 
@@ -371,14 +372,13 @@ addon-only keyword skip_digestion, absent from the native signature. All other
 declared skip controls remain native; no trusted-science bypass is invented.
 No new host runtime, public API or message/scene protocol is needed.
 
-Native heavy radius under alternate length units (uibcdf/molsysmt#440) and heavy same-system
-distances with a second population (uibcdf/molsysmt#441) have reproduced scientific defects in
-uibcdf/molsysmt. Their native arguments/results remain visible and documented;
-parity tests do not qualify these affected results. The addon does not silently
-change mode or units to repair them. The owning scientific fixes need separate
-receiving before clearing those scopes. No generic constant-memory promise,
-optional GPU qualification or remaining structure coverage follows from these
-six wrappers.
+Native heavy unit/endpoint defects under uibcdf/molsysmt#440,
+uibcdf/molsysmt#441 and uibcdf/molsysmt#442 are
+now repaired by the owning team and received against independent physical
+references. Earlier parity-only scopes remain in their dated receipts. No addon
+formula, unit relabeling or silent routing change substitutes for those fixes.
+No general bounded-RAM, optional-GPU or complete structure qualification follows
+from this receiving.
 
 
 ## Independent RMSD, axes and plane receiving — 2026-10-23
@@ -400,10 +400,36 @@ They do not create shapes, infer aromaticity or move the molecular system.
 No host runtime, public API, frontend protocol or new molecule copy is added by
 the wrappers; native calculation/cache ownership remains native.
 
-The reviewed direct metric routes and numeric/property selectors avoid the
-get_distances path affected by uibcdf/molsysmt#441. Rich selectors/optional engines
-retain their own dependencies; this is a bounded receiving claim. The maintainer
-requires waiting for the MolSysMT scientific team on that issue, keeping min/max,
-contact and neighbor wrappers pending. No alternative distance implementation
-or hidden mode change is introduced. RMSF remains unreceived after native
-forced-unit discrepancy uibcdf/molsysmt#442; the scientific team owns that fix too.
+The earlier wait for the scientific team on uibcdf/molsysmt#441 is satisfied
+by its native endpoint repair and bound receiving. General rich selectors and
+optional engines retain native execution dependencies; the earlier independence
+checks were bounded scenarios. Minimum/neighbor wrappers now wait on new owner
+defects uibcdf/molsysmt#444 and uibcdf/molsysmt#445. The addon does not substitute
+another distance algorithm, parameter or hidden execution route.
+
+
+## Repaired native observables and relation readers — 2026-10-24
+
+The provider adds get_maximum_distances, get_contacts and get_rmsf through the
+same current-primary serialized reader. Maxima preserve native local endpoint
+positions, entity/pair reduction choices and quantities; the wrapper's added
+keyword-only skip control is not forwarded to a native helper lacking that flag.
+Contacts retain threshold quantities, supported cell-list/dense and output/index
+choices. RMSF measures the supplied coordinate frame without automatic fitting,
+periodic reconstruction, coloring or result attachment. Nothing edits either
+system, creates scene measurements or requests a projection update.
+
+The native source repairs sequence group mapping/flag, radius/RMSF physical
+units and both heavy distance populations. Bound receiving includes independent
+NumPy references for physical values, indices, repeated structure axes, weighted
+centers and contact maps. It does not merely compare a shared defective route.
+No host runtime, protocol, extra scientific implementation or dependency floor
+is introduced. Source support is separate from compatibility of published files.
+
+The maintainer explicitly requests native pytest coverage across get_distances,
+get_neighbors, get_minimum_distances and get_maximum_distances in
+uibcdf/molsysmt#444 and uibcdf/molsysmt#445. It must account for public paths and critical parameter
+combinations, sources, structures, weights, units/PBC, outputs/indices and errors,
+with independent numeric oracles. This bounded addon receipt is not completion
+of that whole-family review. Minimum/neighbor wrappers remain absent pending
+the scientific team's corrections and receiving.
