@@ -672,3 +672,23 @@ synchronized integration guides. This head includes the new analysis file in
 hosted smoke. Host reconciliation passes 276 reporting/link guards and the
 generated-index check; provider guide validation passes. Exact new-head hosted
 CI is pending at integration, without a duplicate dispatch or package rebuild.
+
+## Exact provider-head CI completed — 2026-10-24
+
+Provider `5f1411ac319d10f510c2ba305fb80aeed9825ef4` passes all six applicable
+hosted checks. [Smoke 40133538822](https://github.com/uibcdf/molsysmt/actions/runs/40133538822)
+passes the native bounded tier (499 cases) and the bound-addon tier (439 cases),
+with no failures, errors or skips in either summary. Its command includes
+`test_structure_analysis_tools.py`; the installed test environment provisions
+MDTraj and RDKit. Import, API stability, docstrings, forms and Rust-runtime checks
+also pass. Dependency contract 40133538774, Ruff 40133538846, guide integrity
+40133538992, publication governance 40133539039 and suite policy 40133539191 pass.
+
+The first final gh-run-receptor request did not execute because automatic
+permission review timed out. Native read-only GitHub inspection and the original
+job log independently confirm success; this is not a receptor or test failure.
+The log is retained locally at `/tmp/msm-addon-5f1411-smoke.log`, SHA-256
+`fa7aa78dd7c9b5b4ec930373d460e13c8613df41a24d4a97c51c319889f4b747`. No rerun,
+publication dispatch, package reconstruction, version freeze or promotion was
+performed. The new PCA weight-container report uibcdf/molsysmt#448 remains
+separate; the qualified default/float64-array CPU routes are unchanged.
