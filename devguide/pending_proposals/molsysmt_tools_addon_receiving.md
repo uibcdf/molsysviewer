@@ -737,3 +737,31 @@ developer-guide validation and canonical queue-index checks independently of
 concurrent file-copy work under uibcdf/molsysmt#450. The committed CI/manifest
 hunks and issue index include only this receiving. Host reconciliation passes
 276 reporting/link guards. Exact new-head CI remains pending at integration.
+
+
+## Translation receiving CI completed on descendant head — 2026-10-24
+
+Smoke 40142340045 on `dcc2ca4e1e7a06f1abaed51dd8dd61933ba16933` was cancelled
+during the native test tier. GitHub and gh-run-receptor preserve cancellation
+with unknown termination cause; it is not a passing result. The workflow uses
+`cancel-in-progress: true`, and the subsequent provider push created the existing
+replacement run. No cancellation, duplicate dispatch or rerun was requested here.
+
+Descendant `04be76b63fa09cc9713ff20c7c78c46f855df817` retains the translation/PCA
+addon sources and tests unchanged, adds the native file-copy repair, and extends
+the native bounded CI tier with its guards.
+[Smoke 40142480213](https://github.com/uibcdf/molsysmt/actions/runs/40142480213)
+passes 655 native cases and 509 bound-addon cases, with no failures, errors or
+skips in either summary. The original command includes both
+`test_structure_analysis_tools.py` and `test_structure_transform_tools.py`.
+Dependency contract 40142480167, Ruff 40142480155, guide integrity 40142480154,
+publication governance 40142480426 and suite policy 40142480388 also pass. This
+qualifies that descendant source head, not a completed smoke run on its parent.
+
+The original job 121016921506 log is retained at
+`/tmp/msm-addon-04be76-smoke.log`, SHA-256
+`bb0d3f2490265bc782cf3b60a68e00a801f58211da28eb172c097cc494f83ee1`.
+Native GitHub metadata and log summaries agree with gh-run-receptor's successful
+offline replay. Its initial inspect found an already-existing cache bundle;
+replay used that bundle without overwriting it. No package qualification, public
+publication or change to the pending center report uibcdf/molsysmt#451 is implied.
