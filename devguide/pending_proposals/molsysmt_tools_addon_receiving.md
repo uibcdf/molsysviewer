@@ -811,3 +811,25 @@ Provider integration is committed at
 passes developer-guide and canonical index validation, excluding the concurrent
 native center report/test edits. The host requires no runtime changes. Hosted
 CI on this source head remains pending at integration.
+
+
+## Exact rotation/reflection provider-head CI completed — 2026-10-24
+
+All five applicable hosted checks pass for
+`fd2b28a1d4f299466964fd0bf69f5358973b7af4`.
+[Smoke 40143949434](https://github.com/uibcdf/molsysmt/actions/runs/40143949434)
+passes 655 native bounded-tier cases and 567 bound-addon cases, with no failures,
+errors or skips in either summary. The command includes the extended
+`test_structure_transform_tools.py`. Ruff 40143949368, guide integrity
+40143949534, suite policy 40143949630 and publication governance 40143949637
+also pass. This is the applicable source-head campaign; no extra matrix or
+installed-artifact qualification was dispatched.
+
+gh-run-receptor's successful terminal report agrees with native GitHub metadata
+and the original job 121021255617 log. The log is retained at
+`/tmp/msm-addon-fd2b28-smoke.log`, SHA-256
+`c41479e63d7515a4ad5d77832eb7990159274f7a68c5716e1858656940bf4f9c`.
+These passing qualified-input tests do not clear the native default/nonunit/zero
+normal reflection findings above. Their owning issue draft is prepared, and the
+explicit offer to open it awaits the maintainer's answer. No native scientific
+fix, package publication or completion of the broader addon is inferred.
