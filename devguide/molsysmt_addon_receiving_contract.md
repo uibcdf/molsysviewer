@@ -4,7 +4,7 @@
 edit/update policy are approved in the [implementation plan](molsysmt_tools_addon_plan.md).
 This contract tracks receiving under uibcdf/molsysviewer#264 and
 uibcdf/molsysmt#421. Source implements managed native removal, synchronization
-controls, the coordinates/box routes of `basic.set`, native translation and a
+controls, the coordinates/box routes of `basic.set`, native translation/rotation/reflection and a
 generic host service. Other effect families, task panels and
 installed compatibility remain unqualified; no release follows from this work.
 
@@ -510,3 +510,18 @@ independent covariance and squared-unit references. Native normalization remains
 with MolSysMT. Center stays absent pending the native partial-reference target
 and return contract under uibcdf/molsysmt#451; no addon formula or silent scope
 change substitutes for the scientific owner's decision.
+
+
+## Rotation and reflection receiving — 2026-10-24
+
+The provider's explicit rotate/flip wrappers reuse the translation coordinator,
+retaining native signatures, defaults, independent output ownership and None for
+in-place results. update_view controls projection only. Flip has an addon-only
+skip_digestion control because the native signature has no declared flag; native
+validation remains active. No host runtime or scientific geometry is added.
+Repeated/nonconsecutive atom/structure scope, scientific interaction invalidation,
+scene identities and synchronization-only retries retain the existing contract.
+Reflection can invert chirality; neither operation transforms the periodic box or
+chemical assignments. Native default/nonunit-normal reflection defects were
+reproduced without Viewer. Only explicit-unit-normal reflection is scientifically
+received; the owner guide and runtime help disclose the limitation.
