@@ -9,11 +9,12 @@ comparison, independent extraction/copies/conversion and preflight, managed
 retained-axis removal and coordinates/box setting, with root aliases and
 synchronization controls. All eleven current native `topology` exports now have
 explicit source wrappers, including chemical-graph and sequence analyses.
-Eighteen `structure` calculations now reuse the same host serialized reader;
-ten coordinate-changing exports remain pending. The added secondary-structure,
-symmetry-corrected RMSD and PCA readers retain explicit engines, chemistry,
-units, result ownership and native limitations, including uibcdf/molsysmt#448
-for PCA list weights. Native endpoint/unit and
+Eighteen `structure` calculations reuse the same host serialized reader;
+native translation now receives independent outputs and managed in-place updates.
+Nine coordinate-changing exports remain pending, including center under
+uibcdf/molsysmt#451. Secondary-structure, symmetry-corrected RMSD and PCA readers
+retain explicit engines, chemistry, units, result ownership and native limits.
+The PCA weight-container repair uibcdf/molsysmt#448 is received from 306e91dda. Native endpoint/unit and
 sequence-group corrections under uibcdf/molsysmt#439, uibcdf/molsysmt#440,
 uibcdf/molsysmt#441 and uibcdf/molsysmt#442 are received
 from their owning team, including the native keyword-only identity flag.

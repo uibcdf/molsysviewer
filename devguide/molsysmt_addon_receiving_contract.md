@@ -4,8 +4,8 @@
 edit/update policy are approved in the [implementation plan](molsysmt_tools_addon_plan.md).
 This contract tracks receiving under uibcdf/molsysviewer#264 and
 uibcdf/molsysmt#421. Source implements managed native removal, synchronization
-controls, the coordinates/box routes of `basic.set`, and a generic host service.
-Other effect families, task panels and
+controls, the coordinates/box routes of `basic.set`, native translation and a
+generic host service. Other effect families, task panels and
 installed compatibility remain unqualified; no release follows from this work.
 
 ## Bound calls and integration controls
@@ -476,7 +476,37 @@ without trajectory projection or coordinate edits. Degenerate eigenspaces,
 dense covariance memory and optional-engine boundaries remain explicit.
 
 No molecular preparation, scene object, automatic analysis attachment, new host
-runtime or protocol is introduced. Native PCA list weights fail at the Rust
-boundary under uibcdf/molsysmt#448; the received CPU routes use default or float64
-ndarray weights. The addon supplies no private normalization or algorithmic
-repair. Source receiving and actual published-file compatibility remain separate.
+runtime or protocol is introduced. The native PCA list-weight failure under
+uibcdf/molsysmt#448 was subsequently repaired and received from
+306e91dda. Supported containers/dtypes and dimensionless quantities now retain
+the native normalization and validation. The addon supplies no private conversion
+or algorithmic repair. Source receiving and actual published-file compatibility
+remain separate.
+
+
+## Native translation and PCA weight repair — 2026-10-24
+
+The translate wrapper preserves the scientific signature, native independent
+default and return, adding only keyword-only update_view=True. Independent
+results are returned to Python without adoption. In-place translation uses the
+existing execution/reconciliation owner and protected-geometry rejection token.
+Preflight resolves native target/selection/structure scope and active-edit status;
+native translate alone computes displacement, broadcasting and publication.
+No scientific operation is repeated during scene synchronization.
+
+Affected atom/structure identities remain fixed. Source records, regions,
+selections, anchored shapes and navigation retain their owners. Native coordinate
+setters invalidate named interaction coverage only in written structures; native
+empty writes retain no-op behavior. Deferred writes compose with admitted
+removal/set operations. A clean rejection retains prior synchronization state;
+possible partial publication becomes uncertain. A scene failure after science
+exposes native None through SystemEditSyncError and retries synchronization only.
+No new host runtime, protocol, scientific snapshot or generic edit framework is
+introduced. Native independent copies retain their actual allocation costs.
+
+The PCA repair receives list/tuple and supported numeric dtypes, strided/read-only
+arrays, dimensionless quantity factors and invalid-input rejection against
+independent covariance and squared-unit references. Native normalization remains
+with MolSysMT. Center stays absent pending the native partial-reference target
+and return contract under uibcdf/molsysmt#451; no addon formula or silent scope
+change substitutes for the scientific owner's decision.
