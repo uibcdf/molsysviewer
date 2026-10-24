@@ -403,9 +403,10 @@ the wrappers; native calculation/cache ownership remains native.
 The earlier wait for the scientific team on uibcdf/molsysmt#441 is satisfied
 by its native endpoint repair and bound receiving. General rich selectors and
 optional engines retain native execution dependencies; the earlier independence
-checks were bounded scenarios. Minimum/neighbor wrappers now wait on new owner
-defects uibcdf/molsysmt#444 and uibcdf/molsysmt#445. The addon does not substitute
-another distance algorithm, parameter or hidden execution route.
+checks were bounded scenarios. Minimum/neighbor wrappers now have authorized
+local receiving of owner repairs under uibcdf/molsysmt#444 and
+uibcdf/molsysmt#445, now closed with scientific fixes in 5710cc0cff1f3f468823699104e51e6fe029c3b2.
+The addon does not substitute another distance algorithm, parameter or hidden route.
 
 
 ## Repaired native observables and relation readers — 2026-10-24
@@ -431,5 +432,51 @@ get_neighbors, get_minimum_distances and get_maximum_distances in
 uibcdf/molsysmt#444 and uibcdf/molsysmt#445. It must account for public paths and critical parameter
 combinations, sources, structures, weights, units/PBC, outputs/indices and errors,
 with independent numeric oracles. This bounded addon receipt is not completion
-of that whole-family review. Minimum/neighbor wrappers remain absent pending
-the scientific team's corrections and receiving.
+of that whole-family review. Minimum/neighbor wrappers subsequently gain local
+receiving of the scientific team's working-tree corrections, as specified below.
+
+
+## Local minimum and neighbor receiving — 2026-10-24
+
+The maintainer authorizes working against the provider repairs before their
+commit. get_minimum_distances and get_neighbors bind only the current primary
+MolSys and retain explicit secondary sources, selections, structure axes,
+independent weights, quantities and native skip controls. Minimum positions stay
+local to selected populations or pairs. Neighbor count/cutoff and supported
+CSR/source-atom pair outputs remain native. The addon re-scopes the native
+criterion admission declaration before forwarding defaults, omitting only absent
+criterion values at delegation. It neither weakens incompatible-call checks nor
+chooses a criterion or scientific algorithm.
+
+The same serialized reader preserves current-primary binding through pending
+edits and replacement, and retains view lifetime checks. Results are not attached
+or visualized automatically. The provider receiving record retains source hashes
+for this initial dirty-tree integration. Native fixes are now committed in
+5710cc0cff1f3f468823699104e51e6fe029c3b2 and the two owner issues are closed;
+addon exact-head CI remains distinct. No host runtime, wire protocol, package compatibility floor or release
+promise is changed by this local receipt.
+
+
+## Structural-analysis readers — 2026-10-24
+
+get_symmetry_corrected_rmsd, get_secondary_structure and
+principal_component_analysis use the existing serialized primary-bound reader.
+Their explicit scientific inputs remain native, including secondary references,
+states, constrained/cached chemical maps, structure indices, numeric weights
+and execution controls. The secondary-structure wrapper adds a keyword-only
+addon skip control without forwarding it to the native helper; native validation
+remains active. Other native skip controls are forwarded unchanged.
+
+The MDTraj DSSP route returns native group codes and sorted unique group scope;
+numeric selections mean group indices here. RDKit-backed pose RMSD retains
+declared chemistry, constrained search scope, raw-baseline applicability and
+producer attribution, with no fitting or periodic reconstruction. PCA returns
+row eigenvectors and squared-length eigenvalues of the native weighted covariance,
+without trajectory projection or coordinate edits. Degenerate eigenspaces,
+dense covariance memory and optional-engine boundaries remain explicit.
+
+No molecular preparation, scene object, automatic analysis attachment, new host
+runtime or protocol is introduced. Native PCA list weights fail at the Rust
+boundary under uibcdf/molsysmt#448; the received CPU routes use default or float64
+ndarray weights. The addon supplies no private normalization or algorithmic
+repair. Source receiving and actual published-file compatibility remain separate.

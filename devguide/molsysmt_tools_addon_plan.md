@@ -9,16 +9,22 @@ comparison, independent extraction/copies/conversion and preflight, managed
 retained-axis removal and coordinates/box setting, with root aliases and
 synchronization controls. All eleven current native `topology` exports now have
 explicit source wrappers, including chemical-graph and sequence analyses.
-Thirteen `structure` calculations now reuse the same host serialized reader;
-fifteen other structure exports remain pending. Native endpoint/unit and
+Eighteen `structure` calculations now reuse the same host serialized reader;
+ten coordinate-changing exports remain pending. The added secondary-structure,
+symmetry-corrected RMSD and PCA readers retain explicit engines, chemistry,
+units, result ownership and native limitations, including uibcdf/molsysmt#448
+for PCA list weights. Native endpoint/unit and
 sequence-group corrections under uibcdf/molsysmt#439, uibcdf/molsysmt#440,
 uibcdf/molsysmt#441 and uibcdf/molsysmt#442 are received
 from their owning team, including the native keyword-only identity flag.
-Maxima, contacts and RMSF are now explicitly available in source. Minimum-distance
-and neighbor wrappers stay pending uibcdf/molsysmt#444 and uibcdf/molsysmt#445;
-the maintainer requests a native pytest contract matrix over the four distance/
-neighbor/extrema tools. The addon supplies no scientific formula or parameter
-substitution. No new host runtime is needed. Broader scientific coverage,
+Maxima, contacts and RMSF are explicitly available in source. Minimum-distance
+and neighbor wrappers now have authorized local receiving of provider repairs
+under uibcdf/molsysmt#444 and uibcdf/molsysmt#445, now closed after the
+scientific owner committed 5710cc0cff1f3f468823699104e51e6fe029c3b2.
+The native pytest matrix and real-view references retain explicit scope; addon
+exact-head CI and installed qualification remain separate. The addon
+supplies no scientific formula or parameter substitution. No new host runtime
+is needed. Broader scientific coverage,
 installed compatibility, dependency floors and release remain separate.
 
 ## Accepted requirements

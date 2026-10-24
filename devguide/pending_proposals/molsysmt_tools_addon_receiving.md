@@ -21,13 +21,14 @@ and actionable state-factory failures are delivered for initial read-tool source
 receiving. Explicit retained-structure maps now extend live adoption and
 independent extraction. Retained-axis removal, coordinate/box setting,
 copy/conversion/preflight, composition/comparison/identity readers, all eleven
-current topology readers, thirteen structure calculations and synchronization now
+current topology readers, eighteen structure calculations and synchronization now
 have source receiving; other namespaces/edit families, task panels and installed
 qualification remain pending. Native repairs under uibcdf/molsysmt#439,
 uibcdf/molsysmt#440, uibcdf/molsysmt#441 and uibcdf/molsysmt#442 are now received.
-New minimum-weight/neighbor-source defects remain with their scientific owner
-under uibcdf/molsysmt#444 and uibcdf/molsysmt#445, with the requested native
-pytest family matrix.
+Minimum-weight/neighbor-source repairs under uibcdf/molsysmt#444 and
+uibcdf/molsysmt#445 now have authorized local working-tree receiving, including
+the requested native pytest matrix. Owner commit/CI and issue closure remain
+separate; no published-file compatibility is inferred.
 
 ## What
 
@@ -579,3 +580,95 @@ The host reconciliation passes 276 reporting/link guards and its generated
 queue-index check. This is source receiving, not clean solver-installed
 artifacts, optional-GPU qualification,
 universal RAM bounds, version freeze, tag, Release or package publication.
+
+
+## Local minimum and neighbor receiving — 2026-10-24
+
+The maintainer authorizes receiving the provider working tree before its owner
+commit. Explicit get_minimum_distances and get_neighbors wrappers preserve the
+native signatures after primary binding, including native skip_digestion. The
+neighbor wrapper re-scopes the native criterion-admission contract before
+forwarding defaults; absent criteria stay absent and explicit incompatible calls
+still fail. No scientific formula, weight substitution or fallback is added.
+
+The local receiving record under uibcdf/molsysmt#421 retains provider base
+3502232d802ee2927f6b6f5d19f0ae045777ecb5, host base f9a87cb55f9041cffab415fa3b3ddaded54c647a,
+file/extension SHA-256 values and original JUnit digests. The source is unchanged
+during the 1001-case applicable regression: all pass without errors or skips.
+It includes 424 cases from the native family matrix and the 89-case bound
+relation file. Nineteen guide blocks and 74 native-context docstring examples
+pass, as do Ruff and the sixteen-file packaging inventory. The addon receiving
+paragraph in Course Module 16 changes narrative only; the scientific team owns
+its independent course changes.
+
+Independent physical-value/index references cover separate endpoint weights,
+translated auxiliary systems, repeated structures, units and supported sparse
+outputs. View state, analyses, pending-edit status, lifetime and replacement
+binding remain guarded. Structure now has fifteen received and thirteen pending
+exports; other namespaces, task panels and installed qualification remain partial.
+Provider commit/CI and the owner's closure of uibcdf/molsysmt#444 and
+uibcdf/molsysmt#445 remain separate. No tag, package, dependency-floor change,
+release candidate freeze or public publication is implied.
+
+Host reconciliation passes 276 reporting/link guards and the generated-index
+check. Provider developer-guide validation also passes on the local tree.
+
+
+After this stable regression, the scientific team updated the five native public
+function files while extending their documentation. Those later file hashes are
+recorded separately; the earlier 1001-case result is not automatically transferred
+to changed bytes. The updated documentation passes 19 guide blocks and 90
+native-context docstring examples. Final owner-commit/CI reconciliation remains
+pending. Host reporting/link guards pass 276 cases and both guide/index checks
+pass.
+
+
+## Structural-analysis source receiving — 2026-10-24
+
+The provider working tree adds get_symmetry_corrected_rmsd,
+get_secondary_structure and principal_component_analysis through the existing
+serialized primary reader. Native signatures, explicit references, chemical
+states, map/constraint scope and execution choices remain intact. The native
+secondary-structure helper has no skip flag; its addon-only keyword is not
+forwarded. The other native flags retain their ordinary semantics. No host
+runtime, wire protocol, coordinate edit or result attachment is introduced.
+
+The provider receipt under uibcdf/molsysmt#421 records 1099 passing
+applicable regression cases and 44 focused real-view cases, zero failures/errors/
+skips, plus 22 guide blocks and 103 native-context docstring examples. Original
+JUnit digests, exact source hashes and source copies are retained. The watched
+scientific and addon sources stay unchanged during this regression. Only the
+generated version module changed when the owner committed those scientific
+corrections; result version strings retain their initial-import provenance. Native/packaging/lifecycle
+checks and Ruff pass; this does not qualify clean solver-installed artifacts.
+
+Independent weighted covariance reconstruction and pose geometry over explicitly
+declared maps protect values and units; MDTraj codes and actual group/structure
+correspondence protect the DSSP integration. Tests retain saved analyses, scene
+state, pending updates and cached reader binding after replacement. Discovery
+does not import the optional engines. Numerical degeneracy, dense PCA memory,
+engine prerequisites and experimental symmetry scope stay explicit.
+
+Native PCA's documented list weights reproduce a Rust type failure independently
+of Viewer. The authorized owner report is uibcdf/molsysmt#448. The received CPU
+routes use default or float64 ndarray weights, with no addon normalization or
+scientific workaround. Eighteen structure readers/calculations are now received;
+ten coordinate-changing exports remain pending. The course addon paragraph gains
+only current receiving prose; other provider course changes are separately owned.
+Overall uibcdf/molsysviewer#264 / uibcdf/molsysmt#421 remain partial, and local
+source receiving does not authorize publication or imply completed exact-head CI.
+
+
+The native scientific owner subsequently committed 5710cc0cff1f3f468823699104e51e6fe029c3b2 and closed
+uibcdf/molsysmt#444 and uibcdf/molsysmt#445. This reconciles the earlier local
+receiving without rewriting its original hash-scoped evidence. The pending PCA
+weight-container defect stays under uibcdf/molsysmt#448. Addon-head CI remains
+separate from the native commit and the local applicable regression.
+
+The five newly received readers (minimum distances, neighbors and the three
+structural analyses) are integrated in provider main at
+`5f1411ac319d10f510c2ba305fb80aeed9825ef4`, over the native scientific fixes and
+synchronized integration guides. This head includes the new analysis file in
+hosted smoke. Host reconciliation passes 276 reporting/link guards and the
+generated-index check; provider guide validation passes. Exact new-head hosted
+CI is pending at integration, without a duplicate dispatch or package rebuild.
