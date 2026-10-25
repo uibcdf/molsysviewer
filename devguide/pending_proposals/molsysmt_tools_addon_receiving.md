@@ -21,7 +21,7 @@ and actionable state-factory failures are delivered for initial read-tool source
 receiving. Explicit retained-structure maps now extend live adoption and
 independent extraction. Retained-axis removal, coordinate/box setting,
 copy/conversion/preflight, composition/comparison/identity readers, all eleven
-current topology readers, eighteen structure calculations, native translation/rotation/reflection and synchronization now
+current topology readers, eighteen structure calculations, native translation/rotation/reflection/fitting and synchronization now
 have source receiving; other namespaces/edit families, task panels and installed
 qualification remain pending. Native repairs under uibcdf/molsysmt#439,
 uibcdf/molsysmt#440, uibcdf/molsysmt#441 and uibcdf/molsysmt#442 are now received.
@@ -833,3 +833,59 @@ These passing qualified-input tests do not clear the native default/nonunit/zero
 normal reflection findings above. Their owning issue draft is prepared, and the
 explicit offer to open it awaits the maintainer's answer. No native scientific
 fix, package publication or completion of the broader addon is inferred.
+
+
+## Native rigid fitting and sequence alignment received — 2026-10-24
+
+Explicit structure.least_rmsd_fit and structure.least_rmsd_align preserve native
+scientific signatures, independent defaults/results and in-place None returns.
+Only keyword-only update_view is added over the existing geometry coordinator.
+Fit anchors and moved populations remain distinct; sequence-derived alignment
+moves whole selected components. Caller-owned references remain stable inputs,
+without locking or synchronizing another view. Independent outputs and conversion
+stay in Python; native setters own exact edited-structure analysis invalidation.
+No alternate correspondence, fitting, periodic reimaging or host runtime is added.
+
+Independent Cartesian poses protect physical values, partial and whole-component
+movement, reference indices and mixed-unit native reference forms. Repeated and
+nonconsecutive structures, native CPU precision, cached facade/replacement,
+source/scene identities, pending mixed edits and actual transport failure are
+received. Synchronization-only retry preserves coordinate storage; an exception
+after a real scientific publication enters uncertain state instead of rollback
+or repeated science.
+
+The final focused file passes 49 cases. The single 956-case applicable regression
+records 952 passes and four failures from a historical assertion that
+least_rmsd_fit must still be absent. Only that inventory expectation was corrected;
+all 85 cases in the two affected files then pass, explicitly including all four
+original failing nodes. The full local suite was not repeated or relabeled green.
+Initial fixture corrections and the native numeric-selection reproduction retain
+separate original JUnits in the provider's fitting receiving record.
+
+Concurrent native center/get_center and related scientific/documentation work was
+present in the local tree. Watched hashes record center.py and generated version
+changes during regression; bound-addon/fitting-test sources remain fixed. The
+run is scoped working-tree evidence, not one clean immutable native head. Other
+native edits and shared-page hunks are excluded from this integration. Exact
+committed-head hosted CI remains a separate gate. Ruff and 25 guide blocks/114
+native-context docstring examples pass; host reporting/link checks pass 280 cases.
+
+The authorized native reports uibcdf/molsysmt#452 and uibcdf/molsysmt#453 record
+None-reference failure and numeric atom/group-index confusion in least_rmsd_align.
+Its received route uses explicit references and MolSysMT expression selections;
+no silent reference replacement or index-to-expression rewrite is introduced.
+Native least_rmsd_fit's implicit self-reference is received separately. Optional
+GPU forwarding is not GPU qualification. Earlier reflection limits and the
+unreceived center under uibcdf/molsysmt#451 remain separate. The source facade now
+exposes twenty-three structure tools: eighteen calculations and five coordinate
+editors, with five other reviewed edits and broader coverage/panels pending under
+uibcdf/molsysmt#421 / uibcdf/molsysviewer#264. No installed package qualification,
+public floor, tag, release, version freeze or promotion is implied.
+
+
+This receiving is integrated in provider
+`5afb557eb6f9304ab48e2df2b6c2d1a0be000b77`. A clean exact-commit checkout passes
+developer-guide and canonical queue-index validation. Only the fitting-related
+course paragraph, manifest description, workflow addition and generated #452/#453
+index delta were staged from shared files; unrelated native-center hunks remain
+local to their owner. Exact hosted CI is pending at integration.

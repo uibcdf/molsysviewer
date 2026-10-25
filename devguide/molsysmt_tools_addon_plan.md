@@ -10,10 +10,13 @@ retained-axis removal and coordinates/box setting, with root aliases and
 synchronization controls. All eleven current native `topology` exports now have
 explicit source wrappers, including chemical-graph and sequence analyses.
 Eighteen `structure` calculations reuse the same host serialized reader;
-native translation, proper rotation and plane reflection now receive independent
-outputs and managed in-place updates. Reflection receiving is limited to explicit
+native translation, proper rotation, plane reflection and least-RMSD fitting/alignment
+now receive independent outputs and managed in-place updates. Native sequence
+alignment currently requires an explicit reference and expression selections;
+its None-reference and numeric-selection defects are tracked under
+uibcdf/molsysmt#452 and uibcdf/molsysmt#453. Reflection receiving is limited to explicit
 unit normals; native default/nonunit-normal defects remain visible and unqualified.
-Seven coordinate-changing exports remain pending, including center under
+Five coordinate-changing exports remain pending, including center under
 uibcdf/molsysmt#451. Secondary-structure, symmetry-corrected RMSD and PCA readers
 retain explicit engines, chemistry, units, result ownership and native limits.
 The PCA weight-container repair uibcdf/molsysmt#448 is received from 306e91dda. Native endpoint/unit and

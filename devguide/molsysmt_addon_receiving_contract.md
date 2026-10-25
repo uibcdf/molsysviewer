@@ -4,7 +4,7 @@
 edit/update policy are approved in the [implementation plan](molsysmt_tools_addon_plan.md).
 This contract tracks receiving under uibcdf/molsysviewer#264 and
 uibcdf/molsysmt#421. Source implements managed native removal, synchronization
-controls, the coordinates/box routes of `basic.set`, native translation/rotation/reflection and a
+controls, the coordinates/box routes of `basic.set`, native translation/rotation/reflection/fitting and a
 generic host service. Other effect families, task panels and
 installed compatibility remain unqualified; no release follows from this work.
 
@@ -525,3 +525,26 @@ Reflection can invert chirality; neither operation transforms the periodic box o
 chemical assignments. Native default/nonunit-normal reflection defects were
 reproduced without Viewer. Only explicit-unit-normal reflection is scientifically
 received; the owner guide and runtime help disclose the limitation.
+
+
+## Native fitting and sequence-alignment receiving — 2026-10-24
+
+Explicit provider least_rmsd_fit/least_rmsd_align preserve native scientific
+parameters, independent outputs and in-place None returns. The existing geometry
+receiver serializes the primary view and adds update_view only. Fit anchors and
+moved populations stay distinct; sequence alignment derives correspondence and
+moves complete selected components. Exact native setters own interaction
+coverage. Neither box reimaging nor alternative fitting/preparation is added.
+
+References remain caller-owned and stable for the call, without implicit locks
+or synchronization of another view. Independent results read current pending
+science but are not adopted. Completed science and scene retry remain separate;
+possible scientific publication before an exception enters uncertain state.
+Native fit conversion/precision choices retain their scientific ownership.
+
+The source receiving qualifies CPU routes and explicit native references for
+sequence alignment using MolSysMT expression selections. The authorized native
+reports uibcdf/molsysmt#452 and uibcdf/molsysmt#453 track its broken None-reference
+and numeric atom/group-domain routes. The addon supplies no silent substitution,
+index-to-expression rewrite or scientific algorithm. Other earlier limits,
+installed qualification and package floors remain separate.
