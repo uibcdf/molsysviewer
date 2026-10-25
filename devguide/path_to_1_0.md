@@ -6,7 +6,7 @@ and explores, including qualified scientific calculations for visual content;
 additional preparation/editing/general analysis belongs to add-on/scientific
 tools. MolSysMT remains required; its redesigned tools add-on has experimental
 source basic readers/independent outputs, retained-axis edits/synchronization and
-eleven topology readers plus eighteen structure calculations and native translation/rotation/reflection and rigid fitting. Legacy root
+eleven topology readers plus eighteen structure calculations and native translation/rotation/reflection, rigid fitting and explicit centering. Legacy root
 declarations remain refused. Broader namespaces/edits, panels and installed
 qualification remain pending. The
 native-Studio expansion plan is withdrawn and removed. The separate

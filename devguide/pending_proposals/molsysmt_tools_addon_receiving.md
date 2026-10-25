@@ -21,7 +21,7 @@ and actionable state-factory failures are delivered for initial read-tool source
 receiving. Explicit retained-structure maps now extend live adoption and
 independent extraction. Retained-axis removal, coordinate/box setting,
 copy/conversion/preflight, composition/comparison/identity readers, all eleven
-current topology readers, eighteen structure calculations, native translation/rotation/reflection/fitting and synchronization now
+current topology readers, eighteen structure calculations, native translation/rotation/reflection/fitting/centering and synchronization now
 have source receiving; other namespaces/edit families, task panels and installed
 qualification remain pending. Native repairs under uibcdf/molsysmt#439,
 uibcdf/molsysmt#440, uibcdf/molsysmt#441 and uibcdf/molsysmt#442 are now received.
@@ -920,3 +920,58 @@ and original job 121030682024. The original log is retained at
 Native alignment limitations under uibcdf/molsysmt#452 / uibcdf/molsysmt#453 remain
 open and explicit. No installed qualification, package reconstruction, version
 freeze or public publication is implied.
+
+
+## Explicit native centering received — 2026-10-24
+
+The bound structure.center mirrors the new native moving/source/initial-target
+contract, with source containment, source-only weights, physical destination
+units, repeated-scope rules and retired-name rejection. Keyword-only update_view
+is the only addition. Native computation, independent default/output ownership,
+in-place None returns and edited-structure interaction invalidation remain in
+MolSysMT. The existing coordinator retains scene identities and composes pending
+edits; no centroid calculation, periodic preparation, molecular snapshot or host
+runtime is introduced.
+
+Sixty-eight focused cases pass on real bundled views. The single applicable
+regression runs in an isolated checkout based on
+99cb83107, applying only the centering reception: **1007 passed**, no failures,
+errors or skips, and no watched source changes during execution. Import-origin
+assertions confirm isolated Python sources; the existing in-environment native
+Rust extension is reused and its path/digest recorded. This is source evidence,
+not a new solver installation or compiled-artifact qualification.
+
+Independent weighted/geometric means, coordinate displacements and rigid pair
+vectors cover units, defaults, mass weights, repeated atoms and structures,
+point/per-structure destinations and overlapping/disjoint/contained initial
+targets. Tests distinguish an initial destination snapshot from a final-center
+constraint, retain untouched coordinates/box and native named-analysis scope,
+exercise real transport interruption, and reject invalid populations/targets
+without publication. Deferred center/removal/translation retains scene/source
+identities and navigation; synchronization never repeats the science. A real
+native publication followed by a pipeline exception becomes uncertain.
+
+Ruff check/format passes six Python files. Twenty-six guide blocks and 120
+native-context docstring examples pass. Host reporting/link checks pass 280
+cases. Original JUnits, import origins and source snapshots are retained in the
+provider's centering receiving record. The native owner separately integrates
+alignment repairs in a38c00d19; their scientific/admission/docs changes are
+preserved when applying this reception. Exact integrated-head CI remains a
+separate gate, and the full local regression is not repeated.
+
+At the maintainer's explicit request uibcdf/molsysmt#451 was reopened with the
+missing closure-traceability appreciation; its scientific fix in 5814dc534 and
+archived evidence remain accepted. Reopening does not block this addon work or
+reopen its numerical diagnosis. Native uibcdf/molsysmt#454 documents the separate
+executed course-preparation correction. The facade now has twenty-four structure
+tools: eighteen calculations and six coordinate editors, with four reviewed
+geometry editors and broader namespaces/task panels still pending under
+uibcdf/molsysmt#421 / uibcdf/molsysviewer#264. No public floor, version freeze,
+release, package reconstruction or promotion is implied.
+
+
+The bound centering reception is integrated in provider
+`fc2936bf9efd198f02f1d195107e5a5e6f62d13b`, preserving parent a38c00d19's
+separate native alignment repairs. A clean exact-commit checkout passes
+developer-guide and canonical index validation. No host runtime changed.
+Hosted qualification of this integrated head remains pending at integration.

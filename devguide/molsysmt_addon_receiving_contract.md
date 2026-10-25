@@ -4,7 +4,7 @@
 edit/update policy are approved in the [implementation plan](molsysmt_tools_addon_plan.md).
 This contract tracks receiving under uibcdf/molsysviewer#264 and
 uibcdf/molsysmt#421. Source implements managed native removal, synchronization
-controls, the coordinates/box routes of `basic.set`, native translation/rotation/reflection/fitting and a
+controls, the coordinates/box routes of `basic.set`, native translation/rotation/reflection/fitting/centering and a
 generic host service. Other effect families, task panels and
 installed compatibility remain unqualified; no release follows from this work.
 
@@ -548,3 +548,24 @@ reports uibcdf/molsysmt#452 and uibcdf/molsysmt#453 track its broken None-refere
 and numeric atom/group-domain routes. The addon supplies no silent substitution,
 index-to-expression rewrite or scientific algorithm. Other earlier limits,
 installed qualification and package floors remain separate.
+
+
+## Explicit centering receiving — 2026-10-24
+
+The provider's center wrapper mirrors native selection, source_center_selection,
+target_center_selection, target_coordinates, weights, structure_indices, syntax,
+engine, in_place and skip_digestion, adding keyword-only update_view only. Native
+centering owns containment, captured initial destinations, units, refinement and
+retired-keyword rejection; no scientific transformation is implemented by Viewer.
+Native output/return ownership, frame scopes and named-analysis invalidation stay
+intact. The existing coordinator retains scene handles and source maps, composes
+deferred edits and retries projection without repeating science. Possible
+scientific publication before failure requires explicit recovery.
+
+All three populations address the bound primary MolSys. Target populations may
+overlap atoms that move, but their destination is captured before movement and
+is not a persistent final-center constraint. Source weights do not weight a
+target selection. The administrative reopening of uibcdf/molsysmt#451 requests
+its missing closure comment; it does not revoke the accepted native correction.
+Native alignment repairs #452/#453 remain a separate owner's change; no host
+runtime, public dependency floor or installed-package qualification is added.
