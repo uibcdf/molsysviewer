@@ -1064,3 +1064,34 @@ No scientific/addon source changed between local qualification and integration.
 Both independent owner commits and the three unrelated generated-RST edits are
 preserved. The exact source CI is now running; no manual heavy dispatch, package
 publication or tag change is implied.
+
+
+## Exact integrated displacement CI completed — 2026-10-25
+
+All six applicable hosted controls pass for
+`a5fb4e2f0eac2c0b7139a8453122335b175d92e3`.
+[Smoke 40240550036](https://github.com/uibcdf/molsysmt/actions/runs/40240550036)
+passes 1018 native bounded-tier cases and 734 bound-addon cases, with no failures,
+errors or skips in either summary. The command explicitly includes the new
+`test_structure_move_away_tools.py`. Dependency contract 40240549993, guide
+integrity 40240549971, publication governance 40240550224, Ruff 40240549961 and
+suite policy 40240550251 also pass. No duplicate/manual heavy campaign was launched.
+
+gh-run-receptor's terminal PASS agrees with native GitHub metadata and original
+job 121311208884. The original log is retained at
+`/tmp/msm-addon-a5fb4e2f-move-away-smoke.log`, SHA-256
+`e497c8ec510822b4619febf57c069a99b224fc75c5f3c8cb3280703facd15e86`.
+The CLI required explicit escape-sequence permission to save the original log;
+only sanitized summary lines were displayed. Native source qualification uses
+the workflow's declared Viewer pin deaba4cbea43015859544b1b393ecbe02dd2ee19.
+It is separate from local receiving against the current Viewer checkout and
+from installed-artifact, full-platform or live-GUI qualification. The prior
+receipt's pending-CI state describes preparation; this is its terminal closure.
+
+uibcdf/molsysmt#456 and uibcdf/molsysmt#457 remain open, confirmed after CI.
+They retain the two native reproductions and scientific acceptance criteria.
+Single-structure nondegenerate displacement is received; the dangerous default/
+zero-direction and partial multi-structure routes are not qualified by this
+green source CI. Three structure editors and broader addon coverage remain
+pending under uibcdf/molsysmt#421 / uibcdf/molsysviewer#264. No tag, package,
+public dependency floor, promotion or publication changed.
