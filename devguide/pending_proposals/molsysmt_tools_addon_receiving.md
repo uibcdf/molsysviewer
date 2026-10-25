@@ -975,3 +975,31 @@ The bound centering reception is integrated in provider
 separate native alignment repairs. A clean exact-commit checkout passes
 developer-guide and canonical index validation. No host runtime changed.
 Hosted qualification of this integrated head remains pending at integration.
+
+
+## Exact integrated centering-head CI completed — 2026-10-24
+
+All six applicable hosted controls pass for
+`fc2936bf9efd198f02f1d195107e5a5e6f62d13b`.
+[Smoke 40150164745](https://github.com/uibcdf/molsysmt/actions/runs/40150164745)
+passes 1018 native bounded-tier cases and 696 bound-addon cases, with no failures,
+errors or skips in either summary. The command includes
+`test_structure_center_tools.py`. Dependency contract 40150164749, guide integrity
+40150164737, publication governance 40150165026, Ruff 40150164740 and suite policy
+40150164976 also pass. The initial scheduling delay had runner_id=0; no manual
+cancellation, rerun or duplicate dispatch was performed.
+
+gh-run-receptor's successful terminal report agrees with native GitHub metadata
+and original job 121039854054. The original log is retained at
+`/tmp/msm-addon-fc2936-center-smoke.log`, SHA-256
+`3f198d372b2520eae7ed99b02fa27334e04c1c44ef7282c9359c684463d10ba8`.
+This qualifies the exact integrated source head, including the independently
+owned alignment repairs inherited from a38c00d19; it does not substitute for
+installed-artifact or full supported-platform qualification.
+
+The maintainer-requested reopening of uibcdf/molsysmt#451 is confirmed at
+https://github.com/uibcdf/molsysmt/issues/451#issuecomment-6391625013. It remains
+open for its missing closure comment; no scientific regression or revocation
+of 5814dc534's archived centering evidence is asserted. The new wrapper is
+received under uibcdf/molsysmt#421 / uibcdf/molsysviewer#264, whose broader scope
+remains partial. Tags, packages, public floors and promotions are unchanged.
