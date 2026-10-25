@@ -10,15 +10,18 @@ retained-axis removal and coordinates/box setting, with root aliases and
 synchronization controls. All eleven current native `topology` exports now have
 explicit source wrappers, including chemical-graph and sequence analyses.
 Eighteen `structure` calculations reuse the same host serialized reader;
-native translation, proper rotation, plane reflection, least-RMSD fitting/alignment
-and explicit centering now receive independent outputs and managed in-place updates.
+native translation, proper rotation, plane reflection, least-RMSD fitting/alignment,
+explicit centering and single-structure displacement now receive independent outputs and managed in-place updates.
 Native self-reference and numeric-selection repairs under uibcdf/molsysmt#452 /
 uibcdf/molsysmt#453 are separately delivered by the scientific owner in a38c00d19;
 combined exact-head CI is tracked in the receiving record. Reflection receiving
 still covers explicit unit normals only. The new contained-source/initial-target
 centering contract delegates to native center; uibcdf/molsysmt#451 was reopened
 at the maintainer's request solely for missing closure traceability, preserving
-the scientific fix. Four reviewed coordinate-changing exports remain pending. Secondary-structure, symmetry-corrected RMSD and PCA readers
+the scientific fix. Three reviewed coordinate-changing exports remain pending.
+Displacement receiving excludes native degenerate-direction/NaN and partial-write
+routes under uibcdf/molsysmt#456 and uibcdf/molsysmt#457; these owner defects are
+not corrected in the addon. Secondary-structure, symmetry-corrected RMSD and PCA readers
 retain explicit engines, chemistry, units, result ownership and native limits.
 The PCA weight-container repair uibcdf/molsysmt#448 is received from 306e91dda. Native endpoint/unit and
 sequence-group corrections under uibcdf/molsysmt#439, uibcdf/molsysmt#440,

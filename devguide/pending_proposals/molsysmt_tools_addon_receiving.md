@@ -21,7 +21,7 @@ and actionable state-factory failures are delivered for initial read-tool source
 receiving. Explicit retained-structure maps now extend live adoption and
 independent extraction. Retained-axis removal, coordinate/box setting,
 copy/conversion/preflight, composition/comparison/identity readers, all eleven
-current topology readers, eighteen structure calculations, native translation/rotation/reflection/fitting/centering and synchronization now
+current topology readers, eighteen structure calculations, native translation/rotation/reflection/fitting/centering/displacement and synchronization now
 have source receiving; other namespaces/edit families, task panels and installed
 qualification remain pending. Native repairs under uibcdf/molsysmt#439,
 uibcdf/molsysmt#440, uibcdf/molsysmt#441 and uibcdf/molsysmt#442 are now received.
@@ -1003,3 +1003,64 @@ open for its missing closure comment; no scientific regression or revocation
 of 5814dc534's archived centering evidence is asserted. The new wrapper is
 received under uibcdf/molsysmt#421 / uibcdf/molsysviewer#264, whose broader scope
 remains partial. Tags, packages, public floors and promotions are unchanged.
+
+
+## Single-structure displacement receiving — 2026-10-25
+
+The provider implements structure.move_away through the existing retained-axis
+coordinator with native defaults/returns and explicit reference inputs. No host
+runtime changes are required. The namespace exposes 25 structure tools:
+18 calculations and seven coordinate editors. align_principal_axes and the two
+dihedral editors remain pending; broader namespaces/panels and installed
+qualification are separate.
+
+The focused guard tests/molsysviewer_molsysmt/test_structure_move_away_tools.py
+in the provider passes 38 cases with independent NumPy displacement oracles.
+It covers weighted source/reference centers, both modes, non-default unit policies,
+copy/in-place ownership, current-primary rebinding, selected-structure analysis
+invalidation, scene maps and synchronization retry without repeating science.
+The native all-default/degenerate-direction route remains unqualified under
+uibcdf/molsysmt#456; multi-structure explicit rejection after partial publication
+is tracked under uibcdf/molsysmt#457. Both are reproduced without Viewer and opened
+with the maintainer's explicit authorization. No scientific workaround is added.
+Broader regression, source identity and CI completion follow separately; no
+package or release is implied.
+
+
+### Completed local displacement qualification — 2026-10-25
+
+The focused guard passes 38 cases. Local regression covers 1061 distinct cases
+without a full-suite rerun: the first campaign passed 964, then was interrupted
+(exit 2) in a documentary matplotlib Qt plt.show loop inherited from DISPLAY=:0.
+The remaining 97 previously unexecuted cases pass with MPLBACKEND=Agg (exit 0).
+Both original JUnits are preserved; this is composite evidence, not a single green
+run. Scientific/addon source hashes and the compiled backend remain unchanged;
+the developer packaging tests regenerate ignored molsysmt/_version.py metadata.
+All 27 addon-guide blocks and 125 native-context doctests pass; Viewer
+reporting/link guards pass 280 cases. Ruff and provider guide/index validation
+pass. MolSysMT's source receipt is
+`devtools/data/molsysviewer_tools_move_away_receiving_20261025.json`.
+It retains JUnit digests, source/import origins, the native-only reproductions
+and actual uncertain-state receiving of #457; sync_view refuses to bless the
+partial write. These are not live Qt/window rendering observations.
+
+The independently owned ArgDigest receiving commit 9135cee1fd29f8591d29d802562c34cc27c44353
+is preserved as integration parent; its source tests/docs are not bundled as our
+changes. Hosted exact-head qualification remains pending at this checkpoint.
+No installed compatibility or release is asserted; #456/#457 require the
+scientific owner's repair.
+
+
+### Integrated displacement source — 2026-10-25
+
+Provider a5fb4e2f0eac2c0b7139a8453122335b175d92e3 is pushed to main.
+Its actual immediate parent is 9135cee1fd29f8591d29d802562c34cc27c44353,
+which adds only three supported-inventory test assertions and preserves the
+separate ArgDigest receiving. Clarification: the source receipt's
+integration_parent field captured afd906b577d74ad574063efd3177ea16e833a088
+at receipt preparation; that field is not the final immediate Git parent. The
+concurrent supported-inventory test commit landed before the feature commit.
+No scientific/addon source changed between local qualification and integration.
+Both independent owner commits and the three unrelated generated-RST edits are
+preserved. The exact source CI is now running; no manual heavy dispatch, package
+publication or tag change is implied.

@@ -52,7 +52,7 @@ documents, and historical audits.
   tools belong to add-on/scientific interfaces. A redesigned MolSysMT tools
   add-on has experimental source `basic` readers, independent outputs,
   retained-axis edits/synchronization, eleven `topology` readers and eighteen
-  `structure` calculations and managed native translation/rotation/reflection, rigid fitting and explicit centering; the
+  `structure` calculations and managed native translation/rotation/reflection, rigid fitting, explicit centering and single-structure displacement; the
   [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md) names
   exact scope and tests. The backend remains required and legacy addon routes
   remain refused. Python remains the primary headless foundation.
