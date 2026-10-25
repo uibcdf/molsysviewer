@@ -889,3 +889,34 @@ developer-guide and canonical queue-index validation. Only the fitting-related
 course paragraph, manifest description, workflow addition and generated #452/#453
 index delta were staged from shared files; unrelated native-center hunks remain
 local to their owner. Exact hosted CI is pending at integration.
+
+
+## Fitting receiving CI completed on descendant head — 2026-10-24
+
+Smoke 40147023405 on `5afb557eb6f9304ab48e2df2b6c2d1a0be000b77` was cancelled
+during toolchain provisioning. GitHub and gh-run-receptor retain unknown
+termination cause; the workflow declares cancel-in-progress, and a subsequent
+native-owner push created the replacement campaign. The cancellation is not a
+passing result; no manual cancellation or duplicate dispatch was requested here.
+
+Descendant `5814dc534cecf179df8bf8f8009c8e21f1593c6e` preserves all bound-addon
+sources and tests from the fitting commit unchanged. It separately integrates
+the owner's center/get_center contract and related callers/docs, and adds native
+center/documentation guards to the bounded CI tier. Native uibcdf/molsysmt#451
+is closed; receiving its redesigned center wrapper remains a separate addon task.
+
+[Smoke 40147106374](https://github.com/uibcdf/molsysmt/actions/runs/40147106374)
+passes 853 native cases and 616 bound-addon cases, with no failures, errors or
+skips in either summary. Its command includes `test_structure_fitting_tools.py`.
+Dependency contract 40147106336, Ruff 40147106353, guide integrity 40147106351,
+suite policy 40147106563 and publication governance 40147106623 also pass. This
+qualifies that descendant source head; it does not relabel the cancelled parent
+smoke or the original locally failed inventory assertion as successful.
+
+gh-run-receptor's successful terminal report agrees with native GitHub metadata
+and original job 121030682024. The original log is retained at
+`/tmp/msm-addon-5814dc-fitting-smoke.log`, SHA-256
+`526d3774e0575a995db02ce9a07ac9df2563cfc0eefd4081de9fcc8be0ee4390`.
+Native alignment limitations under uibcdf/molsysmt#452 / uibcdf/molsysmt#453 remain
+open and explicit. No installed qualification, package reconstruction, version
+freeze or public publication is implied.

@@ -16,8 +16,9 @@ alignment currently requires an explicit reference and expression selections;
 its None-reference and numeric-selection defects are tracked under
 uibcdf/molsysmt#452 and uibcdf/molsysmt#453. Reflection receiving is limited to explicit
 unit normals; native default/nonunit-normal defects remain visible and unqualified.
-Five coordinate-changing exports remain pending, including center under
-uibcdf/molsysmt#451. Secondary-structure, symmetry-corrected RMSD and PCA readers
+Five coordinate-changing exports remain pending, including center. Its native
+redesign under uibcdf/molsysmt#451 is delivered in 5814dc534; the addon wrapper
+still awaits receiving. Secondary-structure, symmetry-corrected RMSD and PCA readers
 retain explicit engines, chemistry, units, result ownership and native limits.
 The PCA weight-container repair uibcdf/molsysmt#448 is received from 306e91dda. Native endpoint/unit and
 sequence-group corrections under uibcdf/molsysmt#439, uibcdf/molsysmt#440,
