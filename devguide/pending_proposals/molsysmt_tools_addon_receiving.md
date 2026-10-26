@@ -1290,3 +1290,51 @@ terminal source checkpoint. Other namespaces, GUI panels, scientific repairs,
 installed package compatibility, public floors and releases remain separate.
 Both 1.0 publications remain paused. The fixed receiving checkout and original
 evidence are retained; unrelated local work and immutable artifacts are preserved.
+
+
+### Native torsion reports filed — 2026-10-26
+
+The maintainer-directed continuation authorizes the two prepared reports.
+Duplicate checks find no equivalent open or closed issue. uibcdf/molsysmt#461
+tracks explicit blocks ignored by native shift_dihedral_angles;
+uibcdf/molsysmt#462 tracks NaN angular edits publishing nonfinite coordinates in
+both native editors and both output modes. The native scientific source hashes
+still match the original receiving audit. Their reports require owning pytest
+guards; no scientific correction is added to the addon. The previous dated
+pending-authorization notes retain their historical scope. Full scientific
+receiving of those routes waits for provider repair and new evidence.
+
+### Periodic-box expert tools — 2026-10-26
+
+The provider adds ten explicit `pbc` queries/factories without a host runtime
+change. Only `has_pbc` binds the current primary, including pending box edits.
+Nine explicit-input utilities require only a live owning view, preserve native
+quantities/rounding/shape semantics and do not assign a box or adopt a result.
+Native methods without a skip parameter retain ordinary public validation.
+Independent references cover row-vector norms, dot-product angles, determinants,
+analytical volume and factory metric geometry across length/angle unit policies
+and reordered/repeated box observations. All 33 specific cases pass; 31 guide
+blocks and 158 inherited native docstring examples pass. The one broader isolated
+addon/native-PBC/packaging regression passes 1,077 tests in 298.19 seconds, with
+no failures/errors/skips or source/backend mutation. Host reporting/link checks
+pass 280 cases. Provider 9061e21494a1f50c1b4f5126edc4e938dbb0b2c2 is pushed
+to main, integrating the independently committed ParmEd repair parent 37ca03de9.
+The local receiving checkout remains fixed at c7fb92a62 plus delivered PBC files;
+its native PBC hashes agree with the integrated parent. All six original
+exact-source controls pass; smoke 40386788168/job 121797066424 records
+1,258 native and 924 addon cases, including all 33 PBC cases. Dependency
+40386787152, Ruff 40386787130, guide integrity 40386787075, suite policy
+40386788769 and Conda governance 40386789041 also pass. GH Run Receptor
+confirms GitHub terminal success. The original log is
+`/tmp/msm-addon-9061e214-pbc-smoke.log`, SHA-256
+`e5d076fbd4752f89261148c8a93251d21df8f538d861d73cf67d43b1e42fdd10`.
+The pre-CI local receipt remains provider-owned under uibcdf/molsysmt#421;
+this terminal evidence supersedes its pending-CI status. No host runtime is added.
+
+Two limitations stay visible: the native declared default
+`get_box_from_lengths_and_angles(..., box_angles=None)` rejects, and the
+Biophysics course's PBC module requests an absent membrane H5MSM demo key.
+Reports were offered and await maintainer authorization. The latter is another
+occurrence of the demo-source mistake fixed for PCA under uibcdf/molsysmt#449;
+that closed issue did not cover this PBC module. Explicit angles are received;
+wrapping/unwrapping, GUI tasks and installed qualification remain separate.

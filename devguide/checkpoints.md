@@ -363,7 +363,7 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**Current priority — 2026-10-23:** the approved
+**Current priority — 2026-10-26:** the approved
 [core/add-on boundary](core_and_addon_boundary.md) gives core visualization and
 exploration, including qualified calculations for visual content. Additional
 molecular editing/preparation/general analysis belongs to tools/add-on
@@ -373,7 +373,11 @@ expert mirroring, implicit current MolSys and independently task-oriented GUI
 requirements. Native mutation semantics and default synchronization are agreed.
 Source receiving now covers basic readers/independent outputs, retained-axis
 remove and geometry set, synchronization/recovery, eleven topology readers and
-eighteen structure calculations plus managed native translation/rotation/reflection, rigid fitting, explicit centering, single-structure displacement, principal-axis alignment and both dihedral editors;
+eighteen structure calculations plus managed translation/rotation/reflection,
+rigid fitting, centering, single-structure displacement, principal-axis alignment
+and both dihedral editors, plus ten PBC box queries/factories. Only has_pbc binds
+the current primary; explicit-input utilities do not assign or adopt results.
+PBC coordinate editors and native default-angle receiving remain pending;
 see [the current record](pending_proposals/molsysmt_tools_addon_receiving.md).
 Broader namespaces/effects, panels and installed qualification remain pending.
 Legacy integration remains refused and MolSysMT stays required as backend.
@@ -1907,14 +1911,17 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current order — 2026-10-23:**
+**Current order — 2026-10-26:**
 
 1. Apply the [core/add-on boundary](core_and_addon_boundary.md). The former
    native-Studio expansion plan is withdrawn and removed. Continue the accepted
    [MolSysMT tools add-on plan](molsysmt_tools_addon_plan.md): qualify remaining
    expert namespaces/effects under the agreed mutation/update policy before
    panels. The topology namespace mirror now covers all eleven baseline exports;
-   the overall addon receiving remains partial. Follow
+   all 28 structure exports have wrappers with documented native torsion limits,
+   and ten PBC queries/factories pass local receiving plus six source CI controls
+   on provider 9061e2149. Next receive coordinate wrapping/unwrapping; the overall addon remains
+   partial. Follow
    [#264](pending_proposals/molsysmt_tools_addon_receiving.md) for exact scope.
    Reuse the [source inventory](studio_molsysmt_operation_inventory.md)
    and [reconciliation review](linked_molecular_edits_design.md) as design

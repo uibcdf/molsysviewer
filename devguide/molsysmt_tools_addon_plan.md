@@ -1,7 +1,7 @@
 # MolSysMT tools add-on — implementation plan
 
 **Status: partial source implementation; installed qualification pending —
-2026-10-23.** The maintainer authorizes the Viewer development effort to implement
+2026-10-26.** The maintainer authorizes the Viewer development effort to implement
 the integration in the owning MolSysMT repository. This is a new plan under
 [the core/add-on boundary](core_and_addon_boundary.md). The withdrawn native
 Studio expansion plan remains removed. The experimental source integration provides bound `basic` queries and read-only
@@ -20,7 +20,8 @@ scientific owner's uibcdf/molsysmt#460 repair and the combined source CI. The ne
 centering contract delegates to native center; uibcdf/molsysmt#451 now has its
 requested final closure comment. All 28 reviewed structure function exports are
 now exposed; native nonfinite torsion inputs and explicit-block shifting remain
-unqualified and need provider repair. Complete exposure is not full scientific
+unqualified and need provider repair under uibcdf/molsysmt#462 and
+uibcdf/molsysmt#461, respectively. Complete exposure is not full scientific
 or installed-package qualification. The scientific owner repairs native undefined-direction and partial-write
 rejection under uibcdf/molsysmt#456 / uibcdf/molsysmt#457 in e6677e4c6.
 The addon forwards those checks without a scientific workaround. Secondary-structure, symmetry-corrected RMSD and PCA readers
@@ -38,6 +39,10 @@ exact-head CI and installed qualification remain separate. The addon
 supplies no scientific formula or parameter substitution. No new host runtime
 is needed. Broader scientific coverage,
 installed compatibility, dependency floors and release remain separate.
+Ten `pbc` queries/factories are now explicit in provider source. Only `has_pbc`
+binds the current primary; other tools retain caller-owned quantities and work
+before loading a system. Native default-angle factory input remains unqualified;
+coordinate wrapping and unwrapping still need managed-effect receiving.
 
 ## Accepted requirements
 
