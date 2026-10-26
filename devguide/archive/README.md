@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Compressed-body dependency advisory](body_parser_compressed_request_advisory.md) — #266 updates body-parser/qs, extends the known-range guard and passes live audit plus all 44 core browser suites.
+
 - [Box-analysis fixture ordering](box_assignment_fixture_invalidates_analysis.md) — #263 initializes the cell before fresh analysis and retains selective invalidation and visible-edge assertions.
 
 - [Molecular load history boundary](replacement_load_retains_scene_history.md) — #262 clears stale Undo/Redo on successful molecular load/reset, preserves rejected loads and retains first-load shapes.

@@ -1377,3 +1377,15 @@ succeeded, but original Core E2E 40389716226 and broader source qualification
 remain in progress/queued; #266 stays partial. Qt experimental 40389716287
 fails transport/WebGL observations and is retained separately, not counted as
 a passing core result. No rerun, cancellation or duplicate dispatch is made.
+
+### Host advisory receiving completed — 2026-10-26
+
+uibcdf/molsysviewer#266 is resolved in source: fix 5246d409, known-range guard
+4be459a4 and exact-head Core E2E 40391698362 pass with clean live audit and
+44/44 suites. The [archived record](../archive/body_parser_compressed_request_advisory.md)
+preserves original logs/digests and explicit boundaries. Main CI 40391698358
+and Python-3.14 source pair 40391697507 fail only the three already tracked
+warning-strict documentation pages with the historical MolSysMT/pandas
+composition (uibcdf/molsysmt#431); experimental Qt remains separate. Neither
+all-green source CI nor corrected-public-package receiving is claimed. Provider
+issues uibcdf/molsysmt#465 and uibcdf/molsysmt#466 remain open for native box/default and course repairs.
