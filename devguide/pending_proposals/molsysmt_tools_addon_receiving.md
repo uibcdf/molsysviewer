@@ -1157,3 +1157,41 @@ changes. The source receipt distinguishes preparation/test base 7b1604ec3 from
 the reviewed integration parent. Three unrelated generated-RST edits remain
 untouched. Exact integrated-head hosted qualification is pending after push; no
 manual matrix, package rebuild, floor, tag or publication is introduced.
+
+
+## Exact integrated principal-axis CI completed — 2026-10-25
+
+All six applicable hosted controls pass for
+`e568a62693619414fed6b237357e7c34f60e5736`.
+[Smoke 40252866723](https://github.com/uibcdf/molsysmt/actions/runs/40252866723)
+passes 1258 native bounded-tier cases and 830 bound-addon cases, with no failures,
+errors or skips in either summary. The original command includes the new
+`test_structure_axes_tools.py` and the owner's `test_reflection_contract.py`.
+Dependency contract 40252866773, guide integrity 40252866813, publication
+governance 40252867247, Ruff 40252866956 and suite policy 40252867221 also pass.
+No duplicate or manual heavy matrix was dispatched.
+
+gh-run-receptor's terminal PASS agrees with GitHub metadata and original job
+121348336519. The original log is retained at
+`/tmp/msm-addon-e568a626-axes-smoke.log`, SHA-256
+`12ee80a0cfa72e03c2e59f9f4470d515717b9553ed49d5e3e33f5ccddacba968`.
+The original terminal escapes were saved only to that file; displayed summaries
+were sanitized. Routine hosted receiving uses declared Viewer source
+deaba4cbea43015859544b1b393ecbe02dd2ee19, distinct from local receiving against
+the current checkout and from final installed-artifact qualification.
+
+This qualifies the integrated source including the independently owned native
+reflection repair 98b10ad2d under uibcdf/molsysmt#460: default z normals, scaled
+nonzero normals and pre-write plane rejection are now exercised together with
+the addon. The earlier isolated local regression intentionally excluded those
+then-uncommitted changes; its 1299-case receipt retains that scope. Native
+#456/#457 repair guards are included too. No scientific workaround was added to
+the addon, and no new principal-axis defect was found.
+
+The preparation receipt's pending-CI status is superseded by this terminal
+source checkpoint. Two reviewed structure editors remain pending:
+set_dihedral_angles and shift_dihedral_angles. Other namespaces, GUI panels,
+all-platform/installed compatibility, dependency floors and releases retain
+their separate scopes. Both 1.0 publications remain paused. The staged isolated
+checkout is retained as dated receiving evidence; unrelated local work and
+immutable artifacts are preserved.
