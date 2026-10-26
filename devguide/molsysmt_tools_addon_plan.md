@@ -11,17 +11,16 @@ synchronization controls. All eleven current native `topology` exports now have
 explicit source wrappers, including chemical-graph and sequence analyses.
 Eighteen `structure` calculations reuse the same host serialized reader;
 native translation, proper rotation, plane reflection, least-RMSD fitting/alignment,
-explicit centering and single-structure displacement now receive independent outputs and managed in-place updates.
+explicit centering, single-structure displacement and principal-axis alignment now receive independent outputs and managed in-place updates.
 Native self-reference and numeric-selection repairs under uibcdf/molsysmt#452 /
 uibcdf/molsysmt#453 are separately delivered by the scientific owner in a38c00d19;
 combined exact-head CI is tracked in the receiving record. Reflection receiving
 still covers explicit unit normals only. The new contained-source/initial-target
-centering contract delegates to native center; uibcdf/molsysmt#451 was reopened
-at the maintainer's request solely for missing closure traceability, preserving
-the scientific fix. Three reviewed coordinate-changing exports remain pending.
-Displacement receiving excludes native degenerate-direction/NaN and partial-write
-routes under uibcdf/molsysmt#456 and uibcdf/molsysmt#457; these owner defects are
-not corrected in the addon. Secondary-structure, symmetry-corrected RMSD and PCA readers
+centering contract delegates to native center; uibcdf/molsysmt#451 now has its
+requested final closure comment. Two reviewed dihedral-changing exports remain
+pending. The scientific owner repairs native undefined-direction and partial-write
+rejection under uibcdf/molsysmt#456 / uibcdf/molsysmt#457 in e6677e4c6.
+The addon forwards those checks without a scientific workaround. Secondary-structure, symmetry-corrected RMSD and PCA readers
 retain explicit engines, chemistry, units, result ownership and native limits.
 The PCA weight-container repair uibcdf/molsysmt#448 is received from 306e91dda. Native endpoint/unit and
 sequence-group corrections under uibcdf/molsysmt#439, uibcdf/molsysmt#440,

@@ -373,7 +373,7 @@ expert mirroring, implicit current MolSys and independently task-oriented GUI
 requirements. Native mutation semantics and default synchronization are agreed.
 Source receiving now covers basic readers/independent outputs, retained-axis
 remove and geometry set, synchronization/recovery, eleven topology readers and
-eighteen structure calculations plus managed native translation/rotation/reflection, rigid fitting, explicit centering and single-structure displacement;
+eighteen structure calculations plus managed native translation/rotation/reflection, rigid fitting, explicit centering, single-structure displacement and principal-axis alignment;
 see [the current record](pending_proposals/molsysmt_tools_addon_receiving.md).
 Broader namespaces/effects, panels and installed qualification remain pending.
 Legacy integration remains refused and MolSysMT stays required as backend.

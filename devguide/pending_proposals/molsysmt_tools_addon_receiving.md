@@ -21,7 +21,7 @@ and actionable state-factory failures are delivered for initial read-tool source
 receiving. Explicit retained-structure maps now extend live adoption and
 independent extraction. Retained-axis removal, coordinate/box setting,
 copy/conversion/preflight, composition/comparison/identity readers, all eleven
-current topology readers, eighteen structure calculations, native translation/rotation/reflection/fitting/centering/displacement and synchronization now
+current topology readers, eighteen structure calculations, native translation/rotation/reflection/fitting/centering/displacement/principal-axis alignment and synchronization now
 have source receiving; other namespaces/edit families, task panels and installed
 qualification remain pending. Native repairs under uibcdf/molsysmt#439,
 uibcdf/molsysmt#440, uibcdf/molsysmt#441 and uibcdf/molsysmt#442 are now received.
@@ -1095,3 +1095,65 @@ zero-direction and partial multi-structure routes are not qualified by this
 green source CI. Three structure editors and broader addon coverage remain
 pending under uibcdf/molsysmt#421 / uibcdf/molsysviewer#264. No tag, package,
 public dependency floor, promotion or publication changed.
+
+
+## Principal-axis alignment and repaired displacement receiving — 2026-10-25
+
+The provider adds explicit structure.align_principal_axes under the existing
+retained-axis receiver. Native scientific parameters/defaults/returns remain
+unchanged; keyword-only skip_digestion controls the addon only because the
+native function has no bypass, and update_view controls projection only.
+The namespace now exposes 26 structure tools (18 calculations, eight editors);
+the two dihedral editors remain pending. No host runtime code changes.
+
+The focused guard in tests/molsysviewer_molsysmt/test_structure_axes_tools.py
+passes 73 initial cases plus two separately selected disjoint-population cases.
+Independent NumPy covariance/eigenvalue, center, distance and signed-volume
+checks cover geometric/inertial definitions, native weights, proper target row
+bases, non-default units and repeated/nonconsecutive structures. Actual view
+checks cover defaults/return ownership, clean and degenerate rejection,
+scene/source correspondence, lifetime and sync-only recovery after a failed
+transport. No GPU, molecular preparation, periodic reconstruction or box
+transformation is added or qualified.
+
+The scientific owner has closed uibcdf/molsysmt#456 / uibcdf/molsysmt#457 in
+native e6677e4c6; current checks reject undefined directions and unsupported axes
+before writes. Its native and real-view guards join this local regression.
+The previous dated NaN/partial-write reproductions remain historical evidence,
+not current unresolved-defect claims. uibcdf/molsysmt#451 also has its requested
+administrative closing comment. Broader local and exact-head CI results follow
+separately. Packages, floors, installed qualification and releases are unchanged.
+
+
+### Completed local principal-axis qualification — 2026-10-25
+
+The focused guard passes 73 cases plus two separately selected disjoint-fitting
+cases. A single executed regression on fixed source 7b1604ec3 plus the owned
+alignment patch passes 1299 cases, zero failures/errors/skips, in 272.85 seconds.
+Scientific/addon source hashes do not change during execution. Generated ignored
+version metadata is recorded separately; the existing Rust binary matches the
+initial shared-checkout observation. No fresh backend build is claimed.
+All 28 guide blocks and 138 native-context doctests pass; Viewer reporting/link
+guards pass 280 cases. Ruff and isolated guide/index validation pass.
+
+Source receipt: `devtools/data/molsysviewer_tools_axes_receiving_20261025.json`
+in MolSysMT. It retains original JUnit digests, source/import origins, unit audits,
+and the two failed runner preflights (no tests executed), rather than presenting
+those attempts as passing campaigns. Documentary tests use MPLBACKEND=Agg, with
+no claim of live Qt/window observation. Native #456/#457 guards are received;
+concurrent scientific reflection work under uibcdf/molsysmt#460 is excluded from
+this isolated local campaign and preserved in the shared checkout. Integrated
+source identity and exact-head hosted CI follow separately. No release follows.
+
+
+### Integrated principal-axis source — 2026-10-25
+
+Provider `e568a62693619414fed6b237357e7c34f60e5736` is pushed to main,
+with immediate parent `98b10ad2d` preserving the independently owned
+uibcdf/molsysmt#460 reflection repair. Its staged files were kept separate from
+our changes. The tested facade, geometry receiver and new guard match the fixed
+local checkout; the shared documentation/tests retain the owner's reflection
+changes. The source receipt distinguishes preparation/test base 7b1604ec3 from
+the reviewed integration parent. Three unrelated generated-RST edits remain
+untouched. Exact integrated-head hosted qualification is pending after push; no
+manual matrix, package rebuild, floor, tag or publication is introduced.
