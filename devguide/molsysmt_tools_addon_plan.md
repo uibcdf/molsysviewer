@@ -41,7 +41,8 @@ is needed. Broader scientific coverage,
 installed compatibility, dependency floors and release remain separate.
 Ten `pbc` queries/factories are now explicit in provider source. Only `has_pbc`
 binds the current primary; other tools retain caller-owned quantities and work
-before loading a system. Native default-angle factory input remains unqualified;
+before loading a system. Native default-angle factory input remains unqualified
+under uibcdf/molsysmt#465;
 coordinate wrapping and unwrapping still need managed-effect receiving.
 
 ## Accepted requirements

@@ -1,4 +1,4 @@
-"""Guard the advisory ranges observed in #242, including nested lock entries."""
+"""Guard observed advisory ranges, including later body-parser findings."""
 
 import json
 from pathlib import Path
@@ -12,8 +12,9 @@ ROOT = Path(__file__).resolve().parents[1]
 # Union of affected ranges reported by npm on 2026-10-13 for this dependency
 # graph (uibcdf/molsysviewer#242). This offline regression guard complements
 # the live registry audit; it cannot enumerate future or other-major advisories.
+# body-parser 2.x also includes GHSA-27r3-jxmh-p828 (uibcdf/molsysviewer#266).
 KNOWN_AFFECTED = {
-    "body-parser": ">=2.0.0,<2.3.0",
+    "body-parser": ">=2.0.0,<2.4.0",
     "brace-expansion": ">=2.0.0,<2.1.7",
     "compression": "<1.8.2",
     "form-data": ">=4.0.0,<4.0.6",

@@ -1359,3 +1359,21 @@ no new report is filed without that answer. Original PBC provider source CI
 9061e2149 remains six controls green with its separate scope.
 
 Advisory: https://github.com/advisories/GHSA-27r3-jxmh-p828
+
+### Follow-up reports authorized and filed — 2026-10-26
+
+The maintainer authorizes all three offered reports. uibcdf/molsysmt#465 owns
+the native default-angle contract; uibcdf/molsysmt#466 owns the remaining
+Biophysics PBC course fixture. uibcdf/molsysviewer#266 records the new
+body-parser advisory, the already delivered lockfile repair and the offline
+known-range guard extension. These explicit report identities supersede the
+earlier pending-authorization notes. Scientific repairs remain with MolSysMT;
+Viewer closes its own advisory only after the required receiving evidence.
+
+The #266 offline guard rejects the new observed 2.x advisory range; two focused
+cases and 286 combined guard/reporting/link cases pass. npm audit is clean and
+332 JS cases pass after the locked repair 5246d409. Its hosted audit step has
+succeeded, but original Core E2E 40389716226 and broader source qualification
+remain in progress/queued; #266 stays partial. Qt experimental 40389716287
+fails transport/WebGL observations and is retained separately, not counted as
+a passing core result. No rerun, cancellation or duplicate dispatch is made.

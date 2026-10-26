@@ -19,8 +19,9 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Partially done (1)
+### Partially done (2)
 
+- [`body_parser_compressed_request_advisory.md`](body_parser_compressed_request_advisory.md) — [#266](https://github.com/uibcdf/molsysviewer/issues/266) — Locked body-parser retains compressed-request denial-of-service advisory. *(high, reproduced)*
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*
 
 ### Deferred until after 1.0 (1)
