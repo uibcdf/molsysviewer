@@ -1252,3 +1252,41 @@ are preserved. Source wrappers now expose the reviewed complete structure
 namespace, with the native nonfinite-input and explicit-block shifting findings
 still unqualified and reporting authorization pending. Exact-head automated
 qualification follows; no package, floor, tag or release changes.
+
+
+## Exact integrated torsion CI completed — 2026-10-25
+
+All six applicable hosted controls pass for
+`8511e910d8acccc4497f440fdacd76d5c4fcf096`.
+[Smoke 40274546653](https://github.com/uibcdf/molsysmt/actions/runs/40274546653)
+passes 1258 native bounded-tier cases and 891 bound-addon cases, with no failures,
+errors or skips in either summary. Its command explicitly includes the new
+`test_structure_dihedral_tools.py`. Dependency contract 40274546617, guide
+integrity 40274546650, publication governance 40274547092, Ruff 40274546680 and
+suite policy 40274547023 also pass. No duplicate/manual heavy matrix was launched.
+
+gh-run-receptor's terminal PASS agrees with official GitHub metadata and original
+job 121414393639. The original log is retained at
+`/tmp/msm-addon-8511e910-dihedrals-smoke.log`, SHA-256
+`1e8842b3d5bea26fb8ab8e39870eeaf818afe3cd0230ac0e5dabcf07f4af4a51`.
+Original terminal escapes were saved only to the file; displayed summaries were
+sanitized. Routine hosted receiving uses the declared Viewer source pin
+deaba4cbea43015859544b1b393ecbe02dd2ee19. This is distinct from local current-host
+receiving and final installed/all-platform qualification.
+
+All 28 reviewed structure function exports are now explicitly available in the
+source facade. The new torsion receiver adds no graph cut, rotation formula,
+argument substitution or automatic scientific preparation. The 61-case guard
+covers finite valid routes, explicit setter blocks, periodic images, ordinary
+rejections and managed scene recovery. This green source CI does not qualify
+nonfinite angular edits or the explicit-block shifter route. Those findings
+remain confirmed in the native-only audit, with provider-report authorization
+pending at this checkpoint. Proposed issue bodies are prepared locally; no
+GitHub issue was opened without a reply. The pending question remains separate
+from completed implementation/validation.
+
+The receipt's pending-CI state described preparation and is superseded by this
+terminal source checkpoint. Other namespaces, GUI panels, scientific repairs,
+installed package compatibility, public floors and releases remain separate.
+Both 1.0 publications remain paused. The fixed receiving checkout and original
+evidence are retained; unrelated local work and immutable artifacts are preserved.
