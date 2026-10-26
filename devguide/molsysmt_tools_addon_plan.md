@@ -58,7 +58,8 @@ receiving passes 109 focused and 1,272 scoped regression cases, without a host
 runtime change. Native alternative-syntax and unsupported-element contracts are
 tracked separately in uibcdf/molsysmt#470 and uibcdf/molsysmt#471. The other 23
 reviewed physchem exports, GUI and installed qualification remain pending.
-Committed-head CI is separate from this local source observation.
+All six original committed-head source controls now pass, including 1,576 native
+and 1,137 addon cases. Installed compatibility remains separate.
 
 ## Accepted requirements
 

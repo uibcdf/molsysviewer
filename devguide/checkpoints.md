@@ -381,7 +381,8 @@ coordinate editors use the managed receiver. Seven physchem property readers
 now have bounded source receiving in provider 2b777e554 (109 focused / 1,272
 scoped cases); other 23 reviewed physchem exports remain pending. Native syntax
 and element-level gaps are uibcdf/molsysmt#470 / uibcdf/molsysmt#471.
-Committed-head CI remains separate. Default-angle factory receiving
+All six original provider source controls now pass, including 1,576 native /
+1,137 addon cases. Installed qualification remains separate. Default-angle factory receiving
 and centered in-place wrapping remain limited under uibcdf/molsysmt#465
 and uibcdf/molsysmt#467;
 see [the current record](pending_proposals/molsysmt_tools_addon_receiving.md).
@@ -1931,7 +1932,8 @@ Resume toward **1.0** in this order:
    Periodic coordinate editors now pass local and integrated receiving on
    provider 4590545fd and its six source CI controls (1,576 native / 1,028 addon
    cases). The first seven physchem property readers now pass 109 focused and
-   1,272 scoped cases on provider 2b777e554; committed-head CI remains pending.
+   1,272 scoped cases on provider 2b777e554; all six source CI controls now pass
+   (1,576 native / 1,137 addon cases).
    Continue remaining physchem exports before panels, retaining native syntax
    and element limits under uibcdf/molsysmt#470 / uibcdf/molsysmt#471. Centered in-place wrapping remains rejected under
    uibcdf/molsysmt#467. The overall addon remains partial. Follow
