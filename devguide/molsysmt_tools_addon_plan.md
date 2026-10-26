@@ -51,6 +51,15 @@ uibcdf/molsysmt#467. Local regression passes 1,171 cases on its frozen baseline;
 1,028 addon cases. Native uibcdf/molsysmt#465, uibcdf/molsysmt#466 and uibcdf/molsysmt#467 and installed qualification remain
 separate.
 
+The first seven physchem property readers are source-received in provider
+2b777e554e7b382453ba0e2752fe726406f2dcab: mass, charge, atomic radius,
+electronegativity, hydrophobicity, polarity and transmembrane tendency. Local
+receiving passes 109 focused and 1,272 scoped regression cases, without a host
+runtime change. Native alternative-syntax and unsupported-element contracts are
+tracked separately in uibcdf/molsysmt#470 and uibcdf/molsysmt#471. The other 23
+reviewed physchem exports, GUI and installed qualification remain pending.
+Committed-head CI is separate from this local source observation.
+
 ## Accepted requirements
 
 1. **Expert Python API:** mirror public MolSysMT module/function paths through

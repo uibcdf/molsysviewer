@@ -1451,3 +1451,56 @@ uibcdf/molsysmt#466 and uibcdf/molsysmt#467 remain separate limits. Viewer
 public-baseline pandas receiving under uibcdf/molsysmt#431 and experimental
 Qt are not described as green by this result. Installed artifacts, dependency
 floors and both 1.0 publications remain separate and paused.
+
+
+### First physchem property slice received locally — 2026-10-26
+
+Provider 2b777e554e7b382453ba0e2752fe726406f2dcab adds seven explicit property
+readers: get_mass, get_charge, get_atomic_radius, get_electronegativity,
+get_hydrophobicity, get_polarity and get_transmembrane_tendency under
+view.addons.molsysmt.physchem. Their primary is resolved through the existing
+serialized reader. Native signatures/defaults, validation, scientific definitions,
+units and containers remain native; no assignment, coloring, implicit preparation,
+adoption or scene update is added. No host runtime changes are needed.
+
+Local receiving passes 109 focused and one 1,272-case scoped regression in
+356.98 seconds with no failures/errors/skips. All 3,034 audited Python sources
+and the frozen existing backend remain unchanged. The native baseline is
+e395e52646dab2ecb480d3d67aa7254be99b8524; live scientific/addon sources match
+the frozen snapshot. One new user-guide example runs. The provider receipt
+`devtools/data/molsysviewer_tools_physchem_properties_receiving_20261026.json`
+under uibcdf/molsysmt#421 records exact hashes, arguments, native-only audits,
+7 received / 23 pending exports and independent references versus parity.
+
+References include elemental constants, hierarchy mass sums, diverse protein
+amino-acid values, all 15 hydrophobicity definitions, both polarity and both
+transmembrane definitions, ProtOr and explicit OpenMM charge on a single-frame
+capped peptide. Lifecycle/replacement, selection order/repetition, empty atomic
+populations, pending scientific reads, named analyses and scene retention are
+covered. Tabulated group charge is distinct from force-field partial charges.
+Native OpenMM mass on MolSys remains unsupported; multi-frame periodic charge
+conversion is rejected without silently choosing a structure.
+
+Maintainer-authorized native reports uibcdf/molsysmt#470 and uibcdf/molsysmt#471
+separately own lost selector syntax and inconsistent unsupported element levels.
+Only actual atom/group table scopes and the received mass/charge hierarchies
+are qualified. The addon adds no selection translator or aggregation formula.
+The full physchem module, panels, installed artifacts, dependency floors and
+both 1.0 publications remain pending or paused. Committed-head CI remains a
+separate gate after this local source observation. The existing historical-public
+backend pandas gap and experimental Qt are unchanged by this delivery.
+
+At the first committed-head inspection, five provider controls pass:
+Ruff 40413403765, dependency contract 40413403966, developer guide 40413403822,
+suite policy 40413404345 and Conda governance 40413404537. Original
+[smoke 40413404006](https://github.com/uibcdf/molsysmt/actions/runs/40413404006)
+remains in progress; GH Run Receptor reports PENDING. This is not an all-green
+CI claim. Viewer receiving-document guards pass 286 cases.
+
+The preceding Viewer checkpoint 84b08909 completes Core E2E
+[40410125887](https://github.com/uibcdf/molsysviewer/actions/runs/40410125887)
+with 44/44 suites, confirmed by GH Run Receptor and the original log
+`/tmp/msv-84b08909-core-e2e.log`, SHA-256
+`ae60e0baee457325c6126a4a5233163eefa9da649d998dbd2b6e5121054102a7`.
+This closes that documentary-checkpoint browser observation, not the separate
+historical-public-backend Python or experimental Qt gaps.

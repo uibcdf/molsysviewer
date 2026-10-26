@@ -377,7 +377,11 @@ eighteen structure calculations plus managed translation/rotation/reflection,
 rigid fitting, centering, single-structure displacement, principal-axis alignment
 and both dihedral editors, plus ten PBC box queries/factories and three
 coordinate editors. Only has_pbc binds the primary among the box utilities;
-coordinate editors use the managed receiver. Default-angle factory receiving
+coordinate editors use the managed receiver. Seven physchem property readers
+now have bounded source receiving in provider 2b777e554 (109 focused / 1,272
+scoped cases); other 23 reviewed physchem exports remain pending. Native syntax
+and element-level gaps are uibcdf/molsysmt#470 / uibcdf/molsysmt#471.
+Committed-head CI remains separate. Default-angle factory receiving
 and centered in-place wrapping remain limited under uibcdf/molsysmt#465
 and uibcdf/molsysmt#467;
 see [the current record](pending_proposals/molsysmt_tools_addon_receiving.md).
@@ -1926,8 +1930,10 @@ Resume toward **1.0** in this order:
    its minimal npm-audit repair, offline guard and 44/44 core browser receiving.
    Periodic coordinate editors now pass local and integrated receiving on
    provider 4590545fd and its six source CI controls (1,576 native / 1,028 addon
-   cases). Broaden the next expert namespace after reconciling remaining native
-   limits and their owning reports. Centered in-place wrapping remains rejected under
+   cases). The first seven physchem property readers now pass 109 focused and
+   1,272 scoped cases on provider 2b777e554; committed-head CI remains pending.
+   Continue remaining physchem exports before panels, retaining native syntax
+   and element limits under uibcdf/molsysmt#470 / uibcdf/molsysmt#471. Centered in-place wrapping remains rejected under
    uibcdf/molsysmt#467. The overall addon remains partial. Follow
    [#264](pending_proposals/molsysmt_tools_addon_receiving.md) for exact scope.
    Reuse the [source inventory](studio_molsysmt_operation_inventory.md)
