@@ -5,7 +5,7 @@ edit/update policy are approved in the [implementation plan](molsysmt_tools_addo
 This contract tracks receiving under uibcdf/molsysviewer#264 and
 uibcdf/molsysmt#421. Source implements managed native removal, synchronization
 controls, the coordinates/box routes of `basic.set`, native translation/rotation/reflection/fitting/centering, single-structure
-displacement, principal-axis alignment and a generic host service. Other effect families, task panels and
+displacement, principal-axis alignment, both dihedral editors and a generic host service. Other effect families, task panels and
 installed compatibility remain unqualified; no release follows from this work.
 
 ## Bound calls and integration controls

@@ -11,15 +11,17 @@ synchronization controls. All eleven current native `topology` exports now have
 explicit source wrappers, including chemical-graph and sequence analyses.
 Eighteen `structure` calculations reuse the same host serialized reader;
 native translation, proper rotation, plane reflection, least-RMSD fitting/alignment,
-explicit centering, single-structure displacement and principal-axis alignment now receive independent outputs and managed in-place updates.
+explicit centering, single-structure displacement, principal-axis alignment and both dihedral editors now receive independent outputs and managed in-place updates.
 Native self-reference and numeric-selection repairs under uibcdf/molsysmt#452 /
 uibcdf/molsysmt#453 are separately delivered by the scientific owner in a38c00d19;
 combined exact-head CI is tracked in the receiving record. Reflection now
 receives the default z normal and finite nonzero scaled normals through the
 scientific owner's uibcdf/molsysmt#460 repair and the combined source CI. The new contained-source/initial-target
 centering contract delegates to native center; uibcdf/molsysmt#451 now has its
-requested final closure comment. Two reviewed dihedral-changing exports remain
-pending. The scientific owner repairs native undefined-direction and partial-write
+requested final closure comment. All 28 reviewed structure function exports are
+now exposed; native nonfinite torsion inputs and explicit-block shifting remain
+unqualified and need provider repair. Complete exposure is not full scientific
+or installed-package qualification. The scientific owner repairs native undefined-direction and partial-write
 rejection under uibcdf/molsysmt#456 / uibcdf/molsysmt#457 in e6677e4c6.
 The addon forwards those checks without a scientific workaround. Secondary-structure, symmetry-corrected RMSD and PCA readers
 retain explicit engines, chemistry, units, result ownership and native limits.

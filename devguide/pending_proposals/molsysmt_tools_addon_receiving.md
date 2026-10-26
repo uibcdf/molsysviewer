@@ -21,7 +21,7 @@ and actionable state-factory failures are delivered for initial read-tool source
 receiving. Explicit retained-structure maps now extend live adoption and
 independent extraction. Retained-axis removal, coordinate/box setting,
 copy/conversion/preflight, composition/comparison/identity readers, all eleven
-current topology readers, eighteen structure calculations, native translation/rotation/reflection/fitting/centering/displacement/principal-axis alignment and synchronization now
+current topology readers, eighteen structure calculations, native translation/rotation/reflection/fitting/centering/displacement/principal-axis alignment/dihedral editing and synchronization now
 have source receiving; other namespaces/edit families, task panels and installed
 qualification remain pending. Native repairs under uibcdf/molsysmt#439,
 uibcdf/molsysmt#440, uibcdf/molsysmt#441 and uibcdf/molsysmt#442 are now received.
@@ -1195,3 +1195,60 @@ all-platform/installed compatibility, dependency floors and releases retain
 their separate scopes. Both 1.0 publications remain paused. The staged isolated
 checkout is retained as dated receiving evidence; unrelated local work and
 immutable artifacts are preserved.
+
+
+## Dihedral editor source receiving — 2026-10-25
+
+The provider implements set_dihedral_angles and shift_dihedral_angles with native
+parameters/defaults/returns and explicit integration controls. Native graph cuts,
+quartet order, blocks, angles and PBC remain scientific-owner behavior. Admission
+declares retained axes and possible coordinate publication from system dimensions,
+without inventing selection/syntax arguments or repeating block calculations.
+No host runtime change is needed. The 28 current structure function exports are
+now exposed: 18 calculations and ten coordinate editors. Complete exposure is
+not complete scientific or installed-artifact qualification.
+
+The focused real-view guard passes 61 cases with independent quaternion and
+atan2 torsion references, unit policies, multiple quartets, repeated structures,
+setter broadcasting/explicit blocks, triclinic/orthogonal periodic images,
+missing-box fallback, native ownership/rejection and sync-only scene recovery.
+Native reproduction shows nonfinite angle publication and explicit blocks ignored
+by shift_dihedral_angles. Those routes remain unqualified; two owning reports
+were offered and await maintainer authorization at this checkpoint. No silent
+scientific correction is added in the addon. Broader local regression and exact
+integrated-head CI follow separately. Other namespaces, GUI panels, compatibility,
+public floors and releases remain pending.
+
+
+### Completed local torsion qualification — 2026-10-25
+
+The focused real-view guard passes 61 cases. One executed full applicable
+regression on fixed bb6283ce7 plus the owned torsion patch passes 1469 cases,
+zero failures/errors/skips, in 281.87 seconds. Scientific/addon source hashes and
+the existing compiled backend do not change during execution. Generated version
+metadata is recorded separately. All 29 guide blocks and 146 native-context
+doctests pass; Viewer reporting/link guards pass 280 cases. Ruff and isolated
+guide/index validation pass. Documentary plots use MPLBACKEND=Agg; this is not
+live Qt/window qualification.
+
+MolSysMT's source receipt is
+`devtools/data/molsysviewer_tools_dihedrals_receiving_20261025.json`.
+It retains original JUnit digests, source/backend hashes, native-only reproductions,
+periodic-image quaternion checks and the status of the offered provider reports.
+NaN reproduction is confirmed in both editors and copy/in-place modes. Explicit
+blocks are ignored by native shifting. Those limitations remain unqualified;
+reporting authorization is pending, not assumed. No molecular/scientific
+workaround is introduced. Exact integrated-head source CI follows separately;
+source exposure, scientific qualification and installed/public availability remain
+separate claims. No release, tag or dependency-floor change follows.
+
+
+### Integrated torsion source — 2026-10-25
+
+Provider `8511e910d8acccc4497f440fdacd76d5c4fcf096` is pushed to main on the reviewed bb6283ce7 baseline.
+The staged tree was verified identical to the isolated reviewed tree before
+commit. Three unrelated generated-RST edits and all independent owner commits
+are preserved. Source wrappers now expose the reviewed complete structure
+namespace, with the native nonfinite-input and explicit-block shifting findings
+still unqualified and reporting authorization pending. Exact-head automated
+qualification follows; no package, floor, tag or release changes.
