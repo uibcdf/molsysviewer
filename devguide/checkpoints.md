@@ -375,9 +375,11 @@ Source receiving now covers basic readers/independent outputs, retained-axis
 remove and geometry set, synchronization/recovery, eleven topology readers and
 eighteen structure calculations plus managed translation/rotation/reflection,
 rigid fitting, centering, single-structure displacement, principal-axis alignment
-and both dihedral editors, plus ten PBC box queries/factories. Only has_pbc binds
-the current primary; explicit-input utilities do not assign or adopt results.
-PBC coordinate editors and native default-angle receiving remain pending;
+and both dihedral editors, plus ten PBC box queries/factories and three
+coordinate editors. Only has_pbc binds the primary among the box utilities;
+coordinate editors use the managed receiver. Default-angle factory receiving
+and centered in-place wrapping remain limited under uibcdf/molsysmt#465
+and uibcdf/molsysmt#467;
 see [the current record](pending_proposals/molsysmt_tools_addon_receiving.md).
 Broader namespaces/effects, panels and installed qualification remain pending.
 Legacy integration remains refused and MolSysMT stays required as backend.
@@ -1922,8 +1924,11 @@ Resume toward **1.0** in this order:
    and ten PBC queries/factories pass local receiving plus six source CI controls
    on provider 9061e2149. [#266](archive/body_parser_compressed_request_advisory.md) is resolved with
    its minimal npm-audit repair, offline guard and 44/44 core browser receiving.
-   Continue coordinate wrapping/unwrapping; the overall addon remains
-   partial. Follow
+   Periodic coordinate editors now pass local and integrated receiving on
+   provider 4590545fd and its six source CI controls (1,576 native / 1,028 addon
+   cases). Broaden the next expert namespace after reconciling remaining native
+   limits and their owning reports. Centered in-place wrapping remains rejected under
+   uibcdf/molsysmt#467. The overall addon remains partial. Follow
    [#264](pending_proposals/molsysmt_tools_addon_receiving.md) for exact scope.
    Reuse the [source inventory](studio_molsysmt_operation_inventory.md)
    and [reconciliation review](linked_molecular_edits_design.md) as design

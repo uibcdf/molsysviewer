@@ -1389,3 +1389,65 @@ warning-strict documentation pages with the historical MolSysMT/pandas
 composition (uibcdf/molsysmt#431); experimental Qt remains separate. Neither
 all-green source CI nor corrected-public-package receiving is claimed. Provider
 issues uibcdf/molsysmt#465 and uibcdf/molsysmt#466 remain open for native box/default and course repairs.
+
+### Periodic coordinate-edit source receiving — 2026-10-26
+
+The provider adds explicit pbc.wrap_to_pbc, pbc.wrap_to_mic and pbc.unwrap
+wrappers, preserving the current primary, scientific parameters/defaults and
+independent/in-place outputs. The existing private coordinate receiver now
+resolves admitted module/name pairs, retaining structure's original default.
+It preserves scene/source identities, serializes molecular writes, defers scene
+projection when requested and retries reconciliation without scientific replay.
+The addon introduces no lattice kernel, covalent reconstruction or centering.
+
+All 94 focused cases pass against independent bounded lattice enumeration,
+primitive-cell formulas and temporal-continuity references across nm/angstrom/pm,
+ordered nonconsecutive/repeated scopes, atom-wise/component modes and native
+ownership. Four periodic guide blocks and twelve inherited PBC docstring
+examples pass. A broader isolated addon/PBC/packaging regression remains active
+at this checkpoint. Other developers' scientific torsion work is preserved;
+this local receiving snapshot does not silently certify their changed source.
+
+The maintainer authorizes uibcdf/molsysmt#467: both native wrapping tools rebind
+the centered in-place target to a detached copy and leave the original intact.
+Four native-only centered/uncentered controls reproduce it. The addon rejects
+center_of_selection with in_place=True before effects; independent centered
+output remains received. This is an explicit integration limit pending owning
+repair, not a scientific workaround. Issues uibcdf/molsysmt#465 and
+uibcdf/molsysmt#466 retain their separate native/default and course scopes.
+
+The isolated PBC edit regression completes 1,171 cases in 371.30 seconds with
+zero failures/errors/skips and no scientific/addon source mutation. Existing
+native extension bytes were copied into that checkout and remain unchanged,
+protecting the measurement from concurrent owner work. Four PBC guide blocks
+and twelve inherited PBC docstring examples pass; all four course code-cell
+sequences are preserved by the prose-only links. The provider receipt retains
+the exact tested snapshot and does not substitute for integrated-head CI.
+
+The provider delivery is 4590545fd2c843f5823a717d33ebe7ba459cce2e, integrating
+owning torsion parent 6f6ed6bf1. Its 198-case focused PBC/dihedral receiving
+passes after the help correction; PBC native source hashes still match the
+frozen 1,171-case snapshot. All source fields and original logs remain in the
+provider receipt. Initial exact-head checks pass 5/6, with smoke 40408393902
+in progress. The public-baseline pandas gap remains separate, as does
+experimental Qt. Both 1.0 publications and package qualification remain paused.
+
+### Integrated periodic-editor source CI completed — 2026-10-26
+
+Provider 4590545fd2c843f5823a717d33ebe7ba459cce2e passes all six original
+controls. Smoke 40408393902/job 121871993740 passes 1,576 native and 1,028 addon
+cases with no failures/errors/skips. Dependency 40408393948, Ruff 40408393648,
+guide integrity 40408393764, suite policy 40408394283 and Conda governance
+40408394299 also pass. GH Run Receptor confirms GitHub terminal success.
+The original log is `/tmp/msm-addon-4590545f-pbc-edits-smoke.log`, SHA-256
+`1259ef82c610582f174a5ec91cec1dc6f9ec3ad84453025129e4c37a2cd30cb4`.
+
+This supersedes the earlier pending producer-CI status and complements, rather
+than relabels, the frozen 1,171-case and integrated 198-case local observations.
+The producer incorporates 6f6ed6bf1's native torsion repairs and the corrected
+addon help. The routine workflow host pin retains its scope; Viewer runtime
+code is unchanged by this delivery. Native uibcdf/molsysmt#465,
+uibcdf/molsysmt#466 and uibcdf/molsysmt#467 remain separate limits. Viewer
+public-baseline pandas receiving under uibcdf/molsysmt#431 and experimental
+Qt are not described as green by this result. Installed artifacts, dependency
+floors and both 1.0 publications remain separate and paused.

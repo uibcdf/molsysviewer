@@ -19,9 +19,9 @@ receives the default z normal and finite nonzero scaled normals through the
 scientific owner's uibcdf/molsysmt#460 repair and the combined source CI. The new contained-source/initial-target
 centering contract delegates to native center; uibcdf/molsysmt#451 now has its
 requested final closure comment. All 28 reviewed structure function exports are
-now exposed; native nonfinite torsion inputs and explicit-block shifting remain
-unqualified and need provider repair under uibcdf/molsysmt#462 and
-uibcdf/molsysmt#461, respectively. Complete exposure is not full scientific
+now exposed. Native torsion repairs under uibcdf/molsysmt#461 and
+uibcdf/molsysmt#462 are delivered in 6f6ed6bf1, with the addon help and focused
+receiver checks reconciled in the PBC integration. Complete exposure is not full scientific
 or installed-package qualification. The scientific owner repairs native undefined-direction and partial-write
 rejection under uibcdf/molsysmt#456 / uibcdf/molsysmt#457 in e6677e4c6.
 The addon forwards those checks without a scientific workaround. Secondary-structure, symmetry-corrected RMSD and PCA readers
@@ -43,7 +43,13 @@ Ten `pbc` queries/factories are now explicit in provider source. Only `has_pbc`
 binds the current primary; other tools retain caller-owned quantities and work
 before loading a system. Native default-angle factory input remains unqualified
 under uibcdf/molsysmt#465;
-coordinate wrapping and unwrapping still need managed-effect receiving.
+the three coordinate editors now have source wrappers and 94 focused receiving
+cases. Native centered in-place wrapping is rejected before effects under
+uibcdf/molsysmt#467. Local regression passes 1,171 cases on its frozen baseline;
+198 focused cases also pass on the integrated torsion/PBC composition. Provider
+4590545fd passes all six exact-source controls, including 1,576 native and
+1,028 addon cases. Native uibcdf/molsysmt#465, uibcdf/molsysmt#466 and uibcdf/molsysmt#467 and installed qualification remain
+separate.
 
 ## Accepted requirements
 
