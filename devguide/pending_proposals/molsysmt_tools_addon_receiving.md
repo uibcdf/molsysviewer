@@ -1338,3 +1338,24 @@ Reports were offered and await maintainer authorization. The latter is another
 occurrence of the demo-source mistake fixed for PCA under uibcdf/molsysmt#449;
 that closed issue did not cover this PBC module. Explicit angles are received;
 wrapping/unwrapping, GUI tasks and installed qualification remain separate.
+
+### Host closure audit tail — 2026-10-26
+
+Host documentation head aacf425279ccb5c142391a983564bc443dbaba5b triggers
+Core E2E 40388498107, which fails before browser execution at npm audit.
+The fresh public advisory GHSA-27r3-jxmh-p828 covers locked body-parser 2.3.0;
+it is distinct from the earlier advisory set closed under uibcdf/molsysviewer#242.
+No browser result is claimed for that stopped execution. Its original job log
+is `/tmp/msv-pbc-host-close-e2e.log`, SHA-256
+`b2c2324611006461572c2410391fdae23ae50550ac57afd515e2af0d2a21c58b`.
+
+A minimal lockfile-only repair moves body-parser to the patched 2.4.0 and its
+required qs to 6.16.1. All other locked package entries, Mol* and direct package
+metadata are unchanged. npm ci succeeds, the corrected lockfile's live audit
+reports zero vulnerabilities at every severity and all 332 JS unit cases pass
+without skips. Hosted validation of this correction remains pending at
+this checkpoint. An owning issue was offered and awaits maintainer authorization;
+no new report is filed without that answer. Original PBC provider source CI
+9061e2149 remains six controls green with its separate scope.
+
+Advisory: https://github.com/advisories/GHSA-27r3-jxmh-p828

@@ -1920,7 +1920,8 @@ Resume toward **1.0** in this order:
    panels. The topology namespace mirror now covers all eleven baseline exports;
    all 28 structure exports have wrappers with documented native torsion limits,
    and ten PBC queries/factories pass local receiving plus six source CI controls
-   on provider 9061e2149. Next receive coordinate wrapping/unwrapping; the overall addon remains
+   on provider 9061e2149. Finish the minimal host npm-audit repair for the new
+   body-parser advisory, then receive coordinate wrapping/unwrapping; the overall addon remains
    partial. Follow
    [#264](pending_proposals/molsysmt_tools_addon_receiving.md) for exact scope.
    Reuse the [source inventory](studio_molsysmt_operation_inventory.md)
