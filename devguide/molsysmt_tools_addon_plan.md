@@ -130,14 +130,60 @@ controls and fixed-ref smoke 40446657873 complete for 02671792f: 2,293 native
 and 1,548 addon cases pass with zero failures/errors/skips. Original main smoke
 40445094772 remains cancelled; the independent same-source recovery retains its
 ref and official evidence. Terminal receiving is published in cff1f8fe0.
-Native bulkiness and secondary-structure propensities are not yet exposed;
-continue the remaining eight readers/calculators, two transformations and one
-explicit-input factory before designing graphical tasks.
+That earlier source gate predates the two reference-scale wrappers now received
+below. Continue the remaining seven readers/calculators, two transformations and
+one explicit-input factory before designing graphical tasks.
 Native reference-metadata aliasing under uibcdf/molsysmt#490 is repaired in
 6eebcd4ec and separately received through 172 targeted local cases plus a bound
 cross-reader mutation check. Small references are detached by the provider; no
 wrapper copy is introduced. This does not relabel the older 02671792f hosted
 gate or claim a new hosted/installed qualification.
+
+### Bulkiness and propensity mirrors received — 2026-10-26
+
+Provider `efc9b94f37bbad8af251b58f81bbb17db029793f` adds two explicit readers under
+`view.addons.molsysmt.physchem`: `get_bulkiness()` and
+`get_secondary_structure_propensity(conformation, ...)`. The facade now exposes
+23 functions; native `97a8dc08c` has 33 public physchem exports, leaving ten
+unreceived, including the newly added TPSA. These counts describe source
+coverage, not equivalent scientific algorithms or installed compatibility.
+
+The wrappers omit only the primary system, resolving current `view.molsys` at
+call time. Native signatures, digestion, selection syntax/order/repetitions,
+scalar/empty axes, strict group-only/name validation, units/results and optional
+attribution are retained. Bulkiness is a reference area quantity, not a measured
+molecular surface. Levitt weighted propensities are detached dimensionless
+float64 frequency ratios with a required category; they are not probabilities,
+predictions or coordinate-based secondary-structure assignments. No cap filtering,
+parent substitution, sum, normalization, preparation, coloring or scene sync is
+introduced. Rich selectors retain their native coordinate requirements.
+
+The [provider receipt](https://github.com/uibcdf/molsysmt/blob/efc9b94f37bbad8af251b58f81bbb17db029793f/devtools/data/molsysviewer_tools_reference_scales_receiving_20261026.json) separates
+119 focused cases and one 3,144-case frozen regression on `39bb09715` plus the
+new readers from the subsequent 596-case focused receiving on incoming
+`97a8dc08c`. All pass without failures/errors/skips. The native group-free repair
+and reference-metadata ownership guard are included in the new bounded CI tier.
+All 40 guide blocks and 90 inherited examples also pass after the incoming merge.
+Two mistaken test expectations and an authored Markdown prefix were corrected
+before integration; the receipt retains those attempts. No second full local
+regression, TPSA receiving or universal scientific qualification is claimed.
+
+All six exact-source controls now pass for this producer. Smoke
+[40453242375](https://github.com/uibcdf/molsysmt/actions/runs/40453242375)
+passes 2,576 native and 1,666 addon cases, zero failures/errors. Two native and
+one addon attribution tests are skipped because optional Ackredit is absent in
+CI; local receiving executes them without relabeling the hosted omissions.
+Dependency, Ruff, guide integrity, suite policy and Conda governance pass on the
+same source. The [terminal provider receipt](https://github.com/uibcdf/molsysmt/blob/c905d8ac753e98ec11959fac5ccbe049311d2068/devtools/data/molsysviewer_tools_reference_scales_source_ci_20261026.json) preserves
+job/step identities, exact Viewer deaba4cbea source, counts, logs and complete
+receptor-bundle file digests. The evidence-only closeout is c905d8ac7; it does
+not change the qualified runtime. The independent scheduled Zenodo probe is
+excluded from these six source controls. Viewer reporting/link/architecture
+receiving passes 286 cases.
+
+GUI, remaining native functions, installed qualification and both paused
+publications retain their separate scope. No Viewer runtime or dependency-floor
+change.
 
 ## Accepted requirements
 
@@ -487,14 +533,13 @@ plans the new add-on; it does not reintroduce the removed Studio expansion plan.
 
 ### Next physchem effects to receive
 
-Hydrogen inventory, chemical readiness, both aromatic readers and the three
-chemical-feature readers now have source wrappers and bounded receiving. Continue
-with the new native bulkiness and secondary-structure propensity lookups, plus
-other feature/typing/charge calculations
-with explicit scientific prerequisites. The current remaining eleven exports include eight
-readers/calculators, two independent-result transformations
+Hydrogen inventory, chemical readiness, both aromatic readers, the three
+chemical-feature readers and both reference-scale readers now have explicit
+source wrappers and bounded receiving. Native TPSA was added during this slice;
+it remains unreceived and is not exposed automatically. The current ten pending
+exports include seven readers/calculators, two independent-result transformations
 (`apply_chemical_template`, `normalize_aromatic_bond_orders`) and one factory
 (`get_peptide_chemical_template`) with no primary-system argument. That factory
-must retain its explicit inputs rather than inventing a bound primary. This is
-planning inspection, not effect qualification or an implementation promise;
-complete native state/result/selection receiving before exposing each family.
+must retain its explicit inputs rather than inventing a bound primary. Review
+scientific prerequisites, state/result ownership and selection effects before
+admitting each family; inventory inspection alone is not effect qualification.

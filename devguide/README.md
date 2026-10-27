@@ -45,6 +45,15 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Reference-scale addon readers — 2026-10-26:** provider `efc9b94f3` adds
+  bulkiness and required-category secondary-structure propensity mirrors. The
+  source facade exposes 23 of 33 inspected physchem functions, with native
+  quantities/arrays and explicit scientific limits preserved. The
+  [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md#bulkiness-and-propensity-mirrors-received--2026-10-26)
+  separates the 3,144-case frozen regression from 596 incoming-source checks;
+  all six exact-source controls pass (2,576 native / 1,666 addon cases,
+  three optional Ackredit skips). GUI/installed qualification remain separate.
+
 - **Core/add-on product boundary approved — 2026-10-22:**
   [the normative decision](core_and_addon_boundary.md) defines core as molecular
   visualization/exploration, including qualified calculations directly creating
@@ -53,7 +62,7 @@ documents, and historical audits.
   add-on has experimental source `basic` readers, independent outputs,
   retained-axis edits/synchronization, eleven `topology` readers and eighteen
   `structure` calculations and managed native translation/rotation/reflection, rigid fitting, explicit centering, single-structure displacement, principal-axis alignment and both dihedral editors, plus thirteen PBC tools
-  and twenty-one physchem source wrappers with formal-charge/hydrophobic/halogen features, aromatic participant/flag readers, detached chemistry reports, native/table-unit limits and bounded CPU SASA receiving; the
+  and twenty-three physchem source wrappers with strict bulkiness/propensity reference lookups, formal-charge/hydrophobic/halogen features, aromatic participant/flag readers, detached chemistry reports, native/table-unit limits and bounded CPU SASA receiving; the
   [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md) names
   exact scope and tests. The backend remains required and legacy addon routes
   remain refused. Python remains the primary headless foundation.

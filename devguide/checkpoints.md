@@ -379,18 +379,18 @@ and both dihedral editors, plus ten PBC box queries/factories and three
 coordinate editors. Only has_pbc binds the primary among the box utilities;
 coordinate editors use the managed receiver. The native PBC repair d7c82e92f
 now receives orthogonal defaults and centered in-place ownership; the temporary
-addon rejection is removed after 24 focused centered checks. Thirteen physchem
-paths are exposed: the seven previously source-qualified properties and six
-additional ProtOr/reference-table tools with 67 focused checks. The other 17
-reviewed physchem exports remain pending. A local forwarding regression is
-corrected and all 329 affected-file cases pass; producer 3c2dfcf65 then passes
-all six source controls (1,576 native / 1,230 addon cases). The native
-825a66d39 selector/element repairs are received with 627 cases and 40 inherited
-examples under uibcdf/molsysmt#470 / uibcdf/molsysmt#471. Producer 77657b030
-completes fixed-ref smoke 40421689803 (2,011 native / 1,246 addon cases);
-the other five exact-SHA controls pass. Original main cancellations are not
-counted as passing tests. Collantes physical unit interpretation stays uncertain under
-uibcdf/molsysmt#473. Installed qualification remains separate;
+addon rejection is removed after 24 focused centered checks. Twenty-three physchem
+wrappers now have bounded receiving, including strict bulkiness and required-
+category secondary-structure propensities. The current inspected native inventory
+is 33; ten exports, including TPSA, remain unreceived. Provider efc9b94f3 includes
+119 focused scale tests, the prior frozen 3,144-case regression and 596 incoming-
+source checks, plus 40 guide blocks / 90 inherited examples. These phases retain
+their distinct source identities. All six exact-source controls pass; smoke
+40453242375 has 2,576 native / 1,666 addon passes and three optional Ackredit
+skips. The terminal provider receipt is published in c905d8ac7. Native #490
+metadata independence and #492 group-free repairs are received locally and their
+guards are included in the bounded CI tier. Collantes unit/normalization evidence
+remains tracked in uibcdf/molsysmt#473. Installed qualification stays separate;
 see [the current record](pending_proposals/molsysmt_tools_addon_receiving.md).
 Broader namespaces/effects, panels and installed qualification remain pending.
 Legacy integration remains refused and MolSysMT stays required as backend.
@@ -1986,6 +1986,14 @@ Resume toward **1.0** in this order:
    cases plus a bound cross-reader mutation/scene check, recorded in 39bb09715.
    No new hosted or installed qualification is inferred. Prior Viewer core E2E 40440002711
    passes on d168986b; that observation retains its own source identity.
+   Two later reference readers bring source exposure to 23: bulkiness retains
+   native area quantities and propensity retains required-category dimensionless
+   ratios. Incoming native TPSA brings the inventory to 33 with ten unreceived.
+   Producer efc9b94f3 records 119 focused cases, one frozen 3,144-case regression,
+   596 incoming-source checks and 40 guide blocks / 90 inherited examples, all
+   passing with their distinct scopes. All six exact-source controls pass; smoke
+   40453242375 records 2,576 native / 1,666 addon passes and three optional
+   Ackredit skips. Terminal provider evidence is c905d8ac7.
    The overall addon remains partial. Follow
    [#264](pending_proposals/molsysmt_tools_addon_receiving.md) for exact scope.
    Reuse the [source inventory](studio_molsysmt_operation_inventory.md)
