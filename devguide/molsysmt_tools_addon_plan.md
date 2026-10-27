@@ -106,6 +106,36 @@ report changes the native pytest exit authority or adds a selector workaround.
 GUI and installed qualification remain pending. No host runtime or dependency
 floor changes; both 1.0 publications remain paused.
 
+Three further chemical-feature readers add `get_charge_centers`,
+`get_hydrophobic_sites` and `get_halogen_bond_sites`: current exposure is 21 tools. The producer receives the 31-export baseline
+after bulkiness in af8264049; native 5681f5e78 then adds secondary-structure
+propensities, bringing the inspected inventory to 32, with eleven pending addon
+tools. The new reader is not qualified by the older source gate. The wrappers
+preserve sparse whole-center versus ordered-pair membership, formal-charge
+quantities, explicit chemistry/state/selection/model controls, match caps and
+native results. Numeric-array independence and reference-metadata ownership
+are distinct qualifications. Native #488 repairs the omitted SMARTS reference-selection
+branch; positive default/None reference and a nonzero declared reference are
+received without downstream translation. Explicit SMARTS state restrictions
+remain native. No preparation, charge assignment, result adoption or scene
+synchronization is introduced.
+
+The frozen pre-repair regression passes 2,812 cases; the subsequent native
+repair follow-up passes 390, including the expanded 81-case new reader file.
+These distinct source observations are not two full-suite gates. All 39 guide
+blocks and 83 inherited native-context examples pass. The actual imported
+PyParsing is 3.3.2; stale 3.3.3 distribution metadata coexists, so this environment
+is not claimed as a clean installed qualification. The five original source
+controls and fixed-ref smoke 40446657873 complete for 02671792f: 2,293 native
+and 1,548 addon cases pass with zero failures/errors/skips. Original main smoke
+40445094772 remains cancelled; the independent same-source recovery retains its
+ref and official evidence. Terminal receiving is published in cff1f8fe0.
+Native bulkiness and secondary-structure propensities are not yet exposed;
+continue the remaining eight readers/calculators, two transformations and one
+explicit-input factory before designing graphical tasks.
+Native reference-metadata aliasing is tracked separately under uibcdf/molsysmt#490;
+source receiving does not qualify arbitrary mutation of returned references.
+
 ## Accepted requirements
 
 1. **Expert Python API:** mirror public MolSysMT module/function paths through
@@ -454,9 +484,11 @@ plans the new add-on; it does not reintroduce the removed Studio expansion plan.
 
 ### Next physchem effects to receive
 
-Hydrogen inventory, chemical readiness and both aromatic readers now have source
-wrappers and bounded receiving. Continue feature/typing/charge calculations with
-explicit chemical prerequisites. Inspection of the remaining twelve exports finds nine
+Hydrogen inventory, chemical readiness, both aromatic readers and the three
+chemical-feature readers now have source wrappers and bounded receiving. Continue
+with the new native bulkiness and secondary-structure propensity lookups, plus
+other feature/typing/charge calculations
+with explicit scientific prerequisites. The current remaining eleven exports include eight
 readers/calculators, two independent-result transformations
 (`apply_chemical_template`, `normalize_aromatic_bond_orders`) and one factory
 (`get_peptide_chemical_template`) with no primary-system argument. That factory

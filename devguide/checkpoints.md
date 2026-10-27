@@ -1969,7 +1969,21 @@ Resume toward **1.0** in this order:
    Collantes now preserves the native provisional area quantity; source unit/
    normalization/value review remains uibcdf/molsysmt#473. Independent installed
    MDTraj comparison compatibility is uibcdf/molsysmt#484; collection-count
-   presentation is uibcdf/pytest-receptor#46. The overall addon remains partial. Follow
+   presentation is uibcdf/pytest-receptor#46.
+   The three chemical-feature mirrors bring source exposure to 21 tools:
+   formal-charge centers, hydrophobic atoms and ordered halogen sites. Native
+   bulkiness and secondary-structure propensities now bring the native inventory
+   to 32, with eleven pending addon tools. The 02671792f gate uses its prior
+   31-export baseline and does not qualify the later native addition. The one frozen
+   pre-repair regression passes 2,812 cases; #488's SMARTS repair follow-up passes
+   390, including 81 feature-reader cases, with 39 guide blocks / 83 inherited
+   examples passing. No consumer selector rewrite or scene side effect. Source
+   Fixed-ref CI recovery 40446657873 for 02671792f passes 2,293 native / 1,548
+   addon cases, with the five other source controls passing. Original main smoke
+   40445094772 remains cancelled; terminal evidence is cff1f8fe0. Native reference-
+   metadata aliasing remains a qualification limit for that source under #490. Prior Viewer core E2E 40440002711
+   passes on d168986b; that observation retains its own source identity.
+   The overall addon remains partial. Follow
    [#264](pending_proposals/molsysmt_tools_addon_receiving.md) for exact scope.
    Reuse the [source inventory](studio_molsysmt_operation_inventory.md)
    and [reconciliation review](linked_molecular_edits_design.md) as design

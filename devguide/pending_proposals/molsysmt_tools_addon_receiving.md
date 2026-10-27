@@ -1758,3 +1758,93 @@ retain their original source identities. The subsequent receipt commit changes
 only evidence/docs and is not a new scientific qualification target.
 Viewer reporting/link/architecture checks pass 286 cases. No Viewer runtime,
 package floor, GUI panel, installed artifact, tag, release or publication changes.
+
+
+## Formal-charge, hydrophobic and halogen features — 2026-10-26
+
+Provider 02671792f3b90de654b467683a8d394118dc4ccb adds three explicit physchem mirrors:
+`get_charge_centers`, `get_hydrophobic_sites`, `get_halogen_bond_sites`.
+Current source exposure is 21/31, ten remaining after af8264049 adds native
+bulkiness. The new wrappers bind the current resident primary and retain native
+scientific signatures/defaults, results, digestion and explicit optional engine
+contracts. Known declared graphs verify charge-center whole memberships versus
+geometry-reference atoms, elementary-charge units, hydrophobic atom populations
+and halogen pair column roles. No chemical preparation, assignment, interaction
+attachment, rendering or automatic synchronization is added.
+
+One frozen applicable regression on 5b5aaeeb4 plus the initial 62 consumer cases
+passes 2,812 cases, zero failures/errors/skips, with unchanged scientific/addon
+source and retained ABI3 backend hashes. This predates the SMARTS repair and
+retains the known native syntax rejection. Native-only isolation identified the
+custom branch omitted by #482; follow-up uibcdf/molsysmt#488 preserves the original
+archived aromatic/ring resolution. The initial reopen of #482 was restored to
+that resolved scope instead of keeping conflicting active/archive identities.
+
+The provider's #488 repair then passes 390 targeted cases, including the expanded
+81-case feature-reader module and native SMARTS/reference, aromatic and topology
+receiving. Positive comparisons now cover default/None reference MDTraj versus
+intended numeric populations, empty subsets and a nonzero declared reference
+independent of structure associations. Explicit/associated SMARTS state requests
+retain native selector restrictions. Full-source matching, complete pairs,
+whole-center cuts and match caps keep their scientific meaning; the addon has
+no selector or chemical-state workaround.
+
+All 39 guide blocks and 83 inherited native-context examples pass. The effective
+parser and Conda record are PyParsing 3.3.2, while old 3.3.3 distribution metadata
+also remains discoverable; metadata alone is not the executed parser version.
+No clean environment or installed artifact is claimed. A subsequent test attempt
+used a non-exported error name in a test; its import was corrected without a
+runtime change. The native selector failure and the test mistake remain separate.
+
+The [source receiving receipt](https://github.com/uibcdf/molsysmt/blob/02671792f3b90de654b467683a8d394118dc4ccb/devtools/data/molsysviewer_tools_feature_sites_receiving_20261026.json)
+retains test phases, corrections and source/backend digests. All four tested
+native repair files match the owning commit c64e3599c2b772320b8bb4ec5e1842d3f997a63b
+byte for byte. The same-source recovered hosted CI completes below.
+The earlier Viewer core browser gate
+[40440002711](https://github.com/uibcdf/molsysviewer/actions/runs/40440002711)
+passes on d168986bd8229b8d1f895652be05164ea7a755c4; it is not relabeled as a
+new source or remote-preview gate. Scientific/provider absence limits, the ten
+remaining exports, GUI, installed qualification and paused publications retain
+their separate scope. No Viewer runtime or dependency-floor change.
+
+
+### Remaining native reference-metadata ownership — 2026-10-26
+
+Final source review independently reproduces mutable `method_reference` aliasing
+across hydrophobic and halogen calls, reported under uibcdf/molsysmt#490 with
+maintainer approval. Numeric feature outputs and primary/scene isolation are
+received; independence of every returned metadata dictionary is not. The
+provider owns the fix. No consumer deepcopy or scientific-data transformation
+is introduced. This is distinct from repaired #488 and remains a qualification
+limit for producer 02671792f.
+
+Its original main smoke 40445094772 is cancelled during addon receiving. A
+subsequent documentation-only push starts main smoke 40445888472; the workflow
+has cancel-in-progress enabled for its main ref. Cancellation remains an official
+non-success result, not a product failure or a passing gate. One manual recovery
+40446657873 uses fixed ref `receiving/physchem-sites-02671792f` at the exact same
+02671792f source, isolating that gate from concurrent main pushes. It does not
+create a release candidate, artifact, tag or public promotion. The recovered run
+now completes successfully: 2,293 native and 1,548 addon cases, zero failures,
+errors or skips. Original source controls dependency 40445094701, Ruff
+40445094654, guide integrity 40445094707, suite policy 40445095033 and Conda
+governance 40445095086 also pass. The
+[terminal provider receipt](https://github.com/uibcdf/molsysmt/blob/cff1f8fe0acb0728d5b4374ba531a47db33309a1/devtools/data/molsysviewer_tools_feature_sites_source_ci_20261026.json)
+retains both official runs, the five controls, exact ref/source/job/step identity
+and original-log SHA-256
+`7d2c3ee12b8bbd4ebff4a00214cac570eb3b145509e9d7208b73a2d3eef014e5`.
+This supersedes the immutable local receipt's pending CI state, without relabeling
+the cancelled run or qualifying #490's metadata ownership. The subsequent receipt
+commit changes guidance/evidence only, not the qualified scientific source.
+
+
+Native 5681f5e78 subsequently adds get_secondary_structure_propensity, bringing
+its public inventory to 32. The addon still exposes 21; eleven are pending,
+including this reader and bulkiness. The source gate stays fixed at 02671792f
+and its 31-export baseline; it does not qualify the subsequent native addition.
+
+
+Viewer reporting/link/architecture checks pass 286 cases. The provider's
+maintained usage guide distinguishes independent numeric feature arrays from
+#490's mutable reference-metadata limit for the qualified baseline. No Viewer
+runtime, dependency floor, GUI panel, installed package, tag or publication change.
