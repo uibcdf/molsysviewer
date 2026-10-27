@@ -64,12 +64,24 @@ uibcdf/molsysmt#470 / uibcdf/molsysmt#471; uncertain Collantes units are uibcdf/
 An additional conformational `physchem.get_sasa` wrapper now has bounded CPU
 receiving, bringing source exposure to 14/30. It retains all-atom occlusion,
 selected output axes, probe/sampling/execution parameters and native results.
-Native-engine correctness outside the nm length context remains unresolved under
-uibcdf/molsysmt#478; the implicit engine-dependent periodic contract is
-uibcdf/molsysmt#479. The consumer applies no scientific compensation. Exact
-source CI for provider 9442e0df2 remains pending. Its local receiving passes
-56 SASA and 1,414 scoped regression cases, with 36 guide blocks / 40 inherited
-examples; no universal SASA qualification is claimed. The other 16 reviewed physchem exports, GUI and installed qualification
+Provider 9442e0df2 completes all six source controls, including smoke 40427400657
+(2,011 native / 1,302 addon cases), at its original bounded scope. Native
+repair d8bda65ec closes uibcdf/molsysmt#478 / #479 with squared working-length
+units and explicit keyword-only `pbc` forwarding. Periodic MDTraj requests with
+a box reject; native MIC excludes self-images. Sixty-one focused SASA receiver
+cases pass on the incoming repair; combined source qualification remains separate.
+
+Two additional stored-chemistry reports, `get_hydrogen_inventory` and
+`get_chemical_readiness`, bring source exposure to 16/30. They retain detached
+results, unknown-count markers, indexed/virtual H, coverage/evidence and explicit
+single-structure/state selection without preparation or scene publication.
+Native default-reference external readiness syntax is tracked under
+uibcdf/molsysmt#480; no consumer selector compensation is introduced.
+Provider d0563c61d passes 66 new-report cases, 61 focused SASA receiver cases
+and one 1,760-case joint regression, plus 37 guide blocks / 53 inherited
+examples. Native repair d8bda65ec also passes its five applicable source
+controls (smoke 40429148780: 2,011 native / 1,307 addon cases). The final
+combined producer's source CI remains pending in the receiving record. The other 14 reviewed physchem exports, GUI and installed qualification
 remain pending. No host runtime or dependency-floor change is introduced.
 
 ## Accepted requirements
@@ -420,9 +432,10 @@ plans the new add-on; it does not reintroduce the removed Studio expansion plan.
 
 ### Next physchem effects to receive
 
-After bounded SASA receiving, prioritize chemical readiness and hydrogen inventory
-before feature/typing/charge calculations. Inspection at provider a77d41fa5 finds
-thirteen remaining readers/calculators, two independent-result transformations
+Hydrogen inventory and chemical readiness now have source wrappers and bounded
+receiving. Continue feature/typing/charge calculations with explicit chemical
+prerequisites. Inspection of the remaining fourteen exports finds eleven
+readers/calculators, two independent-result transformations
 (`apply_chemical_template`, `normalize_aromatic_bond_orders`) and one factory
 (`get_peptide_chemical_template`) with no primary-system argument. That factory
 must retain its explicit inputs rather than inventing a bound primary. This is

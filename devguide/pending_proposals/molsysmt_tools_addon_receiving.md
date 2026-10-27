@@ -1656,3 +1656,41 @@ only the preserved documentation-manifest context differs in the candidate
 files. Exact-producer hosted CI is pending. Viewer reporting/link/architecture
 checks pass 286 cases; no new Viewer runtime is introduced.
 Both 1.0 publications remain paused.
+
+
+## SASA source gate and detached chemistry reports — 2026-10-26
+
+The six exact-source controls of 9442e0df20a659b9d8fa6c9a8a6bc0d115a074fc
+complete successfully. [Smoke 40427400657](https://github.com/uibcdf/molsysmt/actions/runs/40427400657)
+passes 2,011 native and 1,302 addon cases with zero failures/errors/skips.
+Dependency 40427400706, Conda governance 40427401058, Ruff 40427400528, guide
+integrity 40427400665 and suite policy 40427400994 also pass. This supersedes
+the preceding pending-CI state, without rewriting the bounded source receipt.
+
+Native d8bda65ec14ccde99925a85a3dadc008b0154a40 closes uibcdf/molsysmt#478 /
+uibcdf/molsysmt#479. Its scientific owner also updates the bound SASA reader,
+help and guards: corrected squared working units, explicit keyword-only `pbc`,
+Cartesian requests for either engine, MIC with a box for native, and explicit
+rejection of unsupported periodic MDTraj. Native MIC excludes self-images; no
+universal all-images surface or GPU support is qualified. All 61 focused SASA
+receiver cases pass on the incoming repair.
+
+Two new bound readers expose `physchem.get_hydrogen_inventory` and
+`get_chemical_readiness`: 16/30 reviewed physchem paths, fourteen pending.
+They return detached native reports, bind the current resident primary and
+preserve explicit single-structure/state selection, sorted unique atom indices,
+unknown counts, indexed versus virtual H and incident/crossing bonds. They do
+not prepare, certify, color or synchronize the system. Reference-state external
+readiness syntax is independently reproduced under uibcdf/molsysmt#480; no
+consumer translation masks it. Numeric and MolSysMT selections remain available.
+Provider d0563c61ddf70ef62e08f4676c1fe4ba1b11a15b integrates the two readers
+on the incoming SASA repair. One frozen regression passes 1,760 cases, including
+all 66 new report cases, with zero failures/errors/skips and unchanged native,
+addon and backend hashes. All 37 guide blocks and 53 inherited native-context
+examples pass. The receipt retains the native #480 discovery and the corrected
+reference-test mistake, without claiming unsupported syntax as received.
+Native repair d8bda65ec passes five applicable source controls; smoke
+40429148780 has 2,011 native / 1,307 addon cases. This is not final hosted
+qualification of the additional two wrappers; that producer's CI remains pending.
+Viewer reporting/link/architecture checks pass 286 cases. No Viewer runtime,
+dependency floor, installed artifact or release changes.
