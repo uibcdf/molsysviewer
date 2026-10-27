@@ -1691,6 +1691,13 @@ examples pass. The receipt retains the native #480 discovery and the corrected
 reference-test mistake, without claiming unsupported syntax as received.
 Native repair d8bda65ec passes five applicable source controls; smoke
 40429148780 has 2,011 native / 1,307 addon cases. This is not final hosted
-qualification of the additional two wrappers; that producer's CI remains pending.
+qualification of the additional two wrappers. Their own exact producer d0563c61d
+now completes all six source controls: [smoke 40430386606](https://github.com/uibcdf/molsysmt/actions/runs/40430386606)
+passes 2,033 native and 1,373 addon cases with zero failures/errors/skips; suite
+policy 40430387125, Conda governance 40430387183, guide integrity 40430386488,
+dependency 40430386549 and Ruff 40430386451 also pass. The provider's terminal
+receipt preserves job/step identity and the original log digest, superseding
+its local snapshot's pending state. #480 remains open; no unsupported syntax or
+chemical-validity/GPU/installed guarantee is inferred from these results.
 Viewer reporting/link/architecture checks pass 286 cases. No Viewer runtime,
 dependency floor, installed artifact or release changes.

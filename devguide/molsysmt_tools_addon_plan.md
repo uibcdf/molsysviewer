@@ -81,7 +81,9 @@ Provider d0563c61d passes 66 new-report cases, 61 focused SASA receiver cases
 and one 1,760-case joint regression, plus 37 guide blocks / 53 inherited
 examples. Native repair d8bda65ec also passes its five applicable source
 controls (smoke 40429148780: 2,011 native / 1,307 addon cases). The final
-combined producer's source CI remains pending in the receiving record. The other 14 reviewed physchem exports, GUI and installed qualification
+combined producer d0563c61d completes all six source controls; smoke
+40430386606 passes 2,033 native / 1,373 addon cases, zero failures/errors/skips.
+The native #480 limitation remains explicit in its receiving record. The other 14 reviewed physchem exports, GUI and installed qualification
 remain pending. No host runtime or dependency-floor change is introduced.
 
 ## Accepted requirements

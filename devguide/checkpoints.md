@@ -1956,8 +1956,9 @@ Resume toward **1.0** in this order:
    producer d0563c61d passes 66 new-report cases and 1,760 joint regression
    cases locally, plus 37 guide blocks / 53 inherited examples. The native
    SASA repair also passes smoke 40429148780 (2,011 native / 1,307 addon);
-   final combined-source CI remains pending. Continue the remaining 14
-   physchem exports. Collantes unit review
+   final producer d0563c61d also passes all six source controls (smoke
+   40430386606: 2,033 native / 1,373 addon cases), zero failures/errors/skips.
+   Continue the remaining 14 physchem exports with #480's native limit explicit. Collantes unit review
    remains separate under uibcdf/molsysmt#473. The overall addon remains partial. Follow
    [#264](pending_proposals/molsysmt_tools_addon_receiving.md) for exact scope.
    Reuse the [source inventory](studio_molsysmt_operation_inventory.md)
