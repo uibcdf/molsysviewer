@@ -1629,3 +1629,30 @@ gate. Native unit review uibcdf/molsysmt#473, the other seventeen physchem
 exports, panels and installed compatibility remain separate. Later owner
 I/O, fixture and course commits retain their own qualification; this record
 does not label every later main revision green. Both 1.0 publications stay paused.
+
+
+## Conformational SASA receiving — 2026-10-26
+
+The next provider-owned wrapper is `physchem.get_sasa`: source exposure is now
+14/30 reviewed physchem exports, with sixteen pending. Scientific arguments and
+results remain native; the serialized reader binds only the actual current
+primary. All primary atoms remain occluders, with selection filtering the output.
+It introduces no scene object, molecular preparation or automatic synchronization.
+No Viewer runtime changes are required.
+
+Native-only reproductions open uibcdf/molsysmt#478 for incorrect non-nm
+native-engine areas and uibcdf/molsysmt#479 for the implicit different periodic
+semantics of the native and MDTraj engines. Both have analytical reproductions;
+the consumer does not compensate. Bounded CPU receiving and source CI must remain
+separate from unresolved scientific combinations, GPU and installed qualification.
+Provider 9442e0df20a659b9d8fa6c9a8a6bc0d115a074fc implements the explicit
+wrapper and hosted test registration. Its frozen local receiving passes 56 new
+SASA cases and one applicable 1,414-case regression (zero failures/errors/skips;
+1,250 retained warnings), with unchanged source/backend hashes. All 36 guide
+blocks and 40 inherited native-context examples pass. The provider receipt
+retains the corrected pending-export test error and nonqualifying initial
+example import route. Integration preserves concurrent GRO changes on 04b1b41a;
+only the preserved documentation-manifest context differs in the candidate
+files. Exact-producer hosted CI is pending. Viewer reporting/link/architecture
+checks pass 286 cases; no new Viewer runtime is introduced.
+Both 1.0 publications remain paused.

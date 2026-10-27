@@ -61,8 +61,16 @@ intended-population guards and completes fixed-ref smoke 40421689803
 passing. The original main smoke cancellations remain cancellations. Raw
 descriptors do not calculate conformational SASA/volume or assign chemistry. Native syntax/element repairs are received under
 uibcdf/molsysmt#470 / uibcdf/molsysmt#471; uncertain Collantes units are uibcdf/molsysmt#473.
-The other 17 reviewed physchem exports, GUI and installed qualification remain
-pending. No host runtime or dependency-floor change is introduced.
+An additional conformational `physchem.get_sasa` wrapper now has bounded CPU
+receiving, bringing source exposure to 14/30. It retains all-atom occlusion,
+selected output axes, probe/sampling/execution parameters and native results.
+Native-engine correctness outside the nm length context remains unresolved under
+uibcdf/molsysmt#478; the implicit engine-dependent periodic contract is
+uibcdf/molsysmt#479. The consumer applies no scientific compensation. Exact
+source CI for provider 9442e0df2 remains pending. Its local receiving passes
+56 SASA and 1,414 scoped regression cases, with 36 guide blocks / 40 inherited
+examples; no universal SASA qualification is claimed. The other 16 reviewed physchem exports, GUI and installed qualification
+remain pending. No host runtime or dependency-floor change is introduced.
 
 ## Accepted requirements
 
@@ -408,3 +416,15 @@ are coverage checks, not substitutes for executed scientific parity. GUI
 examples need not expose every expert argument, but cannot weaken the Python
 API or hide decisions that change scientific interpretation. This document
 plans the new add-on; it does not reintroduce the removed Studio expansion plan.
+
+
+### Next physchem effects to receive
+
+After bounded SASA receiving, prioritize chemical readiness and hydrogen inventory
+before feature/typing/charge calculations. Inspection at provider a77d41fa5 finds
+thirteen remaining readers/calculators, two independent-result transformations
+(`apply_chemical_template`, `normalize_aromatic_bond_orders`) and one factory
+(`get_peptide_chemical_template`) with no primary-system argument. That factory
+must retain its explicit inputs rather than inventing a bound primary. This is
+planning inspection, not effect qualification or an implementation promise;
+complete native state/result/selection receiving before exposing each family.

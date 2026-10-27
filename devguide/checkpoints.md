@@ -1946,7 +1946,12 @@ Resume toward **1.0** in this order:
    producer 3c2dfcf65 passes all six source controls. Native syntax/element
    repairs 825a66d39 pass 627 receiving cases. Producer 77657b030 completes
    fixed-ref smoke 40421689803 (2,011 native / 1,246 addon cases), with five
-   original source controls passing. Continue the remaining 17 physchem
+   original source controls passing. The next explicit SASA reader brings
+   source exposure to 14/30, with bounded CPU receiving and unresolved native
+   non-nm units / engine-periodic semantics under uibcdf/molsysmt#478 / #479.
+   Provider 9442e0df2 passes 56 SASA / 1,414 scoped regression cases locally,
+   plus 36 guide blocks and 40 inherited examples. Its exact-source CI remains
+   pending. Continue the remaining 16 physchem
    exports. Collantes unit review
    remains separate under uibcdf/molsysmt#473. The overall addon remains partial. Follow
    [#264](pending_proposals/molsysmt_tools_addon_receiving.md) for exact scope.
