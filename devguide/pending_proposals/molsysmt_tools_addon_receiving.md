@@ -1701,3 +1701,60 @@ its local snapshot's pending state. #480 remains open; no unsupported syntax or
 chemical-validity/GPU/installed guarantee is inferred from these results.
 Viewer reporting/link/architecture checks pass 286 cases. No Viewer runtime,
 dependency floor, installed artifact or release changes.
+
+
+## Aromatic participants and detached flags received — 2026-10-26
+
+Provider `eeaf1cab8e9a1ea24113cc131da39a5f834a8217` adds explicit native
+`physchem.get_aromatic_rings` and `get_aromaticity` wrappers: 18/30 reviewed
+physchem exports, twelve remaining. Scientific signatures, defaults, digestion,
+units and source-indexed returns stay native. Stored sparse ring membership
+requires declared chemistry and whole-ring selections; optional RDKit perception
+returns detached flags and attribution without assigning them. Full-graph,
+fused/perimeter, tied-basis, resource-bound and state/frame scope limits remain
+visible. Neither reader prepares chemistry, renders, attaches analyses or
+synchronizes the view. Cached methods resolve the current primary after replacement.
+
+The [immutable source receipt](https://github.com/uibcdf/molsysmt/blob/eeaf1cab8e9a1ea24113cc131da39a5f834a8217/devtools/data/molsysviewer_tools_aromatic_receiving_20261026.json)
+separates sequential validation phases. The one frozen applicable regression
+passed 1,935 cases on 35ef8f5f plus the initial 51 new cases, before incoming
+provider fixes. The f234396bb graph-repair follow-up passed 363 cases, including
+the expanded 93-case aromatic addon file. The final 8cf8b0107 changed-area
+follow-up passed 910 cases, with zero failures/errors/skips and 143 legacy
+H5MSM warnings. All 38 guide blocks and 65 inherited native-context docstring
+examples also passed. The backend was retained, not rebuilt. These observations
+are not a second full regression or installed-artifact qualification on final HEAD.
+
+Native readiness #480 is repaired by f27406cd6; c4b7abacd repairs unequal-population
+H5MSM association maps under #481. Native #482/#483 are closed by f234396bb:
+default-reference external selections are supported and explicit invalid ring
+structure indices reject. Explicit and structure-associated state syntax retains
+native restrictions. Positive intended-population, invalid positional/ID and
+state-restriction guards cover all three graph-reader paths. No selector or
+range-checking compensation is implemented downstream. The corrected opening
+reproduction excludes incomplete hierarchy and the independently broken >=
+comparator; the receipt retains both refuted paths and our fixture/test mistakes.
+
+The provider also changes `get_surface_area` to return a native standardized
+quantity using a provisional Å² table convention. The addon preserves it;
+original-paper units, normalization and values remain unverified under
+uibcdf/molsysmt#473. This lookup is not conformational SASA. Additional authorized
+reports are uibcdf/molsysmt#484 (installed MDTraj 1.11.1 / PyParsing 3.3.3 symbolic
+>=/<= compatibility) and uibcdf/pytest-receptor#46 (collection error displayed as
+an executed failure, while exit 2 stays correct). Neither establishes a wider
+dependency range or blocks the received numeric/MolSysMT and supported external
+selection routes. Their owners retain the corrections.
+
+All six exact-source controls of eeaf1cab8 now complete successfully.
+[Smoke 40438923814](https://github.com/uibcdf/molsysmt/actions/runs/40438923814)
+passes 2,117 native and 1,467 addon cases, zero failures/errors/skips. Dependency
+40438923826, Ruff 40438923843, guide integrity 40438923895, suite policy
+40438924145 and Conda governance 40438924176 also pass. The
+[terminal provider receipt](https://github.com/uibcdf/molsysmt/blob/69b53456b1230f3204674d122cd1068270a2ba4d/devtools/data/molsysviewer_tools_aromatic_source_ci_20261026.json)
+retains exact source/job/step identity and original log SHA-256
+`7d2855acf0d26894597ee420c46aade0df316bc25c5cc772d49d49fdeb9e9094`.
+This supersedes the immutable local receipt's pending CI state; earlier phases
+retain their original source identities. The subsequent receipt commit changes
+only evidence/docs and is not a new scientific qualification target.
+Viewer reporting/link/architecture checks pass 286 cases. No Viewer runtime,
+package floor, GUI panel, installed artifact, tag, release or publication changes.

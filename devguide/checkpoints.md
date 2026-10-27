@@ -1958,8 +1958,18 @@ Resume toward **1.0** in this order:
    SASA repair also passes smoke 40429148780 (2,011 native / 1,307 addon);
    final producer d0563c61d also passes all six source controls (smoke
    40430386606: 2,033 native / 1,373 addon cases), zero failures/errors/skips.
-   Continue the remaining 14 physchem exports with #480's native limit explicit. Collantes unit review
-   remains separate under uibcdf/molsysmt#473. The overall addon remains partial. Follow
+   Provider eeaf1cab8 adds stored aromatic participants and detached aromatic
+   flags, bringing exposure to 18/30; twelve exports remain pending. Native
+   #480/#481 and #482/#483 repairs are received without consumer compensation.
+   The local 1,935-case regression predates incoming repairs; the later graph
+   follow-up passes 363 and the final changed-area follow-up passes 910. All
+   38 guide blocks / 65 inherited examples pass. All six exact-source controls
+   of eeaf1cab8 complete; smoke 40438923814 passes 2,117 native / 1,467 addon
+   cases, zero failures/errors/skips. Terminal evidence is published in 69b53456b.
+   Collantes now preserves the native provisional area quantity; source unit/
+   normalization/value review remains uibcdf/molsysmt#473. Independent installed
+   MDTraj comparison compatibility is uibcdf/molsysmt#484; collection-count
+   presentation is uibcdf/pytest-receptor#46. The overall addon remains partial. Follow
    [#264](pending_proposals/molsysmt_tools_addon_receiving.md) for exact scope.
    Reuse the [source inventory](studio_molsysmt_operation_inventory.md)
    and [reconciliation review](linked_molecular_edits_design.md) as design

@@ -48,8 +48,8 @@ repaired science. Twenty-four focused centered receiver combinations pass;
 source qualification remains separate from installed artifacts.
 
 Thirteen of the thirty reviewed physchem exports now have source wrappers:
-the original seven property readers plus both ProtOr helpers and four raw
-reference tables (surface area, volume, area buried and buried fraction).
+the original seven property readers plus both ProtOr helpers and four
+reference-table lookups (surface area, volume, area buried and buried fraction).
 The first seven retain their completed six-control source CI on 2b777e554;
 the additional six pass 67 focused cases. One broad local attempt finds a
 corrected wrapper-forwarding error; all 329 affected-file cases then pass.
@@ -75,7 +75,7 @@ Two additional stored-chemistry reports, `get_hydrogen_inventory` and
 `get_chemical_readiness`, bring source exposure to 16/30. They retain detached
 results, unknown-count markers, indexed/virtual H, coverage/evidence and explicit
 single-structure/state selection without preparation or scene publication.
-Native default-reference external readiness syntax is tracked under
+Native default-reference external readiness syntax is repaired under
 uibcdf/molsysmt#480; no consumer selector compensation is introduced.
 Provider d0563c61d passes 66 new-report cases, 61 focused SASA receiver cases
 and one 1,760-case joint regression, plus 37 guide blocks / 53 inherited
@@ -83,8 +83,28 @@ examples. Native repair d8bda65ec also passes its five applicable source
 controls (smoke 40429148780: 2,011 native / 1,307 addon cases). The final
 combined producer d0563c61d completes all six source controls; smoke
 40430386606 passes 2,033 native / 1,373 addon cases, zero failures/errors/skips.
-The native #480 limitation remains explicit in its receiving record. The other 14 reviewed physchem exports, GUI and installed qualification
-remain pending. No host runtime or dependency-floor change is introduced.
+Two aromatic participant/flag readers bring current source exposure to 18/30;
+twelve reviewed exports remain pending. Provider eeaf1cab8 forwards native
+scientific signatures/defaults and returns, preserving stored ring membership
+versus optional RDKit perception, full-graph prerequisites, explicit chemistry
+and state/frame scope. No assignments, preparation, scene objects or automatic
+synchronization are added. Native repairs #480, #481 and #482/#483 are received;
+default-reference external syntax and invalid resident frame guards are tested
+without a consumer workaround. One 1,935-case regression preceded the incoming
+repairs; 363 graph-repair checks and a final 910-case changed-area follow-up
+retain their distinct source identities. All 38 guide blocks and 65 inherited
+examples pass. Producer eeaf1cab8 completes all six exact-source controls;
+smoke 40438923814 passes 2,117 native and 1,467 addon cases with zero failures,
+errors or skips. The terminal provider receipt is published in 69b53456b.
+
+Native 8cf8b0107 changes Collantes surface area to a standardized quantity using
+a provisional Å² convention; the addon preserves it unchanged. Original-paper
+units/normalization/values remain unverified under uibcdf/molsysmt#473. Installed
+MDTraj >=/<= compatibility is tracked separately under uibcdf/molsysmt#484;
+compact collection-count presentation is uibcdf/pytest-receptor#46. Neither
+report changes the native pytest exit authority or adds a selector workaround.
+GUI and installed qualification remain pending. No host runtime or dependency
+floor changes; both 1.0 publications remain paused.
 
 ## Accepted requirements
 
@@ -434,9 +454,9 @@ plans the new add-on; it does not reintroduce the removed Studio expansion plan.
 
 ### Next physchem effects to receive
 
-Hydrogen inventory and chemical readiness now have source wrappers and bounded
-receiving. Continue feature/typing/charge calculations with explicit chemical
-prerequisites. Inspection of the remaining fourteen exports finds eleven
+Hydrogen inventory, chemical readiness and both aromatic readers now have source
+wrappers and bounded receiving. Continue feature/typing/charge calculations with
+explicit chemical prerequisites. Inspection of the remaining twelve exports finds nine
 readers/calculators, two independent-result transformations
 (`apply_chemical_template`, `normalize_aromatic_bond_orders`) and one factory
 (`get_peptide_chemical_template`) with no primary-system argument. That factory
