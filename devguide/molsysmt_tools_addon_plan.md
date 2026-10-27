@@ -133,8 +133,11 @@ ref and official evidence. Terminal receiving is published in cff1f8fe0.
 Native bulkiness and secondary-structure propensities are not yet exposed;
 continue the remaining eight readers/calculators, two transformations and one
 explicit-input factory before designing graphical tasks.
-Native reference-metadata aliasing is tracked separately under uibcdf/molsysmt#490;
-source receiving does not qualify arbitrary mutation of returned references.
+Native reference-metadata aliasing under uibcdf/molsysmt#490 is repaired in
+6eebcd4ec and separately received through 172 targeted local cases plus a bound
+cross-reader mutation check. Small references are detached by the provider; no
+wrapper copy is introduced. This does not relabel the older 02671792f hosted
+gate or claim a new hosted/installed qualification.
 
 ## Accepted requirements
 

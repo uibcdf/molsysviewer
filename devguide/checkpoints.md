@@ -1981,7 +1981,10 @@ Resume toward **1.0** in this order:
    Fixed-ref CI recovery 40446657873 for 02671792f passes 2,293 native / 1,548
    addon cases, with the five other source controls passing. Original main smoke
    40445094772 remains cancelled; terminal evidence is cff1f8fe0. Native reference-
-   metadata aliasing remains a qualification limit for that source under #490. Prior Viewer core E2E 40440002711
+   metadata aliasing remains a qualification limit for that source under #490.
+   Its later native repair 6eebcd4ec is separately received: 172 targeted local
+   cases plus a bound cross-reader mutation/scene check, recorded in 39bb09715.
+   No new hosted or installed qualification is inferred. Prior Viewer core E2E 40440002711
    passes on d168986b; that observation retains its own source identity.
    The overall addon remains partial. Follow
    [#264](pending_proposals/molsysmt_tools_addon_receiving.md) for exact scope.

@@ -1848,3 +1848,20 @@ Viewer reporting/link/architecture checks pass 286 cases. The provider's
 maintained usage guide distinguishes independent numeric feature arrays from
 #490's mutable reference-metadata limit for the qualified baseline. No Viewer
 runtime, dependency floor, GUI panel, installed package, tag or publication change.
+
+
+### #490 provider repair received locally — 2026-10-26
+
+Native 6eebcd4ec30e8ed3fbb76ea6e36cbfca5f326c9f resolves #490. A clean source
+snapshot at that identity passes 172 directed cases: native reference ownership
+and existing bound feature/table receiving, zero failures/errors/skips and 77
+legacy H5MSM warnings. A bound-reader check edits one hydrophobic reference;
+later hydrophobic and halogen results retain separate canonical 2.2.2 references
+and the scene is unchanged. The native guard covers nested references and empty
+outputs. The provider detaches small metadata; no consumer copy is introduced.
+The [receiving receipt](https://github.com/uibcdf/molsysmt/blob/39bb09715cfcc2bc44269d4309b16303c0cca594/devtools/data/molsysviewer_tools_reference_metadata_receiving_20261026.json)
+retains source/JUnit digests and observations. This removes the metadata limit
+when using the received repair, without rewriting the older 02671792f gate.
+No additional full regression, new hosted CI, installed artifact, GUI or release
+qualification is claimed. The source API remains 21 wrappers; the 32-function
+native inventory includes eleven not yet received by this addon.
