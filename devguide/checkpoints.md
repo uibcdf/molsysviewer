@@ -379,26 +379,28 @@ and both dihedral editors, plus ten PBC box queries/factories and three
 coordinate editors. Only has_pbc binds the primary among the box utilities;
 coordinate editors use the managed receiver. The native PBC repair d7c82e92f
 now receives orthogonal defaults and centered in-place ownership; the temporary
-addon rejection is removed after 24 focused centered checks. Twenty-four physchem
-wrappers have bounded source receiving, including bulkiness, required-category
-propensities and molecular TPSA with explicit states/variant and detached report.
-TPSA producer f55d7c2f7 passes 53 directed cases, the one frozen 3,294-case regression
-and 41 guide blocks / 94 inherited examples. All six applicable source controls
-pass; fixed-ref smoke 40549539065 has 2,645 native / 1,718 addon passes and five
-optional Ackredit skips. The original automatic main smoke was intentionally
-cancelled, not counted as passing. Incoming native 4e2e18ce7 refactors TPSA and adds
-lipophilicity; 158 focused cases and 41 guide blocks / 94 examples pass on that
-source. Owner smoke 40549946055 passes the same counts and optional omissions,
-with its four other applicable controls. The unchanged dependency contract keeps
-its earlier scope. The latest inspected native inventory is 34, ten unreceived
-by this 24-tool facade, including lipophilicity. Receipt closeout is 69f357e7e.
-Native #494 (builder molecule duplication) and #495 (group-free MDTraj adapter)
-remain owner repairs. Later uncommitted descriptor work remains outside these
-source identities. Earlier #490 metadata and #491 group-free repairs keep their
-receiving; Collantes unit/normalization evidence remains uibcdf/molsysmt#473.
-Prior Viewer E2E 40454434547 passes 44/44 on 386ed937. GUI and installed
-qualification remain separate; see
-[the current record](pending_proposals/molsysmt_tools_addon_receiving.md).
+addon rejection is removed after 24 focused centered checks. Twenty-five physchem
+paths have bounded source receiving on the reviewed 34-export baseline, including
+TPSA and lipophilicity with seven native contribution levels. Producer ea9fff339
+passes 122 directed cases, the one frozen 3,589-case regression and 43 bound-guide
+blocks / 98 inherited native-context examples, zero failures/errors/skips and
+unchanged runtime/backend hashes. Native element output maps stay distinct from
+evaluated complete parent contexts; units, charged sites and H attribution remain
+explicit. Initial fixed-ref smoke 40570840482 ended officially cancelled at the
+15-minute maximum despite both pytest tiers passing (2,807 native / 1,845 bound,
+four / three optional Ackredit skips). Native 3781031d0 repairs
+uibcdf/molsysmt#494/#495: 324 directed cases pass with one strict #499 xfail,
+six bound MDTraj checks and 43 / 98 guide/example checks pass. Its owner CI fails
+on older invalid cross-molecule fixtures (six failures / 123 setup errors).
+Follow-up 4ad988584 fixes those factories under uibcdf/molsysmt#500 (210 passes)
+and budgets 25 minutes for both scientific tiers under uibcdf/molsysmt#501.
+Corrected-source fixed-ref smoke 40575948453 is pending; only our automatic main
+counterpart was intentionally cancelled to isolate it from concurrent pushes.
+Separate owner atom-insertion work stays outside that frozen source. Nine
+physchem exports remain unreceived. Earlier #490 metadata and #491 group-free
+repairs retain their scope; Collantes evidence remains uibcdf/molsysmt#473. Prior
+Viewer E2E 40552845768 passes on 73a6f388. GUI and installed qualification remain
+separate; see [the current record](pending_proposals/molsysmt_tools_addon_receiving.md).
 Broader namespaces/effects, panels and installed qualification remain pending.
 Legacy integration remains refused and MolSysMT stays required as backend.
 Python remains primary and headless. The
@@ -2009,9 +2011,19 @@ Resume toward **1.0** in this order:
    retained as non-pass. Incoming 4e2e18ce7 adds lipophilicity and refactors TPSA;
    158 directed cases / 41 guide blocks / 94 examples pass separately, with owner
    smoke 40549946055 passing the same hosted counts. Terminal evidence is
-   69f357e7e. The current inventory is 34 native / 24 bound / ten pending, including
-   lipophilicity. Native #494/#495 remain owner fixes without consumer workarounds.
-   Later uncommitted molecular-descriptor work keeps its own receiving debt.
+   69f357e7e. That phase records 34 native / 24 bound / ten pending, including
+   lipophilicity. Native #494/#495 are outside that earlier source qualification.
+   Producer ea9fff339 adds lipophilicity and receives all seven native descriptor
+   contribution levels: 25 of 34 paths are exposed, nine pending. All 122 directed
+   cases, the frozen 3,589-case regression and 43 guide blocks / 98 inherited
+   examples pass on their recorded source. Initial fixed-ref smoke 40570840482
+   times out officially cancelled,
+   despite both pytest tiers passing. Native hierarchy repairs receive 324
+   directed passes and one separate #499 xfail. Follow-up 4ad988584 fixes invalid
+   fixture hierarchy (210 passes, uibcdf/molsysmt#500) and budgets 25 minutes
+   without cutting tests (uibcdf/molsysmt#501). Corrected-source smoke
+   40575948453 is pending. Output/context maps, H attribution and scientific
+   limits stay explicit; each source identity retains its own evidence.
    The overall addon remains partial. Follow
    [#264](pending_proposals/molsysmt_tools_addon_receiving.md) for exact scope.
    Reuse the [source inventory](studio_molsysmt_operation_inventory.md)

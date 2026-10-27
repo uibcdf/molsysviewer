@@ -254,6 +254,73 @@ The previously pending Viewer core browser run
 passes all 44 suites on 386ed937. This closes that earlier observation without
 qualifying new TPSA source, installed artifacts or remote preview.
 
+### Lipophilicity and descriptor contributions received — 2026-10-27
+
+Provider `ea9fff3395157389b3a245cf70f58517973e76b8` adds
+`view.addons.molsysmt.physchem.get_lipophilicity(...)` and receives the widened
+TPSA/native contribution contract from 010c489aa. The experimental facade exposes
+25 of 34 reviewed physchem exports; nine remain unreceived. Native science stays
+in MolSysMT; the addon omits only the primary and resolves current view.molsys.
+No host runtime or public dependency-floor change is introduced.
+
+Both readers preserve seven native output levels, source order/repetitions,
+scalar element axes, scalar system sums and typed empty selections. Complete
+parent chemistry is evaluated before output filtering; element_* maps identify
+outputs and molecular maps identify calculation contexts. Indexed H retains its
+row; nonindexed H is attributed to its source attachment atom. TPSA retains
+squared area units and explicit N/O versus N/O/S/P; lipophilicity retains
+float64 dimensionless scores and charged-site metadata, including net-neutral
+charged graphs. Contributions are not measured exposed areas, group properties,
+mixture logP or pH/logD predictions. No source/H preparation, neutralization,
+counterion stripping, fragment recalculation, implicit aggregation, color,
+result adoption or scene synchronization is added.
+
+The [provider receipt](https://github.com/uibcdf/molsysmt/blob/ea9fff3395157389b3a245cf70f58517973e76b8/devtools/data/molsysviewer_tools_molecular_descriptors_receiving_20261027.json) records all 122 directed cases and the one
+frozen 3,589-case applicable regression on 010c489aa plus the wrappers, zero
+failures/errors/skips and unchanged source/backend hashes. All 43 bound-guide
+blocks and 98 inherited native-context doctests pass. Fixtures include reversed
+explicit group/chain membership, native positive external syntax with real
+hierarchy, H-presentation conservation, explicit state/structure associations,
+charged sources, bundled caffeine, detached nested metadata, named coverage,
+scene preservation and cached pending/replacement/lifetime behavior. Broader
+predictive validity, optional-provider absence, GUI and installed artifacts are
+not inferred from these source checks.
+
+The initial fixed-source smoke
+[40570840482](https://github.com/uibcdf/molsysmt/actions/runs/40570840482)
+ended officially cancelled at the 15-minute maximum. Both pytest tiers had
+completed successfully (2,807 native / 1,845 bound passes, four / three optional
+Ackredit skips); that does not make the workflow green. Its GitHub timeout
+annotation and original outputs are retained under uibcdf/molsysmt#501. Five
+other source controls pass. The earlier automatic main run was separately
+cancelled during setup to isolate that fixed-source run.
+
+Owner source 3781031d0 repairs uibcdf/molsysmt#494/#495. Directed receiving
+passes 324 cases with one strict expected failure for the separate native
+atom-insertion defect uibcdf/molsysmt#499. Six positive bound MDTraj checks
+(TPSA/lipophilicity at atom/molecule/system levels) preserve source hierarchy,
+context and scene. All 43 guide blocks / 98 inherited examples pass again.
+Owner CI 40571118517 fails because older fixtures group disconnected inherited
+molecules together: six failures / 123 setup errors, with the bound tier not
+reached. That failure remains recorded as such.
+
+Correction 4ad988584 adapts both fixture factories to public molecule membership,
+without changing scientific assertions or readers (210 focused cases pass).
+It raises the bounded CI budget to 25 minutes without removing tests, under
+uibcdf/molsysmt#500/#501, and adds the native hierarchy guards to both selected
+tiers. Seven integration-tool checks, Ruff, shell syntax and devguide validation
+pass. The [directed receipt](https://github.com/uibcdf/molsysmt/blob/4ad988584ec1409fb9f90e2e8ce2aab05a638473/devtools/data/molsysviewer_tools_descriptor_hierarchy_receiving_20261027.json)
+keeps each source and result separate. The one 3,589-case local regression is
+not repeated or relabelled as a later-source full regression.
+
+The corrected-source gate
+[40575948453](https://github.com/uibcdf/molsysmt/actions/runs/40575948453)
+is pending on fixed ref receiving/descriptor-ci-4ad988584. Its automatic main
+counterpart 40575908036 was intentionally cancelled during setup; that is not a
+pass. Concurrent owner atom-insertion work stays outside this frozen identity.
+Source receiving does not qualify installed packages. Both 1.0 publications
+remain paused.
+
 ## Accepted requirements
 
 1. **Expert Python API:** mirror public MolSysMT module/function paths through
@@ -602,14 +669,18 @@ plans the new add-on; it does not reintroduce the removed Studio expansion plan.
 
 ### Next physchem effects to receive
 
-Twenty-four physchem readers have explicit source wrappers and bounded receiving,
-including molecular TPSA. The latest committed native inventory 4e2e18ce7 has 34
-exports after lipophilicity was added; ten remain unreceived: seven readers or
+Twenty-five physchem paths now have explicit source wrappers and bounded
+receiving on the reviewed 34-export baseline, including lipophilicity and all
+native TPSA/descriptor contribution levels. Nine exports remain: six readers or
 calculators, two independent-result transformations (`apply_chemical_template`,
 `normalize_aromatic_bond_orders`) and one factory (`get_peptide_chemical_template`)
-with no primary-system input. Preserve the factory's explicit inputs. New exports
-never expand the facade automatically; lipophilicity needs its own expert wrapper
-and receiving, as do later native descriptor changes. Receive owner repairs
-#494/#495 separately. Review chemistry/state prerequisites, selection effects and
-detached ownership before admitting each family. GUI and installed qualification
-remain later phases; do not weaken the expert API to simplify graphical tasks.
+without a primary-system input. Preserve its explicit inputs.
+
+The next coherent expert block is explicit AutoDock typing, CIP stereochemistry
+and partial-charge calculation, followed by water/metal sites and chemical-
+template assessment. Each needs its scientific input/state/engine and detached
+result contract received before exposure. Native uibcdf/molsysmt#494/#495 repairs now have bounded directed receiving;
+keep later native changes separate and do not patch scientific selection or
+hierarchy in the addon. The remaining transformations/factory and later GUI retain independent
+effect and lifecycle qualification. New native exports never expand the facade
+automatically, and graphical tasks cannot narrow the expert API.

@@ -45,6 +45,18 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Bound molecular descriptors — 2026-10-27:** provider ea9fff339 exposes
+  lipophilicity and receives all seven native TPSA/descriptor contribution
+  levels. The source facade has 25 of 34 reviewed physchem exports. All 122
+  directed cases, the frozen 3,589-case regression and 43 guide blocks / 98
+  inherited examples pass. The
+  [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md#lipophilicity-and-descriptor-contributions-received--2026-10-27)
+  retains output/context maps, H attribution and scientific limits. Native
+  hierarchy repairs pass directed receiving. Follow-up 4ad988584 fixes two
+  fixtures (210 cases) and raises the CI budget under uibcdf/molsysmt#500/#501.
+  Earlier timeout and failed runs stay non-success evidence; corrected-source
+  CI 40575948453 is pending. GUI and installed qualification remain separate.
+
 - **Molecular TPSA addon reader — 2026-10-27:** provider f55d7c2f7 exposes
   the native molecule-level descriptor with explicit states/variant and optional
   provenance report. The facade has 24 wrappers; the latest committed native
@@ -73,7 +85,7 @@ documents, and historical audits.
   add-on has experimental source `basic` readers, independent outputs,
   retained-axis edits/synchronization, eleven `topology` readers and eighteen
   `structure` calculations and managed native translation/rotation/reflection, rigid fitting, explicit centering, single-structure displacement, principal-axis alignment and both dihedral editors, plus thirteen PBC tools
-  and twenty-four physchem source wrappers including molecular TPSA, with strict bulkiness/propensity reference lookups, formal-charge/hydrophobic/halogen features, aromatic participant/flag readers, detached chemistry reports, native/table-unit limits and bounded CPU SASA receiving; the
+  and twenty-five physchem source wrappers including TPSA/lipophilicity and complete-context contribution levels, with strict bulkiness/propensity reference lookups, formal-charge/hydrophobic/halogen features, aromatic participant/flag readers, detached chemistry reports, native/table-unit limits and bounded CPU SASA receiving; the
   [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md) names
   exact scope and tests. The backend remains required and legacy addon routes
   remain refused. Python remains the primary headless foundation.
