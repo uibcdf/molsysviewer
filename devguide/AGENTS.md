@@ -1,7 +1,7 @@
 # Guidelines for AI agents working in `devguide/`
 
-This file refines the repository root `AGENTS.md` for this directory. Where the two
-disagree, the more specific one wins; where this one is silent, the root applies.
+This file refines the repository root `AGENTS.md` for this directory among local
+rules; the mandatory common suite layer remains above both within its scope.
 
 ## Read the current guide. Read the history only for a stated reason
 
@@ -70,15 +70,8 @@ depends on the work at hand, not on a blanket rule.
 scan will hit it, keep a closed item to one line, and write the sentence rather than the
 bullet list when the bullets carry one idea each.
 
-## Durable working instructions
+The common MolSysSuite layer required by the root `AGENTS.md` retains precedence;
+this file refines only local rules within its directory.
 
-Read [../AGENTS.md](../AGENTS.md), [reporting_protocol.md](reporting_protocol.md)
-and [the common policy](../MOLSYSSUITE_GUIDE.md#durable-working-instructions).
-Keep technical findings in owning issues, tests and maintained documents. Place
-only accepted lasting actions specific to this directory here; repository-wide
-actions belong at root. Read current guidance and relevant active queues first;
-use archive indexes for orientation and open historical records for a stated
-question. Follow the local reporting protocol for actual queue/archive layouts,
-index regeneration, offline gates and synchronization with owning GitHub issues.
-Archive and index resolved records in the same change; append dated corrections
-to archived claims instead of rewriting history.
+Read `../AGENTS.md`, `reporting_protocol.md` and
+[the common instruction policy](../MOLSYSSUITE_GUIDE.md#durable-working-instructions).

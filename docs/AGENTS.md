@@ -43,7 +43,7 @@ the repository root `AGENTS.md`.
 ## Governance and Micro-`AGENTS.md` Model
 
 - **Rule Resolution Hierarchy:**  
-  `Root AGENTS.md` ➔ `docs/AGENTS.md` ➔ `[Subdirectory]/AGENTS.md` ➔ `[Page_Name].AGENTS.md` (Most specific wins).
+  `Root AGENTS.md` ➔ `docs/AGENTS.md` ➔ `[Subdirectory]/AGENTS.md` ➔ `[Page_Name].AGENTS.md` (Most specific local rule wins, under the mandatory common MolSysSuite layer).
 - **Micro-Governance Files (`[Page_Name].AGENTS.md`):**  
   Major documentation pages or notebooks (e.g. `docs/index.ipynb`) are paired with a micro-governance file (e.g. `docs/index.AGENTS.md`).
 - **Content Protection Contract:**  

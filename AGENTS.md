@@ -1,5 +1,21 @@
 # Guidelines for AI Agents
 
+## Mandatory MolSysSuite instructions
+
+Read and follow `MOLSYSSUITE_GUIDE.md` before working in this repository.
+
+Within their stated scope, its common rules take precedence over this file
+and any nested `AGENTS.md`. Local instructions may refine them; deviations
+require the documented policy exception process.
+
+The synchronized guide is owned by `uibcdf/molsyssuite`. It includes the
+[reusable-tool ownership rules](MOLSYSSUITE_GUIDE.md#modular-reusable-tools)
+and [working-instruction rules](MOLSYSSUITE_GUIDE.md#durable-working-instructions).
+For work under `devguide/`, also read `devguide/AGENTS.md` and its local
+reporting protocol. Keep repository-specific instructions below.
+
+## Local working context
+
 This document provides critical instructions for all AI assistants or automation tools contributing to this repository.
 
 ## Development with the principal maintainer
@@ -92,22 +108,17 @@ validation work instead.
     - Unit tests in `molsysviewer/js/tests/unit` (run with `npm run test:js`, coverage with `npm run coverage:js`).
     - E2E in `molsysviewer/js/tests/e2e` (headless Playwright against real Mol*). `npm run test:e2e` runs all suites through one shared Chromium process. The hosted `.github/workflows/CI_e2e.yaml` and the strict 1.0 gate run `test:e2e:core`: all non-remote browser suites. The remote-session feature remains a post-1.0 preview, not a 1.0 release gate (`uibcdf/molsysviewer#100`). `test:e2e:portable` retains core plus remote client/input scenarios; `test:e2e:remote-portable` selects those two remote scenarios; `test:e2e:server-gpu` selects the managed render-worker scenario for a qualified GPU host. `test:e2e:all` retains all suites. Exclusion from the core lane is not a passing remote result. You can force a local Chrome/Chromium with `PW_CHROMIUM_BIN=/path/to/chrome`. Browser launch or WebGL2 failure is an error by default; only an explicit `E2E_ALLOW_SKIP=1` opts out, and an opt-out is not validation. A stalled browser install is a CI provisioning failure, not evidence about the product. Visible-window Qt/GPU observations for the local standalone host remain separate manual release evidence. Do not substitute xvfb/mesa for those observations.
 11. The `sandbox/` directory is a scratch area for developer experiments. Changes there may be committed without review, and should not drive architectural decisions or test expectations.
-12. **Test-run discipline**: Run tests only when the implementation is believed to be correct — not speculatively. Before re-running after a failure, read the full traceback, form a diagnosis, and fix the root cause. One run per fix attempt: no blind iteration. Sequence: (a) run the specific test file first (`pytest tests/test_foo.py -x -q`); (b) after it's green, run the full suite once (`pytest tests/ --tb=no -q`) to check for regressions. Never run the full suite more than once per implementation task.
+12. **Test-run discipline**: diagnose the full traceback and fix the root cause
+    before rerunning. Start with the affected test file, then broaden to the full
+    suite when the changed boundary or required gate warrants it. Retain still-
+    applicable results; repeat a full gate when a new fix/input or unresolved
+    failure invalidates it. Documentation-only work uses its scoped checks.
 13. For TypeScript runtime validation during development, prefer
     `npm run build:runtime` over `npm run build`. The latter is a
     release/packaging command because it synchronizes package versions from the
     Python `versioningit` output.
-14. **Agent-oriented Python test output**: for the `pytest` runs in rule 12, an
-    agent may render output compactly with `pytest-receptor` —
-    `pytest --receptor=llm tests/test_foo.py -x` and `pytest --receptor=llm tests/`.
-    It changes nothing about pass/fail; **normal `pytest` remains the
-    authority**. Do **not** pair it with `--tb=no`/`--tb=line` (they delete the
-    location evidence the compact report needs), so drop `--tb=no` from the
-    rule-12 full-suite check when using it. It is pre-1.0 and under evaluation:
-    report any disagreement with pytest, any failure its compact output was not
-    enough to diagnose, or any wrong grouping, in the `pytest-receptor`
-    repository under `devguide/pending_bugs/` (or `pending_proposals/`). See
-    [`devguide/pytest_receptor.md`](devguide/pytest_receptor.md).
+14. Python test rendering follows `PYTEST_RECEPTOR_GUIDE.md` and the common
+    developer-tool policy; retain native outcomes and diagnostic evidence.
 
 ## The developer guide (`devguide/`)
 
@@ -120,35 +131,13 @@ what it decided — and open a document itself only for a question you can name,
 contract pointing at it for its rationale, a decision being reopened, or a claim that
 needs its evidence. Asked to "read the devguide", that is 23 % of it you do not read.
 
-## Filing a defect or a proposal
+## Local reporting tools
 
-**`devguide/reporting_protocol.md` is normative.** Read it before writing anything into
-`devguide/pending_bugs/` or `devguide/pending_proposals/`.
-
-The short version:
-
-- If it deserves a document in one of those two directories, it deserves a GitHub issue.
-  **Open the issue first**, to obtain the number.
-- Start the document from `devguide/templates/report.md`. Every queue entry carries front
-  matter: `summary`, `issue`, `status`, `opened`, `verification`, `area`, and `severity`
-  for a bug.
-- The document holds the analysis and changes continuously. The issue holds state and is
-  written at exactly two moments: open and close.
-- Closing needs a **`guard`** — the test that fails if the defect returns — or, for a
-  proposal whose outcome is a rule, the **`normative`** document that absorbed it. Then the
-  document moves to `devguide/archive/`.
-- **Archive, never delete.** An archived document is immutable evidence: a claim that turns
-  out to be false gets an appended, dated correction, not an edit.
-- Cross-repository references are `uibcdf/<repo>#<number>`, never a path into another
-  repository's `devguide/`.
-- Plans and inventories are **not** queue entries. They live elsewhere in `devguide/`.
-
-- The queue READMEs are **generated** from that front matter: after adding, closing or
-  restatusing an entry, run `python devtools/devguide_index.py`. Do not hand-edit the
-  block between the `generated: devguide_index` markers.
-
-`tests/test_reporting_protocol.py` enforces what can be checked offline, including that
-the generated indexes are current.
+Read `devguide/reporting_protocol.md` for the component's record schema and paths.
+`python devtools/devguide_index.py` generates queue indexes from front matter;
+run it with `--check` to verify them. `tests/test_reporting_protocol.py` protects
+the offline record/index contract. Maintain the specialized `archive/`/`audits/`
+reading and content rules in `devguide/AGENTS.md`.
 
 ## Citation and preserved releases
 
@@ -215,22 +204,6 @@ These guides are required reading for anyone developing this library. They descr
 - `PYTEST_RECEPTOR_GUIDE.md` — Required guide for compact, truth-preserving pytest output
   in local and hosted development.
 
-## Release and package-publication notices
-
-For every new component release, with or without a published package, and every
-new package version/build/distribution route, open or update a release-specific
-issue in `uibcdf/molsyssuite` as part of closeout. Include exact version/tag/source,
-actual package availability and verification evidence, and ecosystem follow-up.
-Follow [the notice policy](MOLSYSSUITE_GUIDE.md#release-and-package-publication-notices).
-
-## Public release titles
-
-When preparing, publishing or intentionally editing a public GitHub Release, use
-exactly `X.Y.Z` as its title/name, matching the canonical tag and package/project
-version. Put descriptions in the body/notes. Read
-[the local release-title guide](devguide/release_titles.md) and
-[the canonical rule](MOLSYSSUITE_GUIDE.md#github-release-titles).
-
 ## Core visualization and add-on ownership
 
 Apply [the product boundary](devguide/core_and_addon_boundary.md) when designing
@@ -251,31 +224,10 @@ addon management, creation and the catalogue; independent authors request
 catalogue inclusion through a Viewer issue. Follow
 [the documentation ownership rule](devguide/core_and_addon_boundary.md#add-on-documentation-and-catalogue-ownership).
 
-## Modular reusable tools
+## Registered integration guides
 
-Before adding a feature, inspect existing tools and identify the owning module or
-component. Implement or extend independently useful operations as documented reusable
-tools in that owner, with their own contracts and tests; have consumers call them.
-Keep task-specific decisions local and report missing sibling capabilities to the
-provider with linked consumer evidence. Follow
-[MOLSYSSUITE_GUIDE.md#modular-reusable-tools](MOLSYSSUITE_GUIDE.md#modular-reusable-tools)
-for applicability, compatibility, performance and tracked exceptions.
+Read the registered consumer guides when working on their respective boundaries:
 
-## Durable working instructions
-
-Keep technical findings in owning issues, fixes, tests and maintained guidance.
-Place only accepted lasting contributor actions in root or appropriately scoped
-instructions, following
-[the common policy](MOLSYSSUITE_GUIDE.md#durable-working-instructions).
-For work under `devguide/`, also read [devguide/AGENTS.md](devguide/AGENTS.md)
-and its local reporting protocol. Shared instruction proposals belong in
-`uibcdf/molsyssuite`; cross-MOLI contracts belong in `uibcdf/moli`.
-
-## Human-facing issue feedback
-
-Surface actionable suspected defects, inconsistencies, missing analyses and
-improvements, including uncertain or nonblocking findings. When working with a
-human, offer an owning issue at a natural pause; retain existing reporting
-authorization and respect declined/deferred disclosure. Follow
-[the accepted feedback route](MOLSYSSUITE_GUIDE.md#human-facing-issue-feedback)
-for ownership, uncertainty, privacy and exceptions.
+- `DEPDIGEST_GUIDE.md`
+- `ARGDIGEST_GUIDE.md`
+- `PYUNITWIZARD_GUIDE.md`
