@@ -363,7 +363,7 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**Current priority — 2026-10-26:** the approved
+**Current priority — 2026-10-27:** the approved
 [core/add-on boundary](core_and_addon_boundary.md) gives core visualization and
 exploration, including qualified calculations for visual content. Additional
 molecular editing/preparation/general analysis belongs to tools/add-on
@@ -379,19 +379,26 @@ and both dihedral editors, plus ten PBC box queries/factories and three
 coordinate editors. Only has_pbc binds the primary among the box utilities;
 coordinate editors use the managed receiver. The native PBC repair d7c82e92f
 now receives orthogonal defaults and centered in-place ownership; the temporary
-addon rejection is removed after 24 focused centered checks. Twenty-three physchem
-wrappers now have bounded receiving, including strict bulkiness and required-
-category secondary-structure propensities. The current inspected native inventory
-is 33; ten exports, including TPSA, remain unreceived. Provider efc9b94f3 includes
-119 focused scale tests, the prior frozen 3,144-case regression and 596 incoming-
-source checks, plus 40 guide blocks / 90 inherited examples. These phases retain
-their distinct source identities. All six exact-source controls pass; smoke
-40453242375 has 2,576 native / 1,666 addon passes and three optional Ackredit
-skips. The terminal provider receipt is published in c905d8ac7. Native #490
-metadata independence and #492 group-free repairs are received locally and their
-guards are included in the bounded CI tier. Collantes unit/normalization evidence
-remains tracked in uibcdf/molsysmt#473. Installed qualification stays separate;
-see [the current record](pending_proposals/molsysmt_tools_addon_receiving.md).
+addon rejection is removed after 24 focused centered checks. Twenty-four physchem
+wrappers have bounded source receiving, including bulkiness, required-category
+propensities and molecular TPSA with explicit states/variant and detached report.
+TPSA producer f55d7c2f7 passes 53 directed cases, the one frozen 3,294-case regression
+and 41 guide blocks / 94 inherited examples. All six applicable source controls
+pass; fixed-ref smoke 40549539065 has 2,645 native / 1,718 addon passes and five
+optional Ackredit skips. The original automatic main smoke was intentionally
+cancelled, not counted as passing. Incoming native 4e2e18ce7 refactors TPSA and adds
+lipophilicity; 158 focused cases and 41 guide blocks / 94 examples pass on that
+source. Owner smoke 40549946055 passes the same counts and optional omissions,
+with its four other applicable controls. The unchanged dependency contract keeps
+its earlier scope. The latest inspected native inventory is 34, ten unreceived
+by this 24-tool facade, including lipophilicity. Receipt closeout is 69f357e7e.
+Native #494 (builder molecule duplication) and #495 (group-free MDTraj adapter)
+remain owner repairs. Later uncommitted descriptor work remains outside these
+source identities. Earlier #490 metadata and #491 group-free repairs keep their
+receiving; Collantes unit/normalization evidence remains uibcdf/molsysmt#473.
+Prior Viewer E2E 40454434547 passes 44/44 on 386ed937. GUI and installed
+qualification remain separate; see
+[the current record](pending_proposals/molsysmt_tools_addon_receiving.md).
 Broader namespaces/effects, panels and installed qualification remain pending.
 Legacy integration remains refused and MolSysMT stays required as backend.
 Python remains primary and headless. The
@@ -1994,6 +2001,17 @@ Resume toward **1.0** in this order:
    passing with their distinct scopes. All six exact-source controls pass; smoke
    40453242375 records 2,576 native / 1,666 addon passes and three optional
    Ackredit skips. Terminal provider evidence is c905d8ac7.
+   Molecular TPSA in f55d7c2f7 brings the facade to 24 of the 33-export reviewed
+   baseline, nine pending. It passes 53 focused / 3,294 frozen regression cases
+   and 41 guide blocks / 94 inherited examples. All six applicable source controls
+   pass; fixed-ref smoke 40549539065 has 2,645 native / 1,718 addon passes and five
+   optional Ackredit skips. The intentionally cancelled automatic main smoke is
+   retained as non-pass. Incoming 4e2e18ce7 adds lipophilicity and refactors TPSA;
+   158 directed cases / 41 guide blocks / 94 examples pass separately, with owner
+   smoke 40549946055 passing the same hosted counts. Terminal evidence is
+   69f357e7e. The current inventory is 34 native / 24 bound / ten pending, including
+   lipophilicity. Native #494/#495 remain owner fixes without consumer workarounds.
+   Later uncommitted molecular-descriptor work keeps its own receiving debt.
    The overall addon remains partial. Follow
    [#264](pending_proposals/molsysmt_tools_addon_receiving.md) for exact scope.
    Reuse the [source inventory](studio_molsysmt_operation_inventory.md)

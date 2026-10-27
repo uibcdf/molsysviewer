@@ -1912,3 +1912,73 @@ receiving passes 286 cases.
 GUI, remaining native functions, installed qualification and both paused
 publications retain their separate scope. No Viewer runtime or dependency-floor
 change.
+
+
+### Molecular TPSA receiving — 2026-10-27
+
+Provider `f55d7c2f77057ae97b7cb0219d427f41132b8f0c` adds
+`view.addons.molsysmt.physchem.get_tpsa(...)`. The experimental facade exposes
+24 of 33 physchem exports in this reviewed committed baseline; nine remain
+unreceived. Parallel native molecular-descriptor development is preserved and
+has not been included or relabeled as qualified by this slice.
+
+The thin reader retains the native signature minus current `view.molsys`,
+digestion, molecule-order/repetition/scalar/empty axes, complete covalent
+boundaries, declared chemical states and nonconsecutive structure context,
+squared area units and explicit N/O versus N/O/S/P variant. The optional detached
+report preserves molecule/atom maps, method, parameters and provenance. It adds
+no H preparation, fragment capping, source hierarchy repair, selector translation,
+aggregation, scene coloring, adoption or synchronization. TPSA is a topological
+descriptor; it does not measure conformational exposure or predict permeability.
+
+The [source receipt](https://github.com/uibcdf/molsysmt/blob/f55d7c2f77057ae97b7cb0219d427f41132b8f0c/devtools/data/molsysviewer_tools_tpsa_receiving_20261027.json) records 53 directed consumer cases and the one
+3,294-case frozen regression on c905d8ac7 plus this wrapper, all passing with
+zero failures/errors/skips and unchanged runtime/backend hashes. All 41 guide
+blocks and 94 inherited native-context doctests pass. Bundled caffeine is
+explicitly read with RDKit to supply its declared H inventory; native SDF input
+with unspecified CTAB evidence retains rejection rather than hidden inference.
+Initial fixture/selector/input observations and corrections are retained.
+
+Two independently reproduced native defects have maintainer-authorized reports:
+uibcdf/molsysmt#494 duplicates molecule rows when adding groups to a populated
+builder; uibcdf/molsysmt#495 fails MDTraj selection of group-free topology with
+NAType. The adapter adds no workaround and does not claim those repairs received.
+Numeric/native-expression molecule selection is received; the external group-free
+adapter remains a native limit. Continue owner repairs and their later receiving.
+
+All six applicable exact-source controls pass for f55d7c2f7. Fixed-ref smoke
+[40549539065](https://github.com/uibcdf/molsysmt/actions/runs/40549539065)
+passes 2,645 native / 1,718 addon cases with three native and two addon skips
+because optional Ackredit is absent. Those tests execute locally; the hosted
+omissions remain omissions. Our automatic main smoke 40549383525 was intentionally
+cancelled during setup to execute one canonical gate independently of concurrent
+main pushes; it is not a pass. The [terminal source receipt](https://github.com/uibcdf/molsysmt/blob/69f357e7eb0f53151e60de294ea58791e2f2dd59/devtools/data/molsysviewer_tools_tpsa_source_ci_20261027.json)
+retains both official runs, controls, source/ref/job/step identity and complete
+log/receptor-bundle digests.
+
+The owner then commits native refactor 4e2e18ce71d64256baf3c0a7fd52f89e6aa9b792,
+sharing TPSA internals with the new get_lipophilicity. The TPSA wrapper stays
+unchanged. A clean incoming-source snapshot passes 158 directed cases and all
+41 guide blocks / 94 inherited examples, zero failures/errors/skips. No second
+full regression is claimed. Owner smoke
+[40549946055](https://github.com/uibcdf/molsysmt/actions/runs/40549946055)
+passes 2,645 native / 1,718 addon cases with the same five optional skips; Ruff,
+guide integrity, suite policy and Conda governance pass on that same source.
+The unchanged dependency declarations and CI pins retain their earlier applicable
+f55d7c2f7 check; no separate dependency-contract workflow ran for 4e2e18ce7.
+The [incoming receipt](https://github.com/uibcdf/molsysmt/blob/69f357e7eb0f53151e60de294ea58791e2f2dd59/devtools/data/molsysviewer_tools_tpsa_refactor_receiving_20261027.json)
+keeps this receiving separate from the frozen 3,294-case older-source regression.
+The inspected inventory now has 34 native physchem exports; the addon stays at
+24, with ten pending including lipophilicity. Its model is not automatically
+exposed or scientifically qualified by this TPSA slice. Both original owner
+issues #494/#495 remain unreceived repairs. New uncommitted molecular-descriptor
+work stays outside these source identities. Evidence is published in 69f357e7e.
+
+Viewer reporting/link/architecture checks pass 286 cases. GUI, optional-provider
+absence, installed packages, universal model accuracy and publication retain
+separate scope; both 1.0 publications stay paused.
+
+The previously pending Viewer core browser run
+[40454434547](https://github.com/uibcdf/molsysviewer/actions/runs/40454434547)
+passes all 44 suites on 386ed937. This closes that earlier observation without
+qualifying new TPSA source, installed artifacts or remote preview.
