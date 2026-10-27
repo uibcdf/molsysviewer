@@ -394,13 +394,18 @@ six bound MDTraj checks and 43 / 98 guide/example checks pass. Its owner CI fail
 on older invalid cross-molecule fixtures (six failures / 123 setup errors).
 Follow-up 4ad988584 fixes those factories under uibcdf/molsysmt#500 (210 passes)
 and budgets 25 minutes for both scientific tiers under uibcdf/molsysmt#501.
-Corrected-source fixed-ref smoke 40575948453 is pending; only our automatic main
-counterpart was intentionally cancelled to isolate it from concurrent pushes.
-Separate owner atom-insertion work stays outside that frozen source. Nine
-physchem exports remain unreceived. Earlier #490 metadata and #491 group-free
-repairs retain their scope; Collantes evidence remains uibcdf/molsysmt#473. Prior
-Viewer E2E 40552845768 passes on 73a6f388. GUI and installed qualification remain
-separate; see [the current record](pending_proposals/molsysmt_tools_addon_receiving.md).
+Corrected-source fixed-ref smoke 40575948453 passes with 2,847 native /
+1,845 bound passes, seven optional Ackredit skips and one pre-repair #499 xfail;
+five other source controls pass. #500/#501 are closed. Later #499 repair
+ab165135e receives 80 directed native builder cases without expected failures.
+Provider 636003965 adds AutoDock typing, CIP and explicit partial-charge readers,
+bringing source coverage to 28 of 34 reviewed physchem paths. The one frozen
+3,819-case regression (69 directed consumer cases) passes without failures,
+errors or skips; 45 guide blocks / 109 inherited examples pass. Native #503
+nested CIP reference ownership remains explicit, without a consumer workaround.
+New-source fixed-ref smoke 40580219002 is pending. Prior Viewer E2E 40576276877
+passes on a7dcd4cc. GUI and installed qualification remain separate; see
+[the current record](pending_proposals/molsysmt_tools_addon_receiving.md).
 Broader namespaces/effects, panels and installed qualification remain pending.
 Legacy integration remains refused and MolSysMT stays required as backend.
 Python remains primary and headless. The
@@ -2022,8 +2027,12 @@ Resume toward **1.0** in this order:
    directed passes and one separate #499 xfail. Follow-up 4ad988584 fixes invalid
    fixture hierarchy (210 passes, uibcdf/molsysmt#500) and budgets 25 minutes
    without cutting tests (uibcdf/molsysmt#501). Corrected-source smoke
-   40575948453 is pending. Output/context maps, H attribution and scientific
-   limits stay explicit; each source identity retains its own evidence.
+   40575948453 passes with its recorded optional skips and pre-repair #499
+   xfail; #500/#501 are closed. Owner #499 repair receives 80 directed passes.
+   Provider 636003965 adds three explicit chemical readers: 28 of 34 paths,
+   3,819 frozen regression passes, 45 guide blocks / 109 inherited examples.
+   Native #503 nested-reference ownership remains explicit; new-source smoke
+   40580219002 is pending. Each source identity retains its own evidence.
    The overall addon remains partial. Follow
    [#264](pending_proposals/molsysmt_tools_addon_receiving.md) for exact scope.
    Reuse the [source inventory](studio_molsysmt_operation_inventory.md)

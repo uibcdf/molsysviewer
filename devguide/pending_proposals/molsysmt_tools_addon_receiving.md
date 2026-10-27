@@ -2045,8 +2045,62 @@ not repeated or relabelled as a later-source full regression.
 
 The corrected-source gate
 [40575948453](https://github.com/uibcdf/molsysmt/actions/runs/40575948453)
-is pending on fixed ref receiving/descriptor-ci-4ad988584. Its automatic main
-counterpart 40575908036 was intentionally cancelled during setup; that is not a
-pass. Concurrent owner atom-insertion work stays outside this frozen identity.
-Source receiving does not qualify installed packages. Both 1.0 publications
-remain paused.
+passes on fixed ref receiving/descriptor-ci-4ad988584: 2,847 native passes,
+four optional Ackredit skips and one strict #499 xfail on that frozen source;
+1,845 bound passes and three optional Ackredit skips. Five additional source
+controls pass. uibcdf/molsysmt#500/#501 are closed with guard/normative records
+and receipt 4a51f327e. The intentionally cancelled automatic run remains non-pass.
+Later owner #499 repair ab165135e receives 80 native builder cases without
+expected failures; it is not retroactively included in the earlier source CI.
+Viewer E2E 40576276877 passes on a7dcd4cc. Source receiving does not qualify
+installed packages. Both 1.0 publications remain paused.
+
+
+### Explicit chemical readers received — 2026-10-27
+
+Provider `63600396584f78aef05500cd13a1c5fd37b75728` adds the expert paths
+`view.addons.molsysmt.physchem.get_autodock_atom_types(...)`,
+`get_cip_stereochemistry(...)` and `get_partial_charges(...)`. This brings the
+reviewed physchem facade to 28 of 34 native exports, six pending. The current
+primary is implicit; required AutoDock scheme and charge method, keyword-only
+CIP coordinate inference, scientific validation and skip_digestion remain native.
+No host runtime or public dependency floor changes.
+
+Full graph evaluation precedes sorted unique atom output. AutoDock labels remain
+separate from element symbols and stored force-field types. CIP retains complete
+context, S/R and E/Z labels, source atom/bond maps and declared versus coordinate
+evidence; coordinate inference needs one explicit 3D structure. Partial charges
+retain native units, Gasteiger-Marsili or explicit OpenMM force-field prerequisites
+and full-source total checks. These readers do not prepare chemistry, place H,
+select a visible structure implicitly, assign results, color or synchronize the
+scene. Pending reads, cached primary replacement and closed/empty lifetimes use
+the existing managed read boundary.
+
+All 69 directed consumer cases pass within one frozen 3,819-case applicable
+regression, zero failures/errors/skips, unchanged runtime and backend hashes.
+A final test-declaration line wrap has an identical AST. Independent checks
+include bounded chemical reference labels, reflected 3D conformers, pinned
+Gasteiger values and real OpenMM alanine template charges, alongside native
+parity. All 45 guide blocks and 109 inherited native-context doctests pass;
+four course module-39 updates preserve code and outputs. Scoped Ruff, shell
+syntax and devguide validation pass. The [provider receipt](https://github.com/uibcdf/molsysmt/blob/63600396584f78aef05500cd13a1c5fd37b75728/devtools/data/molsysviewer_tools_chemical_readers_receiving_20261027.json)
+keeps the prior #499 receiving and earlier source CI separate.
+
+Native uibcdf/molsysmt#503 remains open: CIP plain-reference author lists share
+mutable canonical metadata, and edits can pollute later bibliography/attribution.
+This is independently reproduced without Viewer and explicitly documented; the
+addon adds no deepcopy. Numeric and scalar-metadata independence does not qualify
+every nested reference. No predictive-accuracy, docking-readiness or installed
+compatibility certificate is inferred.
+
+New-source hosted smoke
+[40580219002](https://github.com/uibcdf/molsysmt/actions/runs/40580219002)
+is pending on receiving/chemical-readers-636003965. Only its automatic main
+counterpart 40580170635 was intentionally cancelled during setup to isolate this
+fixed-source run. Other applicable source controls keep the same source identity.
+This is not a candidate freeze; both 1.0 publications remain paused.
+
+Next receive get_water_sites, get_metal_coordination_sites and
+assess_chemical_template; the two independent-result transformations and
+explicit-input peptide-template factory need their own effect/input receiving.
+GUI tasks and broader editing remain separate. Keep the expert API primary.

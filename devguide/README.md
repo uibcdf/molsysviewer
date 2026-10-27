@@ -45,6 +45,15 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Explicit chemical readers — 2026-10-27:** provider 636003965 exposes
+  AutoDock typing, CIP and explicit partial-charge calculations: 28 of 34
+  reviewed physchem paths. All 3,819 regression cases (69 new directed cases)
+  and 45 guide blocks / 109 inherited examples pass. Prior source CI closes
+  uibcdf/molsysmt#500/#501 and #499 has 80 directed receiving passes. Native
+  uibcdf/molsysmt#503 remains a nested-reference ownership limit. New-source
+  CI 40580219002 is pending; see the
+  [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md#explicit-chemical-readers-received--2026-10-27).
+
 - **Bound molecular descriptors — 2026-10-27:** provider ea9fff339 exposes
   lipophilicity and receives all seven native TPSA/descriptor contribution
   levels. The source facade has 25 of 34 reviewed physchem exports. All 122
@@ -55,7 +64,8 @@ documents, and historical audits.
   hierarchy repairs pass directed receiving. Follow-up 4ad988584 fixes two
   fixtures (210 cases) and raises the CI budget under uibcdf/molsysmt#500/#501.
   Earlier timeout and failed runs stay non-success evidence; corrected-source
-  CI 40575948453 is pending. GUI and installed qualification remain separate.
+  CI 40575948453 passes with its recorded optional skips and pre-repair #499
+  xfail; #500/#501 are closed. GUI and installed qualification remain separate.
 
 - **Molecular TPSA addon reader — 2026-10-27:** provider f55d7c2f7 exposes
   the native molecule-level descriptor with explicit states/variant and optional
@@ -85,7 +95,7 @@ documents, and historical audits.
   add-on has experimental source `basic` readers, independent outputs,
   retained-axis edits/synchronization, eleven `topology` readers and eighteen
   `structure` calculations and managed native translation/rotation/reflection, rigid fitting, explicit centering, single-structure displacement, principal-axis alignment and both dihedral editors, plus thirteen PBC tools
-  and twenty-five physchem source wrappers including TPSA/lipophilicity and complete-context contribution levels, with strict bulkiness/propensity reference lookups, formal-charge/hydrophobic/halogen features, aromatic participant/flag readers, detached chemistry reports, native/table-unit limits and bounded CPU SASA receiving; the
+  and twenty-eight physchem source wrappers including TPSA/lipophilicity, complete-context contribution levels and explicit chemical typing/stereo/charge calculations, with strict bulkiness/propensity reference lookups, formal-charge/hydrophobic/halogen features, aromatic participant/flag readers, detached chemistry reports, native/table-unit limits and bounded CPU SASA receiving; the
   [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md) names
   exact scope and tests. The backend remains required and legacy addon routes
   remain refused. Python remains the primary headless foundation.
