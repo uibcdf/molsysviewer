@@ -45,6 +45,15 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Eleven native build audits — 2026-10-27:** provider 11e7ab7f0 adds eight
+  explicit readers without molecular repair or scene updates. All 62 directed
+  cases, one frozen 4,414-case joint regression, 50 guide blocks and 163 inherited
+  examples pass. Inventory: 116/244 inspected paths, build 11/30. Native
+  multi-structure solvation is uibcdf/molsysmt#504; CIP metadata remains #503.
+  Five source controls pass; main smoke 40598293439 is cancelled at installation.
+  Single exact-source recovery 40598751459 is pending on a fixed reference. See
+  [receiving](pending_proposals/molsysmt_tools_addon_receiving.md#eleven-build-audits-received-in-source--2026-10-27).
+
 - **Complete physchem / initial build — 2026-10-27:** provider 511fafb54 exposes
   all 34 reviewed physchem paths and three build diagnostics. The full expert
   final inventory finds 108 exposed / 244 inspected callable paths, including
@@ -107,7 +116,7 @@ documents, and historical audits.
   add-on has experimental source `basic` readers, independent outputs,
   retained-axis edits/synchronization, eleven `topology` readers and eighteen
   `structure` calculations and managed native translation/rotation/reflection, rigid fitting, explicit centering, single-structure displacement, principal-axis alignment and both dihedral editors, plus thirteen PBC tools
-  and thirty-four physchem source wrappers plus three build diagnostics, including TPSA/lipophilicity, contribution levels, chemical typing/stereo/charge and independent template operations, with strict bulkiness/propensity reference lookups, formal-charge/hydrophobic/halogen features, aromatic participant/flag readers, detached chemistry reports, native/table-unit limits and bounded CPU SASA receiving; the
+  and thirty-four physchem source wrappers plus eleven build diagnostics, including TPSA/lipophilicity, contribution levels, chemical typing/stereo/charge and independent template operations, with strict bulkiness/propensity reference lookups, formal-charge/hydrophobic/halogen features, aromatic participant/flag readers, detached chemistry reports, native/table-unit limits and bounded CPU SASA receiving; the
   [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md) names
   exact scope and tests. The backend remains required and legacy addon routes
   remain refused. Python remains the primary headless foundation.

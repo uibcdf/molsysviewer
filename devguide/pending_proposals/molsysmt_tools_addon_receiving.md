@@ -2172,3 +2172,46 @@ and [CI closeout](https://github.com/uibcdf/molsysmt/blob/4e544cb12dd6bb7738da65
 retain the original 231-path snapshot, expanded callable/stub classification,
 actual source identities and unsuccessful evidence. Do not add nonfunctional
 wrappers for native MD placeholders merely to claim complete exposure.
+
+
+### Eleven build audits received in source — 2026-10-27
+
+Provider `11e7ab7f031830c8b4324152efd0dc35879f2110` adds eight explicit readers to the initial three
+`view.addons.molsysmt.build` tools: missing heavy atoms/bonds/residues/terminal
+cappings, nonstandard-group suggestions, disulfide candidates, hydrogen presence
+and solvation. All eleven remain serialized native reads of current view.molsys,
+including pending scientific edits. They do not repair chemistry, insert bonds,
+adopt results or synchronize the scene. Native scientific signatures/defaults
+are preserved; four legacy readers have an addon-only keyword digestion flag.
+
+The provider inventory is now 116/244 inspected callable paths, build 11/30,
+with 19 construction/preparation/editing paths still pending in build. Counts
+include utilities/aliases and two native MD stubs; they are not universal
+scientific or installed-package qualification. The next scientific namespace is
+raw canonical interactions, followed by independent/basic utilities and molecular
+mechanics under the accepted expansion plan. Broader GUI tasks remain separate.
+
+All 62 new directed cases and a single 4,414-case frozen joint regression pass,
+with zero failures/errors/skips and unchanged source/backend hashes during that
+run. All 50 guide blocks / 163 inherited examples pass. The first added external
+selection test incorrectly treated pentalanine atom zero as heavy; native
+inspection proves H1, so the test now selects an explicit non-H atom. The initial
+remote docstring example was interrupted after sandbox DNS retry evidence; a
+separate network-enabled execution passes. Ruff, inventory/index and native
+developer-guide validation pass. Runtime/source details and receipt are owned
+under uibcdf/molsysmt#421; root runtime needs no change.
+
+Native uibcdf/molsysmt#504 tracks multi-structure boxed-water is_solvated
+ValueError. No first/any/all reduction is invented. Missing sequence reference
+produces a native warning/empty report rather than a completeness certificate;
+selected-group terminal scope, group versus atom indices, and singular
+structure_index stay visible. CIP metadata ownership remains uibcdf/molsysmt#503.
+Five exact-runtime source controls pass: Ruff, dependencies, developer guide,
+suite policy and Conda governance. Main smoke 40598293439 is cancelled during
+package installation, with both scientific tiers skipped. Single recovery
+40598751459 is pending on fixed receiving/build-audits-11e7ab7f0 at the same
+producer. Original cancellation evidence remains preserved, without a duplicate
+main dispatch or a success claim. Provider follow-up 446f765b8 records the handoff;
+its documentation-only changes do not clear full-suite backlog. 511fafb54's
+earlier success is not qualification of the new wrappers. Source receiving is
+not a package/release, and both 1.0 publications remain paused.

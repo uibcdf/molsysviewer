@@ -1,5 +1,17 @@
 # Development checkpoint
 
+**Build audit continuation — 2026-10-27:** provider 11e7ab7f0 exposes eleven
+read-only build paths, including eight further preparation audits; total
+source exposure is 116/244 inspected callable paths. All 62 directed / 4,414
+joint regression cases and 50 guide blocks / 163 inherited examples pass.
+Native multi-structure solvation is uibcdf/molsysmt#504; no consumer aggregation.
+Five source controls pass; main CI 40598293439 is cancelled at installation.
+Single recovery 40598751459 is pending on the fixed 11e7ab7f0 reference.
+[Receiving](pending_proposals/molsysmt_tools_addon_receiving.md#eleven-build-audits-received-in-source--2026-10-27)
+keeps source, hosted gates, optional providers and installed qualification
+separate. Core runtime, GUI, dependency floor and release status do not change.
+Both 1.0 publications remain paused.
+
 **Before-documentation cleanup completed — 2026-10-22:** [#256](archive/ci_jobs_ignore_cancellation.md) and [#260](archive/ci_backlog_retired_python313_cell.md) are resolved with ordinary hosted cancellation and current-matrix watermark guards. #261 also fixes the final board verifier's truncated inventory. [Receiving](pre_documentation_cleanup_20261022.json) records 3,224 local passes and the exact operational/policy probes without relabeling cancelled tests as green. Actual PHMT/Jupyter receiving is complete. Begin broad documentation; #259 remains provider-blocked receiving and #93 awaits the central immutable policy/caller/badge reference. No freeze or publication.
 
 **Routine Python 3.14 migration completed — 2026-10-21:** source `308ce8fb` passes all eight Linux/macOS 3.11–3.14 cells, the three-host 3.14 source pair and both 44/44 core-browser lanes. API resolution and JS unit/coverage (332/332 in each invocation) execute on Linux 3.14. [Receiving](routine_python314_migration_20261021.json) preserves the local 3,163-pass run, both public recipe dry runs, Sphinx and notebook provenance. The prior routine 3.13 transition is complete. #93 remains partial only for the central immutable admission snapshot and its caller/badge adoption. Qt retains two experimental live failures and ten passing offscreen probes; no freeze or publication.

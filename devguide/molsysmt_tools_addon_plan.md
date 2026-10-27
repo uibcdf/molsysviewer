@@ -1,7 +1,7 @@
 # MolSysMT tools add-on — implementation plan
 
 **Status: partial source implementation; installed qualification pending —
-2026-10-26.** The maintainer authorizes the Viewer development effort to implement
+2026-10-27.** The maintainer authorizes the Viewer development effort to implement
 the integration in the owning MolSysMT repository. This is a new plan under
 [the core/add-on boundary](core_and_addon_boundary.md). The withdrawn native
 Studio expansion plan remains removed. The experimental source integration provides bound `basic` queries and read-only
@@ -792,16 +792,16 @@ plans the new add-on; it does not reintroduce the removed Studio expansion plan.
 
 ### Next expert API families
 
-The reviewed physchem surface is fully exposed at 34 paths, and build begins at
-3/30. The owning inventory under uibcdf/molsysmt#421 records the remaining
-functional routes: basic 7, build 27, molecular_mechanics 6, canonical interactions
+The reviewed physchem surface is fully exposed at 34 paths, and build is now at
+11/30. The owning inventory under uibcdf/molsysmt#421 records the remaining
+functional routes: basic 7, build 19, molecular_mechanics 6, canonical interactions
 15, element helpers 57, H5MSM utilities 7, historical hbonds aliases 4, attribute
 helpers 7, supported-capability reports 4 and legacy MD declarations 2.
-These 136 unexposed paths include aliases/utilities and two native always-raise
-stubs, not 136 independent implemented scientific algorithms. Keep classification and source-versus-qualification clear.
+These 128 unexposed paths include aliases/utilities and two native always-raise
+stubs, not 128 independent implemented scientific algorithms. Keep classification and source-versus-qualification clear.
 
-Continue read-only build audits, then raw canonical interaction families and
-independent/basic map utilities. Receive molecular-mechanics diagnostics and
+Read-only build audits are now received at this baseline. Continue with raw
+canonical interaction families and independent/basic map utilities. Receive molecular-mechanics diagnostics and
 energies/forces with explicit providers and units. In-place minimization,
 preparation and topology-changing basic/build operations need their own mapping,
 reconciliation, invalidation and recovery contracts. Element/file/attribute/supported utilities keep
@@ -810,3 +810,15 @@ must not be guessed. Decide historical aliases and the basic.view bridge
 deliberately. Class/adaptor/configuration APIs remain outside the functional
 mirror inventory. Graphical tasks cannot narrow the expert API or advertise
 unreceived operations. Native #503 remains a separate qualification limit.
+
+
+### Eleven build audits received in source — 2026-10-27
+
+Provider 11e7ab7f0 exposes all eleven reviewed read-only build audits; the
+[receiving record](pending_proposals/molsysmt_tools_addon_receiving.md#eleven-build-audits-received-in-source--2026-10-27)
+retains the exact scope, 62 directed / 4,414 regression passes, executable
+guidance and pending hosted gates. Native uibcdf/molsysmt#504 tracks multi-structure
+solvation, independently of CIP metadata #503. Keep group/atom/selected-subsystem
+axes, explicit sequence/structure scopes and native outcomes visible. There is
+no molecular repair or automatic source/scene publication in these readers.
+Next: raw canonical interactions, followed by independent utilities and mechanics.
