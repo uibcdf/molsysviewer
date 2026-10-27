@@ -403,9 +403,19 @@ bringing source coverage to 28 of 34 reviewed physchem paths. The one frozen
 3,819-case regression (69 directed consumer cases) passes without failures,
 errors or skips; 45 guide blocks / 109 inherited examples pass. Native #503
 nested CIP reference ownership remains explicit, without a consumer workaround.
-New-source fixed-ref smoke 40580219002 is pending. Prior Viewer E2E 40576276877
-passes on a7dcd4cc. GUI and installed qualification remain separate; see
-[the current record](pending_proposals/molsysmt_tools_addon_receiving.md).
+Fixed-ref smoke 40580219002 fails, exit 126, because the new consumer test file
+was an orphan shell command. Native/earlier consumer pytest passes remain partial
+evidence. Provider 511fafb54 fixes the command with an early full-list guard,
+completes 34/34 physchem paths and starts build at 3/30. All 40 + 18 directed
+cases pass. The one 4,283-case regression has one corrected packaging allowlist
+failure; 32 packaging/command/inventory and 115 help follow-ups pass. All 49 guide
+blocks / 155 inherited examples pass. The completed expert inventory records 108/244 exposed callable paths,
+including aliases/utilities and two native MD stubs; metadata-only completion is
+4e544cb12 with nine focused controls and unchanged scientific bindings. Five
+source controls and corrected smoke 40585977458 pass: 3,365 native / 1,971 addon
+passes and fifteen optional Ackredit skips, plus nine early controls. Prior Viewer
+E2E 40580448080 passes on 196c47b0. Native #503 stays open. GUI and installed qualification remain separate;
+see [the current record](pending_proposals/molsysmt_tools_addon_receiving.md).
 Broader namespaces/effects, panels and installed qualification remain pending.
 Legacy integration remains refused and MolSysMT stays required as backend.
 Python remains primary and headless. The
@@ -2031,8 +2041,18 @@ Resume toward **1.0** in this order:
    xfail; #500/#501 are closed. Owner #499 repair receives 80 directed passes.
    Provider 636003965 adds three explicit chemical readers: 28 of 34 paths,
    3,819 frozen regression passes, 45 guide blocks / 109 inherited examples.
-   Native #503 nested-reference ownership remains explicit; new-source smoke
-   40580219002 is pending. Each source identity retains its own evidence.
+   Native #503 nested-reference ownership remains explicit. Smoke 40580219002
+   fails on the new module's orphan shell command; 511fafb54 fixes the full list
+   with an early guard, completes physchem at 34/34 and starts build at 3/30.
+   The 40 + 18 directed cases pass. A 4,283-case regression records one corrected
+   packaging allowlist failure; 32 packaging/command and 115 help follow-ups pass,
+   with 49 guide blocks / 155 inherited examples. The complete source inventory
+   records 108/244 exposed callable paths, including aliases/utilities and two
+   native MD stubs, with an ordered module expansion. Five source controls and
+   corrected smoke 40585977458 pass (3,365 native / 1,971 addon passes, fifteen
+   optional Ackredit skips). The tooling-only inventory completion 4e544cb12
+   retains scientific runtime 511fafb54 unchanged and passes nine focused controls.
+   Each source identity retains its own evidence.
    The overall addon remains partial. Follow
    [#264](pending_proposals/molsysmt_tools_addon_receiving.md) for exact scope.
    Reuse the [source inventory](studio_molsysmt_operation_inventory.md)

@@ -2093,14 +2093,82 @@ addon adds no deepcopy. Numeric and scalar-metadata independence does not qualif
 every nested reference. No predictive-accuracy, docking-readiness or installed
 compatibility certificate is inferred.
 
-New-source hosted smoke
+Hosted smoke
 [40580219002](https://github.com/uibcdf/molsysmt/actions/runs/40580219002)
-is pending on receiving/chemical-readers-636003965. Only its automatic main
-counterpart 40580170635 was intentionally cancelled during setup to isolate this
-fixed-source run. Other applicable source controls keep the same source identity.
+ends officially failure, exit 126: the new consumer module was a standalone
+shell command rather than a pytest argument. It completed 2,963 native passes /
+nine optional Ackredit skips and 1,845 earlier consumer passes / three optional
+skips, but omitted the 69 new consumer cases. Those partial successes do not
+qualify the workflow or the omitted module. Its five other source controls pass;
+the intentionally cancelled automatic counterpart remains non-pass. The command
+repair and full-list guard are received in the next phase, without weakening tests.
 This is not a candidate freeze; both 1.0 publications remain paused.
 
-Next receive get_water_sites, get_metal_coordination_sites and
-assess_chemical_template; the two independent-result transformations and
-explicit-input peptide-template factory need their own effect/input receiving.
-GUI tasks and broader editing remain separate. Keep the expert API primary.
+
+### Complete physchem and initial build tools — 2026-10-27
+
+Provider `511fafb54708f34d55ca311c1a4fec0787210efd` completes all 34 reviewed
+physchem function paths and introduces three build diagnostics. Whole indexed
+water and bounded metal/ligand recognition return participants, not observations
+or assigned bonds. Template assessment keeps explicit provenance, source/template
+maps and context policies. Application and aromatic normalization return
+independent native systems/reports and never adopt results into view.molsys.
+Invalidation/history affects the returned copy. The peptide-template factory
+keeps its explicit sequence/terminal/link inputs and can run before a system is
+loaded, producing no coordinates or inferred stereochemistry. Forty directed
+consumer cases pass, preserving native parameters, digestion and result contracts.
+
+The build namespace exposes get_residue_chemical_coverage,
+get_covalent_bond_candidates and get_peptide_bond_candidates, 3/30 native exports.
+Eighteen directed cases pass with real demos, independent alanine edges and
+positive 181L C/N geometry/units. Native atom/group selection axes and explicit
+single-structure requirements remain intact. The legacy pentalanine demo has
+atom-chain indices -1 and remains without peptide candidates; no chain is inferred.
+The metadata absence is observed, but its origin is not established.
+
+The initial eleven-scope provider audit records 108 exposed of 231 inspected
+public paths. The final fourteen-scope audit adds attribute/supported metadata
+and legacy molecular_dynamics declarations: 108 of 244 paths are exposed, 136
+unexposed, including two explicit unimplemented native MD stubs. Callable
+supported.syntaxes compatibility is retained despite import-order differences.
+These paths include aliases/utilities, not independent scientific algorithms. Native classes, format adapters, configuration, datasets
+and third-party bridges are excluded explicitly. The canonical expansion
+inventory remains owned by uibcdf/molsysmt#421; the [dated source snapshot](https://github.com/uibcdf/molsysmt/blob/511fafb54708f34d55ca311c1a4fec0787210efd/devtools/data/molsysviewer_tools_api_inventory_20261027.json)
+records every inspected signature, input kind, exposed route and missing path.
+Complete topology/structure/PBC/physchem exposure does not finish the whole addon.
+
+The one frozen 4,283-case applicable regression records 4,282 passes and one
+source-file allowlist failure: _build.py was not yet admitted by the packaging
+contract. The file is admitted without weakening the guard. All 32 focused
+source/wheel/sdist/command/inventory controls then pass. No full regression
+rerun is inferred. A subsequent help-only clarification passes all 115 selected
+signature/help cases. All 49 guide blocks / 155 inherited native-context examples
+pass; five course Markdown updates preserve code and outputs. Ruff, shell syntax
+and devguide validation pass. The [receiving receipt](https://github.com/uibcdf/molsysmt/blob/511fafb54708f34d55ca311c1a4fec0787210efd/devtools/data/molsysviewer_tools_complete_physchem_build_receiving_20261027.json)
+retains the initial failed run, later corrections, source/backend hashes and scope.
+
+The CI command now includes every addon test module in one pytest invocation.
+An early guard rejects orphan test-file commands and missing modules; real API
+inventory and source package guards also run before science. All native/consumer
+guards remain, with the finite 25-minute job budget. Five additional source
+controls pass. Corrected exact-source smoke
+[40585977458](https://github.com/uibcdf/molsysmt/actions/runs/40585977458)
+passes on main/511fafb54, including cleanup: nine early controls, 3,365 native
+passes / eleven optional Ackredit skips and 1,971 addon passes / four optional
+Ackredit skips. All five additional source controls pass. The prior Viewer E2E
+40580448080 passes on 196c47b0. Native uibcdf/molsysmt#503 remains open, without
+a consumer metadata copy.
+Additional CI/data reports have been offered; no new issue approval is assumed.
+GUI tasks, broader edits, installed artifacts and both 1.0 publications remain
+separate. Python remains the primary expert interface.
+
+Follow-up 4e544cb12 expands only developer auditing/records, with no scientific
+package/runtime binding changes from the qualified producer. Nine focused
+command/inventory/package controls, Ruff, dependency and devguide checks pass.
+The CI marker suppresses redundant scientific reruns for this bounded follow-up;
+it neither relabels it as an exact scientific-head rerun nor clears whole-suite
+debt. The [final inventory](https://github.com/uibcdf/molsysmt/blob/4e544cb12dd6bb7738da651827f3b69fa5847a9c/devtools/data/molsysviewer_tools_full_api_inventory_20261027.json)
+and [CI closeout](https://github.com/uibcdf/molsysmt/blob/4e544cb12dd6bb7738da651827f3b69fa5847a9c/devtools/data/molsysviewer_tools_complete_api_ci_closeout_20261027.json)
+retain the original 231-path snapshot, expanded callable/stub classification,
+actual source identities and unsuccessful evidence. Do not add nonfunctional
+wrappers for native MD placeholders merely to claim complete exposure.

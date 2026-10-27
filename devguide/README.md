@@ -45,13 +45,25 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Complete physchem / initial build — 2026-10-27:** provider 511fafb54 exposes
+  all 34 reviewed physchem paths and three build diagnostics. The full expert
+  final inventory finds 108 exposed / 244 inspected callable paths, including
+  aliases/utilities and two native MD stubs; broader modules remain. The 40 + 18 new directed cases
+  pass. A 4,283-case regression has one corrected packaging-allowlist failure;
+  32 packaging/command/inventory and 115 help follow-ups pass, with 49 guide
+  blocks / 155 inherited examples. Corrected CI 40585977458 passes with
+  3,365 native / 1,971 addon cases and fifteen optional Ackredit skips; five
+  other controls pass. Tooling-only inventory completion is 4e544cb12. See the
+  [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md#complete-physchem-and-initial-build-tools--2026-10-27).
+
 - **Explicit chemical readers — 2026-10-27:** provider 636003965 exposes
   AutoDock typing, CIP and explicit partial-charge calculations: 28 of 34
   reviewed physchem paths. All 3,819 regression cases (69 new directed cases)
   and 45 guide blocks / 109 inherited examples pass. Prior source CI closes
   uibcdf/molsysmt#500/#501 and #499 has 80 directed receiving passes. Native
   uibcdf/molsysmt#503 remains a nested-reference ownership limit. New-source
-  CI 40580219002 is pending; see the
+  CI 40580219002 fails on an orphan test-file command; its full-list repair is
+  received in the next phase. See the
   [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md#explicit-chemical-readers-received--2026-10-27).
 
 - **Bound molecular descriptors — 2026-10-27:** provider ea9fff339 exposes
@@ -95,7 +107,7 @@ documents, and historical audits.
   add-on has experimental source `basic` readers, independent outputs,
   retained-axis edits/synchronization, eleven `topology` readers and eighteen
   `structure` calculations and managed native translation/rotation/reflection, rigid fitting, explicit centering, single-structure displacement, principal-axis alignment and both dihedral editors, plus thirteen PBC tools
-  and twenty-eight physchem source wrappers including TPSA/lipophilicity, complete-context contribution levels and explicit chemical typing/stereo/charge calculations, with strict bulkiness/propensity reference lookups, formal-charge/hydrophobic/halogen features, aromatic participant/flag readers, detached chemistry reports, native/table-unit limits and bounded CPU SASA receiving; the
+  and thirty-four physchem source wrappers plus three build diagnostics, including TPSA/lipophilicity, contribution levels, chemical typing/stereo/charge and independent template operations, with strict bulkiness/propensity reference lookups, formal-charge/hydrophobic/halogen features, aromatic participant/flag readers, detached chemistry reports, native/table-unit limits and bounded CPU SASA receiving; the
   [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md) names
   exact scope and tests. The backend remains required and legacy addon routes
   remain refused. Python remains the primary headless foundation.
