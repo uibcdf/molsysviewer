@@ -1523,3 +1523,109 @@ uibcdf/molsysmt#470 and uibcdf/molsysmt#471 remain open limitations. The 23
 remaining physchem exports, panels, installed artifacts, dependency floors and
 both 1.0 publications retain their separate scope. Concurrent native periodic
 repairs are not part of this exact producer. No host runtime change is needed.
+
+
+### ProtOr/reference tables and repaired PBC receiving — 2026-10-26
+
+Six explicit physchem wrappers add get_protor_atom_type, get_protor_vdw_radius,
+get_surface_area, get_volume, get_area_buried and get_buried_fraction. They use
+the existing serialized primary reader, return native arrays/lists/quantities
+and add no chemistry preparation, assignments, coloring or scene update.
+get_volume adds only addon-owned keyword digestion; get_area_buried gains no
+invented native syntax parameter. Thirteen of thirty reviewed physchem exports
+are exposed, with 17 pending. The 67 new focused cases pass.
+
+The same receiver removes its temporary centered-in-place rejection after native
+d7c82e92f repairs PBC ownership. Twenty-four focused cases pass independent
+weighted-center/lattice references, native parity, nm/angstrom/pm, repeated
+structure axes, trusted/ordinary digestion, exact named-analysis invalidation,
+primary owner retention and deferred synchronization. Native omitted/None box
+angles now delegate to orthogonal construction, without addon angle synthesis.
+The repaired native course/dictionary axes retain their owning source evidence
+under uibcdf/molsysmt#465 / uibcdf/molsysmt#466 / uibcdf/molsysmt#467 / uibcdf/molsysmt#472.
+
+Broadened native selector/element observations remain within the authorized
+uibcdf/molsysmt#470 / uibcdf/molsysmt#471 themes. The maintainer separately authorizes
+uibcdf/molsysmt#473: the raw Collantes surface list is not certified here as an
+nm-squared quantity. Raw table numeric receiving is distinguished from physical
+unit qualification or actual conformational SASA/volume. The four owning course
+notebooks retain every existing code cell/output; only conceptual addon notes
+are added. These prose changes do not qualify legacy scientific examples.
+
+The combined regression is isolated on d7c82e92f plus explicitly owned addon
+changes, protecting it from concurrent scientific-owner edits. Source hashes,
+arguments and terminal evidence will be retained in the provider receipt under
+uibcdf/molsysmt#421. Committed-head CI and installed artifacts remain separate.
+No Viewer runtime, public floor, package, tag or 1.0 publication changes here.
+
+
+Producer 3c2dfcf651e2b6a8505cd7d88b38686811079f4a is committed and pushed. The single full
+local attempt reports 1,726 passes and ten failures, all caused by a temporary
+get_transmembrane_tendency call altered while expanding the namespace. That
+call is restored; all 329 cases in the four affected files then pass. No second
+clean full local run is claimed. Existing native-parity/reference guards catch
+the regression. The committed-source whole addon CI is the final post-fix gate.
+
+The [immutable provider receipt](https://github.com/uibcdf/molsysmt/blob/3c2dfcf651e2b6a8505cd7d88b38686811079f4a/devtools/data/molsysviewer_tools_physchem_tables_receiving_20261026.json)
+records both outcomes, source hashes and the exact frozen parent. Five PBC guide
+blocks, 33 native docstring examples and the new property block execute. Every
+existing code cell/output remains unchanged in the four property-course paths.
+The producer excludes the concurrent native uibcdf/molsysmt#470 / uibcdf/molsysmt#471 repairs; their reception
+must use their later committed identity and keep its own evidence.
+
+
+### Descriptor code qualified; native query repair received — 2026-10-26
+
+Producer 3c2dfcf651e2b6a8505cd7d88b38686811079f4a passes all six original source
+controls. Smoke 40418549676/job 121906860117 passes 1,576 native and 1,230 addon
+cases with no failures/errors/skips. Ruff 40418549659, dependency 40418549584,
+developer guide 40418549611, suite policy 40418550369 and Conda governance
+40418550276 pass. GH Run Receptor confirms terminal success. Original log
+`/tmp/msm-addon-3c2dfcf6-tables-smoke.log` has SHA-256
+`f103d16bd6de793eb21fe1a50b5a067bae62b40af54e128da445e9fdc5cd269c`.
+This is the definitive whole-addon post-fix gate, without relabeling the first
+failed local attempt as green.
+
+Native repair 825a66d39efa91d18b8495bf71f861c056fd77a0 then resolves the scientific
+selection/scope contracts under uibcdf/molsysmt#470 and uibcdf/molsysmt#471.
+Receiving passes all 627 targeted native/addon cases in 183.33 seconds with no
+failures/errors/skips, plus 40 inherited property docstring examples. Alternate
+syntax is now required to succeed and match explicitly resolved intended atom/
+group indices. Unsupported fixed levels reject before invalid selection parsing,
+with ordinary/trusted flags. Current help and user-guide warnings are reconciled.
+The native property contract guard is included in both aligned smoke tiers.
+
+Receiver producer 77657b030ac0e0a7858e6a3db70628e93b5c0c8c is pushed; its final CI is pending.
+The [new immutable receipt](https://github.com/uibcdf/molsysmt/blob/77657b030ac0e0a7858e6a3db70628e93b5c0c8c/devtools/data/molsysviewer_tools_physchem_query_repairs_receiving_20261026.json)
+records this separate composition and prior terminal CI. Collantes unit review
+uibcdf/molsysmt#473, remaining tool families, GUI, installed artifacts, dependency
+floors and both 1.0 publications remain separate. No Viewer runtime change is
+introduced. The host's earlier pandas/public-backend and experimental Qt gaps
+are not claimed resolved here.
+
+
+### Exact-source fixed-ref qualification completed — 2026-10-26
+
+Producer 77657b030ac0e0a7858e6a3db70628e93b5c0c8c completes source qualification. Five original
+controls pass on that exact SHA: Ruff 40420418943, dependency 40420418946,
+developer guide 40420419175, suite policy 40420419530 and Conda governance
+40420419490. Original main smoke 40420419017 and later composed main smoke
+40420849878 remain cancelled by legitimate concurrent main-branch commits;
+neither is counted as a passing test result.
+
+Exactly one replacement [smoke 40421689803](https://github.com/uibcdf/molsysmt/actions/runs/40421689803)
+runs on fixed source ref qualification/viewer-tools-77657b0, independently of
+main concurrency. GitHub run/ref metadata both resolve to 77657b030ac0e0a7858e6a3db70628e93b5c0c8c.
+Job 121917427555 passes 2,011 native and 1,246 addon cases with no
+failures/errors/skips. GH Run Receptor confirms terminal success. Original log
+`/tmp/msm-addon-77657b03-fixed-smoke.log` has SHA-256
+`12494e500201f3875ba486e89f62dd04ae99447eb461dfbf7fd7f6f742973b25`. The reference stays fixed as a source-CI record; it is
+not a release tag, artifact producer, promotion or package qualification.
+
+This supersedes the pending-CI state of the query-repair receipt, without
+rewriting its snapshot or the earlier full-local-run failure. The thirteen
+physchem paths and received native PBC/query repairs have completed this source
+gate. Native unit review uibcdf/molsysmt#473, the other seventeen physchem
+exports, panels and installed compatibility remain separate. Later owner
+I/O, fixture and course commits retain their own qualification; this record
+does not label every later main revision green. Both 1.0 publications stay paused.

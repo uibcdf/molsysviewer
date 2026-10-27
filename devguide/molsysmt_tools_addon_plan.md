@@ -39,27 +39,30 @@ exact-head CI and installed qualification remain separate. The addon
 supplies no scientific formula or parameter substitution. No new host runtime
 is needed. Broader scientific coverage,
 installed compatibility, dependency floors and release remain separate.
-Ten `pbc` queries/factories are now explicit in provider source. Only `has_pbc`
-binds the current primary; other tools retain caller-owned quantities and work
-before loading a system. Native default-angle factory input remains unqualified
-under uibcdf/molsysmt#465;
-the three coordinate editors now have source wrappers and 94 focused receiving
-cases. Native centered in-place wrapping is rejected before effects under
-uibcdf/molsysmt#467. Local regression passes 1,171 cases on its frozen baseline;
-198 focused cases also pass on the integrated torsion/PBC composition. Provider
-4590545fd passes all six exact-source controls, including 1,576 native and
-1,028 addon cases. Native uibcdf/molsysmt#465, uibcdf/molsysmt#466 and uibcdf/molsysmt#467 and installed qualification remain
-separate.
+All thirteen reviewed PBC exports have explicit source wrappers. Native repair
+d7c82e92f supplies orthogonal omitted/None box angles, correct centered in-place
+publication and the repaired course fixture under uibcdf/molsysmt#465 / uibcdf/molsysmt#466 /
+uibcdf/molsysmt#467, with the native dictionary-axis repair under uibcdf/molsysmt#472. The
+addon removes its temporary centered-in-place restriction and delegates the
+repaired science. Twenty-four focused centered receiver combinations pass;
+source qualification remains separate from installed artifacts.
 
-The first seven physchem property readers are source-received in provider
-2b777e554e7b382453ba0e2752fe726406f2dcab: mass, charge, atomic radius,
-electronegativity, hydrophobicity, polarity and transmembrane tendency. Local
-receiving passes 109 focused and 1,272 scoped regression cases, without a host
-runtime change. Native alternative-syntax and unsupported-element contracts are
-tracked separately in uibcdf/molsysmt#470 and uibcdf/molsysmt#471. The other 23
-reviewed physchem exports, GUI and installed qualification remain pending.
-All six original committed-head source controls now pass, including 1,576 native
-and 1,137 addon cases. Installed compatibility remains separate.
+Thirteen of the thirty reviewed physchem exports now have source wrappers:
+the original seven property readers plus both ProtOr helpers and four raw
+reference tables (surface area, volume, area buried and buried fraction).
+The first seven retain their completed six-control source CI on 2b777e554;
+the additional six pass 67 focused cases. One broad local attempt finds a
+corrected wrapper-forwarding error; all 329 affected-file cases then pass.
+Producer 3c2dfcf65 passes all six source controls (1,576 native / 1,230 addon
+cases). Native query repair 825a66d39 then passes 627 receiving cases and
+40 inherited docstring examples. Producer 77657b030 adds positive syntax/
+intended-population guards and completes fixed-ref smoke 40421689803
+(2,011 native / 1,246 addon cases), with the other five exact-SHA controls
+passing. The original main smoke cancellations remain cancellations. Raw
+descriptors do not calculate conformational SASA/volume or assign chemistry. Native syntax/element repairs are received under
+uibcdf/molsysmt#470 / uibcdf/molsysmt#471; uncertain Collantes units are uibcdf/molsysmt#473.
+The other 17 reviewed physchem exports, GUI and installed qualification remain
+pending. No host runtime or dependency-floor change is introduced.
 
 ## Accepted requirements
 

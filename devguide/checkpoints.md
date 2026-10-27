@@ -377,14 +377,20 @@ eighteen structure calculations plus managed translation/rotation/reflection,
 rigid fitting, centering, single-structure displacement, principal-axis alignment
 and both dihedral editors, plus ten PBC box queries/factories and three
 coordinate editors. Only has_pbc binds the primary among the box utilities;
-coordinate editors use the managed receiver. Seven physchem property readers
-now have bounded source receiving in provider 2b777e554 (109 focused / 1,272
-scoped cases); other 23 reviewed physchem exports remain pending. Native syntax
-and element-level gaps are uibcdf/molsysmt#470 / uibcdf/molsysmt#471.
-All six original provider source controls now pass, including 1,576 native /
-1,137 addon cases. Installed qualification remains separate. Default-angle factory receiving
-and centered in-place wrapping remain limited under uibcdf/molsysmt#465
-and uibcdf/molsysmt#467;
+coordinate editors use the managed receiver. The native PBC repair d7c82e92f
+now receives orthogonal defaults and centered in-place ownership; the temporary
+addon rejection is removed after 24 focused centered checks. Thirteen physchem
+paths are exposed: the seven previously source-qualified properties and six
+additional ProtOr/reference-table tools with 67 focused checks. The other 17
+reviewed physchem exports remain pending. A local forwarding regression is
+corrected and all 329 affected-file cases pass; producer 3c2dfcf65 then passes
+all six source controls (1,576 native / 1,230 addon cases). The native
+825a66d39 selector/element repairs are received with 627 cases and 40 inherited
+examples under uibcdf/molsysmt#470 / uibcdf/molsysmt#471. Producer 77657b030
+completes fixed-ref smoke 40421689803 (2,011 native / 1,246 addon cases);
+the other five exact-SHA controls pass. Original main cancellations are not
+counted as passing tests. Collantes physical unit interpretation stays uncertain under
+uibcdf/molsysmt#473. Installed qualification remains separate;
 see [the current record](pending_proposals/molsysmt_tools_addon_receiving.md).
 Broader namespaces/effects, panels and installed qualification remain pending.
 Legacy integration remains refused and MolSysMT stays required as backend.
@@ -1934,9 +1940,15 @@ Resume toward **1.0** in this order:
    cases). The first seven physchem property readers now pass 109 focused and
    1,272 scoped cases on provider 2b777e554; all six source CI controls now pass
    (1,576 native / 1,137 addon cases).
-   Continue remaining physchem exports before panels, retaining native syntax
-   and element limits under uibcdf/molsysmt#470 / uibcdf/molsysmt#471. Centered in-place wrapping remains rejected under
-   uibcdf/molsysmt#467. The overall addon remains partial. Follow
+   The next six property tools (ProtOr and four reference tables) now have 67
+   focused checks and receive d7c82e92f's native PBC repairs, including centered
+   in-place publication. The local forwarding regression is corrected (329 affected-file passes);
+   producer 3c2dfcf65 passes all six source controls. Native syntax/element
+   repairs 825a66d39 pass 627 receiving cases. Producer 77657b030 completes
+   fixed-ref smoke 40421689803 (2,011 native / 1,246 addon cases), with five
+   original source controls passing. Continue the remaining 17 physchem
+   exports. Collantes unit review
+   remains separate under uibcdf/molsysmt#473. The overall addon remains partial. Follow
    [#264](pending_proposals/molsysmt_tools_addon_receiving.md) for exact scope.
    Reuse the [source inventory](studio_molsysmt_operation_inventory.md)
    and [reconciliation review](linked_molecular_edits_design.md) as design

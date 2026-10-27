@@ -53,7 +53,7 @@ documents, and historical audits.
   add-on has experimental source `basic` readers, independent outputs,
   retained-axis edits/synchronization, eleven `topology` readers and eighteen
   `structure` calculations and managed native translation/rotation/reflection, rigid fitting, explicit centering, single-structure displacement, principal-axis alignment and both dihedral editors, plus thirteen PBC tools
-  and seven physchem property readers with native limits; the
+  and thirteen physchem tools with native/table-unit limits; the
   [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md) names
   exact scope and tests. The backend remains required and legacy addon routes
   remain refused. Python remains the primary headless foundation.
