@@ -1,11 +1,24 @@
 # Development checkpoint
 
+**Expert interaction detectors — 2026-10-27:** provider 8d129124e adds three
+hydrogen-bond detectors and disulfide candidates, preserving native scientific
+choices/results without attachment or scene effects. All 65 directed / 4,710
+regression cases and 54 guide blocks / 214 inherited examples pass. Inventory:
+124/244 paths, canonical interactions 8/15. Native supplied-donor failures are
+uibcdf/molsysmt#511; no consumer workaround is added. Five source controls pass;
+scientific smoke 40613617586 remains in progress.
+[Receiving](pending_proposals/molsysmt_tools_addon_receiving.md#expert-hydrogen-bond-and-disulfide-detectors-received--2026-10-27)
+records exact source scope, prior cancellation and remaining seven families.
+Core runtime, GUI, packages and release status do not change; 1.0 stays paused.
+
+
 **Hydrogen-bond recognition/directions — 2026-10-27:** provider b50edcc52 exposes
 four raw expert tools under interactions.hbonds, without preparation or scene
 attachment. All 44 directed / 4,536 regression cases, 52 guide blocks / 184 inherited
 examples and whole-tree lint/format pass. Native limits are uibcdf/molsysmt#506,
 #507, #508 and #509. Five exact-source controls pass; scientific smoke 40608186286
-is pending. The prior eleven-build-audit recovery 40598751459 is success (3,431
+is cancelled, with a completed native tier but no completed addon result. The
+prior eleven-build-audit recovery 40598751459 is success (3,431
 native / 2,033 addon passes, fifteen optional Ackredit skips), separately preserved.
 [Receiving](pending_proposals/molsysmt_tools_addon_receiving.md#build-source-ci-completed-and-hydrogen-bond-sites-received--2026-10-27)
 records the scope and keeps source/installed qualification separate. Core runtime

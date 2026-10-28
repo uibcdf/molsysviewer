@@ -2256,8 +2256,71 @@ These counts include aliases/utilities and native MD stubs, not independent
 universally qualified scientific capabilities. Eleven raw canonical detector
 paths remain next. New exact-source Ruff 40608186203, dependency 40608186380,
 developer guide 40608186210, suite 40608186621 and Conda governance 40608186651
-pass. Scientific smoke 40608186286 remains pending; no duplicate campaign is
-started. The earlier 11e7ab7f0 success is not qualification of these new wrappers.
+pass. Scientific smoke 40608186286 is cancelled: early guards and 3,501 native
+cases pass, with thirteen optional Ackredit skips; the addon tier has no
+completed pytest result. The superseding detector campaign below retains that
+unsuccessful conclusion and includes the prior guards without duplicating it. The earlier 11e7ab7f0 success is not qualification of these new wrappers.
 Runtime/capability documentation remains owned under uibcdf/molsysmt#421.
 Core host runtime, GUI, dependency floor, packages and release status do not
 change; both 1.0 publications remain paused.
+
+
+### Expert hydrogen-bond and disulfide detectors received — 2026-10-27
+
+Provider `8d129124e951c9fcdb3d05d3369535ada6fe6298` adds four explicit paths:
+`view.addons.molsysmt.interactions.hbonds.get_buch_hbonds`,
+`get_luzard_chandler_hbonds`, `get_hbonds`, and
+`view.addons.molsysmt.interactions.disulfides.get_disulfide_candidates`.
+They preserve native signatures, defaults, scientific choices and result types.
+The current primary is implicit and read through the serialized owner, including
+pending edits. Secondary systems and precomputed roles remain explicit. There
+is no preparation, automatic named storage, bond insertion, visual selection or
+scene update. Core `view.interactions` retains its visualization responsibility.
+
+All 65 directed cases and 32 package/command/inventory guards pass. One frozen
+joint regression passes 4,710 cases, with zero failures/errors/skips and unchanged
+source/backend hashes during execution. All 54 guide blocks and 214 inherited
+doctests pass. Two directed cases use real pentalanine views. Native scientific
+sources match the frozen 050375083 basis; integration preserves the published
+documentation/governance parents and all concurrent working-tree content,
+including heading changes in four course notebooks. Whole-tree Ruff/format
+and native developer-guide validation pass. This is source receiving in the
+routine Python 3.14 environment, not a clean solver or installed-package matrix.
+
+Tests exercise native tuple and sparse outputs, nonconsecutive/repeated
+structures, evaluated-empty versus unevaluated coverage, all four selection
+modes, five modern methods/profiles, explicit indexed sites, units under an
+alternate policy, periodic row-box images, occurrence references, lifetime and
+replacement. Saving a calculated analysis is explicit: a validated named-map
+setter on an independent MolSys copy, followed by H5MSM persistence. A result is
+not automatically attached to `view.molsys`. Sulfur proximity candidates are
+not covalent assignments. Resource estimates are not universal RAM guarantees.
+
+Native uibcdf/molsysmt#511 independently reproduces supplied-donor shape failures
+in the two classic detectors. Automatic roles and precomputed acceptors work;
+no flattening, reconstructed donor-H pairs or scientific correction is added
+in the facade. Earlier native #503, #504 and #506–#509 retain their own scope.
+The first four focused attempts exposed a cutoff-boundary fixture, a comparison
+helper's read-only-mapping assumption, native #511 and attempted item assignment
+to the native read-only named map. Only the fixtures/comparison/persistence
+usage were corrected; native numerical behavior is unchanged.
+
+The owning [source receipt](https://github.com/uibcdf/molsysmt/blob/8d129124e951c9fcdb3d05d3369535ada6fe6298/devtools/data/molsysviewer_tools_interaction_detectors_receiving_20261027.json)
+records hashes and evidence; the [inventory](https://github.com/uibcdf/molsysmt/blob/8d129124e951c9fcdb3d05d3369535ada6fe6298/devtools/data/molsysviewer_tools_interaction_detectors_inventory_20261027.json)
+records 124/244 inspected callable paths, canonical interactions 8/15. Counts
+include aliases/utilities and native MD stubs, not independent scientifically
+qualified algorithms. Seven raw families remain: ionic, hydrophobic, halogen
+bonds, metal coordination, pi-pi, cation-pi and water bridges. Broad graphical
+tasks remain separate; scientific usage documentation stays in MolSysMT.
+
+The prior b50edcc52 smoke 40608186286 is cancelled, with 3,501 native passes and
+thirteen optional Ackredit skips but no completed addon tier. Its five other
+source controls pass. The [supersession receipt](https://github.com/uibcdf/molsysmt/blob/8d129124e951c9fcdb3d05d3369535ada6fe6298/devtools/data/molsysviewer_tools_hbond_sites_ci_supersession_20261027.json)
+preserves this distinction. New exact-source Ruff 40613617600, dependencies 40613617596, developer guide
+40613617581, suite 40613618063 and Conda governance 40613618052 pass. Scientific
+smoke 40613617586 is running, currently installing the package; neither
+scientific test tier has completed yet. No duplicate scientific dispatch is started. Earlier source
+success does not qualify the new wrappers. Provider ownership remains
+uibcdf/molsysmt#421 and receiving uibcdf/molsysviewer#264; neither issue is closed
+by a partial expert-API increment. Core runtime, GUI, dependency floor, packages
+and releases are unchanged; both 1.0 publications remain paused.

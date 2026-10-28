@@ -45,12 +45,20 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Expert interaction detectors — 2026-10-27:** provider 8d129124e adds
+  three hydrogen-bond detectors and canonical disulfide candidates. All 65
+  directed / 4,710 joint regression cases and 54 guide blocks / 214 inherited
+  examples pass. Inventory: 124/244 paths, interactions 8/15. Native supplied
+  donors are tracked in uibcdf/molsysmt#511. Five source controls pass;
+  scientific smoke 40613617586 remains in progress. See
+  [receiving](pending_proposals/molsysmt_tools_addon_receiving.md#expert-hydrogen-bond-and-disulfide-detectors-received--2026-10-27).
+
 - **Hydrogen-bond sites and directions — 2026-10-27:** provider b50edcc52 adds
   four explicit nested expert tools, independently of core visualization. All
   44 directed / 4,536 regression cases and 52 guide blocks / 184 inherited
   examples pass. Inventory: 120/244 paths, interactions 4/15. Native limits
   are uibcdf/molsysmt#506, #507, #508 and #509. Five exact-source controls pass;
-  scientific smoke 40608186286 is pending. See
+  scientific smoke 40608186286 is cancelled without a completed addon tier. See
   [receiving](pending_proposals/molsysmt_tools_addon_receiving.md#build-source-ci-completed-and-hydrogen-bond-sites-received--2026-10-27).
 
 - **Eleven native build audits — 2026-10-27:** provider 11e7ab7f0 adds eight

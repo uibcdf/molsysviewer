@@ -795,14 +795,14 @@ plans the new add-on; it does not reintroduce the removed Studio expansion plan.
 The reviewed physchem surface is fully exposed at 34 paths, and build is now at
 11/30. The owning inventory under uibcdf/molsysmt#421 records the remaining
 functional routes: basic 7, build 19, molecular_mechanics 6, canonical interactions
-11, element helpers 57, H5MSM utilities 7, historical hbonds aliases 4, attribute
+7, element helpers 57, H5MSM utilities 7, historical hbonds aliases 4, attribute
 helpers 7, supported-capability reports 4 and legacy MD declarations 2.
-These 124 unexposed paths include aliases/utilities and two native always-raise
-stubs, not 124 independent implemented scientific algorithms. Keep classification and source-versus-qualification clear.
+These 120 unexposed paths include aliases/utilities and two native always-raise
+stubs, not 120 independent implemented scientific algorithms. Keep classification and source-versus-qualification clear.
 
 Read-only build audits are received at this baseline. Four nested hydrogen-bond
-recognition/direction paths are also received; continue the eleven remaining raw
-canonical detectors, then independent/basic map utilities. Receive molecular-mechanics diagnostics and
+recognition/direction paths and four HB/sulfur detectors are received; continue
+the seven remaining raw canonical families, then independent/basic map utilities. Receive molecular-mechanics diagnostics and
 energies/forces with explicit providers and units. In-place minimization,
 preparation and topology-changing basic/build operations need their own mapping,
 reconciliation, invalidation and recovery contracts. Element/file/attribute/supported utilities keep
@@ -837,3 +837,17 @@ rule ownership/language, empty graph and frame-validation limitations. No hidden
 preparation or scene attachment occurs. Continue native raw detectors and their
 own scientific/return contracts; do not substitute core visualization for the
 expert mirror. Source receiving does not establish installed compatibility.
+
+
+### Expert hydrogen-bond and disulfide detectors received — 2026-10-27
+
+Provider 8d129124e adds three explicit hydrogen-bond detectors and the canonical
+sulfur-candidate detector, preserving native tuple/sparse defaults and all
+scientific parameters. Source exposure is 124/244 inspected paths, interactions
+8/15. The [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md#expert-hydrogen-bond-and-disulfide-detectors-received--2026-10-27)
+retains 65 directed cases, 4,710 frozen regression passes, 54 guide blocks / 214
+inherited examples and exact-source hosted status. Native uibcdf/molsysmt#511
+tracks classic supplied-donor shapes; no consumer repair is added. There is no
+automatic named storage, molecular edit or scene effect. The cancelled earlier
+recognition smoke remains distinct from the new pending campaign. Next: the
+seven remaining raw families, followed by independent utilities and mechanics.
