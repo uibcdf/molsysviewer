@@ -117,7 +117,7 @@ closing a popup alone does not close the view.
 
 `view.addons.manager.system_edits` is a host integration service shared by
 addons. A reviewed provider adapter passes `execute(callback, name=...,
-update_view=True, rejection_check=None)` a read-only preparation callback on the bound target. Its
+update_view=True, rejection_check=None, axis_growth=None)` a read-only preparation callback on the bound target. Its
 plan declares the native `run` callable, whether science changes the target,
 operation-relative retained atom/structure correspondence, interaction validity
 and any qualified atomic-rejection guarantee. Scientific semantics and map
@@ -134,8 +134,11 @@ synchronization. A potentially partial scientific write instead needs explicit
 recovery through `replace(molecular_system)`, which discards pending scene
 reconciliation without undoing the scientific mutation.
 
-Initial receiving supports retained nonempty axes. It does not certify new
-atoms/structures, arbitrary provider mutators, raw external writes or molecular
+Receiving supports retained nonempty axes and qualified native prefix additions.
+The explicit axis_growth="atoms" or "structures" keyword requires a plan
+added_count; old hosts reject the keyword before executing science. Providers
+declare retained prefix identities; counts only check that declaration. This
+does not certify arbitrary provider mutators, raw external writes or molecular
 Undo. Coordinate/analysis arrays and arbitrary user extension attributes are not
 copied into its scene checkpoint. Ordinary `view.load` cannot discard unresolved
 managed edits silently. Scientific usage belongs in the provider documentation.
@@ -397,3 +400,30 @@ To build a new add-on, follow these initial steps:
 3. Contribute one workbench section.
 4. Contribute one context action.
 5. Implement at least one Python lifecycle callback to handle context clicks.
+
+
+### Prefix additions and new structure origins
+
+A reviewed provider may use `axis_growth="atoms"` or `"structures"` with an
+integer nonnegative `added_count` in its execution plan. Native prefix identity
+is an explicit provider declaration; matching counts are not identity evidence.
+The other axis must remain unchanged. New atoms have unmapped upstream origins.
+`structure_index_map` entries may be `None` to declare new positions explicitly;
+known source runs remain sparse and retain their original indices. Composed
+pending edits may subsequently retain, remove or reorder those positions.
+
+Per-structure shapes and trajectory cards reject new origins before scientific
+execution because the host cannot invent their new values. Static atom-anchored
+shapes and explicit existing-structure filters retain their meaning. Source
+analyses, evaluated universes and newly unevaluated structures remain the
+scientific owner's responsibility. The host neither merges nor recalculates them.
+
+Live adoption checks coordinate presence with one atom/structure query before
+creating a lazy projection, without scanning a complete edited trajectory. A
+valid native coordinate-free result remains available independently; an in-place
+operation that drops coordinates can complete science but fail synchronization.
+`SystemEditSyncError` preserves that distinction. Expert callers can supply the
+missing scientific data and retry synchronization, or explicitly replace the
+system. A potentially partial native write remains uncertain and requires
+replacement; retry must not rerun science. This source capability does not change
+published package floors or qualify every scientific mutation.

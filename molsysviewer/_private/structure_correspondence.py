@@ -1,4 +1,4 @@
-"""Remap retained scene data through an explicit new-to-old structure axis.
+"""Remap scene data through explicit retained or new structure positions.
 
 These operations copy scene metadata, never molecular coordinates or analyses.
 They are shared by independent extraction and live molecular adoption.
@@ -11,17 +11,18 @@ import numpy as np
 
 
 def normalize_structure_index_map(values, old_count, new_count):
-    """Validate retained source positions, including reordered/repeated entries."""
+    """Validate new-to-old positions; None explicitly declares a new origin."""
     if values is None:
         return None
     if not isinstance(values, (list, tuple, np.ndarray)) or (isinstance(values, np.ndarray) and values.ndim != 1):
         raise ValueError("structure_index_map must be a one-dimensional new-to-old list.")
     if len(values) != new_count or any(
-        isinstance(index, (bool, np.bool_)) or not isinstance(index, Integral) or not 0 <= index < old_count
+        index is not None
+        and (isinstance(index, (bool, np.bool_)) or not isinstance(index, Integral) or not 0 <= index < old_count)
         for index in values
     ):
-        raise ValueError("structure_index_map requires one valid old structure index per new structure.")
-    return [int(index) for index in values]
+        raise ValueError("structure_index_map requires a valid old structure index or None per new structure.")
+    return [None if index is None else int(index) for index in values]
 
 
 def remap_structure_filter(values, frames):
@@ -41,11 +42,15 @@ def remap_shape_structures(record, frames):
     options = result.get("options", {})
     for key, values in list(options.items()):
         if key.startswith("structures_") and isinstance(values, list):
+            if None in frames:
+                raise ValueError("Clear per-structure shapes before adding structures with new origins.")
             options[key] = [deepcopy(values[index]) for index in frames]
     return result
 
 
 def remap_trajectory_cards(cards, frames):
+    if cards and None in frames:
+        raise ValueError("Clear trajectory plot cards before adding structures with new origins.")
     if cards and not frames:
         raise ValueError("Clear trajectory plot cards before removing every structure.")
     result = deepcopy(cards)

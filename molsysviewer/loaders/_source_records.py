@@ -53,6 +53,8 @@ def _remap_source_records(records, atom_map=None, frames=None):
     if frames is not None:
         structures = {}
         for new, old in enumerate(frames):
+            if old is None:
+                continue  # New structures have no declared origin in this source.
             structures.setdefault(int(old), []).append(new)
     result = []
     for original in records:

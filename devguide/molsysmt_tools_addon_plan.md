@@ -586,8 +586,9 @@ authoritative maps and receiving guards before admitting each family:
 `apply_system_edit` accepts an atom map and an explicit new-to-old
 `structure_index_map` for retained structures, including subsets, reordering and
 repetition. Without that map, equal structure counts still declare unchanged
-structure order. New/unknown structure origins are not admitted by this first
-map contract. It conservatively invalidates interaction coverage by default
+structure order. The extended source receiver admits None entries for explicitly new structure
+origins, with preflight rejection of per-structure shapes and trajectory cards
+whose new values are unknown. It conservatively invalidates interaction coverage by default
 and clears scene history. This boundary alone does not certify arbitrary
 scientific edits, pending synchronization or recovery after a failed rebuild.
 Receive required core extensions separately, reusing existing extraction/remap

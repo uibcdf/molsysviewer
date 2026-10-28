@@ -1,4 +1,4 @@
-"""Digest the optional new-to-old structure correspondence for molecular edits."""
+"""Digest old structure positions and explicitly new None origins."""
 
 from molsysviewer._private.exceptions import ArgumentError
 from molsysviewer._private.structure_correspondence import normalize_structure_index_map

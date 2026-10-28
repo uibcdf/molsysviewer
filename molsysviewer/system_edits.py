@@ -149,8 +149,9 @@ class SystemEditsManager:
     preparation callback(target), returning a dict with a native ``run`` callable,
     ``changed`` boolean, optional retained atom/structure maps, an interaction
     policy and optional ``failure_atomic`` declaration. Maps describe this one
-    operation, not the original scene. Initial receiving supports retained axes;
-    adding atoms/structures needs a separate capability contract.
+    operation, not the original scene. The explicit axis_growth capability
+    receives native prefix-preserving additions with an added_count plan field.
+    Counts validate that declared contract; they never establish correspondence.
     """
 
     def __init__(self, view):
@@ -243,7 +244,7 @@ class SystemEditsManager:
                 "reason": self._detail,
             }
 
-    def _prepare_maps(self, view, target, plan):
+    def _prepare_maps(self, view, target, plan, axis_growth):
         atoms = plan.get("atom_index_map")
         count = int(target.get_n_atoms())
         if atoms is not None:
@@ -265,6 +266,20 @@ class SystemEditsManager:
             frames = normalize_structure_index_map(frames, frame_count, len(frames))
         if (atoms is not None and not atoms) or (frames is not None and not frames):
             raise ValueError("Managed removal of every atom or structure is not received; use an independent output.")
+        expected_atoms = len(atoms) if atoms is not None else count
+        expected_frames = len(frames) if frames is not None else frame_count
+        if axis_growth is not None:
+            added = plan.get("added_count")
+            if isinstance(added, bool) or not isinstance(added, Integral) or added < 0:
+                raise ValueError("A prefix addition requires a nonnegative integer added_count.")
+            if atoms is not None or frames is not None:
+                raise ValueError("Prefix additions cannot also declare retained-axis maps.")
+            if axis_growth == "atoms":
+                atoms = dict(enumerate(range(count)))
+                expected_atoms = count + int(added)
+            else:
+                frames = list(range(frame_count)) + [None] * int(added)
+                expected_frames = frame_count + int(added)
         combined_atoms = (
             atoms
             if self._atoms is None
@@ -277,7 +292,11 @@ class SystemEditsManager:
         combined_frames = (
             frames
             if self._frames is None
-            else (self._frames if frames is None else [self._frames[index] for index in frames])
+            else (
+                self._frames
+                if frames is None
+                else [None if index is None else self._frames[index] for index in frames]
+            )
         )
         if combined_frames is not None:
             # Preflight structure-bound scene data before any destructive write.
@@ -286,13 +305,13 @@ class SystemEditsManager:
         return (
             combined_atoms,
             combined_frames,
-            len(atoms) if atoms is not None else count,
-            len(frames) if frames is not None else frame_count,
+            expected_atoms,
+            expected_frames,
         )
 
     @signal(tags=["edit"])
     @digest()
-    def execute(self, callback, *, name, update_view=True, rejection_check=None, skip_digestion=False):
+    def execute(self, callback, *, name, update_view=True, rejection_check=None, axis_growth=None, skip_digestion=False):
         """Execute one admitted native edit and optionally reconcile its scene.
 
         ``callback`` prepares a plan without mutating the target. The ``run``
@@ -304,11 +323,18 @@ class SystemEditsManager:
         remain equal to certify nested-state preservation. An older host rejects
         this explicit keyword before science rather than ignoring a plan field.
         Other exceptions enter uncertain state and require explicit replacement.
+        axis_growth is None, 'atoms' or 'structures'. A received provider may
+        declare a prefix-preserving native addition plus plan['added_count'];
+        new atoms/structures acquire no fabricated old scene/source identity.
+        Preflight rejects unknown per-structure visual data before science.
+        Retained maps and further additions compose across deferred edits.
         """
         if not isinstance(update_view, bool):
             raise TypeError("update_view must be a boolean.")
         if rejection_check is not None and not callable(rejection_check):
             raise TypeError("rejection_check must be a read-only token callable or None.")
+        if axis_growth not in (None, "atoms", "structures"):
+            raise ValueError("axis_growth must be None, 'atoms' or 'structures'.")
         with self._locked():
             view = self._view()
             if self._state not in {"synchronized", "pending"}:
@@ -333,7 +359,7 @@ class SystemEditsManager:
                 policy = plan.get("interactions_policy", "invalidate")
                 if policy not in {"preserve", "invalidate"}:
                     raise ValueError("Unsupported interaction validity policy.")
-                atoms, frames, atom_count, frame_count = self._prepare_maps(view, target, plan)
+                atoms, frames, atom_count, frame_count = self._prepare_maps(view, target, plan, axis_growth)
                 checkpoint = self._checkpoint or _SceneCheckpoint(view)
                 before_rejection = None if rejection_check is None else rejection_check(target)
                 if view.closed or view.molsys is not target:

@@ -178,8 +178,10 @@ The user-facing translation table is in
     (regions, selections, visibility, colors, shapes, annotations,
     measurements, layers, and index mappings)
   - `structure_index_map[j]` declares the old structure at new position `j`,
-    including reordered/repeated positions; frame-dependent shapes, interaction
-    filters, player, plot data/events and source maps follow that relation
+    including reordered/repeated positions. None explicitly declares a new
+    structure without an old scene origin. Per-structure shapes and trajectory
+    cards must be cleared before adding such positions; absent values are never
+    invented. Filters, player and known source maps follow declared origins
   - attached analyses must already match the adopted system; default coverage
     invalidation remains conservative, and explicit preservation is a caller
     declaration rather than a new calculation
@@ -188,7 +190,7 @@ The user-facing translation table is in
 - `convert(...)`
 - `addons.manager.system_edits`
   - generic provider integration service: `read(callback)`,
-    `execute(callback, name=..., update_view=True, rejection_check=None)`, `get_status()`,
+    `execute(callback, name=..., update_view=True, rejection_check=None, axis_growth=None)`, `get_status()`,
     `synchronize()` and explicit recovery `replace(molecular_system)`
   - provider adapters own scientific execution and correspondence declarations;
     the host composes retained maps, guards old-index scene actions and retries
@@ -820,3 +822,30 @@ This small surface matters especially for notebook usage:
 - it avoids requiring mouse-only navigation for workspace changes
 - it also lets notebook code drive the local panel stack of larger add-on
   workspaces
+
+
+### Prefix additions and new structure origins
+
+A reviewed provider may use `axis_growth="atoms"` or `"structures"` with an
+integer nonnegative `added_count` in its execution plan. Native prefix identity
+is an explicit provider declaration; matching counts are not identity evidence.
+The other axis must remain unchanged. New atoms have unmapped upstream origins.
+`structure_index_map` entries may be `None` to declare new positions explicitly;
+known source runs remain sparse and retain their original indices. Composed
+pending edits may subsequently retain, remove or reorder those positions.
+
+Per-structure shapes and trajectory cards reject new origins before scientific
+execution because the host cannot invent their new values. Static atom-anchored
+shapes and explicit existing-structure filters retain their meaning. Source
+analyses, evaluated universes and newly unevaluated structures remain the
+scientific owner's responsibility. The host neither merges nor recalculates them.
+
+Live adoption checks coordinate presence with one atom/structure query before
+creating a lazy projection, without scanning a complete edited trajectory. A
+valid native coordinate-free result remains available independently; an in-place
+operation that drops coordinates can complete science but fail synchronization.
+`SystemEditSyncError` preserves that distinction. Expert callers can supply the
+missing scientific data and retry synchronization, or explicitly replace the
+system. A potentially partial native write remains uncertain and requires
+replacement; retry must not rerun science. This source capability does not change
+published package floors or qualify every scientific mutation.

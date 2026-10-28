@@ -2624,7 +2624,7 @@ class MolSysView(
         new_molsys,
         *,
         atom_index_map: dict[int, int] | None = None,
-        structure_index_map: Sequence[int] | None = None,
+        structure_index_map: Sequence[int | None] | None = None,
         label: str | None = None,
         load_blocks: str = "keep",
         appended_n_atoms: int | None = None,
@@ -2651,9 +2651,11 @@ class MolSysView(
         structure_index_map
             Optional new-to-old structure positions: entry ``j`` gives the old
             structure retained at new position ``j``. Subsets, reordering and
-            repetitions such as ``[2, 0, 2]`` are supported. Every new position
-            must refer to an existing old structure; new/unknown origins cannot
-            be declared with this map. Player position selects the first retained
+            repetitions such as ``[2, 0, 2]`` are supported. A ``None`` entry
+            explicitly declares a new structure with no old scene origin.
+            Per-structure shapes and trajectory plot cards must be cleared before
+            adopting such positions: their missing values are not inferred.
+            Player position selects the first retained
             copy, while filters, shapes, source maps and plots retain all copies.
             Attached scientific analyses must already match the new system.
         label
@@ -2682,6 +2684,9 @@ class MolSysView(
         """
         if new_molsys is None:
             raise ValueError("apply_system_edit(...) requires a molecular system.")
+        from ..loaders._composition import _validate_renderable_presence
+
+        _validate_renderable_presence(new_molsys)
         if load_blocks not in ("keep", "collapse", "append"):
             raise ValueError(f"apply_system_edit(load_blocks={load_blocks!r}) must be 'keep', 'collapse', or 'append'.")
         if load_blocks == "append":

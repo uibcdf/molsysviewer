@@ -147,13 +147,15 @@ copies are outside this receiving requirement.
 
 `view.addons.manager.system_edits` is the generic host service. `read(callback)`
 serializes bound readers with managed writes, without copying native returns.
-`execute(callback, name=..., update_view=True, rejection_check=None)` receives a read-only provider
+`execute(callback, name=..., update_view=True, rejection_check=None, axis_growth=None)` receives a read-only provider
 preparation callback returning a plan: `run`, explicit `changed`, optional
 operation-relative retained atom/structure maps, `interactions_policy` and a
 reviewed optional `failure_atomic` declaration. The native operation runs once.
 The provider remains responsible for scientific validation and the truth of
-these declarations. Initial receiving rejects added/unknown origins and an empty
-atom/structure result before native execution; independent outputs remain native.
+these declarations. Empty atom/structure results still reject before native
+execution. The explicit axis_growth capability receives qualified prefix
+additions through an integer added_count plan field; it does not infer identity
+from increased counts. Independent outputs remain native.
 
 The host composes retained maps across deferral, checkpoints only scene metadata
 and preserves existing handle objects. Retry restores that metadata before
@@ -569,3 +571,53 @@ target selection. The administrative reopening of uibcdf/molsysmt#451 requests
 its missing closure comment; it does not revoke the accepted native correction.
 Native alignment repairs #452/#453 remain a separate owner's change; no host
 runtime, public dependency floor or installed-package qualification is added.
+
+
+### Prefix additions and new structure origins
+
+A reviewed provider may use `axis_growth="atoms"` or `"structures"` with an
+integer nonnegative `added_count` in its execution plan. Native prefix identity
+is an explicit provider declaration; matching counts are not identity evidence.
+The other axis must remain unchanged. New atoms have unmapped upstream origins.
+`structure_index_map` entries may be `None` to declare new positions explicitly;
+known source runs remain sparse and retain their original indices. Composed
+pending edits may subsequently retain, remove or reorder those positions.
+
+Per-structure shapes and trajectory cards reject new origins before scientific
+execution because the host cannot invent their new values. Static atom-anchored
+shapes and explicit existing-structure filters retain their meaning. Source
+analyses, evaluated universes and newly unevaluated structures remain the
+scientific owner's responsibility. The host neither merges nor recalculates them.
+
+Live adoption checks coordinate presence with one atom/structure query before
+creating a lazy projection, without scanning a complete edited trajectory. A
+valid native coordinate-free result remains available independently; an in-place
+operation that drops coordinates can complete science but fail synchronization.
+`SystemEditSyncError` preserves that distinction. Expert callers can supply the
+missing scientific data and retry synchronization, or explicitly replace the
+system. A potentially partial native write remains uncertain and requires
+replacement; retry must not rerun science. This source capability does not change
+published package floors or qualify every scientific mutation.
+
+
+## Managed prefix additions received in source — 2026-10-28
+
+The generic executor now receives an explicit axis_growth capability and an
+added_count plan field for qualified native atom/structure prefix additions.
+New structure origins are None; old source runs stay sparse and retain original
+indices. Deferred growth/removal maps compose without repeating science.
+Per-structure shapes/cards reject unknown new values before execution. Live
+adoption checks coordinate presence through a bounded one-atom/one-structure
+query. Native science can complete yet need missing data before synchronization;
+a partial write remains uncertain and requires explicit replacement.
+
+All 38 focused managed/structure correspondence cases pass. The affected core
+modules pass 168 cases with one stale generated digester-count assertion; the
+baseline is regenerated for the new validator and all 14 inventory tests pass.
+The full 3,308-core-test attempt is inconclusive because /tmp user quota caused
+EDQUOT, HDF5 worker exits and an empty JUnit. Its original failure is preserved,
+not relabelled. The affected HDF5 module passes 37/37 cases with disk temporaries.
+See [source receiving](managed_prefix_growth_receiving_20261028.json). Exact
+hosted CI remains pending. Native uibcdf/molsysmt#520 records the independently
+reproduced named-analysis/state-link partial write; the host does not repair it.
+This does not change published dependency floors, add-on discovery or releases.

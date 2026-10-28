@@ -1,0 +1,63 @@
+{
+  "schema": "molsysviewer.managed-prefix-growth-source@1",
+  "date": "2026-10-28",
+  "basis": "f5bd90e0b20852a38f089462779f383ebec20644",
+  "scientific_basis": "ac30d5ba4f392016f9bd15eda660886ef044b93b",
+  "environment": "molsyssuite@uibcdf_3.14",
+  "runtime_and_guard_hashes": {
+    "molsysviewer/_private/argdigest/argument/axis_growth.py": "64f09f2b6ae0d1e910b8b65cc6ff6dcdda1ad9938b17605b7c06bf90ea6f9c44",
+    "molsysviewer/_private/argdigest/argument/structure_index_map.py": "650b2273b6e142e1bb730a9f57b45a2355ea7445eea4bc4c71f1d54ff2551eee",
+    "molsysviewer/_private/structure_correspondence.py": "9fed3203a858e98c3e08ec247f76a5ede267b0bdd23363b8913816687a3d909a",
+    "molsysviewer/loaders/_composition.py": "a922b9805ff0d4990080b8fd0eba5f1c43c3b8232f18238bda11feb3a8bfe773",
+    "molsysviewer/loaders/_source_records.py": "a445b67b8650e6a1224c88051b9d0bed6bbd817c9af5d0d5f4d447144f1cc25c",
+    "molsysviewer/system_edits.py": "6cb94ac7a46c4477e378e4db7f9217d0a57fdccdc8872dbca0d8a47d06972d96",
+    "molsysviewer/viewer/core.py": "bafca5b3d28b1e496e5e5dc562d3617e2bf30b060569f892ec974a8ccf5fbd3e",
+    "tests/test_managed_axis_growth.py": "b7b3f5a63042e76e718dde3f04e8392c116dc75b33d6bd546999088428ec2953",
+    "devtools/public_api_inventory_baseline.json": "dbf72ea4284e128189747de73aa4a2fc8284c77d03114cfe2c6d45d889c40808"
+  },
+  "focused": {
+    "tests": 38,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "affected_core_attempt": {
+    "tests": 169,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0
+  },
+  "public_inventory_receiving": {
+    "tests": 14,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "hdf_module_disk_receiving": {
+    "tests": 37,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "full_core_attempt": {
+    "status": "inconclusive",
+    "selected": 3308,
+    "scope": "all core tests with -m not qt_runtime, one attempt only",
+    "reason": "Temporary filesystem has usrquota; EDQUOT caused writer/worker failures and empty JUnit, so no global pass is claimed.",
+    "log_sha256": "bd756889ab224a3206045ff766c50d90683fffcf6ad6fedcfbd4a4610baa4cc9",
+    "source_manifest_recovered": ".pytest_cache/composition-core-manifest-recovered.json",
+    "source_changes": []
+  },
+  "affected_core_note": "168 passed plus one stale inventory-count failure; the generated baseline now records the implemented axis_growth digester (445 to 446), and all 14 inventory checks pass. This does not relabel the failed attempt.",
+  "quota_recovery": "Only this task-owned completed 326 MB test output moved from /tmp to ignored disk-backed project cache; scientific files and unrelated work preserved. Recovery uses TMPDIR on disk, not a molecular workaround.",
+  "provider_issue": "uibcdf/molsysmt#520",
+  "hosted": "Pending exact source CI; source receiving is not installed/public package qualification.",
+  "contract": [
+    "Explicit axis_growth atoms/structures and nonnegative plan added_count; old native identities retained as a declared prefix.",
+    "None structure origins are explicit; new per-structure visual values are never inferred. Preflight rejects shapes/cards requiring them.",
+    "Deferred maps compose through additions/removal/repetition; original source runs remain sparse and newly added atoms have unmapped origin.",
+    "One bounded atom/structure query checks coordinate presence before lazy adoption; complete trajectories are not scanned for this check.",
+    "Completed native science with missing coordinates can fail synchronization; retry never repeats science. Partial writes remain uncertain."
+  ],
+  "no_release_or_dependency_floor_change": true
+}

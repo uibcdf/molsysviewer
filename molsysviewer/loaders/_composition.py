@@ -75,6 +75,20 @@ def _load_record(molsys, *, index=0, offset=0, label=None, origin=None, atoms=No
     }
 
 
+def _validate_renderable_presence(molsys):
+    """Require coordinate-bearing axes using one bounded native atom/structure read.
+
+    Live adoption must reject missing coordinates before creating a lazy payload,
+    without scanning/copying a complete edited trajectory. Scientific validity
+    and full loading checks retain their separate owners.
+    """
+    if int(molsys.get_n_atoms()) <= 0 or int(molsys.structures.n_structures) <= 0:
+        raise ValueError("A displayed molecular system requires nonempty atom and structure axes.")
+    sample = msm.get(molsys, element="atom", selection=[0], structure_indices=[0], coordinates=True)
+    if sample is None:
+        raise ValueError("A displayed molecular system requires structural coordinates; use an independent output for coordinate-free results.")
+
+
 def _validate_renderable(molsys):
     count = int(molsys.get_n_atoms())
     frames = int(molsys.structures.n_structures)
