@@ -23,7 +23,7 @@ independent extraction. Retained-axis removal, coordinate/box setting,
 copy/conversion/preflight, composition/comparison/identity readers, all eleven
 current topology readers, eighteen structure calculations, native translation/rotation/reflection/fitting/centering/displacement/principal-axis alignment/dihedral editing,
 all 34 reviewed physchem tools, eleven build diagnostics, fifteen canonical
-interaction tools and synchronization now have source receiving; other namespaces/edit families, task panels and installed
+interaction tools, four system-composition methods and synchronization now have source receiving; other namespaces/edit families, task panels and installed
 qualification remain pending. Native repairs under uibcdf/molsysmt#439,
 uibcdf/molsysmt#440, uibcdf/molsysmt#441 and uibcdf/molsysmt#442 are now received.
 Minimum-weight/neighbor-source repairs under uibcdf/molsysmt#444 and
@@ -2536,3 +2536,79 @@ successor campaign, native CLI counts and log digests. The initial 6,024-case
 regression retains its own basis; neither run is installed artifact qualification.
 Optional Ackredit/unyt/Astropy omissions stay explicit. No duplicate original
 campaign or release is dispatched; native #515/#516 retain independent scope.
+
+
+## System composition received in source — 2026-10-28
+
+Provider `71fbe4f46d3c70e4e973c8025f01752a8c9b1084` receives four expert methods against Viewer
+`4e1bf7642fbeaa14b7894deaf0ea1d2c6a406308`. `add` and
+`append_structures` bind the current destination, retain explicit sources and
+native in-place defaults/None returns, and add `update_view=True`. Independent
+outputs never replace the view. `merge` and `concatenate_structures` take the
+complete explicit collection, work without a primary and never insert it.
+The host requires declared atom/structure prefix growth and verifies counts;
+counts alone do not establish identity. Newly introduced structures have
+explicit unknown origins. Missing per-structure visual values reject before
+science. Deferred maps retain original sources through growth and removal.
+Completed science with missing coordinates permits projection-only retry;
+potentially partial science requires explicit system replacement.
+
+[Provider receiving receipt](https://github.com/uibcdf/molsysmt/blob/71fbe4f46d3c70e4e973c8025f01752a8c9b1084/devtools/data/molsysviewer_tools_composition_receiving_20261028.json)
+separates 52 directed passes from the original 6,166-case regression on ac30d5ba:
+4,886 initial passes, 164 failures and 63 errors with incomplete execution under
+`/tmp` quota, followed by exactly 1,280 failed/unexecuted cases passing on disk.
+This covers 6,166 distinct cases across two attempts, not one green run.
+New owner 5bcd2b760 receiving passes 812/813; the stale numeric chain-ID test
+is corrected under uibcdf/molsysmt#522 (guard 1/1, module 5/5), preserving the
+A–Z/AA string-ID contract and all source-preservation assertions. No scientific
+algorithm changes. Guide examples pass 67 blocks / 331 inherited doctests;
+course notes preserve raw schemas, IDs, code and outputs. Native whole-tree
+Ruff and developer-guide validation pass. Exposure is now 144/244 scoped paths,
+basic 25/26; two FASTA readers remain outside that denominator.
+
+Owner smoke 40767706046 passes 4,028 native cases with sixteen optional skips,
+but fails one addon signature assertion (2,394 pass, four optional skips):
+5bcd2b760 added keyword-only `element` to native `extract`. The wrapper now
+mirrors that argument, and all 22 read-tool cases pass, including independent
+group/chain output parity with unchanged primary coordinates and scene. The
+updated extraction guide example also passes. This receiving retains the failed
+parent campaign and does not claim the newly integrated producer's CI is green.
+
+Native uibcdf/molsysmt#520 remains open: appending named analyses with explicit
+state associations can publish partially before raising. The consumer retains
+the actual exception and quarantines the uncertain state; no scientific
+workaround is introduced. Native attribute/box/analysis/output-form restrictions
+remain visible. Native #515/#516 retain independent scope.
+
+Host [source receipt](../managed_prefix_growth_receiving_20261028.json) records
+38 focused passes, one inconclusive full-core quota attempt, 37 HDF5 recovery
+passes, 168 affected passes and the subsequently regenerated inventory's 14
+passes. Formatting-policy failures and AST-identical corrections remain
+preserved. CI of 0a160feb found the new test incorrectly assuming in-place
+remove at native 0.23.0. Test-only 4e1bf764 uses public extraction/domain
+replacement without changing its correspondence assertions: eight cases pass
+on current native source and eight with the cached original 0.23.0 package
+using existing environment dependencies. This is not clean solver qualification.
+The superseded CI's failed jobs remain evidence; only its active campaigns are
+cancelled. Browser CI 40766765126 and four source controls pass on 0a160feb;
+Qt 40766765134 fails separately in its experimental lane. Final-source host
+and new provider CI remain pending; no blanket green claim is made.
+
+Next: finish exact-source CI receiving, settle the separate `basic.view` bridge
+and continue mechanics/preparation/editing qualification. Graphical tasks and
+installed qualification remain under uibcdf/molsysmt#421 / uibcdf/molsysviewer#264.
+Both 1.0 publications remain paused; dependency floors, tags and packages do not
+change in this receiving.
+
+
+Hosted handoff: provider 71fbe4f46 starts smoke
+[40771740568](https://github.com/uibcdf/molsysmt/actions/runs/40771740568),
+developer-guide 40771740601, Ruff 40771740580, dependency 40771740612,
+policy 40771741163 and Conda governance 40771741328. At recording these are
+queued. Final host 4e1bf764 starts core
+[40771080559](https://github.com/uibcdf/molsysviewer/actions/runs/40771080559),
+source pair 40771080794 and browser 40771080579; these remain pending/active.
+Policy 40771082314 and Conda governance 40771082590 pass. Qt 40771080516
+fails in its separate experimental lane. No duplicate dispatch is made.
+All 277 Viewer reporting guards pass and generated queue indexes are current.
+Native #522 is closed against the published guard/record; #520 remains open.

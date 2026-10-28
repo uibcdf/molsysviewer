@@ -1,5 +1,18 @@
 # Development checkpoint
 
+**System composition received in source — 2026-10-28:** provider `71fbe4f46d3c70e4e973c8025f01752a8c9b1084` adds
+`basic.add`, `append_structures`, `merge` and `concatenate_structures`.
+Bound destination edits use explicit managed prefix maps; collection inputs and
+independent results remain explicit. Source exposure is 144/244 paths (basic
+25/26), plus two separately counted FASTA readers. The receiving record retains
+52 directed checks, the quota-interrupted regression and selective recovery,
+new owner-source receiving and the test-only native #522 correction. Native
+#520 partial append remains open. Host `4e1bf764` corrects a test's unsupported
+0.23.0 in-place assumption; all eight growth checks pass with both current
+source and the minimum public native package. Hosted qualification remains in
+progress; Qt remains experimental. See [receiving](pending_proposals/molsysmt_tools_addon_receiving.md#system-composition-received-in-source--2026-10-28).
+No installed-artifact qualification, package or 1.0 publication is claimed.
+
 **Basic maps and explicit file tools received in source — 2026-10-28:**
   provider 9f6e2e011 adds eleven expert methods. Basic 21/26 and H5MSM 7/7 bring
   scoped exposure to 140/244; two raw FASTA readers are counted separately.
@@ -439,6 +452,11 @@ This is the current handoff. Normative behavior remains in the linked contracts;
 previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
+
+Current composition receiving is summarized at the top of this checkpoint;
+its native #520 limitation and exact-source CI remain explicit. Next finish
+that CI, decide the separate `basic.view` bridge, then qualify mechanics and
+remaining preparation/editing tools before GUI tasks or artifact candidates.
 
 **Current priority — 2026-10-27:** the approved
 [core/add-on boundary](core_and_addon_boundary.md) gives core visualization and
