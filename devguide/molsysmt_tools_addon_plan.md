@@ -795,13 +795,14 @@ plans the new add-on; it does not reintroduce the removed Studio expansion plan.
 The reviewed physchem surface is fully exposed at 34 paths, and build is now at
 11/30. The owning inventory under uibcdf/molsysmt#421 records the remaining
 functional routes: basic 7, build 19, molecular_mechanics 6, canonical interactions
-15, element helpers 57, H5MSM utilities 7, historical hbonds aliases 4, attribute
+11, element helpers 57, H5MSM utilities 7, historical hbonds aliases 4, attribute
 helpers 7, supported-capability reports 4 and legacy MD declarations 2.
-These 128 unexposed paths include aliases/utilities and two native always-raise
-stubs, not 128 independent implemented scientific algorithms. Keep classification and source-versus-qualification clear.
+These 124 unexposed paths include aliases/utilities and two native always-raise
+stubs, not 124 independent implemented scientific algorithms. Keep classification and source-versus-qualification clear.
 
-Read-only build audits are now received at this baseline. Continue with raw
-canonical interaction families and independent/basic map utilities. Receive molecular-mechanics diagnostics and
+Read-only build audits are received at this baseline. Four nested hydrogen-bond
+recognition/direction paths are also received; continue the eleven remaining raw
+canonical detectors, then independent/basic map utilities. Receive molecular-mechanics diagnostics and
 energies/forces with explicit providers and units. In-place minimization,
 preparation and topology-changing basic/build operations need their own mapping,
 reconciliation, invalidation and recovery contracts. Element/file/attribute/supported utilities keep
@@ -817,8 +818,22 @@ unreceived operations. Native #503 remains a separate qualification limit.
 Provider 11e7ab7f0 exposes all eleven reviewed read-only build audits; the
 [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md#eleven-build-audits-received-in-source--2026-10-27)
 retains the exact scope, 62 directed / 4,414 regression passes, executable
-guidance and pending hosted gates. Native uibcdf/molsysmt#504 tracks multi-structure
+guidance and the completed fixed-ref hosted gate. Native uibcdf/molsysmt#504 tracks multi-structure
 solvation, independently of CIP metadata #503. Keep group/atom/selected-subsystem
 axes, explicit sequence/structure scopes and native outcomes visible. There is
 no molecular repair or automatic source/scene publication in these readers.
 Next: raw canonical interactions, followed by independent utilities and mechanics.
+
+
+### Expert hydrogen-bond recognition and directions received — 2026-10-27
+
+Provider b50edcc52 adds the four explicitly bound interactions.hbonds role/site/
+direction methods. The [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md#build-source-ci-completed-and-hydrogen-bond-sites-received--2026-10-27)
+retains exact source identity, 44 directed / 4,536 regression passes, 52 guide
+blocks / 184 inherited examples and current hosted gates. Inventoried exposure
+is 120/244, canonical interactions 4/15. Native uibcdf/molsysmt#506, uibcdf/molsysmt#507,
+uibcdf/molsysmt#508 and uibcdf/molsysmt#509 retain
+rule ownership/language, empty graph and frame-validation limitations. No hidden
+preparation or scene attachment occurs. Continue native raw detectors and their
+own scientific/return contracts; do not substitute core visualization for the
+expert mirror. Source receiving does not establish installed compatibility.

@@ -1,12 +1,24 @@
 # Development checkpoint
 
+**Hydrogen-bond recognition/directions — 2026-10-27:** provider b50edcc52 exposes
+four raw expert tools under interactions.hbonds, without preparation or scene
+attachment. All 44 directed / 4,536 regression cases, 52 guide blocks / 184 inherited
+examples and whole-tree lint/format pass. Native limits are uibcdf/molsysmt#506,
+#507, #508 and #509. Five exact-source controls pass; scientific smoke 40608186286
+is pending. The prior eleven-build-audit recovery 40598751459 is success (3,431
+native / 2,033 addon passes, fifteen optional Ackredit skips), separately preserved.
+[Receiving](pending_proposals/molsysmt_tools_addon_receiving.md#build-source-ci-completed-and-hydrogen-bond-sites-received--2026-10-27)
+records the scope and keeps source/installed qualification separate. Core runtime
+and release status do not change; both 1.0 publications remain paused.
+
 **Build audit continuation — 2026-10-27:** provider 11e7ab7f0 exposes eleven
 read-only build paths, including eight further preparation audits; total
 source exposure is 116/244 inspected callable paths. All 62 directed / 4,414
 joint regression cases and 50 guide blocks / 163 inherited examples pass.
 Native multi-structure solvation is uibcdf/molsysmt#504; no consumer aggregation.
 Five source controls pass; main CI 40598293439 is cancelled at installation.
-Single recovery 40598751459 is pending on the fixed 11e7ab7f0 reference.
+Single recovery 40598751459 passes on fixed 11e7ab7f0: 3,431 native /
+2,033 addon cases, with fifteen optional Ackredit skips.
 [Receiving](pending_proposals/molsysmt_tools_addon_receiving.md#eleven-build-audits-received-in-source--2026-10-27)
 keeps source, hosted gates, optional providers and installed qualification
 separate. Core runtime, GUI, dependency floor and release status do not change.

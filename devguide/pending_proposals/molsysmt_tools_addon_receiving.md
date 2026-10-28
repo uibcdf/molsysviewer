@@ -2215,3 +2215,49 @@ main dispatch or a success claim. Provider follow-up 446f765b8 records the hando
 its documentation-only changes do not clear full-suite backlog. 511fafb54's
 earlier success is not qualification of the new wrappers. Source receiving is
 not a package/release, and both 1.0 publications remain paused.
+
+
+### Build source CI completed and hydrogen-bond sites received — 2026-10-27
+
+Earlier producer 11e7ab7f0 now completes single fixed-ref recovery 40598751459:
+3,431 native and 2,033 addon cases pass, with 11+4 optional Ackredit skips.
+The five exact-runtime source controls already pass. Original main cancellation
+40598293439 is preserved separately; it executed neither scientific tier.
+Provider records this terminal build receiving independently of later work.
+
+New provider b50edcc52d9556038f6c8af9d6da60a79da65b9e exposes four explicit methods
+under view.addons.molsysmt.interactions.hbonds: get_donor_atoms,
+get_acceptor_atoms, get_hbond_sites and get_hbond_site_directions. These read
+current view.molsys through the serialized owner, including pending scientific
+edits, without preparation, occurrence detection, named attachment or scene
+update. Core view.interactions retains its independent visualization ownership.
+Legacy extra digestion controls remain local; source graphs, scientific rules,
+selection differences, states and structure requests stay native.
+
+All 44 directed cases and 32 package/command/inventory guards pass. One frozen
+regression passes 4,536 cases with zero failures/errors/skips and unchanged
+source/backend hashes during execution. All 52 guide blocks and 184 inherited
+examples pass. The owner User Guide and four course narratives preserve all
+code/output cells. Whole-tree Ruff and format pass (4,186 Python files formatted),
+as does developer-guide validation. The 9a9546df4 documentation/governance parent
+is preserved; scientific package sources match the frozen 40a8ac2ea basis.
+
+Native uibcdf/molsysmt#506 tracks caller rule-list mutation; #507 tracks internal
+role rules with external selection syntax; #508 tracks empty covalent-path
+indices/shapes and custom donors without H; #509 tracks resident/H5MSM site-frame
+validation differences. All have independent native reproductions and owning
+records. No wrapper copy, selector translation, frame policy, graph algorithm,
+synthetic direction or virtual H is added to hide them. #503/#504 remain open.
+The local environment pip check has unrelated AmberTools-family missing or
+incompatible dependencies; no clean solver/artifact environment is claimed.
+
+The source inventory is now 120/244 inspected callable paths, interactions 4/15.
+These counts include aliases/utilities and native MD stubs, not independent
+universally qualified scientific capabilities. Eleven raw canonical detector
+paths remain next. New exact-source Ruff 40608186203, dependency 40608186380,
+developer guide 40608186210, suite 40608186621 and Conda governance 40608186651
+pass. Scientific smoke 40608186286 remains pending; no duplicate campaign is
+started. The earlier 11e7ab7f0 success is not qualification of these new wrappers.
+Runtime/capability documentation remains owned under uibcdf/molsysmt#421.
+Core host runtime, GUI, dependency floor, packages and release status do not
+change; both 1.0 publications remain paused.

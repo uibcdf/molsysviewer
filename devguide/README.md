@@ -45,13 +45,22 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Hydrogen-bond sites and directions — 2026-10-27:** provider b50edcc52 adds
+  four explicit nested expert tools, independently of core visualization. All
+  44 directed / 4,536 regression cases and 52 guide blocks / 184 inherited
+  examples pass. Inventory: 120/244 paths, interactions 4/15. Native limits
+  are uibcdf/molsysmt#506, #507, #508 and #509. Five exact-source controls pass;
+  scientific smoke 40608186286 is pending. See
+  [receiving](pending_proposals/molsysmt_tools_addon_receiving.md#build-source-ci-completed-and-hydrogen-bond-sites-received--2026-10-27).
+
 - **Eleven native build audits — 2026-10-27:** provider 11e7ab7f0 adds eight
   explicit readers without molecular repair or scene updates. All 62 directed
   cases, one frozen 4,414-case joint regression, 50 guide blocks and 163 inherited
   examples pass. Inventory: 116/244 inspected paths, build 11/30. Native
   multi-structure solvation is uibcdf/molsysmt#504; CIP metadata remains #503.
   Five source controls pass; main smoke 40598293439 is cancelled at installation.
-  Single exact-source recovery 40598751459 is pending on a fixed reference. See
+  Fixed-ref recovery 40598751459 passes 3,431 native / 2,033 addon cases, with
+  fifteen optional Ackredit skips. See
   [receiving](pending_proposals/molsysmt_tools_addon_receiving.md#eleven-build-audits-received-in-source--2026-10-27).
 
 - **Complete physchem / initial build — 2026-10-27:** provider 511fafb54 exposes
