@@ -1,10 +1,25 @@
 # Development checkpoint
 
+**Canonical interaction expert paths complete in source — 2026-10-28:**
+provider b0f21e58d110e7447b1cdccc3eea421675c67222 adds metal coordination, pi-pi, cation-pi and indexed-water
+bridges. All fifteen canonical paths are exposed; total inventory is 131/244.
+All 133 directed cases, a separate 5,840-case frozen regression and 1,004
+current-source checks pass. Current examples: 61 guide blocks / 279 doctests;
+496 stored-notebook schemas are validated without repair. Provider uibcdf/molsysmt#515 tracks
+the failed full weekly matrix, and uibcdf/molsysmt#516 tracks aromatic MDTraj string selection.
+Four hosted source controls pass; developer-guide 40735430415 and scientific
+smoke 40735430385 remain in progress. Prior cancellations stay preserved.
+[Receiving](pending_proposals/molsysmt_tools_addon_receiving.md#canonical-interaction-expert-paths-completed-in-source--2026-10-28)
+records exact sources, owner repairs and next independent utility/mechanics work.
+Core/GUI/packages remain unchanged; 1.0 remains paused.
+
+
 **Ionic, hydrophobic and halogen detector families — 2026-10-27:** provider
 24ee46486fec5c19da847a61229f553f5200921e adds three explicit native expert methods. All 76 directed /
 4,915 frozen joint regression cases, 32 package guards and 57 guide blocks /
 241 inherited examples pass. Inventory: 127/244 paths, interactions 11/15.
-Five exact-source controls pass; scientific smoke 40618125703 is in progress.
+Five exact-source controls pass; smoke 40618125703 is cancelled during native
+pytest. Later 2083a105b source passes its own scientific smoke, separately.
 The previous 8d129124e campaign completes successfully with its optional-provider
 skips preserved.
 [Receiving](pending_proposals/molsysmt_tools_addon_receiving.md#ionic-hydrophobic-and-halogen-detector-families-received--2026-10-27)

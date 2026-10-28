@@ -1,7 +1,7 @@
 # MolSysMT tools add-on — implementation plan
 
 **Status: partial source implementation; installed qualification pending —
-2026-10-27.** The maintainer authorizes the Viewer development effort to implement
+2026-10-28.** The maintainer authorizes the Viewer development effort to implement
 the integration in the owning MolSysMT repository. This is a new plan under
 [the core/add-on boundary](core_and_addon_boundary.md). The withdrawn native
 Studio expansion plan remains removed. The experimental source integration provides bound `basic` queries and read-only
@@ -794,16 +794,15 @@ plans the new add-on; it does not reintroduce the removed Studio expansion plan.
 
 The reviewed physchem surface is fully exposed at 34 paths, and build is now at
 11/30. The owning inventory under uibcdf/molsysmt#421 records the remaining
-functional routes: basic 7, build 19, molecular_mechanics 6, canonical interactions
-4, element helpers 57, H5MSM utilities 7, historical hbonds aliases 4, attribute
+functional routes: basic 7, build 19, molecular_mechanics 6, element helpers 57, H5MSM utilities 7, historical hbonds aliases 4, attribute
 helpers 7, supported-capability reports 4 and legacy MD declarations 2.
-These 117 unexposed paths include aliases/utilities and two native always-raise
-stubs, not 117 independent implemented scientific algorithms. Keep classification and source-versus-qualification clear.
+These 113 unexposed paths include aliases/utilities and two native always-raise
+stubs, not 113 independent implemented scientific algorithms. Keep classification and source-versus-qualification clear.
 
 Read-only build audits are received at this baseline. Four nested hydrogen-bond
-recognition/direction paths, four HB/sulfur detectors and three chemical contact
-families are received; continue the four remaining canonical families, then
-independent/basic map utilities. Receive molecular-mechanics diagnostics and
+recognition/direction paths and all eleven canonical detection paths are
+received in source; continue independent/basic map utilities and explicit
+file/text operations. Receive molecular-mechanics diagnostics and
 energies/forces with explicit providers and units. In-place minimization,
 preparation and topology-changing basic/build operations need their own mapping,
 reconciliation, invalidation and recovery contracts. Element/file/attribute/supported utilities keep
@@ -864,6 +863,21 @@ Exposure is 127/244 inspected paths, canonical interactions 11/15. Ionic's
 required cutoff and compound centers, hydrophobic pair identity and four-role
 halogen geometry stay native. Legacy incomplete chemistry rejects explicitly.
 Prior 8d129124e source CI completes with its optional-provider skips preserved;
-five new source controls pass; scientific smoke 40618125703 is in progress.
-Next: metal coordination, pi-pi,
-cation-pi and water bridges; native #511 does not require a facade workaround.
+five source controls pass; original smoke 40618125703 is cancelled and later
+2083a105b source passes its separate smoke. The four remaining families are
+received in the next source increment; native #511 does not require a facade workaround.
+
+
+### All canonical interaction expert paths received — 2026-10-28
+
+Provider b0f21e58d110e7447b1cdccc3eea421675c67222 adds metal coordination, pi-pi, cation-pi and indexed-water
+bridge mirrors. Source exposure is 131/244 inspected paths, canonical
+interactions 15/15. The [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md#canonical-interaction-expert-paths-completed-in-source--2026-10-28)
+retains 133 directed cases, the separate 5,840-case frozen regression and
+1,004-case current-source receiving, 496 raw notebook guards and 61/279 current
+examples. Native uibcdf/molsysmt#506/uibcdf/molsysmt#507/uibcdf/molsysmt#508 and notebook uibcdf/molsysmt#514 repairs are preserved;
+uibcdf/molsysmt#515 full-suite triage and uibcdf/molsysmt#516 aromatic selectors remain separate. Four hosted source controls pass; developer-guide 40735430415 and scientific
+smoke 40735430385 remain in progress. Next: independent basic/maps and
+explicit utilities, including reviewing the new FASTA tools outside the current
+inventory; then mechanics and qualified edits. Complete path exposure does not
+promote experimental methods or require source/scene side effects.

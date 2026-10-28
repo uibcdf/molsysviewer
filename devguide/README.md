@@ -45,11 +45,21 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Canonical interaction expert paths complete in source — 2026-10-28:**
+  provider b0f21e58d110e7447b1cdccc3eea421675c67222 adds the four remaining families: 15/15 canonical paths,
+  131/244 inventoried callable paths. All 133 directed cases, a frozen 5,840-case
+  regression, 1,004 current-source checks and 61/279 current examples pass.
+  Native uibcdf/molsysmt#515 full-suite failures and uibcdf/molsysmt#516 selector limitations remain visible;
+  four hosted source controls pass; developer-guide and scientific CI remain
+  in progress. See
+  [receiving](pending_proposals/molsysmt_tools_addon_receiving.md#canonical-interaction-expert-paths-completed-in-source--2026-10-28).
+
 - **Three chemical contact families — 2026-10-27:** provider 24ee46486fec5c19da847a61229f553f5200921e
   adds ionic, hydrophobic and halogen detection. All 76 directed / 4,915 joint
   regression cases, 57 guide blocks / 241 inherited examples and 32 package
   guards pass. Inventory: 127/244 paths, interactions 11/15. Five source controls
-  pass; scientific smoke 40618125703 is in progress. See
+  pass; original smoke 40618125703 is cancelled. Later 2083a105b source
+  passes its separate smoke. See
   [receiving](pending_proposals/molsysmt_tools_addon_receiving.md#ionic-hydrophobic-and-halogen-detector-families-received--2026-10-27).
 
 - **Expert interaction detectors — 2026-10-27:** provider 8d129124e adds

@@ -22,7 +22,7 @@ receiving. Explicit retained-structure maps now extend live adoption and
 independent extraction. Retained-axis removal, coordinate/box setting,
 copy/conversion/preflight, composition/comparison/identity readers, all eleven
 current topology readers, eighteen structure calculations, native translation/rotation/reflection/fitting/centering/displacement/principal-axis alignment/dihedral editing,
-all 34 reviewed physchem tools, eleven build diagnostics, eleven canonical
+all 34 reviewed physchem tools, eleven build diagnostics, fifteen canonical
 interaction tools and synchronization now have source receiving; other namespaces/edit families, task panels and installed
 qualification remain pending. Native repairs under uibcdf/molsysmt#439,
 uibcdf/molsysmt#440, uibcdf/molsysmt#441 and uibcdf/molsysmt#442 are now received.
@@ -2379,8 +2379,10 @@ one Unyt and one Astropy; four addon skips are optional Ackredit. All five
 source controls pass. The [CI closeout](https://github.com/uibcdf/molsysmt/blob/24ee46486fec5c19da847a61229f553f5200921e/devtools/data/molsysviewer_tools_interaction_detectors_ci_closeout_20261027.json)
 retains native job/step conclusions independently from earlier cancellation and
 from this new extension. New exact-source Ruff 40618125677, dependency 40618125652, developer guide
-40618125634, suite 40618126087 and Conda governance 40618125960 pass. Scientific
-smoke 40618125703 remains in progress, with no completed scientific verdict yet.
+40618125634, suite 40618126087 and Conda governance 40618125960 pass. Scientific smoke 40618125703 is cancelled during native pytest, with no
+completed native verdict and addon tier skipped. Later source 2083a105b passes
+its own smoke 40619213988 (3,722 native / 2,219 addon cases, fifteen/four
+optional-provider skips), preserved separately from the original cancellation.
 No duplicate dispatch or release is authorized by those earlier results.
 
 Four canonical families remain: metal coordination, pi-pi, cation-pi and water
@@ -2389,3 +2391,74 @@ Scientific usage documentation remains in MolSysMT; broader graphical tasks
 are separate. Ownership remains uibcdf/molsysmt#421 and receiving
 uibcdf/molsysviewer#264. Core runtime, GUI, dependency floor, packages and release
 status do not change; both 1.0 publications remain paused.
+
+
+### Canonical interaction expert paths completed in source — 2026-10-28
+
+Provider `b0f21e58d110e7447b1cdccc3eea421675c67222` adds explicit native mirrors for
+`view.addons.molsysmt.interactions.metal_coordination.get_metal_coordination`,
+`interactions.pi_pi.get_pi_pi_interactions`,
+`interactions.cation_pi.get_cation_pi_interactions` and
+`interactions.water_bridges.get_water_bridges`. These complete fifteen
+inventoried canonical function paths across nine family namespaces. They bind
+only the current primary, keep native signatures/defaults/keyword-only choices,
+digestion, units, diagnostics and result types, and return independent analyses.
+No preparation, assignment, automatic named storage or scene effect is added;
+core visualization ownership remains separate.
+
+All 133 directed cases pass. One frozen bb808a8b1 joint regression passes 5,840
+cases with zero failures/errors/skips and unchanged source/backend hashes.
+After preserving the owner's later e4691b16d source, 1,004 affected-route,
+reader and schema checks pass with unchanged hashes. Those include native
+uibcdf/molsysmt#506/uibcdf/molsysmt#507 repairs, all four new detector routes, the FASTA readers and 496 raw
+stored-notebook schema guards. All 61 guide blocks / 279 inherited doctests
+pass on the current basis. Whole-tree Ruff/format and developer-guide checks
+pass; the published producer preserves all tested blobs and four unrelated
+working files. These are source observations in Python 3.14, not a clean solver
+or installed-artifact matrix. The [source receipt](https://github.com/uibcdf/molsysmt/blob/b0f21e58d110e7447b1cdccc3eea421675c67222/devtools/data/molsysviewer_tools_final_interactions_receiving_20261028.json)
+retains both test scopes, source/backend hashes and native failed evidence.
+
+Tests retain directed metal roles and stored dative assignments; whole ring/
+compound-center membership; four pi-pi and three cation-pi profiles including
+the explicit custom four-cutoff proposal; parallel/edge filters; NaN meaning;
+row-box periodic images; and exact one-/two-water paths with six/nine actual
+D-H-A roles. All eight two-water orientations are tested under three leg
+criteria. Repeated/nonconsecutive structures, evaluated-empty/unassessed
+coverage, per-analysis occurrence references, typed/H5MSM storage on independent
+copies, pending readers and lifecycle stay native. No process-RAM or public
+out-of-core guarantee is introduced.
+
+Native uibcdf/molsysmt#516 independently reproduces reference-state MDTraj
+string rejection in the two aromatic detector callers; equivalent numeric
+selections succeed. The facade retains that failure and does not translate
+selectors or force a state. The first 49-pass/one-failure attempt exposed this
+native limit. Native uibcdf/molsysmt#508's empty-path/index correction and uibcdf/molsysmt#514's notebook
+schema repair are preserved. Course notes extend an existing Markdown cell,
+retaining every schema version, key, ID, code and output. New native uibcdf/molsysmt#506/uibcdf/molsysmt#507
+repairs preserve caller lists and separate built-in versus custom rule languages;
+reader/help receiving is updated without a consumer scientific workaround.
+
+The original 24ee46486 smoke 40618125703 stays cancelled. Later 2083a105b
+smoke 40619213988 passes 3,722 native / 2,219 addon cases with fifteen/four
+optional-provider skips; the [supersession receipt](https://github.com/uibcdf/molsysmt/blob/b0f21e58d110e7447b1cdccc3eea421675c67222/devtools/data/molsysviewer_tools_contact_ci_supersession_20261028.json)
+keeps source identities separate. e4691b16d parent smoke 40732579310 also
+completes successfully before this producer is pushed. New exact-source Ruff 40735430432, dependency contract 40735430354, suite
+policy 40735431359 and Conda governance 40735431452 pass. Developer-guide
+40735430415 is still checking out the source; scientific smoke 40735430385 is
+in progress. No complete new hosted scientific verdict is claimed and no
+duplicate old-source recovery is dispatched.
+These bounded results do not clear uibcdf/molsysmt#515: the complete weekly run
+40693271675 has seven repeated failures on four Linux minors and a cancelled
+macOS test job, despite a separate 79/79 certificate. Its root-cause triage
+remains with the native owner; the consumer introduces no corrective algorithm.
+
+The [inventory](https://github.com/uibcdf/molsysmt/blob/b0f21e58d110e7447b1cdccc3eea421675c67222/devtools/data/molsysviewer_tools_final_interactions_inventory_20261028.json)
+records 131/244 inspected callable paths, canonical interactions 15/15. Counts
+include aliases/utilities/stubs and do not establish scientific stability or
+universal compatibility. Newly preserved form.file_fasta read_records /
+parse_records are explicit file/text tools outside this inventory, not implicit
+primary-system wrappers. Next: independent basic/maps and explicit utilities,
+then mechanics and qualified editing contracts. Broader graphical tasks and
+installed receiving stay under uibcdf/molsysmt#421 / uibcdf/molsysviewer#264.
+Core host/GUI, dependency floor, packages and releases remain unchanged; both
+1.0 publications stay paused.
