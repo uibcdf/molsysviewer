@@ -1,5 +1,16 @@
 # Development checkpoint
 
+**Basic maps and explicit file tools received in source — 2026-10-28:**
+  provider 9f6e2e011 adds eleven expert methods. Basic 21/26 and H5MSM 7/7 bring
+  scoped exposure to 140/244; two raw FASTA readers are counted separately.
+  All 41 directed / 6,024 joint cases and 65 guide blocks / 305 doctests pass;
+  source/backend hashes and raw notebook schemas stay unchanged. Original
+  9f6e2e011 smoke/devguide runs are cancelled; four auxiliary controls pass.
+  Successor 1f0bef212 smoke 40754038881 passes 4,028 native / 2,395 addon
+  cases with sixteen/four optional skips; all its triggered controls pass.
+  Another 600 affected checks pass on that successor. See [receiving](pending_proposals/molsysmt_tools_addon_receiving.md#basic-maps-and-explicit-file-tools-received-in-source--2026-10-28).
+  No core/GUI/dependency/package change or 1.0 publication is introduced.
+
 **Canonical interaction expert paths complete in source — 2026-10-28:**
 provider b0f21e58d110e7447b1cdccc3eea421675c67222 adds metal coordination, pi-pi, cation-pi and indexed-water
 bridges. All fifteen canonical paths are exposed; total inventory is 131/244.
@@ -7,8 +18,9 @@ All 133 directed cases, a separate 5,840-case frozen regression and 1,004
 current-source checks pass. Current examples: 61 guide blocks / 279 doctests;
 496 stored-notebook schemas are validated without repair. Provider uibcdf/molsysmt#515 tracks
 the failed full weekly matrix, and uibcdf/molsysmt#516 tracks aromatic MDTraj string selection.
-Four hosted source controls pass; developer-guide 40735430415 and scientific
-smoke 40735430385 remain in progress. Prior cancellations stay preserved.
+All six hosted source controls later pass; developer-guide 40735430415 and
+scientific smoke 40735430385 are success. Native/addon tiers pass 4,028/2,354
+cases with sixteen/four optional-provider skips. Prior cancellations stay preserved.
 [Receiving](pending_proposals/molsysmt_tools_addon_receiving.md#canonical-interaction-expert-paths-completed-in-source--2026-10-28)
 records exact sources, owner repairs and next independent utility/mechanics work.
 Core/GUI/packages remain unchanged; 1.0 remains paused.

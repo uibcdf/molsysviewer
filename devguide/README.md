@@ -45,13 +45,24 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Basic maps and explicit file tools received in source — 2026-10-28:**
+  provider 9f6e2e011 adds eleven expert methods. Basic 21/26 and H5MSM 7/7 bring
+  scoped exposure to 140/244; two raw FASTA readers are counted separately.
+  All 41 directed / 6,024 joint cases and 65 guide blocks / 305 doctests pass;
+  source/backend hashes and raw notebook schemas stay unchanged. Original
+  9f6e2e011 smoke/devguide runs are cancelled; four auxiliary controls pass.
+  Successor 1f0bef212 smoke 40754038881 passes 4,028 native / 2,395 addon
+  cases with sixteen/four optional skips; all its triggered controls pass.
+  Another 600 affected checks pass on that successor. See [receiving](pending_proposals/molsysmt_tools_addon_receiving.md#basic-maps-and-explicit-file-tools-received-in-source--2026-10-28).
+  No core/GUI/dependency/package change or 1.0 publication is introduced.
+
 - **Canonical interaction expert paths complete in source — 2026-10-28:**
   provider b0f21e58d110e7447b1cdccc3eea421675c67222 adds the four remaining families: 15/15 canonical paths,
   131/244 inventoried callable paths. All 133 directed cases, a frozen 5,840-case
   regression, 1,004 current-source checks and 61/279 current examples pass.
   Native uibcdf/molsysmt#515 full-suite failures and uibcdf/molsysmt#516 selector limitations remain visible;
-  four hosted source controls pass; developer-guide and scientific CI remain
-  in progress. See
+  all six hosted source controls later pass, including 4,028 native / 2,354
+  addon smoke cases with sixteen/four optional-provider skips. See
   [receiving](pending_proposals/molsysmt_tools_addon_receiving.md#canonical-interaction-expert-paths-completed-in-source--2026-10-28).
 
 - **Three chemical contact families — 2026-10-27:** provider 24ee46486fec5c19da847a61229f553f5200921e

@@ -2462,3 +2462,77 @@ then mechanics and qualified editing contracts. Broader graphical tasks and
 installed receiving stay under uibcdf/molsysmt#421 / uibcdf/molsysviewer#264.
 Core host/GUI, dependency floor, packages and releases remain unchanged; both
 1.0 publications stay paused.
+
+
+## Basic maps and explicit file tools received in source — 2026-10-28
+
+Provider 9f6e2e011033fa9e031ea37af0f49f0de9b6c0ee adds eleven expert methods under
+`view.addons.molsysmt`: basic atom-map composition and complete atom permutation,
+all seven native H5MSM utilities, and the two source-preserving FASTA readers.
+Only `basic.permute_atoms` and `h5msm.write` bind the current primary through its
+serialized reader, including pending native edits. Map reports, filenames,
+text, appended Structures, domain layers and associations remain explicit.
+Open empty views can use those explicit utilities; cached handles reject closed
+views. No result is loaded, attached, adopted or rendered implicitly.
+
+Permutation returns an independent native system on a full new-to-old bijection.
+Chemical states, mechanics, named sparse observations and structural series
+follow native remapping; historical report axes remain unchanged. Atom-map
+composition carries declared direct/generated/representative lineage, not
+molecular matching, coordinates, charge recalculation or identity authentication.
+Legacy pentalanine chain metadata retains native consistency rejection; successful
+cases use declared chemistry and rich native domains without facade repair.
+
+H5MSM paths belong to the Python process filesystem. Molecular-domain files are
+separate from Viewer scene/session persistence. Absent and present-empty layers,
+partial systems, selected named analyses, coverage, units, associations and
+producer metadata remain native. Nonempty mechanics retain 0.5 rejection;
+append only changes the supported explicit file and never reloads the primary.
+Validation before resize is not a crash-transaction guarantee. Migrations retain
+the legacy source. FASTA preserves raw occurrences, headers, whitespace, line
+endings and decoded-character spans in independent JSON-compatible results;
+it does not admit sequences, construct topology/coordinates or require Biopython.
+External files/inputs must remain stable; the primary's edit lock does not lock
+caller-owned resources. Native file effects/errors are not altered.
+
+All 41 directed and 6,024 joint regression cases pass with zero failures, errors
+or skips. All 65 guide blocks / 305 inherited docstring examples pass. The 496
+raw notebook-schema guards pass; both updated course notes preserve cell keys,
+IDs, code, outputs and declared versions. Source/backend hashes remain unchanged
+during regression. Whole-tree Ruff checks and owner developer-guide validation
+pass. This is frozen source receiving, not clean installed artifact or universal
+scientific qualification. The [owner receipt](https://github.com/uibcdf/molsysmt/blob/9f6e2e011033fa9e031ea37af0f49f0de9b6c0ee/devtools/data/molsysviewer_tools_map_file_receiving_20261028.json) records provenance and
+commands; no source dependency floor, core/GUI, package or publication changes.
+
+The inventory exposes 140/244 scoped callable paths (basic 21/26, H5MSM 7/7), plus
+two separately counted FASTA adapter readers. Counts include aliases/utilities
+and are not independent scientific algorithms. Native uibcdf/molsysmt#515 weekly
+failures and uibcdf/molsysmt#516 aromatic selector limits retain separate scope.
+Parent b0f21e58d smoke 40735430385 completed successfully with 4,028 native and
+2,354 addon passes; sixteen/four optional-provider skips remain explicit.
+Developer-guide 40735430415 also succeeds. Those parent results do not qualify
+the new producer: 9f6e2e011 smoke 40753622566 and developer-guide 40753622550
+are cancelled. Its four auxiliary controls pass. Successor 1f0bef2128b0937c0f322ee00070b6314cf32541
+contains native sequence-only conversion changes and leaves every addon source,
+addon regression and smoke selection byte unchanged. Its developer-guide
+40754038896 passes; smoke 40754038881 subsequently completes successfully
+with 4,028 native / 2,395 addon cases and sixteen/four optional-provider skips.
+All other triggered successor controls pass. No duplicate old-source
+recovery is dispatched. The successor is a distinct scientific-source baseline.
+
+Next: explicit system-collection composition (`basic.add`, `append_structures`,
+`concatenate_structures`, `merge`) and the separate `basic.view` bridge decision,
+then mechanics and individually qualified preparation/editing contracts. Graphical
+tasks and installed qualification remain under uibcdf/molsysmt#421 /
+uibcdf/molsysviewer#264; both 1.0 publications remain paused.
+
+
+Final receiving on isolated 1f0bef212 passes 600 affected addon, FASTA,
+sequence-conversion and raw-notebook guards, without failures/errors/skips.
+Tracked sources remain clean and the retained ABI3 backend stays unchanged.
+The [published CI supersession receipt](https://github.com/uibcdf/molsysmt/blob/ac30d5ba4f392016f9bd15eda660886ef044b93b/devtools/data/molsysviewer_tools_map_file_ci_supersession_20261028.json)
+keeps original cancellations, four original auxiliary successes, the distinct
+successor campaign, native CLI counts and log digests. The initial 6,024-case
+regression retains its own basis; neither run is installed artifact qualification.
+Optional Ackredit/unyt/Astropy omissions stay explicit. No duplicate original
+campaign or release is dispatched; native #515/#516 retain independent scope.
