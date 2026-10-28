@@ -1,12 +1,25 @@
 # Development checkpoint
 
+**Ionic, hydrophobic and halogen detector families — 2026-10-27:** provider
+24ee46486fec5c19da847a61229f553f5200921e adds three explicit native expert methods. All 76 directed /
+4,915 frozen joint regression cases, 32 package guards and 57 guide blocks /
+241 inherited examples pass. Inventory: 127/244 paths, interactions 11/15.
+Five exact-source controls pass; scientific smoke 40618125703 is in progress.
+The previous 8d129124e campaign completes successfully with its optional-provider
+skips preserved.
+[Receiving](pending_proposals/molsysmt_tools_addon_receiving.md#ionic-hydrophobic-and-halogen-detector-families-received--2026-10-27)
+records source/evidence scope, declared-chemistry prerequisites and the four
+remaining canonical families. No core/GUI/package change; 1.0 remains paused.
+
+
 **Expert interaction detectors — 2026-10-27:** provider 8d129124e adds three
 hydrogen-bond detectors and disulfide candidates, preserving native scientific
 choices/results without attachment or scene effects. All 65 directed / 4,710
 regression cases and 54 guide blocks / 214 inherited examples pass. Inventory:
 124/244 paths, canonical interactions 8/15. Native supplied-donor failures are
 uibcdf/molsysmt#511; no consumer workaround is added. Five source controls pass;
-scientific smoke 40613617586 remains in progress.
+scientific smoke 40613617586 passes (3,595 native / 2,142 addon cases,
+thirteen/four optional-provider skips).
 [Receiving](pending_proposals/molsysmt_tools_addon_receiving.md#expert-hydrogen-bond-and-disulfide-detectors-received--2026-10-27)
 records exact source scope, prior cancellation and remaining seven families.
 Core runtime, GUI, packages and release status do not change; 1.0 stays paused.

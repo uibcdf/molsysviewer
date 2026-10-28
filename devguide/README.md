@@ -45,12 +45,20 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Three chemical contact families — 2026-10-27:** provider 24ee46486fec5c19da847a61229f553f5200921e
+  adds ionic, hydrophobic and halogen detection. All 76 directed / 4,915 joint
+  regression cases, 57 guide blocks / 241 inherited examples and 32 package
+  guards pass. Inventory: 127/244 paths, interactions 11/15. Five source controls
+  pass; scientific smoke 40618125703 is in progress. See
+  [receiving](pending_proposals/molsysmt_tools_addon_receiving.md#ionic-hydrophobic-and-halogen-detector-families-received--2026-10-27).
+
 - **Expert interaction detectors — 2026-10-27:** provider 8d129124e adds
   three hydrogen-bond detectors and canonical disulfide candidates. All 65
   directed / 4,710 joint regression cases and 54 guide blocks / 214 inherited
   examples pass. Inventory: 124/244 paths, interactions 8/15. Native supplied
   donors are tracked in uibcdf/molsysmt#511. Five source controls pass;
-  scientific smoke 40613617586 remains in progress. See
+  scientific smoke 40613617586 passes with 3,595 native / 2,142 addon cases
+  and thirteen/four optional-provider skips. See
   [receiving](pending_proposals/molsysmt_tools_addon_receiving.md#expert-hydrogen-bond-and-disulfide-detectors-received--2026-10-27).
 
 - **Hydrogen-bond sites and directions — 2026-10-27:** provider b50edcc52 adds

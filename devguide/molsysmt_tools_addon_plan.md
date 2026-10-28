@@ -795,14 +795,15 @@ plans the new add-on; it does not reintroduce the removed Studio expansion plan.
 The reviewed physchem surface is fully exposed at 34 paths, and build is now at
 11/30. The owning inventory under uibcdf/molsysmt#421 records the remaining
 functional routes: basic 7, build 19, molecular_mechanics 6, canonical interactions
-7, element helpers 57, H5MSM utilities 7, historical hbonds aliases 4, attribute
+4, element helpers 57, H5MSM utilities 7, historical hbonds aliases 4, attribute
 helpers 7, supported-capability reports 4 and legacy MD declarations 2.
-These 120 unexposed paths include aliases/utilities and two native always-raise
-stubs, not 120 independent implemented scientific algorithms. Keep classification and source-versus-qualification clear.
+These 117 unexposed paths include aliases/utilities and two native always-raise
+stubs, not 117 independent implemented scientific algorithms. Keep classification and source-versus-qualification clear.
 
 Read-only build audits are received at this baseline. Four nested hydrogen-bond
-recognition/direction paths and four HB/sulfur detectors are received; continue
-the seven remaining raw canonical families, then independent/basic map utilities. Receive molecular-mechanics diagnostics and
+recognition/direction paths, four HB/sulfur detectors and three chemical contact
+families are received; continue the four remaining canonical families, then
+independent/basic map utilities. Receive molecular-mechanics diagnostics and
 energies/forces with explicit providers and units. In-place minimization,
 preparation and topology-changing basic/build operations need their own mapping,
 reconciliation, invalidation and recovery contracts. Element/file/attribute/supported utilities keep
@@ -851,3 +852,18 @@ tracks classic supplied-donor shapes; no consumer repair is added. There is no
 automatic named storage, molecular edit or scene effect. The cancelled earlier
 recognition smoke remains distinct from the new pending campaign. Next: the
 seven remaining raw families, followed by independent utilities and mechanics.
+
+
+### Ionic, hydrophobic and halogen families received — 2026-10-27
+
+Provider 24ee46486fec5c19da847a61229f553f5200921e adds three explicit native family methods without
+preparation, storage, edits or scene effects. The [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md#ionic-hydrophobic-and-halogen-detector-families-received--2026-10-27)
+retains 76 directed / 4,915 joint regression passes, 32 package/command guards,
+57 guide blocks / 241 inherited examples and the exact-source hosted status.
+Exposure is 127/244 inspected paths, canonical interactions 11/15. Ionic's
+required cutoff and compound centers, hydrophobic pair identity and four-role
+halogen geometry stay native. Legacy incomplete chemistry rejects explicitly.
+Prior 8d129124e source CI completes with its optional-provider skips preserved;
+five new source controls pass; scientific smoke 40618125703 is in progress.
+Next: metal coordination, pi-pi,
+cation-pi and water bridges; native #511 does not require a facade workaround.
