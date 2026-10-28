@@ -87,5 +87,19 @@
     "whole_tree_ruff_check": "pass",
     "whole_tree_format_check": "pass",
     "files_checked": 933
+  },
+  "minimum_backend_test_receiving": {
+    "previous_host": "0a160febc5acab2781c8492d47a806d53796cf46",
+    "failed_core_run": 40766765142,
+    "cause": "The new deferred-map test assumed native in-place remove semantics unavailable in the supported MolSysMT 0.23.0 package. Runtime correspondence correctly rejected the unchanged structure count.",
+    "repair": "Test-only public extract and explicit structural-domain replacement, preserving all deferred maps and repetition assertions.",
+    "current_native_source_tests_passed": 8,
+    "minimum_public_molsysmt": "0.23.0 pyabi3h03bb3b7_0",
+    "minimum_package_tests_passed": 8,
+    "minimum_package_scope": "Cached original package imported using PYTHONPATH with suite-environment dependencies; not a clean solver installation.",
+    "test_sha256": "d34b645b5c380ada8d36e79aa3002d9162774c8c250bd6eb5cc7a9dcd170d61c",
+    "whole_tree_ruff_check": "pass",
+    "whole_tree_format_check": "pass",
+    "full_local_core_repeated": false
   }
 }

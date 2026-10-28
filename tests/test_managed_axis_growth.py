@@ -89,9 +89,17 @@ def test_deferred_growth_composes_with_retained_structure_maps(view):
     growth(view, "structures", update=False)
     growth(view, "structures", update=False)
     assert view.molsys.structures.n_structures == 4
+
+    def remove_new_structure(target):
+        edited = msm.extract(target, structure_indices=[0, 2, 3])
+        # Public domain replacement also works at the MolSysMT 0.23.0 floor,
+        # whose remove() does not yet implement in-place removal.
+        target.structures = edited.structures
+        target.interactions = edited.interactions
+
     manager.execute(
         lambda target: {
-            "run": lambda: msm.remove(target, structure_indices=[1], in_place=True),
+            "run": lambda: remove_new_structure(target),
             "changed": True,
             "structure_index_map": [0, 2, 3],
             "interactions_policy": "preserve",
