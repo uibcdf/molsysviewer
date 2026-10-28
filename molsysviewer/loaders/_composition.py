@@ -86,7 +86,9 @@ def _validate_renderable_presence(molsys):
         raise ValueError("A displayed molecular system requires nonempty atom and structure axes.")
     sample = msm.get(molsys, element="atom", selection=[0], structure_indices=[0], coordinates=True)
     if sample is None:
-        raise ValueError("A displayed molecular system requires structural coordinates; use an independent output for coordinate-free results.")
+        raise ValueError(
+            "A displayed molecular system requires structural coordinates; use an independent output for coordinate-free results."
+        )
 
 
 def _validate_renderable(molsys):

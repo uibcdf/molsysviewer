@@ -67,7 +67,9 @@ def test_native_growth_preserves_target_handles_and_known_source_prefix(view, ax
 @pytest.mark.parametrize("owner", ["shape", "plot"])
 def test_new_structure_origins_reject_unknown_visual_series_before_science(view, owner):
     if owner == "shape":
-        view.shapes.add_sphere(structure_centers=msm.pyunitwizard.quantity([[0, 0, 0]], "nm"), radius="0.1 nm", tag="per-structure")
+        view.shapes.add_sphere(
+            structure_centers=msm.pyunitwizard.quantity([[0, 0, 0]], "nm"), radius="0.1 nm", tag="per-structure"
+        )
     else:
         view.trajectory_plot.show({"score": [1]}, tag="per-structure")
     before = copy.deepcopy(view.export_state())
@@ -75,7 +77,9 @@ def test_new_structure_origins_reject_unknown_visual_series_before_science(view,
     with pytest.raises(ValueError, match="Clear"):
         growth(view, "structures")
     assert view.molsys.structures.n_structures == 1
-    np.testing.assert_array_equal(msm.pyunitwizard.get_value(view.molsys.structures.coordinates), msm.pyunitwizard.get_value(coordinates))
+    np.testing.assert_array_equal(
+        msm.pyunitwizard.get_value(view.molsys.structures.coordinates), msm.pyunitwizard.get_value(coordinates)
+    )
     assert view.export_state() == before
     assert view.addons.manager.system_edits.get_status()["state"] == "synchronized"
 

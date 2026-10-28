@@ -59,5 +59,23 @@
     "One bounded atom/structure query checks coordinate presence before lazy adoption; complete trajectories are not scanned for this check.",
     "Completed native science with missing coordinates can fail synchronization; retry never repeats science. Partial writes remain uncertain."
   ],
-  "no_release_or_dependency_floor_change": true
+  "no_release_or_dependency_floor_change": true,
+  "format_followup": {
+    "original_source": "3dde2adcd200d7844ba5f061ff2222a4020da0db",
+    "failed_policy_run": 40766149468,
+    "cause": "Four changed Python files were not Ruff-formatted; initial Ruff check did not replace the whole-tree format gate.",
+    "formatted_files": [
+      "molsysviewer/_private/structure_correspondence.py",
+      "molsysviewer/loaders/_composition.py",
+      "molsysviewer/system_edits.py",
+      "tests/test_managed_axis_growth.py"
+    ],
+    "ast_unchanged": true,
+    "new_hashes": {
+      "molsysviewer/_private/structure_correspondence.py": "9fed3203a858e98c3e08ec247f76a5ede267b0bdd23363b8913816687a3d909a",
+      "molsysviewer/loaders/_composition.py": "c8e3cf553510e6cb9065082a632892fe05f6cac9daa2b4385d6c1be6ef92f9c7",
+      "molsysviewer/system_edits.py": "026cf823c569288da0561eb3fdb5747c40d4ca1dfd2fcfc878d77e74a23e10da",
+      "tests/test_managed_axis_growth.py": "34be6ef9b7b7ccad9d01c8ccaf092b4c7704120a8b4ea13c13eb0dd9fb9a067d"
+    }
+  }
 }

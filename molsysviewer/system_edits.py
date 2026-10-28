@@ -293,9 +293,7 @@ class SystemEditsManager:
             frames
             if self._frames is None
             else (
-                self._frames
-                if frames is None
-                else [None if index is None else self._frames[index] for index in frames]
+                self._frames if frames is None else [None if index is None else self._frames[index] for index in frames]
             )
         )
         if combined_frames is not None:
@@ -311,7 +309,9 @@ class SystemEditsManager:
 
     @signal(tags=["edit"])
     @digest()
-    def execute(self, callback, *, name, update_view=True, rejection_check=None, axis_growth=None, skip_digestion=False):
+    def execute(
+        self, callback, *, name, update_view=True, rejection_check=None, axis_growth=None, skip_digestion=False
+    ):
         """Execute one admitted native edit and optionally reconcile its scene.
 
         ``callback`` prepares a plan without mutating the target. The ``run``
