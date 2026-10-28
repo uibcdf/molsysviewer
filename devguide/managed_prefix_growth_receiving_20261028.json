@@ -77,5 +77,15 @@
       "molsysviewer/system_edits.py": "026cf823c569288da0561eb3fdb5747c40d4ca1dfd2fcfc878d77e74a23e10da",
       "tests/test_managed_axis_growth.py": "34be6ef9b7b7ccad9d01c8ccaf092b4c7704120a8b4ea13c13eb0dd9fb9a067d"
     }
+  },
+  "format_gate_correction": {
+    "previous_followup": "4afee22c",
+    "omission": "The first file list mistakenly included already-formatted structure_correspondence.py and omitted the axis_growth digester.",
+    "corrected_file": "molsysviewer/_private/argdigest/argument/axis_growth.py",
+    "sha256": "c2fa19bc807396a7db967dba9fb32aa5396bea14151e60ca980e0d0e7a24ad73",
+    "ast_unchanged": true,
+    "whole_tree_ruff_check": "pass",
+    "whole_tree_format_check": "pass",
+    "files_checked": 933
   }
 }
