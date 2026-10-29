@@ -55,6 +55,7 @@ def main():
         report = {
             "authority": evaluate("window.__molsysviewerDocsController.hasPythonAuthority()"),
             "provider_file": msm.__file__,
+            "qt_platform": app.platformName(),
         }
         # Use the shared real context-menu form; no native replacement or fake UI.
         evaluate("""(() => {

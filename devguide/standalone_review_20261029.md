@@ -144,3 +144,34 @@ GPU path, assertion threshold or timeout changes. The new picture assertion is
 the explicit reason for revisiting the historical completion-only GL recipe;
 native-GPU and software-host qualification remain separate. Hosted receiving
 of the CPU-composition configuration is pending.
+
+## Hosted Qt closeout and QPA correction
+
+Hosted run [40929332143](https://github.com/uibcdf/molsysviewer/actions/runs/40929332143)
+on 407777c4 passes **13 distinct JUnit cases**, zero failures/errors/skips:
+one live-window smoke, two render guards and ten transport/resource probes.
+Its actual images show dialanine and pentalanine; all ten replacements change
+molecular pixels (minimum fraction 0.10344), three raw movie images have distinct
+viewpoints, and both host lifetimes complete. The original ZIP was downloaded;
+its artifact id/digest and scoped observations are retained in the receipt.
+The pytest `current` alias duplicates some artifact files; it is not a second
+observation or extra test count. #36 and #270–#273 close with guard/archive links.
+
+**Correction to local software attribution:** launching `xvfb-run` was not enough
+to select X11 in this Wayland desktop session. A direct unchanged-launch probe
+reports QPA `wayland`. Earlier local software attempts did not record QPA and
+must not be counted as X11 qualification. Their actual rendering/behavior
+results remain observations, with this narrower scope. The workflow now makes
+`QT_QPA_PLATFORM=xcb` explicit; the child records it and the guard verifies it.
+A fresh local explicit-xcb run passes all three affected cases (72.54 seconds),
+including actual molecular pixels, with platform `xcb` in the report. This is
+separate from both the real native-desktop observation and the completed hosted
+run above. No user application platform default is changed.
+
+All 285 final classification/reporting/link guards pass. Unrelated notebook
+and addon-receiving work remains untouched. Superseded runs started by this
+review are cancelled where still active; historical failures and partial
+outcomes are retained. The current core/scientific campaigns still have the
+known provider warning boundary and are not relabeled green by Qt success.
+The explicit-QPA hosted follow-up is the remaining automatic check; #35 keeps
+its maintainer visual confirmation, and platform/popout exceptions stay open.

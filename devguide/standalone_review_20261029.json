@@ -32,10 +32,10 @@
     "molsysviewer/js/src/messages/frontend-requests.ts": "9b176fb0e042c6f2c55090da2bb161accf34246412da9a007351f8504b4728c1",
     "molsysviewer/js/src/managers/handlers/movie-handlers.ts": "6badc91424a6be7401ea21ba217b6b17ed2c5f9018bde792dd6136ac29fe9e73",
     "molsysviewer/runtime_actions.json": "49cadebc8a25c27972d576498b78e45077ce9df72d20622ccb1e5f574071846a",
-    "tests/test_qt_live_workbench.py": "cfc1a7c3fa0534b0d397ca94cd0b85faecba124edf5181f41ee224912a7eb2fa",
-    "tests/_qt_live_workbench.py": "fd3636faca5264e157bd5db13c770f733a6a3e66f2175476273b4caf29b8c2da",
-    ".github/workflows/CI_qt_experimental.yaml": "dc5f9979bf1fadccf1aee4eb06f81d94fb386580429c81a1e0a33dc4afbd25a4",
-    "tests/test_core_qt_gates.py": "bd05d91dfa86e9913a3cc4b10c91abb6ca8aafebc81fea683a98b021fb399170"
+    "tests/test_qt_live_workbench.py": "67dd7d2fd609b82b59aaf99260111b1b196c737ec1e807dfdf8459c3b454c7fc",
+    "tests/_qt_live_workbench.py": "48e1df2cb849cb746e0a2dfb74335bc8bb755de4b72475a6d2ff5008d562d7a0",
+    ".github/workflows/CI_qt_experimental.yaml": "bcea5f19364698dc038eb30f48a0975d19274801a0ff39a2ed38eb02397bb162",
+    "tests/test_core_qt_gates.py": "8c8e0a56445cba7e973a884331714b9beaa7293a42b44942ac4142a6c6314b1c"
   },
   "checks": {
     "native_final": {
@@ -125,7 +125,8 @@
       "errors": "0",
       "skipped": "0",
       "time": "56.695",
-      "scope": "Xvfb/SwiftShader native-host source regression; distinct from native GPU and human observation"
+      "scope": "Xvfb/SwiftShader native-host source regression; distinct from native GPU and human observation",
+      "qpa_correction": "Launched via xvfb-run, but QPA was not recorded. The same unchanged desktop launcher subsequently selects Wayland. Do not count this earlier local probe as X11 qualification."
     },
     "guidance": {
       "passed": 282,
@@ -135,12 +136,14 @@
       "passed": 1,
       "deselected": 1,
       "time_seconds": 40.34,
-      "scope": "same Xvfb/SwiftShader flow with explicit modal directory/result/path assertions"
+      "scope": "same Xvfb/SwiftShader flow with explicit modal directory/result/path assertions",
+      "qpa_correction": "Launched via xvfb-run, but QPA was not recorded. The same unchanged desktop launcher subsequently selects Wayland. Do not count this earlier local probe as X11 qualification."
     },
     "software_qt_user_filename": {
       "passed": 1,
       "time_seconds": 39.87,
-      "scope": "real fileNameEdit keyboard entry and Save-button click, accepted-result/path/bytes assertions retained"
+      "scope": "real fileNameEdit keyboard entry and Save-button click, accepted-result/path/bytes assertions retained",
+      "qpa_correction": "Launched via xvfb-run, but QPA was not recorded. The same unchanged desktop launcher subsequently selects Wayland. Do not count this earlier local probe as X11 qualification."
     },
     "cpu_composition": {
       "passed": 3,
@@ -178,7 +181,51 @@
         "failed_deliveries": [],
         "independent_host_and_cleanup": true
       },
-      "configuration": "Xvfb; ANGLE SwiftShader WebGL retained; --disable-gpu-compositing selects CPU frame composition; no Qt Quick software override"
+      "configuration": "Xvfb; ANGLE SwiftShader WebGL retained; --disable-gpu-compositing selects CPU frame composition; no Qt Quick software override",
+      "qpa_correction": "Launched via xvfb-run, but QPA was not recorded. The same unchanged desktop launcher subsequently selects Wayland. Do not count this earlier local probe as X11 qualification."
+    },
+    "explicit_xcb": {
+      "passed": 3,
+      "deselected": 47,
+      "time_seconds": 72.54,
+      "observations": {
+        "authority": true,
+        "provider_file": "frozen MolSysMT worktree / molsysmt/__init__.py",
+        "qt_platform": "xcb",
+        "region_atoms": [
+          0,
+          1
+        ],
+        "native_download_and_cancel": true,
+        "camera_received": true,
+        "image_received": true,
+        "python_mode": "cinema",
+        "browser_mode": "standard",
+        "fullscreen_roundtrip": true,
+        "loads": [
+          22,
+          62,
+          22,
+          62,
+          22,
+          62,
+          22,
+          62,
+          22,
+          62
+        ],
+        "changed_molecular_pixels": 0.10269177597736626,
+        "movie_camera_image_difference": 3.9608203125,
+        "movie_frames": 3,
+        "timeout_without_reply": true,
+        "failed_deliveries": [],
+        "independent_host_and_cleanup": true
+      },
+      "scope": "QT_QPA_PLATFORM=xcb explicitly selects the Xvfb display; CPU composition plus SwiftShader; independent of native desktop evidence"
+    },
+    "guidance_final": {
+      "passed": 285,
+      "junit": "final-guides.xml"
     }
   },
   "core_original_diagnosis": {
@@ -266,7 +313,81 @@
       "successful_observations": "real dialog destination and fullscreen/Escape now pass",
       "failure": "molecular pixels unchanged (changed=0.0) with native-pixmap/dma_buf texture-import errors; counts alone did not detect this",
       "fix": "CI-only CPU composition with SwiftShader WebGL retained; source reviewed against Qt 6.11.2 compositor; next hosted receiving pending"
-    }
+    },
+    "qualified_qt": {
+      "commit": "407777c427f01c59019ec7b29edb4af54aaad9fc",
+      "run": 40929332143,
+      "conclusion": "success",
+      "junit": {
+        "qt-render.xml": {
+          "tests": "2",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0",
+          "time": "45.592"
+        },
+        "qt-window.xml": {
+          "tests": "1",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0",
+          "time": "12.211"
+        },
+        "qt-probes.xml": {
+          "tests": "10",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0",
+          "time": "28.702"
+        }
+      },
+      "distinct_cases": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped_cases": 0,
+      "workflow_skipped_jobs": "backlog selector only; no test skip",
+      "observations": {
+        "authority": true,
+        "provider_file": "GitHub Python 3.13 environment / site-packages/molsysmt/__init__.py",
+        "region_atoms": [
+          0,
+          1
+        ],
+        "native_download_and_cancel": true,
+        "camera_received": true,
+        "image_received": true,
+        "python_mode": "cinema",
+        "browser_mode": "standard",
+        "fullscreen_roundtrip": true,
+        "loads": [
+          22,
+          62,
+          22,
+          62,
+          22,
+          62,
+          22,
+          62,
+          22,
+          62
+        ],
+        "changed_molecular_pixels": 0.10343926826131687,
+        "movie_camera_image_difference": 3.9382942708333335,
+        "movie_frames": 3,
+        "timeout_without_reply": true,
+        "failed_deliveries": [],
+        "independent_host_and_cleanup": true
+      },
+      "artifact": {
+        "id": 12921108424,
+        "name": "experimental-qt-results",
+        "size_bytes": 1482299,
+        "sha256": "a90f8cd7cbc96987084a63b14193f7b19b7763bd90905ffa76ed98127e40a33f",
+        "duplicate_alias_note": "pytest current symlink duplicates the report/images in this artifact; count native JUnit cases, not copied file count"
+      },
+      "scope": "source host on configured GitHub Xvfb/software pipeline, Python 3.13, canonical Qt 6.11.2; not installed canonical Viewer-package qualification"
+    },
+    "qpa_followup": "Make xcb explicit in workflow and record/assert platform in native report; no application runtime behavior change; next native run pending."
   },
   "release": {
     "created": false,
@@ -274,6 +395,26 @@
     "packaged": false,
     "standalone_status": "experimental; no change to 1.0 boundary"
   },
-  "resources": "Test-owned shell-state/files isolated in ignored task cache; explicit outputs preserved; implicit second-host HTML removed after page destruction. Shared provider worktree and unrelated files preserved. Removed 91 duplicate task-owned test HTML files (373 MiB); logs/JUnit/JSON, screenshots/movies and latest native/software artifacts retained.",
-  "implementation_commit": "c08d4c7373dff4471d1aa2a39290799858fb38b0"
+  "resources": "Test-owned shell-state/files isolated in ignored task cache; explicit outputs preserved; implicit second-host HTML removed after page destruction. Shared provider worktree and unrelated files preserved. Removed 91 duplicate task-owned test HTML files (373 MiB); logs/JUnit/JSON, screenshots/movies and latest native/software artifacts retained. Older native/software probes used unrecorded QPA; explicit-xcb is the local X11 receiving authority.",
+  "implementation_commit": "c08d4c7373dff4471d1aa2a39290799858fb38b0",
+  "issue_closeout": {
+    "closed": [
+      36,
+      270,
+      271,
+      272,
+      273
+    ],
+    "kept_partial": [
+      35
+    ],
+    "scope": "source fixes plus native Linux/software receiving; manual and platform certification remain separate"
+  },
+  "superseded_runs_cancelled": [
+    40925545198,
+    40925545181,
+    40925545102,
+    40923884451,
+    40926652200
+  ]
 }

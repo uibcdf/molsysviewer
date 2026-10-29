@@ -53,6 +53,8 @@ def test_qt_live_workbench_full_render_gpu(tmp_path):
     assert result.returncode == 0, result.stdout + result.stderr
     report = json.loads((tmp_path / "report.json").read_text())
     assert report["authority"] is True
+    if env.get("QT_QPA_PLATFORM") == "xcb":
+        assert report["qt_platform"] == "xcb"
     assert report["region_atoms"] == [0, 1]
     assert report["camera_received"] is True
     assert report["image_received"] is True

@@ -67,6 +67,8 @@ jobs:
     name: Qt pipeline completes (Xvfb, software WebGL)
     # Keep WebGL available through SwiftShader, with CPU composition instead
     # of importing GPU textures through Mesa's unavailable native pixmaps.
+    env:
+      QT_QPA_PLATFORM: xcb
     needs: nightly-decision
     if: >-
       !cancelled() && inputs.probe_backlog != true

@@ -299,3 +299,18 @@ workflow retains bounded actual-window PNG/report/GIF artifacts alongside
 JUnit. See [the review](../standalone_review_20261029.md); final hosted receiving
 and independent platform qualification remain pending. No fallback is added to
 the user application's graphics defaults.
+
+### Hosted compositor resolution and explicit platform
+
+Run 40929332143 on 407777c4 passes 13 distinct native JUnit cases, with actual
+molecular PNG changes, movie frames and closed/independent hosts. Original
+artifact bytes/digest and counters are received in the [review](../standalone_review_20261029.md).
+The CPU composition configuration resolves the measured Mesa surface boundary;
+no native user default or core assertion is weakened.
+
+A local provenance correction is explicit there: xvfb-run could leave Qt on
+Wayland in the developer session. Earlier probes without recorded QPA are not
+X11 qualification. The fresh explicit-xcb run passes three affected cases and
+records `xcb`; the workflow now selects and checks that platform. The exact
+hosted provenance follow-up remains pending. Windows/macOS, installed-host,
+resource exception and maintainer visual scopes still keep #109 open.

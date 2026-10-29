@@ -212,8 +212,11 @@ recipe exists.
 The experimental hosted lane uses Xvfb and ANGLE/SwiftShader for WebGL, with
 `--disable-gpu-compositing` to select CPU frame composition. The native pixel
 guard exposed missing native-pixmap/dma_buf interoperability on hosted Mesa;
-loading correct atom counts alone was insufficient. The local directed flow
-passes; final hosted evidence belongs in the [review](standalone_review_20261029.md).
+loading correct atom counts alone was insufficient. The local explicit-xcb flow passes all three affected cases. Hosted
+40929332143 passes thirteen cases with actual molecular images; the
+[review](standalone_review_20261029.md) keeps the original failures.
+The job explicitly selects `QT_QPA_PLATFORM=xcb`; earlier local launches
+through xvfb-run without recorded QPA are not X11 qualification.
 
 Do not add `QT_QUICK_BACKEND=software` while forcing ANGLE, or disable the GPU
 indiscriminately: the inspected Qt 6.11.2 initialization rejects unsupported

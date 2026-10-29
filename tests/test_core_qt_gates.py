@@ -85,6 +85,7 @@ def test_workflows_use_the_same_scope_and_keep_qt_failure_visible():
         assert job.get("continue-on-error", "false") == "false"
     diagnostics = [step for step in qt["jobs"]["qt-pipeline"]["steps"] if "python -m pytest" in step.get("run", "")]
     assert len(diagnostics) == 3
+    assert qt["jobs"]["qt-pipeline"]["env"]["QT_QPA_PLATFORM"] == "xcb"
     render = next(step for step in diagnostics if "-k full_render_gpu" in step["run"])
     assert '--basetemp="${RUNNER_TEMP}/qt-render"' in render["run"]
     flags = render["env"]["QTWEBENGINE_CHROMIUM_FLAGS"].split()
