@@ -105,3 +105,9 @@ uibcdf/molsysviewer#276. The old
 [host comparison](standalone_host_plan.md#host-options-considered) and
 [v2 vision](standalone_v2_evolution_plan.md) supply context, not a requirement to
 migrate or remove Python in order to modernize this window.
+
+Startup diagnostics have a separately reproduced environment issue under
+[#278](pending_bugs/qt_dbus_conda_prefix_address.md): the Conda D-Bus library
+uses a relocated system address containing an unescaped `@`. The separate GBM
+to Vulkan diagnostic is not evidence of CPU rendering. No graphics setting or
+persistent bus configuration was changed during diagnosis.
