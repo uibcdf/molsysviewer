@@ -33,7 +33,7 @@
     "molsysviewer/js/src/managers/handlers/movie-handlers.ts": "6badc91424a6be7401ea21ba217b6b17ed2c5f9018bde792dd6136ac29fe9e73",
     "molsysviewer/runtime_actions.json": "49cadebc8a25c27972d576498b78e45077ce9df72d20622ccb1e5f574071846a",
     "tests/test_qt_live_workbench.py": "cfc1a7c3fa0534b0d397ca94cd0b85faecba124edf5181f41ee224912a7eb2fa",
-    "tests/_qt_live_workbench.py": "998267f775c8d962287ea4ca11745a54ed644cc5c1f9c4780e6019922af7a2d1"
+    "tests/_qt_live_workbench.py": "5a49227f2a8e227c1866171f37260553437d25e210649140c9418be1201aabbd"
   },
   "checks": {
     "native_final": {
@@ -105,10 +105,16 @@
       "time": "64.240"
     },
     "browser": {
-      "state": "in_progress",
+      "state": "passed_in_segments",
       "initial": "context-menu and controls-visibility passed; stale MolSysMT absence assertion failed studio-usability",
       "recovery": "studio-usability passes with discovered catalogue assertion",
-      "remaining": "41 core suites running; no remote qualification"
+      "remaining": "41/41 passed; original stopped run retained; no remote qualification",
+      "total_core_suites": 44,
+      "segments": {
+        "initial_unaffected": 2,
+        "corrected_studio_guard": 1,
+        "remaining": 41
+      }
     },
     "software_qt": {
       "tests": "2",
@@ -121,6 +127,12 @@
     "guidance": {
       "passed": 282,
       "junit": "guides.xml"
+    },
+    "software_qt_dialog_followup": {
+      "passed": 1,
+      "deselected": 1,
+      "time_seconds": 40.34,
+      "scope": "same Xvfb/SwiftShader flow with explicit modal directory/result/path assertions"
     }
   },
   "core_original_diagnosis": {
@@ -159,12 +171,45 @@
       "uibcdf/molsysviewer#113"
     ]
   },
-  "hosted_ci": "pending first unskipped implementation push; exact run identities will be received separately",
+  "hosted_ci": {
+    "commit": "c08d4c7373dff4471d1aa2a39290799858fb38b0",
+    "qt": {
+      "run": 40923884784,
+      "conclusion": "failure",
+      "successful_steps": [
+        "transport round-trip",
+        "offscreen transport/resource probes",
+        "JUnit upload"
+      ],
+      "native_junit_failure": "new live-workbench guard: native HTML destination absent after dialog; Ready with no delivery failures; no DBus root cause inferred",
+      "followup": "explicit dialog directory plus accepted result and exact selected-path assertions, more bounded output diagnostics; local software flow passes; hosted receiving pending"
+    },
+    "core": {
+      "run": 40923884520,
+      "status": "in_progress",
+      "observed_failure": "Linux and macOS Python 3.14: three documentation blocks fail on provider Pandas4Warning; known uibcdf/molsysmt#431/public-provider boundary, not waived"
+    },
+    "source_pair": {
+      "run": 40923884460,
+      "status": "in_progress"
+    },
+    "e2e": {
+      "run": 40923884451,
+      "status": "in_progress"
+    },
+    "passed": [
+      "Ruff 40923884456",
+      "MolSysSuite policy 40923885542",
+      "Conda governance 40923885462",
+      "Documentation notebooks 40923884750"
+    ]
+  },
   "release": {
     "created": false,
     "tagged": false,
     "packaged": false,
     "standalone_status": "experimental; no change to 1.0 boundary"
   },
-  "resources": "Test-owned shell-state/files isolated in ignored task cache; explicit outputs preserved; implicit second-host HTML removed after page destruction. Shared provider worktree and unrelated files preserved."
+  "resources": "Test-owned shell-state/files isolated in ignored task cache; explicit outputs preserved; implicit second-host HTML removed after page destruction. Shared provider worktree and unrelated files preserved.",
+  "implementation_commit": "c08d4c7373dff4471d1aa2a39290799858fb38b0"
 }

@@ -82,9 +82,14 @@ def main():
                 if cancel:
                     dialog.reject()
                 else:
-                    dialog.selectFile(str(out / filename))
+                    # Select the directory and filename explicitly, then verify
+                    # the actual modal result before accepting written bytes.
+                    dialog.setDirectory(str(out))
+                    dialog.selectFile(filename)
                     dialog.accept()
-                selected.append(True)
+                choice = {"title": dialog.windowTitle(), "files": dialog.selectedFiles(), "result": dialog.result()}
+                print("download-dialog", choice, flush=True)
+                selected.append(choice)
 
             timer.timeout.connect(choose)
             timer.start()
@@ -93,11 +98,19 @@ def main():
             else:
                 evaluate(script)
             wait(lambda: bool(selected))
+            if not cancel:
+                assert selected[0]["result"] == QFileDialog.DialogCode.Accepted, selected
+                assert selected[0]["files"] == [str(out / filename)], selected
             wait(lambda: not window._molsysviewer_downloads)
             if cancel:
                 assert not (out / filename).exists()
             else:
-                wait(lambda: (out / filename).exists())
+                try:
+                    wait(lambda: (out / filename).exists())
+                except AssertionError as error:
+                    raise AssertionError(
+                        f"{error}; dialog={selected}; outputs={sorted(p.name for p in out.iterdir())}"
+                    ) from error
             timer.stop()
 
         download(

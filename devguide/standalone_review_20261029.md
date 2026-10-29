@@ -56,9 +56,9 @@ the corrected provider propagation and all final behavior assertions.
 The initial core browser run passes context-menu and controls-visibility,
 then stops at Studio's obsolete assertion that MolSysMT has no addon. The
 restored addon is a real discovered provider; the guard now checks the actual
-catalogue and passes. The other 41 core suites are being received separately.
-Their terminal outcome and exact-head hosted CI must be recorded before
-claiming complete core regression. Remote preview suites are outside this lane.
+catalogue and passes. The other 41 core suites subsequently pass, receiving all 44 core suites in
+three segments (two unaffected, corrected Studio, remaining 41). This does not
+rewrite the original stopped run or qualify remote preview suites.
 
 ## Remaining scope
 
@@ -80,3 +80,25 @@ context menu/Studio, demo replacement, fullscreen/Escape and the native export
 dialogs. Keep explicit user outputs; only shell-owned temporary files are
 removed automatically. The code changes for #36 and #270–#273 are guarded;
 closing their source defects does not change the standalone support boundary.
+
+## Hosted receiving on c08d4c73
+
+Qt run 40923884784 preserves a failure: transport and resource probes pass,
+but the new live-workbench guard does not find the native HTML destination
+after its dialog. The native JUnit locates that wait precisely; the compact
+Actions receptor instead selects nearby D-Bus stderr (known diagnostic boundary
+uibcdf/gh-run-receptor#62). No graphics/D-Bus workaround or timeout extension
+is inferred from that output.
+
+The follow-up strengthens dialog automation: set its directory explicitly,
+verify accepted result and exact selected path, and retain bounded dialog/file
+context on failure. That complete software-host flow passes locally; hosted
+receiving of the stronger guard remains pending. Product behavior assertions
+and export bytes are retained.
+
+Core run 40923884520 independently fails three documentation blocks on Linux
+and macOS Python 3.14 because the installed provider emits Pandas4Warning
+(`Bonds_DataFrame.sort_values(inplace=...)`). This is the known public-provider
+boundary under uibcdf/molsysmt#431. It is not suppressed or presented as a Qt
+regression. Policy, Ruff, Conda governance and documentation notebooks pass;
+source-pair, other core cells and hosted browser results are still being received.
