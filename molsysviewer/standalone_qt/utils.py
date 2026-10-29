@@ -19,7 +19,7 @@ from ..runtime_contract import (
     QT_TRANSPORT_ACTIONS,
     RAW_ACTIONS,
 )
-from ..standalone import _resolve_view, build_standalone0_html
+from ..standalone import _resolve_view
 
 logger = logging.getLogger(__name__)
 
@@ -121,6 +121,7 @@ def _import_qt():
         "QTimer": core.QTimer,
         "QUrl": core.QUrl,
         "QWebEnginePage": web_core.QWebEnginePage,
+        "QWebEngineProfile": web_core.QWebEngineProfile,
         "QWebEngineUrlScheme": web_core.QWebEngineUrlScheme,
         "QWebEngineUrlSchemeHandler": web_core.QWebEngineUrlSchemeHandler,
         "QWebEngineView": web_widgets.QWebEngineView,
@@ -291,7 +292,7 @@ def _host_info_message(current_state: dict[str, Any], html_path: str) -> str:
         "  Ctrl+R  Restore Last Source\n"
         "  Ctrl+1  Studio\n"
         "  Ctrl+2  Add-ons\n"
-        "  Escape  Close Panel Mode\n"
+        "  Escape  Dismiss canvas tools/panels or leave fullscreen\n"
         "  Ctrl+Shift+S  Export HTML\n"
         "  Ctrl+Shift+E  Export Figure"
     )
@@ -365,6 +366,8 @@ class QtMessageBridge:
         # MolSysView can consume them. The pure-transport events (ack/error/
         # structure_ready/render_ready) are handled by the bridge and not forwarded.
         self.event_sink = event_sink
+        self._closed = False
+        self._synchronize_draws = False
         self.ready = False
         self.queue: list[dict[str, Any]] = []
         self.inflight: dict[str, Any] | None = None
@@ -398,6 +401,8 @@ class QtMessageBridge:
         return self.generation
 
     def send(self, message: dict[str, Any]) -> None:
+        if self._closed:
+            raise RuntimeError("The Qt host is closed.")
         entry = self._make_entry(message)
         coalesce_key = entry.get("coalesce_key")
         if coalesce_key:
@@ -406,6 +411,8 @@ class QtMessageBridge:
         self._flush()
 
     def handle_frontend_event(self, event: Any) -> bool:
+        if self._closed:
+            return False
         validation_error = _frontend_event_validation_error(event)
         if validation_error is not None:
             return self.reject_frontend_event(
@@ -419,6 +426,9 @@ class QtMessageBridge:
             self._flush()
             self._forward_to_view(event)  # the view also needs "ready"
             return True
+        if name == "qt_ui_state":
+            self._forward_to_view(event)
+            return True
         if name in QT_TRANSPORT_ACTIONS and name != "frontend_error":
             # Pure-transport events: handled here, not forwarded to the view.
             # Progress feedback for the current generation, so the user is never
@@ -426,7 +436,7 @@ class QtMessageBridge:
             if event.get("generation") == self.generation:
                 if name == "structure_ready":
                     self._show_status("Structure ready, rendering…")
-                elif name == "render_ready":
+                elif name == "render_ready" and not self._synchronize_draws:
                     self._show_status("Ready.")
             self._handle_message_event(event)
             return True
@@ -448,6 +458,18 @@ class QtMessageBridge:
             return False
         self._forward_to_view(event)
         return True
+
+    def _close(self) -> None:
+        self._closed = True
+        self.ready = False
+        self.event_sink = None
+        self._cleanup_queue()
+        self.queue.clear()
+        if self.inflight is not None:
+            self._cleanup_entry(self.inflight)
+        self.inflight = None
+        self.payloads.clear()
+        self.binary_payload_ids.clear()
 
     def reject_frontend_event(
         self,
@@ -476,7 +498,7 @@ class QtMessageBridge:
         payload_id = self._materialize_payload_ref(msg)
         op = str(msg.get("op", ""))
         wait_event = "structure_ready" if op in {"load_molsys_payload", "load_molsys_payload_ref"} else "message_ack"
-        timeout_s = 30.0 if wait_event == "structure_ready" else 5.0
+        timeout_s = 30.0 if wait_event == "structure_ready" or op == "commit_scene" else 5.0
         return {
             "id": msg["id"],
             "generation": msg["generation"],
@@ -563,6 +585,8 @@ class QtMessageBridge:
             return "set_panel_mode"
         if op == "set_trajectory_frame":
             return "set_trajectory_frame"
+        if op == "set_host_ui":
+            return "set_host_ui"
         return None
 
     def _flush(self) -> None:
@@ -661,6 +685,11 @@ class QtMessageBridge:
             return
         self.inflight = None
         self._cleanup_entry(entry)
+        if self._synchronize_draws and not self.queue:
+            if entry["message"].get("op") == "commit_scene":
+                self._show_status("Ready.")
+            else:
+                self.queue.append(self._make_entry({"op": "commit_scene"}))
         self._flush()
 
     def _arm_timeout(self, entry: dict[str, Any]) -> None:
@@ -817,6 +846,8 @@ def _install_qt_message_bridge(
     QWebEngineUrlSchemeHandler=None,
     QBuffer=None,
     QByteArray=None,
+    profile=None,
+    synchronize_draws=False,
 ):
     class MolSysViewerQtPage(QWebEnginePage):
         def acceptNavigationRequest(self, url, nav_type, is_main_frame):  # noqa: N802
@@ -828,9 +859,10 @@ def _install_qt_message_bridge(
                 return False
             return super().acceptNavigationRequest(url, nav_type, is_main_frame)
 
-    page = MolSysViewerQtPage(webview)
+    page = MolSysViewerQtPage(profile, webview) if profile is not None else MolSysViewerQtPage(webview)
     webview.setPage(page)
     bridge = QtMessageBridge(webview, QTimer, status_callback=status_callback)
+    bridge._synchronize_draws = synchronize_draws
     setattr(webview, "_molsysviewer_qt_bridge", bridge)
 
     if QWebEngineUrlSchemeHandler is not None and QBuffer is not None and QByteArray is not None:
@@ -845,7 +877,7 @@ def _install_qt_message_bridge(
         # Serve large payloads over the custom scheme, so the page fetches them
         # without needing (insecure) file:// access.
         payload_handler = _get_helper("_make_payload_scheme_handler")(
-            QWebEngineUrlSchemeHandler, QBuffer, QByteArray, bridge.payloads
+            QWebEngineUrlSchemeHandler, QBuffer, QByteArray, bridge.payloads, bridge.binary_payload_ids
         )
         if profile is not None and hasattr(profile, "installUrlSchemeHandler"):
             profile.installUrlSchemeHandler(QT_PAYLOAD_SCHEME.encode("ascii"), payload_handler)
@@ -889,15 +921,15 @@ def _rebuild_qt_html(
     html_path: str,
     title: str,
 ) -> str:
-    return build_standalone0_html(
-        molecular_system,
-        html_path,
-        title=title,
-        include_popout=False,
-        prepare_addons=False,
-        runtime_urls=_get_helper("_qt_runtime_urls")(),
-        host_event_transport="url-scheme",
-    )
+    # This is an exported artifact, not the live Qt shell. Reuse the canonical
+    # self-contained writer and never embed a connector to the native process.
+    view = _resolve_view(molecular_system)
+    try:
+        view.export.html(html_path, title=title, skip_digestion=True)
+        return str(Path(html_path).expanduser().resolve())
+    finally:
+        if view is not molecular_system:
+            view.close()
 
 
 def _build_qt_live_messages(
@@ -945,6 +977,7 @@ def _load_molecular_system_into_qt_host(
         # emitted through the Qt channel/bridge.
         if bridge is not None:
             bridge.begin_generation()
+            view.widget._send_ui_state()
         if molecular_system is None:
             view.reset_viewer(skip_digestion=True)
         else:

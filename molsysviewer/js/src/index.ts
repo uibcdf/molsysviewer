@@ -1,6 +1,7 @@
 // src/index.ts
 
 import { MolSysViewerController, suppressCanvasContextMenu } from "./managers/viewer-controller";
+import { handleFrontendRequest, isFrontendRequest } from "./messages/frontend-requests";
 import { ViewerMessage } from "./messages/viewer-messages";
 import { trajectorySyncToAuthority } from "./messages/trajectory-intent";
 import { frontendSceneProjection, FRONTEND_CONTEXT_ACTIONS } from "./messages/frontend-scene-projection";
@@ -230,7 +231,13 @@ export async function bootDocsView(opts: {
     };
 
     const ui = opts.ui || {};
-    const model = createLocalUiModel(ui);
+    const hasAuthority = ui.host_event_transport === "url-scheme";
+    const model = createLocalUiModel(ui, values => {
+        if (!hasAuthority) return;
+        const keys = ["viewer_mode", "controls_mode", "panel_mode_style", "show_controls",
+            "autohide_controls", "autohide_scope", "controls_position", "controls_position_fullscreen", "addon_states"];
+        notifyHost({ event: "qt_ui_state", values: Object.fromEntries(keys.filter(key => key in values).map(key => [key, values[key]])) });
+    });
     let initialMessages = Array.isArray(opts.initialMessages) ? opts.initialMessages : [];
     if (typeof ui.messages_url === "string" && ui.messages_url) {
         const url = new URL(ui.messages_url, window.location.href);
@@ -276,8 +283,21 @@ export async function bootDocsView(opts: {
         const meta = messageMeta(msg);
         try {
             const controller = await controllerPromise;
-            await controller.handleMessage(msg, { throwOnError: true });
-            popupReplay.record(msg);
+            if (hasAuthority && (msg as any)?.op === "set_host_ui") {
+                for (const [key, value] of Object.entries((msg as any).values || {})) model.set(key, value);
+            } else if (hasAuthority && (msg as any)?.op === "commit_scene") {
+                const canvas = controller.plugin.canvas3d;
+                if (!canvas) throw new Error("The Qt host has no WebGL canvas.");
+                await waitForCanvasDraw(canvas);
+                // Let WebEngine present the completed draw before native status
+                // or capture reports this generation as visible.
+                await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+            } else if (hasAuthority && isFrontendRequest(msg)) {
+                await handleFrontendRequest(controller, msg, notifyHost);
+            } else {
+                await controller.handleMessage(msg, { throwOnError: true });
+                popupReplay.record(msg);
+            }
             notifyHost({ event: "message_ack", phase: "handled", ...meta });
             if ((msg as any)?.op === "load_molsys_payload" || (msg as any)?.op === "load_molsys_payload_ref") {
                 notifyHost({ event: "structure_ready", ...meta });
@@ -332,6 +352,10 @@ export async function bootDocsView(opts: {
     const panelModeStyle = model.get("panel_mode_style") as string;
     const missingAuthority = makeMissingAuthorityReporter(hostEl);
     const controllerPromise = MolSysViewerController.create(target, message => {
+        if (hasAuthority) {
+            notifyHost(message);
+            return;
+        }
         const projection = frontendSceneProjection(message);
         if (projection) {
             popupReplay.record(projection);
@@ -342,10 +366,9 @@ export async function bootDocsView(opts: {
         panelModeStyle,
         model,
         hasInitialStructures: trajInfo.hasStructures,
-        // There is no Python behind an exported page. Said here rather than
-        // inferred, because a callback that quietly drops what it is given looks
-        // exactly like one that delivers.
-        hasAuthority: false,
+        // Static exports have no Python. The local Qt shell explicitly supplies
+        // the live URL-scheme connector instead of inheriting that limitation.
+        hasAuthority,
     });
 
     // Popup manager: an exported page hands over whichever way it got the
@@ -400,6 +423,19 @@ export async function bootDocsView(opts: {
                 initialFrameCount: trajInfo.frameCount,
             }
         );
+
+        if (hasAuthority) {
+            // Qt has no browser chrome to provide Escape's fullscreen fallback.
+            // Shared menu/tool/selection handlers retain the first refusal.
+            const exitFullscreen = (event: KeyboardEvent) => {
+                if (event.key === "Escape" && !event.defaultPrevented && document.fullscreenElement) {
+                    event.preventDefault();
+                    void document.exitFullscreen();
+                }
+            };
+            window.addEventListener("keydown", exitFullscreen);
+            window.addEventListener("pagehide", () => window.removeEventListener("keydown", exitFullscreen), { once: true });
+        }
 
         for (const trait of ["viewer_mode", "controls_mode", "panel_mode_style", "show_controls", "autohide_controls", "autohide_scope", "controls_position", "controls_position_fullscreen"]) {
             model.on(`change:${trait}`, () => popupMgr.send("molsysviewer-sync-ui", {
@@ -471,6 +507,10 @@ export async function bootDocsView(opts: {
                     break;
                 case "molsysviewer-popup-interaction":
                     {
+                        if (hasAuthority) {
+                            notifyHost(data);
+                            break;
+                        }
                         const projection = frontendSceneProjection(data);
                         if (projection) {
                             await controller.handleMessage(projection);
@@ -1509,52 +1549,8 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                 rejectPendingPopupSource = null;
                 return;
             }
-            if (msg && (msg as any).op === "request_camera_snapshot") {
-                controllerPromise.then(c => {
-                    const snapshot = c.getCameraSnapshot();
-                    if (snapshot) {
-                        sendToPython({ event: "camera_snapshot", snapshot });
-                    }
-                });
-                return;
-            }
-            if (msg && (msg as any).op === "request_image_export") {
-                controllerPromise.then(async c => {
-                    const imageExportResult = await c.getImageDataUri({
-                        width: typeof (msg as any).width === "number" ? (msg as any).width : undefined,
-                        height: typeof (msg as any).height === "number" ? (msg as any).height : undefined,
-                        scale: typeof (msg as any).scale === "number" ? (msg as any).scale : undefined,
-                        transparent: !!(msg as any).transparent,
-                        preset: typeof (msg as any).preset === "string" ? (msg as any).preset : undefined,
-                        cameraSnapshot:
-                            (msg as any).camera_snapshot && typeof (msg as any).camera_snapshot === "object"
-                                ? (msg as any).camera_snapshot
-                                : undefined,
-                    });
-                    if (typeof imageExportResult === "string" && imageExportResult) {
-                        sendToPython({
-                            event: "image_export",
-                            data_uri: imageExportResult,
-                            scale: typeof (msg as any).scale === "number" ? (msg as any).scale : 1,
-                            transparent: !!(msg as any).transparent,
-                            preset: typeof (msg as any).preset === "string" ? (msg as any).preset : "current",
-                            width: typeof (msg as any).width === "number" ? (msg as any).width : undefined,
-                            height: typeof (msg as any).height === "number" ? (msg as any).height : undefined,
-                            format: "png",
-                        });
-                    } else if (imageExportResult && typeof imageExportResult === "object" && (imageExportResult as any).success === false) {
-                        sendToPython({
-                            event: "image_export",
-                            ...imageExportResult,
-                            scale: typeof (msg as any).scale === "number" ? (msg as any).scale : 1,
-                            transparent: !!(msg as any).transparent,
-                            preset: typeof (msg as any).preset === "string" ? (msg as any).preset : "current",
-                            width: typeof (msg as any).width === "number" ? (msg as any).width : undefined,
-                            height: typeof (msg as any).height === "number" ? (msg as any).height : undefined,
-                            format: "png",
-                        });
-                    }
-                });
+            if (isFrontendRequest(msg)) {
+                controllerPromise.then(c => handleFrontendRequest(c, msg, sendToPython));
                 return;
             }
             const panelLocal = msg.op === "mount_addon_panel" || msg.op === "addon_panel_message";

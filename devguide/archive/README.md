@@ -1,5 +1,11 @@
 # Archived implementation plans
 
+- [Live Qt workbench](qt_local_shell_uses_export_only_authority.md) — #270 restores shared Python authority, validated preferences and canvas keyboard/menu ownership.
+- [Independent Qt hosts](qt_hosts_share_default_profile.md) — #271 isolates profiles and guards two native windows, late sends and normal owned-file cleanup.
+- [Qt download destinations](qt_local_downloads_have_no_native_destination.md) — #272 accepts/cancels native downloads and exports the current portable scene.
+- [Movie export draw barrier](movie_export_captures_before_camera_draw.md) — #273 waits for each requested camera draw before image capture.
+- [Qt movie camera replies](standalone_qt_movie_camera_snapshot.md) — #36 receives fresh camera state, exports actual orbit frames and times out cooperatively.
+
 - [Compressed-body dependency advisory](body_parser_compressed_request_advisory.md) — #266 updates body-parser/qs, extends the known-range guard and passes live audit plus all 44 core browser suites.
 
 - [Box-analysis fixture ordering](box_assignment_fixture_invalidates_analysis.md) — #263 initializes the cell before fresh analysis and retains selective invalidation and visible-edge assertions.

@@ -15,7 +15,7 @@ supersedes: []
 
 # Standalone Qt — live demo replacement does not update the scene
 
-**Status:** fix implemented and protected; visible-window validation pending.
+**Status:** fix and native GPU regression pass; maintainer visual confirmation remains pending.
 
 The interactive backend was validated in a real Qt/GPU environment on
 2026-07-04. Rendering, transport, the persistent `MolSysView`, context menus,
@@ -23,7 +23,7 @@ and camera interaction worked. Replacing the loaded system did not.
 
 The camera/movie defect formerly recorded beside this one is explicitly
 post-1.0 and now lives in
-[`post_1.0/standalone_qt_movie_camera_snapshot.md`](post_1.0/standalone_qt_movie_camera_snapshot.md).
+[the resolved camera report](../archive/standalone_qt_movie_camera_snapshot.md).
 
 ## Symptom
 
@@ -114,3 +114,22 @@ the bridge cannot become ready because no WebGL canvas is created. The log also
 contains the failed CDN fallback; neither observation proves a replacement
 defect. The Movie interruption source correction and its passing core browser
 gate do not clear this independent experimental Qt result.
+
+## Native source regression — 2026-10-29
+
+`tests/test_qt_live_workbench.py::test_qt_live_workbench_full_render_gpu` passes
+in the actual Linux desktop with canonical PySide6/Qt 6.11.2, Python 3.14.7
+and NVIDIA Quadro M2000. Ten dialanine/pentalanine replacements alternate
+22/62 atoms, each finishes its requested draw, and the central molecular image
+changes each time (minimum changed fraction 0.1038). No failed deliveries
+accumulate. Independent second-host operation also passes.
+
+The local shell now waits for a completed draw and Qt presentation before
+announcing Ready. These automated visible-window/pixel observations supersede
+the absence of a usable display in the earlier local sessions; their historical
+failures remain intact. See [the review](../standalone_review_20261029.md).
+
+The explicitly requested human confirmation is still pending: the maintainer
+should alternate File → Load Demo entries and confirm the visual result/status.
+This report remains partial until that observation is received. No software
+Xvfb result, core browser test or source receipt substitutes for that final check.

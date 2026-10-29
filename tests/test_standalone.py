@@ -268,6 +268,9 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
         def show(self):
             self.shown = True
 
+        def isFullScreen(self):
+            return False
+
         def close(self):
             self.closed = True
 
@@ -293,8 +296,20 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
                 callback({"accepted": True})
 
     class FakeWebEnginePage:
-        def __init__(self, _parent=None):
+        def __init__(self, *args):
             self.webview = None
+            self._profile = args[0] if len(args) == 2 else FakeProfile()
+            self.fullScreenRequested = FakeSignal()
+
+        def settings(self):
+            class Settings:
+                class WebAttribute:
+                    FullScreenSupportEnabled = 1
+
+                def setAttribute(self, name, value):
+                    pass
+
+            return Settings()
 
         def runJavaScript(self, script, callback=None):
             self.webview.scripts.append(script)
@@ -320,8 +335,9 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
             return self._profile
 
     class FakeProfile:
-        def __init__(self):
+        def __init__(self, _parent=None):
             self.installed_schemes = {}
+            self.downloadRequested = FakeSignal()
 
         def installUrlSchemeHandler(self, scheme, handler):  # noqa: N802
             self.installed_schemes[bytes(scheme)] = handler
@@ -442,6 +458,7 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     module_widgets.QMainWindow = FakeMainWindow
     module_widgets.QMessageBox = FakeMessageBox
     module_web_core.QWebEnginePage = FakeWebEnginePage
+    module_web_core.QWebEngineProfile = FakeProfile
     module_web_core.QWebEngineUrlScheme = _FakeUrlScheme
     module_web_core.QWebEngineUrlSchemeHandler = FakeUrlSchemeHandlerBase
     module_web.QWebEngineView = FakeWebView
@@ -495,12 +512,12 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert isinstance(view, MolSysView)
     assert view.widget is runtime["webview"]._molsysviewer_qt_bridge.event_sink.__self__
 
-    # F3 glue: a right-click context event reaches the view and shows a native Qt menu.
+    # A context event must not shadow the shared menu with a Reset-only QMenu.
     before_menus = FakeQMenu.created
     runtime["webview"]._molsysviewer_qt_bridge.handle_frontend_event(
         {"event": "interaction_context_menu", "kind": "empty"}
     )
-    assert FakeQMenu.created == before_menus + 1
+    assert FakeQMenu.created == before_menus
 
     # F2 glue: the Export menu offers movie export.
     export_menu = runtime["window"].menu_bar.menus[2]
@@ -559,7 +576,7 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     view_menu = runtime["window"].menu_bar.menus[1]
     assert view_menu.actions[0].shortcut == "Ctrl+1"
     assert view_menu.actions[1].shortcut == "Ctrl+2"
-    assert view_menu.actions[2].shortcut == "Escape"
+    assert not getattr(view_menu.actions[2], "shortcut", None)
     runtime["webview"]._molsysviewer_qt_bridge.handle_frontend_event({"event": "ready"})
     for action in view_menu.actions:
         assert action.triggered._callbacks
@@ -584,7 +601,7 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     exported = tmp_path / "exported-view.html"
     assert html_export_calls, FakeMessageBox.calls
     assert exported.exists()
-    assert html_export_calls == [("1crn", str(exported.resolve()), "Qt Prototype")]
+    assert html_export_calls == [(view, str(exported.resolve()), "Qt Prototype")]
     assert runtime["window"].status_bar.messages[-1] == "Exported HTML: exported-view.html"
     figure_calls = []
     monkeypatch.setattr(
@@ -596,7 +613,7 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     FakeFileDialog.saved = str(tmp_path / "exported-figure.png")
     export_menu.actions[1].triggered._callbacks[0]()
     assert len(figure_calls) == 1
-    assert figure_calls[0][0] == "1crn"
+    assert figure_calls[0][0] is view
     assert figure_calls[0][1:] == (str((tmp_path / "exported-figure.png").resolve()), "Qt Prototype")
     assert runtime["window"].status_bar.messages[-1] == "Exported Figure: exported-figure.png"
     help_menu = runtime["window"].menu_bar.menus[3]
@@ -1149,6 +1166,13 @@ def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
     assert "data-molsysviewer-export-image" in runtime["webview"]._page.scripts[-1]
 
     class FakeDownload:
+        class DownloadState:
+            DownloadCompleted = "completed"
+            DownloadCancelled = "cancelled"
+
+        def state(self):
+            return self.DownloadState.DownloadCompleted
+
         def __init__(self):
             self.isFinishedChanged = FakeSignal()
             self.directory = None
@@ -1866,20 +1890,11 @@ def test_qt_payload_refs_replace_across_two_real_generations():
 
 
 @pytest.mark.qt_runtime
-def test_qt_live_model_smoke_real_window(monkeypatch):
-    """Real (offscreen) Qt WebEngine smoke test for the live-message transport.
+def test_qt_live_model_smoke_real_window(monkeypatch, tmp_path):
+    """Complete the live transport on a host configured for working WebGL.
 
-    Asserts, in real Qt: the event scheme + bridge round-trip (bridge.ready) and
-    that a payload above the ref threshold is served over the molsysviewer-payload
-    scheme (handler.served).
-
-    NOT validated here: the actual 3D/WebGL render. Headless (offscreen +
-    --disable-gpu) has no WebGL context, so the structure never finishes drawing
-    and this test skips that part. To also validate rendering, run in an
-    environment with a real GPU, or with xvfb plus software WebGL
-    (QTWEBENGINE_CHROMIUM_FLAGS="--use-gl=angle --use-angle=swiftshader
-    --enable-unsafe-swiftshader") — best kept as a separate opt-in test/CI job,
-    not the default smoke.
+    Respect the caller's GPU/software-GL configuration. Pure transport without
+    WebGL is covered by the isolated trivial-page probes, not this real viewer.
     """
     try:
         standalone_qt._import_qt()
@@ -1894,21 +1909,19 @@ def test_qt_live_model_smoke_real_window(monkeypatch):
     # Set threshold to 1 so dialanine payload goes through custom scheme handler
     monkeypatch.setenv("MOLSYSVIEWER_QT_PAYLOAD_REF_THRESHOLD", "1")
     monkeypatch.setenv("QTWEBENGINE_DISABLE_SANDBOX", "1")
-    monkeypatch.setenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-gpu")
-    monkeypatch.setenv("QT_QUICK_BACKEND", "software")
-
-    # Run in offscreen mode to avoid opening visible GUI window during tests
-    monkeypatch.setenv("QT_QPA_PLATFORM", "offscreen")
-
     # Create real window with dialanine demo
+    monkeypatch.setattr(standalone_qt, "_qt_shell_state_path", lambda: tmp_path / "state.json")
     runtime = create_standalone_qt0_window(
         demo["dialanine"],
+        output_filename=str(tmp_path / "shell.html"),
         title="Smoke Test Real Window",
+        apply_project_config=False,
     )
 
     app = runtime["app"]
     webview = runtime["webview"]
     window = runtime["window"]
+    window.show()  # A hidden WebEngine view does not produce the awaited canvas draw.
     bridge = webview._molsysviewer_qt_bridge
 
     # Spin the event loop until the viewer is ready and the structure loads, with 15s timeout
@@ -1929,6 +1942,7 @@ def test_qt_live_model_smoke_real_window(monkeypatch):
                 break
         time.sleep(0.05)
 
+    was_ready = bridge.ready
     try:
         # Cleanup
         window.close()
@@ -1937,7 +1951,7 @@ def test_qt_live_model_smoke_real_window(monkeypatch):
 
     # #1 (event scheme + bridge round-trip): the frontend only signals ready via
     # the molsysviewer:// event scheme, so this proves that channel works in real Qt.
-    assert bridge.ready is True, f"Qt message bridge failed to become ready. Status: {status_msg}"
+    assert was_ready is True, f"Qt message bridge failed to become ready. Status: {status_msg}"
 
     # #2 (payload scheme handler): the dialanine payload is above the ref threshold,
     # so the page must have fetched it over molsysviewer-payload://. The fetch runs
@@ -1948,19 +1962,14 @@ def test_qt_live_model_smoke_real_window(monkeypatch):
         f"(bridge ready={bridge.ready}). Status: {status_msg}"
     )
 
-    if not success:
-        pytest.skip(
-            "Qt WebEngine loaded, the event and payload schemes both worked, but "
-            "WebGL/rendering timed out (expected in headless environment without GPU). "
-            f"Status: {status_msg}"
-        )
+    assert success, f"Qt live viewer did not finish loading. Status: {status_msg}"
 
     assert len(bridge.queue) == 0
     assert bridge.inflight is None
 
 
 @pytest.mark.qt_runtime
-def test_qt_live_model_full_render_gpu(monkeypatch):
+def test_qt_live_model_full_render_gpu(monkeypatch, tmp_path):
     """Opt-in end-to-end render test: also validates the actual 3D/WebGL draw.
 
     Disabled by default (needs a WebGL-capable environment). Enable with
@@ -1981,12 +1990,18 @@ def test_qt_live_model_full_render_gpu(monkeypatch):
 
     monkeypatch.setenv("MOLSYSVIEWER_QT_PAYLOAD_REF_THRESHOLD", "1")
     monkeypatch.setenv("QTWEBENGINE_DISABLE_SANDBOX", "1")
-    monkeypatch.setenv("QT_QPA_PLATFORM", os.environ.get("QT_QPA_PLATFORM", "offscreen"))
 
-    runtime = create_standalone_qt0_window(demo["dialanine"], title="Full Render GPU Test")
+    monkeypatch.setattr(standalone_qt, "_qt_shell_state_path", lambda: tmp_path / "state.json")
+    runtime = create_standalone_qt0_window(
+        demo["dialanine"],
+        output_filename=str(tmp_path / "shell.html"),
+        title="Full Render GPU Test",
+        apply_project_config=False,
+    )
     app = runtime["app"]
     webview = runtime["webview"]
     window = runtime["window"]
+    window.show()  # A hidden WebEngine view does not produce the awaited canvas draw.
     bridge = webview._molsysviewer_qt_bridge
 
     import time
@@ -2003,12 +2018,13 @@ def test_qt_live_model_full_render_gpu(monkeypatch):
             status_msg = window.statusBar().currentMessage()
         time.sleep(0.05)
 
+    was_ready = bridge.ready
     try:
         window.close()
     except Exception:
         pass
 
-    assert bridge.ready is True, f"bridge never became ready. Status: {status_msg}"
+    assert was_ready is True, f"bridge never became ready. Status: {status_msg}"
     handler = getattr(webview, "_molsysviewer_qt_payload_handler", None)
     assert handler is not None and len(handler.served) >= 1, "payload was not served over the custom scheme"
     # The whole point of this test: the load actually finished (rendered).

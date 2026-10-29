@@ -20,11 +20,11 @@ supersedes: []
 
 ## What is true today
 
-The Qt shell is built with `include_popout=False`
-(`standalone_qt/utils.py:_rebuild_qt_html`), so **no popup window can be opened
-in the standalone host at all**. `QtViewChannel.enable_popout` is `False` as
-well, though that attribute is inert — Qt bakes its configuration into the shell
-HTML at build time.
+The local Qt shell defaults to `include_popout=False` in
+`standalone_qt/application.py:create_standalone_qt0_window`. Its page does not
+implement `createWindow`, so Qt popout remains unavailable. Since 2026-10-29,
+`QtViewChannel.enable_popout` is a synchronized trait; making the preference
+reactive does not implement the missing native window or qualify its handshake.
 
 The consequence is not a broken feature; it is an **untested path**. The whole
 popup control plane exists and is exercised only on AnyWidget:

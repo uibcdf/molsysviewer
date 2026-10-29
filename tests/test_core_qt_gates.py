@@ -23,6 +23,7 @@ def collect(expression):
             "-m",
             "pytest",
             "tests/test_standalone.py",
+            "tests/test_qt_live_workbench.py",
             "tests/test_qt_probe_resources.py",
             "tests/test_headless_export_resources.py",
             "--collect-only",
@@ -45,10 +46,16 @@ def collect(expression):
 def test_actual_core_and_qt_collection_keep_contract_and_chromium_checks():
     core = collect("not qt_runtime")
     qt = collect("qt_runtime")
-    assert len(qt) == 12
+    assert len(qt) == 13
     assert not core & qt
     assert {node.split("::", 1)[1] for node in qt if "test_standalone.py::" in node} == QT_PROBES
-    assert all("test_qt_probe_resources.py::" in node or "test_standalone.py::" in node for node in qt)
+    assert all(
+        any(
+            name in node
+            for name in ("test_qt_probe_resources.py::", "test_standalone.py::", "test_qt_live_workbench.py::")
+        )
+        for node in qt
+    )
     assert any("test_qt_view_channel_close_only_detaches_its_own_event_sink" in node for node in core)
     assert any("test_qt_message_bridge_materializes_large_payload_refs" in node for node in core)
     assert any("test_real_png_export_from_read_only_package" in node for node in core)

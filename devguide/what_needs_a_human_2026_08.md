@@ -97,6 +97,11 @@ visually distinguishable demos at least ten times, confirm each replacement show
 only the requested system, confirm the status reaches `Ready.` with no failed
 deliveries, and record the environment in that file.
 
+The 2026-10-29 [native review](standalone_review_20261029.md) now passes ten
+actual-window replacements, molecular pixel changes and Ready/no-delivery-error
+checks on the Linux GPU desktop. #35 remains partial for the maintainer's
+requested visual confirmation; that observation is not inferred from a test.
+
 *Unblocks:* a future supported standalone-host claim; it is outside the 1.0 gate.
 
 ## 2. Look at `34755fb9` — *needs a person, not a test*

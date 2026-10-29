@@ -325,12 +325,10 @@ def _install_menu_bar(
     view_menu.addAction(open_addons_action)
 
     close_panel_action = QAction("Close Panel Mode", window)
-    _get_helper("_set_action_shortcut")(close_panel_action, "Escape")
+    # Let the shared canvas own Escape (menus, tools, selection and fullscreen).
+    # A native QAction shortcut would consume the key before WebEngine sees it.
     close_panel_action.triggered.connect(
-        lambda: _get_helper("_send_viewer_message")(
-            webview,
-            {"op": "set_panel_mode", "panel": None, "expanded": False},
-        )
+        lambda: _get_helper("_send_viewer_message")(webview, {"op": "set_panel_mode", "panel": None, "expanded": False})
     )
     view_menu.addAction(close_panel_action)
 
@@ -352,7 +350,7 @@ def _install_menu_bar(
         try:
             destination = Path(selected).expanduser().resolve()
             _get_helper("_rebuild_qt_html")(
-                current_state.get("molecular_system"),
+                getattr(webview, "_molsysviewer_view", None) or current_state.get("molecular_system"),
                 html_path=str(destination),
                 title=current_title,
             )
@@ -367,7 +365,8 @@ def _install_menu_bar(
     _get_helper("_set_action_shortcut")(export_figure_action, "Ctrl+Shift+E")
 
     def _export_figure():
-        if current_state.get("molecular_system") is None:
+        live_view = getattr(webview, "_molsysviewer_view", None)
+        if live_view is None and current_state.get("molecular_system") is None:
             _get_helper("_show_status")(window, "No molecular system is loaded for figure export.")
             return
         if not hasattr(QFileDialog, "getSaveFileName"):
@@ -384,7 +383,7 @@ def _install_menu_bar(
         try:
             destination = Path(selected).expanduser().resolve()
             _get_helper("_export_qt_figure")(
-                current_state["molecular_system"],
+                live_view or current_state["molecular_system"],
                 output_filename=str(destination),
                 title=current_title,
             )
@@ -418,6 +417,8 @@ def _install_menu_bar(
         try:
             destination = Path(selected).expanduser().resolve()
             _get_helper("_show_status")(window, "Rendering movie…")
+            if not view._request_camera_snapshot(timeout_s=3.0):
+                raise RuntimeError("Could not obtain the current canvas camera; movie export was not started.")
             # Frames render in the frontend and arrive as events; the movie
             # exporter's cooperative wait pumps the Qt loop via view._qt_process_events.
             view.movie.add_camera_orbit(duration_ms=4000.0)

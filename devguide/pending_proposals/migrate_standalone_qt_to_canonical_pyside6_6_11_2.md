@@ -267,3 +267,19 @@ reviewing/removing owned scratch, and preserve caller outputs. Review on
 2026-11-10 or before certification; remove the exception after managed file,
 window and callback cleanup with visible failures is guarded on qualified hosts.
 See `../temporary_resource_lifecycle.md`. No native-GPU pass is inferred.
+
+## Native Linux receiving — 2026-10-29
+
+The [standalone review](../standalone_review_20261029.md) adds real native-window
+source evidence on the existing canonical 6.11.2 development stack. The new
+live-workbench guard covers authority, preferences, download/cancel, fullscreen,
+ten molecular replacements with pixel differences, orbit export and independent
+profiles/cleanup. Earlier failures retain their original conclusions. No D-Bus
+workaround or dependency change was introduced.
+
+Normal local-host lifetime now closes the view/bridge and private page/profile
+and removes owned implicit shell HTML after page destruction. The resource
+exception above is **narrowed, not retired**: initialization before the managed
+close hook and the separate image-export path still need their own audit.
+Native Windows/macOS, installed-host qualification and the accepted review date
+remain pending. This issue stays active and Qt stays experimental.

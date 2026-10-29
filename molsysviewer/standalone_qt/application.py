@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import sys
 import tempfile
 from pathlib import Path
@@ -26,6 +27,8 @@ from .utils import (  # noqa: F401
     _qt_runtime_urls,
     _show_startup_status,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def _run_remote_page_action(webview: Any, selector: str, callback=None, *, reveal_selector: str | None = None) -> None:
@@ -106,16 +109,22 @@ def _install_remote_qt_chrome(*, window: Any, webview: Any, QAction: Any, QFileD
         "Ctrl+Shift+S",
     )
 
+    _install_qt_downloads(window=window, webview=webview, QFileDialog=QFileDialog)
+
+
+def _install_qt_downloads(*, window: Any, webview: Any, QFileDialog: Any) -> None:
+    """Let each native host own the destinations of its browser downloads."""
     page = webview.page()
     profile = page.profile()
     active_downloads: list[Any] = []
+    window._molsysviewer_downloads = active_downloads
     window._molsysviewer_remote_downloads = active_downloads
 
     def handle_download(download: Any) -> None:
         suggested = Path(str(download.suggestedFileName() or "molsysviewer-download")).name
         selected, _filter = QFileDialog.getSaveFileName(
             window,
-            "Save remote MolSysViewer download",
+            "Save MolSysViewer download",
             suggested,
             "All files (*)",
         )
@@ -132,7 +141,15 @@ def _install_remote_qt_chrome(*, window: Any, webview: Any, QAction: Any, QFileD
                 return
             if download in active_downloads:
                 active_downloads.remove(download)
-            window.statusBar().showMessage(f"Downloaded: {destination.name}")
+            state = download.state()
+            if state == type(download).DownloadState.DownloadCompleted:
+                window.statusBar().showMessage(f"Downloaded: {destination.name}")
+            elif state == type(download).DownloadState.DownloadCancelled:
+                window.statusBar().showMessage(f"Download cancelled: {destination.name}")
+            else:
+                window.statusBar().showMessage(
+                    f"Download interrupted: {destination.name}: {download.interruptReasonString()}"
+                )
 
         download.isFinishedChanged.connect(finished)
         download.accept()
@@ -195,7 +212,7 @@ def _install_remote_qt_status_bridge(*, window: Any, webview: Any, QTimer: Any) 
     return timer
 
 
-def _install_remote_qt_fullscreen(*, window: Any, webview: Any) -> None:
+def _install_qt_fullscreen(*, window: Any, webview: Any) -> None:
     """Bridge the page Fullscreen API to the enclosing native Qt window."""
     page = webview.page()
     settings = page.settings()
@@ -260,40 +277,60 @@ def create_standalone_qt0_window(
     QMessageBox = qt["QMessageBox"]
     QTimer = qt["QTimer"]
     QWebEnginePage = qt["QWebEnginePage"]
+    QWebEngineProfile = qt["QWebEngineProfile"]
     QWebEngineUrlScheme = qt["QWebEngineUrlScheme"]
     QWebEngineUrlSchemeHandler = qt["QWebEngineUrlSchemeHandler"]
     QBuffer = qt["QBuffer"]
     QByteArray = qt["QByteArray"]
-    QMenu = qt["QMenu"]
-    QCursor = qt["QCursor"]
 
     # Must run before the QApplication is created, or Chromium rejects the schemes.
     _get_helper("_register_qt_url_schemes")(QWebEngineUrlScheme)
 
+    html_owner = None
     if output_filename is None:
-        with tempfile.NamedTemporaryFile(prefix="molsysviewer-qt0-", suffix=".html", delete=False) as handle:
-            output_filename = handle.name
-
-    html_path = build_standalone0_html(
-        None,
-        output_filename,
-        title=title,
-        include_controls=include_controls,
-        include_popout=include_popout,
-        discover_addons=discover_addons,
-        addon_modules=addon_modules,
-        apply_project_config=apply_project_config,
-        debug_js=debug_js,
-        runtime_urls=_get_helper("_qt_runtime_urls")(),
-        host_event_transport="url-scheme",
-        show_empty_host_overlay=False,
-    )
+        html_owner = tempfile.TemporaryDirectory(prefix="molsysviewer-qt0-")
+        output_filename = str(Path(html_owner.name) / "shell.html")
+    try:
+        html_path = build_standalone0_html(
+            None,
+            output_filename,
+            title=title,
+            include_controls=include_controls,
+            include_popout=include_popout,
+            discover_addons=discover_addons,
+            addon_modules=addon_modules,
+            apply_project_config=apply_project_config,
+            debug_js=debug_js,
+            runtime_urls=_get_helper("_qt_runtime_urls")(),
+            host_event_transport="url-scheme",
+            show_empty_host_overlay=False,
+        )
+    except BaseException:
+        if html_owner is not None:
+            html_owner.cleanup()
+        raise
 
     current_state = {"molecular_system": molecular_system, "base_title": title, "loaded_label": None}
     current_state.update(_get_helper("_load_qt_shell_state")())
 
     app = _get_helper("_get_or_create_application")(QApplication, app_argv)
-    window = QMainWindow()
+
+    class StandaloneWindow(QMainWindow):
+        _molsysviewer_cleanup = None
+
+        def closeEvent(self, event):  # noqa: N802
+            cleanup = self._molsysviewer_cleanup
+            if cleanup is not None:
+                try:
+                    cleanup()
+                except Exception:
+                    logger.exception("Could not close the local Qt host cleanly")
+                    event.ignore()
+                    return
+                self._molsysviewer_cleanup = None
+            super().closeEvent(event)
+
+    window = StandaloneWindow()
     window.setWindowTitle(title)
     saved_window_size = current_state.get("window_size") if isinstance(current_state.get("window_size"), dict) else None
     initial_width = saved_window_size.get("width", width) if saved_window_size else width
@@ -302,6 +339,7 @@ def create_standalone_qt0_window(
         window.resize(initial_width, initial_height)
 
     webview = QWebEngineView(window)
+    profile = QWebEngineProfile(window)
     bridge = _get_helper("_install_qt_message_bridge")(
         webview,
         QWebEnginePage,
@@ -310,6 +348,8 @@ def create_standalone_qt0_window(
         QWebEngineUrlSchemeHandler=QWebEngineUrlSchemeHandler,
         QBuffer=QBuffer,
         QByteArray=QByteArray,
+        profile=profile,
+        synchronize_draws=True,
     )
 
     # Persistent MolSysView driven through the Qt bridge: the same view backend
@@ -321,23 +361,33 @@ def create_standalone_qt0_window(
 
     channel = QtViewChannel(bridge)
     view = MolSysView(transport=channel, debug_js=debug_js)
+    channel.show_controls = include_controls
+    channel.enable_popout = include_popout
     view._qt_process_events = getattr(app, "processEvents", None)  # noqa: SLF001
     webview._molsysviewer_view = view
 
-    # Native Qt context menu on right-click: the frontend emits
-    # interaction_context_menu, the bridge forwards it to the view, and this
-    # callback (registered on the persistent view) shows a QMenu at the cursor.
-    def _qt_context_menu(_event: Any) -> None:
-        try:
-            menu = QMenu(window)
-            reset_action = menu.addAction("Reset view")
-            reset_action.triggered.connect(lambda *_: view.camera.reset())
-            menu.exec(QCursor.pos())
-        except Exception:
-            # The optional native menu must not break interaction dispatch; Q5 tracks diagnostics.
-            pass
+    _install_qt_fullscreen(window=window, webview=webview)
+    _install_qt_downloads(window=window, webview=webview, QFileDialog=QFileDialog)
 
-    view.on_context(_qt_context_menu)
+    page = webview.page()
+    if html_owner is not None:
+        # Chromium may still read the shell until the page has been disposed.
+        page.destroyed.connect(lambda *_: html_owner.cleanup())
+
+    def close_host() -> None:
+        from .utils import _persist_shell_state
+
+        _persist_shell_state(current_state, window=window)
+        for download in list(window._molsysviewer_downloads):
+            if not download.isFinished():
+                download.cancel()
+        view.close()
+        bridge._close()
+        webview.stop()
+        page.deleteLater()
+        profile.deleteLater()  # Queued after its page, as Qt requires.
+
+    window._molsysviewer_cleanup = close_host
 
     webview.setUrl(QUrl.fromLocalFile(html_path))
     window.setCentralWidget(webview)
@@ -353,22 +403,26 @@ def create_standalone_qt0_window(
         current_title=title,
         current_state=current_state,
     )
-    if molecular_system is None:
-        _get_helper("_show_startup_status")(window, current_state)
-    else:
-        _get_helper("_load_molecular_system_into_qt_host")(
-            molecular_system,
-            window=window,
-            webview=webview,
-            current_state=current_state,
-            loaded_label=None,
-            status_message="Loading molecular system...",
-            selection=selection,
-            structure_indices=structure_indices,
-            syntax=syntax,
-            load_mode=load_mode,
-            debug_js=debug_js,
-        )
+    try:
+        if molecular_system is None:
+            _get_helper("_show_startup_status")(window, current_state)
+        else:
+            _get_helper("_load_molecular_system_into_qt_host")(
+                molecular_system,
+                window=window,
+                webview=webview,
+                current_state=current_state,
+                loaded_label=None,
+                status_message="Loading molecular system...",
+                selection=selection,
+                structure_indices=structure_indices,
+                syntax=syntax,
+                load_mode=load_mode,
+                debug_js=debug_js,
+            )
+    except BaseException:
+        window.close()
+        raise
 
     return {
         "app": app,
@@ -469,7 +523,7 @@ def create_remote_qt_window(
         webview=webview,
         QTimer=qt["QTimer"],
     )
-    _install_remote_qt_fullscreen(
+    _install_qt_fullscreen(
         window=window,
         webview=webview,
     )

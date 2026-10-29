@@ -149363,6 +149363,7 @@ var MovieHandlers = class {
     for (let i = 0; i < totalFrames; i++) {
       const time_ms = Math.min(i / fps * 1e3, keyframes[keyframes.length - 1].time_ms);
       await this.applyStateForExport(keyframes, time_ms, baseSnapshot, exportVis, exportStructureIndex);
+      await this.context.waitForDraw();
       const dataUri = await this.context.getImageDataUri({ width: widthPx, height: heightPx });
       this.context.notify?.({
         event: "movie_frame",
@@ -170074,6 +170075,39 @@ var MolSysViewerController = class _MolSysViewerController {
   }
 };
 
+// src/messages/frontend-requests.ts
+function isFrontendRequest(message) {
+  return message?.op === "request_camera_snapshot" || message?.op === "request_image_export";
+}
+async function handleFrontendRequest(controller, message, send) {
+  if (message.op === "request_camera_snapshot") {
+    const snapshot = controller.getCameraSnapshot();
+    if (snapshot) send({ event: "camera_snapshot", snapshot });
+    return;
+  }
+  if (message.op !== "request_image_export") throw new Error("Unknown frontend request.");
+  const options = {
+    width: typeof message.width === "number" ? message.width : void 0,
+    height: typeof message.height === "number" ? message.height : void 0,
+    scale: typeof message.scale === "number" ? message.scale : void 0,
+    transparent: !!message.transparent,
+    preset: typeof message.preset === "string" ? message.preset : void 0,
+    cameraSnapshot: message.camera_snapshot && typeof message.camera_snapshot === "object" ? message.camera_snapshot : void 0
+  };
+  const result2 = await controller.getImageDataUri(options);
+  const metadata = {
+    event: "image_export",
+    scale: options.scale ?? 1,
+    transparent: options.transparent,
+    preset: options.preset ?? "current",
+    width: options.width,
+    height: options.height,
+    format: "png"
+  };
+  if (typeof result2 === "string" && result2) send({ ...metadata, data_uri: result2 });
+  else if (result2 && typeof result2 === "object" && result2.success === false) send({ ...result2, ...metadata });
+}
+
 // src/messages/trajectory-intent.ts
 function trajectorySyncToAuthority(msg) {
   if (msg.op === "set_trajectory_frame") {
@@ -170358,6 +170392,7 @@ var runtime_actions_default = {
     "message_error",
     "structure_ready",
     "render_ready",
+    "qt_ui_state",
     "frontend_error"
   ],
   qt_test_actions: [
@@ -174386,7 +174421,22 @@ async function bootDocsView(opts) {
     console.log("[MolSysViewer docs]", level, ...args);
   };
   const ui = opts.ui || {};
-  const model = createLocalUiModel(ui);
+  const hasAuthority = ui.host_event_transport === "url-scheme";
+  const model = createLocalUiModel(ui, (values2) => {
+    if (!hasAuthority) return;
+    const keys2 = [
+      "viewer_mode",
+      "controls_mode",
+      "panel_mode_style",
+      "show_controls",
+      "autohide_controls",
+      "autohide_scope",
+      "controls_position",
+      "controls_position_fullscreen",
+      "addon_states"
+    ];
+    notifyHost({ event: "qt_ui_state", values: Object.fromEntries(keys2.filter((key2) => key2 in values2).map((key2) => [key2, values2[key2]])) });
+  });
   let initialMessages = Array.isArray(opts.initialMessages) ? opts.initialMessages : [];
   if (typeof ui.messages_url === "string" && ui.messages_url) {
     const url = new URL(ui.messages_url, window.location.href);
@@ -174429,8 +174479,19 @@ async function bootDocsView(opts) {
     const meta = messageMeta(msg);
     try {
       const controller = await controllerPromise;
-      await controller.handleMessage(msg, { throwOnError: true });
-      popupReplay.record(msg);
+      if (hasAuthority && msg?.op === "set_host_ui") {
+        for (const [key2, value] of Object.entries(msg.values || {})) model.set(key2, value);
+      } else if (hasAuthority && msg?.op === "commit_scene") {
+        const canvas = controller.plugin.canvas3d;
+        if (!canvas) throw new Error("The Qt host has no WebGL canvas.");
+        await waitForCanvasDraw(canvas);
+        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+      } else if (hasAuthority && isFrontendRequest(msg)) {
+        await handleFrontendRequest(controller, msg, notifyHost);
+      } else {
+        await controller.handleMessage(msg, { throwOnError: true });
+        popupReplay.record(msg);
+      }
       notifyHost({ event: "message_ack", phase: "handled", ...meta });
       if (msg?.op === "load_molsys_payload" || msg?.op === "load_molsys_payload_ref") {
         notifyHost({ event: "structure_ready", ...meta });
@@ -174486,6 +174547,10 @@ async function bootDocsView(opts) {
   const panelModeStyle = model.get("panel_mode_style");
   const missingAuthority = makeMissingAuthorityReporter(hostEl);
   const controllerPromise = MolSysViewerController.create(target, (message) => {
+    if (hasAuthority) {
+      notifyHost(message);
+      return;
+    }
     const projection = frontendSceneProjection(message);
     if (projection) {
       popupReplay.record(projection);
@@ -174496,10 +174561,9 @@ async function bootDocsView(opts) {
     panelModeStyle,
     model,
     hasInitialStructures: trajInfo.hasStructures,
-    // There is no Python behind an exported page. Said here rather than
-    // inferred, because a callback that quietly drops what it is given looks
-    // exactly like one that delivers.
-    hasAuthority: false
+    // Static exports have no Python. The local Qt shell explicitly supplies
+    // the live URL-scheme connector instead of inheriting that limitation.
+    hasAuthority
   });
   const runtimeSource = typeof opts.runtimeSource === "string" ? opts.runtimeSource : "";
   const popupMgr = new PopupHostManager({
@@ -174533,6 +174597,16 @@ async function bootDocsView(opts) {
         initialFrameCount: trajInfo.frameCount
       }
     );
+    if (hasAuthority) {
+      const exitFullscreen = (event) => {
+        if (event.key === "Escape" && !event.defaultPrevented && document.fullscreenElement) {
+          event.preventDefault();
+          void document.exitFullscreen();
+        }
+      };
+      window.addEventListener("keydown", exitFullscreen);
+      window.addEventListener("pagehide", () => window.removeEventListener("keydown", exitFullscreen), { once: true });
+    }
     for (const trait of ["viewer_mode", "controls_mode", "panel_mode_style", "show_controls", "autohide_controls", "autohide_scope", "controls_position", "controls_position_fullscreen"]) {
       model.on(`change:${trait}`, () => popupMgr.send("molsysviewer-sync-ui", {
         viewerMode: c8.getViewerMode(),
@@ -174603,6 +174677,10 @@ async function bootDocsView(opts) {
           break;
         case "molsysviewer-popup-interaction":
           {
+            if (hasAuthority) {
+              notifyHost(data);
+              break;
+            }
             const projection = frontendSceneProjection(data);
             if (projection) {
               await controller.handleMessage(projection);
@@ -175365,49 +175443,8 @@ function render({ model, el, runtimeSource }) {
       rejectPendingPopupSource = null;
       return;
     }
-    if (msg && msg.op === "request_camera_snapshot") {
-      controllerPromise.then((c8) => {
-        const snapshot = c8.getCameraSnapshot();
-        if (snapshot) {
-          sendToPython({ event: "camera_snapshot", snapshot });
-        }
-      });
-      return;
-    }
-    if (msg && msg.op === "request_image_export") {
-      controllerPromise.then(async (c8) => {
-        const imageExportResult = await c8.getImageDataUri({
-          width: typeof msg.width === "number" ? msg.width : void 0,
-          height: typeof msg.height === "number" ? msg.height : void 0,
-          scale: typeof msg.scale === "number" ? msg.scale : void 0,
-          transparent: !!msg.transparent,
-          preset: typeof msg.preset === "string" ? msg.preset : void 0,
-          cameraSnapshot: msg.camera_snapshot && typeof msg.camera_snapshot === "object" ? msg.camera_snapshot : void 0
-        });
-        if (typeof imageExportResult === "string" && imageExportResult) {
-          sendToPython({
-            event: "image_export",
-            data_uri: imageExportResult,
-            scale: typeof msg.scale === "number" ? msg.scale : 1,
-            transparent: !!msg.transparent,
-            preset: typeof msg.preset === "string" ? msg.preset : "current",
-            width: typeof msg.width === "number" ? msg.width : void 0,
-            height: typeof msg.height === "number" ? msg.height : void 0,
-            format: "png"
-          });
-        } else if (imageExportResult && typeof imageExportResult === "object" && imageExportResult.success === false) {
-          sendToPython({
-            event: "image_export",
-            ...imageExportResult,
-            scale: typeof msg.scale === "number" ? msg.scale : 1,
-            transparent: !!msg.transparent,
-            preset: typeof msg.preset === "string" ? msg.preset : "current",
-            width: typeof msg.width === "number" ? msg.width : void 0,
-            height: typeof msg.height === "number" ? msg.height : void 0,
-            format: "png"
-          });
-        }
-      });
+    if (isFrontendRequest(msg)) {
+      controllerPromise.then((c8) => handleFrontendRequest(c8, msg, sendToPython));
       return;
     }
     const panelLocal = msg.op === "mount_addon_panel" || msg.op === "addon_panel_message";

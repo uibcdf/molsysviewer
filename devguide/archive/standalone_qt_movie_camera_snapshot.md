@@ -1,13 +1,13 @@
 ---
 summary: Movie export in the Qt host fails because the camera snapshot is never mirrored back.
 issue: uibcdf/molsysviewer#36
-status: open
+status: resolved
 opened: 2026-07-04
-closed:
+closed: 2026-10-29
 severity: low
-verification: reproduced
+verification: measured
 area: [standalone, qt, movie]
-guard:
+guard: tests/test_qt_live_workbench.py::test_qt_live_workbench_full_render_gpu
 normative:
 blocked_by: []
 supersedes: []
@@ -15,7 +15,7 @@ supersedes: []
 
 # Standalone Qt movie export lacks a camera snapshot
 
-**Status:** confirmed, deferred until after 1.0.
+**Status:** resolved in source on 2026-10-29; historical deferral retained below.
 
 ## Symptom
 
@@ -54,3 +54,17 @@ than the one the user asked to preserve.
 - Orbit export produces the expected frames.
 - The GUI remains responsive.
 - A missing response terminates with a diagnosed timeout.
+
+## Resolution — 2026-10-29
+
+The shared frontend handles camera/image requests for the live Qt connector.
+Python waits cooperatively process Qt events, and the native movie action asks
+for a fresh camera before constructing the orbit. It does not fall back to a
+silent default viewpoint. The shared movie frame export also waits for drawing
+under uibcdf/molsysviewer#273.
+
+The native GPU guard receives the visible camera, exports three requested raw
+frames into a nonempty animated GIF with visibly different opposite viewpoints,
+observes a live Qt timer throughout, and verifies a missing reply terminates.
+See [the review](../standalone_review_20261029.md) for exact source/environment
+scope. This closes the camera-return/export defect, not standalone certification.

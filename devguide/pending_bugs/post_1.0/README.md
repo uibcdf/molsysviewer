@@ -1,9 +1,7 @@
 # Post-1.0 bugs
 
-Confirmed defects intentionally deferred beyond the 1.0 release gate live
-here. Deferral does not turn a bug into a proposal; the reproduction and
-affected contract remain authoritative.
+Confirmed defects intentionally deferred beyond the 1.0 release gate live here.
+Deferral does not change their contract or reproduction. No current entries.
 
-Current item:
-
-- [`standalone_qt_movie_camera_snapshot.md`](standalone_qt_movie_camera_snapshot.md)
+The Qt movie camera defect was resolved on 2026-10-29 and is preserved in
+[the archived report](../../archive/standalone_qt_movie_camera_snapshot.md).

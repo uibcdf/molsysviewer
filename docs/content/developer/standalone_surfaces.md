@@ -10,7 +10,9 @@ and Windows x86_64 with Python 3.11–3.14. Those installed notebook/browser gat
 and the Windows launcher `--help` gate do not certify Qt. The separate Qt
 [development recipe](https://github.com/uibcdf/molsysviewer/blob/main/devguide/standalone_supported_environment.md)
 records Linux transport observations and Windows/macOS solver-only evidence;
-visible-window rendering and live replacement remain unqualified for 1.0.
+Linux native-window source observations now cover live replacement, exports and
+independent windows. They do not certify installed artifacts, Windows/macOS,
+or the standalone host for 1.0.
 
 MolSysViewer renders the same viewer bundle through **four distinct surfaces**.
 They differ in *transport* (how Python and the JS runtime exchange messages) and
@@ -25,7 +27,7 @@ The table below is about mechanism; these are the names you actually call.
 | --- | --- |
 | AnyWidget / Jupyter | `msv.new_view(...)`, or `msv.demo[...]` |
 | Qt live shell | `molsysviewer.launch_standalone_qt0(molecular_system, ...)`, or the `molsysviewer-qt` console script |
-| Exported HTML | `molsysviewer.build_standalone0_html(...)`, and `view.export.write_html(...)` for the ordinary case |
+| Exported HTML | `molsysviewer.build_standalone0_html(...)`, and `view.export.html(...)` for the ordinary case |
 | Docs / static views | the same builder, driven by the docs pipeline |
 
 `launch_standalone_qt0` opens the window **and runs the Qt event loop**, so it does not
@@ -100,3 +102,54 @@ while generic shell state has no dependency on the structure and should persist
 for a smooth desktop experience. Implementation:
 `_build_qt_live_messages` returns `[clear_all, *export_messages]` and
 `_send_viewer_messages(..., new_generation=True)` advances the generation.
+
+## Live authority, preferences and exports
+
+The local shell explicitly sets `host_event_transport="url-scheme"`. Its
+controller sends product events to its persistent Python view, including shared
+Studio and context-menu actions. Static HTML keeps its authority-free behavior.
+The local native Reset-only context menu has been removed; the canvas uses the
+shared menu. There is no second Qt-specific scene owner.
+
+`QtViewChannel` reuses the widget's trait defaults and validators without
+creating an AnyWidget or a comm. Python preferences travel through
+`set_host_ui`; browser preference changes return as whitelisted `qt_ui_state`
+events. These preferences are transport state, outside scene history. A load
+replays them after advancing its generation. A final `commit_scene` waits for
+a completed Mol* draw and presentation before the shell reports `Ready.`.
+
+Camera and image requests use the same frontend reply handlers in Qt and
+Jupyter. Synchronous Python waiting cooperatively pumps the Qt event loop;
+missing replies still terminate with a timeout. Movie export waits for each
+requested camera state to be drawn before capturing its image.
+
+The native Export menu exports the **current persistent view**, including scene
+edits. HTML output is self-contained through `view.export.html(...)`, without
+the live Qt connector. Studio downloads use the profile's native destination
+dialog; cancellation does not create a destination. Interrupted and completed
+downloads have different status messages.
+
+The shared Fullscreen API controls the native window and restores its previous
+maximized/normal state. Escape belongs to the canvas first (menus, tools,
+selection and panels); an unconsumed Escape exits fullscreen. A native menu
+shortcut must not steal this key before WebEngine receives it.
+
+## Local host ownership and limits
+
+Each local host owns a private off-the-record WebEngine profile, page, scheme
+handlers, payload store and Python view. Independent windows cannot overwrite
+each other's transport handlers. Closing cancels downloads, closes the view
+and bridge, and disposes the page before its profile. Late sends fail visibly.
+An implicit shell directory is removed after page destruction; an explicit
+caller output is preserved. This addresses the normal local-host lifetime;
+remaining initialization/image-export resource exceptions are tracked under
+`uibcdf/molsysviewer#109`.
+
+`include_popout` is false by default. Qt child-window/popout parity remains
+tracked under `uibcdf/molsysviewer#51`; browser popout tests do not qualify it.
+Addon discovery and product-event routing do not certify every notebook-widget
+addon panel in WebEngine. Qualify each owner's actual Qt-compatible contribution
+before claiming it works in this host.
+
+For the latest measured source scopes and retained failed attempts, see
+[the standalone review](https://github.com/uibcdf/molsysviewer/blob/main/devguide/standalone_review_20261029.md).

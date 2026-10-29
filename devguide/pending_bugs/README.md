@@ -23,14 +23,10 @@ list.
 
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*
 
-### Deferred until after 1.0 (1)
-
-- [`standalone_qt_movie_camera_snapshot.md`](post_1.0/standalone_qt_movie_camera_snapshot.md) — [#36](https://github.com/uibcdf/molsysviewer/issues/36) — Movie export in the Qt host fails because the camera snapshot is never mirrored back.
-
 <!-- /generated -->
 
-The movie camera-snapshot defect is confirmed but explicitly deferred under
-[`post_1.0/`](post_1.0/README.md).
+The Qt movie camera-snapshot defect is resolved in source; its evidence is
+preserved in [the archive](../archive/standalone_qt_movie_camera_snapshot.md).
 
 The camera zoom-out defect (Contract S9) was resolved and archived on 2026-08-05.
 The upstream report was filed as

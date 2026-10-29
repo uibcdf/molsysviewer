@@ -406,10 +406,12 @@ Measured evidence, not estimates. Each records the command that reproduces it.
 - [`standalone_v2_evolution_plan.md`](standalone_v2_evolution_plan.md) — post-1.0
   architecture for a v2 host, beyond the monolithic PySide6 prototype.
 
-Closed Qt investigations live under [`audits/`](audits/README.md). The two
-remaining product defects are tracked in
-[`pending_bugs/standalone_qt_live_demo_reload.md`](pending_bugs/standalone_qt_live_demo_reload.md)
-and [`pending_bugs/post_1.0/`](pending_bugs/post_1.0/README.md).
+The [2026-10-29 standalone review](standalone_review_20261029.md) repairs live
+Qt authority/preferences, profile ownership, native downloads and movie/image
+export. Native Linux/GPU guards pass; #35 still needs maintainer visual
+confirmation. #109/#113 retain platform/resource qualification, and #51 keeps
+Qt popout work separate. Qt remains experimental. Older investigations live
+under [`audits/`](audits/README.md).
 
 ## Project direction
 

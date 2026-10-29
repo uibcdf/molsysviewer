@@ -41,7 +41,7 @@ under Xvfb/SwiftShader; this is not a visible-window rendering certificate.
 
 | Platform | Conda resolution with canonical Qt 6.11.2 | Qt host runtime evidence |
 | --- | --- | --- |
-| `linux-64` | Solved and installed | Transport and payload smokes passed on Python 3.11–3.14; visible-window observation still pending |
+| `linux-64` | Solved and installed | Transport and payload smokes on Python 3.11–3.14; native source/window regression on 3.14 (2026-10-29), human confirmation pending |
 | `win-64` | Dry-run solved on Python 3.14 | Not run on Windows yet |
 | `osx-arm64` | Dry-run solved on Python 3.14 with macOS 14 override | Not run on macOS yet |
 | `osx-64` | Outside the supported platform matrix | No support claim or required runtime gate |
@@ -55,6 +55,22 @@ is tracked in `uibcdf/molsyssuite#59`.
 macOS support is currently limited to Apple Silicon (arm64). Intel-based macOS
 (x86_64) is not part of the supported platform matrix. Support may be
 reconsidered if there is demonstrated user demand.
+
+### Native Linux source observation — 2026-10-29
+
+The existing `molsyssuite@uibcdf_3.14` environment (Python 3.14.7,
+canonical PySide6/Qt 6.11.2) now runs visible native windows on the available
+Linux desktop and NVIDIA Quadro M2000 (driver 580.178.04, direct OpenGL).
+No graphics workaround or package change was introduced. The live-workbench
+regression verifies shared authority, camera/PNG replies, native download and
+cancellation, fullscreen/Escape, ten 22/62-atom replacements with changed
+molecular pixels, three orbit images, and two independent hosts with cleanup.
+
+This is source/runtime evidence, not installed-package qualification or a human
+usability certificate. `uibcdf/molsysviewer#35` retains its maintainer visual
+confirmation. Windows/macOS native checks and Qt popout parity remain pending.
+The [review receipt](standalone_review_20261029.json) distinguishes this result
+from historical Xvfb/software and failed local attempts. Qt remains experimental.
 
 ### Historical UIBCDF 6.9.2 recipe (superseded as the default)
 
@@ -185,7 +201,8 @@ The remaining standalone environment questions are:
 - whether final release packaging should remain environment-driven or become a
   more app-like distribution
 
-Those are Phase E / pre-`1.0.0` questions.
+Those remain standalone qualification and distribution questions; the host is
+experimental and outside the core `1.0.0` support promise.
 
 They should not block continued host development now that a supported prototype
 recipe exists.

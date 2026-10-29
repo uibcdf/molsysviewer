@@ -171,6 +171,7 @@
     "message_error",
     "structure_ready",
     "render_ready",
+    "qt_ui_state",
     "frontend_error"
   ],
   "qt_test_actions": [

@@ -325,8 +325,14 @@ async function run() {
         await page.evaluate(() => (window as any).__controller.setPanelMode("addons", true));
         await page.waitForFunction(() => document.querySelector<HTMLElement>('[data-molsysviewer-addons-panel-left]')!.style.display === "none");
         assert.ok(await page.getByLabel("Addon workspace", { exact: true }).isVisible());
-        assert.equal(await page.locator('[data-molsysviewer-addon-card="molsysmt"]').count(), 0);
-        assert.equal(await page.locator('[data-molsysviewer-addon-workspace-tab="molsysmt"]').count(), 0);
+        // Addons are discovered from the real provider, not hardcoded absences.
+        // The optional MolSysMT tools addon has been restored since this guard
+        // was introduced; keep the responsive manager assertion below.
+        const addonManifest = fixture.initial_messages.find((message: any) => message.op === "set_addon_runtime_summary");
+        assert.ok(addonManifest, "The real fixture must provide its addon catalogue");
+        for (const addon of addonManifest.addon_records) {
+            assert.equal(await page.locator(`[data-molsysviewer-addon-card="${addon.name}"]`).count(), 1);
+        }
         assert.ok((await page.locator('[data-molsysviewer-addons-panel-right]').innerText()).includes("Add-ons manager"));
         await page.evaluate(() => (window as any).__controller.setPanelMode("navigate", true));
         assert.equal(await navigation.inputValue(), "shapes");
@@ -352,7 +358,7 @@ async function run() {
         }));
         assert.equal(await page.evaluate(() => (window as any).__disposedPanel.getAttribute("style")), disposed);
         assert.deepEqual(errors, []);
-        console.log("[E2E Studio] real PNG/HTML downloads, transparency, native labels, compact navigation, floating bounds, disposal and MolSysMT retirement passed");
+        console.log("[E2E Studio] real PNG/HTML downloads, transparency, native labels, compact navigation, floating bounds, disposal and discovered addon catalogue passed");
     } finally {
         try { await browser.close(); } finally {
             try { await bridge.close(); } finally { await rm(downloadDir, { recursive: true, force: true }); }

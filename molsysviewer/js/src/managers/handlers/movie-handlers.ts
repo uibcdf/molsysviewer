@@ -171,6 +171,9 @@ export class MovieHandlers {
         for (let i = 0; i < totalFrames; i++) {
             const time_ms = Math.min((i / fps) * 1000, keyframes[keyframes.length - 1].time_ms);
             await this.applyStateForExport(keyframes, time_ms, baseSnapshot, exportVis, exportStructureIndex);
+            // Mol* consumes its queued camera reset during draw, after the
+            // command promise resolves. Capture the applied frame, as playback does.
+            await this.context.waitForDraw();
             const dataUri = await this.context.getImageDataUri({ width: widthPx, height: heightPx });
             this.context.notify?.({
                 event: "movie_frame",

@@ -2999,13 +2999,20 @@ class MolSysView(
             return False
         if timeout_s <= 0:
             return True
+        return self._wait_for_frontend_reply("_last_camera_snapshot", previous, timeout_s) is not None
+
+    def _wait_for_frontend_reply(self, attribute: str, previous: Any, timeout_s: float) -> Any:
+        """Let a native host dispatch its reply while a synchronous caller waits."""
+        process_events = getattr(self, "_qt_process_events", None)
         deadline = time.monotonic() + timeout_s
         while time.monotonic() < deadline:
-            current = self._last_camera_snapshot
+            if callable(process_events):
+                process_events()
+            current = getattr(self, attribute)
             if current is not None and current is not previous:
-                return True
+                return current
             time.sleep(0.01)
-        return False
+        return None
 
     def _request_image_export(
         self,
@@ -3041,13 +3048,8 @@ class MolSysView(
             return None
         if timeout_s <= 0:
             return self._last_image_export_event
-        deadline = time.monotonic() + timeout_s
-        while time.monotonic() < deadline:
-            current = self._last_image_export_event
-            if current is not None and current is not previous:
-                return dict(current)
-            time.sleep(0.01)
-        return None
+        current = self._wait_for_frontend_reply("_last_image_export_event", previous, timeout_s)
+        return dict(current) if current is not None else None
 
     def _request_remote_image_download(self) -> None:
         router = getattr(self.widget, "router", None)

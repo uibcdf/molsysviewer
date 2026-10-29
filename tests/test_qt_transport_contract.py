@@ -181,7 +181,7 @@ def test_an_unknown_action_is_observable_and_refused_on_qt_as_on_anywidget():
     """
     from molsysviewer.standalone_qt import utils
 
-    bridge = utils.QtMessageBridge.__new__(utils.QtMessageBridge)
+    bridge = utils.QtMessageBridge(None, None)
     bridge.ready = True
     forwarded: list = []
     bridge._forward_to_view = forwarded.append  # noqa: SLF001
@@ -202,7 +202,7 @@ def test_an_unknown_action_is_observable_and_refused_on_qt_as_on_anywidget():
 def test_the_explicit_qt_payload_probe_reaches_the_test_sink_without_weakening_product_actions():
     from molsysviewer.standalone_qt import utils
 
-    bridge = utils.QtMessageBridge.__new__(utils.QtMessageBridge)
+    bridge = utils.QtMessageBridge(None, None)
     bridge.ready = True
     forwarded: list = []
     bridge._forward_to_view = forwarded.append  # noqa: SLF001
@@ -214,7 +214,7 @@ def test_the_explicit_qt_payload_probe_reaches_the_test_sink_without_weakening_p
 def test_a_known_product_event_stays_silent_and_reaches_the_view():
     from molsysviewer.standalone_qt import utils
 
-    bridge = utils.QtMessageBridge.__new__(utils.QtMessageBridge)
+    bridge = utils.QtMessageBridge(None, None)
     bridge.ready = True
     forwarded: list = []
     bridge._forward_to_view = forwarded.append  # noqa: SLF001

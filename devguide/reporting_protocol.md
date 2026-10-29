@@ -375,7 +375,7 @@ It is registered in `npm run test:e2e:core`; browser/WebGL failures fail and
 accepted. The validator checks the build/core registration, real Python bridge,
 download assertions and failing entrypoint. The suite renders real pentalanine
 and checks PNG dimensions/alpha, requester-only HTML delivery, native labels,
-compact navigation, floating bounds, observer/drag disposal and addon retirement.
+compact navigation, floating bounds, observer/drag disposal and the discovered addon catalogue.
 Keyboard Settings and shared control fade assertions additionally belong to the
 existing `controls-visibility.e2e.ts` profile.
 

@@ -573,11 +573,16 @@ it in silence with no trace. Structurally, Qt classified its delivery events
 from a hardcoded literal that nothing tied to the shared manifest, so an action
 added on either side stayed invisible to the other.
 
-Qt's five delivery-level events (`message_ack`, `message_error`,
-`structure_ready`, `render_ready`, `frontend_error`) now live in the manifest as
+Qt's connector events (`message_ack`, `message_error`,
+`structure_ready`, `render_ready`, `frontend_error`, `qt_ui_state`) live in the manifest as
 a `qt_transport` group, and the bridge classifies from it instead of its own
 list. The AnyWidget comm is reliable and has no equivalent, which is why the
 group is named for the connector that needs it.
+
+`qt_ui_state` carries only validated canvas/addon preferences to `QtViewChannel`;
+it is forwarded there rather than swallowed as a delivery acknowledgement.
+The local shell's `set_host_ui` and `commit_scene` are private host projections,
+not reproducible scene operations. Static exports do not acquire Python authority.
 
 Qt's bounded retry policy is untouched.
 
