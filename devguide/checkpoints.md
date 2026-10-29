@@ -1,5 +1,15 @@
 # Development checkpoint
 
+**Standalone final review — 2026-10-29:** the live Qt workbench repairs source
+authority/preferences, downloads, camera/movie replies and host cleanup.
+The final pass also fixes full-system loading with a visual selection (#274)
+and actual negotiated binary delivery before numeric JSON (#275). Forty-three
+related contracts, 332 JS units and the real-window guard on native Linux and
+explicit X11/SwiftShader pass. Broad/hosted receiving is recorded separately in
+the [final review](standalone_final_review_20261029.md). Keep maintainer visual
+receiving #35, installed/platform/resource #109/#113, popouts #51 and addon
+rendering qualification separate. Qt remains experimental; no release or tag.
+
 **System composition received in source — 2026-10-28:** provider `71fbe4f46d3c70e4e973c8025f01752a8c9b1084` adds
 `basic.add`, `append_structures`, `merge` and `concatenate_structures`.
 Bound destination edits use explicit managed prefix maps; collection inputs and
@@ -452,6 +462,11 @@ This is the current handoff. Normative behavior remains in the linked contracts;
 previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
+
+The latest user-directed standalone round is summarized in the
+[final review](standalone_final_review_20261029.md). Receive its remaining
+human/hosted checks before resuming the independent addon work below; no Qt
+support admission or release follows from that round.
 
 Current composition receiving is summarized at the top of this checkpoint;
 its native #520 limitation and exact-source CI remain explicit. Next finish

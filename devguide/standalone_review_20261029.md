@@ -1,5 +1,10 @@
 # Standalone source review — 2026-10-29
 
+The subsequent [final pass](standalone_final_review_20261029.md) corrects two
+additional defects in loading policy and actual Qt binary delivery. Its
+guards/receipt supersede assumptions about those paths, without changing the
+scope or results retained below.
+
 The local Qt host now uses the shared live workbench with a persistent Python
 view. This round repairs authority/preferences, independent host profiles and
 normal lifetime, native download destinations, current-scene portable export,

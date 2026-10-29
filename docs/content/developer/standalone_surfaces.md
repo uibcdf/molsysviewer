@@ -40,6 +40,13 @@ Both accept the loading arguments a view accepts (`selection`, `structure_indice
 `syntax`, `load_mode`), the chrome switches (`include_controls`, `include_popout`,
 `width`, `height`, `title`), and the add-on switches (`discover_addons`, `addon_modules`).
 
+The factory and Qt host share the same initial loading policy:
+`load_mode="selection"` loads selected atoms, whereas `load_mode="all"` retains
+the full system and creates an inherited visual selection region with Whole
+hidden. An empty visual selection keeps Whole visible with a warning. Native
+replacement validates the visual selection before replacing the old system;
+it preserves the requested structure order, including nonconsecutive indices.
+
 ### Reaching the current scene from another surface
 
 `view.build_popup_scene_snapshot(mode, endpoint=None, include_molecular=True)` returns the
@@ -69,6 +76,11 @@ format**. The Qt shell must never be driven by regenerating HTML and reloading
 
 - The shell HTML is loaded once (`create_standalone_qt0_window` → `setUrl`).
 - The frontend initializes and emits `ready` over the event scheme.
+- `ready` advertises `array_native_molsys_ref: [1]`. Qualifying canonical lazy
+  loads use the shared array serializer and the payload scheme without first
+  making numeric JSON. The threshold compares raw structural bytes here;
+  raw legacy JSON keeps its encoded-JSON threshold and its own system data.
+  Small or incompatible loads retain JSON.
 - `QtMessageBridge` (runtime-only) queues messages with ids, a rebuild
   `generation`, ack/error/`structure_ready`/`render_ready`, per-op timeouts,
   coalescing and bounded retry. Once the frontend is ready, delivery failures

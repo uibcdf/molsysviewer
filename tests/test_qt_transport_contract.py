@@ -64,48 +64,84 @@ def test_qt_messages_are_not_enveloped():
     assert "direction" not in delivered
 
 
-def _bridge_with_view(view):
-    """A QtMessageBridge wired to a real view, without Qt objects."""
+def _live_view(source, *, version=1, threshold=1):
     from molsysviewer.standalone_qt.utils import QtMessageBridge
-
-    bridge = QtMessageBridge.__new__(QtMessageBridge)
-    bridge.payloads = {}
-    bridge.binary_payload_ids = set()
-    bridge.payload_ref_threshold_bytes = 1  # anything qualifies
-    bridge.view = view
-    return bridge
-
-
-def test_a_large_load_becomes_an_array_native_reference_served_as_bytes():
-    """D4-Qt: the same scheme handler carries raw arrays, not JSON text."""
-    import molsysmt as msm
 
     from molsysviewer import MolSysView
 
-    view = MolSysView()
-    view.load(msm.systems["pentalanine"]["traj_pentalanine.h5msm"])
-    bridge = _bridge_with_view(view)
+    # A real connector held before page readiness: inspect its queued wire data
+    # without importing Qt or pretending that a browser acknowledged it.
+    bridge = QtMessageBridge(None, None)
+    bridge.payload_ref_threshold_bytes = threshold
+    view = MolSysView(transport=QtViewChannel(bridge))
+    view.load(source, structure_indices=[8, 0, 3])
+    view._handle_frontend_event({"event": "ready", "capabilities": {"array_native_molsys_ref": [version]}})
+    return view, bridge
 
-    message = {
-        "id": "load-1",
-        "op": "load_molsys_payload",
-        "payload": {"atoms": {"atom_id": [1]}, "structures": [{"coordinates": [[0, 0, 0]]}]},
-    }
-    payload_id = bridge._materialize_payload_ref(message)  # noqa: SLF001
 
-    assert payload_id == "load-1"
-    # The message now points at the blob and carries the topology inline.
-    assert message["op"] == "load_molsys_array_payload_ref"
-    assert message["ref"]["content_type"] == "application/octet-stream"
-    assert message["ref"]["url"].startswith("molsysviewer-payload://payload/")
-    assert "payload" not in message, "the JSON payload must not travel as well"
-    assert message["metadata"]["n_atoms"] == view.molsys.get_n_atoms()
+def test_a_canonical_live_load_uses_numeric_scheme_bytes_without_json():
+    import numpy as np
+    from molsysviewer._pyunitwizard import puw
 
-    # The blob is exactly the descriptors' bytes, concatenated in order.
-    blob = bridge.payloads[payload_id]
-    assert payload_id in bridge.binary_payload_ids
-    expected = sum(d["byte_length"] for d in message["metadata"]["structural_arrays"])
-    assert len(blob) == expected
+    from molsysviewer import demo
+
+    with demo["pentalanine"] as source:
+        view, bridge = _live_view(source.molsys)
+        try:
+            assert not view._current_molecular_projection.is_materialized
+            entry = next(x for x in bridge.queue if x["message"]["op"] == "load_molsys_array_payload_ref")
+            message = entry["message"]
+            assert message["metadata"]["n_atoms"] == 62
+            assert message["metadata"]["n_structures"] == 3
+            assert entry["wait_event"] == "structure_ready"
+            assert entry["timeout_s"] == 30
+            assert entry["payload_id"] in bridge.binary_payload_ids
+            blob = bridge.payloads[entry["payload_id"]]
+            offset = 0
+            for descriptor in message["metadata"]["structural_arrays"]:
+                stop = offset + descriptor["byte_length"]
+                actual = np.frombuffer(blob[offset:stop], dtype=descriptor["dtype"]).reshape(descriptor["shape"])
+                field = descriptor["kind"]
+                values = getattr(source.molsys.structures, field)[[8, 0, 3]]
+                expected = puw.get_value(values, to_unit="ps" if field == "time" else "angstroms")
+                if field == "coordinates":
+                    expected = expected.transpose(0, 2, 1)
+                np.testing.assert_allclose(actual, expected, rtol=1e-6, atol=1e-6)
+                offset = stop
+            assert offset == len(blob)
+            bridge.begin_generation()
+            assert not bridge.payloads and not bridge.binary_payload_ids
+        finally:
+            view.close()
+
+
+@pytest.mark.parametrize("version, threshold", [(999, 1), (1, 10**12)])
+def test_unsupported_reference_or_small_load_retains_json_fallback(version, threshold):
+    from molsysviewer import demo
+
+    with demo["pentalanine"] as source:
+        view, bridge = _live_view(source.molsys, version=version, threshold=threshold)
+        try:
+            assert view._current_molecular_projection.is_materialized
+            assert not bridge.binary_payload_ids
+            assert not any(x["message"]["op"] == "load_molsys_array_payload_ref" for x in bridge.queue)
+        finally:
+            view.close()
+
+
+def test_raw_payload_is_not_replaced_with_an_implicit_view_system():
+    import json
+
+    from molsysviewer.standalone_qt.utils import QtMessageBridge
+
+    bridge = QtMessageBridge(None, None)
+    bridge.payload_ref_threshold_bytes = 1
+    payload = {"atoms": {"atom_id": [1]}, "structures": [{"coordinates": [[1, 2, 3]]}]}
+    bridge.send({"op": "load_molsys_payload", "payload": payload})
+    entry = bridge.queue[0]
+    assert entry["message"]["op"] == "load_molsys_payload_ref"
+    assert json.loads(bridge.payloads[entry["payload_id"]]) == payload
+    assert not bridge.binary_payload_ids
 
 
 def test_the_scheme_handler_serves_binary_and_json_by_id():

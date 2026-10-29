@@ -43,9 +43,9 @@ def main():
     def idle():
         wait(lambda: bridge.ready and not bridge.queue and bridge.inflight is None)
 
-    def evaluate(script):
+    def evaluate(script, target=web):
         result = []
-        web.page().runJavaScript("JSON.stringify(" + script + ")", result.append)
+        target.page().runJavaScript("JSON.stringify(" + script + ")", result.append)
         wait(lambda: bool(result))
         return json.loads(result[0]) if isinstance(result[0], str) and result[0] else result[0]
 
@@ -56,7 +56,10 @@ def main():
             "authority": evaluate("window.__molsysviewerDocsController.hasPythonAuthority()"),
             "provider_file": msm.__file__,
             "qt_platform": app.platformName(),
+            "initial_binary_projection": not view._current_molecular_projection.is_materialized,
         }
+        assert report["initial_binary_projection"], "Initial Qt data unnecessarily materialized numeric JSON"
+        assert web._molsysviewer_qt_payload_handler.served
         # Use the shared real context-menu form; no native replacement or fake UI.
         evaluate("""(() => {
             const c = window.__molsysviewerDocsController;
@@ -187,6 +190,7 @@ def main():
         report["fullscreen_roundtrip"] = True
         print("fullscreen-completed", flush=True)
         report["loads"] = []
+        report["binary_replacements"] = 0
         for i in range(10):
             source = first if i % 2 == 0 else second
             qt._load_molecular_system_into_qt_host(
@@ -203,6 +207,8 @@ def main():
             )
             assert len(atoms) == 1, atoms
             report["loads"].append(atoms[0])
+            assert not view._current_molecular_projection.is_materialized
+            report["binary_replacements"] += 1
             window.grab().save(str(out / f"system-{i}.png"))
         import imageio.v2 as imageio
         import numpy as np
@@ -253,13 +259,28 @@ def main():
         )
         report["failed_deliveries"] = bridge.failed_deliveries
         print("movie-completed", flush=True)
-        other = qt.create_standalone_qt0_window(second, apply_project_config=False)
+        other = qt.create_standalone_qt0_window(
+            second, selection=[0, 1], structure_indices=[8, 0, 3], load_mode="all", apply_project_config=False
+        )
         print("second-host-created", flush=True)
         other["window"].show()
         other_bridge = other["webview"]._molsysviewer_qt_bridge
         other_view = other["webview"]._molsysviewer_view
         wait(lambda: other_bridge.ready and not other_bridge.queue and other_bridge.inflight is None)
         assert other["webview"].page().profile() is not web.page().profile()
+        assert other_view.molsys.get_n_atoms() == 62
+        assert other_view.molsys.structures.n_structures == 3
+        assert other_view.regions["selection"].atom_indices == (0, 1)
+        assert not other_view.whole.visible
+        assert not other_view._current_molecular_projection.is_materialized
+        assert (
+            evaluate(
+                "window.__molsysviewerDocsController.plugin.managers.structure.hierarchy.current.structures[0].cell.obj.data.elementCount",
+                target=other["webview"],
+            )
+            == 62
+        )
+        report["all_mode_and_structure_indices"] = True
         implicit_html = Path(other["html_path"])
         assert implicit_html.exists()
         print("second-host-ready", flush=True)

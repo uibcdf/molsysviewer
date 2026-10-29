@@ -417,3 +417,5 @@ Completed work, kept for the reasoning:
 - [canvas popup playback](canvas_popup_playback.md) — #238: One playback clock projects applied frames and final derived geometry; FPS edits preserve playback.
 - [annotation callout picking](annotation_callout_picking.md) — #241: Managed callout text is pickable after creation and updates, verified with native GPU hits.
 - [annotation pick registry lifecycle](annotation_pick_registry_lifecycle.md) — #243: Annotation replacement unregisters deleted refs and retains only live registry entries.
+- [Qt initial load policy](qt_initial_load_policy.md) — #274 shares factory loading semantics with Qt, preserving the full system for visual selections.
+- [Qt live array references](qt_live_array_reference.md) — #275 negotiates the real lazy binary path, preserves raw payload identity and checks actual Qt delivery.

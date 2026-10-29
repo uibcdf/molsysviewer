@@ -944,6 +944,28 @@ class MolSysView(
         self._check_binary_structure_ack_timeout()
         if message.get("op") != "load_molsys_payload" or self._molsys is None:
             return False
+        reference_sender = getattr(self.widget, "_send_array_native_reference", None)
+        reference_versions = self._frontend_capabilities.get("array_native_molsys_ref")
+        if (
+            target_endpoint_id is None
+            and is_lazy_molecular_message(message)
+            and message.molecular_revision == self._molecular_projection_revision
+            and callable(reference_sender)
+            and isinstance(reference_versions, (list, tuple))
+            and ARRAY_NATIVE_PROTOCOL_VERSION in reference_versions
+        ):
+            # Scheme-based connectors own their references and ordering. Do not
+            # materialize the JSON fallback or infer a raw payload from a view.
+            try:
+                return bool(reference_sender(message, self._molsys))
+            except Exception as exc:
+                warn(
+                    StructureStreamFallbackWarning(
+                        f"Array-native scheme delivery failed; using JSON fallback: {exc}",
+                    ),
+                    stacklevel=2,
+                )
+                return False
         max_buffer_bytes = self._binary_structure_transport_limit()
         if max_buffer_bytes is None:
             return False

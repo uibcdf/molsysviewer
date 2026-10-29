@@ -1,0 +1,178 @@
+{
+  "schema": "molsysviewer.standalone-final-review@1",
+  "date": "2026-10-29",
+  "basis": "a69b8bfa19b9379bc07eeda71d17dfd1cc7bd62e",
+  "scope": "source-host regression; standalone remains experimental; not installed Viewer qualification",
+  "issues": [
+    274,
+    275
+  ],
+  "source_sha256": {
+    "molsysviewer/new_view.py": "1c18b6f48a3746e6c0a868fd0fb0e68aa21fbb86403ddbfef2987177a1dd7202",
+    "molsysviewer/viewer/core.py": "c45384eca11166c6a2976b8522e2d1ab17e731f6bfbba4c921ca9fc8b3dbb52f",
+    "molsysviewer/standalone_qt/utils.py": "7feb05ebf4e776eadf29312c6bb7726c86ea1107c74e5ce09c084188c320ef3d",
+    "molsysviewer/standalone_qt/view_channel.py": "901fb6a6467207f30a2339ba28cfe5f43b405f207a62a87f43df1bf345652d64",
+    "molsysviewer/js/src/index.ts": "95ade6bca27e99b8ca4923dbb1847c79b95992b3e1a75bcc12866e3046ab99cb",
+    "tests/test_new_view.py": "5db3ee75b8cc43d99afc27f3c056b3ab43cd8e7da6aede5a71809046a001bbdf",
+    "tests/test_qt_transport_contract.py": "d18fca20ff1d7cf8bc39db9a31eacfe148ef87749e55b187c02796188d9ee3db",
+    "tests/test_qt_live_workbench.py": "dc3e848472d56e40638c130820c03458f8b25972da9b2073f64b048c4daf2eaf",
+    "tests/_qt_live_workbench.py": "322d585898855842e9ebe0cc3bfa36391e5921b48ada962b7e352209e616f3ff"
+  },
+  "provider": {
+    "runtime_source_equivalent_to": "71fbe4f46d3c70e4e973c8025f01752a8c9b1084",
+    "rust_backend_sha256": "f32ed73f7ef3cf3225e12fbc56b9c4236a4452d758c94661f41860ad00d82c1c",
+    "sibling_modified": false,
+    "hashes_rechecked": 3004,
+    "hash_mismatches": 0
+  },
+  "python": "3.14.7",
+  "qt": "canonical PySide6/Qt 6.11.2",
+  "checks": {
+    "contracts": {
+      "tests": "26",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "5.495"
+    },
+    "related": {
+      "tests": "43",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "11.667"
+    },
+    "js_units": {
+      "tests": 332,
+      "passed": 332,
+      "skipped": 0
+    },
+    "runtime_build": "build:runtime; no package metadata churn",
+    "x11": {
+      "junit": {
+        "tests": "2",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "34.911"
+      },
+      "configuration": "QT_QPA_PLATFORM=xcb, Xvfb, ANGLE SwiftShader WebGL and CPU composition",
+      "observations": {
+        "authority": true,
+        "provider_file": "frozen MolSysMT source / molsysmt/__init__.py",
+        "qt_platform": "xcb",
+        "initial_binary_projection": true,
+        "region_atoms": [
+          0,
+          1
+        ],
+        "native_download_and_cancel": true,
+        "camera_received": true,
+        "image_received": true,
+        "python_mode": "cinema",
+        "browser_mode": "standard",
+        "fullscreen_roundtrip": true,
+        "loads": [
+          22,
+          62,
+          22,
+          62,
+          22,
+          62,
+          22,
+          62,
+          22,
+          62
+        ],
+        "binary_replacements": 10,
+        "changed_molecular_pixels": 0.10267971965020577,
+        "movie_camera_image_difference": 3.940110677083333,
+        "movie_frames": 3,
+        "timeout_without_reply": true,
+        "failed_deliveries": [],
+        "all_mode_and_structure_indices": true,
+        "independent_host_and_cleanup": true
+      }
+    },
+    "desktop": {
+      "junit": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "28.350"
+      },
+      "configuration": "native Wayland/NVIDIA Quadro M2000; no Xvfb or GL override",
+      "observations": {
+        "authority": true,
+        "provider_file": "frozen MolSysMT source / molsysmt/__init__.py",
+        "qt_platform": "wayland",
+        "initial_binary_projection": true,
+        "region_atoms": [
+          0,
+          1
+        ],
+        "native_download_and_cancel": true,
+        "camera_received": true,
+        "image_received": true,
+        "python_mode": "cinema",
+        "browser_mode": "standard",
+        "fullscreen_roundtrip": true,
+        "loads": [
+          22,
+          62,
+          22,
+          62,
+          22,
+          62,
+          22,
+          62,
+          22,
+          62
+        ],
+        "binary_replacements": 10,
+        "changed_molecular_pixels": 0.10305145640432099,
+        "movie_camera_image_difference": 3.9606119791666665,
+        "movie_frames": 3,
+        "timeout_without_reply": true,
+        "failed_deliveries": [],
+        "all_mode_and_structure_indices": true,
+        "independent_host_and_cleanup": true
+      }
+    },
+    "broad_core": {
+      "status": "passed",
+      "junit": {
+        "tests": "3319",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "21",
+        "time": "245.853"
+      },
+      "passed": 3298,
+      "campaigns": 1,
+      "scope": "all non-qt_runtime tests; native Qt received separately",
+      "skips_preserved": true
+    },
+    "hosted": {
+      "status": "pending"
+    },
+    "guidance": {
+      "tests": 289,
+      "passed": 289,
+      "skipped": 0
+    }
+  },
+  "remaining": [
+    "maintainer visual observation #35",
+    "platform/installed-host/resource #109/#113",
+    "popouts #51",
+    "owner-specific Qt addon rendering",
+    "known public provider Pandas4Warning documentation failures; not waived"
+  ],
+  "release": {
+    "tagged": false,
+    "packaged": false,
+    "published": false
+  }
+}

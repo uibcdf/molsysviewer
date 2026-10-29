@@ -299,7 +299,7 @@ export async function bootDocsView(opts: {
                 popupReplay.record(msg);
             }
             notifyHost({ event: "message_ack", phase: "handled", ...meta });
-            if ((msg as any)?.op === "load_molsys_payload" || (msg as any)?.op === "load_molsys_payload_ref") {
+            if ((msg as any)?.op === "load_molsys_payload" || (msg as any)?.op === "load_molsys_payload_ref" || (msg as any)?.op === "load_molsys_array_payload_ref") {
                 notifyHost({ event: "structure_ready", ...meta });
                 notifyRenderReady(msg);
             }
@@ -542,7 +542,7 @@ export async function bootDocsView(opts: {
         const canvas = controller.plugin.canvas3d;
         if (!canvas) throw new Error("Exported scene has no WebGL canvas.");
         await waitForCanvasDraw(canvas);
-        notifyHost({ event: "ready" });
+        notifyHost({ event: "ready", capabilities: { array_native_molsys_ref: [1] } });
     } catch (err) {
         console.error("[MolSysViewer docs] Init error:", err);
         const message = err instanceof Error ? err.message : String(err);

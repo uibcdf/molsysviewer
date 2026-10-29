@@ -10,6 +10,13 @@ mutation-verified on the AnyWidget connector, and Qt now has both its own
 baseline (`../performance/qt_transport_baseline_2026_07.md`) and binary
 transport, served through the payload scheme handler it already had.
 
+Final Qt receiving on 2026-10-29 found that the live host bypassed that
+adapter (uibcdf/molsysviewer#275). The corrected current path negotiates
+`array_native_molsys_ref: [1]` and passes the canonical lazy projection directly
+to Qt before constructing coordinate JSON. Its real-window guard now checks
+initial loading and ten replacements; earlier isolated adapter tests alone did
+not establish live-host use.
+
 Both connectors keep the JSON path as an observable fallback. Windowed
 residency stays post-1.0; `SharedArrayBuffer` is blocked on preconditions this
 project does not own.
@@ -192,6 +199,13 @@ from `molsysmt.MolSys`; no intermediate viewer form is part of the architecture.
   still cross `QtViewChannel` as JSON; that channel deliberately rejects an
   AnyWidget-style `buffers=` argument because Qt's binary mechanism is the
   payload scheme, not widget comm buffers.
+  Only the current canonical lazy projection can use the negotiated adapter.
+  Its threshold measures raw structural array bytes; legacy raw JSON retains
+  its encoded-JSON threshold and its own payload identity. Small loads or
+  unsupported capabilities use JSON; failed preparation warns before fallback.
+  References belong to the bridge generation and wait for `structure_ready`.
+  The binary blob and selected MolSys remain materialized: no universal RAM
+  bound or out-of-core loading is promised.
 - **Popup:** the runtime router sends one current molecular projection to a
   canvas popup; it does not accumulate molecular payloads in a replay log.
 - **Panel popup:** receives UI state and no molecular arrays.
@@ -433,6 +447,11 @@ relayed buffer fails the byte comparison.
 Qt parity was measured and implemented through its payload-scheme transport;
 AnyWidget `buffers=` and Qt payload blobs are different connector adapters for
 the same array-native schema.
+The live integration is guarded by
+`tests/test_qt_transport_contract.py::test_a_canonical_live_load_uses_numeric_scheme_bytes_without_json`
+and `tests/test_qt_live_workbench.py::test_qt_live_workbench_full_render_gpu`;
+the latter serves real binary bytes and checks changing molecular pixels,
+not just an isolated serializer, on a qualified Qt/WebGL host.
 
 ## Completion and deferred scope
 

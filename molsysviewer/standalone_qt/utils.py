@@ -404,11 +404,51 @@ class QtMessageBridge:
         if self._closed:
             raise RuntimeError("The Qt host is closed.")
         entry = self._make_entry(message)
+        self._enqueue_entry(entry)
+
+    def _enqueue_entry(self, entry: dict[str, Any]) -> None:
         coalesce_key = entry.get("coalesce_key")
         if coalesce_key:
             self.queue = [item for item in self.queue if item.get("coalesce_key") != coalesce_key]
         self.queue.append(entry)
         self._flush()
+
+    def _send_array_native_load(self, molsys, *, label=None, multiple_structures=False) -> bool:
+        """Own a canonical numeric reference without constructing numeric JSON.
+
+        The threshold measures raw structural bytes here. Legacy raw JSON
+        messages retain their encoded-JSON threshold and are never substituted
+        with data from another molecular system.
+        """
+        if self._closed:
+            raise RuntimeError("The Qt host is closed.")
+        if molsys.get_n_atoms() == 0 or molsys.structures.coordinates is None or not molsys.structures.n_structures:
+            return False
+        from ..loaders.array_native_molsys import serialize_array_native_molsys
+
+        payload = serialize_array_native_molsys(molsys)
+        if sum(array.nbytes for array in payload.arrays) < self.payload_ref_threshold_bytes:
+            return False
+        entry = self._make_entry(
+            {
+                "op": "load_molsys_array_payload_ref",
+                "metadata": payload.metadata,
+                "n_structures": payload.metadata["n_structures"],
+                "label": label,
+                "multiple_structures": multiple_structures,
+            }
+        )
+        payload_id = entry["id"]
+        self.payloads[payload_id] = b"".join(bytes(buffer) for buffer in payload.buffers)
+        self.binary_payload_ids.add(payload_id)
+        entry["payload_id"] = payload_id
+        entry["message"]["ref"] = {
+            "kind": "scheme",
+            "url": f"{QT_PAYLOAD_SCHEME}://payload/{payload_id}",
+            "content_type": "application/octet-stream",
+        }
+        self._enqueue_entry(entry)
+        return True
 
     def handle_frontend_event(self, event: Any) -> bool:
         if self._closed:
@@ -497,7 +537,11 @@ class QtMessageBridge:
         msg.setdefault("generation", self.generation)
         payload_id = self._materialize_payload_ref(msg)
         op = str(msg.get("op", ""))
-        wait_event = "structure_ready" if op in {"load_molsys_payload", "load_molsys_payload_ref"} else "message_ack"
+        wait_event = (
+            "structure_ready"
+            if op in {"load_molsys_payload", "load_molsys_payload_ref", "load_molsys_array_payload_ref"}
+            else "message_ack"
+        )
         timeout_s = 30.0 if wait_event == "structure_ready" or op == "commit_scene" else 5.0
         return {
             "id": msg["id"],
@@ -521,14 +565,6 @@ class QtMessageBridge:
             return None
         payload_id = str(message["id"])
 
-        # Prefer the array-native form: the same scheme handler serves the raw
-        # structural arrays, so the page skips intermediate forms, nested lists and the
-        # JSON encode entirely. Measured 4.7x fewer bytes and up to 120x less
-        # preparation time (devguide/performance/qt_transport_baseline_2026_07.md).
-        array_message = self._array_native_ref_message(message, payload_id)
-        if array_message is not None:
-            return payload_id
-
         self.payloads[payload_id] = payload_text.encode("utf-8")
         n_structures = len(payload.get("structures") or []) if isinstance(payload.get("structures"), list) else None
         message.pop("payload", None)
@@ -538,46 +574,6 @@ class QtMessageBridge:
         if n_structures is not None:
             message["n_structures"] = n_structures
         return payload_id
-
-    def _array_native_ref_message(self, message: dict[str, Any], payload_id: str) -> dict | None:
-        """Rewrite a molecular load as an array-native reference, or give up.
-
-        Metadata (topology and the array descriptors) travels in the message, as
-        it does on the AnyWidget seam; the structural arrays are concatenated in
-        descriptor order and served as one binary blob over QT_PAYLOAD_SCHEME.
-
-        Returns None when there is no MolSys to serialize or anything fails, in
-        which case the caller keeps the JSON path. This must never be the reason
-        a structure fails to load.
-        """
-        molsys = getattr(getattr(self, "view", None), "_molsys", None)
-        if molsys is None:
-            return None
-        try:
-            from ..loaders.array_native_molsys import serialize_array_native_molsys
-
-            payload = serialize_array_native_molsys(molsys)
-            blob = b"".join(bytes(buffer) for buffer in payload.buffers)
-        except Exception:
-            emit_suppressed_exception(
-                "molsysviewer.standalone_qt.array_native_ref",
-                sys.exc_info()[1],
-                context={"payload_id": payload_id},
-            )
-            return None
-
-        self.payloads[payload_id] = blob
-        self.binary_payload_ids.add(payload_id)
-        message.pop("payload", None)
-        message["op"] = "load_molsys_array_payload_ref"
-        message["metadata"] = payload.metadata
-        message["n_structures"] = payload.metadata["n_structures"]
-        message["ref"] = {
-            "kind": "scheme",
-            "url": f"{QT_PAYLOAD_SCHEME}://payload/{payload_id}",
-            "content_type": "application/octet-stream",
-        }
-        return message
 
     def _coalesce_key(self, message: dict[str, Any]) -> str | None:
         op = message.get("op")
@@ -986,13 +982,16 @@ def _load_molecular_system_into_qt_host(
             # Demos and some sources arrive as a MolSysView; load its underlying
             # molecular system. Paths / PDB ids / molsysmt systems pass through.
             target = molecular_system._molsys if isinstance(molecular_system, MolSysView) else molecular_system  # noqa: SLF001
-            view.load(
+            from ..new_view import _load_initial_system
+
+            _load_initial_system(
+                view,
                 target,
                 selection=selection,
                 structure_indices=structure_indices,
                 syntax=syntax,
-                mode="replace",
-                skip_digestion=True,
+                load_mode=load_mode,
+                replace=True,
             )
     else:
         # Fallback (no persistent view): the legacy snapshot path.

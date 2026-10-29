@@ -80,11 +80,39 @@ def new_view(
             panel_mode_style=panel_mode_style,
             height=height,
         )
+    return _load_initial_system(
+        view,
+        molecular_system,
+        selection=selection,
+        structure_indices=structure_indices,
+        syntax=syntax,
+        load_mode=load_mode,
+    )
+
+
+def _load_initial_system(
+    view: MolSysView,
+    molecular_system: Any,
+    *,
+    selection: Selection = "all",
+    structure_indices: StructureIndices = "all",
+    syntax: str = "MolSysMT",
+    load_mode: str = "selection",
+    replace: bool = False,
+) -> MolSysView:
+    """Shared factory/host loading policy; replacement remains a host decision."""
     if load_mode not in ("selection", "all"):
         raise ValueError("load_mode must be 'selection' or 'all'")
 
     if molecular_system is None:
         return view
+
+    # A replacement must reject an invalid visual selection before replacing
+    # the old system. Use the scientific owner's selector on the same axes.
+    if replace and load_mode == "all":
+        import molsysmt as msm
+
+        msm.select(molecular_system, selection=selection, structure_indices=structure_indices, syntax=syntax)
 
     if load_mode == "selection":
         view.load(
@@ -92,12 +120,18 @@ def new_view(
             selection=selection,
             structure_indices=structure_indices,
             syntax=syntax,
+            mode="replace" if replace else "add",
             skip_digestion=True,
         )
         return view
 
     view.load(
-        molecular_system, selection="all", structure_indices=structure_indices, syntax=syntax, skip_digestion=True
+        molecular_system,
+        selection="all",
+        structure_indices=structure_indices,
+        syntax=syntax,
+        mode="replace" if replace else "add",
+        skip_digestion=True,
     )
     selected_atoms = list(view.whole.select(selection=selection, syntax=syntax, skip_digestion=True))
     if selected_atoms == []:

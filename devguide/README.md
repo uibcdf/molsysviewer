@@ -45,6 +45,13 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Standalone final source review — 2026-10-29:** the shared live Qt workbench
+  now also honors full-system visual selections and negotiates its real binary
+  path before numeric JSON. Related contracts, JS units and native/software Qt
+  guards pass. [Final receiving](standalone_final_review_20261029.md) records
+  broad/hosted status and the remaining human/platform/addon scope. Qt stays
+  experimental; no release, tag or new package.
+
 - **System composition received in source — 2026-10-28:** provider `71fbe4f46d3c70e4e973c8025f01752a8c9b1084` adds
   `basic.add`, `append_structures`, `merge` and `concatenate_structures`.
   Bound destination edits use explicit managed prefix maps; collection inputs and

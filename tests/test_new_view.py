@@ -59,3 +59,37 @@ def test_new_view_refuses_invalid_selection_before_hiding_whole(source):
 def test_new_view_rejects_invalid_load_mode(source):
     with pytest.raises(ArgumentError):
         msv.new_view(source, load_mode="invalid")
+
+
+@pytest.mark.parametrize("load_mode,n_atoms,regions", [("selection", 2, []), ("all", 22, ["selection"])])
+def test_host_replacement_uses_factory_loading_policy(source, load_mode, n_atoms, regions):
+    from molsysviewer.new_view import _load_initial_system
+
+    with msv.new_view(source) as view:
+        view.regions.add([5], tag="old")
+        _load_initial_system(view, source, selection=[0, 1], load_mode=load_mode, replace=True)
+        assert view.whole.get(n_atoms=True) == n_atoms
+        assert view.regions.tags() == regions
+        assert view.whole.visible == (load_mode == "selection")
+
+
+def test_host_replacement_rejects_invalid_visual_selection_before_replacing(source):
+    from molsysviewer.new_view import _load_initial_system
+
+    with msv.new_view(source, selection=[0, 1]) as view:
+        before = view.molsys
+        with pytest.raises(Exception):
+            _load_initial_system(view, source, selection="invalid query!", load_mode="all", replace=True)
+        assert view.molsys is before
+        assert view.whole.get(n_atoms=True) == 2
+
+
+def test_host_empty_visual_selection_keeps_full_system_visible(source):
+    from molsysviewer.new_view import _load_initial_system
+
+    with msv.new_view() as view:
+        with pytest.warns(UserWarning, match="resolved to zero atoms"):
+            _load_initial_system(view, source, selection="atom_index<0", load_mode="all", replace=True)
+        assert view.whole.get(n_atoms=True) == 22
+        assert view.whole.visible
+        assert view.regions.tags() == []

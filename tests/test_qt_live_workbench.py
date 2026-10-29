@@ -42,6 +42,7 @@ def test_qt_live_workbench_full_render_gpu(tmp_path):
     pytest.importorskip("PySide6.QtWebEngineWidgets")
     script = Path(__file__).with_name("_qt_live_workbench.py")
     env = os.environ.copy()
+    env["MOLSYSVIEWER_QT_PAYLOAD_REF_THRESHOLD"] = "1"
     env["PYTHONPATH"] = os.pathsep.join(filter(None, [str(Path(__file__).resolve().parents[1]), env.get("PYTHONPATH")]))
     try:
         result = subprocess.run(
@@ -53,6 +54,9 @@ def test_qt_live_workbench_full_render_gpu(tmp_path):
     assert result.returncode == 0, result.stdout + result.stderr
     report = json.loads((tmp_path / "report.json").read_text())
     assert report["authority"] is True
+    assert report["initial_binary_projection"] is True
+    assert report["binary_replacements"] == 10
+    assert report["all_mode_and_structure_indices"] is True
     if env.get("QT_QPA_PLATFORM") == "xcb":
         assert report["qt_platform"] == "xcb"
     assert report["region_atoms"] == [0, 1]

@@ -121,6 +121,14 @@ class QtViewChannel(HasTraits):
             )
         self._bridge.send(dict(msg))
 
+    def _send_array_native_reference(self, message, molsys) -> bool:
+        """Encode only the owner's current lazy projection, before JSON exists."""
+        return self._bridge._send_array_native_load(
+            molsys,
+            label=message.get("label"),
+            multiple_structures=bool(message.get("multiple_structures")),
+        )
+
     @property
     def initial_messages(self) -> list[dict]:
         return self._initial_messages
