@@ -206,3 +206,19 @@ experimental and outside the core `1.0.0` support promise.
 
 They should not block continued host development now that a supported prototype
 recipe exists.
+
+## Software-host CI configuration — 2026-10-29
+
+The experimental hosted lane uses Xvfb and ANGLE/SwiftShader for WebGL, with
+`--disable-gpu-compositing` to select CPU frame composition. The native pixel
+guard exposed missing native-pixmap/dma_buf interoperability on hosted Mesa;
+loading correct atom counts alone was insufficient. The local directed flow
+passes; final hosted evidence belongs in the [review](standalone_review_20261029.md).
+
+Do not add `QT_QUICK_BACKEND=software` while forcing ANGLE, or disable the GPU
+indiscriminately: the inspected Qt 6.11.2 initialization rejects unsupported
+SceneGraph/GL combinations, and the fully disabled GL path lost the WebGL
+context in the measured probe. The generic option is described in
+[Qt's rendering documentation](https://doc.qt.io/qtforpython-6.11/overviews/qtwebengine-features.html#hardware-acceleration);
+its suitability for this viewer must still be tested. Native application
+defaults and the separate GPU qualification are unchanged.

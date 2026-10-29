@@ -120,3 +120,27 @@ The source-pair Linux job 123624108154 independently confirms the same three
 Pandas4Warning documentation failures as standard CI; no new provider defect
 is inferred. Cleanup removed 91 duplicate task-owned HTML files (373 MiB),
 retaining logs/JUnit/JSON, images and final native/software artifacts.
+
+### Native surface receiving on 7a19303a
+
+Run 40926652147 confirms the real filename edit and fullscreen/Escape, then
+fails the new image guard: ten systems load with correct atom counts, but the
+native molecular image never changes (`changed=0.0`). Stderr explicitly reports
+failed native-pixmap/dma_buf acquisition and null compositor textures. The old
+completion-only check could not observe this boundary.
+
+Qt 6.11.2's [compositor source](https://github.com/qt/qtwebengine/tree/v6.11.2/src/core/compositor)
+provides a CPU image output path separately from native GPU texture import.
+The CI configuration now keeps WebGL through ANGLE/SwiftShader and selects
+`--disable-gpu-compositing` for frame composition. Both render guards plus the
+workflow contract pass locally (3 cases, 52.82 seconds), including real native
+molecular pixels and movie frames. The workflow also retains only test-owned
+PNG/report/GIF observations beside JUnit, for 14 days.
+
+The generic Qt Quick software override was tested and refuted: keeping forced
+ANGLE aborts with unsupported SceneGraph; letting Qt choose its software path
+loses WebGL. Neither configuration is shipped. No application default, native
+GPU path, assertion threshold or timeout changes. The new picture assertion is
+the explicit reason for revisiting the historical completion-only GL recipe;
+native-GPU and software-host qualification remain separate. Hosted receiving
+of the CPU-composition configuration is pending.

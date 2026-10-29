@@ -283,3 +283,19 @@ exception above is **narrowed, not retired**: initialization before the managed
 close hook and the separate image-export path still need their own audit.
 Native Windows/macOS, installed-host qualification and the accepted review date
 remain pending. This issue stays active and Qt stays experimental.
+
+### Software compositor receiving — 2026-10-29
+
+Viewer 7a19303a / run 40926652147 loads the correct ten atom counts but fails
+the new native pixel-change assertion: native-pixmap/dma_buf import produces
+null textures on hosted Mesa. Filename input and fullscreen now pass. This is
+new evidence beyond the earlier completion-only smoke, and a specific reason
+to revisit the software CI recipe without changing the native-GPU decision.
+
+The source-reviewed CPU compositor path is tested locally with SwiftShader
+WebGL still enabled (`--disable-gpu-compositing`); 3 affected cases pass.
+Generic Qt Quick software overrides were refuted and are not adopted. The
+workflow retains bounded actual-window PNG/report/GIF artifacts alongside
+JUnit. See [the review](../standalone_review_20261029.md); final hosted receiving
+and independent platform qualification remain pending. No fallback is added to
+the user application's graphics defaults.

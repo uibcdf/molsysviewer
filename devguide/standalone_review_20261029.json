@@ -33,7 +33,9 @@
     "molsysviewer/js/src/managers/handlers/movie-handlers.ts": "6badc91424a6be7401ea21ba217b6b17ed2c5f9018bde792dd6136ac29fe9e73",
     "molsysviewer/runtime_actions.json": "49cadebc8a25c27972d576498b78e45077ce9df72d20622ccb1e5f574071846a",
     "tests/test_qt_live_workbench.py": "cfc1a7c3fa0534b0d397ca94cd0b85faecba124edf5181f41ee224912a7eb2fa",
-    "tests/_qt_live_workbench.py": "4140ca67462a647c9da272bba1e5e16b17c80837638fcea83946d38c5e2b90f3"
+    "tests/_qt_live_workbench.py": "fd3636faca5264e157bd5db13c770f733a6a3e66f2175476273b4caf29b8c2da",
+    ".github/workflows/CI_qt_experimental.yaml": "dc5f9979bf1fadccf1aee4eb06f81d94fb386580429c81a1e0a33dc4afbd25a4",
+    "tests/test_core_qt_gates.py": "bd05d91dfa86e9913a3cc4b10c91abb6ca8aafebc81fea683a98b021fb399170"
   },
   "checks": {
     "native_final": {
@@ -75,7 +77,8 @@
         "timeout_without_reply": true,
         "failed_deliveries": [],
         "independent_host_and_cleanup": true
-      }
+      },
+      "harness_scope": "native GPU runtime unchanged; original dialog chooser; later real-editor chooser and CPU-composition flow verified separately"
     },
     "contracts_final": {
       "tests": "102",
@@ -138,6 +141,44 @@
       "passed": 1,
       "time_seconds": 39.87,
       "scope": "real fileNameEdit keyboard entry and Save-button click, accepted-result/path/bytes assertions retained"
+    },
+    "cpu_composition": {
+      "passed": 3,
+      "deselected": 47,
+      "time_seconds": 52.82,
+      "observations": {
+        "authority": true,
+        "provider_file": "frozen MolSysMT worktree / molsysmt/__init__.py",
+        "region_atoms": [
+          0,
+          1
+        ],
+        "native_download_and_cancel": true,
+        "camera_received": true,
+        "image_received": true,
+        "python_mode": "cinema",
+        "browser_mode": "standard",
+        "fullscreen_roundtrip": true,
+        "loads": [
+          22,
+          62,
+          22,
+          62,
+          22,
+          62,
+          22,
+          62,
+          22,
+          62
+        ],
+        "changed_molecular_pixels": 0.1029590245627572,
+        "movie_camera_image_difference": 3.9667643229166667,
+        "movie_frames": 3,
+        "timeout_without_reply": true,
+        "failed_deliveries": [],
+        "independent_host_and_cleanup": true
+      },
+      "configuration": "Xvfb; ANGLE SwiftShader WebGL retained; --disable-gpu-compositing selects CPU frame composition; no Qt Quick software override"
     }
   },
   "core_original_diagnosis": {
@@ -156,7 +197,9 @@
     "final-native2 passed but child lost caller PYTHONPATH: working-environment evidence only",
     "final-native3 failed native Escape shortcut; shared canvas key ownership fixed, final-native4 passes with fixed provider propagation",
     "sandbox JS container result did not enumerate 332 tests: not counted as valid unit evidence",
-    "First software-Qt attempt required native window activation, unavailable without a window manager; removed only that harness prerequisite and directly delivered Escape to WebEngine; software2 passes both selected native render guards."
+    "First software-Qt attempt required native window activation, unavailable without a window manager; removed only that harness prerequisite and directly delivered Escape to WebEngine; software2 passes both selected native render guards.",
+    "QT_QUICK_BACKEND=software with forced ANGLE is rejected/aborts on unsupported SceneGraph; uncommitted probe only, not shipped",
+    "QT_QUICK_BACKEND=software without forced GL loses WebGL context; uncommitted probe only, not shipped"
   ],
   "issues": {
     "resolved_source": [
@@ -215,6 +258,14 @@
       "conclusion": "failure",
       "native_junit_diagnosis": "dialog accepted its original molsysviewer-export.html name instead of test-requested native-view.html; selectFile did not replace the focused editor; file export itself succeeded at the proposed name",
       "correction": "QTest types into the real fileNameEdit and clicks the actual Save button; no application export or graphics changes; next hosted receipt pending"
+    },
+    "qt_pixel_receiving": {
+      "commit": "7a19303a36ed6b15bb88d7e83cbf054026954c8f",
+      "run": 40926652147,
+      "conclusion": "failure",
+      "successful_observations": "real dialog destination and fullscreen/Escape now pass",
+      "failure": "molecular pixels unchanged (changed=0.0) with native-pixmap/dma_buf texture-import errors; counts alone did not detect this",
+      "fix": "CI-only CPU composition with SwiftShader WebGL retained; source reviewed against Qt 6.11.2 compositor; next hosted receiving pending"
     }
   },
   "release": {

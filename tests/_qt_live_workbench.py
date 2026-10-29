@@ -213,7 +213,7 @@ def main():
             a = before[h // 5 : 4 * h // 5, w // 5 : 4 * w // 5, :3].astype(float)
             b = after[h // 5 : 4 * h // 5, w // 5 : 4 * w // 5, :3].astype(float)
             changed = float(np.mean(np.max(np.abs(a - b), axis=2) > 25))
-            assert changed > 0.005, f"The native window still shows the previous system ({i=}, {changed=})"
+            assert changed > 0.005, f"The native molecular image did not change ({i=}, {changed=}, std={b.std()})"
             changes.append(changed)
         report["changed_molecular_pixels"] = min(changes)
         assert view._request_camera_snapshot(timeout_s=3)
