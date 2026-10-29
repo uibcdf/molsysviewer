@@ -48,7 +48,8 @@ documents, and historical audits.
 - **Standalone final source review — 2026-10-29:** the shared live Qt workbench
   now also honors full-system visual selections and negotiates its real binary
   path before numeric JSON. Related contracts, JS units and native/software Qt
-  guards pass. [Final receiving](standalone_final_review_20261029.md) records
+  guards pass, including hosted Qt 13/13 and core browser 44/44.
+  [Final receiving](standalone_final_review_20261029.md) records
   broad/hosted status and the remaining human/platform/addon scope. Qt stays
   experimental; no release, tag or new package.
 

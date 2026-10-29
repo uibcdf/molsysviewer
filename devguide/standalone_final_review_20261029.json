@@ -155,12 +155,284 @@
       "skips_preserved": true
     },
     "hosted": {
-      "status": "pending"
+      "qt": {
+        "run": 40941374529,
+        "commit": "1c6c6c025c9656bc835368cc11f7561abb242549",
+        "conclusion": "success",
+        "artifact": {
+          "id": 12926868571,
+          "name": "experimental-qt-results",
+          "sha256": "072d0c6ba0f59ddc41ca564ca34921eb014b8857310cd0e8140a5f5dd1b5de54",
+          "size_bytes": 1484584
+        },
+        "junit": {
+          "molsysviewer/molsysviewer/qt-window.xml": [
+            {
+              "tests": "1",
+              "failures": "0",
+              "errors": "0",
+              "skipped": "0",
+              "time": "13.162"
+            }
+          ],
+          "molsysviewer/molsysviewer/qt-render.xml": [
+            {
+              "tests": "2",
+              "failures": "0",
+              "errors": "0",
+              "skipped": "0",
+              "time": "35.863"
+            }
+          ],
+          "molsysviewer/molsysviewer/qt-probes.xml": [
+            {
+              "tests": "10",
+              "failures": "0",
+              "errors": "0",
+              "skipped": "0",
+              "time": "28.361"
+            }
+          ]
+        },
+        "observations": [
+          {
+            "authority": true,
+            "provider_file": "GitHub Python 3.13 environment / site-packages/molsysmt/__init__.py",
+            "qt_platform": "xcb",
+            "initial_binary_projection": true,
+            "region_atoms": [
+              0,
+              1
+            ],
+            "native_download_and_cancel": true,
+            "camera_received": true,
+            "image_received": true,
+            "python_mode": "cinema",
+            "browser_mode": "standard",
+            "fullscreen_roundtrip": true,
+            "loads": [
+              22,
+              62,
+              22,
+              62,
+              22,
+              62,
+              22,
+              62,
+              22,
+              62
+            ],
+            "binary_replacements": 10,
+            "changed_molecular_pixels": 0.1032664609053498,
+            "movie_camera_image_difference": 3.9463346354166666,
+            "movie_frames": 3,
+            "timeout_without_reply": true,
+            "failed_deliveries": [],
+            "all_mode_and_structure_indices": true,
+            "independent_host_and_cleanup": true
+          }
+        ],
+        "duplicate_report_entries": 1,
+        "distinct_cases": 13,
+        "provider": {
+          "molsysmt": "0.23.0",
+          "build": "pyabi3h03bb3b7_0",
+          "channel": "uibcdf",
+          "python": "3.13",
+          "pyside6": "6.11.2",
+          "qt6-webengine": "6.11.2"
+        },
+        "scope": "exact-source host receiving with public MolSysMT; not qualification of a new canonical Viewer Conda artifact"
+      },
+      "e2e": {
+        "run": 40941374623,
+        "status": "completed",
+        "conclusion": "success",
+        "passed_suites": 44,
+        "total_core_suites": 44,
+        "remote_preview_qualified": false,
+        "evidence": "completed Core E2E job 123685328850 logs: 44/44 suites passed"
+      },
+      "core": {
+        "run": 40941374526,
+        "status": "completed",
+        "diagnosis": "All six failed completed-job logs confirm the same three documentation examples and MolSysMT 0.23.0 Pandas4Warning; both Python 3.11 cells pass; no waiver",
+        "conclusion": "failure",
+        "matrix": [
+          {
+            "job": 123685329027,
+            "name": "Test on macos-15, Python 3.13",
+            "conclusion": "failure"
+          },
+          {
+            "job": 123685329436,
+            "name": "Test on macos-15, Python 3.14",
+            "conclusion": "failure"
+          },
+          {
+            "job": 123685329437,
+            "name": "Test on ubuntu-latest, Python 3.12",
+            "conclusion": "failure"
+          },
+          {
+            "job": 123685329447,
+            "name": "Test on macos-15, Python 3.11",
+            "conclusion": "success"
+          },
+          {
+            "job": 123685329463,
+            "name": "Test on ubuntu-latest, Python 3.14",
+            "conclusion": "failure"
+          },
+          {
+            "job": 123685329586,
+            "name": "Test on macos-15, Python 3.12",
+            "conclusion": "failure"
+          },
+          {
+            "job": 123685329622,
+            "name": "Test on ubuntu-latest, Python 3.13",
+            "conclusion": "failure"
+          },
+          {
+            "job": 123685329647,
+            "name": "Test on ubuntu-latest, Python 3.11",
+            "conclusion": "success"
+          }
+        ],
+        "failed_job_diagnosis": [
+          {
+            "job": 123685329027,
+            "name": "Test on macos-15, Python 3.13",
+            "summary": "FAIL exit=1 | 3 failed, 3263 passed, 51 skipped, 13 deselected | 761.23s | 4772 warnings | 1 root cause",
+            "same_known_three_pages_and_provider_warning": true,
+            "cases": [
+              "docs/content/user/export/state.md",
+              "docs/content/user/overlays/measurements.md",
+              "docs/content/user/scene_management/selections.md"
+            ]
+          },
+          {
+            "job": 123685329436,
+            "name": "Test on macos-15, Python 3.14",
+            "summary": "FAIL exit=1 | 3 failed, 3263 passed, 51 skipped, 13 deselected | 511.63s | 4772 warnings | 1 root cause",
+            "same_known_three_pages_and_provider_warning": true,
+            "cases": [
+              "docs/content/user/export/state.md",
+              "docs/content/user/overlays/measurements.md",
+              "docs/content/user/scene_management/selections.md"
+            ]
+          },
+          {
+            "job": 123685329437,
+            "name": "Test on ubuntu-latest, Python 3.12",
+            "summary": "FAIL exit=1 | 3 failed, 3290 passed, 24 skipped, 13 deselected | 639.69s | 4916 warnings | 1 root cause",
+            "same_known_three_pages_and_provider_warning": true,
+            "cases": [
+              "docs/content/user/export/state.md",
+              "docs/content/user/overlays/measurements.md",
+              "docs/content/user/scene_management/selections.md"
+            ]
+          },
+          {
+            "job": 123685329463,
+            "name": "Test on ubuntu-latest, Python 3.14",
+            "summary": "FAIL exit=1 | 3 failed, 3290 passed, 24 skipped, 13 deselected | 442.96s | 4916 warnings | 1 root cause",
+            "same_known_three_pages_and_provider_warning": true,
+            "cases": [
+              "docs/content/user/export/state.md",
+              "docs/content/user/overlays/measurements.md",
+              "docs/content/user/scene_management/selections.md"
+            ]
+          },
+          {
+            "job": 123685329586,
+            "name": "Test on macos-15, Python 3.12",
+            "summary": "FAIL exit=1 | 3 failed, 3263 passed, 51 skipped, 13 deselected | 737.76s | 4772 warnings | 1 root cause",
+            "same_known_three_pages_and_provider_warning": true,
+            "cases": [
+              "docs/content/user/export/state.md",
+              "docs/content/user/overlays/measurements.md",
+              "docs/content/user/scene_management/selections.md"
+            ]
+          },
+          {
+            "job": 123685329622,
+            "name": "Test on ubuntu-latest, Python 3.13",
+            "summary": "FAIL exit=1 | 3 failed, 3290 passed, 24 skipped, 13 deselected | 719.87s | 4916 warnings | 1 root cause",
+            "same_known_three_pages_and_provider_warning": true,
+            "cases": [
+              "docs/content/user/export/state.md",
+              "docs/content/user/overlays/measurements.md",
+              "docs/content/user/scene_management/selections.md"
+            ]
+          }
+        ]
+      },
+      "source_pair": {
+        "run": 40941374524,
+        "status": "completed",
+        "observed_linux_failure": {
+          "job": 123685327762,
+          "passed": 3290,
+          "failed": 3,
+          "skipped": 24,
+          "deselected_qt": 13,
+          "root_cause": "Pandas4Warning from MolSysMT Bonds_DataFrame.sort_values(inplace=...)",
+          "provider_source": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9 (0.23.0 source wheel)",
+          "cases": [
+            "docs/content/user/export/state.md",
+            "docs/content/user/overlays/measurements.md",
+            "docs/content/user/scene_management/selections.md"
+          ],
+          "owner": "uibcdf/molsysmt#431",
+          "waived": false,
+          "new_viewer_regression_observed": false,
+          "diagnostic_source": "native completed-job GitHub API logs; installed gh-run-receptor 1.1.1 lacks --job; native gh run view waits for whole run"
+        },
+        "conclusion": "failure",
+        "platform_results": [
+          {
+            "job": 123685327762,
+            "platform": "Linux",
+            "passed": 3290,
+            "failed": 3,
+            "skipped": 24
+          },
+          {
+            "job": 123685327932,
+            "platform": "Windows",
+            "passed": 3263,
+            "failed": 3,
+            "skipped": 51
+          },
+          {
+            "job": 123685328150,
+            "platform": "macOS",
+            "passed": 3263,
+            "failed": 3,
+            "skipped": 51
+          }
+        ],
+        "all_failed_jobs_share_the_known_three_docs_cases": true
+      },
+      "passed_auxiliary_runs": [
+        40941374653,
+        40941375387,
+        40941374592,
+        40941375419
+      ]
     },
     "guidance": {
       "tests": 289,
       "passed": 289,
       "skipped": 0
+    },
+    "guidance_closeout": {
+      "passed": 289,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
     }
   },
   "remaining": [
@@ -174,5 +446,31 @@
     "tagged": false,
     "packaged": false,
     "published": false
+  },
+  "implementation_commit": "1c6c6c025c9656bc835368cc11f7561abb242549",
+  "issues_closed": [
+    274,
+    275
+  ],
+  "guard_scope": {
+    "274": {
+      "launcher_guard": "tests/test_qt_live_workbench.py::test_qt_live_workbench_full_render_gpu",
+      "helper_guard": "tests/test_new_view.py::test_host_replacement_uses_factory_loading_policy",
+      "helper_alone_is_insufficient": true
+    },
+    "275": {
+      "connector_guard": "tests/test_qt_transport_contract.py::test_a_canonical_live_load_uses_numeric_scheme_bytes_without_json",
+      "actual_handshake_guard": "tests/test_qt_live_workbench.py::test_qt_live_workbench_full_render_gpu"
+    }
+  },
+  "closeout": {
+    "application_hashes_unchanged_since_tested_commit": true,
+    "issues_closed": [
+      274,
+      275
+    ],
+    "unrelated_local_paths_preserved": 9,
+    "new_release_or_package": false,
+    "evidence_only_update": true
   }
 }

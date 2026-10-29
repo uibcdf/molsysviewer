@@ -4,8 +4,11 @@
 authority/preferences, downloads, camera/movie replies and host cleanup.
 The final pass also fixes full-system loading with a visual selection (#274)
 and actual negotiated binary delivery before numeric JSON (#275). Forty-three
-related contracts, 332 JS units and the real-window guard on native Linux and
-explicit X11/SwiftShader pass. Broad/hosted receiving is recorded separately in
+related contracts, 3,298 non-Qt cases (21 skips), 332 JS units and the real-window
+guard on native Linux and explicit X11/SwiftShader pass. Exact-source hosted
+Qt passes 13/13 cases and browser passes 44/44 suites; the general/source
+baseline retains the provider's three Pandas4Warning documentation failures.
+Detailed receiving is recorded in
 the [final review](standalone_final_review_20261029.md). Keep maintainer visual
 receiving #35, installed/platform/resource #109/#113, popouts #51 and addon
 rendering qualification separate. Qt remains experimental; no release or tag.
@@ -465,7 +468,8 @@ previous qualification records retain their original candidate and environment.
 
 The latest user-directed standalone round is summarized in the
 [final review](standalone_final_review_20261029.md). Receive its remaining
-human/hosted checks before resuming the independent addon work below; no Qt
+human check and reconcile its recorded provider/qualification limits before
+resuming the independent addon work below; no Qt
 support admission or release follows from that round.
 
 Current composition receiving is summarized at the top of this checkpoint;

@@ -56,3 +56,15 @@ and explicit X11/SwiftShader; it checks full-system retention, its inherited
 selection region and nonconsecutive structures [8, 0, 3] in a second host.
 Public loading signatures are unchanged. This resolves the source defect;
 the standalone remains experimental, with platform/artifact gates separate.
+
+## Guard clarification — 2026-10-29
+
+The front matter names the shared factory-policy regression, which is
+supplemental. Actual launcher wiring is protected by
+`tests/test_qt_live_workbench.py::test_qt_live_workbench_full_render_gpu`:
+the second real Qt host is constructed with `load_mode="all"` and asserts the
+full 62-atom system, inherited two-atom region, hidden Whole and three selected
+structures. Reverting Qt to its old direct selected-atom load fails this guard
+even if the shared helper still passes. The native guard passes on the desktop
+and in hosted run 40941374529. Do not use the helper-only test as a substitute
+for this actual-window receiving.
