@@ -60,6 +60,29 @@ def main():
         }
         assert report["initial_binary_projection"], "Initial Qt data unnecessarily materialized numeric JSON"
         assert web._molsysviewer_qt_payload_handler.served
+        chrome = window._molsysviewer_chrome
+        assert window.menuWidget() is None, "The native host must not duplicate the canvas menus"
+        assert window.windowFlags() & Qt.WindowType.FramelessWindowHint
+        assert chrome.header.isVisible() and not window.statusBar().isVisible()
+        assert not chrome.status.isVisible(), "Idle status must not occupy a permanent bar"
+        assert chrome.buttons["close"].accessibleName() == "Close window"
+        assert chrome.frame.edges(QPoint(0, 0)) == (Qt.Edge.LeftEdge | Qt.Edge.TopEdge)
+        geometry = window.geometry()
+        QTest.mouseClick(chrome.buttons["maximize"], Qt.MouseButton.LeftButton)
+        wait(window.isMaximized)
+        if app.platformName() == "wayland":
+            # QWidget's requested flag precedes the compositor's configure.
+            # Receive the real resize before sending a second window gesture.
+            wait(lambda: window.geometry().size() != geometry.size())
+        assert chrome.buttons["maximize"].accessibleName() == "Restore window"
+        QTest.mouseDClick(chrome.header, Qt.MouseButton.LeftButton, pos=QPoint(200, 15))
+        wait(lambda: not window.isMaximized())
+        wait(lambda: window.geometry().size() == geometry.size())
+        window.statusBar().showMessage("Could not load the selected source.")
+        assert chrome.status.isVisible() and "Could not" in chrome.status.text()
+        window.statusBar().showMessage("Ready.")
+        assert not chrome.status.isVisible()
+        report["modern_window_chrome"] = True
         # Use the shared real context-menu form; no native replacement or fake UI.
         evaluate("""(() => {
             const c = window.__molsysviewerDocsController;
@@ -144,10 +167,19 @@ def main():
             cancel=True,
         )
         print("downloads-completed", flush=True)
-        native_export = (
-            next(action for action in window.menuBar().actions() if action.text() == "Export").menu().actions()[0]
-        )
-        download(native_export.trigger, "native-view.html")
+        actions = window._molsysviewer_host_actions
+        assert actions["open_file"].shortcut().toString() == "Ctrl+O"
+        assert actions["new_view"].shortcut().toString() == "Ctrl+N"
+        assert actions["studio"].shortcut().toString() == "Ctrl+1"
+        assert actions["addons"].shortcut().toString() == "Ctrl+2"
+
+        def native_export_shortcut():
+            QApplication.setActiveWindow(window)
+            web.setFocus()
+            QTest.keyClick(web, Qt.Key.Key_S, Qt.KeyboardModifier.ControlModifier | Qt.KeyboardModifier.ShiftModifier)
+
+        download(native_export_shortcut, "native-view.html")
+        report["native_shortcuts"] = True
         native_html = (out / "native-view.html").read_text()
         assert "qt-region" in native_html and 'id="molsysviewer-runtime-source"' in native_html
         import re
@@ -188,6 +220,32 @@ def main():
         QTest.keyClick(web.focusProxy() or web, Qt.Key.Key_Escape)
         wait(lambda: not window.isFullScreen())
         report["fullscreen_roundtrip"] = True
+        assert chrome.header.isVisible() and window.menuWidget() is None
+        assert not window.statusBar().isVisible()
+        # Real shared Studio loading is the visible replacement for File > Open.
+        source_path = str(msm.systems["pentalanine"]["traj_pentalanine.h5msm"])
+        evaluate(
+            """(() => {
+            const c=window.__molsysviewerDocsController;
+            c.setPanelMode('navigate',true); c.groupPanel.openSection('system');
+            const root=document.querySelector('[data-molsysviewer-system-load="true"]');
+            if (!root.open) root.querySelector('summary').click();
+            const field=root.querySelector('[data-molsysviewer-load-field="source"]');
+            field.value="""
+            + json.dumps(source_path)
+            + """;
+            field.dispatchEvent(new Event('input',{bubbles:true}));
+            const operation=root.querySelector('[data-molsysviewer-load-operation]');
+            operation.value='replace'; operation.dispatchEvent(new Event('change',{bubbles:true}));
+            root.querySelector('[data-molsysviewer-load-submit]').click();
+        })()"""
+        )
+        wait(lambda: view.molsys.get_n_atoms() == 62)
+        idle()
+        assert "Loaded: 62 atoms" in evaluate("document.querySelector('[data-molsysviewer-load-status]').textContent")
+        report["shared_studio_loading"] = True
+        view.set_panel_mode(None, expanded=False)
+        idle()
         print("fullscreen-completed", flush=True)
         report["loads"] = []
         report["binary_replacements"] = 0
@@ -284,7 +342,7 @@ def main():
         implicit_html = Path(other["html_path"])
         assert implicit_html.exists()
         print("second-host-ready", flush=True)
-        other["window"].close()
+        QTest.mouseClick(other["window"]._molsysviewer_chrome.buttons["close"], Qt.MouseButton.LeftButton)
         print("second-host-closed", flush=True)
         QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
         app.processEvents()

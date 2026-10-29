@@ -46,7 +46,7 @@ archived documents link there; its location does not reopen its release scope.
 - [`pytest_xdist_receiver_thread_report.md`](pytest_xdist_receiver_thread_report.md) — [#80](https://github.com/uibcdf/molsysviewer/issues/80) — Decide whether to report pytest-xdist receiver-thread warning imports upstream *(inspected)*
 - [`studio_loader_before_system.md`](studio_loader_before_system.md) — [#265](https://github.com/uibcdf/molsysviewer/issues/265) — Evaluate a dedicated Studio Loader entry before System *(inspected)*
 
-### Deferred until after 1.0 (21)
+### Deferred until after 1.0 (23)
 
 - [`agent_token_cost_of_non_pytest_tests.md`](post_1.0/agent_token_cost_of_non_pytest_tests.md) — [#43](https://github.com/uibcdf/molsysviewer/issues/43) — Study the token cost of non-pytest test output for agent consumers.
 - [`annotations_mvs_machinery.md`](post_1.0/annotations_mvs_machinery.md) — [#44](https://github.com/uibcdf/molsysviewer/issues/44) — Advanced annotations on Mol*'s MVS machinery.
@@ -62,6 +62,8 @@ archived documents link there; its location does not reopen its release scope.
 - [`recheck_latest_conda_forge_qt_for_standalone.md`](post_1.0/recheck_latest_conda_forge_qt_for_standalone.md) — [#113](https://github.com/uibcdf/molsysviewer/issues/113) — Evaluate the latest conda-forge PySide6/Qt for a future supported standalone host.
 - [`representative_scale_followups.md`](post_1.0/representative_scale_followups.md) — [#54](https://github.com/uibcdf/molsysviewer/issues/54) — Post-1.0 performance architecture.
 - [`reproducible_browser_and_render_worker_e2e_evidence.md`](post_1.0/reproducible_browser_and_render_worker_e2e_evidence.md) — [#100](https://github.com/uibcdf/molsysviewer/issues/100) — Define reproducible browser and render-worker E2E evidence lanes.
+- [`shared_demo_recent_loading.md`](post_1.0/shared_demo_recent_loading.md) — [#277](https://github.com/uibcdf/molsysviewer/issues/277) — Evaluate shared GUI access to demos and recent sources
+- [`standalone_host_alternatives.md`](post_1.0/standalone_host_alternatives.md) — [#276](https://github.com/uibcdf/molsysviewer/issues/276) — Evaluate alternatives to Qt for a future standalone host
 - [`structure_windowing_and_lazy_materialization.md`](post_1.0/structure_windowing_and_lazy_materialization.md) — [#55](https://github.com/uibcdf/molsysviewer/issues/55) — Structure windowing and lazy materialization.
 - [`studio_copy_python.md`](post_1.0/studio_copy_python.md) — [#226](https://github.com/uibcdf/molsysviewer/issues/226) — Evaluate copying equivalent Python code from Studio.
 - [`studio_interactions_subpanel_ui_design.md`](post_1.0/studio_interactions_subpanel_ui_design.md) — [#56](https://github.com/uibcdf/molsysviewer/issues/56) — Studio subpanel for Interactions.

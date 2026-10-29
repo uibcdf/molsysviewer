@@ -17,6 +17,16 @@ supersedes: []
 
 **Status:** fix and native GPU regression pass; maintainer visual confirmation remains pending.
 
+**Current manual route — 2026-10-29:** the window menu is retired by accepted
+design. The old File → Load Demo instructions below are historical. Start with
+`molsysviewer-qt dialanine --demo`, then alternate two visibly different system
+files through Studio > System > Load systems with Replace whole, or the native
+Ctrl+O chooser. Confirm ten visible replacements and working camera controls.
+Idle readiness is now the absence of an active progress/error message rather
+than a permanent bottom Ready bar. The diagnostic QStatusBar still retains the
+Ready message for the native guard. Demos/recent GUI access is deferred in #277;
+this does not close the maintainer observation automatically.
+
 The interactive backend was validated in a real Qt/GPU environment on
 2026-07-04. Rendering, transport, the persistent `MolSysView`, context menus,
 and camera interaction worked. Replacing the loaded system did not.

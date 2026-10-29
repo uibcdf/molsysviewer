@@ -101,7 +101,7 @@ Each load bumps the bridge `generation` and sends `clear_all` before the new
 scene. The reset boundary is:
 
 - **Preserved** (generic, shell-level, structure-independent): the window and its
-  size, the menu bar, the status bar, and any purely-visual chrome. These live
+  size, the native header, keyboard affordances and any purely-visual chrome. These live
   for the whole app session because the Qt shell is persistent.
 - **Reset per generation** (structure-dependent scene state): layers, regions,
   shapes, measurements, and the scene "look" (background, legend, focus-fade,
@@ -135,15 +135,22 @@ Jupyter. Synchronous Python waiting cooperatively pumps the Qt event loop;
 missing replies still terminate with a timeout. Movie export waits for each
 requested camera state to be drawn before capturing its image.
 
-The native Export menu exports the **current persistent view**, including scene
-edits. HTML output is self-contained through `view.export.html(...)`, without
+The local window has no File/View/Export/Help menu or replacement application
+menu. Visible scene workflows belong to the shared canvas. A thin native header
+owns window movement, minimize/maximize/close and transient status. The bottom
+status bar stays hidden; errors remain available in the header. Native shortcuts
+remain registered on the window, including Ctrl+O, Ctrl+N and Ctrl+Shift+S/E.
+See [the window contract](https://github.com/uibcdf/molsysviewer/blob/main/devguide/standalone_window_chrome.md).
+
+Keyboard exports use the **current persistent view**, including scene edits.
+HTML output is self-contained through `view.export.html(...)`, without
 the live Qt connector. Studio downloads use the profile's native destination
 dialog; cancellation does not create a destination. Interrupted and completed
 downloads have different status messages.
 
 The shared Fullscreen API controls the native window and restores its previous
 maximized/normal state. Escape belongs to the canvas first (menus, tools,
-selection and panels); an unconsumed Escape exits fullscreen. A native menu
+selection and panels); an unconsumed Escape exits fullscreen. A native window
 shortcut must not steal this key before WebEngine receives it.
 
 ## Local host ownership and limits

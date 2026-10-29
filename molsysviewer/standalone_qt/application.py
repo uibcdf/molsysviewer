@@ -12,7 +12,8 @@ from smonitor import signal
 
 from .._private.argdigest import digest
 from ..standalone import build_standalone0_html
-from .menus import _install_menu_bar  # noqa: F401 - resolved by name, see above
+from .actions import _install_host_actions
+from .chrome import _install_window_chrome
 
 # `_get_helper` resolves these **by name** -- `getattr(module, name)` first, then
 # `globals()[name]`. Ruff cannot see a string lookup, so it reports every one of them
@@ -271,10 +272,7 @@ def create_standalone_qt0_window(
     QMainWindow = qt["QMainWindow"]
     QWebEngineView = qt["QWebEngineView"]
     QUrl = qt["QUrl"]
-    QAction = qt["QAction"]
     QFileDialog = qt["QFileDialog"]
-    QInputDialog = qt["QInputDialog"]
-    QMessageBox = qt["QMessageBox"]
     QTimer = qt["QTimer"]
     QWebEnginePage = qt["QWebEnginePage"]
     QWebEngineProfile = qt["QWebEngineProfile"]
@@ -390,19 +388,10 @@ def create_standalone_qt0_window(
     window._molsysviewer_cleanup = close_host
 
     webview.setUrl(QUrl.fromLocalFile(html_path))
-    window.setCentralWidget(webview)
-    _get_helper("_install_menu_bar")(
-        window=window,
-        webview=webview,
-        QUrl=QUrl,
-        QAction=QAction,
-        QFileDialog=QFileDialog,
-        QInputDialog=QInputDialog,
-        QMessageBox=QMessageBox,
-        html_path=html_path,
-        current_title=title,
-        current_state=current_state,
+    _install_host_actions(
+        window=window, webview=webview, qt=qt, html_path=html_path, current_title=title, current_state=current_state
     )
+    _install_window_chrome(window=window, webview=webview, qt=qt)
     try:
         if molecular_system is None:
             _get_helper("_show_startup_status")(window, current_state)

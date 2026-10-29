@@ -1,0 +1,140 @@
+{
+  "schema": "molsysviewer.qt-window-receiving@1",
+  "date": "2026-10-29",
+  "basis": "ba655f48",
+  "scope": "modern local experimental Qt window; unchanged shared TS/runtime and scientific provider; not canonical installed-artifact qualification",
+  "source_sha256": {
+    "molsysviewer/standalone_qt/application.py": "9e175c62d52d9a4dccb41fc47d7eabd2a69262b348c5e2f65e04ea1b20e69635",
+    "molsysviewer/standalone_qt/actions.py": "f920e5e1407e6fc07cd32c6b8a85a9169b2848ad235b178ec1d0a8d7b01e8778",
+    "molsysviewer/standalone_qt/chrome.py": "86db4bf275dfc2689707fc7421d65b75c0701e2af6fb1b72f30c031fa01a846b",
+    "molsysviewer/standalone_qt/utils.py": "d2be10981b330f09fac3fb07c8e061f14ad348c28afddd99aff05cbde8096891",
+    "molsysviewer/standalone_qt/__init__.py": "1286a834b578153fd1fc12ed58e0aeb4fa773dd61967e83710e61af7a45d0c27",
+    "tests/test_standalone.py": "f066669817842af154516eff10d6e8ef2278d6684495cf67df6450f8eaf7fe1f",
+    "tests/_qt_live_workbench.py": "0d367514b351791e9e6827a231fb2550d8d174fbe4fd2cea45646c0ce7951cf7",
+    "tests/test_qt_live_workbench.py": "0035b9752e5c975213169b1a94a76c57d79c3f0b878269cd0121471cae06e459"
+  },
+  "provider": {
+    "runtime_source_equivalent_to": "71fbe4f46d3c70e4e973c8025f01752a8c9b1084",
+    "scope": "local frozen-source tests only",
+    "source_files_rechecked": 3004,
+    "hash_mismatches": 0
+  },
+  "changes": [
+    "no native or replacement application menu",
+    "frameless native header and window controls",
+    "hidden diagnostic QStatusBar with contextual header status",
+    "window-associated native shortcuts",
+    "shared Studio loading and exports",
+    "demo/recent GUI placement deferred"
+  ],
+  "issues": {
+    "host_alternatives": 276,
+    "demo_recent_gui": 277,
+    "maintainer_visual_receiving_kept_open": 35
+  },
+  "checks": {
+    "contracts": {
+      "tests": "40",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "12.772"
+    },
+    "desktop": {
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "30.746"
+    },
+    "desktop_observations": {
+      "authority": true,
+      "provider_file": "frozen MolSysMT source / molsysmt/__init__.py",
+      "qt_platform": "wayland",
+      "initial_binary_projection": true,
+      "modern_window_chrome": true,
+      "region_atoms": [
+        0,
+        1
+      ],
+      "native_shortcuts": true,
+      "native_download_and_cancel": true,
+      "camera_received": true,
+      "image_received": true,
+      "python_mode": "cinema",
+      "browser_mode": "standard",
+      "fullscreen_roundtrip": true,
+      "shared_studio_loading": true,
+      "loads": [
+        22,
+        62,
+        22,
+        62,
+        22,
+        62,
+        22,
+        62,
+        22,
+        62
+      ],
+      "binary_replacements": 10,
+      "changed_molecular_pixels": 0.09984045460390946,
+      "movie_camera_image_difference": 3.96486328125,
+      "movie_frames": 3,
+      "timeout_without_reply": true,
+      "failed_deliveries": [],
+      "all_mode_and_structure_indices": true,
+      "independent_host_and_cleanup": true
+    },
+    "x11_affected": {
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "56.258"
+    },
+    "guide_checks": {
+      "tests": "295",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "2.483"
+    },
+    "broad_core": {
+      "junit": {
+        "tests": "3324",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "21",
+        "time": "255.239"
+      },
+      "campaigns": 1,
+      "scope": "all non-qt_runtime tests"
+    },
+    "hosted": {
+      "status": "pending"
+    }
+  },
+  "retained_failed_attempt": {
+    "native": {
+      "tests": "2",
+      "failures": "1",
+      "errors": "0",
+      "skipped": "0",
+      "time": "52.135"
+    },
+    "cause": "test issued restore before pending Wayland maximize configure; isolated real widget probe establishes requested-state/resize ordering",
+    "resolution": "guard waits for actual compositor resize before second gesture; no production timing or GL workaround"
+  },
+  "remaining": [
+    "human visual/move/resize/minimize/multi-screen receiving",
+    "Qt platform/artifact/resource #109/#113",
+    "Qt popouts #51",
+    "known public provider Pandas4Warning baseline incompatibility"
+  ],
+  "release": {
+    "tagged": false,
+    "packaged": false,
+    "published": false
+  }
+}

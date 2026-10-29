@@ -1,5 +1,14 @@
 # Development checkpoint
 
+**Local Qt window modernized — 2026-10-29:** the local host now has an integrated
+native header and no window/application menu. Visible scene tools stay in the
+shared canvas; native keyboard shortcuts and contextual status remain. The real
+desktop guard, five affected X11 checks, 40 standalone contracts, 295 guide
+checks and 3,303 non-Qt cases (21 skips) pass. Hosted receiving is separate in
+the [window contract/receipt](standalone_window_chrome.md). Host alternatives
+and demo/recent GUI placement remain post-1.0 under #276/#277. Maintainer visual
+receiving #35 is still open; no platform admission, artifact or release follows.
+
 **Standalone final review — 2026-10-29:** the live Qt workbench repairs source
 authority/preferences, downloads, camera/movie replies and host cleanup.
 The final pass also fixes full-system loading with a visual selection (#274)

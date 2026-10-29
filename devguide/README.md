@@ -396,6 +396,10 @@ Measured evidence, not estimates. Each records the command that reproduces it.
 
 ### Standalone
 
+- [`standalone_window_chrome.md`](standalone_window_chrome.md) — current local
+  window: shared canvas scene UI, native header, no window/application menu.
+  Future host comparison and demo/recent GUI placement remain #276/#277.
+
 - [`standalone_direction.md`](standalone_direction.md) — **the decision, and the
   one to read first: one workbench model, multiple hosts.** Standalone is not a
   second product with its own interaction model or scene architecture.

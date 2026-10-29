@@ -16,8 +16,15 @@ identity.
 
 ## Current source checkpoint — 2026-10-29
 
+The accepted [window design](standalone_window_chrome.md) retires the traditional
+window menu without replacing it. Scene actions remain in the shared canvas;
+a thin native header owns window management and status, with native shortcuts
+retained. Demos/recent-source GUI placement is deferred under #277. Alternative
+hosts are a separate post-1.0 evaluation under #276. The menu-based prototype
+stages below retain their historical implementation context.
+
 The thin local Qt shell and its shared live-workbench authority now work in
-source. Native menus/dialogs, current-scene HTML/figure export, camera/movie
+source. Native shortcuts/dialogs, current-scene HTML/figure export, camera/movie
 replies, repeated molecular loading and independent host lifetime have directed
 native-desktop evidence. The explicit X11/software hosted flow passes 13 cases.
 See [the review](standalone_review_20261029.md) for original failures, source
@@ -70,10 +77,10 @@ shell around a widget.
 Seven signals, none of which is flashy host chrome.
 
 1. **Dedicated app identity.** The host owns the application name, icon, window
-   title and menu structure. This is the first thing that separates an app from
+   title and native window controls. This is the first thing that separates an app from
    a browser page.
 2. **Native host affordances.** File open, save and export dialogs, keyboard
-   shortcuts and menu actions come from the host, and feel native rather than
+   shortcuts come from the host, and feel native rather than
    simulated inside the viewer surface.
 3. **A clean boundary between host and viewer.** The professional feel is lost
    the moment the app becomes architecturally confused: the host is a strong
@@ -125,7 +132,8 @@ becoming a second product.
 The same shell is also the preferred native client for a remotely hosted
 session. With client rendering it embeds the full runtime as today; with server
 rendering it embeds the shared UI-only workbench and a WebRTC video viewport.
-Native menus, dialogs and shortcuts remain host-owned in both cases.
+Window controls, native dialogs and shortcuts remain host-owned. The local
+host's scene workflows stay in the shared canvas, without a second menu.
 
 ## What The First Qt Spike Already Taught Us
 

@@ -57,6 +57,9 @@ def test_qt_live_workbench_full_render_gpu(tmp_path):
     assert report["initial_binary_projection"] is True
     assert report["binary_replacements"] == 10
     assert report["all_mode_and_structure_indices"] is True
+    assert report["modern_window_chrome"] is True
+    assert report["shared_studio_loading"] is True
+    assert report["native_shortcuts"] is True
     if env.get("QT_QPA_PLATFORM") == "xcb":
         assert report["qt_platform"] == "xcb"
     assert report["region_atoms"] == [0, 1]

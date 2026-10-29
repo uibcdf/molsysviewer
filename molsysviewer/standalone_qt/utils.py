@@ -108,6 +108,9 @@ def _import_qt():
         raise ImportError(QT_IMPORT_ERROR) from exc
 
     return {
+        "QtCore": core,
+        "QtGui": gui,
+        "QtWidgets": widgets,
         "QAction": gui.QAction,
         "QApplication": widgets.QApplication,
         "QBuffer": core.QBuffer,
@@ -266,7 +269,7 @@ def _show_startup_status(window, current_state: dict[str, Any]) -> None:
         return
     _get_helper("_show_status")(
         window,
-        "Ready. Use File to load a demo, file, PDB ID, or MolSysMT source.",
+        "Ready. Open Studio > System > Load systems to begin.",
     )
 
 

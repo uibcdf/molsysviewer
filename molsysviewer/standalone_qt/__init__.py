@@ -7,7 +7,6 @@ from .application import (
     launch_standalone_qt0,
 )
 from .main import _build_arg_parser, main
-from .menus import _install_menu_bar
 from .utils import (
     QT_IMPORT_ERROR,
     QT_STATE_FILENAME,
