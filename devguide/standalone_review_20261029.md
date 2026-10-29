@@ -212,3 +212,15 @@ python -m molsysviewer.standalone_qt dialanine --demo
 
 This is receiving, not a request to repeat already credited scientific tests.
 Other native platforms and Qt child-window/popout parity retain their own work.
+
+### Receipt-only head confirmation
+
+The receipt-only source head 8912b695 also passes
+[Qt run 40933616161](https://github.com/uibcdf/molsysviewer/actions/runs/40933616161):
+all 13 JUnit cases, no failures/errors/skips, with `xcb` verified in the child
+report. Its original artifact was downloaded and checked. Separately,
+[hosted core browser 40929332142](https://github.com/uibcdf/molsysviewer/actions/runs/40929332142)
+passes the complete 44-suite lane on the unchanged application runtime in
+407777c4. The later native guard/provenance and receiving edits do not change
+that browser runtime. These successes do not waive the provider warning gap
+in general/scientific CI or the remaining human/native-platform scopes.
