@@ -299,7 +299,7 @@
     "resolution": "guard waits for actual compositor resize before second gesture; no production timing or GL workaround"
   },
   "remaining": [
-    "human visual/move/resize/minimize/multi-screen receiving",
+    "explicit ten-replacement human evidence for #35; individual move/resize/minimize/multi-screen checklist outcomes not separately enumerated",
     "Qt platform/artifact/resource #109/#113",
     "Qt popouts #51",
     "known public provider Pandas4Warning baseline incompatibility"
@@ -311,7 +311,7 @@
   },
   "implementation_commit": "3283086a8625b14c85445b1ba3311736c3f8f559",
   "closeout": {
-    "human_visual_receiving": "pending; async request sent",
+    "human_visual_receiving": "Maintainer reports that the new window looks very good and appears to work adequately after the manual checklist was supplied. Individual checklist outcomes and ten visible replacements were not separately enumerated.",
     "temporary_resources": "test-owned cache only; native windows closed; no shared provider source edited",
     "unrelated_local_paths_preserved": 9,
     "issue_state": "276/277 open, post-1.0 milestone; #35 remains partial",
@@ -321,5 +321,13 @@
       "failed": 0,
       "log": ".pytest_cache/modern-qt-20261029/closeout-links.log"
     }
+  },
+  "maintainer_observation": {
+    "date": "2026-10-29",
+    "source": "maintainer feedback in development session",
+    "appearance": "positive",
+    "general_functioning": "appears adequate",
+    "individual_checklist_results": "not enumerated",
+    "ten_replacements_confirmed": false
   }
 }

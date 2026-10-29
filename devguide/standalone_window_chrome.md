@@ -90,8 +90,12 @@ job reports the same three documentation examples raising Pandas4Warning from
 The receipt preserves their terminal states; overall CI is failed. This review
 changes no warning policy or provider route.
 
-Human receiving still checks actual dragging, edge resizing, minimize/restore,
-multi-screen work and visual comfort. Native Windows/macOS, installed artifacts,
+On 2026-10-29, the maintainer reports that the new window looks very good and
+appears to function adequately after receiving the manual checklist. This
+records positive visual and general-use feedback; individual move/resize,
+minimize/restore and multi-screen outcomes were not separately enumerated.
+The explicit ten-replacement human observation required by #35 remains open.
+Native Windows/macOS, installed artifacts,
 resource exceptions and Qt popouts retain #109/#113/#51. The remote-session
 preview retains its separate shell and support boundary. This local redesign
 does not certify those surfaces or change the 1.0 support promise.
