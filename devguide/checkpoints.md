@@ -4,7 +4,8 @@
 native header and no window/application menu. Visible scene tools stay in the
 shared canvas; native keyboard shortcuts and contextual status remain. The real
 desktop guard, five affected X11 checks, 40 standalone contracts, 295 guide
-checks and 3,303 non-Qt cases (21 skips) pass. Hosted receiving is separate in
+checks and 3,303 non-Qt cases (21 skips) pass. Hosted Qt 40956603201 passes all
+13 cases on functional commit 3283086a; other campaigns retain their own states in
 the [window contract/receipt](standalone_window_chrome.md). Host alternatives
 and demo/recent GUI placement remain post-1.0 under #276/#277. Maintainer visual
 receiving #35 is still open; no platform admission, artifact or release follows.

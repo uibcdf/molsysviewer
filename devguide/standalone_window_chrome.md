@@ -75,6 +75,19 @@ pass; all 3,004 frozen provider hashes remain unchanged. The
 [machine receipt](standalone_window_receiving_20261029.json) retains exact
 source hashes, native/X11 scopes, the original failed attempt and hosted status.
 
+Hosted [Qt run 40956603201](https://github.com/uibcdf/molsysviewer/actions/runs/40956603201)
+passes all 13 distinct cases on functional commit `3283086a`: no failures,
+errors or skips. The original artifact ZIP 12932774299 matches GitHub's
+SHA-256 `65ad0ddb4f776ec2beb9af472b626893713fb16f8c5e962adbed6d6d288893e9`.
+Its deduplicated report verifies the new frame, actual export shortcut, Studio
+loading and changing molecular pixels, alongside the prior binary/authority
+checks. The installed provider is public MolSysMT 0.23.0 `pyabi3h03bb3b7_0`,
+with Python 3.13 and canonical Qt 6.11.2. This is not a new canonical Viewer
+artifact qualification. Other general/browser campaigns retain their observed
+states in the receipt; no whole-matrix success is claimed. The prior
+public baseline's Pandas4Warning documentation failures remain a separate
+provider-qualification matter under uibcdf/molsysmt#431.
+
 Human receiving still checks actual dragging, edge resizing, minimize/restore,
 multi-screen work and visual comfort. Native Windows/macOS, installed artifacts,
 resource exceptions and Qt popouts retain #109/#113/#51. The remote-session

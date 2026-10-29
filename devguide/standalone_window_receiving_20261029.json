@@ -112,7 +112,158 @@
       "scope": "all non-qt_runtime tests"
     },
     "hosted": {
-      "status": "pending"
+      "qt": {
+        "run": 40956603201,
+        "commit": "3283086a8625b14c85445b1ba3311736c3f8f559",
+        "conclusion": "success",
+        "artifact": {
+          "id": 12932774299,
+          "sha256": "65ad0ddb4f776ec2beb9af472b626893713fb16f8c5e962adbed6d6d288893e9",
+          "size_bytes": 1469400
+        },
+        "junit": {
+          "molsysviewer/molsysviewer/qt-window.xml": [
+            {
+              "tests": "1",
+              "failures": "0",
+              "errors": "0",
+              "skipped": "0",
+              "time": "16.592"
+            }
+          ],
+          "molsysviewer/molsysviewer/qt-render.xml": [
+            {
+              "tests": "2",
+              "failures": "0",
+              "errors": "0",
+              "skipped": "0",
+              "time": "45.984"
+            }
+          ],
+          "molsysviewer/molsysviewer/qt-probes.xml": [
+            {
+              "tests": "10",
+              "failures": "0",
+              "errors": "0",
+              "skipped": "0",
+              "time": "30.827"
+            }
+          ]
+        },
+        "observations": [
+          {
+            "authority": true,
+            "provider_file": "GitHub Python 3.13 environment / site-packages/molsysmt/__init__.py",
+            "qt_platform": "xcb",
+            "initial_binary_projection": true,
+            "modern_window_chrome": true,
+            "region_atoms": [
+              0,
+              1
+            ],
+            "native_shortcuts": true,
+            "native_download_and_cancel": true,
+            "camera_received": true,
+            "image_received": true,
+            "python_mode": "cinema",
+            "browser_mode": "standard",
+            "fullscreen_roundtrip": true,
+            "shared_studio_loading": true,
+            "loads": [
+              22,
+              62,
+              22,
+              62,
+              22,
+              62,
+              22,
+              62,
+              22,
+              62
+            ],
+            "binary_replacements": 10,
+            "changed_molecular_pixels": 0.09921352559156378,
+            "movie_camera_image_difference": 3.93033203125,
+            "movie_frames": 3,
+            "timeout_without_reply": true,
+            "failed_deliveries": [],
+            "all_mode_and_structure_indices": true,
+            "independent_host_and_cleanup": true
+          }
+        ],
+        "duplicate_report_copies": 1,
+        "distinct_cases": 13,
+        "provider": {
+          "molsysmt": "0.23.0",
+          "build": "pyabi3h03bb3b7_0",
+          "channel": "uibcdf",
+          "python": "3.13",
+          "pyside6": "6.11.2",
+          "qt6-webengine": "6.11.2"
+        },
+        "scope": "installed source-host flow with public provider, not a new canonical Viewer package"
+      },
+      "snapshot_observed_at": "2026-10-29T21:28:02.473048+00:00",
+      "other_lanes": [
+        {
+          "conclusion": "",
+          "databaseId": 40956603291,
+          "status": "in_progress",
+          "workflowName": "CI_e2e"
+        },
+        {
+          "conclusion": "",
+          "databaseId": 40956603207,
+          "status": "in_progress",
+          "workflowName": "Python 3.14 source pair"
+        },
+        {
+          "conclusion": "success",
+          "databaseId": 40956603276,
+          "status": "completed",
+          "workflowName": "Ruff Lint"
+        },
+        {
+          "conclusion": "success",
+          "databaseId": 40956603210,
+          "status": "completed",
+          "workflowName": "Documentation notebooks"
+        },
+        {
+          "conclusion": "success",
+          "databaseId": 40956603201,
+          "status": "completed",
+          "workflowName": "Experimental Qt diagnostics"
+        },
+        {
+          "conclusion": "",
+          "databaseId": 40956603280,
+          "status": "in_progress",
+          "workflowName": "CI"
+        },
+        {
+          "conclusion": "success",
+          "databaseId": 40956603808,
+          "status": "completed",
+          "workflowName": "MolSysSuite policy"
+        },
+        {
+          "conclusion": "success",
+          "databaseId": 40956603907,
+          "status": "completed",
+          "workflowName": "Conda publication governance"
+        }
+      ],
+      "all_lanes_green_claimed": false,
+      "prior_public_baseline_issue": "uibcdf/molsysmt#431; earlier general/source campaigns fail three Pandas4Warning documentation examples; not waived or assumed to qualify this commit"
+    },
+    "retained_frontend": {
+      "unchanged_since": "ba655f48",
+      "prior_functional_receiving": "1c6c6c025c9656bc835368cc11f7561abb242549",
+      "js_units": 332,
+      "core_browser_suites": 44,
+      "new_frontend_run_claimed": false,
+      "scope": "TS, bundle and scientific provider inputs unchanged by this Qt shell change"
     }
   },
   "retained_failed_attempt": {
@@ -136,5 +287,18 @@
     "tagged": false,
     "packaged": false,
     "published": false
+  },
+  "implementation_commit": "3283086a8625b14c85445b1ba3311736c3f8f559",
+  "closeout": {
+    "human_visual_receiving": "pending; async request sent",
+    "temporary_resources": "test-owned cache only; native windows closed; no shared provider source edited",
+    "unrelated_local_paths_preserved": 9,
+    "issue_state": "276/277 open, post-1.0 milestone; #35 remains partial",
+    "publication": "no tag, release or package",
+    "documentation_links": {
+      "passed": 4,
+      "failed": 0,
+      "log": ".pytest_cache/modern-qt-20261029/closeout-links.log"
+    }
   }
 }
