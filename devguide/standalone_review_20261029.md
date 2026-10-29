@@ -102,3 +102,21 @@ and macOS Python 3.14 because the installed provider emits Pandas4Warning
 boundary under uibcdf/molsysmt#431. It is not suppressed or presented as a Qt
 regression. Policy, Ruff, Conda governance and documentation notebooks pass;
 source-pair, other core cells and hosted browser results are still being received.
+
+### Dialog diagnosis confirmed on 937a7340
+
+Run 40925545119's native JUnit records an accepted dialog whose selected file
+is still `molsysviewer-export.html`, the application's proposal, rather than
+the test's `native-view.html`. The export wrote the proposed destination;
+`selectFile()` did not replace the focused editor in this hosted execution.
+The guard now uses QTest to type into the real filename editor and click its
+Save button, retaining exact destination/result/bytes assertions. The local
+software-host flow passes again (39.87 seconds). Application export behavior,
+graphics configuration and timeouts are unchanged.
+
+The automation forces widget-based QFileDialog instances for interaction;
+it does not certify every operating system's proprietary native picker.
+The source-pair Linux job 123624108154 independently confirms the same three
+Pandas4Warning documentation failures as standard CI; no new provider defect
+is inferred. Cleanup removed 91 duplicate task-owned HTML files (373 MiB),
+retaining logs/JUnit/JSON, images and final native/software artifacts.

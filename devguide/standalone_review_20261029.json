@@ -33,7 +33,7 @@
     "molsysviewer/js/src/managers/handlers/movie-handlers.ts": "6badc91424a6be7401ea21ba217b6b17ed2c5f9018bde792dd6136ac29fe9e73",
     "molsysviewer/runtime_actions.json": "49cadebc8a25c27972d576498b78e45077ce9df72d20622ccb1e5f574071846a",
     "tests/test_qt_live_workbench.py": "cfc1a7c3fa0534b0d397ca94cd0b85faecba124edf5181f41ee224912a7eb2fa",
-    "tests/_qt_live_workbench.py": "5a49227f2a8e227c1866171f37260553437d25e210649140c9418be1201aabbd"
+    "tests/_qt_live_workbench.py": "4140ca67462a647c9da272bba1e5e16b17c80837638fcea83946d38c5e2b90f3"
   },
   "checks": {
     "native_final": {
@@ -133,6 +133,11 @@
       "deselected": 1,
       "time_seconds": 40.34,
       "scope": "same Xvfb/SwiftShader flow with explicit modal directory/result/path assertions"
+    },
+    "software_qt_user_filename": {
+      "passed": 1,
+      "time_seconds": 39.87,
+      "scope": "real fileNameEdit keyboard entry and Save-button click, accepted-result/path/bytes assertions retained"
     }
   },
   "core_original_diagnosis": {
@@ -191,7 +196,8 @@
     },
     "source_pair": {
       "run": 40923884460,
-      "status": "in_progress"
+      "status": "in_progress",
+      "observed_failure": "Linux and macOS: same three Pandas4Warning documentation cases; Windows still running; native Linux job 123624108154 confirms the exact trace"
     },
     "e2e": {
       "run": 40923884451,
@@ -202,7 +208,14 @@
       "MolSysSuite policy 40923885542",
       "Conda governance 40923885462",
       "Documentation notebooks 40923884750"
-    ]
+    ],
+    "qt_dialog_followup": {
+      "commit": "937a73403880e2e7503948c3a9add78bd3d88dfd",
+      "run": 40925545119,
+      "conclusion": "failure",
+      "native_junit_diagnosis": "dialog accepted its original molsysviewer-export.html name instead of test-requested native-view.html; selectFile did not replace the focused editor; file export itself succeeded at the proposed name",
+      "correction": "QTest types into the real fileNameEdit and clicks the actual Save button; no application export or graphics changes; next hosted receipt pending"
+    }
   },
   "release": {
     "created": false,
@@ -210,6 +223,6 @@
     "packaged": false,
     "standalone_status": "experimental; no change to 1.0 boundary"
   },
-  "resources": "Test-owned shell-state/files isolated in ignored task cache; explicit outputs preserved; implicit second-host HTML removed after page destruction. Shared provider worktree and unrelated files preserved.",
+  "resources": "Test-owned shell-state/files isolated in ignored task cache; explicit outputs preserved; implicit second-host HTML removed after page destruction. Shared provider worktree and unrelated files preserved. Removed 91 duplicate task-owned test HTML files (373 MiB); logs/JUnit/JSON, screenshots/movies and latest native/software artifacts retained.",
   "implementation_commit": "c08d4c7373dff4471d1aa2a39290799858fb38b0"
 }

@@ -11,7 +11,7 @@ def main():
     import molsysviewer.standalone_qt as qt
     from PySide6.QtCore import QCoreApplication, QEvent, QPoint, Qt, QTimer
     from PySide6.QtTest import QTest
-    from PySide6.QtWidgets import QApplication, QFileDialog
+    from PySide6.QtWidgets import QApplication, QDialogButtonBox, QFileDialog, QLineEdit
 
     QApplication.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeDialogs)
 
@@ -82,11 +82,19 @@ def main():
                 if cancel:
                     dialog.reject()
                 else:
-                    # Select the directory and filename explicitly, then verify
-                    # the actual modal result before accepting written bytes.
+                    # Exercise the visible editor: selectFile() can preserve an
+                    # already focused editor's proposed name (seen on hosted Qt).
                     dialog.setDirectory(str(out))
-                    dialog.selectFile(filename)
-                    dialog.accept()
+                    editor = dialog.findChild(QLineEdit, "fileNameEdit")
+                    assert editor is not None
+                    editor.setFocus()
+                    editor.selectAll()
+                    QTest.keyClicks(editor, filename)
+                    buttons = dialog.findChild(QDialogButtonBox, "buttonBox")
+                    assert buttons is not None
+                    save = buttons.button(QDialogButtonBox.StandardButton.Save)
+                    assert save is not None
+                    QTest.mouseClick(save, Qt.MouseButton.LeftButton)
                 choice = {"title": dialog.windowTitle(), "files": dialog.selectedFiles(), "result": dialog.result()}
                 print("download-dialog", choice, flush=True)
                 selected.append(choice)
