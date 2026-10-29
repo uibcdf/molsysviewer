@@ -66,8 +66,12 @@ For a process-local application check on this host, use:
 DBUS_SYSTEM_BUS_ADDRESS=unix:path=/run/dbus/system_bus_socket molsysviewer-qt 1TCD --demo
 ```
 
-The isolated library check passes with this address. The full Viewer launch
-with it remains a separate observation; no application success is inferred.
+The isolated library check passes with this address. On 2026-10-29 the
+maintainer also confirms that this exact application command removes the
+D-Bus error, while the separate Vulkan message remains. This is a verified
+process-local workaround on the observed host, not a provider/package fix.
+The issue retains low severity; this environment-specific diagnostic does not
+block 1.0, and no automatic environment rewrite is introduced.
 
 ## Why
 
