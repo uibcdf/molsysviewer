@@ -5,9 +5,9 @@ status: partial
 opened: 2026-07-04
 closed:
 severity: high
-verification: reproduced
+verification: measured
 area: [standalone, qt]
-guard:
+guard: tests/test_qt_live_workbench.py::test_qt_live_workbench_full_render_gpu
 normative:
 blocked_by: []
 supersedes: []

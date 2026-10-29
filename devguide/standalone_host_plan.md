@@ -14,6 +14,20 @@ keeps this document's Qt shell and ownership boundary; connecting to a server
 changes the connector and rendering endpoint, not the standalone product
 identity.
 
+## Current source checkpoint — 2026-10-29
+
+The thin local Qt shell and its shared live-workbench authority now work in
+source. Native menus/dialogs, current-scene HTML/figure export, camera/movie
+replies, repeated molecular loading and independent host lifetime have directed
+native-desktop evidence. The explicit X11/software hosted flow passes 13 cases.
+See [the review](standalone_review_20261029.md) for original failures, source
+hashes and the corrected local-QPA attribution.
+
+Stage 2 and parts of Stage 3 are implemented; this does not complete the future
+supported-host aspiration. Receive #35's maintainer visual confirmation,
+qualify Windows/macOS and installed hosts under #109/#113, retain resource
+exceptions, and keep Stage 4 popout layouts under #51. Qt remains experimental.
+
 ## Core Position
 
 One workbench model, one scene/state model, one add-on/workspace model, multiple
@@ -252,10 +266,12 @@ final answer.
 
 ## Practical Recommendation For The Next Standalone Revisit
 
-1. Confirm the final shell choice.
-2. Build the thinnest possible dedicated app window.
-3. Keep `Core`, panel mode, export and add-ons visibly intact there.
-4. Only then improve file, session and app polish.
+1. Receive the maintainer's visual check of the corrected single-window host.
+2. Close independent platform/resource qualification with actual evidence.
+3. Qualify owner-specific addon contributions and improve startup/file/session
+   polish without forking the shared workbench.
+4. Address advanced host layouts under #51 after the single-window experience
+   is accepted. Do not describe these remaining stages as implemented.
 
 ## Provisional Conclusion
 

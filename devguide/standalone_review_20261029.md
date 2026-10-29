@@ -175,3 +175,40 @@ outcomes are retained. The current core/scientific campaigns still have the
 known provider warning boundary and are not relabeled green by Qt success.
 The explicit-QPA hosted follow-up is the remaining automatic check; #35 keeps
 its maintainer visual confirmation, and platform/popout exceptions stay open.
+
+## Final explicit-X11 receiving
+
+[40931457746](https://github.com/uibcdf/molsysviewer/actions/runs/40931457746)
+on **8c32a5aa** passes all **13/13** native JUnit cases, zero failures/errors/skips.
+The child records and verifies `qt_platform="xcb"`. Ten molecule replacements,
+accepted/cancelled downloads, current-scene export, fullscreen/Escape, movie
+frames, timeout and independent-window cleanup all pass. The original artifact
+was downloaded; its id/digest and counters are in the receipt. The installed
+provider is MolSysMT **0.23.0 pyabi3h03bb3b7_0** from uibcdf, canonical
+PySide6/Qt WebEngine 6.11.2 on Python 3.13. This verifies that provider floor
+for this source-host flow, not every API or a published Viewer artifact.
+
+The production application source remains c08d4c73; later commits refine its
+native guard, graphics-lane configuration and evidence. All 3,004 retained
+local provider source hashes are unchanged. The board check finds all 31 queued
+documents consistent after closing #36/#270/#271/#272/#273. #35 remains partial
+for the human observation below. No tag, package, Release or 1.0 declaration.
+
+### Maintainer visual receiving
+
+Launch the current checkout in `molsyssuite@uibcdf_3.14`:
+
+```bash
+python -m molsysviewer.standalone_qt dialanine --demo
+```
+
+1. Alternate File → Load Demo → dialanine/pentalanine ten times; confirm only
+   the requested molecule is visible and the status reaches Ready.
+2. Rotate, zoom, pan and reset; use the shared right-click menu and Studio
+   on an actual picked atom/group, and check fullscreen/Escape.
+3. Export edited HTML, a figure and the orbit movie; accept one destination
+   and cancel another. Confirm the portable HTML includes the scene edits.
+4. Close/reopen the host and report any visual or interaction anomaly.
+
+This is receiving, not a request to repeat already credited scientific tests.
+Other native platforms and Qt child-window/popout parity retain their own work.

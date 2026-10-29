@@ -20,7 +20,8 @@
     ],
     "backend_sha256": "f32ed73f7ef3cf3225e12fbc56b9c4236a4452d758c94661f41860ad00d82c1c",
     "live_worktree_modified": false,
-    "public_pair_qualification": false
+    "public_pair_qualification": false,
+    "scope": "local frozen-source checks only; hosted Qt uses the installed provider recorded below"
   },
   "source_sha256": {
     "molsysviewer/standalone_qt/application.py": "ad3a58be87e21e625eba74821e7c8f3ae5e619b43cfb281141f038f96de5806f",
@@ -281,17 +282,21 @@
     },
     "core": {
       "run": 40923884520,
-      "status": "in_progress",
-      "observed_failure": "Linux and macOS Python 3.14: three documentation blocks fail on provider Pandas4Warning; known uibcdf/molsysmt#431/public-provider boundary, not waived"
+      "status": "completed",
+      "observed_failure": "Linux and macOS Python 3.14: three documentation blocks fail on provider Pandas4Warning; known uibcdf/molsysmt#431/public-provider boundary, not waived",
+      "conclusion": "failure"
     },
     "source_pair": {
       "run": 40923884460,
-      "status": "in_progress",
-      "observed_failure": "Linux and macOS: same three Pandas4Warning documentation cases; Windows still running; native Linux job 123624108154 confirms the exact trace"
+      "status": "completed",
+      "observed_failure": "Linux and macOS: same three Pandas4Warning documentation cases; Windows still running; native Linux job 123624108154 confirms the exact trace",
+      "conclusion": "failure"
     },
     "e2e": {
       "run": 40923884451,
-      "status": "in_progress"
+      "status": "completed",
+      "conclusion": "cancelled",
+      "reason": "superseded diagnostic source commit; original partial outcome retained; local 44 suites passed in segments"
     },
     "passed": [
       "Ruff 40923884456",
@@ -387,7 +392,86 @@
       },
       "scope": "source host on configured GitHub Xvfb/software pipeline, Python 3.13, canonical Qt 6.11.2; not installed canonical Viewer-package qualification"
     },
-    "qpa_followup": "Make xcb explicit in workflow and record/assert platform in native report; no application runtime behavior change; next native run pending."
+    "qpa_followup": "completed: explicit xcb recorded and asserted in 40931457746, all thirteen cases pass",
+    "explicit_qpa_final": {
+      "commit": "8c32a5aaed533f4edb0df7027f66e6a1b21cbd60",
+      "run": 40931457746,
+      "conclusion": "success",
+      "junit": {
+        "qt-render.xml": {
+          "tests": "2",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0",
+          "time": "49.222"
+        },
+        "qt-window.xml": {
+          "tests": "1",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0",
+          "time": "14.714"
+        },
+        "qt-probes.xml": {
+          "tests": "10",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0",
+          "time": "29.838"
+        }
+      },
+      "distinct_cases": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped_cases": 0,
+      "observations": {
+        "authority": true,
+        "provider_file": "GitHub Python 3.13 environment / site-packages/molsysmt/__init__.py",
+        "qt_platform": "xcb",
+        "region_atoms": [
+          0,
+          1
+        ],
+        "native_download_and_cancel": true,
+        "camera_received": true,
+        "image_received": true,
+        "python_mode": "cinema",
+        "browser_mode": "standard",
+        "fullscreen_roundtrip": true,
+        "loads": [
+          22,
+          62,
+          22,
+          62,
+          22,
+          62,
+          22,
+          62,
+          22,
+          62
+        ],
+        "changed_molecular_pixels": 0.1035497845936214,
+        "movie_camera_image_difference": 3.9571354166666666,
+        "movie_frames": 3,
+        "timeout_without_reply": true,
+        "failed_deliveries": [],
+        "independent_host_and_cleanup": true
+      },
+      "provider": {
+        "molsysmt": "0.23.0",
+        "build": "pyabi3h03bb3b7_0",
+        "channel": "uibcdf",
+        "pyside6": "6.11.2",
+        "qt6-webengine": "6.11.2"
+      },
+      "artifact": {
+        "id": 12921868975,
+        "name": "experimental-qt-results",
+        "size_bytes": 1493395,
+        "sha256": "4a64926967f4a815ceb84fa1a9200b0bb160378cb26cfca552330f6cd850de94"
+      },
+      "scope": "explicit X11/software source-host receiving; not a published Viewer artifact or standalone platform-support admission"
+    }
   },
   "release": {
     "created": false,
@@ -415,6 +499,18 @@
     40925545181,
     40925545102,
     40923884451,
-    40926652200
-  ]
+    40926652200,
+    40926652183
+  ],
+  "closeout": {
+    "board": "31 queued documents agree with GitHub after five closures",
+    "frozen_provider_files_rechecked": 3004,
+    "provider_hash_mismatches": 0,
+    "application_source_commit": "c08d4c7373dff4471d1aa2a39290799858fb38b0",
+    "qualified_workflow_and_guard_commit": "8c32a5aaed533f4edb0df7027f66e6a1b21cbd60",
+    "remaining": "maintainer visual #35; platform/resource #109/#113, popouts #51; known provider warning boundary in core/scientific CI; no release",
+    "additional_duplicate_html_reclaimed_bytes": 42782677,
+    "provider_scope": "Frozen 71fbe4f4 bytes only for local tests; hosted source-host flow explicitly uses public MolSysMT 0.23.0. These are distinct checks.",
+    "latest_functional_changes": "No application runtime changes after c08d4c73; guard/workflow qualified through 8c32a5aa; final receiving edits documentation/evidence only."
+  }
 }

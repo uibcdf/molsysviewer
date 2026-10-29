@@ -15,9 +15,9 @@ supersedes: []
 # Migrate the optional standalone Qt host to canonical PySide6 6.11.2
 
 **Reported:** 2026-09-27 during the Qt dependency simplification study.
-**Status:** Active; source, tests and development/CI recipes have been updated,
-and an earlier hosted Linux Qt pipeline passed. Native Windows/macOS and visible-window
-observations have not completed.
+**Status:** Active; Linux native-desktop source observations and explicit-X11
+software receiving now pass on canonical 6.11.2. Maintainer visual confirmation,
+native Windows/macOS, installed-host and the bounded resource exception remain.
 The 2026-09-28 scope decision keeps the host experimental for 1.0, so those
 remaining observations are outside the core release gate.
 
@@ -314,3 +314,12 @@ X11 qualification. The fresh explicit-xcb run passes three affected cases and
 records `xcb`; the workflow now selects and checks that platform. The exact
 hosted provenance follow-up remains pending. Windows/macOS, installed-host,
 resource exception and maintainer visual scopes still keep #109 open.
+
+### Explicit-X11 receiving completed
+
+Run 40931457746 on 8c32a5aa passes all 13 distinct JUnit cases, with `xcb`
+recorded and asserted. MolSysMT 0.23.0 build pyabi3h03bb3b7_0, canonical
+PySide6/Qt WebEngine 6.11.2 and Python 3.13 are recorded from native job logs.
+Original artifact id/digest and observations are preserved in the review.
+This completes the software compositor/platform follow-up above. The maintained
+status at the top names the scopes that still keep #109 active.

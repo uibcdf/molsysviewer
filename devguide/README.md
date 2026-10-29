@@ -408,7 +408,7 @@ Measured evidence, not estimates. Each records the command that reproduces it.
 
 The [2026-10-29 standalone review](standalone_review_20261029.md) repairs live
 Qt authority/preferences, profile ownership, native downloads and movie/image
-export. Native Linux/GPU guards pass; #35 still needs maintainer visual
+export. Native Linux/GPU guards and 13/13 explicit-X11 hosted cases pass; #35 still needs maintainer visual
 confirmation. #109/#113 retain platform/resource qualification, and #51 keeps
 Qt popout work separate. Qt remains experimental. Older investigations live
 under [`audits/`](audits/README.md).

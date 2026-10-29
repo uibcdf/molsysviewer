@@ -21,7 +21,7 @@ list.
 
 ### Partially done (1)
 
-- [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*
+- [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, measured)*
 
 <!-- /generated -->
 
@@ -56,18 +56,13 @@ present.
 
 ## Recommended execution
 
-The partially done Qt report is one real-window validation block:
-
-1. Reproduce each defect separately in the supported Qt/WebGL environment.
-2. Add temporary, runtime-only diagnostics at both sides of the bridge. Record
-   message/generation identifiers and acknowledgements; do not add diagnostic
-   events to scene history or export.
-3. Identify the first boundary where the expected state disappears.
-4. Add the narrow automated regression test at that boundary.
-5. Confirm the corrected workflow in the real window before closing the bug.
-
-Fakes remain useful for the regression after the cause is known. They are not
-evidence that the original real-window symptom is fixed.
+#35 needs the maintainer's ten-load visual confirmation using the current
+native host and its Ready status. Its automated native-desktop and hosted
+pixel checks pass; see [the current review](../standalone_review_20261029.md).
+Receive the manual observation before closing it. Add runtime-only diagnostics
+if that observation exposes a remaining defect; the fixed transport does not
+need another speculative investigation. Automated pixels and software Xvfb
+results do not substitute for the requested human confirmation.
 
 No other bug work should be invented from stale plans. New dogfooding findings
 enter this directory only with a reproduction and an affected public contract.
