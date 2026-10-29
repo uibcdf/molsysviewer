@@ -203,18 +203,18 @@
         },
         "scope": "installed source-host flow with public provider, not a new canonical Viewer package"
       },
-      "snapshot_observed_at": "2026-10-29T21:28:02.473048+00:00",
+      "snapshot_observed_at": "2026-10-29T22:53:03.369044+00:00",
       "other_lanes": [
         {
-          "conclusion": "",
+          "conclusion": "success",
           "databaseId": 40956603291,
-          "status": "in_progress",
+          "status": "completed",
           "workflowName": "CI_e2e"
         },
         {
-          "conclusion": "",
+          "conclusion": "failure",
           "databaseId": 40956603207,
-          "status": "in_progress",
+          "status": "completed",
           "workflowName": "Python 3.14 source pair"
         },
         {
@@ -236,9 +236,9 @@
           "workflowName": "Experimental Qt diagnostics"
         },
         {
-          "conclusion": "",
+          "conclusion": "failure",
           "databaseId": 40956603280,
-          "status": "in_progress",
+          "status": "completed",
           "workflowName": "CI"
         },
         {
@@ -255,7 +255,28 @@
         }
       ],
       "all_lanes_green_claimed": false,
-      "prior_public_baseline_issue": "uibcdf/molsysmt#431; earlier general/source campaigns fail three Pandas4Warning documentation examples; not waived or assumed to qualify this commit"
+      "prior_public_baseline_issue": "uibcdf/molsysmt#431; earlier general/source campaigns fail three Pandas4Warning documentation examples; not waived or assumed to qualify this commit",
+      "terminal_review": {
+        "general_ci": {
+          "run": 40956603280,
+          "passed_jobs": 2,
+          "failed_jobs": 6,
+          "skipped_jobs": 2
+        },
+        "source_pair": {
+          "run": 40956603207,
+          "failed_jobs": 3
+        },
+        "browser": {
+          "run": 40956603291,
+          "conclusion": "success"
+        },
+        "failure_scope": "Every failed job has the same three documentation-page failures: export/state.md, overlays/measurements.md, scene_management/selections.md. Pandas4Warning in Bonds_DataFrame.sort_values(inplace=...) is raised as an error; existing provider issue uibcdf/molsysmt#431. No warning filter or dependency route changed. Overall CI remains failed.",
+        "logs": [
+          ".pytest_cache/modern-qt-20261029/review-ci-failed.log",
+          ".pytest_cache/modern-qt-20261029/review-source-failed.log"
+        ]
+      }
     },
     "retained_frontend": {
       "unchanged_since": "ba655f48",

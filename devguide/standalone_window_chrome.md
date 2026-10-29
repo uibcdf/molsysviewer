@@ -83,10 +83,12 @@ Its deduplicated report verifies the new frame, actual export shortcut, Studio
 loading and changing molecular pixels, alongside the prior binary/authority
 checks. The installed provider is public MolSysMT 0.23.0 `pyabi3h03bb3b7_0`,
 with Python 3.13 and canonical Qt 6.11.2. This is not a new canonical Viewer
-artifact qualification. Other general/browser campaigns retain their observed
-states in the receipt; no whole-matrix success is claimed. The prior
-public baseline's Pandas4Warning documentation failures remain a separate
-provider-qualification matter under uibcdf/molsysmt#431.
+artifact qualification. The browser campaign 40956603291 also passes. General
+CI 40956603280 and source-pair 40956603207 finish with failures: every failed
+job reports the same three documentation examples raising Pandas4Warning from
+`Bonds_DataFrame.sort_values(inplace=...)`, tracked by uibcdf/molsysmt#431.
+The receipt preserves their terminal states; overall CI is failed. This review
+changes no warning policy or provider route.
 
 Human receiving still checks actual dragging, edge resizing, minimize/restore,
 multi-screen work and visual comfort. Native Windows/macOS, installed artifacts,
