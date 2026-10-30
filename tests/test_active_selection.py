@@ -462,9 +462,13 @@ def test_active_selection_set_retains_atoms_when_metadata_domains_are_absent(dro
     source_view = demo["dialanine"]
     try:
         source = source_view.molsys
-        states = msm.ChemicalStates(n_atoms=source.get_n_atoms())
-        domains = source.structures if drop_topology else [source.topology, states, source.structures]
-        molsys = msm.convert(domains, to_form="molsysmt.MolSys")
+        # The input is a native partial system, independent of converter
+        # availability at the older public provider floor.
+        molsys = type(source)._from_partial_domains(
+            topology=None if drop_topology else source.topology.copy(),
+            chemical_states=None if drop_topology else msm.ChemicalStates(n_atoms=source.get_n_atoms()),
+            structures=source.structures.copy(),
+        )
     finally:
         source_view.close()
     view = load_from_molsysmt(molecular_system=molsys)

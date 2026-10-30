@@ -80,12 +80,18 @@ def test_single_and_nested_complementary_forms_keep_one_system_intent(source_sys
     pdb = tmp_path / "source.pdb"
     msm.convert(source, to_form=str(pdb))
     mixed = _view()
-    # A full molecular composition supplies its independent chemistry explicitly.
-    complete_forms = [source.topology, source.chemical_states, source.structures]
+    # Only the older provider can deliver chemistry through Topology. The
+    # independent-domain provider needs its chemical source explicitly.
+    topology_has_chemistry = msm.has_attribute(source.topology, "n_bonds")
+    complete_forms = (
+        [source.topology, source.structures]
+        if topology_has_chemistry
+        else [source.topology, source.chemical_states, source.structures]
+    )
     mixed.load([pdb, complete_forms], multiple=True, labels=["File", "Forms"])
     assert mixed.molsys.get_n_atoms() == 20
     assert mixed.load_blocks[0]["origin"]["reference"] == str(pdb)
-    assert len(mixed.load_blocks[1]["origin"]["items"]) == 3
+    assert len(mixed.load_blocks[1]["origin"]["items"]) == (2 if topology_has_chemistry else 3)
 
 
 def test_source_atom_and_reordered_frame_maps_resolve_actual_coordinates(source_system):

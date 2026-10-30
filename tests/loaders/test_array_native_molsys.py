@@ -170,8 +170,13 @@ def test_static_payload_preserves_unavailable_and_empty_chemistry(dialanine_view
         states.append_state()
     if chemistry == "complete_empty":
         states._states[0].connectivity_completeness = "complete"
-    domains = molsys.structures if states is None else [molsys.topology, states, molsys.structures]
-    molsys = msm.convert(domains, to_form="molsysmt.MolSys")
+    # Construct native fixtures directly: serialization does not require the
+    # older provider's missing standalone Structures/composite converters.
+    molsys = type(molsys)._from_partial_domains(
+        topology=None if states is None else molsys.topology.copy(),
+        chemical_states=states,
+        structures=molsys.structures.copy(),
+    )
     states = molsys.chemical_states
     coordinates = puw.get_value(molsys.structures.coordinates, to_unit="nm")
     coordinates_before = coordinates.copy()
