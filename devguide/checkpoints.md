@@ -10,7 +10,9 @@ Python receiving covers 3,318 distinct cases across the original run and #282
 provenance recovery (21 skips), not one clean full run. Hosted states remain in the [polish receipt](standalone_window_polish_receiving_20261030.json).
 The test provider is reconstructed from 71fbe4f46 with the unchanged ABI3 binary;
 the separate ChemicalStates migration #269 is not received by this work.
-Qt remains experimental; no tag or package.
+The additional helper collection regression is corrected under #283 with
+a genuine no-site-packages guard; latest CI remains separately observed.
+The maintainer postpones visual receiving. Qt remains experimental; no tag or package.
 
 **Local Qt window modernized — 2026-10-29:** the local host now has an integrated
 native header and no window/application menu. Visible scene tools stay in the

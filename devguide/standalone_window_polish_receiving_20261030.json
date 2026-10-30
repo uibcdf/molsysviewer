@@ -104,7 +104,7 @@
       "scope": "core real Mol*/Chromium, Python 3.14 and fixed source provider"
     },
     "hosted": {
-      "status": "both Qt checkpoints pass 14/14; final general/source/browser campaigns observed in progress, with policy and Conda governance success; no whole-matrix green claim",
+      "status": "Qt runtime qualified in both prior 14/14 campaigns; latest test-helper correction CI observed in progress, with policy and Conda governance success. Prior macOS collection failures are retained and fixed separately under #283.",
       "commit": "7900263691cd96fcf74840357cc2e7ca8ef62914",
       "qt_run": 41101688171,
       "browser_run": 41101687647,
@@ -345,6 +345,49 @@
         ],
         "observed_test_failures": "Linux general CI and Linux/Windows source-pair failed-test summaries report the same three Pandas4Warning documentation examples on the retained public provider baseline. Other job conclusions remain separate. Provider issue MolSysMT#431 is fixed in later source; no baseline-pin or warning-filter change here.",
         "macos_collection": "The direct macOS job log identifies missing optional PySide6 in the new helper; #283 corrects this distinct test regression. Do not attribute these collection failures to the old Pandas warnings."
+      },
+      "latest_source": {
+        "commit": "6020e580f3b681e83f249b5f03243c821c1c6b3c",
+        "observed_at": "2026-10-30T18:29:11.651310+00:00",
+        "lanes": [
+          {
+            "conclusion": "",
+            "databaseId": 41106975264,
+            "status": "in_progress",
+            "workflowName": "Python 3.14 source pair"
+          },
+          {
+            "conclusion": "success",
+            "databaseId": 41106976121,
+            "status": "completed",
+            "workflowName": "Conda publication governance"
+          },
+          {
+            "conclusion": "",
+            "databaseId": 41106975172,
+            "status": "in_progress",
+            "workflowName": "Experimental Qt diagnostics"
+          },
+          {
+            "conclusion": "",
+            "databaseId": 41106975234,
+            "status": "in_progress",
+            "workflowName": "CI_e2e"
+          },
+          {
+            "conclusion": "success",
+            "databaseId": 41106976143,
+            "status": "completed",
+            "workflowName": "MolSysSuite policy"
+          },
+          {
+            "conclusion": "",
+            "databaseId": 41106975237,
+            "status": "in_progress",
+            "workflowName": "CI"
+          }
+        ],
+        "all_green_claimed": false
       }
     },
     "read_only_recovery": {
@@ -370,6 +413,10 @@
     "guides_final": {
       "passed": 298,
       "junit": ".pytest_cache/qt-polish-20261030/guides-final.xml"
+    },
+    "guides_last": {
+      "passed": 299,
+      "junit": ".pytest_cache/qt-polish-20261030/guides-last.xml"
     }
   },
   "diagnosed_attempts": [
@@ -415,7 +462,7 @@
     "temporary_archive_cleanup": "redundant provider tar archives removed; compatible source retained for the postponed human launch",
     "publication": "none",
     "provider_unchanged_after_tests": true,
-    "latest_test_helper_fix": "local dependency-absence and actual-widget guards pass; successor CI will receive this correction"
+    "latest_test_helper_fix": "6020e580; both isolated dependency-absence and real-widget guards pass; current full hosted CI still pending"
   },
   "additional_test_defect": {
     "issue": 283,
@@ -429,5 +476,6 @@
       "junit": ".pytest_cache/qt-polish-20261030/optional-import-recovery.xml"
     },
     "log": ".pytest_cache/qt-polish-20261030/macos-ci-job.log"
-  }
+  },
+  "latest_validation_commit": "6020e580f3b681e83f249b5f03243c821c1c6b3c"
 }
