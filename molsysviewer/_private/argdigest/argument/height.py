@@ -6,6 +6,8 @@ def digest_height(height, caller=None):
         "molsysviewer.standalone_qt.application.create_standalone_qt0_window",
         "molsysviewer.standalone_qt.application.launch_standalone_qt0",
     }:
+        if height is None:
+            return None
         if isinstance(height, int) and not isinstance(height, bool) and height > 0:
             return height
         raise ArgumentError("height", value=height, caller=caller, message="expected a positive number of pixels")

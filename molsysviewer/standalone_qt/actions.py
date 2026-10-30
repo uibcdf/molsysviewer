@@ -11,6 +11,7 @@ from .utils import (
     _record_recent_source,
     _restore_last_source,
     _show_host_error,
+    _show_status,
 )
 
 
@@ -80,7 +81,7 @@ def _install_host_actions(*, window, webview, qt, current_state, html_path, curr
                 view.export.html(destination, title=current_title)
             else:
                 view.export.figure(destination)
-            window.statusBar().showMessage(f"Exported: {destination.name}")
+            _show_status(window, f"Exported: {destination.name}", kind="info")
         except Exception as exc:
             _show_host_error(window, qt["QMessageBox"], "Export Failed", f"Could not export {kind}: {exc}")
 
@@ -89,11 +90,12 @@ def _install_host_actions(*, window, webview, qt, current_state, html_path, curr
 
     bind("new_view", "New view", "Ctrl+N", new_view)
     bind("open_file", "Open file", "Ctrl+O", open_file)
-    bind("restore_last", "Restore last source", "Ctrl+R", restore_last)
+    bind("restore_last", "Restore last source", "Ctrl+Shift+R", restore_last)
     bind("close", "Close window", "Ctrl+W", window.close)
     bind("studio", "Open Studio", "Ctrl+1", lambda: panel("navigate"))
     bind("addons", "Open Add-ons", "Ctrl+2", lambda: panel("addons"))
     bind("export_html", "Export HTML", "Ctrl+Shift+S", lambda: export("html"))
     bind("export_figure", "Export figure", "Ctrl+Shift+E", lambda: export("figure"))
+    bind("status_details", "Read status details", "Ctrl+Shift+D", lambda: window._molsysviewer_chrome.show_details())
     window._molsysviewer_host_actions = actions
     return actions

@@ -23,6 +23,7 @@ from traitlets import HasTraits
 
 from .._private.smonitor import CATALOG, META, PACKAGE_ROOT
 from ..widget import MolSysViewerWidget
+from .status import _HOST_SHORTCUTS
 from .utils import _frontend_event_validation_error
 
 logger = logging.getLogger(__name__)
@@ -85,7 +86,7 @@ class QtViewChannel(HasTraits):
 
     def _send_ui_state(self, change=None) -> None:
         if not self._receiving_ui:
-            self._bridge.send({"op": "set_host_ui", "values": self.get_state()})
+            self._bridge.send({"op": "set_host_ui", "values": {**self.get_state(), "host_shortcuts": _HOST_SHORTCUTS}})
 
     # -- outgoing (Python -> JS) ---------------------------------------------
 

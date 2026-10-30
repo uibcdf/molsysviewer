@@ -6,6 +6,8 @@ library remains headless and does not require the optional Qt binding.
 
 from __future__ import annotations
 
+from .status import _StatusMessage
+
 
 def _install_window_chrome(*, window, webview, qt):
     core, gui, widgets = qt["QtCore"], qt["QtGui"], qt["QtWidgets"]
@@ -52,10 +54,11 @@ def _install_window_chrome(*, window, webview, qt):
             brand.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
             row.addWidget(brand)
             row.addStretch(1)
-            chrome.status = widgets.QLabel(self)
+            chrome.status = widgets.QToolButton(self)
             chrome.status.setObjectName("molsysviewerWindowStatus")
             chrome.status.setAccessibleName("Application status")
-            chrome.status.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+            chrome.status.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+            chrome.status.clicked.connect(chrome.show_details)
             row.addWidget(chrome.status)
             chrome.buttons = {}
             controls = (
@@ -188,7 +191,16 @@ def _install_window_chrome(*, window, webview, qt):
             self.status_timer = core.QTimer(self)
             self.status_timer.setSingleShot(True)
             self.status_timer.setInterval(7000)
-            self.status_timer.timeout.connect(self.status.hide)
+            self.status_timer.timeout.connect(self.expire_status)
+            self.last_status = None
+            self.active_status = False
+            self.details = None
+            self.fullscreen_status = widgets.QToolButton(self.frame)
+            self.fullscreen_status.setObjectName("molsysviewerFullscreenStatus")
+            self.fullscreen_status.setAccessibleName("Read status details")
+            self.fullscreen_status.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+            self.fullscreen_status.clicked.connect(self.show_details)
+            self.fullscreen_status.hide()
             self.status_bar = window.statusBar()
             self.status_bar.setSizeGripEnabled(False)
             self.status_bar.messageChanged.connect(self.show_status)
@@ -243,22 +255,83 @@ def _install_window_chrome(*, window, webview, qt):
             self.buttons["maximize"].setAccessibleName(label)
             self.buttons["maximize"].setToolTip(label)
             self.buttons["maximize"].setIcon(icon("restore" if window.isMaximized() else "maximize", self.foreground))
+            self.sync_status()
 
         def show_status(self, message):
             self.status_timer.stop()
-            if not message or message.startswith("Ready"):
-                self.status.hide()
+            status = _StatusMessage(message, getattr(message, "kind", "info"))
+            if not status or status.kind == "ready":
+                self.active_status = False
+                self.sync_status()
                 return
-            self.status.setToolTip(message)
-            self.status.setAccessibleDescription(message)
-            width = min(420, max(120, window.width() // 3))
-            self.status.setText(self.status.fontMetrics().elidedText(message, Qt.TextElideMode.ElideRight, width))
-            self.status.show()
-            lower = message.lower()
-            error = any(word in lower for word in ("failed", "could not", "error", "timeout", "timed out"))
-            self.status.setStyleSheet("color: #dc3545;" if error else "")
-            if not error and not any(word in lower for word in ("loading", "rendering", "downloading", "connecting")):
+            self.last_status = status
+            self.active_status = True
+            self.sync_status()
+            if status.kind == "info":
                 self.status_timer.start()
+
+        def expire_status(self):
+            self.active_status = False
+            self.sync_status()
+
+        def sync_status(self):
+            status = self.last_status
+            active = self.active_status and status is not None
+            self.status.setVisible(active)
+            floating = active and window.isFullScreen() and status.kind in {"error", "progress"}
+            self.fullscreen_status.setVisible(floating)
+            if not active:
+                return
+            self.status.setToolTip(f"{status}\nClick for full details (Ctrl+Shift+D)")
+            self.status.setAccessibleName(f"{status.kind.capitalize()} status: read details")
+            self.status.setAccessibleDescription(str(status))
+            width = min(420, max(120, window.width() // 3))
+            self.status.setText(self.status.fontMetrics().elidedText(str(status), Qt.TextElideMode.ElideRight, width))
+            self.status.setStyleSheet("color: #dc3545;" if status.kind == "error" else "")
+            self.fullscreen_status.setText("Error — details" if status.kind == "error" else "Working — details")
+            self.fullscreen_status.setToolTip(self.status.toolTip())
+            self.fullscreen_status.setStyleSheet(
+                f"background: {self.background}; color: {self.foreground}; border: 1px solid {self.border}; padding: 6px;"
+            )
+            self.fullscreen_status.adjustSize()
+            self.fullscreen_status.move(12, 12)
+            if floating:
+                self.fullscreen_status.raise_()
+
+        def show_details(self):
+            if self.details is not None:
+                self.details.raise_()
+                self.details.activateWindow()
+                return
+            dialog = widgets.QDialog(window)
+            dialog.setObjectName("molsysviewerStatusDetails")
+            dialog.setWindowTitle("Status details")
+            dialog.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+            layout = widgets.QVBoxLayout(dialog)
+            text = widgets.QPlainTextEdit(dialog)
+            text.setObjectName("molsysviewerStatusText")
+            text.setAccessibleName("Full status message")
+            text.setReadOnly(True)
+            message = str(self.last_status) if self.last_status is not None else "No status message is available yet."
+            text.setPlainText(message)
+            layout.addWidget(text)
+            buttons = widgets.QDialogButtonBox(widgets.QDialogButtonBox.StandardButton.Close, dialog)
+            copy = buttons.addButton("Copy message", widgets.QDialogButtonBox.ButtonRole.ActionRole)
+            copy.setObjectName("molsysviewerCopyStatus")
+            copy.clicked.connect(lambda: widgets.QApplication.clipboard().setText(message))
+            buttons.rejected.connect(dialog.close)
+            layout.addWidget(buttons)
+            screen = window.screen().availableGeometry()
+            dialog.resize(min(620, screen.width()), min(320, screen.height()))
+            self.details = dialog
+
+            def finished():
+                self.details = None
+                webview.setFocus()
+
+            dialog.finished.connect(finished)
+            dialog.show()
+            text.setFocus()
 
         def eventFilter(self, watched, event):  # noqa: N802
             if watched is window:
@@ -266,8 +339,13 @@ def _install_window_chrome(*, window, webview, qt):
                     self.sync_state()
                 elif event.type() == core.QEvent.Type.PaletteChange:
                     self.refresh_style()
+                    self.sync_status()
+                elif event.type() == core.QEvent.Type.Resize:
+                    self.sync_status()
                 elif event.type() == core.QEvent.Type.Close:
                     self.status_timer.stop()
+                    if self.details is not None:
+                        self.details.close()
             return False
 
     chrome = Chrome()

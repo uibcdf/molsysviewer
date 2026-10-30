@@ -20,6 +20,8 @@ from ..runtime_contract import (
     RAW_ACTIONS,
 )
 from ..standalone import _resolve_view
+from .geometry import _capture_geometry
+from .status import _StatusMessage
 
 logger = logging.getLogger(__name__)
 
@@ -170,7 +172,12 @@ def _load_qt_shell_state() -> dict[str, Any]:
         or not isinstance(window_size.get("height"), int)
     ):
         window_size = None
-    return {"recent_sources": recent_sources[:5], "last_source": last_source, "window_size": window_size}
+    result = {"recent_sources": recent_sources[:5], "last_source": last_source, "window_size": window_size}
+    if isinstance(data.get("window_geometry"), dict):
+        result["window_geometry"] = data["window_geometry"]
+    if data.get("window_maximized") is True:
+        result["window_maximized"] = True
+    return result
 
 
 def _save_qt_shell_state(current_state: dict[str, Any]) -> None:
@@ -180,11 +187,16 @@ def _save_qt_shell_state(current_state: dict[str, Any]) -> None:
         "recent_sources": current_state.get("recent_sources", [])[:5],
         "last_source": current_state.get("last_source"),
         "window_size": current_state.get("window_size"),
+        "window_geometry": current_state.get("window_geometry"),
+        "window_maximized": current_state.get("window_maximized", False),
     }
     path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
 
 
 def _capture_window_size(window) -> dict[str, int] | None:
+    if hasattr(window, "normalGeometry"):
+        rect = _capture_geometry(window)
+        return {"width": rect["width"], "height": rect["height"]}
     width = None
     height = None
     if hasattr(window, "width") and callable(window.width):
@@ -210,15 +222,26 @@ def _capture_window_size(window) -> dict[str, int] | None:
     return {"width": width, "height": height}
 
 
-def _show_status(window, message: str) -> None:
+def _show_status(window, message: str, *, kind: str | None = None) -> None:
+    status = _StatusMessage(message, kind or getattr(message, "kind", "info"))
+    chrome = getattr(window, "_molsysviewer_chrome", None)
     if hasattr(window, "statusBar"):
         status_bar = window.statusBar()
         if status_bar is not None and hasattr(status_bar, "showMessage"):
-            status_bar.showMessage(message)
+            # QStatusBar converts to plain text. Avoid briefly interpreting the
+            # managed record as an unrelated info message through its signal.
+            blocked = status_bar.blockSignals(True) if chrome is not None else None
+            try:
+                status_bar.showMessage(str(status))
+            finally:
+                if blocked is not None:
+                    status_bar.blockSignals(blocked)
+    if chrome is not None:
+        chrome.show_status(status)
 
 
 def _show_host_error(window, QMessageBox, title: str, message: str) -> None:
-    _get_helper("_show_status")(window, message)
+    _get_helper("_show_status")(window, message, kind="error")
     if hasattr(QMessageBox, "critical"):
         QMessageBox.critical(window, title, message)
     elif hasattr(QMessageBox, "warning"):
@@ -262,14 +285,15 @@ def _set_empty_state(window, current_state: dict[str, Any]) -> None:
 def _show_startup_status(window, current_state: dict[str, Any]) -> None:
     loaded_label = current_state.get("loaded_label")
     if isinstance(loaded_label, str) and loaded_label:
-        _get_helper("_show_status")(window, f"Ready: {loaded_label}")
+        _get_helper("_show_status")(window, f"Ready: {loaded_label}", kind="ready")
         return
     if current_state.get("molecular_system") is not None:
-        _get_helper("_show_status")(window, "Ready. Molecular system loaded.")
+        _get_helper("_show_status")(window, "Ready. Molecular system loaded.", kind="ready")
         return
     _get_helper("_show_status")(
         window,
         "Ready. Open Studio > System > Load systems to begin.",
+        kind="ready",
     )
 
 
@@ -292,12 +316,13 @@ def _host_info_message(current_state: dict[str, Any], html_path: str) -> str:
         "Primary shell shortcuts:\n"
         "  Ctrl+N  New Empty Host\n"
         "  Ctrl+O  Open File\n"
-        "  Ctrl+R  Restore Last Source\n"
+        "  Ctrl+Shift+R  Restore Last Source\n"
         "  Ctrl+1  Studio\n"
         "  Ctrl+2  Add-ons\n"
         "  Escape  Dismiss canvas tools/panels or leave fullscreen\n"
         "  Ctrl+Shift+S  Export HTML\n"
-        "  Ctrl+Shift+E  Export Figure"
+        "  Ctrl+Shift+E  Export Figure\n"
+        "  Ctrl+Shift+D  Read or copy the last status message"
     )
 
 
@@ -335,6 +360,11 @@ def _persist_shell_state(current_state: dict[str, Any], window=None) -> None:
         window_size = _get_helper("_capture_window_size")(window)
         if window_size is not None:
             current_state["window_size"] = window_size
+        if hasattr(window, "normalGeometry"):
+            current_state["window_geometry"] = _capture_geometry(window)
+            current_state["window_maximized"] = window.isMaximized() or (
+                window.isFullScreen() and bool(getattr(window, "_molsysviewer_fullscreen_maximized", False))
+            )
     try:
         _get_helper("_save_qt_shell_state")(current_state)
     except Exception:
@@ -478,13 +508,13 @@ class QtMessageBridge:
             # left in front of a blank window during a long load.
             if event.get("generation") == self.generation:
                 if name == "structure_ready":
-                    self._show_status("Structure ready, rendering…")
+                    self._show_status("Structure ready, rendering…", kind="progress")
                 elif name == "render_ready" and not self._synchronize_draws:
-                    self._show_status("Ready.")
+                    self._show_status("Ready.", kind="ready")
             self._handle_message_event(event)
             return True
         if name == "frontend_error":
-            self._show_status(f"Frontend error: {event.get('error', 'unknown error')}")
+            self._show_status(f"Frontend error: {event.get('error', 'unknown error')}", kind="error")
             return True
         # Any other frontend event (interaction_*, movie_*, region_ack, ...) is a
         # product event for the persistent MolSysView. It must be one the shared
@@ -523,7 +553,7 @@ class QtMessageBridge:
     ) -> bool:
         message = f"Rejected malformed frontend event from {source}: {reason}"
         logger.warning("%s; payload=%r", message, event)
-        self._show_status(message)
+        self._show_status(message, kind="error")
         return False
 
     def _forward_to_view(self, event: dict[str, Any]) -> None:
@@ -595,7 +625,7 @@ class QtMessageBridge:
         self.inflight = entry
         entry["deadline"] = time.monotonic() + float(entry["timeout_s"])
         if str(entry["message"].get("op", "")) in {"load_molsys_payload", "load_molsys_payload_ref"}:
-            self._show_status("Loading molecular system…")
+            self._show_status("Loading molecular system…", kind="progress")
         self._arm_timeout(entry)
         self._run_javascript(entry)
 
@@ -653,12 +683,15 @@ class QtMessageBridge:
                 "reason": reason,
             }
             self.failed_deliveries.append(failure)
-            self._show_status(f"Viewer message delivery failed after {attempts} attempts: {op} ({reason})")
+            self._show_status(
+                f"Viewer message delivery failed after {attempts} attempts: {op} ({reason})", kind="error"
+            )
             self._flush()
             return
         self.queue.insert(0, entry)
         self._show_status(
-            f"Viewer message delivery delayed (attempt {attempts}/{self.MAX_DELIVERY_ATTEMPTS}): {op} ({reason})"
+            f"Viewer message delivery delayed (attempt {attempts}/{self.MAX_DELIVERY_ATTEMPTS}): {op} ({reason})",
+            kind="progress",
         )
         delay_ms = min(
             self.RETRY_MAX_DELAY_MS,
@@ -677,7 +710,7 @@ class QtMessageBridge:
         if event.get("event") == "message_error":
             self.inflight = None
             self._cleanup_entry(entry)
-            self._show_status(f"Viewer message failed: {event.get('error', 'unknown error')}")
+            self._show_status(f"Viewer message failed: {event.get('error', 'unknown error')}", kind="error")
             self._flush()
             return
         if event.get("event") != entry.get("wait_event"):
@@ -686,7 +719,7 @@ class QtMessageBridge:
         self._cleanup_entry(entry)
         if self._synchronize_draws and not self.queue:
             if entry["message"].get("op") == "commit_scene":
-                self._show_status("Ready.")
+                self._show_status("Ready.", kind="ready")
             else:
                 self.queue.append(self._make_entry({"op": "commit_scene"}))
         self._flush()
@@ -701,7 +734,7 @@ class QtMessageBridge:
                 return
             self.inflight = None
             self._cleanup_entry(entry)
-            self._show_status(f"Viewer message timed out: {entry['message'].get('op', 'unknown')}")
+            self._show_status(f"Viewer message timed out: {entry['message'].get('op', 'unknown')}", kind="error")
             self._flush()
 
         self.QTimer.singleShot(timeout_ms, _check_timeout)
@@ -709,9 +742,9 @@ class QtMessageBridge:
     def _retry_later(self, delay_ms: int = RETRY_BASE_DELAY_MS) -> None:
         self.QTimer.singleShot(delay_ms, self._flush)
 
-    def _show_status(self, message: str) -> None:
+    def _show_status(self, message: str, *, kind: str = "info") -> None:
         if callable(self.status_callback):
-            self.status_callback(message)
+            self.status_callback(_StatusMessage(message, kind))
 
     def _cleanup_entry(self, entry: dict[str, Any]) -> None:
         payload_id = entry.get("payload_id")
@@ -1019,7 +1052,7 @@ def _load_molecular_system_into_qt_host(
         else:
             _get_helper("_set_loaded_state")(window, current_state, molecular_system, loaded_label)
     _get_helper("_persist_shell_state")(current_state, window=window)
-    _get_helper("_show_status")(window, status_message)
+    _get_helper("_show_status")(window, status_message, kind="ready" if molecular_system is None else "progress")
 
 
 def _export_qt_figure(

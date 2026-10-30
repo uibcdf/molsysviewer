@@ -70,7 +70,7 @@ and a later change reaches the popup as an ordinary live message.
 Key rule: the **Qt shell is a live app**, the **exported HTML is an output
 format**. The Qt shell must never be driven by regenerating HTML and reloading
 `QWebEngineView`; that destroys the Chromium/Mol\*/WebGL runtime on every load.
-`_rebuild_qt_html` exists only for the export action.
+Static artifacts use the current view export owner; they are not a host reload mechanism.
 
 ## The Qt live-message model
 
@@ -85,12 +85,13 @@ format**. The Qt shell must never be driven by regenerating HTML and reloading
   `generation`, ack/error/`structure_ready`/`render_ready`, per-op timeouts,
   coalescing and bounded retry. Once the frontend is ready, delivery failures
   are retried up to five times with backoff; exhausting that budget discards the
-  message with a status-bar report and a compact runtime record. An ack timeout
+  message with a host-status report and a compact runtime record. An ack timeout
   is terminal and reported but is not retried. Stale-generation acks are ignored.
 - A load runs `clear_all` + the reproducible scene messages under a new
   generation; the shell and its WebGL context stay alive.
-- `_message_history` remains the single reproducible source of truth; ids,
-  generations, acks and timeouts are runtime-only and never recorded.
+- The current scene/state owners define reproducible content. Static exports
+  project that live state; they do not replay a command history. Transport ids,
+  generations, acks and timeouts remain runtime-only.
 
 See `devguide/pending_proposals/` for the design proposal and the interactive
 backend follow-up.
@@ -138,8 +139,12 @@ requested camera state to be drawn before capturing its image.
 The local window has no File/View/Export/Help menu or replacement application
 menu. Visible scene workflows belong to the shared canvas. A thin native header
 owns window movement, minimize/maximize/close and transient status. The bottom
-status bar stays hidden; errors remain available in the header. Native shortcuts
+status bar stays hidden; errors remain available through a clickable header status and a fullscreen
+details affordance. Ctrl+Shift+D opens selectable/copyable status text. Native shortcuts
 remain registered on the window, including Ctrl+O, Ctrl+N and Ctrl+Shift+S/E.
+Shared Help lists Desktop window shortcuts only in the live Qt host;
+Ctrl+Shift+R restores the last recorded source, while Ctrl+R does not replace
+the system. This host metadata is absent from portable scenes.
 See [the window contract](https://github.com/uibcdf/molsysviewer/blob/main/devguide/standalone_window_chrome.md).
 
 Keyboard exports use the **current persistent view**, including scene edits.
@@ -172,3 +177,9 @@ before claiming it works in this host.
 
 For the latest measured source scopes and retained failed attempts, see
 [the standalone review](https://github.com/uibcdf/molsysviewer/blob/main/devguide/standalone_review_20261029.md).
+
+The local launcher restores normal window geometry and maximized state
+separately; fullscreen is never restored at startup. Omitted width/height use
+saved values with a 1440×960 fallback, while explicit positive dimensions
+override them and start a normal window. Legacy saved dimensions remain
+readable. Wayland retains compositor control over global window placement.

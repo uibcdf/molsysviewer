@@ -42,8 +42,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         default=[],
         help="Explicit add-on module(s) to register, e.g. molsysviewer_topomt.",
     )
-    parser.add_argument("--width", type=int, default=1440, help="Initial window width.")
-    parser.add_argument("--height", type=int, default=960, help="Initial window height.")
+    parser.add_argument("--width", type=int, default=None, help="Initial width; overrides the saved window size.")
+    parser.add_argument("--height", type=int, default=None, help="Initial height; overrides the saved window size.")
     parser.add_argument(
         "--no-exec",
         action="store_true",
@@ -61,8 +61,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         runtime = _get_helper("launch_remote_qt")(
             args.connect,
             title=args.title,
-            width=args.width,
-            height=args.height,
+            width=args.width if args.width is not None else 1440,
+            height=args.height if args.height is not None else 960,
             exec_app=not args.no_exec,
         )
         print(runtime["session_url"])

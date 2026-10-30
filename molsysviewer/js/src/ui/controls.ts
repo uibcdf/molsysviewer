@@ -426,6 +426,9 @@ export const buildControls = (
     const isMinimal = controlsMode === "compact" || isCinema;
 
     const helpOverlay = new HelpOverlay(container);
+    const refreshHostHelp = () => helpOverlay.setHostShortcuts(model.get("host_shortcuts"));
+    refreshHostHelp();
+    observe("change:host_shortcuts", refreshHostHelp);
     release.push(() => helpOverlay.dispose());
     c.setHelpOpener(() => helpOverlay.show());
 

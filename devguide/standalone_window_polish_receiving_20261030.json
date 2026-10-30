@@ -1,0 +1,117 @@
+{
+  "date": "2026-10-30",
+  "issues": [
+    279,
+    280,
+    281
+  ],
+  "scope": "local Qt status, geometry and native shortcuts; shared Help only",
+  "provider": {
+    "source": "71fbe4f46d3c70e4e973c8025f01752a8c9b1084",
+    "root": ".pytest_cache/qt-polish-20261030/provider",
+    "reconstruction": "git archive plus copied matching ABI3 binary; sibling checkout unchanged",
+    "matched_previous_source_files": 3003,
+    "missing_previous_generated_file": "molsysmt/_version.py; distribution metadata is not frozen by this reconstruction",
+    "backend_sha256": "f32ed73f7ef3cf3225e12fbc56b9c4236a4452d758c94661f41860ad00d82c1c",
+    "qualification": "source compatibility, not installed artifact"
+  },
+  "checks": {
+    "standalone_contracts": {
+      "passed": 40,
+      "scope": "non-qt_runtime tests/test_standalone.py"
+    },
+    "api": {
+      "passed": 18,
+      "junit": ".pytest_cache/qt-polish-20261030/api.xml"
+    },
+    "widgets": {
+      "passed": 1,
+      "junit": ".pytest_cache/qt-polish-20261030/chrome-final.xml",
+      "scope": "real offscreen Qt widgets, not WebGL"
+    },
+    "native": {
+      "passed": 1,
+      "deselected": 1,
+      "seconds": 53.36,
+      "junit": ".pytest_cache/qt-polish-20261030/native.xml",
+      "report": {
+        "authority": true,
+        "provider_file": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/qt-polish-20261030/provider/molsysmt/__init__.py",
+        "qt_platform": "wayland",
+        "initial_binary_projection": true,
+        "modern_window_chrome": true,
+        "region_atoms": [
+          0,
+          1
+        ],
+        "host_shortcut_help": true,
+        "native_shortcuts": true,
+        "native_download_and_cancel": true,
+        "camera_received": true,
+        "image_received": true,
+        "python_mode": "cinema",
+        "browser_mode": "standard",
+        "fullscreen_status_details": true,
+        "fullscreen_roundtrip": true,
+        "shared_studio_loading": true,
+        "loads": [
+          22,
+          62,
+          22,
+          62,
+          22,
+          62,
+          22,
+          62,
+          22,
+          62
+        ],
+        "binary_replacements": 10,
+        "changed_molecular_pixels": 0.09926376028806584,
+        "movie_camera_image_difference": 3.9533203125,
+        "movie_frames": 3,
+        "timeout_without_reply": true,
+        "failed_deliveries": [],
+        "all_mode_and_structure_indices": true,
+        "independent_host_and_cleanup": true
+      },
+      "scope": "visible native Wayland/GPU, no QPA/GL workaround"
+    },
+    "js_units": {
+      "passed": 332,
+      "failed": 0,
+      "log": ".pytest_cache/qt-polish-20261030/js-units-native.tap",
+      "note": "prior sandbox output exposed only one file result; native TAP confirms 332 cases"
+    },
+    "core": {
+      "status": "running",
+      "log": ".pytest_cache/qt-polish-20261030/core.log"
+    },
+    "browser": {
+      "status": "running",
+      "log": ".pytest_cache/qt-polish-20261030/browser.log"
+    },
+    "hosted": {
+      "status": "not dispatched yet"
+    }
+  },
+  "diagnosed_attempts": [
+    "Initial standalone run imported the sibling ChemicalStates branch because the old /tmp snapshot had been removed; stopped at missing topology.bonds. Reconstructed the prior source without altering sibling work.",
+    "Status widget receiving exposed plain QStatusBar signal overwriting typed last status; explicit dispatcher now preserves the record and suppresses that intermediate signal.",
+    "Geometry probe initially used a decorated restore window; corrected to actual frameless host policy.",
+    "Remote Help unit fixture lacks dataset; standard setAttribute preserves the real DOM behavior and existing fixture.",
+    "A new test referred to retired _message_history; corrected to the actual live static export snapshot."
+  ],
+  "publication": {
+    "tag": false,
+    "package": false,
+    "release": false
+  },
+  "remaining": [
+    "maintainer visual receiving",
+    "explicit human ten replacements for #35",
+    "platform/artifact/popout scope #109/#113/#51",
+    "public 0.23.0 Pandas4Warning baseline under MolSysMT#431",
+    "ChemicalStates receiving #269 remains separate"
+  ]
+}

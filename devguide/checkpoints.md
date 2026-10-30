@@ -1,5 +1,15 @@
 # Development checkpoint
 
+**Qt window polish — 2026-10-30:** #279/#280/#281 receive explicit status kinds,
+selectable/copyable full details in fullscreen, normal geometry/maximized-state
+restoration and host-specific shared Help. Ctrl+Shift+R replaces the ambiguous
+source-restoration binding; Ctrl+Shift+D reads status details. Native
+Wayland/WebEngine, widget and API receiving passes; full regression and hosted
+status remain in the [polish receipt](standalone_window_polish_receiving_20261030.json).
+The test provider is reconstructed from 71fbe4f46 with the unchanged ABI3 binary;
+the separate ChemicalStates migration #269 is not received by this work.
+Qt remains experimental; no tag or package.
+
 **Local Qt window modernized — 2026-10-29:** the local host now has an integrated
 native header and no window/application menu. Visible scene tools stay in the
 shared canvas; native keyboard shortcuts and contextual status remain. The real

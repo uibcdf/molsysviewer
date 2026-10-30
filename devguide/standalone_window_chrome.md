@@ -22,10 +22,17 @@ introduced into the WebEngine composition path.
 
 There is no permanent bottom status bar. The existing QStatusBar remains
 hidden as the diagnostic message owner; the header receives its messages.
-Ready hides the status label, work-in-progress remains visible, completed
-informational messages expire after seven seconds, and errors remain until a
-subsequent status replaces them. Elided messages retain their full tooltip and
-accessible description. The window does not claim a current molecular source
+The private host status record carries an explicit `ready`, `progress`, `info`
+or `error` kind. Ready hides the status control, progress remains visible,
+completed information expires after seven seconds, and errors remain until a
+subsequent status replaces them. Filenames and arbitrary message content never
+define severity or duration. Existing string callbacks remain compatible.
+
+The status control is keyboard-focusable and clickable. It opens a nonmodal
+Status details window with selectable full text and Copy message;
+Ctrl+Shift+D opens the last meaningful status even after Ready or expiry.
+In fullscreen a small native details control appears for active progress/errors,
+while the main header stays hidden. Opening details preserves fullscreen. The window does not claim a current molecular source
 name that the shared loading path cannot reliably supply.
 
 ## Keyboard affordances
@@ -38,10 +45,16 @@ previous shortcuts:
 | --- | --- |
 | Ctrl+N | Clear to an empty view |
 | Ctrl+O | Native file chooser, replacing the current system |
-| Ctrl+R | Explicitly restore the last recorded desktop source |
+| Ctrl+Shift+R | Explicitly restore the last recorded desktop source |
 | Ctrl+W | Close the window |
 | Ctrl+1 / Ctrl+2 | Open Studio / Add-ons |
 | Ctrl+Shift+S / Ctrl+Shift+E | Native HTML / figure export |
+| Ctrl+Shift+D | Read or copy the last status message |
+
+Shared Help includes a Desktop window section only when the live Qt host
+supplies these capabilities. They are runtime metadata, absent from widget
+preferences and portable scene snapshots. Ctrl+R is no longer bound to source
+replacement.
 
 The native reset-only context menu is not restored. The removed convenience
 movie action does not define another scene workflow; Movie remains owned by
@@ -49,6 +62,17 @@ the shared UI and Python API. Demos and the recent-source list stay outside
 the GUI by explicit maintainer decision. Demos remain available through
 `msv.demo` and `molsysviewer-qt NAME --demo`; future GUI usefulness/placement is
 uibcdf/molsysviewer#277, alongside the independent Loader proposal #265.
+
+## Window geometry
+
+The local host records normal geometry, screen identity and maximized state
+separately. Closing maximized or fullscreen does not overwrite normal size;
+startup never reopens fullscreen. Legacy width/height records remain readable.
+Omitted Python/CLI width and height use the saved dimensions, falling back to
+1440 by 960 logical pixels. Explicit positive pixel dimensions take precedence
+and start a normal window. Geometry is bounded to the available workspace;
+on Wayland, the compositor retains global placement authority. This desktop
+metadata does not save the molecular system or scene.
 
 ## Receiving and scope
 
@@ -111,3 +135,15 @@ Startup diagnostics have a separately reproduced environment issue under
 uses a relocated system address containing an unescaped `@`. The separate GBM
 to Vulkan diagnostic is not evidence of CPU rendering. No graphics setting or
 persistent bus configuration was changed during diagnosis.
+
+## Polish receiving — 2026-10-30
+
+Issues #279/#280/#281 own the explicit statuses, accessible fullscreen details,
+normal geometry and native Help refinement. The [new receipt](standalone_window_polish_receiving_20261030.json)
+keeps the native Wayland/WebEngine result, offscreen widget boundaries, source
+reconstruction and full regression/hosted states separate. The desktop guard
+observes actual click/copy in fullscreen, host Help and ten changing binary
+loads; the widget guard checks misleading filenames, duration, hover targeting,
+normal/maximized/fullscreen size, saved metadata, legacy restoration, explicit
+dimensions and offscreen-coordinate clamping. Offscreen widget checks are not
+GPU, multi-monitor or supported-platform qualification.

@@ -21,6 +21,9 @@ def test_ui_preferences_use_the_same_validators_and_reject_partial_updates():
         state = bridge.queue[-1]["message"]
         assert state["op"] == "set_host_ui"
         assert state["values"]["viewer_mode"] == "cinema"
+        assert any(row[0] == "Ctrl+Shift+D" for row in state["values"]["host_shortcuts"])
+        assert "host_shortcuts" not in channel.get_state()
+        assert all(message.get("op") != "set_host_ui" for message in view._build_export_messages())
         count = len(bridge.queue)
         channel._dispatch_event({"event": "qt_ui_state", "values": {"viewer_mode": "standard"}})
         assert view.widget.viewer_mode == "standard"
@@ -58,6 +61,8 @@ def test_qt_live_workbench_full_render_gpu(tmp_path):
     assert report["binary_replacements"] == 10
     assert report["all_mode_and_structure_indices"] is True
     assert report["modern_window_chrome"] is True
+    assert report["host_shortcut_help"] is True
+    assert report["fullscreen_status_details"] is True
     assert report["shared_studio_loading"] is True
     assert report["native_shortcuts"] is True
     if env.get("QT_QPA_PLATFORM") == "xcb":

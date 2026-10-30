@@ -19,6 +19,11 @@ list.
 
 <!-- generated: devguide_index -->
 
+### Being worked on (2)
+
+- [`qt_status_presentation.md`](qt_status_presentation.md) — [#279](https://github.com/uibcdf/molsysviewer/issues/279) — Qt status severity, lifetime and full-text access are inconsistent. *(medium, reproduced)*
+- [`qt_window_geometry_restore.md`](qt_window_geometry_restore.md) — [#280](https://github.com/uibcdf/molsysviewer/issues/280) — Qt persists expanded dimensions as the normal window size. *(medium, reproduced)*
+
 ### Partially done (1)
 
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, measured)*

@@ -14,6 +14,7 @@ from .._private.argdigest import digest
 from ..standalone import build_standalone0_html
 from .actions import _install_host_actions
 from .chrome import _install_window_chrome
+from .geometry import _restore_geometry
 
 # `_get_helper` resolves these **by name** -- `getattr(module, name)` first, then
 # `globals()[name]`. Ruff cannot see a string lookup, so it reports every one of them
@@ -27,6 +28,7 @@ from .utils import (  # noqa: F401
     _load_qt_shell_state,
     _qt_runtime_urls,
     _show_startup_status,
+    _show_status,
 )
 
 logger = logging.getLogger(__name__)
@@ -144,17 +146,19 @@ def _install_qt_downloads(*, window: Any, webview: Any, QFileDialog: Any) -> Non
                 active_downloads.remove(download)
             state = download.state()
             if state == type(download).DownloadState.DownloadCompleted:
-                window.statusBar().showMessage(f"Downloaded: {destination.name}")
+                _show_status(window, f"Downloaded: {destination.name}", kind="info")
             elif state == type(download).DownloadState.DownloadCancelled:
-                window.statusBar().showMessage(f"Download cancelled: {destination.name}")
+                _show_status(window, f"Download cancelled: {destination.name}", kind="info")
             else:
-                window.statusBar().showMessage(
-                    f"Download interrupted: {destination.name}: {download.interruptReasonString()}"
+                _show_status(
+                    window,
+                    f"Download interrupted: {destination.name}: {download.interruptReasonString()}",
+                    kind="error",
                 )
 
         download.isFinishedChanged.connect(finished)
         download.accept()
-        window.statusBar().showMessage(f"Downloading: {destination.name}")
+        _show_status(window, f"Downloading: {destination.name}", kind="progress")
 
     profile.downloadRequested.connect(handle_download)
 
@@ -227,6 +231,7 @@ def _install_qt_fullscreen(*, window: Any, webview: Any) -> None:
         enabling = bool(request.toggleOn())
         if enabling:
             restore["maximized"] = bool(window.isMaximized() if hasattr(window, "isMaximized") else False)
+            window._molsysviewer_fullscreen_maximized = restore["maximized"]
             window.showFullScreen()
         elif restore["maximized"] and hasattr(window, "showMaximized"):
             window.showMaximized()
@@ -263,8 +268,8 @@ def create_standalone_qt0_window(
     apply_project_config: bool = True,
     debug_js: bool | None = None,
     app_argv: Sequence[str] | None = None,
-    width: int = 1440,
-    height: int = 960,
+    width: int | None = None,
+    height: int | None = None,
     skip_digestion: bool = False,
 ) -> dict[str, Any]:
     qt = _get_helper("_import_qt")()
@@ -330,11 +335,6 @@ def create_standalone_qt0_window(
 
     window = StandaloneWindow()
     window.setWindowTitle(title)
-    saved_window_size = current_state.get("window_size") if isinstance(current_state.get("window_size"), dict) else None
-    initial_width = saved_window_size.get("width", width) if saved_window_size else width
-    initial_height = saved_window_size.get("height", height) if saved_window_size else height
-    if hasattr(window, "resize"):
-        window.resize(initial_width, initial_height)
 
     webview = QWebEngineView(window)
     profile = QWebEngineProfile(window)
@@ -342,7 +342,7 @@ def create_standalone_qt0_window(
         webview,
         QWebEnginePage,
         QTimer,
-        status_callback=lambda message: window.statusBar().showMessage(message),
+        status_callback=lambda message: _show_status(window, message),
         QWebEngineUrlSchemeHandler=QWebEngineUrlSchemeHandler,
         QBuffer=QBuffer,
         QByteArray=QByteArray,
@@ -392,6 +392,7 @@ def create_standalone_qt0_window(
         window=window, webview=webview, qt=qt, html_path=html_path, current_title=title, current_state=current_state
     )
     _install_window_chrome(window=window, webview=webview, qt=qt)
+    _restore_geometry(window, app, qt, current_state, width=width, height=height)
     try:
         if molecular_system is None:
             _get_helper("_show_startup_status")(window, current_state)
@@ -440,8 +441,8 @@ def launch_standalone_qt0(
     apply_project_config: bool = True,
     debug_js: bool | None = None,
     app_argv: Sequence[str] | None = None,
-    width: int = 1440,
-    height: int = 960,
+    width: int | None = None,
+    height: int | None = None,
     exec_app: bool = True,
     skip_digestion: bool = False,
 ) -> dict[str, Any]:

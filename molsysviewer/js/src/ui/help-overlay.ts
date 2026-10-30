@@ -160,6 +160,7 @@ function makeSection(heading: string, rows: HelpRow[]): HTMLDivElement {
 
 export class HelpOverlay {
     private readonly root: HTMLDivElement;
+    private readonly hostShortcuts: HTMLDivElement;
     private visible = false;
     private releaseKeyHandler?: () => void;
 
@@ -210,6 +211,11 @@ export class HelpOverlay {
         grid.appendChild(makeSection("Keyboard", sections.keyboard));
 
         card.appendChild(grid);
+        this.hostShortcuts = document.createElement("div");
+        this.hostShortcuts.setAttribute("data-molsysviewer-host-shortcuts", "true");
+        this.hostShortcuts.style.marginTop = "20px";
+        this.hostShortcuts.hidden = true;
+        card.appendChild(this.hostShortcuts);
 
         // Close on backdrop click
         this.root.addEventListener("pointerdown", (ev) => {
@@ -221,6 +227,18 @@ export class HelpOverlay {
     }
 
     public onVisibilityChange?: (visible: boolean) => void;
+
+    /** Runtime host capabilities, deliberately absent from portable scene state. */
+    setHostShortcuts(value: unknown): void {
+        const rows: HelpRow[] = Array.isArray(value) ? value.slice(0, 12).filter(
+            (row): row is HelpRow => Array.isArray(row) && row.length === 2
+                && typeof row[0] === "string" && row[0].length <= 80
+                && typeof row[1] === "string" && row[1].length <= 160
+        ) : [];
+        this.hostShortcuts.replaceChildren();
+        this.hostShortcuts.hidden = rows.length === 0;
+        if (rows.length) this.hostShortcuts.appendChild(makeSection("Desktop window", rows));
+    }
 
     toggle(): void {
         this.visible ? this.hide() : this.show();

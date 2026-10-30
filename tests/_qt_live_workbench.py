@@ -9,6 +9,7 @@ def main():
     from pathlib import Path
 
     import molsysviewer.standalone_qt as qt
+    from molsysviewer.standalone_qt.utils import _show_status
     from PySide6.QtCore import QCoreApplication, QEvent, QPoint, Qt, QTimer
     from PySide6.QtTest import QTest
     from PySide6.QtWidgets import QApplication, QDialogButtonBox, QFileDialog, QLineEdit
@@ -78,9 +79,9 @@ def main():
         QTest.mouseDClick(chrome.header, Qt.MouseButton.LeftButton, pos=QPoint(200, 15))
         wait(lambda: not window.isMaximized())
         wait(lambda: window.geometry().size() == geometry.size())
-        window.statusBar().showMessage("Could not load the selected source.")
+        _show_status(window, "Could not load the selected source.", kind="error")
         assert chrome.status.isVisible() and "Could not" in chrome.status.text()
-        window.statusBar().showMessage("Ready.")
+        _show_status(window, "Ready.", kind="ready")
         assert not chrome.status.isVisible()
         report["modern_window_chrome"] = True
         # Use the shared real context-menu form; no native replacement or fake UI.
@@ -172,6 +173,13 @@ def main():
         assert actions["new_view"].shortcut().toString() == "Ctrl+N"
         assert actions["studio"].shortcut().toString() == "Ctrl+1"
         assert actions["addons"].shortcut().toString() == "Ctrl+2"
+        assert actions["restore_last"].shortcut().toString() == "Ctrl+Shift+R"
+        assert actions["status_details"].shortcut().toString() == "Ctrl+Shift+D"
+        evaluate("document.querySelector('button[title=\"Help (H)\"]').click()")
+        # Help is shared, but desktop capabilities are present only in this host.
+        assert "Ctrl+Shift+D" in evaluate("document.querySelector('[data-molsysviewer-host-shortcuts]').textContent")
+        QTest.keyClick(web.focusProxy() or web, Qt.Key.Key_Escape)
+        report["host_shortcut_help"] = True
 
         def native_export_shortcut():
             QApplication.setActiveWindow(window)
@@ -213,6 +221,21 @@ def main():
             web.focusProxy() or web, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier, QPoint(*position)
         )
         wait(lambda: window.isFullScreen() and evaluate("Boolean(document.fullscreenElement)"))
+        detail_message = "Download interrupted: " + "a long file name " * 30
+        _show_status(window, detail_message, kind="error")
+        wait(chrome.fullscreen_status.isVisible)
+        QTest.mouseClick(chrome.fullscreen_status, Qt.MouseButton.LeftButton)
+        wait(lambda: chrome.details is not None and chrome.details.isVisible())
+        from PySide6.QtWidgets import QPlainTextEdit, QPushButton
+
+        assert chrome.details.findChild(QPlainTextEdit, "molsysviewerStatusText").toPlainText() == detail_message
+        QTest.mouseClick(chrome.details.findChild(QPushButton, "molsysviewerCopyStatus"), Qt.MouseButton.LeftButton)
+        assert QApplication.clipboard().text() == detail_message
+        chrome.details.close()
+        wait(lambda: chrome.details is None)
+        assert window.isFullScreen() and evaluate("Boolean(document.fullscreenElement)")
+        _show_status(window, "Ready.", kind="ready")
+        report["fullscreen_status_details"] = True
         window.activateWindow()
         web.setFocus()
         # Deliver to WebEngine directly: Xvfb has no window manager to grant

@@ -140384,11 +140384,25 @@ var HelpOverlay = class {
     grid.appendChild(makeSection("Mouse", sections.mouse));
     grid.appendChild(makeSection("Keyboard", sections.keyboard));
     card8.appendChild(grid);
+    this.hostShortcuts = document.createElement("div");
+    this.hostShortcuts.setAttribute("data-molsysviewer-host-shortcuts", "true");
+    this.hostShortcuts.style.marginTop = "20px";
+    this.hostShortcuts.hidden = true;
+    card8.appendChild(this.hostShortcuts);
     this.root.addEventListener("pointerdown", (ev) => {
       if (ev.target === this.root) this.hide();
     });
     this.root.appendChild(card8);
     this.host.appendChild(this.root);
+  }
+  /** Runtime host capabilities, deliberately absent from portable scene state. */
+  setHostShortcuts(value) {
+    const rows = Array.isArray(value) ? value.slice(0, 12).filter(
+      (row3) => Array.isArray(row3) && row3.length === 2 && typeof row3[0] === "string" && row3[0].length <= 80 && typeof row3[1] === "string" && row3[1].length <= 160
+    ) : [];
+    this.hostShortcuts.replaceChildren();
+    this.hostShortcuts.hidden = rows.length === 0;
+    if (rows.length) this.hostShortcuts.appendChild(makeSection("Desktop window", rows));
   }
   toggle() {
     this.visible ? this.hide() : this.show();
@@ -140972,6 +140986,9 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
   const isCinema = controlsMode === "cinema";
   const isMinimal = controlsMode === "compact" || isCinema;
   const helpOverlay = new HelpOverlay(container);
+  const refreshHostHelp = () => helpOverlay.setHostShortcuts(model.get("host_shortcuts"));
+  refreshHostHelp();
+  observe("change:host_shortcuts", refreshHostHelp);
   release.push(() => helpOverlay.dispose());
   c8.setHelpOpener(() => helpOverlay.show());
   const onHelpKey = (ev) => {
