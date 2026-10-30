@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-30",
+  "issue": "uibcdf/molsysviewer#93",
+  "state": "local_verified_hosted_pending",
+  "previous_caller": "policy-v1.5.7",
+  "policy": {
+    "ref": "policy-v1.5.10",
+    "commit": "1c38d50337ffd67e20eb02f5e02b24152073b3b4",
+    "annotated_tag_object": "0cb9555ace0a62ef3b8fdae261a9e55bb22ad660",
+    "viewer_transition_state": "admitted",
+    "public_python": [
+      "3.11",
+      "3.12",
+      "3.13",
+      "3.14"
+    ],
+    "scope": "public core 0.24.0 build 1; experimental Qt and future candidates retain separate qualification"
+  },
+  "canonical_tools": {
+    "source": ".pytest_cache/policy1510-receiving/provider",
+    "origin": "git archive of exact central commit; owner checkout unchanged",
+    "badge_generator": "devtools/scripts/repository_badges.py snippet --repository uibcdf/molsysviewer",
+    "conformance": "devtools/scripts/check_repository.py . --repository uibcdf/molsysviewer --skip-guide-content --json"
+  },
+  "checks": {
+    "conformance_findings": [],
+    "badge_findings": [],
+    "metadata_and_archive_guards": {
+      "passed": 25,
+      "junit": ".pytest_cache/policy1510-receiving/metadata.xml"
+    },
+    "dependency_contract": "pass",
+    "ruff": "check and format pass; 940 files",
+    "index": "pass"
+  },
+  "guards": [
+    "tests/test_distribution_artifact.py::test_the_readme_badge_says_what_we_support",
+    "tests/test_archive_tags.py::test_archive_policy_caller_observes_slash_tags_unconditionally"
+  ],
+  "hosted": {
+    "state": "pending exact-head owner policy run"
+  },
+  "limits": {
+    "new_scientific_campaign": false,
+    "provider_refactor_received": false,
+    "qt_promoted_to_stable": false,
+    "release_tag_or_package": false
+  },
+  "resources": "Frozen canonical tools and local receipts retained through owner-policy receiving; shared environments and unrelated local work preserved."
+}

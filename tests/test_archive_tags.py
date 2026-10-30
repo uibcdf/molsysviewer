@@ -16,7 +16,7 @@ def test_archive_policy_caller_observes_slash_tags_unconditionally():
     workflow = yaml.load((ROOT / ".github/workflows/molsyssuite-policy.yml").read_text(), Loader=yaml.BaseLoader)
     assert workflow["on"]["push"]["tags"] == ["**"]
     job = workflow["jobs"]["policy"]
-    assert job["uses"] == "uibcdf/molsyssuite/.github/workflows/check-python-repository.yaml@policy-v1.5.7"
+    assert job["uses"] == "uibcdf/molsyssuite/.github/workflows/check-python-repository.yaml@policy-v1.5.10"
     assert not job.get("if")
 
 

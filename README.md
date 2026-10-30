@@ -2,7 +2,7 @@
 
 [![MolSysSuite: Scientific Component](https://img.shields.io/badge/MolSysSuite-scientific%20component-0b7285?labelColor=24292f)](https://github.com/uibcdf/molsyssuite/blob/main/devguide/repository_badges.md#scientific-component)
 [![MolSysSuite policy](https://github.com/uibcdf/molsysviewer/actions/workflows/molsyssuite-policy.yml/badge.svg?branch=main)](https://github.com/uibcdf/molsysviewer/actions/workflows/molsyssuite-policy.yml)
-[![Python 3.11 | 3.12 | 3.13](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13-3776AB?logo=python&logoColor=white)](https://github.com/uibcdf/molsyssuite/blob/main/devguide/python_policy.md)
+[![Python 3.11 | 3.12 | 3.13 | 3.14](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-3776AB?logo=python&logoColor=white)](https://github.com/uibcdf/molsyssuite/blob/main/devguide/python_policy.md)
 [![License](https://img.shields.io/github/license/uibcdf/molsysviewer)](https://github.com/uibcdf/molsysviewer/blob/main/LICENSE)
 [![Tests](https://github.com/uibcdf/molsysviewer/actions/workflows/CI.yaml/badge.svg?branch=main)](https://github.com/uibcdf/molsysviewer/actions/workflows/CI.yaml)
 [![Codecov](https://codecov.io/gh/uibcdf/molsysviewer/branch/main/graph/badge.svg)](https://app.codecov.io/gh/uibcdf/molsysviewer)
@@ -11,7 +11,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18072956.svg)](https://doi.org/10.5281/zenodo.18072956)
 [![Conda](https://img.shields.io/conda/vn/uibcdf/molsysviewer)](https://anaconda.org/uibcdf/molsysviewer)
 
-Coverage: Python tests plus JavaScript unit tests, uploaded by the Linux/Python 3.13 CI lane on eligible full runs; weekly and conditional nightly recovery retain the existing cadence. This report does not cover all browser, GUI or GPU behavior. The badge reflects the last uploaded report, which may lag later direct or skip-CI commits; it does not certify a full matrix or scientific correctness.
+Coverage: Python tests plus JavaScript unit tests, uploaded by the Linux/Python 3.14 CI lane on eligible full runs; weekly and conditional nightly recovery retain the existing cadence. This report does not cover all browser, GUI or GPU behavior. The badge reflects the last uploaded report, which may lag later direct or skip-CI commits; it does not certify a full matrix or scientific correctness.
 
 *A Mol\*-powered interactive molecular viewer for Jupyter, built around the idea that
 exploratory science should become reproducible science.*
@@ -219,10 +219,11 @@ and their `--help` checks pass; this repairs the missing launchers in the older
 0.23.4 package ([#101](https://github.com/uibcdf/molsysviewer/issues/101)).
 Command availability does not certify the experimental desktop or remote host.
 
-Central Python 3.14 admission remains pending under
-[#93](https://github.com/uibcdf/molsysviewer/issues/93); the installed results
-above do not declare that administrative admission. Intel-based macOS is outside
-the current matrix. For experimental Qt work,
+Central admission of the public core package for Python 3.11–3.14 is frozen in
+[MolSysSuite policy-v1.5.10](https://github.com/uibcdf/molsyssuite/tree/policy-v1.5.10);
+[#93](https://github.com/uibcdf/molsysviewer/issues/93) records local adoption.
+New candidates and optional hosts retain their own qualification. Intel-based
+macOS is outside the current matrix. For experimental Qt work,
 see the [separate development recipe](devguide/standalone_supported_environment.md).
 That recipe preserves Linux transport evidence and Windows/macOS solver-only
 observations; neither a successful solve nor the core noarch package certifies

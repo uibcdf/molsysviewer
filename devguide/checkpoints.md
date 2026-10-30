@@ -1,5 +1,12 @@
 # Development checkpoint
 
+**Python admission adoption — 2026-10-30:** #93 adopts the published central
+`policy-v1.5.10` / `1c38d50337ffd67e20eb02f5e02b24152073b3b4`, which
+freezes the public core's Python 3.11–3.14 admission. The caller and canonical
+generated badge are updated together; conformance, metadata and scoped guards
+pass locally. Hosted owner-policy receiving remains before archival/closure.
+No scientific rerun, provider-refactor reception or publication is inferred.
+
 **Help receiving — 2026-10-30:** #284 reproduces the maintainer's Qt H/h
 failure with actual keys, corrects document-body focus without claiming outer
 notebook keys, and makes Help reuse Studio's bounded host-size calculation.

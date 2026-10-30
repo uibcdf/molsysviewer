@@ -344,9 +344,8 @@ def test_every_publicly_exported_name_resolves():
 
 
 SUPPORTED_PYTHON_VERSIONS = ("3.11", "3.12", "3.13", "3.14")
-#: Core 0.24.0 build 1 is centrally admitted. The badge still follows the frozen
-#: policy caller until the central owner publishes the new immutable snapshot.
-PUBLIC_PYTHON_VERSIONS = ("3.11", "3.12", "3.13")
+#: Public core admission and its generated badge are frozen by policy-v1.5.10.
+PUBLIC_PYTHON_VERSIONS = SUPPORTED_PYTHON_VERSIONS
 #: Routine development and single-version jobs follow the suite target.
 RECOMMENDED_PYTHON_VERSION = "3.14"
 
