@@ -16,7 +16,8 @@ supersedes: []
 
 **Reported:** 2026-09-27 during the Qt dependency simplification study.
 **Status:** Active; Linux native-desktop source observations and explicit-X11
-software receiving now pass on canonical 6.11.2. Maintainer visual confirmation,
+software receiving now pass on canonical 6.11.2. Local window/Help receiving
+and the ten-replacement human observation (#35) are confirmed on 2026-10-30;
 native Windows/macOS, installed-host and the bounded resource exception remain.
 The 2026-09-28 scope decision keeps the host experimental for 1.0, so those
 remaining observations are outside the core release gate.

@@ -208,3 +208,8 @@ by this feedback, and the explicit ten-replacement human observation under
 The maintainer subsequently accepts the new Help size and its improved
 legibility. The local window-polish checklist is received; the independent
 #35 ten-replacement observation and platform/artifact qualification remain.
+
+On 2026-10-30, subsequent maintainer feedback explicitly confirms ten correct
+alternating Ctrl+O replacements. #35 is now received and archived in the
+[human closure record](archive/standalone_qt_live_demo_reload.md). This closes
+that manual remainder without extending the Qt platform/artifact promise.

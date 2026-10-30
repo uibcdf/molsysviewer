@@ -91,7 +91,7 @@ was wrong, not the principle.
 against 0.21.0 or later, and confirming that Qt frames a loaded structure the way the
 exported page was confirmed to on 2026-08-06.
 
-**`pending_bugs/standalone_qt_live_demo_reload.md` — the fix is in, the
+**`archive/standalone_qt_live_demo_reload.md` — the fix is in, the
 confirmation is not.** Its closure criteria are explicitly manual: alternate two
 visually distinguishable demos at least ten times, confirm each replacement shows
 only the requested system, confirm the status reaches `Ready.` with no failed
@@ -101,6 +101,11 @@ The 2026-10-29 [native review](standalone_review_20261029.md) now passes ten
 actual-window replacements, molecular pixel changes and Ready/no-delivery-error
 checks on the Linux GPU desktop. #35 remains partial for the maintainer's
 requested visual confirmation; that observation is not inferred from a test.
+
+**Human receiving — 2026-10-30:** Diego explicitly confirms ten correct
+alternating PDB replacements through Ctrl+O. #35 is closed with the
+[receiving receipt](qt_reload_human_receiving_20261030.json); its manual
+remainder is no longer pending. Broader host qualification remains separate.
 
 *Unblocks:* a future supported standalone-host claim; it is outside the 1.0 gate.
 

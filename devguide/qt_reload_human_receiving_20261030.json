@@ -1,0 +1,73 @@
+{
+  "date": "2026-10-30",
+  "issue": "uibcdf/molsysviewer#35",
+  "state": "manual_and_automated_receiving_complete",
+  "human": {
+    "observer": "Diego Prada Gracia",
+    "route": "Ctrl+O in the same local Qt window",
+    "fixtures": [
+      "pentalanine.pdb",
+      "dialanine.pdb"
+    ],
+    "replacements": 10,
+    "result": "Correct substitution on every reported change; count explicitly clarified as ten",
+    "camera": "Earlier manual host checks confirm rotation, pan and zoom; no per-replacement counter/diagnostic claim is inferred"
+  },
+  "fixtures": [
+    {
+      "name": "dialanine",
+      "file": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/qt-manual35/dialanine.pdb",
+      "n_atoms": 22
+    },
+    {
+      "name": "pentalanine",
+      "file": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/qt-manual35/pentalanine.pdb",
+      "n_atoms": 62
+    }
+  ],
+  "visible_fixture_directory": "/tmp/molsysviewer-qt-check-35",
+  "launch_context": {
+    "environment": "molsyssuite@uibcdf_3.14",
+    "compatible_molsysmt_source": "71fbe4f46d3c70e4e973c8025f01752a8c9b1084",
+    "provider_path": ".pytest_cache/qt-polish-20261030/provider",
+    "source_ui_commit": "1488a8a7dbefba987aa36c8193ed1e90784f4a11",
+    "scope": "recorded launch instructions and unchanged UI source, not a fresh installed-package/process fingerprint"
+  },
+  "automated": {
+    "guard": "tests/test_qt_live_workbench.py::test_qt_live_workbench_full_render_gpu",
+    "report": ".pytest_cache/qt-help-284/presented/test_qt_live_workbench_full_re0/report.json",
+    "report_sha256": "23f013cfd29c2760925d31ad736c06888b01f4cef148a8fde1c17c84f6c96467",
+    "qt_platform": "wayland",
+    "loads": [
+      22,
+      62,
+      22,
+      62,
+      22,
+      62,
+      22,
+      62,
+      22,
+      62
+    ],
+    "binary_replacements": 10,
+    "changed_molecular_pixels": 0.10061406893004116,
+    "failed_deliveries": [],
+    "authority": true,
+    "input_bytes_unchanged_since_functional_commit": true,
+    "rerun_for_human_feedback": false
+  },
+  "limits": {
+    "human_claims_fresh_backend_diagnostics": false,
+    "new_platform_or_installed_candidate_qualification": false,
+    "qt_remains_experimental": true,
+    "release_tag_or_package": false
+  },
+  "resources": "Small manual PDB inputs and the compatible provider remain available for continued dogfooding while #269 is pending; no shared or caller-owned files are removed.",
+  "closure_checks": {
+    "guide_and_reporting_cases": 295,
+    "junit": ".pytest_cache/qt-manual35/closure-guides.xml",
+    "generated_indexes": "current",
+    "diff_check": "pass"
+  }
+}

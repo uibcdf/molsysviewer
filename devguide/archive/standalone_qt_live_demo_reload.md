@@ -1,9 +1,9 @@
 ---
 summary: In the standalone Qt host, replacing the loaded demo leaves the previous system on screen.
 issue: uibcdf/molsysviewer#35
-status: partial
+status: resolved
 opened: 2026-07-04
-closed:
+closed: 2026-10-30
 severity: high
 verification: measured
 area: [standalone, qt]
@@ -15,7 +15,8 @@ supersedes: []
 
 # Standalone Qt — live demo replacement does not update the scene
 
-**Status:** fix and native GPU regression pass; maintainer visual confirmation remains pending.
+**Status:** resolved. The fix and native GPU regression pass; on 2026-10-30
+the maintainer explicitly confirms ten correct visible replacements.
 
 **Current manual route — 2026-10-29:** the window menu is retired by accepted
 design. The old File → Load Demo instructions below are historical. Start with
@@ -143,3 +144,27 @@ The explicitly requested human confirmation is still pending: the maintainer
 should alternate File → Load Demo entries and confirm the visual result/status.
 This report remains partial until that observation is received. No software
 Xvfb result, core browser test or source receipt substitutes for that final check.
+
+
+## Human receiving and closure — 2026-10-30
+
+Diego confirms correct visible replacement while alternating pentalanine and
+dialanine PDBs through Ctrl+O in the same Qt window, then explicitly clarifies
+that he performed ten changes. The fixtures were exported from the real bundled
+demos with the compatible provider and contain 62 and 22 atoms respectively.
+The receipt separates fixture facts from the human observation; no counter or
+backend diagnostic is attributed to the human report. Earlier manual window
+checks already confirm rotation, pan and zoom after manipulating the host.
+
+The existing native guard independently receives ten distinct binary loads,
+Ready/completed presentation, changing molecular pixels and zero failed
+deliveries. Its latest applicable native report is retained in the
+[human receiving receipt](../qt_reload_human_receiving_20261030.json), alongside
+the earlier source/hosted evidence. No code change or redundant scientific/GPU
+rerun is needed to record the final human observation.
+
+Guard: `tests/test_qt_live_workbench.py::test_qt_live_workbench_full_render_gpu`.
+The asserted 22/62 alternation, actual changed rendered pixels and empty failed
+delivery list protect the original accepted-message/payload-generation failure
+mechanisms. This closes #35's requested manual result. Qt remains experimental;
+#109/#113 platform/artifact and #51 popout qualification remain independent.

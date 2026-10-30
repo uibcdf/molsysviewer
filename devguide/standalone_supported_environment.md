@@ -67,8 +67,10 @@ cancellation, fullscreen/Escape, ten 22/62-atom replacements with changed
 molecular pixels, three orbit images, and two independent hosts with cleanup.
 
 This is source/runtime evidence, not installed-package qualification or a human
-usability certificate. `uibcdf/molsysviewer#35` retains its maintainer visual
-confirmation. Windows/macOS native checks and Qt popout parity remain pending.
+usability certificate. The maintainer's separate ten-replacement confirmation
+is now received under `uibcdf/molsysviewer#35`; see the
+[human receipt](qt_reload_human_receiving_20261030.json). Windows/macOS native
+checks and Qt popout parity remain pending.
 The [review receipt](standalone_review_20261029.json) distinguishes this result
 from historical Xvfb/software and failed local attempts. Qt remains experimental.
 

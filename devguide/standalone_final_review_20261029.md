@@ -1,5 +1,10 @@
 # Final standalone source review — 2026-10-29
 
+**Human follow-up — 2026-10-30:** the maintainer explicitly confirms ten
+correct Ctrl+O replacements, receiving #35's manual remainder. See the
+[closure report](archive/standalone_qt_live_demo_reload.md). Other platform,
+artifact and popout qualification remains independent of this observation.
+
 The final pass found and repaired two additional live-host discrepancies:
 uibcdf/molsysviewer#274 ignored `load_mode="all"` and discarded unselected
 atoms; uibcdf/molsysviewer#275 never entered the declared array-native path

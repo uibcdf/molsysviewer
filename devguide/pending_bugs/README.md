@@ -19,10 +19,6 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Partially done (1)
-
-- [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, measured)*
-
 ### Open (1)
 
 - [`qt_dbus_conda_prefix_address.md`](qt_dbus_conda_prefix_address.md) — [#278](https://github.com/uibcdf/molsysviewer/issues/278) — Qt startup reports an invalid D-Bus system address in Conda prefixes containing @. *(low, reproduced)*
@@ -60,13 +56,9 @@ present.
 
 ## Recommended execution
 
-#35 needs the maintainer's ten-load visual confirmation using the current
-native host and its Ready status. Its automated native-desktop and hosted
-pixel checks pass; see [the current review](../standalone_review_20261029.md).
-Receive the manual observation before closing it. Add runtime-only diagnostics
-if that observation exposes a remaining defect; the fixed transport does not
-need another speculative investigation. Automated pixels and software Xvfb
-results do not substitute for the requested human confirmation.
+#35's ten-replacement visual confirmation is received and the report is
+[archived](../archive/standalone_qt_live_demo_reload.md). The remaining #278
+entry concerns the local Conda D-Bus address and is not a core 1.0 blocker.
 
 No other bug work should be invented from stale plans. New dogfooding findings
 enter this directory only with a reproduction and an affected public contract.

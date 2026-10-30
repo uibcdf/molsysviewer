@@ -62,7 +62,7 @@ reviewed issue set does not cover subsequently reported #233/#239/#242/#245.
 | [#41](https://github.com/uibcdf/molsysviewer/issues/41) | Advisory; outside core gate | Historical documentation-pipeline analysis offered to MolSysMT; a provider migration is not a promised Viewer feature. | [MolSysMT docs / explicit advisory follow-up](pending_proposals/molsysmt_docs_pipeline_analysis.md) |
 | [#39](https://github.com/uibcdf/molsysviewer/issues/39) | Post-1.0 on demand | Existing board deferral remains explicit; retain its legacy path for immutable archived backlinks. Single self-contained HTML and served shared bundles retain their supported routes. | [Record](pending_proposals/classic_script_runtime_for_offline_bundles.md) |
 | [#36](https://github.com/uibcdf/molsysviewer/issues/36) | Post-1.0 experimental defect | Qt orbit export lacks a returned camera snapshot; retain the defect instead of treating core camera/movie tests as Qt closure. | [Viewer Qt camera/export](archive/standalone_qt_movie_camera_snapshot.md) |
-| [#35](https://github.com/uibcdf/molsysviewer/issues/35) | Experimental defect; outside core gate | Live replacement fix and automated guards exist; ten visible-window replacements and Ready/no-delivery-error confirmation remain unperformed. | [Viewer Qt / manual GPU observation](pending_bugs/standalone_qt_live_demo_reload.md) |
+| [#35](https://github.com/uibcdf/molsysviewer/issues/35) | Experimental defect; outside core gate | Live replacement fix and automated guards exist; ten visible-window replacements and Ready/no-delivery-error confirmation remain unperformed. | [Viewer Qt / manual GPU observation](archive/standalone_qt_live_demo_reload.md) |
 
 ## Queue corrections and preserved observations
 

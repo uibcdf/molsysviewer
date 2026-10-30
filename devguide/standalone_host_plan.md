@@ -31,8 +31,8 @@ See [the review](standalone_review_20261029.md) for original failures, source
 hashes and the corrected local-QPA attribution.
 
 Stage 2 and parts of Stage 3 are implemented; this does not complete the future
-supported-host aspiration. Receive #35's maintainer visual confirmation,
-qualify Windows/macOS and installed hosts under #109/#113, retain resource
+supported-host aspiration. The maintainer's ten-replacement observation is
+received under #35. Qualify Windows/macOS and installed hosts under #109/#113, retain resource
 exceptions, and keep Stage 4 popout layouts under #51. Qt remains experimental.
 
 ## Core Position

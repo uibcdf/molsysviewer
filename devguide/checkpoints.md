@@ -1,5 +1,14 @@
 # Development checkpoint
 
+**Qt reload human receiving complete — 2026-10-30:** Diego confirms ten correct
+alternating pentalanine/dialanine replacements through Ctrl+O in one native
+window. This receives the explicit human remainder of #35, complementing the
+passing native binary/presentation/pixel guard. The
+[archived report](archive/standalone_qt_live_demo_reload.md) and
+[receipt](qt_reload_human_receiving_20261030.json) retain the evidence. No
+runtime change or new scientific campaign; Qt remains experimental and
+#109/#113/#51 retain their separate qualification.
+
 **Python admission adoption complete — 2026-10-30:** #93 adopts the published central
 `policy-v1.5.10` / `1c38d50337ffd67e20eb02f5e02b24152073b3b4`, which
 freezes the public core's Python 3.11–3.14 admission. The caller and canonical

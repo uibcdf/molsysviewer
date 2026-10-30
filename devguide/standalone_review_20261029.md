@@ -1,5 +1,10 @@
 # Standalone source review — 2026-10-29
 
+**Human follow-up — 2026-10-30:** the maintainer explicitly confirms ten
+correct Ctrl+O replacements. The manual remainder under #35 is received in
+the [closure report](archive/standalone_qt_live_demo_reload.md); the dated
+review below retains its original source and automated scope.
+
 The subsequent [final pass](standalone_final_review_20261029.md) corrects two
 additional defects in loading policy and actual Qt binary delivery. Its
 guards/receipt supersede assumptions about those paths, without changing the
