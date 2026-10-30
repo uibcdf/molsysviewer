@@ -12,7 +12,11 @@ The test provider is reconstructed from 71fbe4f46 with the unchanged ABI3 binary
 the separate ChemicalStates migration #269 is not received by this work.
 The additional helper collection regression is corrected under #283 with
 a genuine no-site-packages guard; latest CI remains separately observed.
-The maintainer postpones visual receiving. Qt remains experimental; no tag or package.
+Final-source Qt 41106975172 passes 14/14 and browser 41106975234 passes.
+All nine failed general/source jobs now reach the suite and report only the
+three retained-provider Pandas4Warning examples; #283 collection is corrected.
+The maintainer resumes visual receiving; observations remain pending.
+Qt remains experimental; no tag or package.
 
 **Local Qt window modernized — 2026-10-29:** the local host now has an integrated
 native header and no window/application menu. Visible scene tools stay in the

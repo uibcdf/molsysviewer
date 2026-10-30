@@ -172,3 +172,15 @@ filtering. Keep optional Qt/Viewer imports inside a child's main entry point.
 helper's eager imports; its isolated `python -I -S` guard proves collection
 without optional packages, while the actual Qt receiving remains separate.
 The failing macOS collection campaigns are retained as failures.
+
+The resumed receiving review verifies terminal campaigns on `6020e580`:
+Qt [41106975172](https://github.com/uibcdf/molsysviewer/actions/runs/41106975172)
+passes 14 distinct cases without failures, errors or skips; original artifact
+13002880194 matches SHA-256
+`b7eefd091f2e8924bd437d97b374bb66b38a7e1081c81dff562bc01d81fb2331`.
+Browser [41106975234](https://github.com/uibcdf/molsysviewer/actions/runs/41106975234)
+also passes. Native logs for all six failed general-CI jobs and all three
+source-pair jobs now report only the three retained-provider Pandas4Warning
+documentation failures under MolSysMT#431. Optional-Qt collection succeeds;
+the complete CI remains failed, with no provider-pin or warning-filter change.
+The maintainer has resumed the manual checklist; observations remain pending.

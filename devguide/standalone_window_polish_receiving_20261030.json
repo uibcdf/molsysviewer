@@ -348,46 +348,240 @@
       },
       "latest_source": {
         "commit": "6020e580f3b681e83f249b5f03243c821c1c6b3c",
-        "observed_at": "2026-10-30T18:29:11.651310+00:00",
+        "observed_at": "2026-10-30T18:56:29.573707+00:00",
         "lanes": [
           {
-            "conclusion": "",
-            "databaseId": 41106975264,
-            "status": "in_progress",
-            "workflowName": "Python 3.14 source pair"
-          },
-          {
-            "conclusion": "success",
             "databaseId": 41106976121,
+            "workflowName": "Conda publication governance",
             "status": "completed",
-            "workflowName": "Conda publication governance"
+            "conclusion": "success"
           },
           {
-            "conclusion": "",
             "databaseId": 41106975172,
-            "status": "in_progress",
-            "workflowName": "Experimental Qt diagnostics"
-          },
-          {
-            "conclusion": "",
-            "databaseId": 41106975234,
-            "status": "in_progress",
-            "workflowName": "CI_e2e"
-          },
-          {
-            "conclusion": "success",
-            "databaseId": 41106976143,
+            "workflowName": "Experimental Qt diagnostics",
             "status": "completed",
-            "workflowName": "MolSysSuite policy"
+            "conclusion": "success"
           },
           {
-            "conclusion": "",
+            "databaseId": 41106976143,
+            "workflowName": "MolSysSuite policy",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "databaseId": 41106975264,
+            "workflowName": "Python 3.14 source pair",
+            "status": "completed",
+            "conclusion": "failure"
+          },
+          {
             "databaseId": 41106975237,
-            "status": "in_progress",
-            "workflowName": "CI"
+            "workflowName": "CI",
+            "status": "completed",
+            "conclusion": "failure"
+          },
+          {
+            "databaseId": 41106975234,
+            "workflowName": "CI_e2e",
+            "status": "completed",
+            "conclusion": "success"
           }
         ],
-        "all_green_claimed": false
+        "all_green_claimed": false,
+        "previous_observation": {
+          "observed_at": "2026-10-30T18:29:11.651310+00:00",
+          "lanes": [
+            {
+              "conclusion": "",
+              "databaseId": 41106975264,
+              "status": "in_progress",
+              "workflowName": "Python 3.14 source pair"
+            },
+            {
+              "conclusion": "success",
+              "databaseId": 41106976121,
+              "status": "completed",
+              "workflowName": "Conda publication governance"
+            },
+            {
+              "conclusion": "",
+              "databaseId": 41106975172,
+              "status": "in_progress",
+              "workflowName": "Experimental Qt diagnostics"
+            },
+            {
+              "conclusion": "",
+              "databaseId": 41106975234,
+              "status": "in_progress",
+              "workflowName": "CI_e2e"
+            },
+            {
+              "conclusion": "success",
+              "databaseId": 41106976143,
+              "status": "completed",
+              "workflowName": "MolSysSuite policy"
+            },
+            {
+              "conclusion": "",
+              "databaseId": 41106975237,
+              "status": "in_progress",
+              "workflowName": "CI"
+            }
+          ]
+        },
+        "qt": {
+          "run": 41106975172,
+          "conclusion": "success",
+          "artifact_id": 13002880194,
+          "sha256": "b7eefd091f2e8924bd437d97b374bb66b38a7e1081c81dff562bc01d81fb2331",
+          "size_bytes": 1462730,
+          "distinct_cases": 14,
+          "junit": [
+            {
+              "name": "pytest",
+              "errors": "0",
+              "failures": "0",
+              "skipped": "0",
+              "tests": "1",
+              "time": "18.868",
+              "timestamp": "2026-10-30T18:27:44.782684+00:00",
+              "hostname": "runnervmnwato"
+            },
+            {
+              "name": "pytest",
+              "errors": "0",
+              "failures": "0",
+              "skipped": "0",
+              "tests": "2",
+              "time": "51.521",
+              "timestamp": "2026-10-30T18:28:06.990940+00:00",
+              "hostname": "runnervmnwato"
+            },
+            {
+              "name": "pytest",
+              "errors": "0",
+              "failures": "0",
+              "skipped": "0",
+              "tests": "11",
+              "time": "34.066",
+              "timestamp": "2026-10-30T18:29:01.858037+00:00",
+              "hostname": "runnervmnwato"
+            }
+          ],
+          "native_reports": [
+            {
+              "authority": true,
+              "provider_file": "/home/runner/micromamba/envs/test/lib/python3.13/site-packages/molsysmt/__init__.py",
+              "qt_platform": "xcb",
+              "initial_binary_projection": true,
+              "modern_window_chrome": true,
+              "region_atoms": [
+                0,
+                1
+              ],
+              "host_shortcut_help": true,
+              "native_shortcuts": true,
+              "native_download_and_cancel": true,
+              "camera_received": true,
+              "image_received": true,
+              "python_mode": "cinema",
+              "browser_mode": "standard",
+              "fullscreen_status_details": true,
+              "fullscreen_roundtrip": true,
+              "shared_studio_loading": true,
+              "loads": [
+                22,
+                62,
+                22,
+                62,
+                22,
+                62,
+                22,
+                62,
+                22,
+                62
+              ],
+              "binary_replacements": 10,
+              "changed_molecular_pixels": 0.11207863136574074,
+              "movie_camera_image_difference": 3.9544661458333334,
+              "movie_frames": 3,
+              "timeout_without_reply": true,
+              "failed_deliveries": [],
+              "all_mode_and_structure_indices": true,
+              "independent_host_and_cleanup": true
+            }
+          ],
+          "scope": "X11/SwiftShader source-host receiving, not native hardware or installed Viewer qualification"
+        },
+        "failure_review": {
+          "general_run": 41106975237,
+          "source_pair_run": 41106975264,
+          "general_jobs": {
+            "success": 2,
+            "failure": 6,
+            "skipped": 2
+          },
+          "reviewed_failed_job_logs": [
+            {
+              "log": ".pytest_cache/qt-checks-20261030/core-linux312.log",
+              "summary": "FAIL exit=1 | 3 failed, 3305 passed, 24 skipped, 14 deselected | 505.72s | 4914 warnings | 1 root cause",
+              "cause": "Pandas4Warning in Bonds_DataFrame.sort_values(inplace=...)"
+            },
+            {
+              "log": ".pytest_cache/qt-checks-20261030/core-linux313.log",
+              "summary": "FAIL exit=1 | 3 failed, 3305 passed, 24 skipped, 14 deselected | 753.70s | 4914 warnings | 1 root cause",
+              "cause": "Pandas4Warning in Bonds_DataFrame.sort_values(inplace=...)"
+            },
+            {
+              "log": ".pytest_cache/qt-checks-20261030/core-linux314.log",
+              "summary": "FAIL exit=1 | 3 failed, 3305 passed, 24 skipped, 14 deselected | 456.99s | 4914 warnings | 1 root cause",
+              "cause": "Pandas4Warning in Bonds_DataFrame.sort_values(inplace=...)"
+            },
+            {
+              "log": ".pytest_cache/qt-checks-20261030/core-macos312.log",
+              "summary": "FAIL exit=1 | 3 failed, 3278 passed, 51 skipped, 14 deselected | 686.68s | 4770 warnings | 1 root cause",
+              "cause": "Pandas4Warning in Bonds_DataFrame.sort_values(inplace=...)"
+            },
+            {
+              "log": ".pytest_cache/qt-checks-20261030/core-macos313.log",
+              "summary": "FAIL exit=1 | 3 failed, 3278 passed, 51 skipped, 14 deselected | 429.05s | 4770 warnings | 1 root cause",
+              "cause": "Pandas4Warning in Bonds_DataFrame.sort_values(inplace=...)"
+            },
+            {
+              "log": ".pytest_cache/qt-checks-20261030/core-macos314.log",
+              "summary": "FAIL exit=1 | 3 failed, 3278 passed, 51 skipped, 14 deselected | 385.78s | 4770 warnings | 1 root cause",
+              "cause": "Pandas4Warning in Bonds_DataFrame.sort_values(inplace=...)"
+            },
+            {
+              "log": ".pytest_cache/qt-checks-20261030/source-linux.log",
+              "summary": "FAIL exit=1 | 3 failed, 3305 passed, 24 skipped, 14 deselected | 412.56s | 4914 warnings | 1 root cause",
+              "cause": "Pandas4Warning in Bonds_DataFrame.sort_values(inplace=...)"
+            },
+            {
+              "log": ".pytest_cache/qt-checks-20261030/source-macos.log",
+              "summary": "FAIL exit=1 | 3 failed, 3278 passed, 51 skipped, 14 deselected | 356.34s | 4770 warnings | 1 root cause",
+              "cause": "Pandas4Warning in Bonds_DataFrame.sort_values(inplace=...)"
+            },
+            {
+              "log": ".pytest_cache/qt-checks-20261030/source-windows.log",
+              "summary": "FAIL exit=1 | 3 failed, 3278 passed, 51 skipped, 14 deselected | 342.33s | 4770 warnings | 1 root cause",
+              "cause": "Pandas4Warning in Bonds_DataFrame.sort_values(inplace=...)"
+            }
+          ],
+          "common_cause": "All nine failed jobs report exactly three documentation failures caused by Pandas4Warning in the retained public MolSysMT baseline (MolSysMT#431). No optional-Qt collection error remains.",
+          "examples": [
+            "docs/content/user/scene_management/selections.md",
+            "docs/content/user/overlays/measurements.md",
+            "docs/content/user/export/state.md"
+          ],
+          "changed_provider_pin": false,
+          "suppressed_warning": false,
+          "receptor_limit": "General-CI receptor retained the official failure but could not download all logs; native per-job logs supply the diagnosis."
+        },
+        "browser": {
+          "run": 41106975234,
+          "conclusion": "success"
+        }
       }
     },
     "read_only_recovery": {
@@ -439,7 +633,7 @@
     "ChemicalStates receiving #269 remains separate"
   ],
   "implementation_commit": "7900263691cd96fcf74840357cc2e7ca8ef62914",
-  "human_visual_receiving": "Maintainer explicitly postpones this round for a few minutes. No checklist result inferred.",
+  "human_visual_receiving": "Maintainer resumed checks; the four-point checklist and compatible launch command were supplied. Awaiting observations; no manual result inferred.",
   "visual_inspection": {
     "scope": "real offscreen widget captures, not molecular GPU validation",
     "header": ".pytest_cache/qt-polish-20261030/header-status.png",
@@ -456,13 +650,13 @@
       282,
       283
     ],
-    "visual_receiving": "explicitly postponed by maintainer",
+    "visual_receiving": "resumed; awaiting maintainer observations",
     "runtime_unchanged_between_commits": true,
     "unrelated_local_paths_preserved": 9,
     "temporary_archive_cleanup": "redundant provider tar archives removed; compatible source retained for the postponed human launch",
     "publication": "none",
     "provider_unchanged_after_tests": true,
-    "latest_test_helper_fix": "6020e580; both isolated dependency-absence and real-widget guards pass; current full hosted CI still pending"
+    "latest_test_helper_fix": "6020e580; Qt and browser gates pass; all nine failed general/source jobs reach the test suite and report the retained provider Pandas4Warning examples, without optional-Qt collection errors."
   },
   "additional_test_defect": {
     "issue": 283,
