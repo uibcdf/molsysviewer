@@ -130,6 +130,9 @@ export async function checkNotebookCanvasPopup(page: Page, dir: string) {
         await checkProportionalStudio(popup);
         assert.ok(await popup.getByTitle("Lock background", { exact: true }).isVisible(),
             "the canvas popup inherits the unlocked initial Studio state");
+        await popup.locator('[data-molsysviewer-group-panel-tab="load"]').click();
+        assert.ok(await popup.locator('[data-molsysviewer-group-panel-section="load"]').isVisible());
+        await popup.locator('[data-molsysviewer-load-source="0"] [data-molsysviewer-load-field="source"]').fill("1TCD");
         assert.ok(await popup.locator('[data-molsysviewer-group-panel-tab="regions"]').isVisible());
         await popup.locator('[data-molsysviewer-group-panel-tab="regions"]').click();
         assert.ok(await popup.getByText("Saved Regions", { exact: true }).isVisible());
@@ -146,6 +149,9 @@ export async function checkNotebookCanvasPopup(page: Page, dir: string) {
         const panelPopup = await panelPending;
         panelPopup.on("pageerror", error => errors.push(String(error)));
         await panelPopup.locator('[data-molsysviewer-group-panel-tab="regions"]').waitFor({ state: "visible" });
+        await panelPopup.locator('[data-molsysviewer-group-panel-tab="load"]').click();
+        assert.ok(await panelPopup.locator('[data-molsysviewer-group-panel-section="load"]').isVisible());
+        await panelPopup.locator('[data-molsysviewer-group-panel-tab="regions"]').click();
         assert.equal(await panelPopup.locator(".molsysviewer-controls").count(), 0);
         assert.equal(await panelPopup.locator('[data-molsysviewer-welcome-card="true"]').count(), 0);
         await checkStudioFullscreen(panelPopup, [page, popup]);

@@ -54,6 +54,7 @@ class FakeElement {
     }
 
     remove() {}
+    focus() {}
     setAttribute(name: string, value: string) { this.attributes.set(name, value); }
     getAttribute(name: string) { return this.attributes.get(name); }
 
@@ -103,6 +104,50 @@ function findFirstByAttribute(root: FakeElement, attributeName: string, value?: 
 function findFirstGroupButton(root: FakeElement): FakeElement | null {
     return findFirstByAttribute(root, "data-molsysviewer-group-item");
 }
+
+test("GroupPanel chooses Load only as the empty live entry and respects explicit navigation", () => {
+    const restore = installFakeDom();
+    try {
+        for (const initialHasSystem of [false, true]) {
+            const host = new FakeElement() as any;
+            const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {},
+                () => {}, () => {}, { initialHasSystem });
+            const selected = () => collectByAttribute(host, "data-molsysviewer-group-panel-tab")
+                .find(tab => tab.getAttribute("aria-current") === "page")?.getAttribute("data-molsysviewer-group-panel-tab");
+            assert.equal(selected(), initialHasSystem ? "system" : "load");
+            panel.openSection("shapes");
+            panel.setStructure(undefined);
+            panel.setHierarchyItems([]);
+            assert.equal(selected(), "shapes", "an empty hierarchy must not steal a deliberately chosen workspace");
+            panel.openSystemLoading();
+            assert.equal(selected(), "load");
+        }
+    } finally { restore(); }
+});
+
+test("GroupPanel migrates legacy navigation and omits live Load from browser-only views", () => {
+    const restore = installFakeDom();
+    const previousWindow = (globalThis as any).window;
+    try {
+        for (const { saved, hasAuthority, expected } of [
+            { saved: ["shapes", "system", "whole"], hasAuthority: true, expected: ["shapes", "load", "system", "whole"] },
+            { saved: ["system", "shapes", "load"], hasAuthority: true, expected: ["system", "shapes", "load"] },
+            { saved: ["load", "shapes", "system"], hasAuthority: false, expected: ["shapes", "system"] },
+        ]) {
+            (globalThis as any).window = { localStorage: { getItem: () => JSON.stringify(saved) } };
+            const host = new FakeElement() as any;
+            new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {},
+                () => {}, () => {}, { hasAuthority });
+            const order = collectByAttribute(host, "data-molsysviewer-group-panel-tab")
+                .map(tab => tab.getAttribute("data-molsysviewer-group-panel-tab"));
+            assert.deepEqual(order.slice(0, expected.length), expected);
+            assert.equal(order.includes("load"), hasAuthority);
+        }
+    } finally {
+        (globalThis as any).window = previousWindow;
+        restore();
+    }
+});
 
 test("GroupPanel test DOM resolves scoped options and preserves prepend order", () => {
     const select = new FakeElement("select");

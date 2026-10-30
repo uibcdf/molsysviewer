@@ -38,12 +38,11 @@ archived documents link there; its location does not reopen its release scope.
 - [`molsysmt_known_source_form_and_large_string_detection.md`](molsysmt_known_source_form_and_large_string_detection.md) — [#42](https://github.com/uibcdf/molsysviewer/issues/42) — Adopt a public source-form hint when MolSysMT provides it; historical extension detection is repaired. *(measured)* — waiting on uibcdf/molsysmt#151
 - [`native_copy_contract_receiving.md`](native_copy_contract_receiving.md) — [#259](https://github.com/uibcdf/molsysviewer/issues/259) — Qualify view and analysis independence against the native MolSysMT copy contract. *(inspected)* — waiting on uibcdf/molsysmt#121
 
-### Open (4)
+### Open (3)
 
 - [`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md) — [#39](https://github.com/uibcdf/molsysviewer/issues/39) — Build the runtime as a classic script so many shared views open from a disk with no server. *(measured)*
 - [`molsysmt_docs_pipeline_analysis.md`](molsysmt_docs_pipeline_analysis.md) — [#41](https://github.com/uibcdf/molsysviewer/issues/41) — MolSysMT's documentation pipeline read at the scale it is about to reach. *(measured)*
 - [`pytest_xdist_receiver_thread_report.md`](pytest_xdist_receiver_thread_report.md) — [#80](https://github.com/uibcdf/molsysviewer/issues/80) — Decide whether to report pytest-xdist receiver-thread warning imports upstream *(inspected)*
-- [`studio_loader_before_system.md`](studio_loader_before_system.md) — [#265](https://github.com/uibcdf/molsysviewer/issues/265) — Evaluate a dedicated Studio Loader entry before System *(inspected)*
 
 ### Deferred until after 1.0 (23)
 

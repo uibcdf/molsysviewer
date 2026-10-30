@@ -136,12 +136,16 @@ incoming-analysis composition is established.
 
 ### Studio loading
 
-The System subpanel offers a persistent loading draft with explicit independent
+The first Studio entry, Load, offers a persistent loading draft with explicit independent
 systems versus complementary files, add/replace/append intentions, optional
 labels, atom selectors and ordered structure selectors. Multiple selected frames
 require the same explicit pairing as Python. The empty-view welcome action opens
 this form. It accepts paths available to the Python session and PDB IDs, rather
 than transporting uploaded browser files. Exported browser-only views omit it.
+System retains molecular inspection. Empty live views start in Load; a matching
+successful load opens System when the user is still in Load. Explicit navigation
+is preserved during loading and later frame/hierarchy refreshes. The same form
+serves the notebook, canvas popup, detached Studio and Qt live host.
 
 Studio's private action handler delegates to public `view.load` with digestion
 enabled. Request-specific runtime acknowledgments report completion/error and

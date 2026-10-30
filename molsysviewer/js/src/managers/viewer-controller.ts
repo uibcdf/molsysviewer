@@ -1276,7 +1276,8 @@ export class MolSysViewerController {
                 ...details,
             });
         }, { sharedShell, floating: floatingPanels, model: this.model,
-             hasAuthority: this.initOptions?.hasAuthority !== false });
+             hasAuthority: this.initOptions?.hasAuthority !== false,
+             initialHasSystem: this.initOptions?.hasInitialStructures });
         const addonsOptions: any = sharedShell ? { sharedShell } : (floatingPanels ? { floating: true } : {});
         addonsOptions.model = this.model;
         addonsOptions.onAction = (action: string, details: any) => {
@@ -4347,6 +4348,8 @@ export class MolSysViewerController {
         btn.onclick = () => {
             if (this.initOptions?.hasAuthority !== false) {
                 this.hideWelcomeCard();
+                if (this.currentWorkspace !== "core") this.selectWorkspace("core");
+                this.setPanelMode("navigate", true);
                 this.groupPanel.openSystemLoading();
                 return;
             }

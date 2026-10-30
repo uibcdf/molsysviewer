@@ -105,7 +105,8 @@ async function checkStudioLoading(page: any) {
         const structure = c.plugin.managers.structure.hierarchy.current.structures[0].cell.obj.data;
         return { atoms: structure.elementCount, regions: Object.keys((window as any).Harness.inspectScene(c).regions).length };
     });
-    const submit = async () => {
+    const submit = async (navigateWhilePending?: string) => {
+        await page.evaluate(() => { (window as any).__loadFormBefore = document.querySelector('[data-molsysviewer-system-load="true"]'); });
         const count = await page.evaluate(() => (window as any).__messages.filter((m: any) => m.action === "load_systems").length);
         try {
             await page.locator('[data-molsysviewer-load-submit="true"]').click();
@@ -131,27 +132,39 @@ async function checkStudioLoading(page: any) {
         // An acknowledgment for another endpoint/request must not end this load.
         await apply([{ op: "system_load_result", request_id: "another-request", ok: true }]);
         assert.ok(await page.locator('[data-molsysviewer-load-submit="true"]').isDisabled());
+        if (navigateWhilePending) await page.locator(`[data-molsysviewer-group-panel-tab="${navigateWhilePending}"]`).click();
         authority.stdin.write(JSON.stringify(request) + "\n");
         const result = await receive();
         await apply(result.messages);
         assert.ok(!(await page.locator('[data-molsysviewer-load-submit="true"]').isDisabled()));
+        assert.ok(await page.evaluate(() => (window as any).__loadFormBefore === document.querySelector('[data-molsysviewer-system-load="true"]')),
+            "structure rebuilds must preserve the loading form and its draft");
+        const acknowledgement = result.messages.find((m: any) => m.op === "system_load_result");
+        const expectedSection = navigateWhilePending ?? (acknowledgement.ok && acknowledgement.n_atoms > 0 ? "system" : "load");
+        assert.equal(await page.locator('[data-molsysviewer-group-panel-tab][aria-current="page"]').getAttribute("data-molsysviewer-group-panel-tab"), expectedSection);
+        await page.locator('[data-molsysviewer-group-panel-tab="load"]').click();
         return { request, ...result };
     };
     try {
         const fixture = await receive();
         await page.goto("about:blank");
         await page.setViewportSize({ width: 1200, height: 1000 });
-        await page.setContent('<div id="root" style="width:1000px;height:850px"></div>');
+        await page.setContent('<div id="root" style="position:relative;width:1000px;height:850px"></div>');
         await page.addScriptTag({ path: resolve(dir, "harness.bundle.js") });
-        await page.evaluate(async () => { await (window as any).Harness.createController("root"); });
+        await page.evaluate(async () => { await (window as any).Harness.createController("root", { panelModeStyle: "floating-unified" }); });
         await page.locator('[data-molsysviewer-welcome-load="true"]').click();
+        assert.equal(await page.locator('[data-molsysviewer-group-panel-tab]').first().getAttribute("data-molsysviewer-group-panel-tab"), "load");
+        assert.equal(await page.locator('[data-molsysviewer-group-panel-tab="load"]').getAttribute("aria-current"), "page");
+        assert.equal(await page.locator('[data-molsysviewer-group-panel-section="system"] [data-molsysviewer-system-load]').count(), 0);
+        await page.locator('[data-molsysviewer-group-panel-tab="system"]').click();
+        await page.locator('[data-molsysviewer-system-empty="true"]').getByRole("button", { name: "Load systems", exact: true }).click();
         assert.ok(await row(0, "source").isVisible());
         for (let index = 0; index < 4; index++) {
             if (index) await page.locator('[data-molsysviewer-load-add-source="true"]').click();
             await row(index, "source").fill(fixture.paths[index]);
             await row(index, "label").fill(["A", "A", "C", "D"][index]);
         }
-        const batch = await submit();
+        const batch = await submit("shapes");
         assert.equal(batch.request.multiple, true);
         assert.equal(batch.records.length, 4);
         assert.deepEqual(await rendered(), { atoms: 88, regions: 4 });
@@ -196,6 +209,7 @@ async function checkStudioLoading(page: any) {
         const paired = await submit();
         assert.deepEqual(paired.request.structure_indices, [[2, 0], [1, 2]]);
         assert.deepEqual(await rendered(), { atoms: 4, regions: 2 });
+        await page.locator('[data-molsysviewer-group-panel-tab="shapes"]').click();
         for (let frame = 0; frame < 2; frame++) {
             const actual = await page.evaluate(async (index: number) => {
                 const c = (window as any).__controller;
@@ -210,13 +224,23 @@ async function checkStudioLoading(page: any) {
             }, frame);
             actual.forEach((position: number[], atom: number) => position.forEach((value, axis) =>
                 assert.ok(Math.abs(value - paired.coordinates[frame][atom][axis]) < 1e-4)));
+            assert.equal(await page.locator('[data-molsysviewer-group-panel-tab="shapes"]').getAttribute("aria-current"), "page",
+                "trajectory refreshes preserve explicit Studio navigation");
         }
+        await page.setViewportSize({ width: 480, height: 1000 });
+        await page.locator("#root").evaluate((el: HTMLElement) => { el.style.width = "420px"; });
+        const compact = page.getByRole("combobox", { name: "Studio section", exact: true });
+        await compact.waitFor({ state: "visible" });
+        assert.equal(await compact.locator("option").first().getAttribute("value"), "load");
+        await compact.selectOption("load");
+        assert.equal(await row(0, "structures").inputValue(), "2,0");
         await page.goto("about:blank");
         await page.setContent('<div id="root" style="width:1000px;height:850px"></div>');
         await page.addScriptTag({ path: resolve(dir, "harness.bundle.js") });
         await page.evaluate(async () => { await (window as any).Harness.createController("root", { hasAuthority: false }); });
         assert.equal(await page.locator('[data-molsysviewer-system-load="true"]').count(), 0,
             "an exported browser-only view must not offer Python-backed loading");
+        assert.equal(await page.locator('[data-molsysviewer-group-panel-tab="load"]').count(), 0);
         console.log("[E2E Studio loading] empty entry, mixed batch, retry/add/replace, complementary forms, append and trajectory pairing passed");
     } finally {
         if (authority.exitCode === null) {

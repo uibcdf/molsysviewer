@@ -1,23 +1,34 @@
 ---
 summary: Evaluate a dedicated Studio Loader entry before System
 issue: uibcdf/molsysviewer#265
-status: open
+status: resolved
 opened: 2026-10-22
-closed:
-verification: inspected
+closed: 2026-10-30
+verification: reproduced
 area: [studio, ui, loading]
-guard:
-normative:
+guard: molsysviewer/js/tests/e2e/composite-load.e2e.ts
+normative: devguide/studio_interaction_contract.md
 blocked_by: []
 supersedes: []
 ---
 
 # Evaluate a dedicated Studio Loader entry before System
 
+**Accepted direction — 2026-10-30:** the maintainer selects **Load**, first
+in Studio's default menu, with **Load systems** as the panel title. System
+retains loaded-system inspection. Empty views start in Load; after a successful
+GUI load, System presents the result. Explicit manual navigation is retained,
+including shape-only/addon use without atoms. Frame/hierarchy updates must not
+force a tab switch. The existing public load contract and single form owner
+are preserved. Earlier alternatives below remain design history; the prior
+recommendation to stay in Load after success is superseded by this receiving.
+
 **Reported:** 2026-10-22, proposed by the principal maintainer during the
 MolSysMT addon integration work.
 
-## What
+## Original proposal (history)
+
+### What
 
 Evaluate moving the existing **Load systems** controls from **Studio > System**
 into a dedicated **Studio > Loader** entry, placed first in the Studio menu,
@@ -184,3 +195,54 @@ an error/retry and Python-driven replacement while another section is open.
 The navigation should preserve explicit user work rather than switching tabs
 on every structural update. This design discussion remains independent of
 the pending MolSysMT implementation, which still owns scientific semantics.
+
+## Implementation receiving — 2026-10-30
+
+The accepted arrangement is implemented by `LoadPanel`, using the existing
+`SystemLoadControls` instance and public `view.load()` route. System retains
+inspection and links to Load when empty. Independent/complementary input,
+Add/Replace/Append, labels, atom/frame selectors, explicit pairing, correlated
+progress and retry keep their scientific semantics. Paths belong to the Python
+host; exported browser-only pages do not offer live loading.
+
+Empty live views initially choose Load. A matching successful GUI load opens
+System if the user is still in Load. A deliberate switch during a pending load
+is respected. Errors, unrelated replies, frame changes and hierarchy rebuilding
+retain the form and drafts. Legacy saved navigation inserts Load before System;
+current deliberate ordering is preserved, with Load filtered from static pages.
+The Remove input label explicitly separates draft rows from loaded atoms.
+
+Local guards pass 334 JavaScript cases and 24 real-Python loading cases. The
+four affected real-browser suites pass: composite loading, Studio usability,
+controls/popups and panel-only/shape-only workspaces. This is source development
+with the independent-domain provider, not an installed-artifact or release claim.
+
+
+## Resolution — 2026-10-30
+
+Implemented the accepted first **Load** section and kept **System** for
+inspection. The composite browser guard drives the actual floating Welcome
+entry, empty-System link, four-source batch, additions, replacement, errors and
+retry, complementary topology/coordinates, trajectory append and explicit
+nonconsecutive pairing through the real Python authority. It checks that a
+matching success opens System, a manual switch during loading survives, frame
+changes retain Shapes, the same draft DOM survives rebuilding, compact Load is
+first, and browser-only exports omit live loading.
+
+The floating Welcome action now opens the shared Studio shell through the
+controller before selecting Load. Merely expanding GroupPanel left that shell
+closed; the real floating entry assertion guards this failure. Sidebar
+preferences are covered by the GroupPanel unit guard for legacy migration,
+current customization, initial empty/populated views and static filtering.
+The controls browser suite checks Load in both canvas and detached Studio
+popups; Studio usability and panel-popup/shape-only suites retain layout,
+export, addon Render/Clear and ownership behavior. All four pass without skips.
+
+The development interpreter is `molsyssuite@uibcdf_3.14`; the scientific provider
+is source `97f6b58ff6096750a955459c58bdff67c325aae7`, with documentation/report
+work preserved separately. The 24 Python loading cases pass with 29 legacy
+H5MSM read warnings. JavaScript passes 334/334. Runtime generation uses
+`build:runtime`, and wide/compact screenshots were inspected. Source/browser
+evidence does not establish installed-package or platform qualification.
+Applicable hosted CI will be inspected on the published source checkpoint;
+no tag, package, scientific contract or 1.0 publication is created here.

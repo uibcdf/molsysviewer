@@ -1,5 +1,14 @@
 # Development checkpoint
 
+**Dedicated Studio Load — 2026-10-30:** #265 adds Load first in the default
+menu, keeps System for inspection and starts empty live views in Load. Matching
+success opens System while deliberate navigation and drafts survive loading
+and frame refreshes. Floating Welcome opens the shared shell correctly. All
+334 JS cases, 24 Python loading cases and four directed browser suites pass;
+wide/compact visuals were inspected. The [archived report](archive/studio_loader_before_system.md)
+and [Studio contract](studio_interaction_contract.md#card-and-navigation) retain
+the boundary. Hosted CI is separate; no package/tag or 1.0 publication.
+
 **Qt reload human receiving complete — 2026-10-30:** Diego confirms ten correct
 alternating pentalanine/dialanine replacements through Ctrl+O in one native
 window. This receives the explicit human remainder of #35, complementing the

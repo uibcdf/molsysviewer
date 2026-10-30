@@ -157557,190 +157557,6 @@ var GroupStrip = class {
   }
 };
 
-// src/ui/panels/system-load-controls.ts
-function systemStructureIndices(text) {
-  text = text.trim();
-  if (text === "all") return text;
-  if (text.startsWith("[") !== text.endsWith("]")) throw new Error("Structure-list brackets must be paired.");
-  const parts = text.replace(/^\[/, "").replace(/\]$/, "").split(",").map((part) => part.trim());
-  if (!parts.length || parts.some((part) => !/^\d+$/.test(part))) {
-    throw new Error("Structures must be 'all' or a comma-separated list of nonnegative integers.");
-  }
-  const indices3 = parts.map(Number);
-  if (indices3.some((index) => !Number.isSafeInteger(index)) || new Set(indices3).size !== indices3.length) {
-    throw new Error("Structure indices must be unique integers that can be represented exactly.");
-  }
-  return indices3;
-}
-function atomSelection(text) {
-  text = text.trim() || "all";
-  if (!text.startsWith("[")) return text;
-  const values2 = JSON.parse(text);
-  if (!Array.isArray(values2) || !values2.length || values2.some((value) => !Number.isSafeInteger(value) || value < 0)) {
-    throw new Error("Atom indices must be a nonempty list of nonnegative integers.");
-  }
-  return values2;
-}
-function systemLoadArguments(rows, input, mode, pair2) {
-  if (!rows.length || rows.some((row3) => !row3.source.trim())) throw new Error("Enter a path or PDB ID for every source.");
-  if (input !== "independent" && input !== "complementary") throw new Error("Unknown source interpretation.");
-  if (!["add", "replace", "append_structures"].includes(mode)) throw new Error("Unknown load operation.");
-  const multiple = input === "independent" && rows.length > 1;
-  if (multiple && mode === "append_structures") throw new Error("Append structures accepts one system, including its complementary files.");
-  const sources = rows.map((row3) => row3.source.trim());
-  const selectedRows = multiple ? rows : rows.slice(0, 1);
-  const selections = selectedRows.map((row3) => atomSelection(row3.selection));
-  const structures = selectedRows.map((row3) => systemStructureIndices(row3.structures));
-  return {
-    molecular_system: sources.length === 1 ? sources[0] : sources,
-    multiple,
-    mode,
-    ...multiple ? { labels: rows.map((row3) => row3.label.trim() || null) } : { label: rows[0].label.trim() || null },
-    selection: multiple ? selections : selections[0],
-    structure_indices: multiple ? structures : structures[0],
-    structure_pairing: pair2 ? "by_index" : null
-  };
-}
-var SystemLoadControls = class {
-  constructor(ctx) {
-    this.ctx = ctx;
-    this.rows = [];
-    this.pending = null;
-    this.serial = 0;
-    this.root = document.createElement("details");
-    this.root.setAttribute("data-molsysviewer-system-load", "true");
-    Object.assign(this.root.style, { flex: "0 0 auto", maxHeight: "50%", overflowY: "auto", fontSize: "11px" });
-    const summary = document.createElement("summary");
-    summary.textContent = "Load systems";
-    summary.style.cursor = "pointer";
-    this.root.appendChild(summary);
-    const card8 = makeSettingsCard("Sources");
-    this.root.appendChild(card8);
-    this.fields = document.createElement("fieldset");
-    Object.assign(this.fields.style, { margin: "0", padding: "0", border: "0", display: "flex", flexDirection: "column", gap: "8px", minWidth: "0" });
-    card8.appendChild(this.fields);
-    this.input = makeStyledSelect([
-      { value: "independent", label: "Independent systems" },
-      { value: "complementary", label: "Complementary files: one system" }
-    ], "independent", () => this.renderRows());
-    this.input.setAttribute("data-molsysviewer-load-input-mode", "true");
-    this.fields.appendChild(this.input);
-    this.operation = makeStyledSelect([
-      { value: "add", label: "Add to whole" },
-      { value: "replace", label: "Replace whole" },
-      { value: "append_structures", label: "Append structures of the current system" }
-    ], "add", () => {
-    });
-    this.operation.setAttribute("data-molsysviewer-load-operation", "true");
-    this.fields.appendChild(this.operation);
-    const hint = document.createElement("div");
-    hint.textContent = "Enter file paths accessible to the running Python session, or PDB IDs. Each independent system becomes part of whole; multiple sources get their own regions.";
-    hint.style.color = "rgba(244,244,245,0.65)";
-    this.fields.appendChild(hint);
-    this.rowsHost = document.createElement("div");
-    this.fields.appendChild(this.rowsHost);
-    const add = makeButton2("Add source", () => {
-      this.addRow();
-    });
-    add.setAttribute("data-molsysviewer-load-add-source", "true");
-    this.fields.appendChild(add);
-    const pairing = document.createElement("label");
-    this.pair = document.createElement("input");
-    this.pair.type = "checkbox";
-    this.pair.setAttribute("data-molsysviewer-load-pairing", "true");
-    pairing.appendChild(this.pair);
-    pairing.appendChild(document.createTextNode(" Pair selected structures in their listed order"));
-    this.fields.appendChild(pairing);
-    const rule = document.createElement("div");
-    rule.textContent = "For combining several structures per source, declare pairing. Counts and available times must match. Coordinates are not aligned; whole keeps its first/current box.";
-    rule.style.color = "rgba(244,244,245,0.65)";
-    this.fields.appendChild(rule);
-    const submit = makeButton2("Load", () => this.submit());
-    submit.setAttribute("data-molsysviewer-load-submit", "true");
-    this.fields.appendChild(submit);
-    this.status = document.createElement("div");
-    this.status.setAttribute("data-molsysviewer-load-status", "true");
-    this.status.setAttribute("role", "status");
-    card8.appendChild(this.status);
-    card8.appendChild(workflowHelp("loading", [
-      "Several PDBs: choose Independent systems, add one source per PDB ID or file, then Add to whole. Each source keeps its own region. No alignment is performed.",
-      "Topology and trajectory: choose Complementary files: one system. Enter both paths and choose the structures in the first source; this loads one system, not two independent systems.",
-      "Structures are zero-based: all or 0, 8, 3. To combine multi-structure independent sources, declare pairing and use matching counts and times. Append structures requires compatible atom identity and order."
-    ]));
-    this.addRow();
-  }
-  open() {
-    this.root.open = true;
-  }
-  isPending() {
-    return this.pending !== null;
-  }
-  updateResult(requestId, ok, atoms2, structures, sources, error2) {
-    if (requestId !== this.pending) return;
-    this.pending = null;
-    this.fields.disabled = false;
-    this.root.setAttribute("aria-busy", "false");
-    this.status.textContent = ok ? `Loaded: ${atoms2} atoms, ${structures} structures, ${sources} source(s).` : error2 || "Loading failed.";
-  }
-  addRow() {
-    this.rows.push({ source: "", label: "", selection: "all", structures: "0" });
-    this.renderRows();
-  }
-  renderRows() {
-    this.rowsHost.replaceChildren();
-    this.rows.forEach((row3, index) => {
-      const card8 = makeSettingsCard(`Source ${index + 1}`);
-      card8.setAttribute("data-molsysviewer-load-source", String(index));
-      const field2 = (key2, label2) => {
-        const wrap = document.createElement("label");
-        wrap.textContent = label2;
-        Object.assign(wrap.style, { display: "flex", flexDirection: "column", gap: "3px" });
-        const control = document.createElement("input");
-        control.type = "text";
-        control.value = row3[key2];
-        control.setAttribute("data-molsysviewer-load-field", key2);
-        Object.assign(control.style, { width: "100%", boxSizing: "border-box", background: "rgba(255,255,255,0.05)", color: "#f4f4f5", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "4px", padding: "4px" });
-        control.addEventListener("input", () => {
-          row3[key2] = control.value;
-        });
-        wrap.appendChild(control);
-        card8.appendChild(wrap);
-      };
-      field2("source", "File path or PDB ID");
-      if (this.input.value === "independent" || index === 0) {
-        field2("label", "Label (optional)");
-        field2("selection", "Atoms: MolSysMT selection or [0, 2, ...]");
-        field2("structures", "Structures: 0, 8, 3 or all (0-based)");
-      }
-      if (this.rows.length > 1) {
-        const remove3 = makeButton2("Remove source", () => {
-          this.rows.splice(index, 1);
-          this.renderRows();
-        });
-        remove3.setAttribute("data-molsysviewer-load-remove-source", String(index));
-        card8.appendChild(remove3);
-      }
-      this.rowsHost.appendChild(card8);
-    });
-  }
-  submit() {
-    if (this.pending) return;
-    try {
-      const args = systemLoadArguments(this.rows, this.input.value, this.operation.value, this.pair.checked);
-      this.pending = `load-${Date.now()}-${++this.serial}-${Math.random().toString(36).slice(2)}`;
-      this.fields.disabled = true;
-      this.root.setAttribute("aria-busy", "true");
-      this.status.textContent = "Loading\u2026";
-      this.ctx.onAction("load_systems", { ...args, request_id: this.pending });
-    } catch (error2) {
-      this.pending = null;
-      this.fields.disabled = false;
-      this.root.setAttribute("aria-busy", "false");
-      this.status.textContent = String(error2 instanceof Error ? error2.message : error2);
-    }
-  }
-};
-
 // src/ui/panels/system-panel.ts
 var SystemPanel = class {
   constructor(ctx, callbacks, hasAuthority = true) {
@@ -157750,7 +157566,7 @@ var SystemPanel = class {
     this.key = "system";
     this.host = null;
     this.stripsRow = null;
-    this.loading = null;
+    this.emptyState = null;
     this.inspector = null;
     /** Hierarchy relayed from a host, used only when this endpoint has none. */
     this.relayedItems = null;
@@ -157804,8 +157620,11 @@ var SystemPanel = class {
     this.inspector.style.display = "none";
     host.appendChild(this.inspector);
     if (this.hasAuthority) {
-      this.loading = new SystemLoadControls(this.ctx);
-      host.appendChild(this.loading.root);
+      this.emptyState = document.createElement("div");
+      this.emptyState.setAttribute("data-molsysviewer-system-empty", "true");
+      this.emptyState.textContent = "No molecular system is loaded. ";
+      this.emptyState.appendChild(makeButton2("Load systems", () => this.callbacks.onLoad?.()));
+      host.appendChild(this.emptyState);
     }
     this.stripsRow = document.createElement("div");
     Object.assign(this.stripsRow.style, {
@@ -157820,15 +157639,6 @@ var SystemPanel = class {
     host.appendChild(this.stripsRow);
   }
   // ── Domain state pushed from the host ──────────────────────
-  openLoading() {
-    this.loading?.open();
-  }
-  isLoading() {
-    return this.loading?.isPending() ?? false;
-  }
-  updateLoading(requestId, ok, atoms2, structures, sources, error2) {
-    this.loading?.updateResult(requestId, ok, atoms2, structures, sources, error2);
-  }
   setStructure(structure) {
     if (this.structure === structure) return;
     this.structure = structure;
@@ -157954,6 +157764,7 @@ var SystemPanel = class {
   /** Rebuild the strips for the current structure; reports natural visibility via onRebuilt. */
   rebuild() {
     if (!this.stripsRow) return;
+    if (this.emptyState) this.emptyState.style.display = this.structure?.units.length || this.relayedItems?.length ? "none" : "";
     if (!this.structureNeedsReconcile && this.renderedStructure === this.structure) {
       this.callbacks.onRebuilt(this.strips.size > 0);
       return;
@@ -158068,6 +157879,234 @@ var SystemPanel = class {
       legend.appendChild(item2);
     }
     return legend;
+  }
+};
+
+// src/ui/panels/system-load-controls.ts
+function systemStructureIndices(text) {
+  text = text.trim();
+  if (text === "all") return text;
+  if (text.startsWith("[") !== text.endsWith("]")) throw new Error("Structure-list brackets must be paired.");
+  const parts = text.replace(/^\[/, "").replace(/\]$/, "").split(",").map((part) => part.trim());
+  if (!parts.length || parts.some((part) => !/^\d+$/.test(part))) {
+    throw new Error("Structures must be 'all' or a comma-separated list of nonnegative integers.");
+  }
+  const indices3 = parts.map(Number);
+  if (indices3.some((index) => !Number.isSafeInteger(index)) || new Set(indices3).size !== indices3.length) {
+    throw new Error("Structure indices must be unique integers that can be represented exactly.");
+  }
+  return indices3;
+}
+function atomSelection(text) {
+  text = text.trim() || "all";
+  if (!text.startsWith("[")) return text;
+  const values2 = JSON.parse(text);
+  if (!Array.isArray(values2) || !values2.length || values2.some((value) => !Number.isSafeInteger(value) || value < 0)) {
+    throw new Error("Atom indices must be a nonempty list of nonnegative integers.");
+  }
+  return values2;
+}
+function systemLoadArguments(rows, input, mode, pair2) {
+  if (!rows.length || rows.some((row3) => !row3.source.trim())) throw new Error("Enter a path or PDB ID for every source.");
+  if (input !== "independent" && input !== "complementary") throw new Error("Unknown source interpretation.");
+  if (!["add", "replace", "append_structures"].includes(mode)) throw new Error("Unknown load operation.");
+  const multiple = input === "independent" && rows.length > 1;
+  if (multiple && mode === "append_structures") throw new Error("Append structures accepts one system, including its complementary files.");
+  const sources = rows.map((row3) => row3.source.trim());
+  const selectedRows = multiple ? rows : rows.slice(0, 1);
+  const selections = selectedRows.map((row3) => atomSelection(row3.selection));
+  const structures = selectedRows.map((row3) => systemStructureIndices(row3.structures));
+  return {
+    molecular_system: sources.length === 1 ? sources[0] : sources,
+    multiple,
+    mode,
+    ...multiple ? { labels: rows.map((row3) => row3.label.trim() || null) } : { label: rows[0].label.trim() || null },
+    selection: multiple ? selections : selections[0],
+    structure_indices: multiple ? structures : structures[0],
+    structure_pairing: pair2 ? "by_index" : null
+  };
+}
+var SystemLoadControls = class {
+  constructor(ctx) {
+    this.ctx = ctx;
+    this.rows = [];
+    this.pending = null;
+    this.serial = 0;
+    this.root = document.createElement("details");
+    this.root.setAttribute("data-molsysviewer-system-load", "true");
+    Object.assign(this.root.style, { flex: "0 0 auto", maxHeight: "50%", overflowY: "auto", fontSize: "11px" });
+    const summary = document.createElement("summary");
+    summary.textContent = "Load systems";
+    summary.style.cursor = "pointer";
+    this.root.appendChild(summary);
+    const card8 = makeSettingsCard("Sources");
+    this.root.appendChild(card8);
+    this.fields = document.createElement("fieldset");
+    Object.assign(this.fields.style, { margin: "0", padding: "0", border: "0", display: "flex", flexDirection: "column", gap: "8px", minWidth: "0" });
+    card8.appendChild(this.fields);
+    this.input = makeStyledSelect([
+      { value: "independent", label: "One or more independent systems" },
+      { value: "complementary", label: "Complementary files: one system" }
+    ], "independent", () => this.renderRows());
+    this.input.setAttribute("data-molsysviewer-load-input-mode", "true");
+    this.input.setAttribute("aria-label", "Source interpretation");
+    this.fields.appendChild(this.input);
+    this.operation = makeStyledSelect([
+      { value: "add", label: "Add to whole" },
+      { value: "replace", label: "Replace whole" },
+      { value: "append_structures", label: "Append structures of the current system" }
+    ], "add", () => {
+    });
+    this.operation.setAttribute("data-molsysviewer-load-operation", "true");
+    this.operation.setAttribute("aria-label", "Load operation");
+    this.fields.appendChild(this.operation);
+    const hint = document.createElement("div");
+    hint.textContent = "Use file paths accessible to the running Python session, or PDB IDs. Structures defaults to 0 (first frame); enter all for a full trajectory.";
+    hint.style.color = "rgba(244,244,245,0.65)";
+    this.fields.appendChild(hint);
+    this.rowsHost = document.createElement("div");
+    this.fields.appendChild(this.rowsHost);
+    const add = makeButton2("Add source", () => {
+      this.addRow();
+    });
+    add.setAttribute("data-molsysviewer-load-add-source", "true");
+    this.fields.appendChild(add);
+    const pairing = document.createElement("label");
+    this.pair = document.createElement("input");
+    this.pair.type = "checkbox";
+    this.pair.setAttribute("data-molsysviewer-load-pairing", "true");
+    pairing.appendChild(this.pair);
+    pairing.appendChild(document.createTextNode(" Pair selected structures in their listed order"));
+    this.fields.appendChild(pairing);
+    const rule = document.createElement("div");
+    rule.textContent = "For combining several structures per source, declare pairing. Counts and available times must match. Coordinates are not aligned; whole keeps its first/current box.";
+    rule.style.color = "rgba(244,244,245,0.65)";
+    this.fields.appendChild(rule);
+    const submit = makeButton2("Load", () => this.submit());
+    submit.setAttribute("data-molsysviewer-load-submit", "true");
+    this.fields.appendChild(submit);
+    this.status = document.createElement("div");
+    this.status.setAttribute("data-molsysviewer-load-status", "true");
+    this.status.setAttribute("role", "status");
+    card8.appendChild(this.status);
+    card8.appendChild(workflowHelp("loading", [
+      "Several PDBs: choose Independent systems, add one source per PDB ID or file, then Add to whole. Each source keeps its own region. No alignment is performed.",
+      "Topology and trajectory: choose Complementary files: one system. Enter both paths and choose the structures in the first source; this loads one system, not two independent systems.",
+      "Structures are zero-based: all or 0, 8, 3. To combine multi-structure independent sources, declare pairing and use matching counts and times. Append structures requires compatible atom identity and order."
+    ]));
+    this.addRow();
+  }
+  open() {
+    this.root.open = true;
+  }
+  isPending() {
+    return this.pending !== null;
+  }
+  updateResult(requestId, ok, atoms2, structures, sources, error2) {
+    if (requestId !== this.pending) return false;
+    this.pending = null;
+    this.fields.disabled = false;
+    this.root.setAttribute("aria-busy", "false");
+    this.status.textContent = ok ? `Loaded: ${atoms2} atoms, ${structures} structures, ${sources} source(s).` : error2 || "Loading failed.";
+    return true;
+  }
+  addRow() {
+    this.rows.push({ source: "", label: "", selection: "all", structures: "0" });
+    this.renderRows();
+  }
+  renderRows() {
+    this.rowsHost.replaceChildren();
+    this.rows.forEach((row3, index) => {
+      const card8 = makeSettingsCard(`Source ${index + 1}`);
+      card8.setAttribute("data-molsysviewer-load-source", String(index));
+      const field2 = (key2, label2) => {
+        const wrap = document.createElement("label");
+        wrap.textContent = label2;
+        Object.assign(wrap.style, { display: "flex", flexDirection: "column", gap: "3px" });
+        const control = document.createElement("input");
+        control.type = "text";
+        control.value = row3[key2];
+        control.setAttribute("data-molsysviewer-load-field", key2);
+        Object.assign(control.style, { width: "100%", boxSizing: "border-box", background: "rgba(255,255,255,0.05)", color: "#f4f4f5", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "4px", padding: "4px" });
+        control.addEventListener("input", () => {
+          row3[key2] = control.value;
+        });
+        wrap.appendChild(control);
+        card8.appendChild(wrap);
+      };
+      field2("source", "File path or PDB ID");
+      if (this.input.value === "independent" || index === 0) {
+        field2("label", "Label (optional)");
+        field2("selection", "Atoms: MolSysMT selection or [0, 2, ...]");
+        field2("structures", "Structures: 0, 8, 3 or all (0-based)");
+      }
+      if (this.rows.length > 1) {
+        const remove3 = makeButton2("Remove input", () => {
+          this.rows.splice(index, 1);
+          this.renderRows();
+        });
+        remove3.title = "Remove this input row; loaded atoms are unchanged.";
+        remove3.setAttribute("data-molsysviewer-load-remove-source", String(index));
+        card8.appendChild(remove3);
+      }
+      this.rowsHost.appendChild(card8);
+    });
+  }
+  submit() {
+    if (this.pending) return;
+    try {
+      const args = systemLoadArguments(this.rows, this.input.value, this.operation.value, this.pair.checked);
+      this.pending = `load-${Date.now()}-${++this.serial}-${Math.random().toString(36).slice(2)}`;
+      this.fields.disabled = true;
+      this.root.setAttribute("aria-busy", "true");
+      this.status.textContent = "Loading\u2026";
+      this.ctx.onAction("load_systems", { ...args, request_id: this.pending });
+    } catch (error2) {
+      this.pending = null;
+      this.fields.disabled = false;
+      this.root.setAttribute("aria-busy", "false");
+      this.status.textContent = String(error2 instanceof Error ? error2.message : error2);
+    }
+  }
+};
+
+// src/ui/panels/load-panel.ts
+var LoadPanel = class {
+  constructor(ctx, onInspect) {
+    this.ctx = ctx;
+    this.onInspect = onInspect;
+    this.key = "load";
+  }
+  mount(host) {
+    host.appendChild(makeSectionHeader("Load systems"));
+    const intro = document.createElement("div");
+    intro.textContent = "Load one system, add several, or combine topology and coordinates or a trajectory.";
+    Object.assign(intro.style, { fontSize: "12px", lineHeight: "1.5", color: "rgba(244,244,245,0.75)" });
+    host.appendChild(intro);
+    this.controls = new SystemLoadControls(this.ctx);
+    Object.assign(this.controls.root.style, { maxHeight: "none", overflowY: "visible", fontSize: "12px" });
+    const summary = this.controls.root.querySelector("summary");
+    if (summary) summary.style.display = "none";
+    this.controls.open();
+    host.appendChild(this.controls.root);
+    this.inspect = makeButton2("Inspect system", this.onInspect);
+    this.inspect.setAttribute("data-molsysviewer-load-inspect", "true");
+    this.inspect.style.display = "none";
+    host.appendChild(this.inspect);
+  }
+  setVisible(_visible) {
+  }
+  open() {
+    this.controls?.open();
+  }
+  isPending() {
+    return this.controls?.isPending() ?? false;
+  }
+  setSystemAvailable(available) {
+    if (this.inspect) this.inspect.style.display = available ? "" : "none";
+  }
+  updateResult(requestId, ok, atoms2, structures, sources, error2) {
+    return this.controls?.updateResult(requestId, ok, atoms2, structures, sources, error2) ?? false;
   }
 };
 
@@ -163965,6 +164004,8 @@ var GroupPanel = class {
     this.onFocusRegion = onFocusRegion;
     this.onAction = onAction;
     this.activeTab = "system";
+    this.navigationChosen = false;
+    this.hasSystem = false;
     this.tabs = /* @__PURE__ */ new Map();
     /** False in an exported page: the panels can show the scene but not change it. */
     this.hasAuthority = true;
@@ -163974,6 +164015,7 @@ var GroupPanel = class {
     this.visible = false;
     this.model = options?.model;
     this.hasAuthority = options?.hasAuthority !== false;
+    this.hasSystem = options?.initialHasSystem === true;
     const floating = options?.floating || !!options?.sharedShell;
     this.sharedShell = !!options?.sharedShell;
     this.shell = options?.sharedShell ? options.sharedShell : floating ? new FloatingPanelShell(this.host, { title: "Studio", navButtonLabel: "Add-ons" }) : new PanelShell(this.host, { title: "Studio", width: 560, toggleWidth: 26, navButtonLabel: "Add-ons" });
@@ -164118,6 +164160,8 @@ var GroupPanel = class {
     });
     this.body.appendChild(this.rightColumn);
     if (!this.hasAuthority) this.rightColumn.appendChild(this.buildNoSessionNotice());
+    const loadSection = this.hasAuthority ? this.createSection("load") : void 0;
+    if (loadSection) this.loadPanel = new LoadPanel(this.makePanelContext("load"), () => this.openSection("system"));
     this.systemSection = this.createSection("system");
     this.wholeSection = this.createSection("whole");
     this.wholePanel = new WholePanel(this.makePanelContext("whole"));
@@ -164162,8 +164206,9 @@ var GroupPanel = class {
       onHover: this.onHover,
       onContext: this.onContext,
       onAnnotationContext: this.onAnnotationContext,
+      onLoad: () => this.openSystemLoading(),
       onRebuilt: (naturalVisible) => {
-        this.visible = this.runtimeVisibleOverride ?? (naturalVisible || this.systemPanel?.isLoading() === true);
+        this.visible = this.runtimeVisibleOverride ?? (this.hasAuthority || naturalVisible);
         this.updateBodyDisplay();
         if (!this.sharedShell && !this.visible && this.expanded) this.expanded = false;
         if (this.visible) this.applyExpandedState();
@@ -164182,7 +164227,11 @@ var GroupPanel = class {
       ["viewport", ["Viewport", "Dark", this.viewportSection, this.viewportPanel]],
       ["export", ["Export", "None", this.exportSection, this.exportPanel]]
     ]);
+    if (loadSection && this.loadPanel) {
+      registryMap.set("load", ["Load", "Molecular systems", loadSection, this.loadPanel]);
+    }
     const defaultOrder = [
+      ...this.hasAuthority ? ["load"] : [],
       "system",
       "whole",
       "selection",
@@ -164200,8 +164249,13 @@ var GroupPanel = class {
     if (savedOrder) {
       try {
         const parsed = JSON.parse(savedOrder);
-        if (Array.isArray(parsed) && new Set(parsed).size === parsed.length && parsed.every((k) => defaultOrder.includes(k))) {
-          tabOrder = [...parsed, ...defaultOrder.filter((k) => !parsed.includes(k))];
+        if (Array.isArray(parsed) && new Set(parsed).size === parsed.length && parsed.every((k) => k === "load" || defaultOrder.includes(k))) {
+          const retained = parsed.filter((k) => defaultOrder.includes(k));
+          tabOrder = [...retained, ...defaultOrder.filter((k) => !retained.includes(k))];
+          if (this.hasAuthority && !parsed.includes("load")) {
+            tabOrder = tabOrder.filter((key2) => key2 !== "load");
+            tabOrder.splice(Math.max(0, tabOrder.indexOf("system")), 0, "load");
+          }
         }
       } catch (e) {
       }
@@ -164223,7 +164277,8 @@ var GroupPanel = class {
       (value) => this.switchTab(value)
     );
     this.updateCompactNavigation();
-    this.switchTab("system");
+    this.switchTab(this.hasAuthority && !this.hasSystem ? "load" : "system", false);
+    this.loadPanel?.setSystemAvailable(this.hasSystem);
   }
   /**
    * Say, before anything is clicked, what this Studio can and cannot do here.
@@ -164282,6 +164337,7 @@ var GroupPanel = class {
     const button2 = document.createElement("button");
     button2.setAttribute("data-molsysviewer-group-panel-tab", key2);
     const tooltips = {
+      load: "Load molecular systems, combine complementary files, or add trajectory structures.",
       system: "Molecular hierarchy, chain sequence, and group-level selections.",
       whole: "Global representation styling, visual presets, and overall system view.",
       selection: "Create, view, and modify active and saved selection queries.",
@@ -164412,7 +164468,8 @@ var GroupPanel = class {
     else this.tabs.get(key2)?.button.focus();
     return true;
   }
-  switchTab(key2) {
+  switchTab(key2, explicit = true) {
+    if (explicit) this.navigationChosen = true;
     this.activeTab = key2;
     if (this.compactNavigation) this.compactNavigation.select.value = key2;
     for (const [tabKey, { button: button2, badge }] of this.tabs.entries()) {
@@ -164446,8 +164503,8 @@ var GroupPanel = class {
     }
   }
   setStructure(structure) {
-    this.switchTab("system");
     this.systemPanel.setStructure(structure);
+    this.updateSystemAvailability(!!structure?.units.length);
   }
   get panelContentWidth() {
     return this.shell.width;
@@ -164462,12 +164519,17 @@ var GroupPanel = class {
   openSystemLoading() {
     if (!this.hasAuthority) return;
     this.setRuntimeVisible(true);
-    this.switchTab("system");
+    this.switchTab("load");
     this.setExpanded(true);
-    this.systemPanel.openLoading();
+    this.loadPanel?.open();
   }
   updateSystemLoading(requestId, ok, atoms2, structures, sources, error2) {
-    this.systemPanel.updateLoading(requestId, ok, atoms2, structures, sources, error2);
+    const matched = this.loadPanel?.updateResult(requestId, ok, atoms2, structures, sources, error2);
+    if (matched && ok && (atoms2 ?? 0) > 0) {
+      this.hasSystem = true;
+      this.loadPanel?.setSystemAvailable(true);
+      if (this.activeTab === "load") this.switchTab("system", false);
+    }
   }
   updateStudioAction(result2) {
     for (const { panel } of this.panels.values()) {
@@ -164682,6 +164744,14 @@ var GroupPanel = class {
   /** Hierarchy relayed from a host, for an endpoint with no structure. */
   setHierarchyItems(items) {
     this.systemPanel.setHierarchyItems(items);
+    this.updateSystemAvailability(items.length > 0);
+  }
+  updateSystemAvailability(available) {
+    this.hasSystem = available;
+    this.loadPanel?.setSystemAvailable(available);
+    if (!this.navigationChosen && !this.loadPanel?.isPending()) {
+      this.switchTab(available || !this.hasAuthority ? "system" : "load", false);
+    }
   }
   dispose() {
     this.compactNavigation?.dispose();
@@ -166640,7 +166710,8 @@ var MolSysViewerController = class _MolSysViewerController {
       sharedShell,
       floating: floatingPanels,
       model: this.model,
-      hasAuthority: this.initOptions?.hasAuthority !== false
+      hasAuthority: this.initOptions?.hasAuthority !== false,
+      initialHasSystem: this.initOptions?.hasInitialStructures
     });
     const addonsOptions = sharedShell ? { sharedShell } : floatingPanels ? { floating: true } : {};
     addonsOptions.model = this.model;
@@ -169852,6 +169923,8 @@ var MolSysViewerController = class _MolSysViewerController {
     btn.onclick = () => {
       if (this.initOptions?.hasAuthority !== false) {
         this.hideWelcomeCard();
+        if (this.currentWorkspace !== "core") this.selectWorkspace("core");
+        this.setPanelMode("navigate", true);
         this.groupPanel.openSystemLoading();
         return;
       }

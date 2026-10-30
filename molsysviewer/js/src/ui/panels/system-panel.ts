@@ -17,7 +17,7 @@ import type {
     OnSelect,
 } from "../group-panel";
 import { PanelContext, StudioPanel } from "./types";
-import { SystemLoadControls } from "./system-load-controls";
+import { makeButton } from "./ui-helpers";
 
 /** Interaction callbacks the System strips need, threaded from the controller. */
 export interface SystemPanelCallbacks {
@@ -32,6 +32,7 @@ export interface SystemPanelCallbacks {
      * naturally-visible System tab. The host owns panel-level visibility.
      */
     onRebuilt: (naturalVisible: boolean) => void;
+    onLoad?: () => void;
 }
 
 /**
@@ -47,7 +48,7 @@ export class SystemPanel implements StudioPanel {
     readonly key = "system";
     private host: HTMLElement | null = null;
     private stripsRow: HTMLDivElement | null = null;
-    private loading: SystemLoadControls | null = null;
+    private emptyState: HTMLDivElement | null = null;
     private inspector: HTMLDivElement | null = null;
     /** Hierarchy relayed from a host, used only when this endpoint has none. */
     private relayedItems: GroupSelectionItem[] | null = null;
@@ -113,8 +114,11 @@ export class SystemPanel implements StudioPanel {
         this.inspector.style.display = "none";
         host.appendChild(this.inspector);
         if (this.hasAuthority) {
-            this.loading = new SystemLoadControls(this.ctx);
-            host.appendChild(this.loading.root);
+            this.emptyState = document.createElement("div");
+            this.emptyState.setAttribute("data-molsysviewer-system-empty", "true");
+            this.emptyState.textContent = "No molecular system is loaded. ";
+            this.emptyState.appendChild(makeButton("Load systems", () => this.callbacks.onLoad?.()));
+            host.appendChild(this.emptyState);
         }
         this.stripsRow = document.createElement("div");
         Object.assign(this.stripsRow.style, {
@@ -130,14 +134,6 @@ export class SystemPanel implements StudioPanel {
     }
 
     // ── Domain state pushed from the host ──────────────────────
-
-    openLoading(): void { this.loading?.open(); }
-
-    isLoading(): boolean { return this.loading?.isPending() ?? false; }
-
-    updateLoading(requestId: string, ok: boolean, atoms?: number, structures?: number, sources?: number, error?: string): void {
-        this.loading?.updateResult(requestId, ok, atoms, structures, sources, error);
-    }
 
     setStructure(structure: Structure | undefined): void {
         if (this.structure === structure) return;
@@ -265,6 +261,7 @@ export class SystemPanel implements StudioPanel {
     /** Rebuild the strips for the current structure; reports natural visibility via onRebuilt. */
     rebuild(): void {
         if (!this.stripsRow) return;
+        if (this.emptyState) this.emptyState.style.display = this.structure?.units.length || this.relayedItems?.length ? "none" : "";
         if (!this.structureNeedsReconcile && this.renderedStructure === this.structure) {
             this.callbacks.onRebuilt(this.strips.size > 0);
             return;

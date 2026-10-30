@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Dedicated Studio Load](studio_loader_before_system.md) — #265 separates molecular input from System inspection, preserves drafts/navigation and guards floating Welcome, compact layout and popups.
+
 - [Qt repeated molecular loading](standalone_qt_live_demo_reload.md) — #35 receives the maintainer's ten visible replacements alongside the guarded transport/pixel fix.
 - [Python 3.14 admission](extend_python_support_to_3_14.md) — #93 adopts frozen policy-v1.5.10, its canonical badge and passing hosted owner conformance.
 - [Help keyboard and adaptive layout](help_keyboard_and_responsive_layout.md) — #284 receives real Qt H/h, focus/Escape ownership and host-relative Help sizing.

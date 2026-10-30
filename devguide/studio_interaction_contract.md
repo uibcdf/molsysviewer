@@ -20,6 +20,17 @@ with the scientific owner and the existing explicit system-edit/loading contract
 
 ## Card and navigation
 
+Load is the first default Studio section for live Python-backed views. It owns
+the single persistent molecular-loading form: one source or several independent
+systems, complementary topology/coordinate files and explicit add/replace/append
+operations. System owns loaded-system hierarchy, sequence and inspection.
+Empty views start in Load; successful correlated GUI loading opens System if
+the user is still in Load. Errors keep Load and its draft. Explicit navigation
+and frame/hierarchy updates preserve the chosen section, so shape-only/addon
+workflows remain available before loading molecules. Browser-only exports omit
+Python-backed Load. Legacy tab orders gain Load before System; subsequent
+deliberate ordering remains window-local. The Python API is unchanged (#265).
+
 New floating Studio shells start with background unlocked, so gestures outside
 the card can rotate the molecular canvas. An explicitly inherited lock state
 and a deliberate user lock survive hiding/reopening the same panel; this is

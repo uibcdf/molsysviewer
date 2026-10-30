@@ -19,6 +19,7 @@ import { LayersPanel, LayerObjectSummary, LayerSummary } from "./panels/layers-p
 import { RegionsPanel } from "./panels/regions-panel";
 import { SelectionPanel } from "./panels/selection-panel";
 import { SystemPanel } from "./panels/system-panel";
+import { LoadPanel } from "./panels/load-panel";
 import { WholePanel } from "./panels/whole-panel";
 import { MeasuresPanel, MeasurementSeries, MeasurementSettings, MeasurementSummary } from "./panels/measures-panel";
 import { AnnotationsPanel, AnnotationSettings, AnnotationSummary } from "./panels/annotations-panel";
@@ -168,7 +169,7 @@ export type SelectionQueryPreview = {
     status?: "pending";
 };
 
-type TabKey = "system" | "whole" | "selection" | "regions" | "measures" | "interactions" | "annotations" | "shapes" | "layers" | "viewport" | "export" | "settings";
+type TabKey = "load" | "system" | "whole" | "selection" | "regions" | "measures" | "interactions" | "annotations" | "shapes" | "layers" | "viewport" | "export" | "settings";
 
 export class GroupPanel {
 
@@ -182,6 +183,8 @@ export class GroupPanel {
     private readonly tabsContainer: HTMLDivElement;
     private compactNavigation?: CompactPanelNavigation;
     private activeTab: TabKey = "system";
+    private navigationChosen = false;
+    private hasSystem = false;
     private readonly tabs: Map<TabKey, { button: HTMLButtonElement; badge: HTMLSpanElement }> = new Map();
 
     // Migrated subpanels (panel-per-module architecture)
@@ -199,6 +202,7 @@ export class GroupPanel {
     private readonly regionsPanel: RegionsPanel;
     private readonly selectionPanel: SelectionPanel;
     private readonly systemPanel: SystemPanel;
+    private readonly loadPanel?: LoadPanel;
     private readonly panels = new Map<TabKey, { section: HTMLDivElement; panel: StudioPanel }>();
 
     // Right column: Content Sections
@@ -237,10 +241,11 @@ export class GroupPanel {
         private readonly onActivateSavedSelection: (tag: string) => void,
         private readonly onFocusRegion: (tag: string) => void,
         private readonly onAction: ((action: string, details?: any) => void) | undefined,
-        options?: { floating?: boolean; sharedShell?: FloatingPanelShell; model?: any; hasAuthority?: boolean },
+        options?: { floating?: boolean; sharedShell?: FloatingPanelShell; model?: any; hasAuthority?: boolean; initialHasSystem?: boolean },
     ) {
         this.model = options?.model;
         this.hasAuthority = options?.hasAuthority !== false;
+        this.hasSystem = options?.initialHasSystem === true;
         const floating = options?.floating || !!options?.sharedShell;
         this.sharedShell = !!options?.sharedShell;
         this.shell = options?.sharedShell
@@ -408,6 +413,8 @@ export class GroupPanel {
         if (!this.hasAuthority) this.rightColumn.appendChild(this.buildNoSessionNotice());
 
         // Create Sections
+        const loadSection = this.hasAuthority ? this.createSection("load") : undefined;
+        if (loadSection) this.loadPanel = new LoadPanel(this.makePanelContext("load"), () => this.openSection("system"));
         this.systemSection = this.createSection("system");
         this.wholeSection = this.createSection("whole");
         this.wholePanel = new WholePanel(this.makePanelContext("whole"));
@@ -450,6 +457,7 @@ export class GroupPanel {
             onHover: this.onHover,
             onContext: this.onContext,
             onAnnotationContext: this.onAnnotationContext,
+            onLoad: () => this.openSystemLoading(),
             onRebuilt: (naturalVisible: boolean) => {
                 // The override is honoured in *both* directions, as its
                 // `boolean | null` type has always promised. It used to force only
@@ -459,9 +467,9 @@ export class GroupPanel {
                 // The System subpanel having nothing to draw was silently read as
                 // the whole panel having nothing to draw, hiding Whole, Selections,
                 // Regions and the rest, which render from summaries alone.
-                // Rebuilding a load temporarily removes molecular hierarchy.
-                // Its active form still has work to show during that interval.
-                this.visible = this.runtimeVisibleOverride ?? (naturalVisible || this.systemPanel?.isLoading() === true);
+                // A live empty view still has Load and shape-only workspaces.
+                // Hierarchy absence during rebuilding must not hide Studio.
+                this.visible = this.runtimeVisibleOverride ?? (this.hasAuthority || naturalVisible);
                 this.updateBodyDisplay();
                 if (!this.sharedShell && !this.visible && this.expanded) this.expanded = false;
                 if (this.visible) this.applyExpandedState();
@@ -482,8 +490,12 @@ export class GroupPanel {
             ["viewport", ["Viewport", "Dark", this.viewportSection, this.viewportPanel]],
             ["export", ["Export", "None", this.exportSection, this.exportPanel]],
         ]);
+        if (loadSection && this.loadPanel) {
+            registryMap.set("load", ["Load", "Molecular systems", loadSection, this.loadPanel]);
+        }
 
         const defaultOrder: TabKey[] = [
+            ...(this.hasAuthority ? ["load" as TabKey] : []),
             "system",
             "whole",
             "selection",
@@ -501,8 +513,14 @@ export class GroupPanel {
         if (savedOrder) {
             try {
                 const parsed = JSON.parse(savedOrder);
-                if (Array.isArray(parsed) && new Set(parsed).size === parsed.length && parsed.every(k => defaultOrder.includes(k as TabKey))) {
-                    tabOrder = [...parsed, ...defaultOrder.filter(k => !parsed.includes(k))] as TabKey[];
+                if (Array.isArray(parsed) && new Set(parsed).size === parsed.length
+                    && parsed.every(k => k === "load" || defaultOrder.includes(k as TabKey))) {
+                    const retained = parsed.filter(k => defaultOrder.includes(k as TabKey));
+                    tabOrder = [...retained, ...defaultOrder.filter(k => !retained.includes(k))] as TabKey[];
+                    if (this.hasAuthority && !parsed.includes("load")) {
+                        tabOrder = tabOrder.filter(key => key !== "load");
+                        tabOrder.splice(Math.max(0, tabOrder.indexOf("system")), 0, "load");
+                    }
                 }
             } catch (e) {
                 // Ignore parsing errors
@@ -523,7 +541,8 @@ export class GroupPanel {
         this.compactNavigation = new CompactPanelNavigation(this.body, this.leftColumn, this.rightColumn,
             "Studio section", value => this.switchTab(value as TabKey));
         this.updateCompactNavigation();
-        this.switchTab("system");
+        this.switchTab(this.hasAuthority && !this.hasSystem ? "load" : "system", false);
+        this.loadPanel?.setSystemAvailable(this.hasSystem);
     }
 
     /**
@@ -584,6 +603,7 @@ export class GroupPanel {
         const button = document.createElement("button");
         button.setAttribute("data-molsysviewer-group-panel-tab", key);
         const tooltips: Record<string, string> = {
+            load: "Load molecular systems, combine complementary files, or add trajectory structures.",
             system: "Molecular hierarchy, chain sequence, and group-level selections.",
             whole: "Global representation styling, visual presets, and overall system view.",
             selection: "Create, view, and modify active and saved selection queries.",
@@ -734,7 +754,8 @@ export class GroupPanel {
         return true;
     }
 
-    private switchTab(key: TabKey): void {
+    private switchTab(key: TabKey, explicit = true): void {
+        if (explicit) this.navigationChosen = true;
         this.activeTab = key;
         if (this.compactNavigation) this.compactNavigation.select.value = key;
 
@@ -774,8 +795,8 @@ export class GroupPanel {
     }
 
     setStructure(structure: Structure | undefined): void {
-        this.switchTab("system");
         this.systemPanel.setStructure(structure);
+        this.updateSystemAvailability(!!structure?.units.length);
     }
 
     get panelContentWidth(): number {
@@ -794,13 +815,18 @@ export class GroupPanel {
     openSystemLoading(): void {
         if (!this.hasAuthority) return;
         this.setRuntimeVisible(true);
-        this.switchTab("system");
+        this.switchTab("load");
         this.setExpanded(true);
-        this.systemPanel.openLoading();
+        this.loadPanel?.open();
     }
 
     updateSystemLoading(requestId: string, ok: boolean, atoms?: number, structures?: number, sources?: number, error?: string): void {
-        this.systemPanel.updateLoading(requestId, ok, atoms, structures, sources, error);
+        const matched = this.loadPanel?.updateResult(requestId, ok, atoms, structures, sources, error);
+        if (matched && ok && (atoms ?? 0) > 0) {
+            this.hasSystem = true;
+            this.loadPanel?.setSystemAvailable(true);
+            if (this.activeTab === "load") this.switchTab("system", false);
+        }
     }
 
     updateStudioAction(result: import("./panels/saved-list-tools").StudioActionResult): void {
@@ -1029,6 +1055,15 @@ export class GroupPanel {
     /** Hierarchy relayed from a host, for an endpoint with no structure. */
     setHierarchyItems(items: GroupSelectionItem[]): void {
         this.systemPanel.setHierarchyItems(items);
+        this.updateSystemAvailability(items.length > 0);
+    }
+
+    private updateSystemAvailability(available: boolean): void {
+        this.hasSystem = available;
+        this.loadPanel?.setSystemAvailable(available);
+        if (!this.navigationChosen && !this.loadPanel?.isPending()) {
+            this.switchTab(available || !this.hasAuthority ? "system" : "load", false);
+        }
     }
 
     dispose(): void {

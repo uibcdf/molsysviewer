@@ -84,19 +84,21 @@ export class SystemLoadControls {
         Object.assign(this.fields.style, { margin: "0", padding: "0", border: "0", display: "flex", flexDirection: "column", gap: "8px", minWidth: "0" });
         card.appendChild(this.fields);
         this.input = makeStyledSelect([
-            { value: "independent", label: "Independent systems" },
+            { value: "independent", label: "One or more independent systems" },
             { value: "complementary", label: "Complementary files: one system" },
         ], "independent", () => this.renderRows());
         this.input.setAttribute("data-molsysviewer-load-input-mode", "true");
+        this.input.setAttribute("aria-label", "Source interpretation");
         this.fields.appendChild(this.input);
         this.operation = makeStyledSelect([
             { value: "add", label: "Add to whole" }, { value: "replace", label: "Replace whole" },
             { value: "append_structures", label: "Append structures of the current system" },
         ], "add", () => {});
         this.operation.setAttribute("data-molsysviewer-load-operation", "true");
+        this.operation.setAttribute("aria-label", "Load operation");
         this.fields.appendChild(this.operation);
         const hint = document.createElement("div");
-        hint.textContent = "Enter file paths accessible to the running Python session, or PDB IDs. Each independent system becomes part of whole; multiple sources get their own regions.";
+        hint.textContent = "Use file paths accessible to the running Python session, or PDB IDs. Structures defaults to 0 (first frame); enter all for a full trajectory.";
         hint.style.color = "rgba(244,244,245,0.65)";
         this.fields.appendChild(hint);
         this.rowsHost = document.createElement("div");
@@ -133,11 +135,12 @@ export class SystemLoadControls {
 
     isPending(): boolean { return this.pending !== null; }
 
-    updateResult(requestId: string, ok: boolean, atoms?: number, structures?: number, sources?: number, error?: string): void {
-        if (requestId !== this.pending) return;
+    updateResult(requestId: string, ok: boolean, atoms?: number, structures?: number, sources?: number, error?: string): boolean {
+        if (requestId !== this.pending) return false;
         this.pending = null; this.fields.disabled = false;
         this.root.setAttribute("aria-busy", "false");
         this.status.textContent = ok ? `Loaded: ${atoms} atoms, ${structures} structures, ${sources} source(s).` : (error || "Loading failed.");
+        return true;
     }
 
     private addRow(): void {
@@ -167,7 +170,8 @@ export class SystemLoadControls {
                 field("structures", "Structures: 0, 8, 3 or all (0-based)");
             }
             if (this.rows.length > 1) {
-                const remove = makeButton("Remove source", () => { this.rows.splice(index, 1); this.renderRows(); });
+                const remove = makeButton("Remove input", () => { this.rows.splice(index, 1); this.renderRows(); });
+                remove.title = "Remove this input row; loaded atoms are unchanged.";
                 remove.setAttribute("data-molsysviewer-load-remove-source", String(index)); card.appendChild(remove);
             }
             this.rowsHost.appendChild(card);
