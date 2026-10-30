@@ -1,10 +1,12 @@
 # Development checkpoint
 
-**Python admission adoption — 2026-10-30:** #93 adopts the published central
+**Python admission adoption complete — 2026-10-30:** #93 adopts the published central
 `policy-v1.5.10` / `1c38d50337ffd67e20eb02f5e02b24152073b3b4`, which
 freezes the public core's Python 3.11–3.14 admission. The caller and canonical
 generated badge are updated together; conformance, metadata and scoped guards
-pass locally. Hosted owner-policy receiving remains before archival/closure.
+pass locally. Hosted policy 41117599459 passes both jobs and all required
+steps on 756aa9e1. The [archived report](archive/extend_python_support_to_3_14.md)
+and [receipt](python314_policy1510_adoption_20261030.json) retain the closure.
 No scientific rerun, provider-refactor reception or publication is inferred.
 
 **Help receiving — 2026-10-30:** #284 reproduces the maintainer's Qt H/h
@@ -925,7 +927,7 @@ family module passes 30. The earlier Python 3.14 source-pair qualification used 
 `5e2721691b6a3c175406a8e4c0926dfb7b160671`, with its own runtime floors,
 Node 22 and immediate `pip check`. Public dependency floors are unchanged.
 See [the resolved bug record](archive/scientific_test_environments_missing_rdkit.md)
-and [the source-pair baseline](pending_proposals/extend_python_support_to_3_14.md#current-scientific-source-pair-baseline--2026-10-06).
+and [the source-pair baseline](archive/extend_python_support_to_3_14.md#current-scientific-source-pair-baseline--2026-10-06).
 
 The once-run complete regression returns **2,820 passed, 23 skipped and one
 failed guard**, in 556.22 s. #162 identifies a profiler that counted SMonitor's

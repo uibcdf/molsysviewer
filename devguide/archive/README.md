@@ -1,5 +1,6 @@
 # Archived implementation plans
 
+- [Python 3.14 admission](extend_python_support_to_3_14.md) — #93 adopts frozen policy-v1.5.10, its canonical badge and passing hosted owner conformance.
 - [Help keyboard and adaptive layout](help_keyboard_and_responsive_layout.md) — #284 receives real Qt H/h, focus/Escape ownership and host-relative Help sizing.
 - [Optional Qt child imports](qt_probe_eager_optional_import.md) — #283 defers helper dependencies to main and guards collection without site packages.
 - [Qt status details](qt_status_presentation.md) — #279 uses explicit status kinds and supports full-text copying in fullscreen.

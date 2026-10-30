@@ -1,7 +1,7 @@
 {
   "date": "2026-10-30",
   "issue": "uibcdf/molsysviewer#93",
-  "state": "local_verified_hosted_pending",
+  "state": "owner_policy_verified",
   "previous_caller": "policy-v1.5.7",
   "policy": {
     "ref": "policy-v1.5.10",
@@ -31,14 +31,55 @@
     },
     "dependency_contract": "pass",
     "ruff": "check and format pass; 940 files",
-    "index": "pass"
+    "index": "pass after archival",
+    "closure_guides": {
+      "passed": 298,
+      "junit": ".pytest_cache/policy1510-receiving/closure-guides.xml"
+    }
   },
   "guards": [
     "tests/test_distribution_artifact.py::test_the_readme_badge_says_what_we_support",
     "tests/test_archive_tags.py::test_archive_policy_caller_observes_slash_tags_unconditionally"
   ],
   "hosted": {
-    "state": "pending exact-head owner policy run"
+    "run": 41117599459,
+    "commit": "756aa9e13f3d8e3ae7add28c96efc7f412518afb",
+    "event": "push",
+    "workflow": "MolSysSuite policy",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "Dependency metadata audit",
+        "conclusion": "success"
+      },
+      {
+        "name": "policy / conformance",
+        "conclusion": "success"
+      }
+    ],
+    "required_steps": [
+      {
+        "name": "Audit dependency metadata without importing the viewer",
+        "conclusion": "success"
+      },
+      {
+        "name": "Check Python formatting",
+        "conclusion": "success"
+      },
+      {
+        "name": "Check Python lint and imports",
+        "conclusion": "success"
+      },
+      {
+        "name": "Check out MolSysSuite policy",
+        "conclusion": "success"
+      },
+      {
+        "name": "Check repository conformance",
+        "conclusion": "success"
+      }
+    ],
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/41117599459"
   },
   "limits": {
     "new_scientific_campaign": false,
@@ -46,5 +87,11 @@
     "qt_promoted_to_stable": false,
     "release_tag_or_package": false
   },
-  "resources": "Frozen canonical tools and local receipts retained through owner-policy receiving; shared environments and unrelated local work preserved."
+  "resources": "Removed the task-owned frozen-tool export and generated-index snapshot after verified receiving; JUnit, native hosted metadata, canonical badge output and owned-index patch remain. Shared environments, manual #35 inputs and unrelated local work are preserved.",
+  "closure": {
+    "report": "devguide/archive/extend_python_support_to_3_14.md",
+    "guard": "tests/test_distribution_artifact.py::test_the_readme_badge_says_what_we_support",
+    "central_notice": "uibcdf/molsyssuite#29",
+    "scope": "administrative admission adoption only"
+  }
 }

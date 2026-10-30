@@ -1,5 +1,15 @@
 # Path to 1.0.0 (Unified Release Plan)
 
+**Python admission adoption complete — 2026-10-30:** #93 receives immutable
+MolSysSuite `policy-v1.5.10` and its public-core Python 3.11–3.14 admission.
+The caller and canonical badge are adopted together; hosted owner policy
+41117599459 passes on 756aa9e1 after local metadata/conformance guards. The
+[adoption receipt](python314_policy1510_adoption_20261030.json) and
+[archived report](archive/extend_python_support_to_3_14.md) retain the evidence.
+This closes the administrative admission remainder; future candidate,
+ChemicalStates and experimental Qt qualification remain independent. No new
+scientific campaign, tag, package or 1.0 publication follows.
+
 **Core/add-on boundary approved — 2026-10-22:** apply
 [the normative product decision](core_and_addon_boundary.md): core visualizes
 and explores, including qualified scientific calculations for visual content;
@@ -578,7 +588,7 @@ package versions, staging URL/SHA-256 provenance, MolSysMT native code,
 BCIF/PDB-text conversion, and Viewer loading/resources. The five targeted
 runs and exact source/artifact identities are recorded in
 [`checkpoints.md`](checkpoints.md#separate-python-314-staging-slice) and
-[`pending_proposals/extend_python_support_to_3_14.md`](pending_proposals/extend_python_support_to_3_14.md).
+[`archive/extend_python_support_to_3_14.md`](archive/extend_python_support_to_3_14.md).
 
 This closes a major **pre-1.0 staging installation milestone**, not Phase 10
 gates 1–5 or the 1.0 release. The numbers `0.22.3`/`0.23.3` are technical
