@@ -8,8 +8,11 @@ Help before fullscreen. Four directed Qt/transport/absence checks, an additional
 native presentation run, 332 JS cases and the complete three-scenario controls
 browser entry pass. The rendered Qt card was inspected. See the
 [receiving record](archive/help_keyboard_and_responsive_layout.md).
-Human status-copy and window/molecular-interaction checks pass; corrected Help
-and close/relaunch geometry await confirmation. Qt remains experimental.
+Human status-copy and window/molecular-interaction checks pass. The maintainer
+also confirms working H/h and restored window size after close/relaunch.
+The responsive Help appearance has not been separately confirmed. Hosted Qt
+41114314894 passes on 1488a8a7; other applicable campaigns remain separately
+observed. Qt remains experimental.
 
 **Qt window polish — 2026-10-30:** #279/#280/#281 receive explicit status kinds,
 selectable/copyable full details in fullscreen, normal geometry/maximized-state
@@ -27,7 +30,7 @@ Final-source Qt 41106975172 passes 14/14 and browser 41106975234 passes.
 All nine failed general/source jobs now reach the suite and report only the
 three retained-provider Pandas4Warning examples; #283 collection is corrected.
 The maintainer's partial visual observations are retained in the receipt and
-the Help follow-up above; close/relaunch geometry still awaits confirmation.
+the Help follow-up above, including confirmed close/relaunch size recovery.
 Qt remains experimental; no tag or package.
 
 **Local Qt window modernized — 2026-10-29:** the local host now has an integrated

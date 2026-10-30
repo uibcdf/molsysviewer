@@ -196,3 +196,11 @@ source-pair jobs now report only the three retained-provider Pandas4Warning
 documentation failures under MolSysMT#431. Optional-Qt collection succeeds;
 the complete CI remains failed, with no provider-pin or warning-filter change.
 The maintainer has resumed the manual checklist; observations remain pending.
+
+On receiving `1488a8a7`, the maintainer confirms working H/h and recovery of
+window size after close/relaunch, supplementing the earlier status-copy and
+window/molecular-interaction checks. Hosted Qt
+[41114314894](https://github.com/uibcdf/molsysviewer/actions/runs/41114314894)
+passes on that correction. Adaptive Help appearance is not separately accepted
+by this feedback, and the explicit ten-replacement human observation under
+#35 remains independent. Other hosted campaigns keep their own outcomes.

@@ -62,3 +62,12 @@ The original human checks pass status copying in normal/fullscreen and molecular
 interaction after window manipulation. The corrected Help and close/relaunch
 geometry still await maintainer confirmation. No complete green CI, additional
 platform or installed-artifact qualification is inferred.
+
+## Maintainer receiving — 2026-10-30
+
+After receiving 1488a8a7, the maintainer confirms that H/h works and window size
+is recovered after closing and reopening the application. This adds those two
+human observations to the earlier status-copy and molecular-input results;
+it does not infer a separate visual acceptance of the adaptive Help card or
+the ten-replacement observation required by #35. Hosted Qt 41114314894 passes;
+the other applicable campaigns retain their own states.
