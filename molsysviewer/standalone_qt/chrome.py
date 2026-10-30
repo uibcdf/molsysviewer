@@ -73,7 +73,9 @@ def _install_window_chrome(*, window, webview, qt):
                 button.setToolTip(label)
                 button.setFixedSize(34, 28)
                 button.setIconSize(core.QSize(20, 20))
-                button.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+                # Native title-bar gestures must not steal canvas keyboard
+                # focus. Tab access to the window buttons remains available.
+                button.setFocusPolicy(Qt.FocusPolicy.TabFocus)
                 button.clicked.connect(callback)
                 chrome.buttons[kind] = button
                 row.addWidget(button)

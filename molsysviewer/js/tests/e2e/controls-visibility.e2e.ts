@@ -7,6 +7,7 @@ import { chromium } from "./e2e-browser";
 import { checkNotebookCanvasPopup } from "./canvas-popup-scenarios";
 import { checkCanvasPopupMirror } from "./canvas-popup-mirror-scenarios";
 import { captureCanvasPopupControllers } from "./canvas-popup-fixture";
+import { checkHelpLayout } from "./help-layout-scenarios";
 
 const dir = dirname(fileURLToPath(import.meta.url));
 
@@ -306,6 +307,7 @@ print(json.dumps({"page": str(output), "single": str(single)}))
                 await hidden();
             }
         }
+        await checkHelpLayout(page);
         assert.deepEqual(await page.evaluate(() => {
             const c = (window as any).__molsysviewerDocsController;
             return { trajectory: c.trajectory.trajectoryListeners.size, layout: c.layoutChangeListeners.length };

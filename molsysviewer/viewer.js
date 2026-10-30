@@ -140231,8 +140231,8 @@ function injectHelpStyles() {
   style.id = styleId;
   style.textContent = `
         .molsysviewer-help-card {
-            width: min(640px, 88%);
-            height: min(480px, calc(100% - 40px));
+            width: min(1200px, 86%);
+            max-height: calc(100% - 24px);
             overflow-y: auto;
             background: rgba(18, 18, 22, 0.92);
             border-radius: 16px;
@@ -140243,7 +140243,6 @@ function injectHelpStyles() {
             font-size: 13px;
             padding: 20px 24px 24px;
             box-sizing: border-box;
-            transition: all 150ms cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         
         /* Custom elegant scrollbar for the help card */
@@ -140271,7 +140270,7 @@ function injectHelpStyles() {
         }
         .molsysviewer-help-title {
             font-weight: 600;
-            font-size: 14px;
+            font-size: 1.15em;
         }
         .molsysviewer-help-close {
             background: transparent;
@@ -140290,12 +140289,12 @@ function injectHelpStyles() {
         }
         .molsysviewer-help-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 28px;
         }
         .molsysviewer-help-section-title {
             font-weight: 600;
-            font-size: 11px;
+            font-size: 0.85em;
             text-transform: uppercase;
             letter-spacing: 0.07em;
             opacity: 0.45;
@@ -140313,7 +140312,7 @@ function injectHelpStyles() {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 5px;
             padding: 2px 7px;
-            font-size: 11px;
+            font-size: 0.85em;
             font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
             white-space: nowrap;
             flex-shrink: 0;
@@ -140322,7 +140321,9 @@ function injectHelpStyles() {
         .molsysviewer-help-desc {
             opacity: 0.75;
             text-align: right;
-            font-size: 12px;
+            font-size: 0.95em;
+            overflow-wrap: anywhere;
+            min-width: 0;
         }
     `;
   document.head.appendChild(style);
@@ -140351,6 +140352,7 @@ function makeSection(heading, rows) {
 var HelpOverlay = class {
   constructor(host, sections = DEFAULT_SECTIONS) {
     this.host = host;
+    this.resize = () => this.layout();
     this.visible = false;
     injectHelpStyles();
     this.root = document.createElement("div");
@@ -140364,6 +140366,7 @@ var HelpOverlay = class {
       pointerEvents: "auto"
     });
     const card8 = document.createElement("div");
+    this.card = card8;
     card8.className = "molsysviewer-help-card";
     const header2 = document.createElement("div");
     header2.className = "molsysviewer-help-header";
@@ -140371,6 +140374,7 @@ var HelpOverlay = class {
     title.className = "molsysviewer-help-title";
     title.textContent = "Canvas Quick Reference";
     const closeBtn = document.createElement("button");
+    this.closeButton = closeBtn;
     closeBtn.type = "button";
     closeBtn.title = "Close (H or Esc)";
     closeBtn.className = "molsysviewer-help-close";
@@ -140380,20 +140384,36 @@ var HelpOverlay = class {
     header2.appendChild(closeBtn);
     card8.appendChild(header2);
     const grid = document.createElement("div");
+    this.grid = grid;
     grid.className = "molsysviewer-help-grid";
     grid.appendChild(makeSection("Mouse", sections.mouse));
     grid.appendChild(makeSection("Keyboard", sections.keyboard));
     card8.appendChild(grid);
     this.hostShortcuts = document.createElement("div");
     this.hostShortcuts.setAttribute("data-molsysviewer-host-shortcuts", "true");
-    this.hostShortcuts.style.marginTop = "20px";
     this.hostShortcuts.hidden = true;
-    card8.appendChild(this.hostShortcuts);
+    grid.appendChild(this.hostShortcuts);
     this.root.addEventListener("pointerdown", (ev) => {
       if (ev.target === this.root) this.hide();
     });
     this.root.appendChild(card8);
     this.host.appendChild(this.root);
+    if (typeof ResizeObserver !== "undefined") {
+      this.resizeObserver = new ResizeObserver(this.resize);
+      this.resizeObserver.observe(this.host);
+    }
+    window.addEventListener("resize", this.resize);
+  }
+  layout() {
+    const width = this.host.clientWidth, height = this.host.clientHeight;
+    if (!(width > 0 && height > 0)) return;
+    const size4 = getFloatingPanelSize(width, height);
+    this.card.style.width = `${size4.width}px`;
+    this.card.style.maxHeight = `${size4.height}px`;
+    this.card.style.fontSize = `${Math.max(13, Math.min(16, width / 70, height / 48))}px`;
+    const columns = size4.width >= 960 && !this.hostShortcuts.hidden ? 3 : size4.width >= 600 ? 2 : 1;
+    this.grid.style.gridTemplateColumns = `repeat(${columns}, minmax(0, 1fr))`;
+    this.hostShortcuts.style.gridColumn = columns === 2 ? "1 / -1" : "";
   }
   /** Runtime host capabilities, deliberately absent from portable scene state. */
   setHostShortcuts(value) {
@@ -140403,18 +140423,25 @@ var HelpOverlay = class {
     this.hostShortcuts.replaceChildren();
     this.hostShortcuts.hidden = rows.length === 0;
     if (rows.length) this.hostShortcuts.appendChild(makeSection("Desktop window", rows));
+    this.layout();
   }
   toggle() {
     this.visible ? this.hide() : this.show();
   }
   show() {
+    if (this.visible) return;
+    this.returnFocus = this.host.getRootNode?.()?.activeElement ?? document.activeElement;
     this.visible = true;
     this.root.style.display = "flex";
+    this.layout();
+    this.closeButton.focus?.({ preventScroll: true });
     this.onVisibilityChange?.(true);
     const onKey = (ev) => {
-      if (ev.target?.closest?.("input, textarea, [contenteditable]")) return;
-      if (!this.host.contains(ev.target)) return;
+      if (ev.ctrlKey || ev.metaKey || ev.altKey || ev.isComposing || ev.repeat) return;
+      if (ev.composedPath()[0]?.closest?.("input, textarea, [contenteditable]")) return;
+      if (!ev.composedPath().includes(this.host)) return;
       if (ev.key === "Escape" || ev.key.toLowerCase() === "h") {
+        ev.preventDefault();
         ev.stopPropagation();
         this.hide();
       }
@@ -140423,17 +140450,23 @@ var HelpOverlay = class {
     this.releaseKeyHandler = () => window.removeEventListener("keydown", onKey, true);
   }
   hide() {
+    const active = this.host.getRootNode?.()?.activeElement ?? document.activeElement;
+    const restoreFocus = active && this.root.contains(active);
     this.visible = false;
     this.root.style.display = "none";
     this.onVisibilityChange?.(false);
     this.releaseKeyHandler?.();
     this.releaseKeyHandler = void 0;
+    if (restoreFocus && this.returnFocus?.isConnected) this.returnFocus.focus?.({ preventScroll: true });
+    this.returnFocus = void 0;
   }
   isVisible() {
     return this.visible;
   }
   dispose() {
     this.hide();
+    this.resizeObserver?.disconnect();
+    window.removeEventListener("resize", this.resize);
     this.root.remove();
   }
 };
@@ -140992,8 +141025,8 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
   release.push(() => helpOverlay.dispose());
   c8.setHelpOpener(() => helpOverlay.show());
   const onHelpKey = (ev) => {
+    if (ev.ctrlKey || ev.metaKey || ev.altKey || ev.isComposing || ev.repeat) return;
     if (ev.target?.closest?.("input, textarea, [contenteditable]")) return;
-    if (!container.contains(ev.target)) return;
     if (ev.key.toLowerCase() === "v") {
       ev.preventDefault();
       ev.stopPropagation();
@@ -141005,6 +141038,12 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
     }
   };
   listen(container, "keydown", onHelpKey, true);
+  listen(window, "keydown", ((ev) => {
+    if (ev.key.toLowerCase() !== "h") return;
+    if (ev.target !== document.body && ev.target !== document.documentElement) return;
+    const shortcuts = model.get("host_shortcuts");
+    if (Array.isArray(shortcuts) && shortcuts.length) onHelpKey(ev);
+  }), true);
   if (isCinema) {
     const toast = document.createElement("div");
     toast.textContent = "Cinema Mode active. Press N/W for panels, H for help.";

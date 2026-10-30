@@ -62,6 +62,35 @@ def main():
         assert report["initial_binary_projection"], "Initial Qt data unnecessarily materialized numeric JSON"
         assert web._molsysviewer_qt_payload_handler.served
         chrome = window._molsysviewer_chrome
+        QApplication.setActiveWindow(window)
+        web.setFocus()
+        QTest.keyClick(web.focusProxy() or web, Qt.Key.Key_H)
+        wait(
+            lambda: (
+                evaluate("getComputedStyle(document.querySelector('.molsysviewer-help-card').parentElement).display")
+                == "flex"
+            ),
+            timeout=3,
+        )
+        evaluate(
+            "(() => {window.__helpPainted=false; requestAnimationFrame(()=>requestAnimationFrame(()=>window.__helpPainted=true));})()"
+        )
+        wait(lambda: evaluate("window.__helpPainted"))
+        window.grab().save(str(out / "help-native.png"))
+        QTest.keyClick(web.focusProxy() or web, Qt.Key.Key_H, Qt.KeyboardModifier.ControlModifier)
+        assert (
+            evaluate("getComputedStyle(document.querySelector('.molsysviewer-help-card').parentElement).display")
+            == "flex"
+        )
+        QTest.keyClick(web.focusProxy() or web, Qt.Key.Key_H, Qt.KeyboardModifier.ShiftModifier)
+        wait(
+            lambda: (
+                evaluate("getComputedStyle(document.querySelector('.molsysviewer-help-card').parentElement).display")
+                == "none"
+            ),
+            timeout=3,
+        )
+        report["help_keyboard"] = True
         assert window.menuWidget() is None, "The native host must not duplicate the canvas menus"
         assert window.windowFlags() & Qt.WindowType.FramelessWindowHint
         assert chrome.header.isVisible() and not window.statusBar().isVisible()
@@ -79,6 +108,22 @@ def main():
         QTest.mouseDClick(chrome.header, Qt.MouseButton.LeftButton, pos=QPoint(200, 15))
         wait(lambda: not window.isMaximized())
         wait(lambda: window.geometry().size() == geometry.size())
+        QTest.keyClick(QApplication.focusWidget() or web, Qt.Key.Key_H)
+        wait(
+            lambda: (
+                evaluate("getComputedStyle(document.querySelector('.molsysviewer-help-card').parentElement).display")
+                == "flex"
+            ),
+            timeout=3,
+        )
+        QTest.keyClick(web.focusProxy() or web, Qt.Key.Key_Escape)
+        wait(
+            lambda: (
+                evaluate("getComputedStyle(document.querySelector('.molsysviewer-help-card').parentElement).display")
+                == "none"
+            ),
+            timeout=3,
+        )
         _show_status(window, "Could not load the selected source.", kind="error")
         assert chrome.status.isVisible() and "Could not" in chrome.status.text()
         _show_status(window, "Ready.", kind="ready")
@@ -175,7 +220,13 @@ def main():
         assert actions["addons"].shortcut().toString() == "Ctrl+2"
         assert actions["restore_last"].shortcut().toString() == "Ctrl+Shift+R"
         assert actions["status_details"].shortcut().toString() == "Ctrl+Shift+D"
-        evaluate("document.querySelector('button[title=\"Help (H)\"]').click()")
+        QTest.keyClick(web.focusProxy() or web, Qt.Key.Key_H)
+        wait(
+            lambda: (
+                evaluate("getComputedStyle(document.querySelector('.molsysviewer-help-card').parentElement).display")
+                == "flex"
+            )
+        )
         # Help is shared, but desktop capabilities are present only in this host.
         assert "Ctrl+Shift+D" in evaluate("document.querySelector('[data-molsysviewer-host-shortcuts]').textContent")
         QTest.keyClick(web.focusProxy() or web, Qt.Key.Key_Escape)
@@ -236,6 +287,31 @@ def main():
         assert window.isFullScreen() and evaluate("Boolean(document.fullscreenElement)")
         _show_status(window, "Ready.", kind="ready")
         report["fullscreen_status_details"] = True
+        QTest.keyClick(web.focusProxy() or web, Qt.Key.Key_H)
+        wait(
+            lambda: (
+                evaluate("getComputedStyle(document.querySelector('.molsysviewer-help-card').parentElement).display")
+                == "flex"
+            )
+        )
+        help_bounds = evaluate("""(() => {
+            const card=document.querySelector('.molsysviewer-help-card'), r=card.getBoundingClientRect(),
+            host=card.parentElement.getBoundingClientRect();
+            return {width:r.width, height:r.height, hostWidth:host.width, hostHeight:host.height,
+                font:parseFloat(getComputedStyle(card).fontSize),
+                columns:getComputedStyle(card.querySelector('.molsysviewer-help-grid')).gridTemplateColumns.split(' ').length};
+        })()""")
+        assert 0 < help_bounds["width"] <= help_bounds["hostWidth"]
+        assert 0 < help_bounds["height"] <= help_bounds["hostHeight"]
+        report["help_layout"] = help_bounds
+        QTest.keyClick(web.focusProxy() or web, Qt.Key.Key_Escape)
+        wait(
+            lambda: (
+                evaluate("getComputedStyle(document.querySelector('.molsysviewer-help-card').parentElement).display")
+                == "none"
+            )
+        )
+        assert window.isFullScreen(), "Escape closes Help before leaving fullscreen"
         window.activateWindow()
         web.setFocus()
         # Deliver to WebEngine directly: Xvfb has no window manager to grant

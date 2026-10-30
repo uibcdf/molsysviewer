@@ -633,7 +633,7 @@
     "ChemicalStates receiving #269 remains separate"
   ],
   "implementation_commit": "7900263691cd96fcf74840357cc2e7ca8ef62914",
-  "human_visual_receiving": "Maintainer resumed checks; the four-point checklist and compatible launch command were supplied. Awaiting observations; no manual result inferred.",
+  "human_visual_receiving": "Partial maintainer receiving: status details/copy pass in normal/fullscreen; window manipulation preserves rotation, pan and zoom. H/h fails and is corrected/guarded under #284; the Help button works but the fixed-size card is too small on large windows. Geometry close/relaunch was clarified and remains pending; no passing result inferred.",
   "visual_inspection": {
     "scope": "real offscreen widget captures, not molecular GPU validation",
     "header": ".pytest_cache/qt-polish-20261030/header-status.png",
@@ -650,7 +650,7 @@
       282,
       283
     ],
-    "visual_receiving": "resumed; awaiting maintainer observations",
+    "visual_receiving": "partial; observations retained in human_visual_receiving, geometry and corrected Help await maintainer confirmation",
     "runtime_unchanged_between_commits": true,
     "unrelated_local_paths_preserved": 9,
     "temporary_archive_cleanup": "redundant provider tar archives removed; compatible source retained for the postponed human launch",

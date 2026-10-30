@@ -433,8 +433,8 @@ export const buildControls = (
     c.setHelpOpener(() => helpOverlay.show());
 
     const onHelpKey = (ev: KeyboardEvent) => {
+        if (ev.ctrlKey || ev.metaKey || ev.altKey || ev.isComposing || ev.repeat) return;
         if ((ev.target as HTMLElement)?.closest?.("input, textarea, [contenteditable]")) return;
-        if (!container.contains(ev.target as Node)) return;
         if (ev.key.toLowerCase() === "v") {
             ev.preventDefault();
             ev.stopPropagation();
@@ -448,6 +448,15 @@ export const buildControls = (
     // Listen inside the canvas: notebook hosts can use a shadow root, which
     // retargets window events and hides the actual focused input/container.
     listen(container, "keydown", onHelpKey as EventListener, true);
+    // A desktop WebEngine canvas can retain document-body focus. Only its
+    // explicit native capabilities opt into this fallback; notebook views
+    // continue to own keys solely within their own container/shadow root.
+    listen(window, "keydown", ((ev: KeyboardEvent) => {
+        if (ev.key.toLowerCase() !== "h") return;
+        if (ev.target !== document.body && ev.target !== document.documentElement) return;
+        const shortcuts = model.get("host_shortcuts");
+        if (Array.isArray(shortcuts) && shortcuts.length) onHelpKey(ev);
+    }) as EventListener, true);
 
     if (isCinema) {
         // Render a subtle, elegant, self-dismissing helper toast for accessibility

@@ -56,6 +56,18 @@ supplies these capabilities. They are runtime metadata, absent from widget
 preferences and portable scene snapshots. Ctrl+R is no longer bound to source
 replacement.
 
+H/h also opens Help when WebEngine retains document-body focus; the fallback
+requires live desktop capabilities and never claims a notebook's outer keys.
+Inputs, modified shortcuts and repeat/composition events are preserved.
+Help focuses its close control and restores the previous element on dismissal;
+Escape closes Help before leaving fullscreen. Mouse gestures on the native
+window buttons preserve canvas focus while keyboard Tab access remains.
+The card reuses Studio's bounded host-size calculation, caps width at 1200 CSS
+pixels, and grows text from 13 to 16 pixels. One, two or three columns adapt
+to available space and host capabilities; short canvases scroll vertically.
+Resize observers and key handlers are disposed with the controls. The real Qt
+guard must exercise actual H/h keys, not replace them with a Help-button click.
+
 The native reset-only context menu is not restored. The removed convenience
 movie action does not define another scene workflow; Movie remains owned by
 the shared UI and Python API. Demos and the recent-source list stay outside

@@ -62,6 +62,8 @@ def test_qt_live_workbench_full_render_gpu(tmp_path):
     assert report["all_mode_and_structure_indices"] is True
     assert report["modern_window_chrome"] is True
     assert report["host_shortcut_help"] is True
+    assert report["help_keyboard"] is True
+    assert report["help_layout"]["font"] >= 13
     assert report["fullscreen_status_details"] is True
     assert report["shared_studio_loading"] is True
     assert report["native_shortcuts"] is True

@@ -1,5 +1,16 @@
 # Development checkpoint
 
+**Help receiving — 2026-10-30:** #284 reproduces the maintainer's Qt H/h
+failure with actual keys, corrects document-body focus without claiming outer
+notebook keys, and makes Help reuse Studio's bounded host-size calculation.
+Text grows from 13 to 16 CSS pixels with one/two/three columns; Escape closes
+Help before fullscreen. Four directed Qt/transport/absence checks, an additional
+native presentation run, 332 JS cases and the complete three-scenario controls
+browser entry pass. The rendered Qt card was inspected. See the
+[receiving record](archive/help_keyboard_and_responsive_layout.md).
+Human status-copy and window/molecular-interaction checks pass; corrected Help
+and close/relaunch geometry await confirmation. Qt remains experimental.
+
 **Qt window polish — 2026-10-30:** #279/#280/#281 receive explicit status kinds,
 selectable/copyable full details in fullscreen, normal geometry/maximized-state
 restoration and host-specific shared Help. Ctrl+Shift+R replaces the ambiguous
@@ -15,7 +26,8 @@ a genuine no-site-packages guard; latest CI remains separately observed.
 Final-source Qt 41106975172 passes 14/14 and browser 41106975234 passes.
 All nine failed general/source jobs now reach the suite and report only the
 three retained-provider Pandas4Warning examples; #283 collection is corrected.
-The maintainer resumes visual receiving; observations remain pending.
+The maintainer's partial visual observations are retained in the receipt and
+the Help follow-up above; close/relaunch geometry still awaits confirmation.
 Qt remains experimental; no tag or package.
 
 **Local Qt window modernized — 2026-10-29:** the local host now has an integrated

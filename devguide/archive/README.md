@@ -1,5 +1,6 @@
 # Archived implementation plans
 
+- [Help keyboard and adaptive layout](help_keyboard_and_responsive_layout.md) — #284 receives real Qt H/h, focus/Escape ownership and host-relative Help sizing.
 - [Optional Qt child imports](qt_probe_eager_optional_import.md) — #283 defers helper dependencies to main and guards collection without site packages.
 - [Qt status details](qt_status_presentation.md) — #279 uses explicit status kinds and supports full-text copying in fullscreen.
 - [Qt normal window geometry](qt_window_geometry_restore.md) — #280 restores normal size and maximized state separately, with explicit-size precedence.

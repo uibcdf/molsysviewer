@@ -144,7 +144,10 @@ details affordance. Ctrl+Shift+D opens selectable/copyable status text. Native s
 remain registered on the window, including Ctrl+O, Ctrl+N and Ctrl+Shift+S/E.
 Shared Help lists Desktop window shortcuts only in the live Qt host;
 Ctrl+Shift+R restores the last recorded source, while Ctrl+R does not replace
-the system. This host metadata is absent from portable scenes.
+the system. This host metadata is absent from portable scenes. H/h also works
+with WebEngine document-body focus. Help owns keyboard focus while open,
+closes before fullscreen on Escape, and adapts its bounded size, text and
+columns to the actual canvas dimensions using the shared Studio size helper.
 See [the window contract](https://github.com/uibcdf/molsysviewer/blob/main/devguide/standalone_window_chrome.md).
 
 Keyboard exports use the **current persistent view**, including scene edits.
