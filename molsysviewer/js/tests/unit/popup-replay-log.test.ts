@@ -55,6 +55,8 @@ test("PopupReplayLog excludes transient HTML downloads and Studio replies from e
     log.record({ op: "set_trajectory_frame", index: 2 });
     log.record({ op: "html_export_ready", request_id: "download", html: "<html>runtime</html>" });
     log.record({ op: "studio_action_result", request_id: "creation", action: "create_shape", domain: "shapes", ok: true });
+    log.record({ op: "system_file_browse_result", request_id: "picker", ok: true, kind: "selection", paths: ["/private/input.pdb"] });
+    log.record({ op: "system_load_result", request_id: "load", ok: true, n_atoms: 22 });
     assert.equal(log.size, 1);
     assert.deepEqual(log.snapshot("canvas"), [{ op: "set_trajectory_frame", index: 2 }]);
     assert.deepEqual(log.snapshot("panel"), []);

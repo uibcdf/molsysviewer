@@ -1,5 +1,16 @@
 # Development checkpoint
 
+**Studio Load polished — 2026-10-30:** #286/#287 add a fixed action/result
+footer, per-source Options, contextual Append/pairing and action labels, Enter
+and explicit file acquisition. Jupyter browses the Python-host filesystem in
+bounded pages; Qt owns a native multi-file dialog. Selection does not load
+data. All 334 JS cases, 63 directed Python cases, four affected browser suites
+and the full native Qt guard pass; the final layout/Append case is additionally
+checked in the composite suite. The [receiving record](studio_load_polish_receiving_20261030.json)
+and archived reports retain scope and prior failures. Base hosted browser/Qt
+pass; general/source CI retains the known three MolSysMT#431 documentation
+failures. New hosted evidence remains separate. No tag/package or 1.0 release.
+
 **Dedicated Studio Load — 2026-10-30:** #265 adds Load first in the default
 menu, keeps System for inspection and starts empty live views in Load. Matching
 success opens System while deliberate navigation and drafts survive loading

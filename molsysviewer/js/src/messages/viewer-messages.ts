@@ -15,6 +15,20 @@ import {
 } from "../shapes";
 import { MolSysPayload } from "../plugin/structure";
 
+/** Correlated host-file acquisition; no molecular content or scene mutation. */
+export type SystemFileBrowseResult = {
+    op: "system_file_browse_result";
+    request_id: string;
+    ok: boolean;
+    error_message?: string;
+    kind?: "directory" | "selection";
+    paths?: string[];
+    directory?: string;
+    parent?: string | null;
+    entries?: Array<{ name: string; path: string; is_directory: boolean }>;
+    next_cursor?: [number, string, string] | null;
+};
+
 export type SystemSyncStateMessage = {
     op: "set_system_sync_state";
     state: "synchronized" | "editing" | "syncing" | "pending" | "sync_failed" | "uncertain" | "closed";
@@ -934,6 +948,7 @@ export type KnownViewerMessage =
     AddPharmacophoreMessage |
     { op: "interaction_action_result"; request_id: number; ok: boolean; analysis_name?: string; error_message?: string } |
     { op: "system_load_result"; request_id: string; ok: boolean; n_atoms?: number; n_structures?: number; n_sources?: number; error_message?: string } |
+    SystemFileBrowseResult |
     { op: "studio_action_result"; action: string; request_id: string; domain: string; ok: boolean; error_message?: string } |
     InteractionFrame | InteractionSeries | InteractionSummariesMessage |
     { op: "interaction_inspection"; request_id: number; result: InteractionInspection } |

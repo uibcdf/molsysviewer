@@ -1871,6 +1871,7 @@ export class MolSysViewerController {
         const onKeyDown = (event: KeyboardEvent) => {
             if (this.host.contains(event.target as Node) && this.contextMenu.handleEscape(event)) return;
             if ((event.target as HTMLElement)?.closest?.("[data-molsysviewer-context-menu]")) return;
+            if ((event.target as HTMLElement)?.closest?.("[data-molsysviewer-load-file-picker]")) return;
             if ((event.target as HTMLElement)?.closest?.("input, textarea, [contenteditable]")) return;
             if (!this.host.contains(event.target as Node)) return;
 
@@ -2555,6 +2556,7 @@ export class MolSysViewerController {
                     break;
                 case "interaction_action_result": this.groupPanel.updateInteractionCreation(msg.request_id, msg.ok, msg.analysis_name, msg.error_message); break;
                 case "system_load_result": this.groupPanel.updateSystemLoading(msg.request_id, msg.ok, msg.n_atoms, msg.n_structures, msg.n_sources, msg.error_message); break;
+                case "system_file_browse_result": this.groupPanel.updateSystemFiles(msg); break;
                 case "studio_action_result": this.groupPanel.updateStudioAction(msg); this.addonsPanel.updateStudioAction(msg); break;
                 case "interaction_inspection": this.groupPanel.updateInteractionInspection(msg.request_id, msg.result); break;
                 case "add_network_links": await this.shapes.addNetworkLinks(msg); break;

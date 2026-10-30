@@ -100,6 +100,19 @@ async function checkStudioLoading(page: any) {
         for (const item of items) await (window as any).__controller.handleMessage(item);
     }, messages);
     const row = (index: number, field: string) => page.locator(`[data-molsysviewer-load-source="${index}"] [data-molsysviewer-load-field="${field}"]`);
+    const options = async (index: number) => {
+        const details = page.locator(`[data-molsysviewer-load-options="${index}"]`);
+        if (!await details.evaluate((element: HTMLDetailsElement) => element.open)) await details.locator("summary").click();
+    };
+    let browseCalls = 0;
+    const browseReply = async () => {
+        const requests = await page.evaluate(() => (window as any).__messages.filter((m: any) => m.action === "browse_load_files"));
+        const request = requests[browseCalls++]; assert.ok(request);
+        authority.stdin.write(JSON.stringify(request) + "\n");
+        const reply = await receive();
+        await apply(reply.messages);
+        assert.equal(reply.records.length, 0, "browsing and selection must never load molecular data");
+    };
     const rendered = async () => page.evaluate(() => {
         const c = (window as any).__controller;
         const structure = c.plugin.managers.structure.hierarchy.current.structures[0].cell.obj.data;
@@ -159,14 +172,69 @@ async function checkStudioLoading(page: any) {
         await page.locator('[data-molsysviewer-group-panel-tab="system"]').click();
         await page.locator('[data-molsysviewer-system-empty="true"]').getByRole("button", { name: "Load systems", exact: true }).click();
         assert.ok(await row(0, "source").isVisible());
+        for (const [width, height] of [[1000, 480], [560, 360], [1000, 850]]) {
+            await page.locator("#root").evaluate((element, size) => {
+                (element as HTMLElement).style.width = size[0] + "px";
+                (element as HTMLElement).style.height = size[1] + "px";
+            }, [width, height]);
+            await page.waitForFunction(() => {
+                const button = document.querySelector<HTMLElement>('[data-molsysviewer-load-submit]')!;
+                const rect = button.getBoundingClientRect();
+                const host = document.getElementById("root")!.getBoundingClientRect();
+                return rect.top >= host.top && rect.bottom <= host.bottom
+                    && document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2) === button;
+            });
+            assert.ok(await row(0, "source").evaluate(element => {
+                const rect = element.getBoundingClientRect();
+                return document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2) === element;
+            }), "source and primary action must be reachable without initial scrolling");
+            assert.ok(await page.locator('[data-molsysviewer-load-browse="0"]').evaluate(element => {
+                const rect = element.getBoundingClientRect();
+                return document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2) === element;
+            }), "Browse must be visible next to the source even in a minimum-size canvas");
+        }
+        assert.equal(await row(0, "label").isVisible(), false, "advanced options start folded");
+        assert.equal(await page.locator('[data-molsysviewer-load-operation] option[value="append_structures"]').isDisabled(), true);
+        await row(0, "source").press("Enter");
+        assert.match(await page.locator('[data-molsysviewer-load-status]').textContent(), /Enter a path/);
+        await page.locator("#root").evaluate(element => { (element as HTMLElement).style.height = "480px"; });
+        const picker = page.locator('[data-molsysviewer-load-file-picker]');
+        await page.locator('[data-molsysviewer-load-browse="0"]').click();
+        await page.keyboard.press("Escape");
+        await browseReply();
+        assert.equal(await picker.isVisible(), false, "a late directory reply cannot reopen a cancelled picker");
+        assert.equal(await row(0, "source").inputValue(), "");
+        await page.locator('[data-molsysviewer-load-browse="0"]').click(); await browseReply();
+        await picker.getByLabel("Python directory", { exact: true }).fill(fixture.directory);
+        await picker.getByRole("button", { name: "Open folder", exact: true }).click(); await browseReply();
+        await picker.getByLabel("source-0.pdb", { exact: true }).check();
+        await picker.getByRole("button", { name: "Next page", exact: true }).click(); await browseReply();
+        assert.ok(await picker.getByText("unused-082.txt", { exact: true }).isVisible());
+        await picker.getByLabel("Show hidden files", { exact: true }).check(); await browseReply();
+        assert.ok(await picker.getByLabel(".hidden-source.pdb", { exact: true }).isVisible());
+        await picker.getByLabel("source-1.h5msm", { exact: true }).check();
+        await picker.getByRole("button", { name: "Use selected files", exact: true }).click();
+        assert.equal(await row(0, "source").inputValue(), fixture.paths[0]);
+        assert.equal(await row(1, "source").inputValue(), fixture.paths[1]);
+        await page.locator('[data-molsysviewer-load-remove-source="1"]').click();
+        await page.locator('[data-molsysviewer-load-browse="0"]').click(); await browseReply();
+        await picker.getByLabel("Python directory", { exact: true }).fill(fixture.directory + "/missing");
+        await picker.getByRole("button", { name: "Open folder", exact: true }).click(); await browseReply();
+        assert.match(await picker.getByRole("status").textContent(), /missing/);
+        await picker.getByRole("button", { name: "Cancel", exact: true }).click();
+        assert.equal(await row(0, "source").inputValue(), fixture.paths[0], "picker failure/cancellation retains the draft");
         for (let index = 0; index < 4; index++) {
             if (index) await page.locator('[data-molsysviewer-load-add-source="true"]').click();
             await row(index, "source").fill(fixture.paths[index]);
+            await options(index);
             await row(index, "label").fill(["A", "A", "C", "D"][index]);
         }
         const batch = await submit("shapes");
         assert.equal(batch.request.multiple, true);
         assert.equal(batch.records.length, 4);
+        assert.ok((await page.locator('[data-molsysviewer-load-add-source]').boundingBox())!.height < 48);
+        assert.ok((await page.locator('[data-molsysviewer-load-inspect]').boundingBox())!.height < 48,
+            "column action buttons must not grow into large empty blocks");
         assert.deepEqual(await rendered(), { atoms: 88, regions: 4 });
         assert.match(await page.locator('[data-molsysviewer-load-status="true"]').textContent(), /88 atoms, 1 structures, 4 source/);
         assert.equal(await row(0, "source").inputValue(), fixture.paths[0], "hierarchy refresh must retain the draft");
@@ -182,10 +250,10 @@ async function checkStudioLoading(page: any) {
         await page.locator('[data-molsysviewer-load-operation="true"]').selectOption("replace");
         await submit();
         assert.deepEqual(await rendered(), { atoms: 22, regions: 0 });
-        await page.locator('[data-molsysviewer-load-input-mode="true"]').selectOption("complementary");
         await row(0, "source").fill(fixture.complementary[0]);
         await row(0, "selection").fill("[0,1,2,3,4,5,6,7,8,9]");
         await page.locator('[data-molsysviewer-load-add-source="true"]').click();
+        await page.locator('[data-molsysviewer-load-input-mode="true"]').selectOption("complementary");
         await row(1, "source").fill(fixture.complementary[1]);
         assert.equal(await row(1, "selection").count(), 0, "complementary forms share selectors");
         const complementary = await submit();
@@ -196,9 +264,13 @@ async function checkStudioLoading(page: any) {
         const appended = await submit();
         assert.equal(appended.messages.find((m: any) => m.op === "system_load_result").n_structures, 2);
         await page.locator('[data-molsysviewer-load-input-mode="true"]').selectOption("independent");
+        assert.ok(await page.locator('[data-molsysviewer-load-submit]').isDisabled(),
+            "switching an Append draft to independent systems requires an explicit compatible operation");
+        assert.match(await page.locator('[data-molsysviewer-load-availability]').textContent(), /one system/);
         await page.locator('[data-molsysviewer-load-operation="true"]').selectOption("replace");
         for (let index = 0; index < 2; index++) {
             await row(index, "source").fill(fixture.trajectory);
+            await options(index);
             await row(index, "structures").fill(index === 0 ? "2,0" : "1,2");
             await row(index, "selection").fill(index === 0 ? "[0,2]" : "[1,3]");
         }

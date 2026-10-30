@@ -321,28 +321,142 @@ def main():
         report["fullscreen_roundtrip"] = True
         assert chrome.header.isVisible() and window.menuWidget() is None
         assert not window.statusBar().isVisible()
-        # Real shared Studio loading is the visible replacement for File > Open.
-        source_path = str(msm.systems["pentalanine"]["traj_pentalanine.h5msm"])
-        evaluate(
-            """(() => {
-            const c=window.__molsysviewerDocsController;
-            c.setPanelMode('navigate',true); c.groupPanel.openSection('system');
-            const root=document.querySelector('[data-molsysviewer-system-load="true"]');
-            if (!root.open) root.querySelector('summary').click();
-            const field=root.querySelector('[data-molsysviewer-load-field="source"]');
-            field.value="""
-            + json.dumps(source_path)
-            + """;
-            field.dispatchEvent(new Event('input',{bubbles:true}));
-            const operation=root.querySelector('[data-molsysviewer-load-operation]');
-            operation.value='replace'; operation.dispatchEvent(new Event('change',{bubbles:true}));
-            root.querySelector('[data-molsysviewer-load-submit]').click();
-        })()"""
+
+        # Exercise the visible Load workspace through genuine WebEngine input.
+        def web_click(selector):
+            evaluate(
+                "(() => {window.__clickPainted=false; requestAnimationFrame(()=>requestAnimationFrame(()=>window.__clickPainted=true));})()"
+            )
+            wait(lambda: evaluate("window.__clickPainted"))
+            target = evaluate(
+                """(() => {
+                const element=document.querySelector("""
+                + json.dumps(selector)
+                + """);
+                if (!element) throw Error('Missing visible control');
+                element.scrollIntoView({block:'nearest'});
+                const r=element.getBoundingClientRect(), x=r.x+r.width/2, y=r.y+r.height/2;
+                const hit=document.elementFromPoint(x,y);
+                return {x,y,visible:r.width>0&&r.height>0&&(hit===element||element.contains(hit))};
+            })()"""
+            )
+            assert target["visible"], f"Control is hidden or obscured: {selector}"
+            QTest.mouseClick(
+                web.focusProxy() or web,
+                Qt.MouseButton.LeftButton,
+                Qt.KeyboardModifier.NoModifier,
+                QPoint(round(target["x"]), round(target["y"])),
+            )
+            app.processEvents()
+
+        QTest.keyClick(web.focusProxy() or web, Qt.Key.Key_1, Qt.KeyboardModifier.ControlModifier)
+        web_click('[data-molsysviewer-group-panel-tab="load"]')
+        wait(
+            lambda: (
+                evaluate(
+                    "document.querySelector('[data-molsysviewer-group-panel-tab=load]').getAttribute('aria-current')"
+                )
+                == "page"
+            )
         )
+        source_path = str(msm.systems["pentalanine"]["traj_pentalanine.h5msm"])
+        field_selector = '[data-molsysviewer-load-source="0"] [data-molsysviewer-load-field="source"]'
+        dialog_errors = []
+        dialog_answers = []
+        picker_events = []
+        view.widget.on_msg(
+            lambda _widget, event, _buffers: (
+                picker_events.append(event) if event.get("action") == "browse_load_files" else None
+            )
+        )
+
+        def answer_file_dialog(accept):
+            deadline = time.monotonic() + 10
+
+            def answer():
+                dialog = app.activeModalWidget()
+                if not isinstance(dialog, QFileDialog):
+                    if time.monotonic() < deadline:
+                        QTimer.singleShot(30, answer)
+                    else:
+                        dialog_errors.append("No native file picker appeared")
+                    return
+                buttons = dialog.findChild(QDialogButtonBox)
+                if accept:
+                    dialog.selectFile(source_path)
+                    button = buttons.button(QDialogButtonBox.StandardButton.Open)
+                else:
+                    button = buttons.button(QDialogButtonBox.StandardButton.Cancel)
+                QTest.mouseClick(button, Qt.MouseButton.LeftButton)
+                dialog_answers.append(accept)
+
+            QTimer.singleShot(30, answer)
+
+        before_atoms = int(msm.get(view.molsys, n_atoms=True))
+        answer_file_dialog(False)
+        web_click('[data-molsysviewer-load-browse="0"]')
+        wait(
+            lambda: (
+                bool(dialog_errors)
+                or (
+                    dialog_answers == [False]
+                    and evaluate(
+                        "getComputedStyle(document.querySelector('[data-molsysviewer-load-file-picker]')).display"
+                    )
+                    == "none"
+                )
+            )
+        )
+        if dialog_errors:
+            window.grab().save(str(out / "file-picker-failure.png"))
+        assert not dialog_errors, {
+            "errors": dialog_errors,
+            "picker_events": picker_events,
+            "dom": evaluate(
+                "({picker:document.querySelector('[data-molsysviewer-load-file-picker]').style.display,active:document.activeElement.tagName})"
+            ),
+        }
+        assert evaluate("document.querySelector(" + json.dumps(field_selector) + ").value") == ""
+        assert int(msm.get(view.molsys, n_atoms=True)) == before_atoms
+        report["native_file_picker_cancelled"] = True
+        answer_file_dialog(True)
+        web_click('[data-molsysviewer-load-browse="0"]')
+        wait(
+            lambda: (
+                bool(dialog_errors)
+                or evaluate("document.querySelector(" + json.dumps(field_selector) + ").value") == source_path
+            )
+        )
+        assert not dialog_errors, dialog_errors
+        assert int(msm.get(view.molsys, n_atoms=True)) == before_atoms
+        report["native_file_picker_selected"] = True
+        # Also prove ordinary typing, without assigning input.value from JS.
+        web_click(field_selector)
+        QTest.keyClick(web.focusProxy() or web, Qt.Key.Key_A, Qt.KeyboardModifier.ControlModifier)
+        QTest.keyClicks(web.focusProxy() or web, source_path)
+        assert evaluate("document.querySelector(" + json.dumps(field_selector) + ").value") == source_path
+        web_click("[data-molsysviewer-load-operation]")
+        key_target = app.focusWidget() or web.focusProxy() or web
+        for key in (Qt.Key.Key_Home, Qt.Key.Key_Down, Qt.Key.Key_Return):
+            QTest.keyClick(key_target, key)
+        wait(lambda: evaluate("document.querySelector('[data-molsysviewer-load-operation]').value") == "replace")
+        evaluate(
+            "(() => {window.__loadPainted=false; requestAnimationFrame(()=>requestAnimationFrame(()=>window.__loadPainted=true));})()"
+        )
+        wait(lambda: evaluate("window.__loadPainted"))
+        window.grab().save(str(out / "load-native.png"))
+        web_click("[data-molsysviewer-load-submit]")
         wait(lambda: view.molsys.get_n_atoms() == 62)
         idle()
         assert "Loaded: 62 atoms" in evaluate("document.querySelector('[data-molsysviewer-load-status]').textContent")
+        assert (
+            evaluate(
+                "document.querySelector('[data-molsysviewer-group-panel-tab=system]').getAttribute('aria-current')"
+            )
+            == "page"
+        )
         report["shared_studio_loading"] = True
+        report["visible_studio_loading"] = True
         view.set_panel_mode(None, expanded=False)
         idle()
         print("fullscreen-completed", flush=True)
@@ -447,6 +561,7 @@ def main():
         app.processEvents()
         print("deletions-processed", flush=True)
         assert other_view.closed and not implicit_html.exists()
+        assert other_view._studio_file_picker is None
         try:
             other_bridge.send({"op": "clear_all"})
         except RuntimeError:

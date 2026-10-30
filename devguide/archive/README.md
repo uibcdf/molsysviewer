@@ -1,5 +1,8 @@
 # Archived implementation plans
 
+- [Studio Load polish](studio_load_usability_and_file_selection.md) — #286 simplifies short-canvas loading, keeps its action visible and adds explicit host-file acquisition.
+- [Visible Qt Load guard](qt_studio_load_guard_uses_hidden_form.md) — #287 replaces hidden DOM activation with paint-synchronized real input, file dialogs and replacement.
+
 - [Dedicated Studio Load](studio_loader_before_system.md) — #265 separates molecular input from System inspection, preserves drafts/navigation and guards floating Welcome, compact layout and popups.
 
 - [Qt repeated molecular loading](standalone_qt_live_demo_reload.md) — #35 receives the maintainer's ten visible replacements alongside the guarded transport/pixel fix.

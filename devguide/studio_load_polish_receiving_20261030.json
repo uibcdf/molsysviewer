@@ -1,0 +1,60 @@
+{
+  "scope": "Source receiving for Studio Load polish and visible Qt input; not installed artifact qualification",
+  "issues": [
+    "uibcdf/molsysviewer#286",
+    "uibcdf/molsysviewer#287"
+  ],
+  "base_viewer": "531f3814a160ad03ae56a0371a07e7fabd0f784b",
+  "environment": "molsyssuite@uibcdf_3.14",
+  "provider_initial": "97f6b58ff6096750a955459c58bdff67c325aae7",
+  "provider_final": "9fb77c3583b44dda31c0466348369de137301df9",
+  "provider_change": "PDB export validation and documentation; unrelated API-reference work preserved",
+  "local": {
+    "javascript": {
+      "passed": 334,
+      "failed": 0,
+      "skipped": 0
+    },
+    "directed_python": {
+      "passed": 63,
+      "failed": 0
+    },
+    "browser_suites": [
+      "controls-visibility",
+      "studio-usability",
+      "composite-load",
+      "panel-popup-welcome"
+    ],
+    "native_qt": {
+      "passed": 1,
+      "seconds": 30.63,
+      "platform": "Wayland",
+      "stack": "PySide6 / Qt 6.11.2",
+      "dialog_mode": "real Qt widgets; AA_DontUseNativeDialogs"
+    },
+    "screenshots_inspected": true,
+    "final_python_checks": {
+      "passed": 363,
+      "failed": 0,
+      "directed_loading_and_transport": 63,
+      "reporting_links_architecture": 300,
+      "warnings": 47,
+      "warning_kind": "LegacyH5MSMWarning"
+    }
+  },
+  "acquisition": {
+    "jupyter": "Python-host metadata listing; 80 entries and one lookahead; no molecular byte reads or browser upload",
+    "qt": "owner-window QFileDialog.getOpenFileNames; callback released at close",
+    "selection": "fills drafts only",
+    "reply": "request-correlated, excluded from replay"
+  },
+  "base_hosted": {
+    "browser": 41139611272,
+    "qt": 41139611271,
+    "source_pair": 41139611269,
+    "ci": 41139611296,
+    "source_general_outcome": "failure; three known Pandas4Warning documentation cases under uibcdf/molsysmt#431"
+  },
+  "hosted_final": "pending publication/inspection; no claim of all-green CI",
+  "publication": "no tag, package, release or 1.0 publication"
+}

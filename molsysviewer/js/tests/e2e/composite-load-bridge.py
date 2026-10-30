@@ -86,6 +86,9 @@ def studio_bridge(sources):
             else:
                 msm.h5msm.write(source, str(path))
             paths.append(str(path))
+        for index in range(83):
+            (Path(directory) / f"unused-{index:03}.txt").touch()
+        (Path(directory) / ".hidden-source.pdb").write_bytes(Path(paths[0]).read_bytes())
         complementary = [
             str(msm.systems["pentalanine"]["pentalanine.prmtop"]),
             str(msm.systems["pentalanine"]["pentalanine.inpcrd"]),
@@ -104,7 +107,15 @@ def studio_bridge(sources):
         sent = []
         view.widget.send = sent.append
         print(
-            json.dumps({"paths": paths, "complementary": complementary, "trajectory": str(trajectory_path)}), flush=True
+            json.dumps(
+                {
+                    "paths": paths,
+                    "directory": directory,
+                    "complementary": complementary,
+                    "trajectory": str(trajectory_path),
+                }
+            ),
+            flush=True,
         )
         for line in sys.stdin:
             event = json.loads(line)

@@ -24,6 +24,7 @@ export type PanelAction =
     | "addon_register_module"
     | "batch_scene_objects"
     | "load_systems"
+    | "browse_load_files"
     // Selection
     | "apply_selection_query"
     | "selection_query_preview_request"

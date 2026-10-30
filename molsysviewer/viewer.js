@@ -157882,6 +157882,152 @@ var SystemPanel = class {
   }
 };
 
+// src/ui/panels/load-file-picker.ts
+var LoadFilePicker = class {
+  constructor(ctx, onPick, onClose) {
+    this.ctx = ctx;
+    this.onPick = onPick;
+    this.onClose = onClose;
+    this.root = document.createElement("div");
+    this.path = document.createElement("input");
+    this.hidden = document.createElement("input");
+    this.entries = document.createElement("div");
+    this.status = document.createElement("div");
+    this.pending = null;
+    this.directory = "";
+    this.parentPath = null;
+    this.cursor = null;
+    this.selected = /* @__PURE__ */ new Set();
+    this.root.setAttribute("data-molsysviewer-load-file-picker", "true");
+    this.root.tabIndex = -1;
+    this.root.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        this.close();
+      }
+    });
+    Object.assign(this.root.style, { display: "none", flex: "1 1 0", minHeight: "0", flexDirection: "column", gap: "6px" });
+    const title = document.createElement("div");
+    title.textContent = "Files on the machine running Python";
+    title.style.fontWeight = "700";
+    title.title = "Choosing files fills the inputs; it does not load them.";
+    this.path.setAttribute("aria-label", "Python directory");
+    this.path.type = "text";
+    Object.assign(this.path.style, { width: "100%", minWidth: "0", boxSizing: "border-box", padding: "4px", color: "#f4f4f5", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "4px" });
+    this.path.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        this.request(this.path.value);
+      }
+    });
+    const navigation = document.createElement("div");
+    Object.assign(navigation.style, { display: "flex", gap: "6px", flexWrap: "wrap" });
+    this.go = makeButton2("Open folder", () => this.request(this.path.value));
+    this.parent = makeButton2("Parent folder", () => {
+      if (this.parentPath) this.request(this.parentPath);
+    });
+    const hiddenLabel = document.createElement("label");
+    this.hidden.type = "checkbox";
+    this.hidden.addEventListener("change", () => this.request(this.directory));
+    hiddenLabel.append(this.hidden, document.createTextNode(" Show hidden files"));
+    navigation.append(this.go, this.parent, hiddenLabel);
+    Object.assign(this.entries.style, { flex: "1 1 0", minHeight: "0", overflowY: "auto", display: "flex", flexDirection: "column", gap: "3px" });
+    this.entries.setAttribute("aria-label", "Python files and folders");
+    this.status.setAttribute("role", "status");
+    Object.assign(this.status.style, { fontSize: "11px", maxHeight: "48px", overflowY: "auto", overflowWrap: "anywhere" });
+    const footer = document.createElement("div");
+    Object.assign(footer.style, { flexShrink: "0", display: "flex", flexWrap: "wrap", gap: "6px" });
+    this.choose = makeButton2("Use selected files", () => {
+      const paths = Array.from(this.selected);
+      if (paths.length) {
+        this.close();
+        this.onPick(paths);
+      }
+    });
+    this.next = makeButton2("Next page", () => {
+      if (this.cursor) this.request(this.directory, this.cursor);
+    });
+    footer.append(this.choose, this.next, makeButton2("Cancel", () => this.close()));
+    this.root.append(title, this.path, navigation, this.entries, this.status, footer);
+  }
+  open() {
+    this.selected.clear();
+    this.root.style.display = "flex";
+    this.entries.replaceChildren();
+    this.root.focus({ preventScroll: true });
+    this.request(this.directory);
+  }
+  close() {
+    this.pending = null;
+    this.root.style.display = "none";
+    this.onClose();
+  }
+  request(directory, after) {
+    if (this.pending) return;
+    this.pending = `files-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    this.status.textContent = "Choosing files\u2026";
+    this.refreshControls();
+    try {
+      this.ctx.onAction("browse_load_files", { request_id: this.pending, directory, show_hidden: this.hidden.checked, after });
+    } catch (error2) {
+      this.update({ op: "system_file_browse_result", request_id: this.pending, ok: false, error_message: String(error2) });
+    }
+  }
+  update(result2) {
+    if (result2.request_id !== this.pending) return;
+    this.pending = null;
+    if (!result2.ok) {
+      this.status.textContent = result2.error_message || "Could not browse this directory.";
+    } else if (result2.kind === "selection") {
+      const paths = result2.paths ?? [];
+      this.close();
+      if (paths.length) this.onPick(paths);
+    } else {
+      this.directory = result2.directory ?? "";
+      this.path.value = this.directory;
+      this.parentPath = result2.parent ?? null;
+      this.cursor = result2.next_cursor ?? null;
+      this.entries.replaceChildren();
+      for (const entry of result2.entries ?? []) {
+        if (entry.is_directory) {
+          const button2 = makeButton2(entry.name + "/", () => this.request(entry.path));
+          button2.title = entry.path;
+          button2.style.textAlign = "left";
+          button2.style.flex = "0 0 auto";
+          this.entries.appendChild(button2);
+        } else {
+          const label2 = document.createElement("label");
+          label2.title = entry.path;
+          label2.style.overflowWrap = "anywhere";
+          const check = document.createElement("input");
+          check.type = "checkbox";
+          check.checked = this.selected.has(entry.path);
+          check.addEventListener("change", () => {
+            if (check.checked) this.selected.add(entry.path);
+            else this.selected.delete(entry.path);
+            this.refreshControls();
+            this.status.textContent = `${this.selected.size} file(s) selected.`;
+          });
+          label2.append(check, document.createTextNode(" " + entry.name));
+          this.entries.appendChild(label2);
+        }
+      }
+      this.status.textContent = `${this.selected.size} file(s) selected.`;
+      if (this.root.contains(document.activeElement)) this.path.focus({ preventScroll: true });
+    }
+    this.refreshControls();
+  }
+  refreshControls() {
+    const busy = this.pending !== null;
+    this.path.disabled = this.hidden.disabled = this.go.disabled = busy;
+    this.parent.disabled = busy || !this.parentPath;
+    this.next.disabled = busy || !this.cursor;
+    this.next.style.display = this.cursor ? "" : "none";
+    this.choose.disabled = busy || !this.selected.size;
+  }
+};
+
 // src/ui/panels/system-load-controls.ts
 function systemStructureIndices(text) {
   text = text.trim();
@@ -157929,116 +158075,186 @@ function systemLoadArguments(rows, input, mode, pair2) {
 var SystemLoadControls = class {
   constructor(ctx) {
     this.ctx = ctx;
+    this.root = document.createElement("div");
+    this.form = document.createElement("form");
+    this.fields = document.createElement("fieldset");
+    this.rowsHost = document.createElement("div");
+    this.status = document.createElement("div");
+    this.availability = document.createElement("div");
+    this.pair = document.createElement("input");
+    this.pairing = document.createElement("div");
+    this.advanced = /* @__PURE__ */ new WeakMap();
+    this.summaries = /* @__PURE__ */ new Map();
+    this.sourceInputs = /* @__PURE__ */ new Map();
     this.rows = [];
     this.pending = null;
     this.serial = 0;
-    this.root = document.createElement("details");
+    this.hasSystem = false;
+    this.pairingApplicable = false;
     this.root.setAttribute("data-molsysviewer-system-load", "true");
-    Object.assign(this.root.style, { flex: "0 0 auto", maxHeight: "50%", overflowY: "auto", fontSize: "11px" });
-    const summary = document.createElement("summary");
-    summary.textContent = "Load systems";
-    summary.style.cursor = "pointer";
-    this.root.appendChild(summary);
-    const card8 = makeSettingsCard("Sources");
-    this.root.appendChild(card8);
-    this.fields = document.createElement("fieldset");
-    Object.assign(this.fields.style, { margin: "0", padding: "0", border: "0", display: "flex", flexDirection: "column", gap: "8px", minWidth: "0" });
-    card8.appendChild(this.fields);
+    Object.assign(this.root.style, { display: "flex", flexDirection: "column", flex: "1 1 0", minHeight: "0", overflow: "hidden", fontSize: "12px" });
+    Object.assign(this.form.style, { display: "flex", flexDirection: "column", flex: "1 1 0", minHeight: "0", gap: "6px" });
+    this.form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      this.submit();
+    });
+    Object.assign(this.fields.style, { margin: "0", padding: "0 4px 0 0", border: "0", display: "flex", flexDirection: "column", gap: "6px", minWidth: "0", minHeight: "0", flex: "1 1 0", overflowY: "auto" });
+    this.rowsHost.style.flexShrink = "0";
+    this.fields.appendChild(this.rowsHost);
+    const add = makeButton2("Add source", () => this.addRow());
+    add.setAttribute("data-molsysviewer-load-add-source", "true");
+    add.style.flex = "0 0 auto";
+    this.fields.appendChild(add);
     this.input = makeStyledSelect([
-      { value: "independent", label: "One or more independent systems" },
+      { value: "independent", label: "Independent systems: one per source" },
       { value: "complementary", label: "Complementary files: one system" }
     ], "independent", () => this.renderRows());
     this.input.setAttribute("data-molsysviewer-load-input-mode", "true");
     this.input.setAttribute("aria-label", "Source interpretation");
+    this.input.style.flexShrink = "0";
     this.fields.appendChild(this.input);
-    this.operation = makeStyledSelect([
-      { value: "add", label: "Add to whole" },
-      { value: "replace", label: "Replace whole" },
-      { value: "append_structures", label: "Append structures of the current system" }
-    ], "add", () => {
-    });
-    this.operation.setAttribute("data-molsysviewer-load-operation", "true");
-    this.operation.setAttribute("aria-label", "Load operation");
-    this.fields.appendChild(this.operation);
-    const hint = document.createElement("div");
-    hint.textContent = "Use file paths accessible to the running Python session, or PDB IDs. Structures defaults to 0 (first frame); enter all for a full trajectory.";
-    hint.style.color = "rgba(244,244,245,0.65)";
-    this.fields.appendChild(hint);
-    this.rowsHost = document.createElement("div");
-    this.fields.appendChild(this.rowsHost);
-    const add = makeButton2("Add source", () => {
-      this.addRow();
-    });
-    add.setAttribute("data-molsysviewer-load-add-source", "true");
-    this.fields.appendChild(add);
-    const pairing = document.createElement("label");
-    this.pair = document.createElement("input");
     this.pair.type = "checkbox";
     this.pair.setAttribute("data-molsysviewer-load-pairing", "true");
-    pairing.appendChild(this.pair);
-    pairing.appendChild(document.createTextNode(" Pair selected structures in their listed order"));
-    this.fields.appendChild(pairing);
+    const pairingLabel = document.createElement("label");
+    pairingLabel.append(this.pair, document.createTextNode(" Pair structures in their listed order"));
+    this.pairing.appendChild(pairingLabel);
     const rule = document.createElement("div");
-    rule.textContent = "For combining several structures per source, declare pairing. Counts and available times must match. Coordinates are not aligned; whole keeps its first/current box.";
-    rule.style.color = "rgba(244,244,245,0.65)";
-    this.fields.appendChild(rule);
-    const submit = makeButton2("Load", () => this.submit());
-    submit.setAttribute("data-molsysviewer-load-submit", "true");
-    this.fields.appendChild(submit);
-    this.status = document.createElement("div");
+    rule.textContent = "Combining trajectories requires matching counts and times. Coordinates are not aligned; Whole keeps its current box.";
+    Object.assign(rule.style, { fontSize: "11px", color: "rgba(244,244,245,0.7)" });
+    this.pairing.appendChild(rule);
+    this.pairing.style.flexShrink = "0";
+    this.fields.appendChild(this.pairing);
+    const tips = workflowHelp("loading", [
+      "Files must be accessible to the running Python session. Browse selects files there; it does not upload files from your browser computer. You can also type a path or PDB ID.",
+      "Several PDBs: add one source per system and choose Independent systems. Each source keeps its own region. No alignment is performed.",
+      "Topology and trajectory: add both paths and choose Complementary files: one system. Options in the first source apply to the combined system.",
+      "Options default to all atoms and structure 0 (the first frame). Enter all for a complete trajectory, or an ordered zero-based list such as 0, 8, 3.",
+      "Appending structures requires an existing system with compatible atom identity and order. Selecting files only fills this draft; the primary button applies the chosen operation."
+    ]);
+    tips.style.flexShrink = "0";
+    this.fields.appendChild(tips);
+    this.form.appendChild(this.fields);
+    const footer = document.createElement("div");
+    footer.setAttribute("data-molsysviewer-load-footer", "true");
+    Object.assign(footer.style, { flexShrink: "0", display: "flex", flexDirection: "column", gap: "5px", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "6px" });
+    this.operation = makeStyledSelect([
+      { value: "add", label: "Add to Whole" },
+      { value: "replace", label: "Replace Whole" },
+      { value: "append_structures", label: "Append structures" }
+    ], "add", () => this.refreshState());
+    this.operation.setAttribute("data-molsysviewer-load-operation", "true");
+    this.operation.setAttribute("aria-label", "Load operation");
+    footer.appendChild(this.operation);
+    this.availability.setAttribute("data-molsysviewer-load-availability", "true");
+    this.availability.style.fontSize = "11px";
+    footer.appendChild(this.availability);
+    this.submitButton = makeButton2("Load system", () => this.submit());
+    this.submitButton.type = "submit";
+    this.submitButton.style.flex = "0 0 auto";
+    this.submitButton.setAttribute("data-molsysviewer-load-submit", "true");
+    footer.appendChild(this.submitButton);
     this.status.setAttribute("data-molsysviewer-load-status", "true");
     this.status.setAttribute("role", "status");
-    card8.appendChild(this.status);
-    card8.appendChild(workflowHelp("loading", [
-      "Several PDBs: choose Independent systems, add one source per PDB ID or file, then Add to whole. Each source keeps its own region. No alignment is performed.",
-      "Topology and trajectory: choose Complementary files: one system. Enter both paths and choose the structures in the first source; this loads one system, not two independent systems.",
-      "Structures are zero-based: all or 0, 8, 3. To combine multi-structure independent sources, declare pairing and use matching counts and times. Append structures requires compatible atom identity and order."
-    ]));
+    Object.assign(this.status.style, { maxHeight: "48px", overflowY: "auto", overflowWrap: "anywhere", fontSize: "11px" });
+    footer.appendChild(this.status);
+    this.form.appendChild(footer);
+    this.picker = new LoadFilePicker(ctx, (paths) => {
+      const index = this.pickTarget ? this.rows.indexOf(this.pickTarget) : -1;
+      if (index < 0) return;
+      this.rows[index].source = paths[0];
+      this.rows.splice(index + 1, 0, ...paths.slice(1).map((source) => ({ source, label: "", selection: "all", structures: "0" })));
+      this.renderRows();
+      this.sourceInput(index)?.focus();
+    }, () => {
+      this.form.style.display = "flex";
+      const index = this.pickTarget ? this.rows.indexOf(this.pickTarget) : -1;
+      this.sourceInput(index)?.focus();
+    });
+    this.root.append(this.form, this.picker.root);
     this.addRow();
   }
   open() {
-    this.root.open = true;
   }
   isPending() {
     return this.pending !== null;
   }
+  updateFiles(result2) {
+    this.picker.update(result2);
+  }
+  setSystemAvailable(available) {
+    if (!available && this.pending) return;
+    this.hasSystem = available;
+    if (!available && this.operation.value === "append_structures") this.operation.value = "add";
+    this.refreshState();
+  }
   updateResult(requestId, ok, atoms2, structures, sources, error2) {
     if (requestId !== this.pending) return false;
     this.pending = null;
+    if (ok && (atoms2 ?? 0) > 0) this.hasSystem = true;
     this.fields.disabled = false;
     this.root.setAttribute("aria-busy", "false");
     this.status.textContent = ok ? `Loaded: ${atoms2} atoms, ${structures} structures, ${sources} source(s).` : error2 || "Loading failed.";
+    this.refreshState();
     return true;
   }
   addRow() {
     this.rows.push({ source: "", label: "", selection: "all", structures: "0" });
     this.renderRows();
+    this.sourceInput(this.rows.length - 1)?.focus();
+  }
+  sourceInput(index) {
+    return index < 0 ? null : this.sourceInputs.get(this.rows[index]) ?? null;
   }
   renderRows() {
     this.rowsHost.replaceChildren();
+    this.summaries.clear();
+    this.sourceInputs.clear();
     this.rows.forEach((row3, index) => {
       const card8 = makeSettingsCard(`Source ${index + 1}`);
       card8.setAttribute("data-molsysviewer-load-source", String(index));
-      const field2 = (key2, label2) => {
+      const field2 = (parent, key2, label2) => {
         const wrap = document.createElement("label");
         wrap.textContent = label2;
-        Object.assign(wrap.style, { display: "flex", flexDirection: "column", gap: "3px" });
+        Object.assign(wrap.style, { display: "flex", flexDirection: "column", gap: "3px", minWidth: "0", flex: "1 1 auto" });
         const control = document.createElement("input");
         control.type = "text";
         control.value = row3[key2];
         control.setAttribute("data-molsysviewer-load-field", key2);
+        if (key2 === "source") this.sourceInputs.set(row3, control);
         Object.assign(control.style, { width: "100%", boxSizing: "border-box", background: "rgba(255,255,255,0.05)", color: "#f4f4f5", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "4px", padding: "4px" });
         control.addEventListener("input", () => {
           row3[key2] = control.value;
+          this.refreshState();
         });
         wrap.appendChild(control);
-        card8.appendChild(wrap);
+        parent.appendChild(wrap);
       };
-      field2("source", "File path or PDB ID");
+      const sourceRow = document.createElement("div");
+      Object.assign(sourceRow.style, { display: "flex", alignItems: "flex-end", gap: "6px" });
+      field2(sourceRow, "source", "File path or PDB ID");
+      const browse = makeButton2("Browse\u2026", () => {
+        this.pickTarget = row3;
+        this.form.style.display = "none";
+        this.picker.open();
+      });
+      browse.title = "Choose files accessible to the Python session";
+      browse.style.flex = "0 0 auto";
+      browse.setAttribute("data-molsysviewer-load-browse", String(index));
+      sourceRow.appendChild(browse);
+      card8.appendChild(sourceRow);
       if (this.input.value === "independent" || index === 0) {
-        field2("label", "Label (optional)");
-        field2("selection", "Atoms: MolSysMT selection or [0, 2, ...]");
-        field2("structures", "Structures: 0, 8, 3 or all (0-based)");
+        const options = document.createElement("details");
+        options.open = this.advanced.get(row3) ?? false;
+        options.setAttribute("data-molsysviewer-load-options", String(index));
+        options.addEventListener("toggle", () => this.advanced.set(row3, options.open));
+        const summary = document.createElement("summary");
+        summary.style.cursor = "pointer";
+        this.summaries.set(row3, summary);
+        options.appendChild(summary);
+        field2(options, "label", "Label (optional)");
+        field2(options, "selection", "Atoms: MolSysMT selection or [0, 2, ...]");
+        field2(options, "structures", "Structures: 0, 8, 3 or all (0-based)");
+        card8.appendChild(options);
       }
       if (this.rows.length > 1) {
         const remove3 = makeButton2("Remove input", () => {
@@ -158051,21 +158267,53 @@ var SystemLoadControls = class {
       }
       this.rowsHost.appendChild(card8);
     });
+    this.refreshState();
+  }
+  refreshState() {
+    this.input.style.display = this.rows.length > 1 ? "" : "none";
+    this.operation.style.display = this.hasSystem ? "" : "none";
+    this.operation.disabled = this.pending !== null;
+    const append2 = this.operation.querySelector('option[value="append_structures"]');
+    if (append2) append2.disabled = !this.hasSystem || this.rows.length > 1 && this.input.value === "independent";
+    this.pairingApplicable = this.input.value === "independent" && this.rows.length > 1 && this.rows.some((row3) => {
+      try {
+        const value = systemStructureIndices(row3.structures);
+        return value === "all" || value.length > 1;
+      } catch {
+        return false;
+      }
+    });
+    this.pairing.style.display = this.pairingApplicable ? "" : "none";
+    this.pair.disabled = !this.pairingApplicable;
+    for (const [row3, summary] of this.summaries) {
+      const frames = row3.structures === "0" ? "first structure" : row3.structures === "all" ? "all structures" : `structures: ${row3.structures}`;
+      summary.textContent = `Options \xB7 ${frames}${!row3.selection.trim() || row3.selection.trim() === "all" ? " \xB7 all atoms" : " \xB7 selected atoms"}`;
+    }
+    const multiple = this.input.value === "independent" && this.rows.length > 1;
+    this.submitButton.textContent = this.pending ? "Loading\u2026" : !this.hasSystem ? `Load system${multiple ? "s" : ""}` : this.operation.value === "replace" ? "Replace system" : this.operation.value === "append_structures" ? "Append structures" : `Add system${multiple ? "s" : ""}`;
+    const invalidAppend = this.operation.value === "append_structures" && (!this.hasSystem || multiple);
+    this.availability.textContent = invalidAppend ? "Append accepts one system: use complementary files or one source." : "";
+    this.availability.style.display = invalidAppend ? "" : "none";
+    this.submitButton.disabled = this.pending !== null || invalidAppend;
+    this.status.style.display = this.status.textContent ? "" : "none";
   }
   submit() {
     if (this.pending) return;
     try {
-      const args = systemLoadArguments(this.rows, this.input.value, this.operation.value, this.pair.checked);
+      if (this.operation.value === "append_structures" && !this.hasSystem) throw new Error("Load a system before appending structures.");
+      const args = systemLoadArguments(this.rows, this.input.value, this.operation.value, this.pairingApplicable && this.pair.checked);
       this.pending = `load-${Date.now()}-${++this.serial}-${Math.random().toString(36).slice(2)}`;
       this.fields.disabled = true;
       this.root.setAttribute("aria-busy", "true");
       this.status.textContent = "Loading\u2026";
+      this.refreshState();
       this.ctx.onAction("load_systems", { ...args, request_id: this.pending });
     } catch (error2) {
       this.pending = null;
       this.fields.disabled = false;
       this.root.setAttribute("aria-busy", "false");
       this.status.textContent = String(error2 instanceof Error ? error2.message : error2);
+      this.refreshState();
     }
   }
 };
@@ -158078,20 +158326,14 @@ var LoadPanel = class {
     this.key = "load";
   }
   mount(host) {
+    Object.assign(host.style, { overflowY: "hidden", gap: "6px" });
     host.appendChild(makeSectionHeader("Load systems"));
-    const intro = document.createElement("div");
-    intro.textContent = "Load one system, add several, or combine topology and coordinates or a trajectory.";
-    Object.assign(intro.style, { fontSize: "12px", lineHeight: "1.5", color: "rgba(244,244,245,0.75)" });
-    host.appendChild(intro);
     this.controls = new SystemLoadControls(this.ctx);
-    Object.assign(this.controls.root.style, { maxHeight: "none", overflowY: "visible", fontSize: "12px" });
-    const summary = this.controls.root.querySelector("summary");
-    if (summary) summary.style.display = "none";
-    this.controls.open();
     host.appendChild(this.controls.root);
     this.inspect = makeButton2("Inspect system", this.onInspect);
     this.inspect.setAttribute("data-molsysviewer-load-inspect", "true");
     this.inspect.style.display = "none";
+    this.inspect.style.flex = "0 0 auto";
     host.appendChild(this.inspect);
   }
   setVisible(_visible) {
@@ -158103,7 +158345,11 @@ var LoadPanel = class {
     return this.controls?.isPending() ?? false;
   }
   setSystemAvailable(available) {
+    this.controls?.setSystemAvailable(available);
     if (this.inspect) this.inspect.style.display = available ? "" : "none";
+  }
+  updateFiles(result2) {
+    this.controls?.updateFiles(result2);
   }
   updateResult(requestId, ok, atoms2, structures, sources, error2) {
     return this.controls?.updateResult(requestId, ok, atoms2, structures, sources, error2) ?? false;
@@ -164531,6 +164777,9 @@ var GroupPanel = class {
       if (this.activeTab === "load") this.switchTab("system", false);
     }
   }
+  updateSystemFiles(result2) {
+    this.loadPanel?.updateFiles(result2);
+  }
   updateStudioAction(result2) {
     for (const { panel } of this.panels.values()) {
       if ("updateStudioAction" in panel) panel.updateStudioAction(result2);
@@ -167608,6 +167857,7 @@ var MolSysViewerController = class _MolSysViewerController {
     const onKeyDown = (event) => {
       if (this.host.contains(event.target) && this.contextMenu.handleEscape(event)) return;
       if (event.target?.closest?.("[data-molsysviewer-context-menu]")) return;
+      if (event.target?.closest?.("[data-molsysviewer-load-file-picker]")) return;
       if (event.target?.closest?.("input, textarea, [contenteditable]")) return;
       if (!this.host.contains(event.target)) return;
       if (event.key === "Escape") {
@@ -168249,6 +168499,9 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "system_load_result":
           this.groupPanel.updateSystemLoading(msg.request_id, msg.ok, msg.n_atoms, msg.n_structures, msg.n_sources, msg.error_message);
+          break;
+        case "system_file_browse_result":
+          this.groupPanel.updateSystemFiles(msg);
           break;
         case "studio_action_result":
           this.groupPanel.updateStudioAction(msg);
@@ -171956,7 +172209,7 @@ var PopupReplayLog = class {
     if (!message || typeof message !== "object") return;
     const op4 = operation(message);
     if (!op4) return;
-    if (op4 === "html_export_ready" || op4 === "studio_action_result") return;
+    if (op4 === "html_export_ready" || op4 === "studio_action_result" || op4 === "system_file_browse_result" || op4 === "system_load_result") return;
     if (op4 === "mount_addon_panel" || op4 === "addon_panel_message") return;
     if (op4 === "clear_all") {
       this.entries = [];

@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping
 from typing import Any
 
+from ._file_selection import HANDLERS as FILE_SELECTION_HANDLERS
 from .addons import HANDLERS as ADDON_HANDLERS
 from .batch import batch_scene_objects
 from .interactions import HANDLERS as INTERACTION_HANDLERS
@@ -42,6 +43,7 @@ STUDIO_RESULT_DOMAINS = {
 def _build_handlers() -> dict[str, PanelActionHandler]:
     handlers: dict[str, PanelActionHandler] = {}
     for domain in (
+        FILE_SELECTION_HANDLERS,
         ADDON_HANDLERS,
         INTERACTION_HANDLERS,
         {

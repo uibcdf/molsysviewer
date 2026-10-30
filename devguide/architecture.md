@@ -147,6 +147,16 @@ successful load opens System when the user is still in Load. Explicit navigation
 is preserved during loading and later frame/hierarchy refreshes. The same form
 serves the notebook, canvas popup, detached Studio and Qt live host.
 
+The editor scrolls separately from its action/result footer; source options and
+help are disclosed progressively. Contextual labels and Append/pairing
+availability preserve explicit scientific intent. Browse acquires paths, never
+loads data automatically: Jupyter requests bounded directory pages from its
+Python host, and the local Qt owner provides its native multi-file dialog.
+The filesystem action reads directory metadata rather than trajectory bytes.
+Replies are request-correlated, runtime-only and excluded from popup replay;
+the native callback is released with the host. See the
+[Studio contract](studio_interaction_contract.md#card-and-navigation).
+
 Studio's private action handler delegates to public `view.load` with digestion
 enabled. Request-specific runtime acknowledgments report completion/error and
 counts, without entering the molecular replay journal. A failure retains the

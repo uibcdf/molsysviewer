@@ -66,6 +66,9 @@ def test_qt_live_workbench_full_render_gpu(tmp_path):
     assert report["help_layout"]["font"] >= 13
     assert report["fullscreen_status_details"] is True
     assert report["shared_studio_loading"] is True
+    assert report["visible_studio_loading"] is True
+    assert report["native_file_picker_cancelled"] is True
+    assert report["native_file_picker_selected"] is True
     assert report["native_shortcuts"] is True
     if env.get("QT_QPA_PLATFORM") == "xcb":
         assert report["qt_platform"] == "xcb"

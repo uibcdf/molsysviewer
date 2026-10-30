@@ -363,6 +363,9 @@ def create_standalone_qt0_window(
     channel.enable_popout = include_popout
     view._qt_process_events = getattr(app, "processEvents", None)  # noqa: SLF001
     webview._molsysviewer_view = view
+    view._studio_file_picker = lambda: QFileDialog.getOpenFileNames(
+        window, "Choose molecular input files", "", "All files (*)"
+    )[0]
 
     _install_qt_fullscreen(window=window, webview=webview)
     _install_qt_downloads(window=window, webview=webview, QFileDialog=QFileDialog)
@@ -379,6 +382,7 @@ def create_standalone_qt0_window(
         for download in list(window._molsysviewer_downloads):
             if not download.isFinished():
                 download.cancel()
+        view._studio_file_picker = None
         view.close()
         bridge._close()
         webview.stop()

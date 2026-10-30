@@ -829,6 +829,10 @@ export class GroupPanel {
         }
     }
 
+    updateSystemFiles(result: import("../messages/viewer-messages").SystemFileBrowseResult): void {
+        this.loadPanel?.updateFiles(result);
+    }
+
     updateStudioAction(result: import("./panels/saved-list-tools").StudioActionResult): void {
         // Saved-selection editors can create another domain's object. Only the
         // matching request owner consumes a reply; the domain stays canonical.

@@ -31,6 +31,25 @@ workflows remain available before loading molecules. Browser-only exports omit
 Python-backed Load. Legacy tab orders gain Load before System; subsequent
 deliberate ordering remains window-local. The Python API is unchanged (#265).
 
+Load uses a scrollable editor with a fixed action/result footer. The initial
+source and action remain reachable at the default 480 px notebook height and
+minimum desktop geometry. Per-source Options retain labels, atom/frame filters
+and disclosure state; defaults stay all atoms and frame 0. The action label
+states Load/Add/Replace/Append and Enter submits the form. Append is unavailable
+without a system or for several independent sources. Pairing is offered for
+independent multi-structure inputs and remains an explicit scientific choice.
+
+Browse fills source drafts without loading or reading molecular contents.
+Jupyter uses private, read-only Python-host directory requests; each page retains
+at most 80 entries plus one lookahead during a directory scan. This is not a
+universal memory bound: selected paths and other GUI state retain their own
+scope. Hidden files, parent/manual navigation, paging and multiple selection
+are available. Browser-local upload is not implemented by this action. Qt owns
+a native multi-file dialog through a private callback that is cleared at host
+close. Replies are correlated to the requesting picker and excluded from popup
+replay. Cancel/Escape and stale replies do not change molecular data or drafts;
+picker focus owns Escape before Studio/fullscreen shortcuts (#286/#287).
+
 New floating Studio shells start with background unlocked, so gestures outside
 the card can rotate the molecular canvas. An explicitly inherited lock state
 and a deliberate user lock survive hiding/reopening the same panel; this is
