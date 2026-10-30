@@ -69,3 +69,118 @@ Record the selected arrangement, responsibilities and empty/loaded behavior
 before implementation. If adopted, add browser guards covering the loading
 entry points, preserved workflows and popup parity. No release milestone or
 immediate interface change is assigned by this report.
+
+## Design review — 2026-10-30 (proposed, not yet adopted)
+
+The current `SystemPanel.mount()` mounts the system header, context inspector,
+`SystemLoadControls` and chain strips in one section. `GroupPanel` defaults to
+System, `openSystemLoading()` opens that same section, and `setStructure()`
+unconditionally switches to it. The form already owns independent and
+complementary sources, Add/Replace/Append structures, source labels, atom/frame
+selection, ordered pairing, correlated progress/results and error recovery.
+This proposal relocates that existing owner; it creates no scientific operation.
+
+### Alternatives
+
+| Arrangement | Benefit | Cost |
+| --- | --- | --- |
+| Keep loading in System | One entry, familiar to existing users | Loading controls compete with hierarchy, sequence and inspection |
+| Separate first Load entry | Directly exposes the entry task and simplifies System | Adds one navigation entry and requires clear post-load behavior |
+| Load/Inspect horizontal tabs inside System | Separates tasks without another sidebar entry | Loading remains hidden behind System and adds nested navigation |
+
+Recommend the separate **Load** entry, with **Load systems** as its panel title.
+The verb states the user's task more directly than Loader; Loader remains the
+issue's working name until the maintainer decides. Keep System immediately
+after Load in the default order, retaining the existing other sections and
+respecting subsequent user customization. A saved order that predates Load
+inserts it before System rather than appending it at the end.
+
+### Responsibilities and navigation
+
+- Load owns source entry, source interpretation, Add/Replace/Append, per-source
+  labels/selections/structures, pairing, progress, result and retry. Its form
+  opens when entering the section and preserves drafts across navigation.
+- System retains loaded-system identity, hierarchy/sequence, the context
+  inspector, group interaction and the existing annotation overlays. Before
+  loading it explains the empty state and links to Load.
+- On first opening Studio for a genuinely empty molecular view, select Load;
+  for a view initialized with a molecular system, select System. Later scene
+  updates preserve the user's chosen section. Shape-only/addon workflows keep
+  their explicit navigation rather than being redirected to Load.
+- After a successful GUI load, remain in Load with the existing result counts
+  and an explicit **Inspect system** action. This preserves the workspace for
+  adding another source. Automatically opening System is a viable alternative,
+  but would move the user away from repeated loading and any remaining drafts.
+- Welcome, context-menu loading and the existing internal `openSystemLoading()`
+  entry all open this one form. Opening Load does not clear a scene or selection.
+  Native Ctrl+O retains its current file-chooser/replacement contract.
+
+### Availability and lifecycle
+
+Use the existing live-Python authority boundary: notebook, local Qt and their
+qualified live popup endpoints expose loading. Static HTML without Python does
+not gain a fictitious loader; it retains System and the existing inspection
+tools. Paths continue to address the Python host's filesystem; this proposal
+does not invent browser upload or local/remote path equivalence. Future demo
+and recent-source controls remain separately deferred under #277.
+
+Keep one `SystemLoadControls` instance per panel endpoint. Structure/hierarchy
+rebuilds must not destroy its pending request or redirect the active section.
+Results are consumed by their request identifier. Failure preserves the form,
+error and prior valid scene; success keeps the existing Add/Replace/Append and
+source-region semantics. The detached panel still forwards the same events to
+the Python authority. Preserve endpoint cleanup and independent local layout.
+
+Python remains primary: `view.load()` and its arguments, source/index maps,
+box policy, molecular editing boundary and addon ownership are unchanged.
+No new public wrapper is needed. The MolSysMT refactor is not a prerequisite
+for evaluating this navigation; qualification against its new contract remains
+part of #269 when the provider is ready.
+
+### Implementation and acceptance after the design decision
+
+Extract a small registered Load panel around the existing form and delegate
+load results/opening to it. Keep System's inspector/strips lifecycle independent.
+Replace unconditional navigation on structure updates with the chosen startup
+and explicit-navigation rules. Preserve saved tab order and compact navigation.
+
+Receive the real single/batch/progressive and complementary-file flows, all
+three operations, invalid input and rejected-load recovery, pending form/drafts
+through rebuilds and section changes, and initial empty/populated/shape-only
+views. Check normal, compact, fullscreen, canvas-popup and detached-panel
+navigation with the existing controls-visibility, composition and loading
+browser owners. Source tests use the fixed compatible provider while #269 is
+pending; this does not qualify its evolving implementation or a new package.
+
+The remaining design decisions are the visible name (Load versus Loader),
+separate-entry adoption and whether successful loading stays in Load. No UI
+implementation is authorized by this analysis alone.
+
+### Maintainer direction and questions to resolve — 2026-10-30
+
+The maintainer favors the proposed direction and explicitly requests further
+discussion before proceeding. Keep this as a proposal; neither the visible
+name nor post-load navigation is a final implementation decision yet.
+
+Review three concrete user boundaries before adopting it:
+
+1. **Draft versus completed load.** Keeping the workspace available should
+   preserve unsubmitted inputs and scientific options. After success, show
+   clearly which request was applied and what the next action will do. An
+   unchanged Add request can intentionally duplicate a system through Python;
+   the GUI should make a repeat action explicit without inventing automatic
+   molecular deduplication or routine confirmation dialogs.
+2. **Inputs versus loaded sources.** Removing a row only removes a draft input;
+   it must not imply that atoms are removed from the live system. Loaded-system
+   inspection stays in System and source-region visualization stays in Regions.
+   General molecular editing still belongs to the MolSysMT addon.
+3. **Meaning of Load.** The current proposal covers molecular systems and
+   complementary trajectories. Interaction-analysis imports and scene/session
+   restoration have existing owning panels; decide their discoverability
+   deliberately rather than moving every file operation into this panel.
+
+Compare first load, adding another source, loading several sources together,
+an error/retry and Python-driven replacement while another section is open.
+The navigation should preserve explicit user work rather than switching tabs
+on every structural update. This design discussion remains independent of
+the pending MolSysMT implementation, which still owns scientific semantics.
