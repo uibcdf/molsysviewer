@@ -71,3 +71,9 @@ human observations to the earlier status-copy and molecular-input results;
 it does not infer a separate visual acceptance of the adaptive Help card or
 the ten-replacement observation required by #35. Hosted Qt 41114314894 passes;
 the other applicable campaigns retain their own states.
+
+## Visual acceptance — 2026-10-30
+
+The maintainer subsequently accepts the new Help size and confirms that the
+card is more legible than before. This completes the visual receiving for
+this Help refinement; #35 and platform/artifact qualification remain separate.

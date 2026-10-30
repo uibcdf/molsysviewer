@@ -626,21 +626,20 @@
     "release": false
   },
   "remaining": [
-    "maintainer visual review of responsive Help appearance",
     "explicit human ten replacements for #35",
     "platform/artifact/popout scope #109/#113/#51",
     "public 0.23.0 Pandas4Warning baseline under MolSysMT#431",
     "ChemicalStates receiving #269 remains separate"
   ],
   "implementation_commit": "7900263691cd96fcf74840357cc2e7ca8ef62914",
-  "human_visual_receiving": "Maintainer confirms working H/h on the received correction and window-size recovery after closing and reopening the application. Earlier status details/copy pass in normal/fullscreen, and window manipulation preserves rotation, pan and zoom. Adaptive Help appearance has not been separately accepted; no ten-replacement human result is inferred.",
+  "human_visual_receiving": "Maintainer confirms working H/h, window-size recovery after close/relaunch, and accepts the new Help size and improved legibility. Earlier status details/copy pass in normal/fullscreen, and window manipulation preserves rotation, pan and zoom. This receives the local window-polish checklist; no ten-replacement human result or additional platform/artifact qualification is inferred.",
   "visual_inspection": {
     "scope": "real offscreen widget captures, not molecular GPU validation",
     "header": ".pytest_cache/qt-polish-20261030/header-status.png",
     "details": ".pytest_cache/qt-polish-20261030/status-details.png",
     "outcome": "legible header text and selectable full-text/copy window"
   },
-  "temporary_resources": "Test-owned cache retained for evidence and the postponed human launch with the compatible provider; native windows are closed. Shared environments and nine unrelated local paths remain preserved.",
+  "temporary_resources": "Test-owned cache retained for evidence and the compatible provider needed for local receiving while #269 remains pending; native windows are closed. Shared environments and nine unrelated local paths remain preserved.",
   "test_provenance_fix_commit": "cf57138055eb68d7c7233fdbf6c2a8b3d541a2ee",
   "closeout": {
     "issues_closed": [
@@ -650,10 +649,10 @@
       282,
       283
     ],
-    "visual_receiving": "H/h and close/relaunch size confirmed; adaptive Help appearance and #35 ten-replacement receiving remain separate",
+    "visual_receiving": "local window-polish checklist accepted; #35 ten-replacement and platform/artifact receiving remain independent",
     "runtime_unchanged_between_commits": true,
     "unrelated_local_paths_preserved": 9,
-    "temporary_archive_cleanup": "redundant provider tar archives removed; compatible source retained for the postponed human launch",
+    "temporary_archive_cleanup": "redundant provider tar archives removed; compatible source retained for standalone receiving while #269 remains pending",
     "publication": "none",
     "provider_unchanged_after_tests": true,
     "latest_test_helper_fix": "6020e580; Qt and browser gates pass; all nine failed general/source jobs reach the test suite and report the retained provider Pandas4Warning examples, without optional-Qt collection errors."
@@ -679,7 +678,7 @@
     "window_size_close_relaunch": "confirmed by maintainer",
     "status_details_and_copy_normal_fullscreen": "previously confirmed by maintainer",
     "window_manipulation_preserves_molecular_input": "previously confirmed by maintainer",
-    "responsive_help_appearance": "not separately confirmed",
+    "responsive_help_appearance": "accepted by maintainer: new size is very good and card is more legible than before",
     "ten_replacements_issue_35": "not inferred from this feedback",
     "hosted_qt": {
       "run": 41114314894,

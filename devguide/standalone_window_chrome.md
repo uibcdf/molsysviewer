@@ -204,3 +204,7 @@ window/molecular-interaction checks. Hosted Qt
 passes on that correction. Adaptive Help appearance is not separately accepted
 by this feedback, and the explicit ten-replacement human observation under
 #35 remains independent. Other hosted campaigns keep their own outcomes.
+
+The maintainer subsequently accepts the new Help size and its improved
+legibility. The local window-polish checklist is received; the independent
+#35 ten-replacement observation and platform/artifact qualification remain.

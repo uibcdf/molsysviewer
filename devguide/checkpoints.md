@@ -10,7 +10,7 @@ browser entry pass. The rendered Qt card was inspected. See the
 [receiving record](archive/help_keyboard_and_responsive_layout.md).
 Human status-copy and window/molecular-interaction checks pass. The maintainer
 also confirms working H/h and restored window size after close/relaunch.
-The responsive Help appearance has not been separately confirmed. Hosted Qt
+The maintainer also accepts the new Help size and improved legibility. Hosted Qt
 41114314894 passes on 1488a8a7; other applicable campaigns remain separately
 observed. Qt remains experimental.
 
