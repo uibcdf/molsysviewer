@@ -104,7 +104,7 @@
       "scope": "core real Mol*/Chromium, Python 3.14 and fixed source provider"
     },
     "hosted": {
-      "status": "Qt checkpoint success; final fixture/evidence commit qualification remains separate",
+      "status": "both Qt checkpoints pass 14/14; final general/source/browser campaigns observed in progress, with policy and Conda governance success; no whole-matrix green claim",
       "commit": "7900263691cd96fcf74840357cc2e7ca8ef62914",
       "qt_run": 41101688171,
       "browser_run": 41101687647,
@@ -195,6 +195,156 @@
           }
         ],
         "scope": "X11/SwiftShader source-host receiving; not native-GPU or new installed Viewer qualification"
+      },
+      "final_source": {
+        "commit": "cf57138055eb68d7c7233fdbf6c2a8b3d541a2ee",
+        "observed_at": "2026-10-30T18:15:23.392316+00:00",
+        "lanes": [
+          {
+            "conclusion": "",
+            "databaseId": 41104547524,
+            "status": "in_progress",
+            "workflowName": "Python 3.14 source pair"
+          },
+          {
+            "conclusion": "success",
+            "databaseId": 41104548258,
+            "status": "completed",
+            "workflowName": "Conda publication governance"
+          },
+          {
+            "conclusion": "",
+            "databaseId": 41104547626,
+            "status": "in_progress",
+            "workflowName": "CI_e2e"
+          },
+          {
+            "conclusion": "success",
+            "databaseId": 41104547391,
+            "status": "completed",
+            "workflowName": "Experimental Qt diagnostics"
+          },
+          {
+            "conclusion": "success",
+            "databaseId": 41104548046,
+            "status": "completed",
+            "workflowName": "MolSysSuite policy"
+          },
+          {
+            "conclusion": "",
+            "databaseId": 41104547663,
+            "status": "in_progress",
+            "workflowName": "CI"
+          }
+        ],
+        "all_green_claimed": false,
+        "qt": {
+          "run": 41104547391,
+          "conclusion": "success",
+          "artifact_id": 13001550396,
+          "sha256": "755960842c9936f7a00fd21fcd1ba612e1381673020f3fb1fb2536ad42797fe9",
+          "size_bytes": 1449977,
+          "distinct_cases": 14,
+          "junit": [
+            {
+              "name": "pytest",
+              "errors": "0",
+              "failures": "0",
+              "skipped": "0",
+              "tests": "1",
+              "time": "15.423",
+              "timestamp": "2026-10-30T18:11:22.577586+00:00",
+              "hostname": "runnervmnwato"
+            },
+            {
+              "name": "pytest",
+              "errors": "0",
+              "failures": "0",
+              "skipped": "0",
+              "tests": "11",
+              "time": "30.895",
+              "timestamp": "2026-10-30T18:12:20.637535+00:00",
+              "hostname": "runnervmnwato"
+            },
+            {
+              "name": "pytest",
+              "errors": "0",
+              "failures": "0",
+              "skipped": "0",
+              "tests": "2",
+              "time": "38.887",
+              "timestamp": "2026-10-30T18:11:39.926518+00:00",
+              "hostname": "runnervmnwato"
+            }
+          ],
+          "scope": "X11/SwiftShader source-host receiving, not native hardware or installed package qualification"
+        }
+      },
+      "previous_checkpoint": [
+        {
+          "conclusion": "success",
+          "databaseId": 41101688499,
+          "status": "completed",
+          "workflowName": "Documentation notebooks"
+        },
+        {
+          "conclusion": "success",
+          "databaseId": 41101688588,
+          "status": "completed",
+          "workflowName": "MolSysSuite policy"
+        },
+        {
+          "conclusion": "cancelled",
+          "databaseId": 41101688842,
+          "status": "completed",
+          "workflowName": "Conda publication governance"
+        },
+        {
+          "conclusion": "success",
+          "databaseId": 41101687662,
+          "status": "completed",
+          "workflowName": "Ruff Lint"
+        },
+        {
+          "conclusion": "success",
+          "databaseId": 41101688171,
+          "status": "completed",
+          "workflowName": "Experimental Qt diagnostics"
+        },
+        {
+          "conclusion": "success",
+          "databaseId": 41101687647,
+          "status": "completed",
+          "workflowName": "CI_e2e"
+        },
+        {
+          "conclusion": "failure",
+          "databaseId": 41101688215,
+          "status": "completed",
+          "workflowName": "Python 3.14 source pair"
+        },
+        {
+          "conclusion": "failure",
+          "databaseId": 41101687711,
+          "status": "completed",
+          "workflowName": "CI"
+        }
+      ],
+      "superseded_cancellation_attempts": {
+        "runs": [
+          41101687711,
+          41101688215
+        ],
+        "applied": false,
+        "result": "GitHub rejected cancellation because both runs were already completed; their actual failure conclusions remain preserved."
+      },
+      "prior_failure_review": {
+        "logs": [
+          ".pytest_cache/qt-polish-20261030/previous-core-failures.log",
+          ".pytest_cache/qt-polish-20261030/previous-source-failures.log"
+        ],
+        "observed_test_failures": "Linux general CI and Linux/Windows source-pair failed-test summaries report the same three Pandas4Warning documentation examples on the retained public provider baseline. Other job conclusions remain separate. Provider issue MolSysMT#431 is fixed in later source; no baseline-pin or warning-filter change here.",
+        "macos_collection": "The direct macOS job log identifies missing optional PySide6 in the new helper; #283 corrects this distinct test regression. Do not attribute these collection failures to the old Pandas warnings."
       }
     },
     "read_only_recovery": {
@@ -249,5 +399,35 @@
     "details": ".pytest_cache/qt-polish-20261030/status-details.png",
     "outcome": "legible header text and selectable full-text/copy window"
   },
-  "temporary_resources": "Test-owned cache retained for evidence and the postponed human launch with the compatible provider; native windows are closed. Shared environments and nine unrelated local paths remain preserved."
+  "temporary_resources": "Test-owned cache retained for evidence and the postponed human launch with the compatible provider; native windows are closed. Shared environments and nine unrelated local paths remain preserved.",
+  "test_provenance_fix_commit": "cf57138055eb68d7c7233fdbf6c2a8b3d541a2ee",
+  "closeout": {
+    "issues_closed": [
+      279,
+      280,
+      281,
+      282,
+      283
+    ],
+    "visual_receiving": "explicitly postponed by maintainer",
+    "runtime_unchanged_between_commits": true,
+    "unrelated_local_paths_preserved": 9,
+    "temporary_archive_cleanup": "redundant provider tar archives removed; compatible source retained for the postponed human launch",
+    "publication": "none",
+    "provider_unchanged_after_tests": true,
+    "latest_test_helper_fix": "local dependency-absence and actual-widget guards pass; successor CI will receive this correction"
+  },
+  "additional_test_defect": {
+    "issue": 283,
+    "scope": "new test helper, not production runtime",
+    "observed": "macOS core job 124219876361 / run 41101687711 fails doctest collection with missing optional PySide6",
+    "cause": "helper module imported Qt eagerly before marker deselection",
+    "fix": "move optional imports inside main; genuine isolated python -I -S import guard",
+    "recovery": {
+      "passed": 2,
+      "seconds": 3.15,
+      "junit": ".pytest_cache/qt-polish-20261030/optional-import-recovery.xml"
+    },
+    "log": ".pytest_cache/qt-polish-20261030/macos-ci-job.log"
+  }
 }

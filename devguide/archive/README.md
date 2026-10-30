@@ -1,5 +1,6 @@
 # Archived implementation plans
 
+- [Optional Qt child imports](qt_probe_eager_optional_import.md) — #283 defers helper dependencies to main and guards collection without site packages.
 - [Qt status details](qt_status_presentation.md) — #279 uses explicit status kinds and supports full-text copying in fullscreen.
 - [Qt normal window geometry](qt_window_geometry_restore.md) — #280 restores normal size and maximized state separately, with explicit-size precedence.
 - [Qt shortcut Help](qt_host_shortcut_help.md) — #281 exposes native capabilities in shared Help and names source restoration explicitly.

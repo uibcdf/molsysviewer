@@ -4,21 +4,21 @@ import json
 import sys
 from pathlib import Path
 
-import molsysviewer.standalone_qt as standalone
-from molsysviewer.standalone_qt.chrome import _install_window_chrome
-from molsysviewer.standalone_qt.geometry import _capture_geometry, _restore_geometry
-from molsysviewer.standalone_qt.status import _StatusMessage
-from molsysviewer.standalone_qt.utils import (
-    _capture_window_size,
-    _load_qt_shell_state,
-    _persist_shell_state,
-    _show_status,
-)
-from PySide6 import QtCore, QtGui, QtWidgets
-from PySide6.QtTest import QTest
-
 
 def main():
+    import molsysviewer.standalone_qt as standalone
+    from molsysviewer.standalone_qt.chrome import _install_window_chrome
+    from molsysviewer.standalone_qt.geometry import _capture_geometry, _restore_geometry
+    from molsysviewer.standalone_qt.status import _StatusMessage
+    from molsysviewer.standalone_qt.utils import (
+        _capture_window_size,
+        _load_qt_shell_state,
+        _persist_shell_state,
+        _show_status,
+    )
+    from PySide6 import QtCore, QtGui, QtWidgets
+    from PySide6.QtTest import QTest
+
     app = QtWidgets.QApplication([])
     window = QtWidgets.QMainWindow()
     window.resize(700, 500)

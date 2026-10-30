@@ -147,3 +147,28 @@ loads; the widget guard checks misleading filenames, duration, hover targeting,
 normal/maximized/fullscreen size, saved metadata, legacy restoration, explicit
 dimensions and offscreen-coordinate clamping. Offscreen widget checks are not
 GPU, multi-monitor or supported-platform qualification.
+
+Hosted Qt [41101688171](https://github.com/uibcdf/molsysviewer/actions/runs/41101688171)
+passes all 14 distinct cases on functional source `79002636`. Its original ZIP
+12997823413 matches SHA-256
+`e87b7d7721310c60b7bb01f0d5ffa72951e21ddd427fd4c50bdf324fb4e216a6`.
+This is X11/SwiftShader source-host receiving, separate from native Wayland/GPU
+and installed-package qualification. Final `cf571380` changes only the export
+test's provider provenance and evidence; runtime bytes remain identical.
+Its hosted campaigns retain their observed states in the receipt. The original
+Python full run keeps its one provenance failure; directed recovery covers
+3,318 distinct passing cases across attempts, not one clean full run.
+Maintainer visual receiving is explicitly postponed.
+
+Final-source Qt [41104547391](https://github.com/uibcdf/molsysviewer/actions/runs/41104547391)
+also passes 14/14 on `cf571380`; original ZIP 13001550396 matches SHA-256
+`755960842c9936f7a00fd21fcd1ba612e1381673020f3fb1fb2536ad42797fe9`.
+General/source/browser campaigns retain their timestamped states in the receipt;
+no complete green matrix or new artifact compatibility is claimed.
+
+The full pytest lane also collects child helpers for doctests before marker
+filtering. Keep optional Qt/Viewer imports inside a child's main entry point.
+[#283](archive/qt_probe_eager_optional_import.md) corrects the new widget
+helper's eager imports; its isolated `python -I -S` guard proves collection
+without optional packages, while the actual Qt receiving remains separate.
+The failing macOS collection campaigns are retained as failures.

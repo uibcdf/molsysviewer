@@ -4,7 +4,8 @@
 selectable/copyable full details in fullscreen, normal geometry/maximized-state
 restoration and host-specific shared Help. Ctrl+Shift+R replaces the ambiguous
 source-restoration binding; Ctrl+Shift+D reads status details. Native
-Wayland/WebEngine, widget/API checks, 332 JS cases and 44 browser suites pass.
+Wayland/WebEngine, widget/API checks, 332 JS cases, 44 browser suites and
+hosted Qt 41101688171 (14/14) pass.
 Python receiving covers 3,318 distinct cases across the original run and #282
 provenance recovery (21 skips), not one clean full run. Hosted states remain in the [polish receipt](standalone_window_polish_receiving_20261030.json).
 The test provider is reconstructed from 71fbe4f46 with the unchanged ABI3 binary;
