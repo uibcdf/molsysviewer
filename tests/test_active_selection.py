@@ -1,4 +1,5 @@
 import molsysmt as msm
+import numpy as np
 import pytest
 from molsysviewer.active_selection import _combine
 from molsysviewer.loaders.load_molsysmt import load_from_molsysmt
@@ -423,3 +424,66 @@ def test_context_action_expand_selection_uses_loaded_index_space_for_subset():
     assert view.active_selection.atom_indices == list(range(10))
     assert view._test_message_log[-1]["op"] == "set_active_selection"  # noqa: SLF001
     assert view._test_message_log[-1]["atom_indices"] == list(range(10))  # noqa: SLF001
+
+
+@pytest.mark.parametrize("partial", [False, True])
+def test_active_selection_set_preserves_atoms_with_unknown_chain_membership(partial):
+    view = demo["dialanine"]
+    try:
+        molsys = view.molsys
+        molsys.topology.atoms["chain_index"] = molsys.topology.atoms["chain_index"].astype(object)
+        if partial:
+            molsys.topology.atoms.loc[0, "chain_index"] = None
+        else:
+            molsys.topology.atoms["chain_index"] = None
+        before = molsys.topology.atoms.copy(deep=True)
+        coordinates = msm.pyunitwizard.get_value(molsys.structures.coordinates, to_unit="nm")
+        coordinates_before = coordinates.copy()
+
+        # Keep this unit guard on selection metadata. The older provider's
+        # history snapshot has a separate nullable chain-label projection bug.
+        with view.history.suspended():
+            view.active_selection.set([0, 1, 0])
+
+        assert view.active_selection.atom_indices == [0, 1]
+        assert view.active_selection.chain_indices == ([0] if partial else [])
+        assert view.active_selection.group_indices == [0]
+        assert molsys.topology.atoms.equals(before)
+        current = msm.pyunitwizard.get_value(molsys.structures.coordinates, to_unit="nm")
+        assert np.shares_memory(current, coordinates)
+        np.testing.assert_array_equal(current, coordinates_before)
+        assert view._test_message_log[-1]["atom_indices"] == [0, 1]  # noqa: SLF001
+    finally:
+        view.close()
+
+
+@pytest.mark.parametrize("drop_topology", [False, True])
+def test_active_selection_set_retains_atoms_when_metadata_domains_are_absent(drop_topology):
+    source_view = demo["dialanine"]
+    try:
+        source = source_view.molsys
+        states = msm.ChemicalStates(n_atoms=source.get_n_atoms())
+        domains = source.structures if drop_topology else [source.topology, states, source.structures]
+        molsys = msm.convert(domains, to_form="molsysmt.MolSys")
+    finally:
+        source_view.close()
+    view = load_from_molsysmt(molecular_system=molsys)
+    try:
+        molsys = view.molsys
+        coordinates = msm.pyunitwizard.get_value(molsys.structures.coordinates, to_unit="nm")
+        coordinates_before = coordinates.copy()
+
+        view.active_selection.set([3, 0, 3])
+
+        assert view.active_selection.atom_indices == [3, 0]
+        assert view.active_selection.component_indices == []
+        assert view.active_selection.group_indices == ([] if drop_topology else [0])
+        assert (molsys.chemical_states is None) is drop_topology
+        if not drop_topology:
+            assert molsys.chemical_states.n_chemical_states == 0
+        assert (molsys.topology is None) is drop_topology
+        current = msm.pyunitwizard.get_value(molsys.structures.coordinates, to_unit="nm")
+        assert np.shares_memory(current, coordinates)
+        np.testing.assert_array_equal(current, coordinates_before)
+    finally:
+        view.close()

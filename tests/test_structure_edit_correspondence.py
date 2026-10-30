@@ -8,6 +8,7 @@ import pytest
 
 import molsysviewer as msv
 from molsysviewer import pyunitwizard as puw
+from tests._edit_helpers import remove_structures_in_place
 
 
 @pytest.fixture
@@ -140,11 +141,8 @@ def test_same_object_structure_replacement_uses_the_previously_projected_axis(vi
     source = view.load_blocks[0]
     original = puw.get_value(target.structures.coordinates, to_unit="nm").copy()
     view.player.go_to_structure(2)
-    edited = msm.remove(target, structure_indices=[1], to_form="molsysmt.MolSys")
-    # Announce a public domain replacement on the actual bound object, without
-    # requiring newer provider in-place removal semantics at the backend floor.
-    target.structures = edited.structures
-    target.interactions = edited.interactions
+    # The bound object retains identity while every molecular domain is remapped.
+    remove_structures_in_place(target, [1])
     view.apply_system_edit(target, structure_index_map=[0, 2], interactions_policy="preserve")
     assert view.molsys is target and view.player.index == 1
     np.testing.assert_array_equal(puw.get_value(target.structures.coordinates, to_unit="nm"), original[[0, 2]])

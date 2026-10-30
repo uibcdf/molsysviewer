@@ -13,12 +13,16 @@ from molsysviewer import pyunitwizard as puw
 
 @pytest.fixture(scope="module")
 def source_system():
-    return msm.extract(
+    molsys = msm.extract(
         msv.demo["pentalanine"].molsys,
         selection=list(range(10)),
         structure_indices=[0, 8, 3],
         to_form="molsysmt.MolSys",
     )
+    # This positive composition fixture declares one chain explicitly; the
+    # legacy pentalanine file does not assign its atoms to the stored chain row.
+    msm.set(molsys, element="atom", chain_index=0)
+    return molsys
 
 
 def _single(source_system):
@@ -76,10 +80,12 @@ def test_single_and_nested_complementary_forms_keep_one_system_intent(source_sys
     pdb = tmp_path / "source.pdb"
     msm.convert(source, to_form=str(pdb))
     mixed = _view()
-    mixed.load([pdb, complementary], multiple=True, labels=["File", "Forms"])
+    # A full molecular composition supplies its independent chemistry explicitly.
+    complete_forms = [source.topology, source.chemical_states, source.structures]
+    mixed.load([pdb, complete_forms], multiple=True, labels=["File", "Forms"])
     assert mixed.molsys.get_n_atoms() == 20
     assert mixed.load_blocks[0]["origin"]["reference"] == str(pdb)
-    assert len(mixed.load_blocks[1]["origin"]["items"]) == 2
+    assert len(mixed.load_blocks[1]["origin"]["items"]) == 3
 
 
 def test_source_atom_and_reordered_frame_maps_resolve_actual_coordinates(source_system):

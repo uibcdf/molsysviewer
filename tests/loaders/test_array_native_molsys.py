@@ -109,3 +109,83 @@ def test_array_native_payload_rejects_nonfinite_coordinates(dialanine_view):
 
     with pytest.raises(ValueError, match="coordinates must contain only finite"):
         serialize_array_native_molsys(molsys)
+
+
+@pytest.mark.parametrize("encoder", ["json", "array"])
+def test_static_payload_uses_the_declared_reference_state(dialanine_view, encoder):
+    from molsysviewer.loaders.json_molsys import serialize_json_molsys
+
+    molsys = dialanine_view.molsys.copy()
+    states = molsys.chemical_states
+    original = states.get_bonds(chemical_state=0).copy(deep=True)
+    second = states.append_state()
+    states._set_reference_index(second)
+    coordinates = puw.get_value(molsys.structures.coordinates, to_unit="nm")
+    coordinates_before = coordinates.copy()
+
+    def payload():
+        return serialize_json_molsys(molsys) if encoder == "json" else serialize_array_native_molsys(molsys).metadata
+
+    # State zero has the original peptide edges; the declared reference is empty.
+    assert "bonds" not in payload()
+    assert states.reference_chemical_state_index == second
+    assert states.get_bonds(chemical_state=0).equals(original)
+    assert np.shares_memory(puw.get_value(molsys.structures.coordinates, to_unit="nm"), coordinates)
+    np.testing.assert_array_equal(puw.get_value(molsys.structures.coordinates, to_unit="nm"), coordinates_before)
+
+    states._set_reference_index(0)
+    bonds = payload()["bonds"]
+    assert bonds["indexA"][:2] == [0, 1]
+    assert bonds["indexB"][:2] == [1, 2]
+    assert len(bonds["indexA"]) == len(original)
+
+
+@pytest.mark.parametrize("encoder", ["json", "array"])
+def test_static_payload_rejects_ambiguous_reference_state(dialanine_view, encoder):
+    import molsysmt as msm
+    from molsysviewer.loaders.json_molsys import serialize_json_molsys
+
+    molsys = dialanine_view.molsys.copy()
+    states = molsys.chemical_states
+    states.append_state()
+    states._set_reference_index(None)
+
+    with pytest.raises(msm.StructuralInconsistencyError, match="no reference state"):
+        if encoder == "json":
+            serialize_json_molsys(molsys)
+        else:
+            serialize_array_native_molsys(molsys)
+    assert states.reference_chemical_state_index is None
+    assert states.n_chemical_states == 2
+
+
+@pytest.mark.parametrize("chemistry", ["absent", "zero_states", "unknown", "complete_empty"])
+def test_static_payload_preserves_unavailable_and_empty_chemistry(dialanine_view, chemistry):
+    import molsysmt as msm
+    from molsysviewer.loaders.json_molsys import serialize_json_molsys
+
+    molsys = dialanine_view.molsys.copy()
+    states = None if chemistry == "absent" else msm.ChemicalStates(n_atoms=molsys.get_n_atoms())
+    if chemistry in {"unknown", "complete_empty"}:
+        states.append_state()
+    if chemistry == "complete_empty":
+        states._states[0].connectivity_completeness = "complete"
+    domains = molsys.structures if states is None else [molsys.topology, states, molsys.structures]
+    molsys = msm.convert(domains, to_form="molsysmt.MolSys")
+    states = molsys.chemical_states
+    coordinates = puw.get_value(molsys.structures.coordinates, to_unit="nm")
+    coordinates_before = coordinates.copy()
+    count = None if states is None else states.n_chemical_states
+    completeness = msm.get(molsys, connectivity_completeness=True) if count else None
+
+    payload = serialize_json_molsys(molsys)
+    binary = serialize_array_native_molsys(molsys)
+
+    assert "bonds" not in payload
+    assert "bonds" not in binary.metadata
+    assert molsys.chemical_states is states
+    assert np.shares_memory(puw.get_value(molsys.structures.coordinates, to_unit="nm"), coordinates)
+    np.testing.assert_array_equal(puw.get_value(molsys.structures.coordinates, to_unit="nm"), coordinates_before)
+    assert (None if states is None else states.n_chemical_states) == count
+    if count:
+        assert msm.get(molsys, connectivity_completeness=True) == completeness

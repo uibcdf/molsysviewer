@@ -71,7 +71,13 @@ def _atom_attribute(molsys: Any, attribute: str) -> Any:
 
 
 def serialize_static_molsys_payload(molsys: Any, n_atoms: int) -> dict[str, Any]:
-    """Return the canonical JSON-compatible topology shared by both encoders."""
+    """Return stable inventory and reference-state bonds for both encoders.
+
+    Stored edges come from ChemicalStates, independently of Topology. Missing
+    chemistry or a collection without states contributes no explicit edges;
+    this does not assert complete connectivity. An ambiguous reference raises
+    instead of selecting a state or inferring chemistry from coordinates.
+    """
     group_indices = _atom_attribute(molsys, "group_index")
     chain_indices = _atom_attribute(molsys, "chain_index")
 
@@ -119,7 +125,10 @@ def serialize_static_molsys_payload(molsys: Any, n_atoms: int) -> dict[str, Any]
         "group_type": _column(_atom_attribute(molsys, "group_type"), n_atoms, default="", cast=str),
     }
 
-    bonds_frame = molsys.topology.bonds
+    states = molsys.chemical_states
+    bonds_frame = (
+        states.get_bonds(chemical_state="reference") if states is not None and states.n_chemical_states > 0 else None
+    )
     if bonds_frame is None or len(bonds_frame) == 0:
         return {"atoms": atoms}
 

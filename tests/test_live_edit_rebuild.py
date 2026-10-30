@@ -4,7 +4,6 @@ import pytest
 
 pytest.importorskip("molsysmt")
 import molsysmt as msm
-from molsysmt.native import Structures
 from molsysviewer._pyunitwizard import puw
 from molsysviewer.demo import demo
 
@@ -141,7 +140,7 @@ def test_load_mode_append_structures_errors_on_empty_view():
 
 def test_load_mode_append_structures_supports_topology_only_view():
     topology_only = demo["dialanine"]._molsys.copy()  # noqa: SLF001
-    topology_only.structures = Structures(skip_digestion=True)
+    topology_only = msm.extract(topology_only, structure_indices=[], to_form="molsysmt.MolSys")
 
     view = MolSysView(debug_js=True)
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
@@ -420,7 +419,8 @@ def test_consecutive_live_edits_keep_replay_state_consistent(monkeypatch):
     pocket_layer.hide(skip_digestion=True)
 
     apply_set(view, element="group", selection=[0], group_name="ACE2")
-    apply_append_structures(view, demo["dialanine"]._molsys)  # noqa: SLF001
+    # Append coordinates only; the target intentionally has renamed group labels.
+    apply_append_structures(view, demo["dialanine"].molsys.structures)
     apply_remove(view, selection=[0])
 
     ops = [msg.get("op") for msg in view._test_message_log]
@@ -590,7 +590,8 @@ def test_canonical_export_after_live_edit_chain_reflects_current_state(monkeypat
     pocket_layer.hide(skip_digestion=True)
 
     apply_set(view, element="group", selection=[0], group_name="ACE2")
-    apply_append_structures(view, demo["dialanine"]._molsys)  # noqa: SLF001
+    # Append coordinates only; the target intentionally has renamed group labels.
+    apply_append_structures(view, demo["dialanine"].molsys.structures)
     apply_remove(view, selection=[0])
 
     exported = view._build_export_messages()  # noqa: SLF001

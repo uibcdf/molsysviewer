@@ -8,6 +8,7 @@ import pytest
 from molsysviewer.system_edits import SystemEditSyncError
 
 import molsysviewer as msv
+from tests._edit_helpers import remove_structures_in_place
 
 
 @pytest.fixture
@@ -91,11 +92,7 @@ def test_deferred_growth_composes_with_retained_structure_maps(view):
     assert view.molsys.structures.n_structures == 4
 
     def remove_new_structure(target):
-        edited = msm.extract(target, structure_indices=[0, 2, 3])
-        # Public domain replacement also works at the MolSysMT 0.23.0 floor,
-        # whose remove() does not yet implement in-place removal.
-        target.structures = edited.structures
-        target.interactions = edited.interactions
+        remove_structures_in_place(target, [1])
 
     manager.execute(
         lambda target: {

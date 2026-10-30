@@ -25,6 +25,13 @@ view.active_selection.is_empty()
 `set` takes a MolSysMT selection expression, so anything you can write for
 `view.whole.select(...)` works here. It replaces whatever was active; `clear()` empties it.
 
+You can also pass explicit atom indices, for example
+`view.active_selection.set([3, 0, 3])`. The selection keeps the first occurrence
+of each atom, giving `[3, 0]`. If a native hierarchy level is unavailable or an
+atom has unknown membership, its group, component, chain, molecule or entity
+metadata stays empty at that level. The selected atoms remain selected; Viewer
+does not create molecular memberships to complete that metadata.
+
 ## Keeping one
 
 The active selection is transient — the next click replaces it. `save` gives it a tag and

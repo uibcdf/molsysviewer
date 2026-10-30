@@ -77,6 +77,20 @@ Legacy payloads without this declaration retain backend validation; missing
 metadata is unknown, not proof of membership. The declaration is a UI hint,
 never authority to bypass Python scope resolution.
 
+The static payload reads covalent bonds from the native `ChemicalStates`
+reference state, independently of `Topology`. It does not infer bonds from
+coordinates or choose state zero when the reference is ambiguous. An absent
+chemical domain or a collection with no states contributes no explicit bond
+array; an empty array is not evidence of complete chemical knowledge. Existing
+native completeness and structure-to-state associations remain unchanged.
+This static projection does not implement per-structure chemical-state switching.
+
+Programmatic active selection retains its ordered, deduplicated atom indices.
+Unknown memberships and unavailable hierarchy levels contribute no group,
+component, chain, molecule or entity metadata indices. Rendering defaults do not
+become native memberships. See the source receiving contract in
+[MolSysViewer #269](https://github.com/uibcdf/molsysviewer/issues/269).
+
 ## Partial coordinate edits
 
 `partial_coordinates_update` contains explicit `atom_indices` and

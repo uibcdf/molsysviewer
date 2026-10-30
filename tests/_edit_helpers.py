@@ -13,6 +13,7 @@ the primitive, so the reconciliation-focused core tests exercise
 
 from __future__ import annotations
 
+from inspect import signature
 from typing import Any
 
 import molsysmt as msm
@@ -118,3 +119,19 @@ def apply_set(
         **kwargs,
     )
     view.apply_system_edit(view.molsys)
+
+
+def remove_structures_in_place(molsys: Any, structure_indices: Any) -> None:
+    """Remove structures coherently while retaining the bound MolSys identity.
+
+    The independent-domain provider must remap associations and analyses through
+    its public molecular operation. The older public floor lacks in-place remove;
+    its domain replacement route is retained only for that provider signature.
+    A scientific failure never selects the compatibility route.
+    """
+    if "in_place" in signature(msm.remove).parameters:
+        msm.remove(molsys, structure_indices=structure_indices, in_place=True)
+    else:
+        edited = msm.remove(molsys, structure_indices=structure_indices, to_form="molsysmt.MolSys")
+        molsys.structures = edited.structures
+        molsys.interactions = edited.interactions

@@ -218,6 +218,8 @@ class ActiveSelection:
         A selection that resolves to no atoms clears the active selection. Returns
         ``self``. Note: this only *reads* the loaded system (via ``msm.get``) to derive
         metadata; it never mutates it and never queries the original input form.
+        Unknown memberships and unavailable hierarchy levels contribute no metadata
+        indices; the selected atoms are retained without invented memberships.
         """
         import molsysmt as msm
 
@@ -242,15 +244,28 @@ class ActiveSelection:
         # Derive the full per-level metadata from _molsys (in-memory MolSys) — a
         # read-only query; never against the original input (view.molecular_system).
         levels = ("group", "component", "chain", "molecule", "entity")
-        metadata = msm.get(
-            molsys,
-            element="atom",
-            selection=atom_indices,
-            output_type="dictionary",
-            skip_digestion=True,
-            **{f"{level}_index": True for level in levels},
+        states = molsys.chemical_states
+        candidates = [
+            level for level in levels if level != "component" or states is not None and states.n_chemical_states > 0
+        ]
+        available = [level for level in candidates if msm.has_attribute(molsys, f"{level}_index", skip_digestion=True)]
+        metadata = (
+            msm.get(
+                molsys,
+                element="atom",
+                selection=atom_indices,
+                output_type="dictionary",
+                skip_digestion=True,
+                **{f"{level}_index": True for level in available},
+            )
+            if available
+            else {}
         )
-        level_indices = {level: sorted({int(value) for value in metadata[f"{level}_index"]}) for level in levels}
+        level_indices = {level: [] for level in levels}
+        for level in available:
+            values = metadata[f"{level}_index"]
+            if values is not None:
+                level_indices[level] = sorted({int(value) for value in values if value is not None})
 
         # _molsys index space == frontend index space, so send the atoms as-is.
         self._view._send(

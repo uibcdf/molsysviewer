@@ -17,6 +17,13 @@ parameters organize integration; panel names are presentation, not new Python
 namespaces or one wrapper per button. Related rows and composed acceptance
 scenarios do not prescribe canned workflows.
 
+The JSON source snapshot retains the names inspected at its recorded provider
+commit. For the later independent-domain cutover, the nine chemical graph tools
+move from `molsysmt.topology` to `molsysmt.chemical_states`; sequence tools remain
+under topology. Use the [receiving guide](chemical_domain_receiving.md) for
+current development-source routes. This migration note does not rewrite the
+historical snapshot or certify a published feature floor.
+
 ## Evidence and limits
 
 Inspected MolSysMT scientific/export source at
