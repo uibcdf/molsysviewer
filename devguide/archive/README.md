@@ -1,5 +1,10 @@
 # Archived implementation plans
 
+- [Qt status details](qt_status_presentation.md) — #279 uses explicit status kinds and supports full-text copying in fullscreen.
+- [Qt normal window geometry](qt_window_geometry_restore.md) — #280 restores normal size and maximized state separately, with explicit-size precedence.
+- [Qt shortcut Help](qt_host_shortcut_help.md) — #281 exposes native capabilities in shared Help and names source restoration explicitly.
+- [Read-only export provenance](read_only_export_provider_provenance.md) — #282 preserves and asserts the selected scientific provider in the real child guard.
+
 - [Live Qt workbench](qt_local_shell_uses_export_only_authority.md) — #270 restores shared Python authority, validated preferences and canvas keyboard/menu ownership.
 - [Independent Qt hosts](qt_hosts_share_default_profile.md) — #271 isolates profiles and guards two native windows, late sends and normal owned-file cleanup.
 - [Qt download destinations](qt_local_downloads_have_no_native_destination.md) — #272 accepts/cancels native downloads and exports the current portable scene.

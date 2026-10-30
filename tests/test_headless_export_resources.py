@@ -8,6 +8,7 @@ from pathlib import Path
 from urllib.request import urlopen
 
 import imageio.v3 as imageio
+import molsysmt as msm
 import pytest
 from molsysviewer._private.html_server import runtime_html_server
 
@@ -62,14 +63,25 @@ def test_real_png_export_from_read_only_package(tmp_path):
 import pathlib, sys
 import molsysviewer as msv
 assert pathlib.Path(msv.__file__).resolve().is_relative_to(pathlib.Path(sys.argv[1]).resolve())
+import molsysmt as msm
+assert pathlib.Path(msm.__file__).resolve() == pathlib.Path(sys.argv[3]).resolve()
 with msv.demo["dialanine"] as view:
     view._export_image_headless_playwright(sys.argv[2], width_px=320, height_px=240, timeout_s=45)
 """
     try:
         result = subprocess.run(
-            [sys.executable, "-c", script, str(package_root), str(output)],
+            [sys.executable, "-c", script, str(package_root), str(output), str(Path(msm.__file__).resolve())],
             cwd=tmp_path,
-            env={**os.environ, "PYTHONPATH": str(package_root), "PYTHONDONTWRITEBYTECODE": "1"},
+            env={
+                **os.environ,
+                "PYTHONPATH": os.pathsep.join(
+                    filter(
+                        None,
+                        [str(package_root), str(Path(msm.__file__).resolve().parents[1]), os.environ.get("PYTHONPATH")],
+                    )
+                ),
+                "PYTHONDONTWRITEBYTECODE": "1",
+            },
             text=True,
             capture_output=True,
             timeout=90,

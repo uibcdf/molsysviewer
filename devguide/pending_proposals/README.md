@@ -25,10 +25,9 @@ archived documents link there; its location does not reopen its release scope.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (2)
+### Being worked on (1)
 
 - [`migrate_standalone_qt_to_canonical_pyside6_6_11_2.md`](migrate_standalone_qt_to_canonical_pyside6_6_11_2.md) — [#109](https://github.com/uibcdf/molsysviewer/issues/109) — Migrate the optional standalone Qt host to canonical PySide6 6.11.2. *(measured)*
-- [`qt_host_shortcut_help.md`](qt_host_shortcut_help.md) — [#281](https://github.com/uibcdf/molsysviewer/issues/281) — Expose native Qt shortcuts in shared Help and clarify source restoration. *(inspected)*
 
 ### Partially done (2)
 
