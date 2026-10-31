@@ -1,14 +1,14 @@
 ---
 summary: Observe readiness and completion of native Qt file-dialog actions in CI
 issue: uibcdf/molsysviewer#287
-status: active
+status: resolved
 opened: 2026-10-30
-closed:
+closed: 2026-10-31
 verification: reproduced
 severity: medium
 area: [qt, tests, loading]
-guard:
-normative:
+guard: tests/test_qt_live_workbench.py::test_qt_live_workbench_full_render_gpu
+normative: devguide/studio_interaction_contract.md
 blocked_by: []
 supersedes: []
 ---
@@ -77,3 +77,37 @@ interim commit and a single exact-source Qt workflow_dispatch. The Viewer
 runtime/scientific code is unchanged from 191419cc; the existing full/source
 CI backlog is retained, not cleared or represented as passing. Scoped Ruff,
 record and workflow checks remain due. This is not release qualification.
+
+## Exact-source qualification in progress
+
+A single workflow_dispatch, 41149452645, targets exactly
+62508cfd54b1899d06a8d98c4ad12521f8d1feca with staging disabled. No duplicate
+dispatch was created. The maintainer explicitly defers the Jupyter/Qt visual
+smoke until later; no human acceptance is inferred from automated results.
+
+## Resolution — 2026-10-31 UTC
+
+Exact-source hosted run 41149452645 succeeds on
+62508cfd54b1899d06a8d98c4ad12521f8d1feca. All required steps pass. Its original
+JUnit files contain 1 window, 2 render and 11 probe cases: 14/14, zero failures,
+errors or skips. The original native report confirms the visible Load route,
+Cancel finished with 0, typed-file Open finished with 1, exactly two dialog
+clicks, ten alternating 22/62-atom replacements and no failed deliveries.
+Original JUnit/report digests are retained in the source receiving receipt.
+
+The guard now waits for the intended exposed dialog and enabled button, uses
+genuine filename input and observes actual completion. Diagnostic failure
+cleanup is bounded and cannot manufacture a successful result. No acceptance
+retry, extra global timeout, product rendering workaround or scientific change
+was introduced. The precise Qt-internal reason selectFile did not establish the
+hosted selection is not claimed; the corrected guard tests the user path.
+
+The full browser gate 41144414475 passed on 191419cc; no Viewer runtime files
+changed through the qualified guard source. Local native/SwiftShader evidence
+remains separate. The maintainer explicitly defers the human Jupyter/Qt Load
+smoke. Automatic receiving is complete; no human acceptance, full-scientific CI
+clearance, new artifact qualification, tag or publication is inferred.
+
+The final evidence-only closure changes no test, workflow or runtime bytes
+relative to the qualified source. Scoped record/contract checks apply; completed
+results are retained for unchanged inputs rather than repeated as a release gate.

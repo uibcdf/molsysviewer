@@ -1,11 +1,14 @@
 # Development checkpoint
 
-**Load hosted closeout pending — 2026-10-30:** browser 41144414475 passes on
-191419cc. Qt 41144414471 times out in native file-dialog acceptance, so #287 is
-reopened with [bounded readiness/completion receiving](pending_bugs/qt_load_dialog_completion_readiness.md).
-The corrected local Xvfb control passes; hosted exact-source recovery and the
-maintainer's Load smoke remain due. The earlier native result is retained.
-No all-green CI, package/tag or 1.0 publication is inferred.
+**Load automatic closeout complete — 2026-10-31 UTC:** exact-source Qt
+41149452645 passes on 62508cfd with 14/14 cases and no failure/error/skip.
+Original JUnit/report receipts verify actual Cancel/Open completion, exactly
+two dialog clicks and ten replacements. The full browser gate 41144414475
+passes on unchanged Viewer runtime source 191419cc. The
+[Qt follow-up](archive/qt_load_dialog_completion_readiness.md) preserves both
+intermediate hosted failures. The maintainer explicitly defers the Jupyter/Qt
+visual smoke. Source/general scientific CI and the known MolSysMT#431 warning
+baseline remain separate; no full-suite, artifact, tag or 1.0 claim follows.
 
 **Studio Load polished — 2026-10-30:** #286/#287 add a fixed action/result
 footer, per-source Options, contextual Append/pairing and action labels, Enter

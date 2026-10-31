@@ -57,4 +57,11 @@ See studio_load_polish_receiving_20261030.json and the maintained Studio contrac
 Issue #287 is reopened after run 41144414471 times out in the native file-dialog
 acceptance phase on 191419cc. The native result above is preserved; it did not
 qualify that hosted environment. The active receiving record is
-[Qt dialog completion](../pending_bugs/qt_load_dialog_completion_readiness.md).
+[Qt dialog completion](qt_load_dialog_completion_readiness.md).
+
+## Hosted closeout — 2026-10-31 UTC
+
+The follow-up now receives exact-source run 41149452645 on 62508cfd: 14/14
+Qt cases, actual rejected/accepted dialog results and no failed deliveries.
+[The follow-up record](qt_load_dialog_completion_readiness.md) retains the
+intermediate failures. Human Load smoke is deferred by the maintainer.

@@ -56,22 +56,55 @@
     "source_general_outcome": "failure; three known Pandas4Warning documentation cases under uibcdf/molsysmt#431"
   },
   "hosted_final": {
-    "source": "191419ccce92306641a18bd1cc02238cd6c126c9",
-    "browser": {
-      "run": 41144414475,
-      "conclusion": "success"
-    },
+    "source": "62508cfd54b1899d06a8d98c4ad12521f8d1feca",
     "qt": {
-      "run": 41144414471,
-      "conclusion": "failure",
-      "detail": "second native file dialog remains open; child timed out at 180 seconds; full JUnit inspected"
+      "run": 41149452645,
+      "event": "workflow_dispatch",
+      "conclusion": "success",
+      "junit": {
+        "qt-window.xml": {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "sha256": "b41ff2624c0b462f24891ba7d89665c25908874887c43688cf744122537e412f"
+        },
+        "qt-render.xml": {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "sha256": "f3dd9c0a84d9f1396a9e6f062f9944e1cf020e5fe66ddb4e3b263d11d54c0cfc"
+        },
+        "qt-probes.xml": {
+          "tests": 11,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "sha256": "bf4eb8fb12c4a4f82cfcc12a26ff170ba6c3c76390d1e9119ad2f94dce707de2"
+        }
+      },
+      "report_sha256": "caa2a735e28ecf649d5d075488d5b5fe167f54dd6fa39b2a1dc9fca3f9cbfb45",
+      "real_dialog_results": [
+        [
+          false,
+          0
+        ],
+        [
+          true,
+          1
+        ]
+      ],
+      "dialog_clicks": 2,
+      "failed_deliveries": []
     },
-    "source_pair": {
-      "run": 41144414418,
-      "conclusion": "failure",
-      "classification": "Exactly the three retained Pandas4Warning documentation cases (selections, measurements, export/state) in all three platforms; full native logs verified"
+    "browser": {
+      "source": "191419ccce92306641a18bd1cc02238cd6c126c9",
+      "run": 41144414475,
+      "conclusion": "success",
+      "scope": "full core browser gate; no Viewer runtime files changed through 62508cfd"
     },
-    "recovery": "#287 reopened; dialog identity/readiness and actual finished result guarded; exact hosted recovery pending"
+    "full_scientific_ci": "not cleared by this Load qualification; retained Pandas4Warning baseline and existing source/general runs keep their own status"
   },
   "publication": "no tag, package, release or 1.0 publication",
   "dialog_closeout_local": {
@@ -112,11 +145,59 @@
       "passed": 1,
       "seconds": 38.39
     },
-    "hosted": "pending exact-source qualification",
+    "hosted": {
+      "source": "62508cfd54b1899d06a8d98c4ad12521f8d1feca",
+      "run": 41149452645,
+      "event": "workflow_dispatch",
+      "use_staging": false,
+      "status": "success",
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
     "native_wayland": {
       "passed": 1,
       "seconds": 32.74
     },
     "checkpoint_route": "Guard-only interim commit with skip marker; one explicitly dispatched exact-source Qt workflow; scientific/full CI backlog retained, not cleared"
+  },
+  "manual_load_smoke": {
+    "status": "deferred_by_maintainer",
+    "observation": "The maintainer will check the Jupyter and Qt Load smoke later. No successful observation inferred."
+  },
+  "previous_hosted_observation_191419cc": {
+    "source": "191419ccce92306641a18bd1cc02238cd6c126c9",
+    "browser": {
+      "run": 41144414475,
+      "conclusion": "success"
+    },
+    "qt": {
+      "run": 41144414471,
+      "conclusion": "failure",
+      "detail": "second native file dialog remains open; child timed out at 180 seconds; full JUnit inspected"
+    },
+    "source_pair": {
+      "run": 41144414418,
+      "conclusion": "failure",
+      "classification": "Exactly the three retained Pandas4Warning documentation cases (selections, measurements, export/state) in all three platforms; full native logs verified"
+    },
+    "recovery": "#287 reopened; dialog identity/readiness and actual finished result guarded; exact hosted recovery pending"
+  },
+  "automatic_load_closeout": "complete; manual smoke deferred by the maintainer",
+  "evidence_closeout_route": "Evidence-only closure; source/test/workflow bytes unchanged from the Qt-qualified 62508cfd; scoped record/contract checks are rerun. No full CI or release claim.",
+  "evidence_closeout_checks": {
+    "passed": 304,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "scope": [
+      "tests/test_reporting_protocol.py",
+      "tests/test_devguide_links.py",
+      "tests/test_core_qt_gates.py",
+      "tests/test_source_workflow_coverage.py"
+    ],
+    "index_check": "up to date",
+    "diff_check": "clean"
   }
 }

@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Qt Load dialog completion](qt_load_dialog_completion_readiness.md) — #287 receives genuine filename input and observed dialog results with hosted 14/14 recovery; manual smoke remains deferred.
+
 - [Studio Load polish](studio_load_usability_and_file_selection.md) — #286 simplifies short-canvas loading, keeps its action visible and adds explicit host-file acquisition.
 - [Visible Qt Load guard](qt_studio_load_guard_uses_hidden_form.md) — #287 replaces hidden DOM activation with paint-synchronized real input, file dialogs and replacement.
 
