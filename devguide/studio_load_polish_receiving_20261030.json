@@ -90,5 +90,33 @@
       1
     ],
     "qualification": "pending exact corrected hosted source; baseline local reproduction was nondeterministic"
+  },
+  "dialog_hosted_attempts": [
+    {
+      "source": "191419ccce92306641a18bd1cc02238cd6c126c9",
+      "run": 41144414471,
+      "conclusion": "failure",
+      "detail": "unobserved modal acceptance timeout"
+    },
+    {
+      "source": "132b408c7bb64a89e12a71b26bafb1cf9370bd19",
+      "run": 41148560185,
+      "conclusion": "failure",
+      "detail": "bounded observer: accept choice had selected=[], clicked=false; original Cancel finished with 0"
+    }
+  ],
+  "dialog_typing_recovery": {
+    "scope": "guard-only correction; Viewer runtime unchanged from 191419cc",
+    "strategy": "QTest typing into the native filename editor, observed selectedFiles and finished codes, one click per dialog",
+    "xvfb_swiftshader": {
+      "passed": 1,
+      "seconds": 38.39
+    },
+    "hosted": "pending exact-source qualification",
+    "native_wayland": {
+      "passed": 1,
+      "seconds": 32.74
+    },
+    "checkpoint_route": "Guard-only interim commit with skip marker; one explicitly dispatched exact-source Qt workflow; scientific/full CI backlog retained, not cleared"
   }
 }

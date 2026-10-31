@@ -360,6 +360,7 @@ def main():
             )
         )
         source_path = str(msm.systems["pentalanine"]["traj_pentalanine.h5msm"])
+        assert Path(source_path).is_file(), source_path
         field_selector = '[data-molsysviewer-load-source="0"] [data-molsysviewer-load-field="source"]'
         dialog_errors = []
         dialog_answers = []
@@ -374,7 +375,7 @@ def main():
 
         def answer_file_dialog(accept):
             deadline = time.monotonic() + 10
-            state = {"dialog": None, "clicked": False, "finished": False}
+            state = {"dialog": None, "typed": False, "clicked": False, "finished": False}
 
             def record(phase, **values):
                 dialog_observations.append({"accept": accept, "phase": phase, **values})
@@ -397,11 +398,15 @@ def main():
                     detail = {"modal": modal.windowTitle() if modal is not None else None, "clicked": state["clicked"]}
                     if dialog is not None:
                         detail["selected"] = dialog.selectedFiles()
+                        detail["directory"] = dialog.directory().absolutePath()
+                        detail["filename"] = dialog.findChild(QLineEdit, "fileNameEdit").text()
+                        detail["expected"] = source_path
+                        detail["source_exists"] = Path(source_path).is_file()
                     record("timeout", **detail)
                     dialog_errors.append("The native file dialog did not complete: " + json.dumps(detail))
                     # Failure cleanup only: never manufacture a successful acceptance.
                     if dialog is not None:
-                        if modal is not None and dialog.isAncestorOf(modal):
+                        if modal is not None and modal is not dialog and dialog.isAncestorOf(modal):
                             modal.reject()
                         dialog.reject()
                     return
@@ -413,8 +418,6 @@ def main():
                     ):
                         dialog = state["dialog"] = modal
                         dialog.finished.connect(completed)
-                        if accept:
-                            dialog.selectFile(source_path)
                         record("bound", title=dialog.windowTitle())
                 if dialog is not None and not state["clicked"]:
                     buttons = dialog.findChild(QDialogButtonBox)
@@ -422,11 +425,26 @@ def main():
                         QDialogButtonBox.StandardButton.Open if accept else QDialogButtonBox.StandardButton.Cancel
                     )
                     handle = dialog.windowHandle()
+                    exposed = handle is not None and handle.isExposed()
+                    if accept and not state["typed"] and exposed:
+                        filename = dialog.findChild(QLineEdit, "fileNameEdit")
+                        if filename.isVisible() and filename.isEnabled() and not filename.rect().isEmpty():
+                            state["typed"] = True
+                            QTest.mouseClick(
+                                filename,
+                                Qt.MouseButton.LeftButton,
+                                Qt.KeyboardModifier.NoModifier,
+                                filename.rect().center(),
+                            )
+                            QTest.keyClick(filename, Qt.Key.Key_A, Qt.KeyboardModifier.ControlModifier)
+                            QTest.keyClicks(filename, source_path)
+                            record("typed", filename=filename.text(), selected=dialog.selectedFiles())
+                            QTimer.singleShot(30, answer)
+                            return
                     selected = dialog.selectedFiles()
                     ready = (
                         modal is dialog
-                        and handle is not None
-                        and handle.isExposed()
+                        and exposed
                         and button.isVisible()
                         and button.isEnabled()
                         and not button.rect().isEmpty()
