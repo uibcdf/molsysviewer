@@ -55,6 +55,40 @@
     "ci": 41139611296,
     "source_general_outcome": "failure; three known Pandas4Warning documentation cases under uibcdf/molsysmt#431"
   },
-  "hosted_final": "pending publication/inspection; no claim of all-green CI",
-  "publication": "no tag, package, release or 1.0 publication"
+  "hosted_final": {
+    "source": "191419ccce92306641a18bd1cc02238cd6c126c9",
+    "browser": {
+      "run": 41144414475,
+      "conclusion": "success"
+    },
+    "qt": {
+      "run": 41144414471,
+      "conclusion": "failure",
+      "detail": "second native file dialog remains open; child timed out at 180 seconds; full JUnit inspected"
+    },
+    "source_pair": {
+      "run": 41144414418,
+      "conclusion": "failure",
+      "classification": "Exactly the three retained Pandas4Warning documentation cases (selections, measurements, export/state) in all three platforms; full native logs verified"
+    },
+    "recovery": "#287 reopened; dialog identity/readiness and actual finished result guarded; exact hosted recovery pending"
+  },
+  "publication": "no tag, package, release or 1.0 publication",
+  "dialog_closeout_local": {
+    "xvfb_swiftshader": {
+      "passed": 1,
+      "seconds": 36.38
+    },
+    "native_wayland": {
+      "passed": 1,
+      "seconds": 30.74
+    },
+    "contract_workflow_checks": 8,
+    "dialog_clicks": 2,
+    "actual_results": [
+      0,
+      1
+    ],
+    "qualification": "pending exact corrected hosted source; baseline local reproduction was nondeterministic"
+  }
 }

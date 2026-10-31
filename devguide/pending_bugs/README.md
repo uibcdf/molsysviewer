@@ -19,6 +19,10 @@ list.
 
 <!-- generated: devguide_index -->
 
+### Being worked on (1)
+
+- [`qt_load_dialog_completion_readiness.md`](qt_load_dialog_completion_readiness.md) — [#287](https://github.com/uibcdf/molsysviewer/issues/287) — Observe readiness and completion of native Qt file-dialog actions in CI *(medium, reproduced)*
+
 ### Open (1)
 
 - [`qt_dbus_conda_prefix_address.md`](qt_dbus_conda_prefix_address.md) — [#278](https://github.com/uibcdf/molsysviewer/issues/278) — Qt startup reports an invalid D-Bus system address in Conda prefixes containing @. *(low, reproduced)*

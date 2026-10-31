@@ -370,25 +370,84 @@ def main():
             )
         )
 
+        dialog_observations = []
+
         def answer_file_dialog(accept):
             deadline = time.monotonic() + 10
+            state = {"dialog": None, "clicked": False, "finished": False}
+
+            def record(phase, **values):
+                dialog_observations.append({"accept": accept, "phase": phase, **values})
+                (out / "file-dialog-diagnostics.json").write_text(json.dumps(dialog_observations, indent=2))
+
+            def completed(code):
+                state["finished"] = True
+                accepted = code == QFileDialog.DialogCode.Accepted
+                dialog_answers.append(accepted)
+                record("finished", result=int(code))
+                if accepted != accept:
+                    dialog_errors.append("The native file dialog returned an unexpected result")
 
             def answer():
-                dialog = app.activeModalWidget()
-                if not isinstance(dialog, QFileDialog):
-                    if time.monotonic() < deadline:
-                        QTimer.singleShot(30, answer)
-                    else:
-                        dialog_errors.append("No native file picker appeared")
+                if state["finished"]:
                     return
-                buttons = dialog.findChild(QDialogButtonBox)
-                if accept:
-                    dialog.selectFile(source_path)
-                    button = buttons.button(QDialogButtonBox.StandardButton.Open)
-                else:
-                    button = buttons.button(QDialogButtonBox.StandardButton.Cancel)
-                QTest.mouseClick(button, Qt.MouseButton.LeftButton)
-                dialog_answers.append(accept)
+                dialog = state["dialog"]
+                modal = app.activeModalWidget()
+                if time.monotonic() >= deadline:
+                    detail = {"modal": modal.windowTitle() if modal is not None else None, "clicked": state["clicked"]}
+                    if dialog is not None:
+                        detail["selected"] = dialog.selectedFiles()
+                    record("timeout", **detail)
+                    dialog_errors.append("The native file dialog did not complete: " + json.dumps(detail))
+                    # Failure cleanup only: never manufacture a successful acceptance.
+                    if dialog is not None:
+                        if modal is not None and dialog.isAncestorOf(modal):
+                            modal.reject()
+                        dialog.reject()
+                    return
+                if dialog is None:
+                    if (
+                        isinstance(modal, QFileDialog)
+                        and modal.isVisible()
+                        and modal.windowTitle() == "Choose molecular input files"
+                    ):
+                        dialog = state["dialog"] = modal
+                        dialog.finished.connect(completed)
+                        if accept:
+                            dialog.selectFile(source_path)
+                        record("bound", title=dialog.windowTitle())
+                if dialog is not None and not state["clicked"]:
+                    buttons = dialog.findChild(QDialogButtonBox)
+                    button = buttons.button(
+                        QDialogButtonBox.StandardButton.Open if accept else QDialogButtonBox.StandardButton.Cancel
+                    )
+                    handle = dialog.windowHandle()
+                    selected = dialog.selectedFiles()
+                    ready = (
+                        modal is dialog
+                        and handle is not None
+                        and handle.isExposed()
+                        and button.isVisible()
+                        and button.isEnabled()
+                        and not button.rect().isEmpty()
+                        and (not accept or selected == [source_path])
+                    )
+                    if ready:
+                        state["clicked"] = True
+                        record(
+                            "click",
+                            selected=selected,
+                            enabled=button.isEnabled(),
+                            width=button.width(),
+                            height=button.height(),
+                        )
+                        QTimer.singleShot(30, answer)
+                        QTest.mouseClick(
+                            button, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier, button.rect().center()
+                        )
+                        return
+                if not state["finished"]:
+                    QTimer.singleShot(30, answer)
 
             QTimer.singleShot(30, answer)
 
@@ -430,6 +489,7 @@ def main():
         assert not dialog_errors, dialog_errors
         assert int(msm.get(view.molsys, n_atoms=True)) == before_atoms
         report["native_file_picker_selected"] = True
+        report["file_dialog_actions"] = dialog_observations
         # Also prove ordinary typing, without assigning input.value from JS.
         web_click(field_selector)
         QTest.keyClick(web.focusProxy() or web, Qt.Key.Key_A, Qt.KeyboardModifier.ControlModifier)

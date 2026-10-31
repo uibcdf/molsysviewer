@@ -1,5 +1,12 @@
 # Development checkpoint
 
+**Load hosted closeout pending — 2026-10-30:** browser 41144414475 passes on
+191419cc. Qt 41144414471 times out in native file-dialog acceptance, so #287 is
+reopened with [bounded readiness/completion receiving](pending_bugs/qt_load_dialog_completion_readiness.md).
+The corrected local Xvfb control passes; hosted exact-source recovery and the
+maintainer's Load smoke remain due. The earlier native result is retained.
+No all-green CI, package/tag or 1.0 publication is inferred.
+
 **Studio Load polished — 2026-10-30:** #286/#287 add a fixed action/result
 footer, per-source Options, contextual Append/pairing and action labels, Enter
 and explicit file acquisition. Jupyter browses the Python-host filesystem in

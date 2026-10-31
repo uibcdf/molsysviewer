@@ -50,3 +50,11 @@ assertions are part of the passing guard. Hosted Xvfb/SwiftShader, installed
 packages and human acceptance retain independent scopes.
 
 See studio_load_polish_receiving_20261030.json and the maintained Studio contract.
+
+
+## Hosted follow-up — 2026-10-30
+
+Issue #287 is reopened after run 41144414471 times out in the native file-dialog
+acceptance phase on 191419cc. The native result above is preserved; it did not
+qualify that hosted environment. The active receiving record is
+[Qt dialog completion](../pending_bugs/qt_load_dialog_completion_readiness.md).

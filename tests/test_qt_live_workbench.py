@@ -69,6 +69,13 @@ def test_qt_live_workbench_full_render_gpu(tmp_path):
     assert report["visible_studio_loading"] is True
     assert report["native_file_picker_cancelled"] is True
     assert report["native_file_picker_selected"] is True
+    assert [
+        (item["accept"], item["result"]) for item in report["file_dialog_actions"] if item["phase"] == "finished"
+    ] == [
+        (False, 0),
+        (True, 1),
+    ]
+    assert sum(item["phase"] == "click" for item in report["file_dialog_actions"]) == 2
     assert report["native_shortcuts"] is True
     if env.get("QT_QPA_PLATFORM") == "xcb":
         assert report["qt_platform"] == "xcb"
