@@ -1,15 +1,27 @@
 # Development checkpoint
 
-**ChemicalStates hosted recovery prepared — 2026-11-03:** the original run
+**ChemicalStates hosted recovery dispatched — 2026-11-03:** the original run
 41690488611 now completes macOS successfully (3,320 passes / 52 skips), including
 all five copy cases and exact installed Rust validation. Its Linux and Windows
 Python results remain received; the original full run remains failure evidence
-for the subsequently corrected context-menu fixture. A Linux-only source
-recovery is prepared without repeating the successful hosts. The workflow
+for the subsequently corrected context-menu fixture. Linux-only source
+recovery [41707479800](https://github.com/uibcdf/molsysviewer/actions/runs/41707479800)
+uses Viewer `d51d9f44` and the same MolSysMT `d8ea626a`, without repeating the
+successful hosts; it is queued with no executed steps at receipt. The workflow
 defaults to all three platforms and rejects reduced candidate qualification;
 all selected-host checks remain active and 17 scope guards pass. The
 [campaign receipt](chemical_domain_installed_receiving_20261103.json) retains
-the original JUnit/log hashes and the pending recovery. #269 remains open.
+the three original ZIP/JUnit integrity checks and the pending recovery. #269
+remains open. No duplicate dispatch or obsolete-run cancellation is performed.
+
+**Addon contribution CI follow-up — 2026-11-03:** PR #538's eight scientific
+matrix cells pass; its aggregate completion remains queued. PR #540 passes
+smoke, Ruff, dependency and guide checks while its full matrix remains active.
+Its benchmark run 41702758772 fails at the same reference-H5 conversion before
+timing as #539, with no new causal claim. The
+[attribute receipt](molsysmt_attribute_tools_receiving_20261103.json) retains
+the original failed-step log digest and keeps owner investigation separate.
+Neither PR is merged by this consumer.
 
 **Attribute metadata delivered — 2026-11-03:** [MolSysMT PR #540](https://github.com/uibcdf/molsysmt/pull/540)
 delivers owner commit `c31e7658d`, based on `639ec85d8` and native #534/#535

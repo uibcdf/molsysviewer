@@ -115,9 +115,42 @@
     "branch_inventory": "151/244",
     "combined_after_owner_integration": "155/244, not yet integrated or qualified as a combined branch",
     "native_534_535": "Committed repair 13f72af2 is received in source; owning issue closure remains separate.",
-    "source_269": "The earlier d72f93f7/d8ea626a installed-source campaign remains separate; macOS is still queued.",
+    "source_269": "Original d72f93f7/d8ea626a run 41690488611 has successful macOS/Windows cells and all three Python results received. Linux browser recovery 41707479800 uses d51d9f44 with the same provider and remains queued; no closure or artifact qualification is inferred.",
     "package_537": "Real sdist directory-validator fix remains in PR #538.",
     "ci_539": "Performance audit investigation remains owner work; no native workaround in this facade."
   },
-  "temporary_resources": "Isolated PR-review checkout retained while the contribution is under review; remove when integrated or withdrawn. No new Rust build or environment installation."
+  "temporary_resources": "Isolated PR-review checkout retained while the contribution is under review; remove when integrated or withdrawn. No new Rust build or environment installation.",
+  "hosted_ci_receipt": {
+    "date": "2026-11-03",
+    "owner_head": "c31e7658db3f8308fbd084f4279c00e65e6f8207",
+    "smoke": {
+      "run": 41702758809,
+      "conclusion": "success"
+    },
+    "full_matrix": {
+      "run": 41702758733,
+      "state": "active",
+      "conclusion": null
+    },
+    "benchmark": {
+      "run": 41702758772,
+      "job": 126150033576,
+      "conclusion": "failure",
+      "failed_step": "Run Current Benchmarks",
+      "observed_failure": "benchmarks/competitors/run_matrix.py:37 rejects the catalogued villin H5 in msm.convert before any timed benchmark, matching the reported #539 symptom.",
+      "native_failed_step_log_sha256": "bc78c31323f7f144f8997f44398f26f02e3c0b89a7344682406a72890e228c74",
+      "owner_issue": "uibcdf/molsysmt#539",
+      "causation": "Same observed failure boundary; exact cause in this hosted process remains unverified. No new defect, benchmark success or missing-file conclusion is inferred."
+    },
+    "independent_supported_pr": {
+      "issue": "uibcdf/molsysmt#538",
+      "head": "3c13ba1a5c248de11622ff015b24551f72c59846",
+      "run": 41689119856,
+      "successful_scientific_cells": 8,
+      "aggregate_job": "PR full suite",
+      "aggregate_state": "queued",
+      "overall_conclusion": null
+    },
+    "delivery": "Both PRs remain open for owner review/integration; no merge or owner-main push."
+  }
 }

@@ -55,6 +55,15 @@ Python, browser or notebook step is removed. Recovery uses the same MolSysMT
 commit so the successful original macOS/Windows receipts remain applicable.
 No release or preserved-artifact gate follows from this source recovery.
 
+The single hosted recovery is dispatched as run
+[41707479800](https://github.com/uibcdf/molsysviewer/actions/runs/41707479800),
+Viewer `d51d9f445ef504d17e0d43235a1a890d162d5d16` against the same provider.
+GitHub expands exactly one Linux job; the default push still expands all three
+platforms. The recovery is queued with no executed steps at receipt. Independent
+downloads verify all three original ZIP digests and exact JUnit bytes. These
+integrity checks do not turn the original browser failure or queued recovery
+into success; #269 remains active.
+
 ## Follow-up — 2026-11-03
 
 **Provider update:** published correction

@@ -358,7 +358,7 @@
   },
   "temporary_resources": "Owned local provider snapshot and archive removed after integrity checks; original logs, JUnit files, source identities and digests retained in ignored task evidence. PR contribution worktree retained separately for owner review.",
   "hosted_linux_recovery": {
-    "state": "prepared",
+    "state": "dispatched",
     "provider_source": "d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42",
     "scope": "Linux-only source receiving; complete default and candidate qualification retain all three platforms. All Linux installation, audit, Rust, Python, browser and notebook steps remain active.",
     "guard_cases": 17,
@@ -370,6 +370,50 @@
     "record_checks": {
       "passed": 299,
       "junit_sha256": "0c0c97a8bf51a88efa12e284f7cc2da94a9845f74914b7518cab36f75a5812b2"
+    },
+    "run": 41707479800,
+    "consumer_source": "d51d9f445ef504d17e0d43235a1a890d162d5d16",
+    "event": "workflow_dispatch",
+    "inputs": {
+      "source_receiving": "true",
+      "platform": "ubuntu-latest",
+      "molsysmt_sha": "d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42"
+    },
+    "dispatch_count": 1,
+    "conclusion": null,
+    "matrix_observations": {
+      "default_push": {
+        "run": 41707301185,
+        "platforms": [
+          "ubuntu-latest",
+          "macos-15",
+          "windows-2025"
+        ]
+      },
+      "scoped_dispatch": {
+        "run": 41707479800,
+        "platforms": [
+          "ubuntu-latest"
+        ]
+      },
+      "scope_guard": "All 17 local workflow tests pass; candidate mode rejects partial selections."
+    }
+  },
+  "original_artifact_verification": {
+    "Linux": {
+      "zip_sha256": "25ef503039ae8826e4bdb15ac5326e8535872333a1a38b81632e4f276e726fff",
+      "zip_matches_github_digest": true,
+      "junit_matches_original_zip": true
+    },
+    "Windows": {
+      "zip_sha256": "781f49b18994f951c198fa2055618feff823a9935360c091bbff4b40612cfaab",
+      "zip_matches_github_digest": true,
+      "junit_matches_original_zip": true
+    },
+    "macOS": {
+      "zip_sha256": "f473591720e186ea23ca8a2886ebeca0ad914135b9934f9e9689cfec84e3731b",
+      "zip_matches_github_digest": true,
+      "junit_matches_original_zip": true
     }
   }
 }
