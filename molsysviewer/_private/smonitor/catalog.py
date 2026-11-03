@@ -307,7 +307,7 @@ MESSAGES = {
     "argument_error": "Error in {caller} due to the {argument} argument with value {value}.{detail}",
     "file_already_handled": "The file {filename} is already handled.",
     "iterator_error": "Error in iterator: {detail}.",
-    "library_not_found": "The python library {library} was not found. (Caller: {caller})",
+    "library_not_found": "The python library {library} was not found. (Caller: {caller}){detail}",
     "molecular_system_needed": "A molecular system is needed.",
     "molecular_systems_needed": "Molecular systems are needed.",
     "not_compatible_conversion": "Not compatible conversion.",

@@ -95,6 +95,24 @@ def test_distribution_manifests_name_runtime_dependencies_and_resources():
     assert REQUIRED_RUNTIME_DEPENDENCIES <= _conda_run_dependencies(recipe)
 
 
+def test_runtime_and_optional_feature_requirements_have_inclusive_floors():
+    """Unbounded providers must not silently reenter maintained runtime metadata."""
+    import tomllib
+
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text())["project"]
+    groups = {"runtime": project["dependencies"]}
+    groups.update({name: values for name, values in project["optional-dependencies"].items() if name != "dev"})
+    for group, values in groups.items():
+        for raw in values:
+            requirement = Requirement(raw)
+            assert any(spec.operator == ">=" for spec in requirement.specifier), (group, raw)
+            assert all(spec.operator == ">=" for spec in requirement.specifier), (
+                "A runtime restriction needs an explicit incompatibility review and guard update",
+                group,
+                raw,
+            )
+
+
 def test_nglview_is_not_a_hard_viewer_dependency():
     pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     recipe = (ROOT / "devtools" / "conda-build" / "meta.yaml").read_text(encoding="utf-8")

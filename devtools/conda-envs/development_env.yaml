@@ -18,10 +18,10 @@ dependencies:
   - packaging>=23
   - smonitor>=0.21.0
   - traitlets>=5
-  - pyyaml
+  - pyyaml>=6.0
 
   # --- Scientific stack (lightweight) ---
-  - numpy
+  - numpy>=1.26
   - pandas
   - molsysmt>=0.23.0
   - pyunitwizard>=0.25.0
@@ -41,7 +41,7 @@ dependencies:
   - jupyterlab-git
 
   # --- NodeJS for JS development and esbuild ---
-  - nodejs>=18
+  - nodejs>=22
 
   # --- Qt standalone stack (conda-forge) ---
   # Keep the Python binding and Qt WebEngine runtime on the same version.

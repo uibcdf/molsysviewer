@@ -14,22 +14,22 @@ dependencies:
   - pytest-receptor ==1.2.0
   - pytest-cov
   # The distribution-contract tests parse the Conda YAML recipe during collection.
-  - pyyaml
+  - pyyaml>=6.0
   # Runtime dependencies, with the floors pyproject.toml declares. The package is
   # installed with --no-deps, so this list is the only thing that brings them in;
   # tests/test_distribution_artifact.py keeps the two in step.
   - aiohttp>=3.10
   - anywidget>=0.9.15
   - argdigest>=0.13.0
-  - depdigest
+  - depdigest>=0.12.0
   - molsysmt>=0.23.0
-  - numpy
+  - numpy>=1.26
   - packaging>=23
   - pyunitwizard>=0.25.0
   - smonitor>=0.13.0
   - traitlets>=5
   - pandas
-  - imageio
+  - imageio>=2.16.0
   # Node 26 currently breaks the bundled JS coverage tool's CommonJS loader.
   - nodejs>=22,<23
   # Test-only requirements: the README exercises an MDTraj input and the

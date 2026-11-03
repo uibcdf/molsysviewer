@@ -13,7 +13,7 @@ dependencies:
   - pytest
   - pytest-receptor ==1.2.0
   - pytest-cov
-  - pyyaml
+  - pyyaml>=6.0
   # Execute every documented notebook against this same exact source pair.
   - nbconvert
   - ipykernel
@@ -26,7 +26,7 @@ dependencies:
   - matplotlib
   - py-mmcif>=1.1.1
   - argdigest>=0.13.0
-  - depdigest>=0.10.0
+  - depdigest>=0.12.0
   # Floors declared by the exact MolSysMT source candidate.
   - smonitor>=0.16.0
   - pyunitwizard>=0.28.1
@@ -34,7 +34,7 @@ dependencies:
   - anywidget>=0.9.15
   - packaging>=23
   - traitlets>=5
-  - imageio
+  - imageio>=2.16.0
   - jinja2
   - mdtraj
   - biopython

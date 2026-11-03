@@ -4,12 +4,12 @@ from ._private.exceptions import LibraryNotFoundError
 
 LIBRARIES = {
     "numpy": {"type": "hard", "pypi": "numpy"},
-    "molsysmt": {"type": "hard", "pypi": "molsysmt"},
+    "molsysmt": {"type": "hard", "pypi": None, "conda": "molsysmt", "channel": "uibcdf"},
     "anywidget": {"type": "hard", "pypi": "anywidget"},
-    "pyunitwizard": {"type": "hard", "pypi": "pyunitwizard"},
-    "smonitor": {"type": "hard", "pypi": "smonitor"},
-    "depdigest": {"type": "hard", "pypi": "depdigest"},
-    "argdigest": {"type": "hard", "pypi": "argdigest"},
+    "pyunitwizard": {"type": "hard", "pypi": None, "conda": "pyunitwizard", "channel": "uibcdf"},
+    "smonitor": {"type": "hard", "pypi": None, "conda": "smonitor", "channel": "uibcdf"},
+    "depdigest": {"type": "hard", "pypi": None, "conda": "depdigest", "channel": "uibcdf"},
+    "argdigest": {"type": "hard", "pypi": None, "conda": "argdigest", "channel": "uibcdf"},
 }
 
 MAPPING = {
@@ -21,3 +21,4 @@ MAPPING = {
 SHOW_ALL_CAPABILITIES = True
 
 EXCEPTION_CLASS = LibraryNotFoundError
+DOC_URL = "https://www.uibcdf.org/molsysviewer"

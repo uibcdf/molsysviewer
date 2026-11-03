@@ -13,9 +13,9 @@ dependencies = [
   "aiohttp>=3.10",
   "anywidget>=0.9.15",
   "argdigest>=0.13.0",
-  "depdigest",
+  "depdigest>=0.12.0",
   "molsysmt>=0.23.0",
-  "numpy",
+  "numpy>=1.26",
   "packaging>=23",
   "pyunitwizard>=0.25.0",
   "smonitor>=0.13.0",
@@ -61,9 +61,9 @@ dev = [
   "pytest-cov",
 ]
 # YAML support for user presets (msv.config.load_user_presets with .yaml files)
-yaml = ["pyyaml"]
+yaml = ["pyyaml>=6.0"]
 # Movie export (view.movie.export)
-movie = ["imageio"]
+movie = ["imageio>=2.16.0"]
 # The standalone Qt host prefers canonical PySide6 with Qt WebEngine. The
 # validated conda route uses matching pyside6, qt6-webengine and qt6-positioning
 # from conda-forge. Keep this extra empty until a pip-wheel route is validated.

@@ -15,7 +15,7 @@ class LibraryNotFoundError(Exception):
 
         full_message = message_from_catalog(
             "library_not_found",
-            extra={"library": library, "caller": caller, "detail": message},
+            extra={"library": library, "caller": caller, "detail": f"\n{message}" if message else ""},
             default_message=default_message,
         )
 

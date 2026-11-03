@@ -120,7 +120,7 @@ def test_real_undeclared_or_duplicate_source_checkouts_remain_rejected(tree, fau
         ("devtools/conda-envs/development_env.yaml", "python=3.14", "python=3.15", "violates python"),
         ("devtools/conda-envs/test_env.yaml", "python>=3.11,<3.15", "python>=3.11,<3.16", "violates python"),
         ("devtools/conda-envs/test_env.yaml", "argdigest>=0.13.0", "argdigest", "violates"),
-        ("devtools/conda-envs/test_env.yaml", "  - numpy\n", "  - numpy\n  - numpy\n", "duplicate"),
+        ("devtools/conda-envs/test_env.yaml", "  - numpy>=1.26\n", "  - numpy>=1.26\n  - numpy>=1.26\n", "duplicate"),
         (
             "devtools/conda-envs/test_env.yaml",
             "argdigest>=0.13.0",
@@ -220,8 +220,10 @@ def _installed_fixture(tree, tmp_path, version="2.0"):
         f"Metadata-Version: 2.1\nName: contract-probe\nVersion: {version}\n", encoding="utf-8"
     )
     (dist / "direct_url.json").write_text(json.dumps({"url": source.as_uri(), "dir_info": {}}), encoding="utf-8")
-    _replace(tree, "pyproject.toml", '  "numpy",', '  "numpy",\n  "contract-probe>=2",')
-    _replace(tree, "devtools/conda-build/meta.yaml", "    - numpy\n", "    - numpy\n    - contract-probe >=2\n")
+    _replace(tree, "pyproject.toml", '  "numpy>=1.26",', '  "numpy>=1.26",\n  "contract-probe>=2",')
+    _replace(
+        tree, "devtools/conda-build/meta.yaml", "    - numpy >=1.26\n", "    - numpy >=1.26\n    - contract-probe >=2\n"
+    )
     for path in (tree / "devtools/conda-envs").glob("*.yaml"):
         if path.name != "build_env.yaml":
             _replace(tree, str(path.relative_to(tree)), "dependencies:\n", "dependencies:\n  - contract-probe>=2\n")
