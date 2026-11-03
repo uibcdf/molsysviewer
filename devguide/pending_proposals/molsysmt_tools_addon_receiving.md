@@ -14,6 +14,32 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Explicit element utilities delivered by owner PR — 2026-11-03
+
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) delivers
+`6ca857e81d5a28a95e37ed40c59450719f8f9e00`, based on frozen owner `03050a16`.
+Eight explicit-input utilities retain native labels, validation, warnings and
+returns with open-empty-view lifetime binding. They do not read the molecular
+system, flush edits, assign chemistry or affect scene/history. Element-level
+composition remains distinct from actual-system basic composition and its
+existing root alias; locally consumed skip flags are keyword-only.
+
+Complete addon receiving passes 2,594 cases without failures/errors/skips,
+including 132 new cases. Native element baseline passes 69, focused/inventory
+133 and package/inventory/notebook structure 530; guide examples, course
+preservation, docstrings, Ruff and devguide controls pass. The
+[receipt](../molsysmt_element_utilities_receiving_20261103.json) retains hashes
+and qualification limits. This branch exposes 152/244, including 8/57 element
+paths. PR #538/#540 remain independent: 163/244 is their hypothetical union,
+not an owner-integrated result. The 21 primary-input and 28 remaining explicit
+utilities require per-tool review; #264 remains partial.
+
+Owner main subsequently published native #542 repair `dbdbc9bfe`, outside the
+frozen local test source. Receive its exact-source CI separately; neither these
+utilities nor structural archive controls qualify that repair, a new package,
+GUI panels or publication. Owner review and integration retain all three
+contribution namespaces; the host runtime is unchanged.
+
 ## Attribute helpers delivered by owner PR — 2026-11-03
 
 [MolSysMT PR #540](https://github.com/uibcdf/molsysmt/pull/540) delivers commit

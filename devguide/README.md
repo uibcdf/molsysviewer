@@ -45,6 +45,14 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Explicit element utilities delivered — 2026-11-03:**
+  [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) adds eight
+  lifetime-bound explicit-input utilities, with 2,594 addon cases passing,
+  including 132 new guards. The
+  [receipt](molsysmt_element_utilities_receiving_20261103.json) records branch
+  exposure 152/244 and the unintegrated 163/244 union with #538/#540. Owner
+  integration and later native #542 repair receiving stay separate; #264 is partial.
+
 - **Attribute helpers delivered — 2026-11-03:** [MolSysMT PR #540](https://github.com/uibcdf/molsysmt/pull/540)
   provides all seven explicit metadata utilities. Complete addon receiving passes
   2,579 cases, including 126 new cases. The

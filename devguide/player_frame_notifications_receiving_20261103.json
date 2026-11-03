@@ -213,7 +213,53 @@
     "main_ci": {
       "run": 41716925011,
       "state_at_receipt": "queued",
-      "conclusion": null
+      "conclusion": null,
+      "completed_linux_failures": [
+        {
+          "job": 126199246530,
+          "python": "3.12",
+          "conclusion": "failure",
+          "passed": 3382,
+          "failed": 3,
+          "skipped": 29,
+          "qt_deselected": 14,
+          "failure_boundary": "The same three warning-strict documentation examples fail on the public MolSysMT 0.23.0 Pandas4Warning.",
+          "native_log_sha256": "b37796c6f77c3828654a553b6bf506d13db66e5a6625c7df367f8c2ac09e05c9"
+        },
+        {
+          "job": 126199246323,
+          "python": "3.13",
+          "conclusion": "failure",
+          "passed": 3382,
+          "failed": 3,
+          "skipped": 29,
+          "qt_deselected": 14,
+          "failure_boundary": "The same three warning-strict documentation examples fail on the public MolSysMT 0.23.0 Pandas4Warning.",
+          "native_log_sha256": "ef8c0f93f057d350dd8f29af58c350e6875de7d1ec4f76e72622c0172557e364"
+        },
+        {
+          "job": 126199246522,
+          "python": "3.14",
+          "conclusion": "failure",
+          "passed": 3382,
+          "failed": 3,
+          "skipped": 29,
+          "qt_deselected": 14,
+          "failure_boundary": "The same three warning-strict documentation examples fail on the public MolSysMT 0.23.0 Pandas4Warning.",
+          "native_log_sha256": "a03735f3239e71676dce442df4bb6873ba321a5e84e2b86482782127ceba73b4"
+        }
+      ],
+      "successful_linux_minors": [
+        "3.11"
+      ],
+      "queued_macos_minors": [
+        "3.11",
+        "3.12",
+        "3.13",
+        "3.14"
+      ],
+      "tool": "GH Run Receptor 1.4.0+2.ga60f4c7 (environment source version), supplemented with all three original failed job logs",
+      "scope": "Run remains queued and not green. Each completed Linux failure was inspected independently; no new player or element defect inferred."
     }
   }
 }
