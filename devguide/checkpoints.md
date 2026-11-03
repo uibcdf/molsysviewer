@@ -1,5 +1,15 @@
 # Development checkpoint
 
+**Addon metadata preparation — 2026-11-03:** #264 refreshes the owner's
+inventory at provider `f72ab0e6`: 144/244 paths exposed, with next dispositions
+for all 100 remaining paths. Eleven `supported`/`attribute` utility contracts
+are prepared; none binds the molecular system or updates the scene. New addon
+exposure remains unimplemented. The [review](molsysmt_metadata_tools_review_20261103.md)
+retains passing native report checks and actual failures handed to MolSysMT#534
+(bond-requirement metadata) / #535 (cold alias initialization). No assertion or
+native result is rewritten in Viewer. #269/MolSysMT#533 still owns the installed
+receiving prerequisite; no candidate or publication follows.
+
 **Chemical-domain follow-up — 2026-11-03:** #269 remains blocked on the specific
 installed Rust-export mismatch in MolSysMT#533; the parent #255 refactor is
 completed. Latest committed provider `bd28d57f` passes 164 directed Viewer

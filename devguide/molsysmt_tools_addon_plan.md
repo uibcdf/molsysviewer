@@ -656,6 +656,15 @@ sufficient.
 
 ## Coverage and completion
 
+The [2026-11-03 metadata review](molsysmt_metadata_tools_review_20261103.md)
+refreshes the owning collector at provider `f72ab0e6`: 144/244 paths exposed,
+100 unexposed paths dispositioned without claiming per-tool effect qualification.
+It prepares the eleven explicit-input `supported`/`attribute` contracts while
+keeping new exposure unimplemented. Native dependency metadata and alias
+initialization findings are owned by MolSysMT#534/#535. Installed receiving
+remains separate under #269/MolSysMT#533. This preparation does not override the
+fixed-provider receiving requirement for subsequent expert implementation.
+
 Freeze a provider commit and classify every public tool in its inventory as
 implemented, conditional on a named engine/prerequisite, pending adaptation, or
 excluded with a concrete justification. Record aliases/support types separately;

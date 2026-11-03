@@ -45,6 +45,13 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Addon metadata preparation — 2026-11-03:** #264 retains 144/244 exposed
+  paths. The [review](molsysmt_metadata_tools_review_20261103.md) dispositions
+  all 100 unexposed paths and prepares eleven explicit-input metadata contracts,
+  without implementing new methods. Native bond-dependency and cold alias
+  findings are reported as MolSysMT#534/#535; installed receiving still waits
+  on #269/MolSysMT#533. Owner-side API references remain in MolSysMT.
+
 - **Chemical-domain follow-up — 2026-11-03:** isolated committed provider
   `bd28d57f` passes 164 directed Viewer cases without skips. The completed
   refactor #255 is separate from the remaining installed Rust-manifest defect,

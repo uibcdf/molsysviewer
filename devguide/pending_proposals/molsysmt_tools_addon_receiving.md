@@ -14,6 +14,24 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Metadata block prepared — 2026-11-03
+
+The [receiving review](../molsysmt_metadata_tools_review_20261103.md) refreshes
+the owner's actual collector at committed provider `f72ab0e6`. Exposure remains
+144/244: all 100 unexposed paths have an explicit next disposition, with
+per-tool scientific/engine effects still pending where unreviewed. Element
+helpers split into 21 primary-input candidates and 36 explicit-input utilities.
+
+Eleven proposed metadata tools need an open owner but no molecular system.
+Their contract preserves native defaults, types and errors, empty-view access,
+closed-view refusal, unchanged pending edits and independent report data.
+Native supported tests pass 23 cases; native attribute tests pass ten and fail
+one existing cold alias-collision test. Independent probes pass eleven and
+retain four stable-inventory/bond-requirement failures. These findings now have
+owners MolSysMT#534/#535. No consumer repair or new addon method is introduced.
+The installed prerequisite remains MolSysMT#533 under #269; this is useful
+contract preparation while receiving waits, not completed expert growth.
+
 ## Current chemical-domain receiving — 2026-11-02
 
 Viewer `481319a9` receives provider `de7ffad2` in the shared Python 3.14.7
