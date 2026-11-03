@@ -1,13 +1,21 @@
 # Metadata utility contract prepared for addon receiving
 
+**Attribute implementation follow-up — 2026-11-03:** [MolSysMT PR #540](https://github.com/uibcdf/molsysmt/pull/540)
+delivers all seven helpers at `c31e7658d`, receiving native repair `13f72af2`
+from `639ec85d8`. Complete addon receiving passes 2,579 cases, including 126 new
+cases; this independent branch exposes 151/244. The
+[attribute receipt](molsysmt_attribute_tools_receiving_20261103.json) keeps this
+distinct from preparation and supported-report evidence. Both PRs await owner
+integration; 155/244 is the combined target, not a qualified merged result.
+
 **Implementation follow-up — 2026-11-03:** the four supported reports have a
 separate source implementation at owner commit `4e1a06ee1`, with 2,527 addon
 cases passing, including 74 new cases. Owner-branch exposure is 148/244; owner
 main integration is pending. The [new receipt](molsysmt_supported_tools_receiving_20261103.json)
-keeps this distinct from the frozen preparation evidence below. The seven
-attribute helpers remain unimplemented in the facade.
+keeps this distinct from the frozen preparation evidence below. The attribute
+increment is received separately above.
 
-**Status — 2026-11-03:** the inventory and consumer requirements for the next
+**Original preparation — 2026-11-03:** the inventory and consumer requirements for the next
 expert-addon block are prepared under `uibcdf/molsysviewer#264` and
 `uibcdf/molsysmt#421`. No new addon methods are implemented or qualified by this
 review: exposure remains **144/244**. The owning implementation, usage reference

@@ -45,6 +45,14 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Attribute helpers delivered — 2026-11-03:** [MolSysMT PR #540](https://github.com/uibcdf/molsysmt/pull/540)
+  provides all seven explicit metadata utilities. Complete addon receiving passes
+  2,579 cases, including 126 new cases. The
+  [receipt](molsysmt_attribute_tools_receiving_20261103.json) separates native
+  repair receiving, source qualification and pending owner integration. Branch
+  exposure is 151/244; integration with #538 requires 155/244. #264 stays partial;
+  #269/macOS and #537/#539 remain separate. No new host or release claim.
+
 - **Supported reports source increment — 2026-11-03:** owner branch `4e1a06ee1`
   implements the four metadata reports; 2,527 addon cases pass, including 74 new
   cases. Branch exposure is 148/244, with no host change and main integration

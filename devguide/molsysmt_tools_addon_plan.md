@@ -677,8 +677,17 @@ automatic molecular observation is added.
 Contributions implementing this plan in MolSysMT, including its addon package,
 are delivered as pull requests for the MolSysMT development team's review and
 integration. The direct-push workflow used within Viewer does not apply to
-MolSysMT. The current increment is delivered in
+MolSysMT. The supported increment is delivered in
 [MolSysMT PR #538](https://github.com/uibcdf/molsysmt/pull/538).
+
+The attribute increment is delivered independently in
+[MolSysMT PR #540](https://github.com/uibcdf/molsysmt/pull/540), commit `c31e7658d`.
+It receives native repair `13f72af2` from `639ec85d8`, with all seven helpers and
+2,579 complete addon passes (126 new cases). The
+[attribute receipt](molsysmt_attribute_tools_receiving_20261103.json) records
+151/244 branch exposure and the 155/244 combined integration target. Owner
+review, actual archive/benchmark CI and installed receiving remain separate.
+
 
 Freeze a provider commit and classify every public tool in its inventory as
 implemented, conditional on a named engine/prerequisite, pending adaptation, or

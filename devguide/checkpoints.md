@@ -1,5 +1,19 @@
 # Development checkpoint
 
+**Attribute metadata delivered — 2026-11-03:** [MolSysMT PR #540](https://github.com/uibcdf/molsysmt/pull/540)
+delivers owner commit `c31e7658d`, based on `639ec85d8` and native #534/#535
+repair `13f72af2`. All seven helpers work on an open empty view without primary
+reading, synchronization or scene/history effects. Complete addon receiving
+passes 2,579 cases with zero failures/errors/skips, including 126 new cases.
+Native baseline 340, distribution/CI structure 36 and notebook schema 496 pass
+separately; examples execute, 156 course notebooks validate and code/outputs
+remain unchanged. The [receipt](molsysmt_attribute_tools_receiving_20261103.json)
+retains source/result hashes and catalog-data equality. This independent branch
+exposes 151/244; owner integration with #538 must retain both namespaces and
+reconcile 155/244. Actual archive validation still needs #537 and benchmark
+#539 remains separate. #264 stays partial; #269/macOS remains outstanding.
+No direct owner-main push, new minimum, candidate, tag or publication.
+
 **Corrected ChemicalStates installed-source receiving — 2026-11-03:** #269 is
 active on Viewer `d72f93f7` / MolSysMT `d8ea626a`, after reviewing provider fix
 `2797c5425` for #533. Single source-receiving run 41690488611 covers Python 3.14

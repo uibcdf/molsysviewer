@@ -14,6 +14,24 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Attribute helpers delivered by owner PR — 2026-11-03
+
+[MolSysMT PR #540](https://github.com/uibcdf/molsysmt/pull/540) delivers commit
+`c31e7658db3f8308fbd084f4279c00e65e6f8207`, based on published `639ec85d8`.
+All seven helpers retain explicit inputs, native validation/returns and an
+open-empty-view lifetime without molecular reading or scene/history effects.
+The committed #534/#535 repair `13f72af2` is received rather than emulated in
+the facade; owning issue closure remains separate.
+
+Complete addon receiving passes 2,579 cases without failures/errors/skips,
+including 126 new cases. Native baseline 340, package/CI structure 36 and notebook
+schema 496 pass separately. The [receipt](../molsysmt_attribute_tools_receiving_20261103.json)
+retains source/result hashes and successful examples/course checks. This branch
+exposes 151/244; integration with independent #538 requires 155/244 and retains
+both namespaces. No combined or installed qualification is claimed. Actual
+archive fix #537 and benchmark investigation #539 remain separate. Review and
+integration belong to MolSysMT; #264 remains partial.
+
 ## Supported reports implemented on owner branch — 2026-11-03
 
 The maintainer authorized the four `supported` reports as an independent source
