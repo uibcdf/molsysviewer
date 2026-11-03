@@ -45,6 +45,13 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **JavaScript source coverage — 2026-11-03:** #290 corrects esbuild maps and
+  c8 filtering and rejects empty, unmapped and non-production reports. All 335
+  unit cases and seven real-tooling/negative controls pass; 93 production sources
+  now have measured line/function coverage. The
+  [receipt](js_source_coverage_receiving_20261103.json) retains counts, hashes and
+  scope. Hosted receiving is pending; no runtime/package/release change.
+
 - **Source and distribution receiving — 2026-11-02:** #259 receives independent
   molecular/analysis/visual copies in source. The complete current-provider core
   passes 3,344 cases with 21 justified omissions and 14 Qt cases deselected;

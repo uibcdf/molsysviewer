@@ -19,6 +19,21 @@ JS/TS unit tests
 - Location: `molsysviewer/js/tests/unit`
 - Commands: `npm run test:js`, `npm run coverage:js`
 
+`coverage:js` runs the same complete unit index once under c8. The test bundle
+has a linked esbuild source map; `.c8rc.json` applies exclusions after remapping.
+`allow-external` lets c8 attribute function ranges whose source-map names are
+file URLs, while the include pattern and final repository guard restrict the
+accepted report to existing TypeScript files under this checkout's `js/src`.
+The guard cross-checks LCOV source/line/function counters against c8's JSON
+summary and requires executed functions in the real local UI model. Empty,
+unmapped, harness-only and false all-lines-hit/zero-function reports fail.
+Reports are written to ignored `coverage-js/`; CI preserves LCOV and the summary
+before Python tests, so an unrelated later failure does not erase this evidence.
+This measures the sources present in the unit bundle, not every source file or
+rendered browser/Qt behavior. It establishes no new percentage threshold.
+The isolated real-tooling and negative controls run with
+`python -m pytest tests/test_js_source_coverage.py --receptor=llm`.
+
 E2E tests (Playwright)
 - Location: `molsysviewer/js/tests/e2e`
 - Command: `npm run test:e2e`

@@ -92,5 +92,14 @@ Neither a clean audit nor severity alone proves browser exploitability.
 The 2026-11-02 review additionally qualifies test-exclude-scoped glob/minimatch
 overrides under #289. They affect only coverage tooling; remove them when its
 maintained dependency ranges admit unaffected versions and requalify traversal,
-unit execution and the full audit. The pre-existing empty LCOV remains #290;
-successful test execution does not establish numerical source coverage.
+unit execution and the full audit.
+
+JavaScript source coverage uses linked esbuild maps and c8 post-remap filtering
+under #290. Accept only reports whose source records resolve to existing
+`molsysviewer/js/src/**/*.ts`, whose LCOV line/function counters agree with the
+JSON summary, and whose real local-UI-model functions were executed. A successful
+test exit, an existing file or an all-lines-hit/zero-function report is
+insufficient. `tests/test_js_source_coverage.py` exercises real mapped/unmapped
+production code and rejected reports. This is unit-bundle coverage, not an
+all-source, browser, artifact or scientific qualification; no new percentage
+threshold is imposed.

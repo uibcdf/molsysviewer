@@ -76,6 +76,8 @@ coverage.xml
 .hypothesis/
 
 # JS test build artifacts
+molsysviewer/js/tests/unit/*.js.map
+molsysviewer/js/coverage-js/
 molsysviewer/js/tests/*.js
 molsysviewer/js/tests/unit/*.js
 molsysviewer/js/tests/e2e/*.e2e.js

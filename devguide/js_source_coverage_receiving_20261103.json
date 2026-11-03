@@ -1,0 +1,71 @@
+{
+  "issue": "uibcdf/molsysviewer#290",
+  "date": "2026-11-03",
+  "baseline_viewer_commit": "ef55401364488bff81901e2714ba03c6c8a05256",
+  "scope": "Source JS unit-bundle coverage tooling; no runtime, dependency, package or scientific changes.",
+  "local": {
+    "node": "22.22.1",
+    "c8": "10.1.3",
+    "command": "npm run coverage:js",
+    "tests": 335,
+    "passed": 335,
+    "skipped": 0,
+    "production_source_records": 93,
+    "summary": {
+      "lines": {
+        "total": 42599,
+        "covered": 28347,
+        "skipped": 0,
+        "pct": 66.54
+      },
+      "statements": {
+        "total": 42599,
+        "covered": 28347,
+        "skipped": 0,
+        "pct": 66.54
+      },
+      "functions": {
+        "total": 1624,
+        "covered": 887,
+        "skipped": 0,
+        "pct": 54.61
+      },
+      "branches": {
+        "total": 4919,
+        "covered": 3247,
+        "skipped": 0,
+        "pct": 66
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": 100
+      }
+    },
+    "guard_tests": {
+      "passed": 7,
+      "failed": 0,
+      "junit": ".pytest_cache/js-coverage-20261103/coverage-guards.xml"
+    },
+    "native_log": ".pytest_cache/js-coverage-20261103/final-coverage.log",
+    "reports": {
+      "lcov.info": {
+        "bytes": 560499,
+        "sha256": "ab1fccf2efa622993785a8cea66c6c6f0d453867975a0983da91ef75bf905a14"
+      },
+      "coverage-summary.json": {
+        "bytes": 31434,
+        "sha256": "a0f498d6ca60f6c5c9b1c7761a4c5bd19533038ac00662a3651e9648762eb195"
+      }
+    }
+  },
+  "hosted": {
+    "state": "pending"
+  },
+  "limits": [
+    "V8 remapped unit-bundle metrics; not all repository sources or browser/Qt coverage.",
+    "No new percentage threshold; no artifact/installed/scientific qualification.",
+    "Unrelated provider/source CI failures remain separate; publications stay paused."
+  ]
+}

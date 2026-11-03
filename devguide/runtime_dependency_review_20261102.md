@@ -74,10 +74,19 @@ source coverage. No numerical coverage evidence is claimed.
 
 Before a new artifact: finish #269 against a provider whose installed Rust
 manifest passes; complete remaining addon source/GUI scope under #264; reconcile
-source coverage under #290; reconcile
 the historical `release_plan.toml` only when an actual candidate is frozen;
 then qualify original wheel/Conda/npm bytes, platforms, public promotion,
 first contact and preservation through the existing release route. The stale
 0.24.1 staging plan is retained as historical preparation, not authorization to
 publish it or to label current development 0.25.0. These are explicit future
 release prerequisites, not hidden policy-review exemptions.
+
+## Coverage receiving — 2026-11-03
+
+The previously empty report is corrected under #290 without changing the
+dependency graph: all 335 unit cases and seven real-tooling/negative controls
+pass. Source maps, post-remap URL filtering and a fail-closed report guard now
+produce measured production line/function records. The
+[receipt](js_source_coverage_receiving_20261103.json) retains exact scope and
+pending hosted receiving. This supersedes the coverage-specific next action
+above; installed provider/artifact and remaining addon work stay separate.

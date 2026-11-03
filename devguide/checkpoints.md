@@ -1,5 +1,15 @@
 # Development checkpoint
 
+**JavaScript source coverage — 2026-11-03:** #290 keeps the full 335-case unit
+index and corrects source maps/c8 URL filtering. Seven real-tooling and negative
+guards pass. LCOV now measures 93 production sources with 28,347/42,599 lines
+and 887/1,624 functions executed; the report gate rejects missing, empty,
+unmapped and harness-only coverage, including false full-line/zero-function
+reports. See the [receipt](js_source_coverage_receiving_20261103.json) and
+[testing contract](../docs/content/developer/testing.md). Hosted JS receiving
+is pending. The provider #269, partial addon #264 and deferred Load human smoke
+remain separate. No runtime, tag, package or 1.0 publication.
+
 **Chemical-domain receiving — 2026-11-02:** Viewer `481319a9` receives requested
 MolSysMT `de7ffad2` with 265 affected core and five protected-copy cases passing.
 All 2,453 addon nodes pass across the original 2,452-pass run and one cwd-corrected

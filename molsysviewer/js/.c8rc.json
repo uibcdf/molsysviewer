@@ -1,0 +1,7 @@
+{
+  "exclude-after-remap": true,
+  "allow-external": true,
+  "include": ["**/src/**/*.ts"],
+  "reporter": ["lcov", "json-summary"],
+  "reports-dir": "coverage-js"
+}

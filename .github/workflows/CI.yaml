@@ -173,6 +173,24 @@ jobs:
       working-directory: molsysviewer/js
       run: npm ci
 
+    - name: JS unit tests (Node)
+      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.14'
+      shell: bash -l {0}
+      working-directory: molsysviewer/js
+      run: npm run coverage:js
+
+    - name: Preserve JavaScript source coverage
+      if: >-
+        always() && matrix.cfg.os == 'ubuntu-latest'
+        && matrix.cfg.python-version == '3.14'
+      uses: actions/upload-artifact@v4
+      with:
+        name: javascript-source-coverage
+        path: |
+          molsysviewer/js/coverage-js/lcov.info
+          molsysviewer/js/coverage-js/coverage-summary.json
+        if-no-files-found: warn
+
     - name: Test import module
       shell: bash -l {0}
       run: |
@@ -194,22 +212,10 @@ jobs:
         # pytest -n logical -v --cov-config=.coveragerc --cov=molsysviewer --cov-report=xml --junitxml=junit.xml --color=yes
         python -m pytest -m "not qt_runtime" -o receptor_rerun_command="python -m pytest" --receptor=ci -v --cov-config=.coveragerc --cov=molsysviewer --cov-report=xml --junitxml=junit.xml --color=yes
 
-    - name: JS unit tests (Node)
-      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.14'
-      shell: bash -l {0}
-      run: |
-        cd molsysviewer/js
-        npm run build
-        npm run test:js
-        npm run coverage:js
-
     - name: Check coverage
       shell: bash -l {0}
       run: |
         cat ./coverage.xml
-        if [ -f molsysviewer/js/coverage-js/lcov.info ]; then
-          echo "JS coverage generated"
-        fi
 
     - name: Upload coverage reports to Codecov
       if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.14'

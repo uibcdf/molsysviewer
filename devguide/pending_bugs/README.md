@@ -19,9 +19,12 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Open (2)
+### Being worked on (1)
 
 - [`js_coverage_report_is_empty.md`](js_coverage_report_is_empty.md) — [#290](https://github.com/uibcdf/molsysviewer/issues/290) — Make JavaScript coverage measure executed production sources and reject empty LCOV. *(medium, reproduced)*
+
+### Open (1)
+
 - [`qt_dbus_conda_prefix_address.md`](qt_dbus_conda_prefix_address.md) — [#278](https://github.com/uibcdf/molsysviewer/issues/278) — Qt startup reports an invalid D-Bus system address in Conda prefixes containing @. *(low, reproduced)*
 
 <!-- /generated -->
