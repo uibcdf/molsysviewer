@@ -14,6 +14,33 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Chain/entity readers delivered in the element PR — 2026-11-03
+
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) is expanded at
+`2cb4c8f01eea474d3959f1117f11c2291e49512f`: four chain readers and five entity
+readers bind the current primary through the managed reader. Native selection,
+output levels, IDs/unknowns, containers and redefine_* projections remain
+unchanged; they do not assign results or reconcile scene/history. The original
+eight explicit-input utilities keep empty-view access without molecular reading.
+
+Complete addon receiving passes 2,687 cases without failures/errors/skips,
+including 93 new hierarchy cases and the earlier 132 utility cases. Focused
+receiving passes 234, the native chain/entity baseline 54 and structural
+package/inventory/notebook controls 530. Examples execute; course code, outputs,
+execution counts and IDs stay unchanged. The
+[receipt](../molsysmt_element_hierarchy_receiving_20261103.json) retains exact
+sources, result hashes, contracts and validation limits. Branch exposure is
+161/244, including 17/57 element paths; 172/244 with #538/#540 is hypothetical
+until owner integration. Twelve primary-input and 28 explicit element paths
+still need review. #264 remains partial.
+
+The initial #543 hosted smoke failed because the new utility test module was
+missing from its explicit command. `c6d0b9ecb` repairs it with a red/green guard;
+the final increment lists both element modules and retains the same fail-closed
+single invocation. Original failure and incomplete replacement CI remain
+separate from the complete local result. Owner main, host runtime, scientific
+sources, dependency floors, candidates and publication are unchanged.
+
 ## Explicit element utilities delivered by owner PR — 2026-11-03
 
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) delivers

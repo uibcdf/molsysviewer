@@ -1,5 +1,17 @@
 # Development checkpoint
 
+**Current-primary chain/entity readers delivered — 2026-11-03:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), final source
+`2cb4c8f01`, adds nine managed readers beside eight explicit utilities.
+Complete addon receiving passes 2,687 cases without failures/errors/skips,
+including 93 new hierarchy cases. Native baseline, focused/integration,
+structural package/notebook, examples, course and Ruff checks pass within the
+[recorded scopes](molsysmt_element_hierarchy_receiving_20261103.json).
+Branch exposure is 161/244; 172/244 with #538/#540 is hypothetical until owner
+integration. The hosted smoke omission has a red/green command guard and the
+final workflow includes both element modules. Final-head hosted CI is pending;
+no host runtime, scientific source, candidate, floor or publication change.
+
 **Explicit element utilities delivered by owner PR — 2026-11-03:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
 `6ca857e81`, adds eight explicit-input element utilities without molecular
@@ -746,8 +758,9 @@ matrix remains failed only on the three old-provider warning-strict examples.
 Its browser, Qt, notebooks, Ruff and policy jobs pass; general CI remains
 pending, with three completed Linux failures confined to the same old-provider
 warning-strict examples. Continue #264 after owner review of PR #538/#540/#543;
-#543 receives eight explicit element utilities (2,594 complete addon passes).
-Main's 144/244 baseline, #543's 152/244 branch and the hypothetical 163/244 union
+#543 receives seventeen element paths (2,687 complete addon passes), including
+nine current-primary readers and eight explicit utilities. Main's 144/244
+baseline, #543's 161/244 branch and the hypothetical 172/244 union
 remain distinct until integration. #259/#285/#288/#289/#290 retain their
 source/tooling evidence.
 Load human smoke remains explicitly deferred. No candidate is frozen and both
@@ -2351,8 +2364,8 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-03:** #269 is resolved in source; #291 runtime
 receiving is identified separately. Review the owner-integrated inventory,
-then continue the 21 primary-input and 28 remaining explicit-input `element`
-paths under #264 after reviewing the eight utilities delivered in owner PR #543.
+then continue the 12 primary-input and 28 remaining explicit-input `element`
+paths under #264 after reviewing all seventeen paths delivered in owner PR #543.
 Preserve explicit versus implicit inputs and the owner-reviewed PR route.
 Resolve or record native limits before
 preparation/mechanics and GUI tasks. Broad documentation and exact frozen

@@ -45,6 +45,14 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Chain/entity readers delivered — 2026-11-03:**
+  [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) now contains
+  seventeen element paths, including nine current-primary readers. Complete
+  addon receiving passes 2,687 cases, with 93 new hierarchy guards. The
+  [receipt](molsysmt_element_hierarchy_receiving_20261103.json) records branch
+  exposure 161/244, native projection effects and the corrected hosted test
+  list. Owner integration and final-head CI remain pending; #264 is partial.
+
 - **Explicit element utilities delivered — 2026-11-03:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) adds eight
   lifetime-bound explicit-input utilities, with 2,594 addon cases passing,

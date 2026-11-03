@@ -192,5 +192,10 @@
       }
     ],
     "scope": "Queued/incomplete checks remain pending owner review; local source receiving is not an exact-head hosted or combined integration certificate."
+  },
+  "follow_up": {
+    "owner_head": "2cb4c8f01eea474d3959f1117f11c2291e49512f",
+    "receipt": "molsysmt_element_hierarchy_receiving_20261103.json",
+    "scope": "The same PR now includes nine additional primary-bound readers. The original eight-method receipt and its counts remain historical evidence of that source only; the new receipt qualifies the full seventeen-method source locally."
   }
 }
