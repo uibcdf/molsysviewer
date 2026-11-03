@@ -17,7 +17,7 @@
       "molsysmt_sha": "d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42"
     }
   },
-  "state": "awaiting_macos",
+  "state": "awaiting_hosted_linux_recovery",
   "platforms": [
     "ubuntu-latest",
     "macos-15",
@@ -205,13 +205,70 @@
       "job_conclusion": "success"
     },
     "macOS": {
-      "state": "queued",
-      "runner_id": 0,
-      "runner_name": "",
-      "labels": [
-        "macos-15"
+      "junit_sha256": "800f3dadd2de447406f040671bc2d3640c3b53a7810ca31f07df74ab7709cd5a",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "52",
+          "tests": "3372",
+          "time": "309.363",
+          "timestamp": "2026-11-03T19:35:01.933110+00:00",
+          "hostname": "sat12-bq163-4f650491-65b7-4fd5-a53b-027e45a05cd1-C62990E82954.local"
+        }
       ],
-      "scope": "No assigned runner and no executed tests observed; not passing evidence."
+      "copy_cases": [
+        {
+          "name": "test_view_copy_isolates_controlled_edits_and_retains_old_analysis_handles[coordinates]",
+          "skipped": false,
+          "failed": false
+        },
+        {
+          "name": "test_view_copy_isolates_controlled_edits_and_retains_old_analysis_handles[box]",
+          "skipped": false,
+          "failed": false
+        },
+        {
+          "name": "test_view_copy_isolates_controlled_edits_and_retains_old_analysis_handles[chemistry]",
+          "skipped": false,
+          "failed": false
+        },
+        {
+          "name": "test_failed_native_edit_and_visual_edits_do_not_change_the_other_view",
+          "skipped": false,
+          "failed": false
+        },
+        {
+          "name": "test_copied_analysis_survives_nonconsecutive_extraction_and_session",
+          "skipped": false,
+          "failed": false
+        }
+      ],
+      "skip_reasons": {
+        "Legacy MolSysMT entry point is not installed": 1,
+        "template has no placeholders": 14,
+        "needs a Chromium-family browser on PATH to open the page for real": 8,
+        "Optional headless PNG backend": 1,
+        "Requires installed scientific artifacts": 2,
+        "Linux /proc residency probes": 19,
+        "requires an explicitly selected real Chromium/GPU environment": 2,
+        "imageio is installed; cannot test ImportError path": 1,
+        "molsysviewer_elastnetmt is not installed": 1,
+        "molsysviewer_pharmacophoremt is not installed": 1,
+        "molsysviewer_topomt is not installed": 1,
+        "Windows process memory API": 1
+      },
+      "state": "completed",
+      "job_conclusion": "success",
+      "passed": 3320,
+      "native_log_sha256": "a5c3a6969f5c541195b161650d1c8780a5be0d248f9c3c3acf6a7f87da7d7261",
+      "installed_rust": {
+        "exports": 102,
+        "minimum_image": 2.5
+      },
+      "path_guard_passed": 3,
+      "integration_passed": 2
     }
   },
   "artifacts": [
@@ -235,6 +292,13 @@
       "id": 13258580553,
       "name": "source-receiving-Linux-py3.14",
       "size_in_bytes": 59525
+    },
+    {
+      "id": 13265063572,
+      "name": "source-receiving-macOS-py3.14",
+      "digest": "sha256:f473591720e186ea23ca8a2886ebeca0ad914135b9934f9e9689cfec84e3731b",
+      "size_in_bytes": 60580,
+      "expired": false
     }
   ],
   "browser_recovery": {
@@ -271,8 +335,8 @@
     "watch_closeout": "Local read-only observer stopped with exit 130 at handoff; the GitHub workflow was not cancelled."
   },
   "observed_at": "2026-11-03T18:54:16.225694+00:00",
-  "github_status": "queued",
-  "github_conclusion": null,
+  "github_status": "completed",
+  "github_conclusion": "failure",
   "pr_538_followup": {
     "issue": "uibcdf/molsysmt#539",
     "run": 41689119788,
@@ -292,5 +356,20 @@
     "index_check": "passed",
     "board_agreement": "31 documents agree"
   },
-  "temporary_resources": "Owned local provider snapshot and archive removed after integrity checks; original logs, JUnit files, source identities and digests retained in ignored task evidence. PR contribution worktree retained separately for owner review."
+  "temporary_resources": "Owned local provider snapshot and archive removed after integrity checks; original logs, JUnit files, source identities and digests retained in ignored task evidence. PR contribution worktree retained separately for owner review.",
+  "hosted_linux_recovery": {
+    "state": "prepared",
+    "provider_source": "d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42",
+    "scope": "Linux-only source receiving; complete default and candidate qualification retain all three platforms. All Linux installation, audit, Rust, Python, browser and notebook steps remain active.",
+    "guard_cases": 17,
+    "guard_junit_sha256": "8a3de317931720b5335341b5e582566ddbea2efaf6978e0354d11e81cafb49fe",
+    "retained_results": "Original macOS and Windows successes remain applicable: no production source changes, only the test fixture and CI/review records.",
+    "production_package_changed_paths": [
+      "molsysviewer/js/tests/e2e/context-menu.e2e.ts"
+    ],
+    "record_checks": {
+      "passed": 299,
+      "junit_sha256": "0c0c97a8bf51a88efa12e284f7cc2da94a9845f74914b7518cab36f75a5812b2"
+    }
+  }
 }

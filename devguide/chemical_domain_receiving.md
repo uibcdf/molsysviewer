@@ -23,8 +23,19 @@ assumed chain membership absent from its legacy input. Test-only correction
 `383721ea` declares that membership, preserves unknown/partial cases and passes
 the affected suite and all 44 core suites locally with the exact provider
 snapshot and unchanged reused backend. This local recovery does not rewrite
-the hosted job's failure or qualify a new installed build. macOS is still
-queued without an assigned runner; #269 remains open.
+the hosted job's failure or qualify a new installed build. macOS has now passed
+its whole cell: 3,320 Python passes, 52 skips and all five copy cases executed.
+The three-host Python results are received; #269 remains open for the hosted
+Linux recovery against the corrected fixture.
+
+For source-only platform recovery, dispatch
+`ci-python-314-source-pair.yaml` with `source_receiving=true`, the exact
+`molsysmt_sha` and `platform=ubuntu-latest` (or the named macOS/Windows runner).
+The default `platform=all` retains the complete three-host matrix. Candidate
+qualification rejects single-platform selection. The selected platform still
+executes its entire installation/audit/test path; a scoped success is not a
+new complete matrix or an installed-artifact release certificate. Retain the
+original run and each still-applicable result alongside the recovery receipt.
 
 Earlier scoped receiving of committed
 `bd28d57f2b0b31a6215d206dea27602f5f72e70d` passes 164 real Viewer cases with

@@ -76,7 +76,9 @@ documents, and historical audits.
   retains 3,347 Linux / 3,320 Windows Python passes, zero failures, all five
   copy cases per host, 25 Linux notebooks and a local 44-suite browser recovery
   after explicitly declaring the positive menu fixture's chain. The original
-  hosted Linux job remains failed; macOS is queued without a runner. This is
+  hosted Linux job remains failed; macOS now passes 3,320 cases with 52 skips
+  and all five copy cases. Hosted Linux recovery is prepared with the default
+  complete candidate matrix protected. This is
   separate from the earlier
   164-case [scoped source result](chemical_domain_receiving_20261103.json) and
   old-provider warning failures. No candidate or release is selected.

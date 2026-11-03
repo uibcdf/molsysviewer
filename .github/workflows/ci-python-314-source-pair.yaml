@@ -22,6 +22,16 @@ on:
         required: true
         default: false
         type: boolean
+      platform:
+        description: All platforms for qualification; one platform only for scoped source recovery
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - ubuntu-latest
+          - macos-15
+          - windows-2025
       molsysmt_sha:
         description: Full MolSysMT source candidate commit SHA
         required: true
@@ -59,12 +69,32 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cfg:
-          - { os: ubuntu-latest, python-version: "3.14" }
-          - { os: macos-15,  python-version: "3.14" }
-          - { os: windows-2025, python-version: "3.14" }
+        cfg: >-
+          ${{ fromJSON('{
+          "all":[{"os":"ubuntu-latest","python-version":"3.14"},{"os":"macos-15","python-version":"3.14"},{"os":"windows-2025","python-version":"3.14"}],
+          "ubuntu-latest":[{"os":"ubuntu-latest","python-version":"3.14"}],
+          "macos-15":[{"os":"macos-15","python-version":"3.14"}],
+          "windows-2025":[{"os":"windows-2025","python-version":"3.14"}]
+          }')[inputs.platform || 'all'] }}
 
     steps:
+      - name: Validate source-recovery scope
+        shell: bash
+        env:
+          SELECTED_PLATFORM: ${{ inputs.platform || 'all' }}
+          SOURCE_RECEIVING: ${{ inputs.source_receiving || false }}
+        run: |
+          set -euo pipefail
+          case "$SELECTED_PLATFORM" in
+            all|ubuntu-latest|macos-15|windows-2025) ;;
+            *) echo "::error::Unknown source-receiving platform"; exit 1 ;;
+          esac
+          if [[ "$SELECTED_PLATFORM" != all && "$SOURCE_RECEIVING" != true ]]; then
+            echo "::error::Candidate qualification requires all platforms; scoped recovery requires source_receiving=true"
+            exit 1
+          fi
+          echo "Platform scope: $SELECTED_PLATFORM; source receiving: $SOURCE_RECEIVING"
+
       - name: Check out MolSysViewer
         uses: actions/checkout@v4
         with:

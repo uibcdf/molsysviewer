@@ -1,5 +1,16 @@
 # Development checkpoint
 
+**ChemicalStates hosted recovery prepared — 2026-11-03:** the original run
+41690488611 now completes macOS successfully (3,320 passes / 52 skips), including
+all five copy cases and exact installed Rust validation. Its Linux and Windows
+Python results remain received; the original full run remains failure evidence
+for the subsequently corrected context-menu fixture. A Linux-only source
+recovery is prepared without repeating the successful hosts. The workflow
+defaults to all three platforms and rejects reduced candidate qualification;
+all selected-host checks remain active and 17 scope guards pass. The
+[campaign receipt](chemical_domain_installed_receiving_20261103.json) retains
+the original JUnit/log hashes and the pending recovery. #269 remains open.
+
 **Attribute metadata delivered — 2026-11-03:** [MolSysMT PR #540](https://github.com/uibcdf/molsysmt/pull/540)
 delivers owner commit `c31e7658d`, based on `639ec85d8` and native #534/#535
 repair `13f72af2`. All seven helpers work on an open empty view without primary

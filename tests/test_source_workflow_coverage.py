@@ -1,13 +1,63 @@
 """The development source handoff includes real notebooks and browser workflows."""
 
+import json
+import os
+import shutil
 import subprocess
 import sys
 import tomllib
 from pathlib import Path
 
+import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_source_recovery_matrix_keeps_complete_default_and_whitelisted_subsets():
+    workflow = yaml.load(
+        (ROOT / ".github/workflows/ci-python-314-source-pair.yaml").read_text(encoding="utf-8"),
+        Loader=yaml.BaseLoader,
+    )
+    option = workflow["on"]["workflow_dispatch"]["inputs"]["platform"]
+    assert option["default"] == "all" and option["type"] == "choice"
+    expression = workflow["jobs"]["source-pair"]["strategy"]["matrix"]["cfg"]
+    prefix, suffix = "${{ fromJSON('", "')[inputs.platform || 'all'] }}"
+    assert expression.startswith(prefix) and expression.endswith(suffix)
+    matrices = json.loads(expression[len(prefix) : -len(suffix)])
+    assert set(option["options"]) == set(matrices)
+    platforms = ["ubuntu-latest", "macos-15", "windows-2025"]
+    assert matrices["all"] == [{"os": name, "python-version": "3.14"} for name in platforms]
+    for platform in platforms:
+        assert matrices[platform] == [{"os": platform, "python-version": "3.14"}]
+    steps = workflow["jobs"]["source-pair"]["steps"]
+    assert steps[0]["name"] == "Validate source-recovery scope"
+    assert steps[0]["env"] == {
+        "SELECTED_PLATFORM": "${{ inputs.platform || 'all' }}",
+        "SOURCE_RECEIVING": "${{ inputs.source_receiving || false }}",
+    }
+
+
+@pytest.mark.parametrize("platform", ["all", "ubuntu-latest", "macos-15", "windows-2025", "unknown"])
+@pytest.mark.parametrize("receiving", [False, True])
+def test_source_recovery_guard_executes_without_waiving_candidate_platforms(platform, receiving):
+    workflow = yaml.load(
+        (ROOT / ".github/workflows/ci-python-314-source-pair.yaml").read_text(encoding="utf-8"),
+        Loader=yaml.BaseLoader,
+    )
+    script = workflow["jobs"]["source-pair"]["steps"][0]["run"]
+    bash = shutil.which("bash")
+    if bash is None:
+        pytest.skip("Bash is required to execute the workflow's actual scope guard")
+    result = subprocess.run(
+        [bash],
+        input=script,
+        text=True,
+        capture_output=True,
+        env=dict(os.environ, SELECTED_PLATFORM=platform, SOURCE_RECEIVING=str(receiving).lower()),
+    )
+    accepted = platform != "unknown" and (platform == "all" or receiving)
+    assert result.returncode == (0 if accepted else 1), result.stdout + result.stderr
 
 
 def test_exact_source_pair_executes_all_notebooks_and_core_browser_suites():

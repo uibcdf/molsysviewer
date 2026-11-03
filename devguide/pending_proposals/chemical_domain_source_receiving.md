@@ -41,10 +41,19 @@ locally with the exact provider snapshot and unchanged reused native backend.
 All 3,420 archived package files remain byte-identical after those checks.
 
 The hosted Linux failure remains recorded separately from local recovery.
-macOS has no runner assigned (`runner_id=0`) and has executed no tests. Keep
-the issue active until this outstanding platform result and the applicable
-receiving evidence are reconciled; no release or preserved-artifact gate is
-inferred from the local recovery.
+macOS now completes its full cell: 3,320 Python passes, 52 skips and all five
+copy cases executed. Its original JUnit and installed Rust result (102 exports,
+minimum image 2.5) are received in the campaign record. The original three-host
+Python scope is therefore complete; the full run remains failed on Linux's
+browser fixture. Keep the issue active pending hosted Linux recovery.
+
+The source-pair workflow now permits a whitelisted single-platform source
+recovery while retaining all three platforms by default. Candidate mode rejects
+a reduced platform set. Seventeen workflow guards cover both the matrix and
+the actual Bash scope check; no Linux installation, audit, Rust, integration,
+Python, browser or notebook step is removed. Recovery uses the same MolSysMT
+commit so the successful original macOS/Windows receipts remain applicable.
+No release or preserved-artifact gate follows from this source recovery.
 
 ## Follow-up — 2026-11-03
 
