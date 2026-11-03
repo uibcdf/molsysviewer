@@ -1,5 +1,23 @@
 # Development checkpoint
 
+**Corrected ChemicalStates installed-source receiving — 2026-11-03:** #269 is
+active on Viewer `d72f93f7` / MolSysMT `d8ea626a`, after reviewing provider fix
+`2797c5425` for #533. Single source-receiving run 41690488611 covers Python 3.14
+on Linux/macOS/Windows, retaining exact Rust export validation and the existing
+core/integration and Linux browser/notebook checks. The
+[campaign receipt](chemical_domain_installed_receiving_20261103.json) records
+inputs and observed state. Linux Python passes 3,347 cases with 25 skips;
+Windows passes 3,320 with 52 skips, and its full cell succeeds. Both run all
+five copy cases. All 25 Linux notebooks pass. Hosted browser core stops at the
+positive menu fixture's undeclared chain; test-only correction `383721ea`
+declares membership explicitly, preserves negative cases and passes the
+affected suite plus all 44 core suites locally with the exact provider snapshot.
+Its 3,420 source files remain byte-identical. The original hosted Linux failure
+is preserved; macOS still has no runner, so #269 remains open. PR #538 stays
+with the MolSysMT team; benchmark-audit failure #539 has a separate owner report
+with the successful local conversion and uncertainty retained.
+No candidate-version tag, public floor or publication changes.
+
 **Supported reports source increment — 2026-11-03:** owner commit `4e1a06ee1`
 on `addon/supported-reports-20261103` implements four explicit capability reports
 for empty or loaded views, without molecular/scene/history or pending-edit

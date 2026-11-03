@@ -57,18 +57,21 @@ documents, and historical audits.
   paths. The [review](molsysmt_metadata_tools_review_20261103.md) dispositions
   all 100 unexposed paths and prepares eleven explicit-input metadata contracts,
   without implementing new methods. Native bond-dependency and cold alias
-  findings are reported as MolSysMT#534/#535; installed receiving still waits
-  on #269/MolSysMT#533. Owner-side API references remain in MolSysMT.
+  findings are reported as MolSysMT#534/#535; installed receiving proceeds
+  separately under #269 after #533's repair. Owner-side API references remain
+  in MolSysMT.
 
-- **Chemical-domain follow-up — 2026-11-03:** isolated committed provider
-  `bd28d57f` passes 164 directed Viewer cases without skips. The completed
-  refactor #255 is separate from the remaining installed Rust-manifest defect,
-  now owned by MolSysMT#533; #269 remains blocked and no unchanged installed
-  matrix is repeated. Original three-platform JUnit confirms the known
-  old-provider documentation warning failures and passing coverage controls.
-  The [follow-up receipt](chemical_domain_receiving_20261103.json) retains scope
-  and the separate formatter-only policy correction, verified by successful
-  policy run 41672576821 on source `48221c3a`.
+- **Chemical-domain installed-source receiving — 2026-11-03:** #269 is active
+  on one corrected pair: Viewer `d72f93f7` / MolSysMT `d8ea626a`, run 41690488611,
+  Linux/macOS/Windows Python 3.14. Provider repair #533 retains exact Rust-export
+  equality. The [campaign receipt](chemical_domain_installed_receiving_20261103.json)
+  retains 3,347 Linux / 3,320 Windows Python passes, zero failures, all five
+  copy cases per host, 25 Linux notebooks and a local 44-suite browser recovery
+  after explicitly declaring the positive menu fixture's chain. The original
+  hosted Linux job remains failed; macOS is queued without a runner. This is
+  separate from the earlier
+  164-case [scoped source result](chemical_domain_receiving_20261103.json) and
+  old-provider warning failures. No candidate or release is selected.
 
 - **JavaScript source coverage — 2026-11-03:** #290 corrects esbuild maps and
   c8 filtering and rejects empty, unmapped and non-production reports. All 335

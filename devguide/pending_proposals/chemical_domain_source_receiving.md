@@ -1,18 +1,50 @@
 ---
 summary: Receive independent MolSysMT chemical domains through Viewer and the expert addon.
 issue: uibcdf/molsysviewer#269
-status: blocked
+status: active
 opened: 2026-10-29
 closed:
 verification: measured
 area: [molsysmt, loading, interactions, addons]
 guard:
 normative: devguide/chemical_domain_receiving.md
-blocked_by: [uibcdf/molsysmt#533]
+blocked_by: []
 supersedes: []
 ---
 
 # Current ChemicalStates source receiving
+
+## Corrected installed-source campaign — 2026-11-03
+
+The identified provider repair is now under consumer qualification in the single
+[source-pair run 41690488611](https://github.com/uibcdf/molsysviewer/actions/runs/41690488611):
+Viewer `d72f93f7aa8a3d89b2848bef905a48a00102f8e1` and MolSysMT
+`d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42`, Python 3.14 on Linux, macOS and
+Windows. `source_receiving=true` skips candidate-version tagging and retains
+ordinary installation, exact Rust-export validation, integration/core tests
+and Linux browser/notebook execution. The
+[campaign receipt](../chemical_domain_installed_receiving_20261103.json) owns
+observed state and original-result digests. No result or closure is inferred
+from dispatch. MolSysMT PR #538 remains independently owner-reviewed and is not
+part of this provider source.
+
+The Linux Python selection passes 3,347 cases with 25 skips; Windows passes
+3,320 with 52 skips and completes its whole cell successfully. Both execute all
+five protected-copy cases. Linux's 25 notebooks also pass. The original Linux
+job nevertheless fails in the first browser suite: its positive pentalanine
+fixture assumes a chain assignment that the legacy file does not declare.
+The menu truthfully reports the missing membership. Test-only correction
+`383721ea` declares one chain explicitly for both the snapshot and real-owner
+request replay, leaving unknown/partial membership scenarios and all behavioral
+assertions intact. The affected suite and the complete 44-suite core lane pass
+locally with the exact provider snapshot and unchanged reused native backend.
+All 3,420 archived package files remain byte-identical after those checks.
+
+The hosted Linux failure remains recorded separately from local recovery.
+macOS has no runner assigned (`runner_id=0`) and has executed no tests. Keep
+the issue active until this outstanding platform result and the applicable
+receiving evidence are reconciled; no release or preserved-artifact gate is
+inferred from the local recovery.
 
 ## Follow-up — 2026-11-03
 
@@ -20,17 +52,15 @@ supersedes: []
 `2797c5425f5735568422325928520ae591c3676a` adds the reviewed vector export and
 guards actual-module drift. MolSysMT#533 retains the focused source and local
 noneditable Linux evidence; its broader hosted qualification remains pending.
-Viewer has not yet rerun the installed source pair against that correction.
-The original failure below remains preserved; an identified source repair now
-exists, so the next receiving attempt must use that new input rather than
-repeat the original failing provider.
+The original failure below remains preserved; the corrected campaign above
+uses the new identified input rather than repeating the original provider.
 
 The provider refactor #255 is merged and closed; the remaining installed-export
 defect now has its own owner, uibcdf/molsysmt#533. Committed main
 `bd28d57f2b0b31a6215d206dea27602f5f72e70d` still expects 101 private exports
 while Rust registers `get_vectors` as the 102nd. No matching repair issue existed
-outside the completed refactor discussion. Keep the exact export guard active
-and wait for an identified correction before repeating the installed matrix.
+outside the completed refactor discussion at the time of that attempt. The
+exact export guard remains active in the corrected campaign.
 
 The latest provider commit adds typed component-label preservation during
 extraction. An isolated archive of its committed package/addon sources excludes

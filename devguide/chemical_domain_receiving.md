@@ -8,7 +8,25 @@ artifact qualification.
 
 ## Current follow-up — 2026-11-03
 
-Provider source is now available on main. Scoped receiving of committed
+The provider's exact-export repair `2797c5425` is published in checkpoint
+`d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42`. Consumer installed-source campaign
+41690488611 receives that checkpoint against Viewer
+`d72f93f7aa8a3d89b2848bef905a48a00102f8e1`, on Linux/macOS/Windows with Python
+3.14. The [campaign receipt](chemical_domain_installed_receiving_20261103.json)
+retains results separately from the previous failed inputs. This is a single
+source-receiving dispatch, without version tags or release qualification.
+
+Linux and Windows pass their full Python selections (3,347/25 skips and
+3,320/52 skips), including all five copy cases, and Linux executes all 25
+notebooks. The hosted browser failure is a positive context-menu fixture that
+assumed chain membership absent from its legacy input. Test-only correction
+`383721ea` declares that membership, preserves unknown/partial cases and passes
+the affected suite and all 44 core suites locally with the exact provider
+snapshot and unchanged reused backend. This local recovery does not rewrite
+the hosted job's failure or qualify a new installed build. macOS is still
+queued without an assigned runner; #269 remains open.
+
+Earlier scoped receiving of committed
 `bd28d57f2b0b31a6215d206dea27602f5f72e70d` passes 164 real Viewer cases with
 no skips, including the five independent-copy cases. Its extraction-label dtype
 fix is received using an isolated committed-source snapshot and the unchanged
@@ -16,10 +34,10 @@ shared Rust backend; sibling worktree edits are excluded. This does not claim
 a rebuilt or installed provider artifact. The
 [follow-up receipt](chemical_domain_receiving_20261103.json) keeps exact inputs.
 
-The installed Rust-manifest mismatch remains unchanged and is now owned by
-uibcdf/molsysmt#533; the broader #255 refactor is completed. Do not repeat the
-same failing installed-source matrix or filter its unexpected export. Review
-the owner's exact repair, then qualify one fixed pair. Old-provider public/source
+The original installed Rust-manifest mismatch is owned by
+uibcdf/molsysmt#533; the broader #255 refactor is completed. Its identified
+repair retains exact export equality. Do not repeat the original failing
+inputs or filter the unexpected export. Old-provider public/source
 Pandas4Warning failures remain separate from new-source compatibility and the
 passing JavaScript coverage steps.
 

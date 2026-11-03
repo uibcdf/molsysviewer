@@ -25,17 +25,17 @@ archived documents link there; its location does not reopen its release scope.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (1)
+### Being worked on (2)
 
+- [`chemical_domain_source_receiving.md`](chemical_domain_source_receiving.md) — [#269](https://github.com/uibcdf/molsysviewer/issues/269) — Receive independent MolSysMT chemical domains through Viewer and the expert addon. *(measured)*
 - [`migrate_standalone_qt_to_canonical_pyside6_6_11_2.md`](migrate_standalone_qt_to_canonical_pyside6_6_11_2.md) — [#109](https://github.com/uibcdf/molsysviewer/issues/109) — Migrate the optional standalone Qt host to canonical PySide6 6.11.2. *(measured)*
 
 ### Partially done (1)
 
 - [`molsysmt_tools_addon_receiving.md`](molsysmt_tools_addon_receiving.md) — [#264](https://github.com/uibcdf/molsysviewer/issues/264) — Qualify the redesigned MolSysMT addon host and molecular-edit reconciliation. *(inspected)*
 
-### Blocked (2)
+### Blocked (1)
 
-- [`chemical_domain_source_receiving.md`](chemical_domain_source_receiving.md) — [#269](https://github.com/uibcdf/molsysviewer/issues/269) — Receive independent MolSysMT chemical domains through Viewer and the expert addon. *(measured)* — waiting on uibcdf/molsysmt#533
 - [`molsysmt_known_source_form_and_large_string_detection.md`](molsysmt_known_source_form_and_large_string_detection.md) — [#42](https://github.com/uibcdf/molsysviewer/issues/42) — Adopt a public source-form hint when MolSysMT provides it; historical extension detection is repaired. *(measured)* — waiting on uibcdf/molsysmt#151
 
 ### Open (3)

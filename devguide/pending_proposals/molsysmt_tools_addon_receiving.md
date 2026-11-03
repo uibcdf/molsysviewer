@@ -44,6 +44,11 @@ team owns review and integration; Viewer contributors do not push to its main
 branch or merge the PR.
 #264 stays partial. There is no new installed, package, platform or release claim.
 
+PR #538's performance audit fails before timings while preparing the catalogued
+H5 reference. MolSysMT#539 retains the CI traceback and successful same-input
+local conversion on the PR branch, with the cause explicitly unverified.
+Owner investigation and integration remain separate from #269 receiving.
+
 A separate follow-up at `3c13ba1a5` fixes MolSysMT#537: the sdist validator
 mistook real tar directory entries for unreviewed addon files. Four new cases
 fail before and pass after the correction; 36 distribution/CI controls pass,

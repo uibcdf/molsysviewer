@@ -1,0 +1,296 @@
+{
+  "schema": "molsysviewer.chemical-domain-installed-source-receiving@1",
+  "date": "2026-11-03",
+  "issue": "uibcdf/molsysviewer#269",
+  "provider_issue": "uibcdf/molsysmt#533",
+  "provider_source": "d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42",
+  "provider_fix": "2797c5425f5735568422325928520ae591c3676a",
+  "viewer_source": "d72f93f7aa8a3d89b2848bef905a48a00102f8e1",
+  "dispatch": {
+    "run": 41690488611,
+    "workflow": "ci-python-314-source-pair.yaml",
+    "event": "workflow_dispatch",
+    "source_receiving": true,
+    "count": 1,
+    "inputs": {
+      "source_receiving": "true",
+      "molsysmt_sha": "d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42"
+    }
+  },
+  "state": "awaiting_macos",
+  "platforms": [
+    "ubuntu-latest",
+    "macos-15",
+    "windows-2025"
+  ],
+  "python": "3.14",
+  "source_review": {
+    "prior_provider": "bd28d57f2b0b31a6215d206dea27602f5f72e70d",
+    "runtime_changes": "Explicit ChemicalStatesDict composition with all declared states and dtype-preserving Series decoding; Rust implementation unchanged.",
+    "repair": "Reviewed get_vectors manifest entry and unchanged exact-set enforcement, with independent missing/unexpected export guards.",
+    "unchanged_since_supported_base": {
+      "molsysmt": {
+        "base": "2e5c8b64b7a2e4aa270c09b6311691cd88800ac2",
+        "tree": "7dc41528d4999857c86d8ea1c6bfd5b13684d897",
+        "unchanged": true
+      },
+      "molsysviewer_molsysmt": {
+        "base": "2e5c8b64b7a2e4aa270c09b6311691cd88800ac2",
+        "tree": "0532f5ecbf90b5139ddb664f960ae6cbb02770be",
+        "unchanged": true
+      },
+      "rust": {
+        "base": "2e5c8b64b7a2e4aa270c09b6311691cd88800ac2",
+        "tree": "32cfb07b9c26ae9ad3ed379c1b76fab85669cf67",
+        "unchanged": true
+      }
+    }
+  },
+  "limits": [
+    "Installed source feasibility, not canonical staged/public artifact qualification or a clean solver-produced dependency closure.",
+    "No new version, dependency floor, tag, candidate freeze or publication.",
+    "PR #538 remains independently owned by the MolSysMT team; its supported wrappers are not part of this provider commit.",
+    "Shared development environment and unrelated worktrees were preserved.",
+    "The original hosted Linux job remains failed; the 44-suite recovery is local source evidence, not a successful hosted rerun or a new installed build."
+  ],
+  "provider_prerequisite": {
+    "run": 41687790382,
+    "workflow": "ci-smoke.yaml",
+    "source": "d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42",
+    "conclusion": "success",
+    "scope": "Owner ordinary source smoke; does not replace this Viewer installed-source matrix.",
+    "viewer_source": "ca7ebea60d530a7a0c65cb4d0ccea7b4288f3352",
+    "native_log_sha256": "c65da51472c45f3801618145c7f6799d55923d533bf8b1ecb499dc3f4b89da9f",
+    "command_guards": {
+      "passed": 9
+    },
+    "native_tier": {
+      "passed": 4184,
+      "skipped": 16,
+      "skip_reasons": {
+        "ackredit_not_installed": 14,
+        "unyt_not_installed": 1,
+        "astropy_not_installed": 1
+      }
+    },
+    "addon_tier": {
+      "passed": 2449,
+      "skipped": 4,
+      "skip_reasons": {
+        "ackredit_not_installed": 4
+      }
+    }
+  },
+  "results": {
+    "Linux": {
+      "junit_sha256": "7c4114b57424691ac87c759aa6f249ea6318c23de871ecc637d48d56c3976ec7",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "25",
+          "tests": "3372",
+          "time": "355.485",
+          "timestamp": "2026-11-03T18:18:06.021385+00:00",
+          "hostname": "runnervmnwato"
+        }
+      ],
+      "copy_cases": [
+        {
+          "name": "test_view_copy_isolates_controlled_edits_and_retains_old_analysis_handles[coordinates]",
+          "skipped": false,
+          "failed": false
+        },
+        {
+          "name": "test_view_copy_isolates_controlled_edits_and_retains_old_analysis_handles[box]",
+          "skipped": false,
+          "failed": false
+        },
+        {
+          "name": "test_view_copy_isolates_controlled_edits_and_retains_old_analysis_handles[chemistry]",
+          "skipped": false,
+          "failed": false
+        },
+        {
+          "name": "test_failed_native_edit_and_visual_edits_do_not_change_the_other_view",
+          "skipped": false,
+          "failed": false
+        },
+        {
+          "name": "test_copied_analysis_survives_nonconsecutive_extraction_and_session",
+          "skipped": false,
+          "failed": false
+        }
+      ],
+      "skip_reasons": {
+        "Legacy MolSysMT entry point is not installed": 1,
+        "template has no placeholders": 14,
+        "Optional headless PNG backend": 1,
+        "Requires installed scientific artifacts": 2,
+        "requires an explicitly selected real Chromium/GPU environment": 2,
+        "imageio is installed; cannot test ImportError path": 1,
+        "molsysviewer_elastnetmt is not installed": 1,
+        "molsysviewer_pharmacophoremt is not installed": 1,
+        "molsysviewer_topomt is not installed": 1,
+        "Windows process memory API": 1
+      },
+      "passed": 3347,
+      "scope": "Installed Rust validation, integration, Python suite and all 25 notebooks pass. Original hosted browser core aborted in its first suite; later local recovery is recorded separately.",
+      "job_conclusion": "failure",
+      "failed_step": "Run all core browser suites against the exact source pair",
+      "failure": "Positive context-menu fixture expected assigned chain membership from a legacy demo whose atoms have no declared chain. Production menu correctly reports missing membership.",
+      "native_log_sha256": "d795633bb04710943f743418059b2d32cdfd3c2daac7d3d9ab4d424f92dadab8",
+      "notebooks": {
+        "executed": 25,
+        "conclusion": "success"
+      }
+    },
+    "Windows": {
+      "junit_sha256": "135f479d4f2e9fa5dec839cf3e71ddf658007759726dab49396ef6d2aad26802",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "52",
+          "tests": "3372",
+          "time": "444.194",
+          "timestamp": "2026-11-03T18:20:34.931582+00:00",
+          "hostname": "runnervmhao91"
+        }
+      ],
+      "copy_cases": [
+        {
+          "name": "test_view_copy_isolates_controlled_edits_and_retains_old_analysis_handles[coordinates]",
+          "skipped": false,
+          "failed": false
+        },
+        {
+          "name": "test_view_copy_isolates_controlled_edits_and_retains_old_analysis_handles[box]",
+          "skipped": false,
+          "failed": false
+        },
+        {
+          "name": "test_view_copy_isolates_controlled_edits_and_retains_old_analysis_handles[chemistry]",
+          "skipped": false,
+          "failed": false
+        },
+        {
+          "name": "test_failed_native_edit_and_visual_edits_do_not_change_the_other_view",
+          "skipped": false,
+          "failed": false
+        },
+        {
+          "name": "test_copied_analysis_survives_nonconsecutive_extraction_and_session",
+          "skipped": false,
+          "failed": false
+        }
+      ],
+      "skip_reasons": {
+        "Legacy MolSysMT entry point is not installed": 1,
+        "template has no placeholders": 14,
+        "needs a Chromium-family browser on PATH to open the page for real": 8,
+        "POSIX read-only directory permission guard": 1,
+        "Requires installed scientific artifacts": 2,
+        "Linux /proc residency probes": 19,
+        "requires an explicitly selected real Chromium/GPU environment": 2,
+        "imageio is installed; cannot test ImportError path": 1,
+        "POSIX Ctrl-C subprocess guard": 1,
+        "molsysviewer_elastnetmt is not installed": 1,
+        "molsysviewer_pharmacophoremt is not installed": 1,
+        "molsysviewer_topomt is not installed": 1
+      },
+      "passed": 3320,
+      "job_conclusion": "success"
+    },
+    "macOS": {
+      "state": "queued",
+      "runner_id": 0,
+      "runner_name": "",
+      "labels": [
+        "macos-15"
+      ],
+      "scope": "No assigned runner and no executed tests observed; not passing evidence."
+    }
+  },
+  "artifacts": [
+    {
+      "digest": "sha256:0657e701699b24a6edee2ffa13d6e2a9dcd411c630cd5e1e5250dba8b587fdf0",
+      "expired": false,
+      "id": 13259270298,
+      "name": "source-pair-notebook-failure-logs",
+      "size_in_bytes": 12457
+    },
+    {
+      "digest": "sha256:781f49b18994f951c198fa2055618feff823a9935360c091bbff4b40612cfaab",
+      "expired": false,
+      "id": 13258930807,
+      "name": "source-receiving-Windows-py3.14",
+      "size_in_bytes": 60081
+    },
+    {
+      "digest": "sha256:25ef503039ae8826e4bdb15ac5326e8535872333a1a38b81632e4f276e726fff",
+      "expired": false,
+      "id": 13258580553,
+      "name": "source-receiving-Linux-py3.14",
+      "size_in_bytes": 59525
+    }
+  ],
+  "browser_recovery": {
+    "provider_source": "d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42",
+    "scope": "Local real Mol*/Chromium with exact committed provider Python sources and unchanged reused native backend; not a new installed build.",
+    "change": "Declare chain_index=0 explicitly in both positive pentalanine context-menu snapshots/replay fixtures; retain unknown/partial membership scenarios and existing behavioral assertions.",
+    "context_menu": {
+      "conclusion": "success",
+      "native_log_sha256": "e463fd4b1d5d61f6a3ee9448b3394196307b3bde6fa3d32e84460b6f7937ef00"
+    },
+    "complete_core": {
+      "conclusion": "success",
+      "suites": 44,
+      "native_log_sha256": "3c4e2e3ba8f261f6cd308d1cab1cfc30d16eb65ce5158c21eb9da62d592bd799"
+    },
+    "consumer_fixture_source": "383721ea4f835c3e62962312b361bce4fee2ed81",
+    "fixture_source_sha256": "e628b2ce50d0d62a5c7891baa93a5c4ce948fb9a4d897e4b01218581f4054835",
+    "local_provider": {
+      "source": "d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42",
+      "archive_sha256": "227be1fd0c9e288ca03a70f6d0aee6f1aa882952cd2885788491d30d9f08786b",
+      "backend_sha256": "f32ed73f7ef3cf3225e12fbc56b9c4236a4452d758c94661f41860ad00d82c1c",
+      "scope": "Local browser diagnosis using exact committed Python package sources and unchanged reused native backend; not installed qualification."
+    },
+    "provider_integrity": {
+      "checked_files": 3420,
+      "mismatches": [],
+      "source": "d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42"
+    },
+    "production_change": "The fixture commit changes only the context-menu E2E test. No production/runtime source changes relative to installed-source Viewer d72f93f7."
+  },
+  "diagnostics": {
+    "gh_run_receptor_version": "1.1.1",
+    "limitation": "Installed receptor predates --job. Native gh run view also withholds logs until the parent run completes. Used the completed-job logs API, explicitly writing raw bytes to an ignored local file; original outcomes retained.",
+    "watch_closeout": "Local read-only observer stopped with exit 130 at handoff; the GitHub workflow was not cancelled."
+  },
+  "observed_at": "2026-11-03T18:54:16.225694+00:00",
+  "github_status": "queued",
+  "github_conclusion": null,
+  "pr_538_followup": {
+    "issue": "uibcdf/molsysmt#539",
+    "run": 41689119788,
+    "conclusion": "failure",
+    "failure": "Benchmark H5-to-PDB preparation rejects molecular_system in CI before performance measurements.",
+    "local_probe": {
+      "result": "success",
+      "output_bytes": 7131519
+    },
+    "uncertainty": "Same conversion succeeds locally on the PR branch with qa profile and benchmark imports. Environment/import/dependency/product cause remains unverified; owner investigation required.",
+    "scope": "Separate from #269; PR review and integration belong to MolSysMT."
+  },
+  "record_validation": {
+    "passed": 299,
+    "failed": 0,
+    "junit_sha256": "d80627ff568062b7d5d082ae8526e75b1c5d1f3859ed1c0790dba00135edc924",
+    "index_check": "passed",
+    "board_agreement": "31 documents agree"
+  },
+  "temporary_resources": "Owned local provider snapshot and archive removed after integrity checks; original logs, JUnit files, source identities and digests retained in ignored task evidence. PR contribution worktree retained separately for owner review."
+}

@@ -92,7 +92,12 @@
     "pull_request": "https://github.com/uibcdf/molsysmt/pull/538",
     "integration_owner": "MolSysMT development team",
     "note": "Maintainer explicitly requires PR delivery for MolSysMT contributions. No direct main push or PR merge is authorized from this Viewer session.",
-    "prior_attempt": "An earlier PR creation attempt was rejected by automatic review before explicit PR authorization; no PR was created by that attempt."
+    "prior_attempt": "An earlier PR creation attempt was rejected by automatic review before explicit PR authorization; no PR was created by that attempt.",
+    "ci_followup": {
+      "issue": "uibcdf/molsysmt#539",
+      "run": 41689119788,
+      "state": "Benchmark audit fails during reference preparation in CI; local same-input conversion succeeds; owner investigation pending."
+    }
   },
   "hosted": {
     "run": 41685357103,
