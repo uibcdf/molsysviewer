@@ -1,9 +1,9 @@
 ---
 summary: Make JavaScript coverage measure executed production sources and reject empty LCOV.
 issue: uibcdf/molsysviewer#290
-status: active
+status: resolved
 opened: 2026-11-02
-closed:
+closed: 2026-11-03
 verification: reproduced
 severity: medium
 area: [ci, coverage, testing]
@@ -54,4 +54,27 @@ false-full case and missing line records are also rejected. The full native
 CI runs the full JS selection and report validation immediately after JS
 dependency installation, before Python tests, and preserves both reports. The
 previous packaging/version-sync rebuild is removed from this unit-only step.
-Exact-source hosted JS receiving is pending. No tag, package or 1.0 claim.
+Exact-source hosted JS receiving is verified below. No tag, package or 1.0 claim.
+
+## Resolution — 2026-11-03
+
+Source `87de7eab2023c697a4de193fc2af6306fd0ee3f0` passes the hosted
+“JS unit tests (Node)” and report-preservation steps in run 41667711689, job
+126027409575. Downloaded original artifact 13247025814 has SHA-256
+`91012f680f632b0b506f72294af2f71f70c9e6cc531402b5dcb9ed2e0715f44c`,
+matching GitHub. Its LCOV is byte-identical to the measured local report; JSON
+summary totals agree (absolute checkout paths account for different JSON bytes).
+The enclosing Python matrix is still active at this observation; these passing
+JS steps do not declare the overall workflow green. Hosted test stdout is not
+yet available.
+
+The seven real-tooling/negative guards protect attribution and rejection; the
+371 integration checks pass at the source checkpoint after regenerating queue
+indexes and staging new clean-checkout link targets. The final archived-state
+selection passes 368 cases; three open-queue parameterizations disappear. The
+[receipt](../js_source_coverage_receiving_20261103.json) retains local and hosted
+identities, hashes, counts and limitations. The normative coverage rule is in
+[the dependency contract](../dependency_contract.md#javascript-registry-advisories);
+[developer testing](../../docs/content/developer/testing.md) explains execution.
+No production runtime, lockfile, numerical acceptance threshold or public
+artifact changes. Provider receiving under #269 and addon #264 remain separate.

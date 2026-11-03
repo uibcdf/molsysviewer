@@ -58,14 +58,51 @@
         "bytes": 31434,
         "sha256": "a0f498d6ca60f6c5c9b1c7761a4c5bd19533038ac00662a3651e9648762eb195"
       }
+    },
+    "integration_guards": {
+      "passed": 371,
+      "failed": 0,
+      "junit": ".pytest_cache/js-coverage-20261103/final-integration-guards.xml",
+      "note": "Final scoped integration rerun after regenerating queue indexes and staging new link targets. Intermediate governance failures are retained in earlier logs."
+    },
+    "archived_integration_guards": {
+      "passed": 368,
+      "failed": 0,
+      "junit": ".pytest_cache/js-coverage-20261103/archived-integration-guards.xml",
+      "note": "Same scoped selection after report closure; three open-queue parameterizations disappear on archival."
     }
   },
   "hosted": {
-    "state": "pending"
+    "state": "js_steps_verified",
+    "run_id": 41667711689,
+    "job_id": 126027409575,
+    "source_commit": "87de7eab2023c697a4de193fc2af6306fd0ee3f0",
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/41667711689",
+    "scope": "Linux Python 3.14 job: JS unit tests (Node) and Preserve JavaScript source coverage steps succeeded. Overall Python matrix still running at observation.",
+    "artifact": {
+      "id": 13247025814,
+      "name": "javascript-source-coverage",
+      "zip_sha256": "91012f680f632b0b506f72294af2f71f70c9e6cc531402b5dcb9ed2e0715f44c",
+      "bytes": 136015
+    },
+    "reports": {
+      "lcov.info": {
+        "bytes": 560499,
+        "sha256": "ab1fccf2efa622993785a8cea66c6c6f0d453867975a0983da91ef75bf905a14"
+      },
+      "coverage-summary.json": {
+        "bytes": 31992,
+        "sha256": "c7f0f68df6f2fde8cdce6e041f6e583f51e19059cb37e9d932548d5cc78e578e"
+      }
+    },
+    "lcov_identical_to_local": true,
+    "summary_totals_identical_to_local": true,
+    "test_stdout": "Not yet available while the enclosing Python job runs; do not claim a downloaded hosted TAP count."
   },
   "limits": [
     "V8 remapped unit-bundle metrics; not all repository sources or browser/Qt coverage.",
     "No new percentage threshold; no artifact/installed/scientific qualification.",
     "Unrelated provider/source CI failures remain separate; publications stay paused."
-  ]
+  ],
+  "source_commit": "87de7eab2023c697a4de193fc2af6306fd0ee3f0"
 }

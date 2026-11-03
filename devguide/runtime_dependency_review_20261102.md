@@ -88,5 +88,6 @@ dependency graph: all 335 unit cases and seven real-tooling/negative controls
 pass. Source maps, post-remap URL filtering and a fail-closed report guard now
 produce measured production line/function records. The
 [receipt](js_source_coverage_receiving_20261103.json) retains exact scope and
-pending hosted receiving. This supersedes the coverage-specific next action
+passing hosted JS receiving in 41667711689; its LCOV matches local bytes.
+The overall Python matrix remains separately pending. This supersedes the coverage-specific next action
 above; installed provider/artifact and remaining addon work stay separate.

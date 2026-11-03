@@ -439,3 +439,4 @@ Completed work, kept for the reasoning:
 - [annotation pick registry lifecycle](annotation_pick_registry_lifecycle.md) — #243: Annotation replacement unregisters deleted refs and retains only live registry entries.
 - [Qt initial load policy](qt_initial_load_policy.md) — #274 shares factory loading semantics with Qt, preserving the full system for visual selections.
 - [Qt live array references](qt_live_array_reference.md) — #275 negotiates the real lazy binary path, preserves raw payload identity and checks actual Qt delivery.
+- [Production TypeScript coverage](js_coverage_report_is_empty.md) — #290 restores measured source coverage, rejects invalid reports and verifies hosted LCOV against the local result.

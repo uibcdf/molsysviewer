@@ -6,8 +6,11 @@ guards pass. LCOV now measures 93 production sources with 28,347/42,599 lines
 and 887/1,624 functions executed; the report gate rejects missing, empty,
 unmapped and harness-only coverage, including false full-line/zero-function
 reports. See the [receipt](js_source_coverage_receiving_20261103.json) and
-[testing contract](../docs/content/developer/testing.md). Hosted JS receiving
-is pending. The provider #269, partial addon #264 and deferred Load human smoke
+[testing contract](../docs/content/developer/testing.md). Hosted JS steps pass
+in 41667711689 on source `87de7eab`; the original artifact's LCOV is byte-identical
+to local output. The enclosing Python matrix remains separately in progress.
+The [resolved report](archive/js_coverage_report_is_empty.md) retains the closure.
+The provider #269, partial addon #264 and deferred Load human smoke
 remain separate. No runtime, tag, package or 1.0 publication.
 
 **Chemical-domain receiving — 2026-11-02:** Viewer `481319a9` receives requested
@@ -586,6 +589,15 @@ This is the current handoff. Normative behavior remains in the linked contracts;
 previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
+
+**Current handoff — 2026-11-03:** #290's exact-source hosted JS receiving is
+complete as described at the top of this checkpoint. Resume #269's installed
+provider/Rust-manifest boundary and the partial #264 expert addon inventory
+(144/244 reviewed paths). #259/#285/#288/#289 have source/tooling receiving;
+the later unit-coverage receipt supersedes earlier empty-LCOV limitations only
+within its stated scope. Load human smoke remains explicitly deferred.
+No candidate is frozen and both 1.0 publications remain paused. The dated
+rounds below retain their original evidence and do not select a new release.
 
 The latest user-directed standalone round is summarized in the
 [final review](standalone_final_review_20261029.md). Receive its remaining
@@ -2182,6 +2194,14 @@ MolSysViewer does.** It is generated; regenerate with
 documents carry it.
 
 Resume toward **1.0** in this order:
+
+**Current order — 2026-11-03:** #290's hosted unit-coverage receiving is complete.
+Receive #269 against the provider's corrected installed Rust manifest; continue
+the remaining expert addon surface under #264 before GUI and documentation
+completion. Freeze and qualify original candidate artifacts only when the
+maintainer resumes that separate phase. Earlier source receiving, public
+packages and human observations retain their recorded scopes. The dated
+inventory below is historical progression, not authorization to publish.
 
 **Current order — 2026-10-26:**
 

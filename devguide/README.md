@@ -50,7 +50,9 @@ documents, and historical audits.
   unit cases and seven real-tooling/negative controls pass; 93 production sources
   now have measured line/function coverage. The
   [receipt](js_source_coverage_receiving_20261103.json) retains counts, hashes and
-  scope. Hosted receiving is pending; no runtime/package/release change.
+  scope. Hosted JS steps pass in 41667711689; original LCOV matches local bytes.
+  The [resolved report](archive/js_coverage_report_is_empty.md) keeps the
+  overall Python workflow's separate pending state. No runtime/package/release change.
 
 - **Source and distribution receiving — 2026-11-02:** #259 receives independent
   molecular/analysis/visual copies in source. The complete current-provider core
