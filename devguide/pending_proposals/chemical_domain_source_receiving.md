@@ -16,6 +16,15 @@ supersedes: []
 
 ## Follow-up — 2026-11-03
 
+**Provider update:** published correction
+`2797c5425f5735568422325928520ae591c3676a` adds the reviewed vector export and
+guards actual-module drift. MolSysMT#533 retains the focused source and local
+noneditable Linux evidence; its broader hosted qualification remains pending.
+Viewer has not yet rerun the installed source pair against that correction.
+The original failure below remains preserved; an identified source repair now
+exists, so the next receiving attempt must use that new input rather than
+repeat the original failing provider.
+
 The provider refactor #255 is merged and closed; the remaining installed-export
 defect now has its own owner, uibcdf/molsysmt#533. Committed main
 `bd28d57f2b0b31a6215d206dea27602f5f72e70d` still expects 101 private exports

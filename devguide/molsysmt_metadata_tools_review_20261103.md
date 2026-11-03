@@ -1,5 +1,12 @@
 # Metadata utility contract prepared for addon receiving
 
+**Implementation follow-up — 2026-11-03:** the four supported reports have a
+separate source implementation at owner commit `4e1a06ee1`, with 2,527 addon
+cases passing, including 74 new cases. Owner-branch exposure is 148/244; owner
+main integration is pending. The [new receipt](molsysmt_supported_tools_receiving_20261103.json)
+keeps this distinct from the frozen preparation evidence below. The seven
+attribute helpers remain unimplemented in the facade.
+
 **Status — 2026-11-03:** the inventory and consumer requirements for the next
 expert-addon block are prepared under `uibcdf/molsysviewer#264` and
 `uibcdf/molsysmt#421`. No new addon methods are implemented or qualified by this

@@ -1,0 +1,200 @@
+{
+  "schema": "molsysviewer.supported-addon-receiving@1",
+  "date": "2026-11-03",
+  "issues": [
+    "uibcdf/molsysmt#421",
+    "uibcdf/molsysviewer#264"
+  ],
+  "source_base": "2e5c8b64b7a2e4aa270c09b6311691cd88800ac2",
+  "viewer_source": "4faf5496c141f33e7e6ba44aaf769dcf24176603",
+  "source_scope": "Four explicit metadata wrappers in a review worktree; no Rust build or installation, new native scientific method or host runtime change.",
+  "native_backend": {
+    "mode": "Reused unchanged shared backend for source checks; no installed qualification.",
+    "sha256": "f32ed73f7ef3cf3225e12fbc56b9c4236a4452d758c94661f41860ad00d82c1c"
+  },
+  "inventory": {
+    "exposed": 148,
+    "reviewed": 244,
+    "supported": 4,
+    "attribute": 0,
+    "raw_output_sha256": "d598b186471b026ee92095c9d499208b875924e132bc1eac4f1e02565702303d",
+    "collector": "devtools/scripts/audit_molsysviewer_tools_api.py"
+  },
+  "module_sha256": {
+    "molsysviewer_molsysmt/_supported.py": "01698c198f5eca4deaf4220c33ed8ed769609db5b732c6dec06b56ae9bd566a5",
+    "molsysviewer_molsysmt/_api.py": "926b6f7a44ae9f08efb1700cd2bffd5d69850bd397a242521ae5a8ee89d6b2c0",
+    "molsysviewer_molsysmt/_basic.py": "a1580138e363986b6461b65eb124a58ad2fa15b5ff50313c7a867edaddb613a7"
+  },
+  "validation": {
+    "doctests_and_inventory": {
+      "passed": 5,
+      "junit_sha256": "e98e7e2bdc37589401a59cc28dd33e98dc603b6a7cbec853bfafccdb5bb5d764"
+    },
+    "initial_metadata": {
+      "passed": 73,
+      "failed": 1,
+      "cause": "New test used status instead of public state; after fixing that, public export_state rejection while pending required comparing retained scene messages.",
+      "junit_sha256": "1b14361acb0686529f8705e02d82bbda37cd92c270df1b7730232b585a6582dc"
+    },
+    "pending_recovery": {
+      "passed": 1,
+      "junit_sha256": "4f857dfa0bfe8f76001ac58829a820cfc737610c78cc1b0cd7084c817c76e7b8"
+    },
+    "complete_addon": {
+      "passed": 2527,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 638.03,
+      "supported_cases": 74,
+      "junit_sha256": "e16cad6244f1ce1efb7252b2bc8eb1ba55065c4b42406277697bb2bbb9fbcaae",
+      "native_log_sha256": "806c3c4c9825aaedf2cc72439c47b6397bf7212c0792252c461b46a45d34d0af",
+      "scope": "One complete addon run in the owner checkout against the unchanged reused backend and current Viewer source."
+    },
+    "new_guide_block": "executed successfully",
+    "course": "Prose-only extension; code cells, stored outputs and notebook format unchanged.",
+    "native_and_notebook_schema": {
+      "passed": 519,
+      "junit_sha256": "a58030f1f2eebbe83c4a38e72d9a19a4da8873b7d22560b8fc0c536935302872"
+    },
+    "course_structure": "156 notebooks; manifest, toctrees and labels consistent.",
+    "package_and_ci_guards": {
+      "passed": 32,
+      "junit_sha256": "bdf551192e0408866f667a4b9727cb3a98bee4e0f2eda63300a3df3ee186a212",
+      "scope": "Structural source/wheel/sdist inventory controls, including missing _supported.py; no built/installed-pair certificate."
+    },
+    "initial_package_guard": {
+      "passed": 8,
+      "failed": 1,
+      "cause": "New supported module missing from the reviewed source/wheel/installed tools-file inventory; fixed by adding its exact path, retaining retired/unreviewed-file rejection."
+    },
+    "static_checks": {
+      "ruff_lint": "passed",
+      "ruff_format": "4301 files already formatted",
+      "docstrings": "246 native public functions pass structural/default/nonvacuity checks",
+      "devguide": "passed; generated indexes current"
+    }
+  },
+  "limits": [
+    "Installed-source receiving remains under molsysviewer#269/molsysmt#533.",
+    "Native #534/#535 remain separate; no alias priming or dependency-metadata correction in the facade.",
+    "Declared capabilities do not qualify optional engines or every molecular input.",
+    "No package floor, version, tag, release or publication change."
+  ],
+  "guard_source_sha256": {
+    "tests/molsysviewer_molsysmt/test_supported_tools.py": "027b0f51d1ee900f5eaadce184e012cbee0413d7e3bdc4a1d0ddca53c5ce2038",
+    "devtools/scripts/viewer_tools_contract.py": "3caed247497a2c7adad877ed19e76e0d0da6a73515674c4882c1d9bd5c46e440",
+    "devtools/tests/test_native_viewer_integration.py": "13735fc29737613deae3da50616a2dd022c0b70d1b5c69351186cb51ffcd9cf7"
+  },
+  "owner_commit": "4e1a06ee1ba698937696fd9b1e9dbb5f072a17b4",
+  "owner_branch": "addon/supported-reports-20261103",
+  "delivery": {
+    "state": "branch_published_owner_main_unmodified",
+    "pull_request": "not_created",
+    "note": "Implementation and evidence are concrete on the owner branch; integration route requires maintainer clarification after PR creation was rejected by automatic permission review."
+  },
+  "hosted": {
+    "run": 41685357103,
+    "workflow": "ci-smoke.yaml",
+    "event": "workflow_dispatch",
+    "source": "4e1a06ee1ba698937696fd9b1e9dbb5f072a17b4",
+    "state": "completed",
+    "scope": "One ordinary owner source smoke run of the feature commit; not the later distribution-validator fix, the pending Viewer installed-source pair or a release gate.",
+    "viewer_source": "ca7ebea60d530a7a0c65cb4d0ccea7b4288f3352",
+    "conclusion": "success",
+    "platform": "ubuntu-latest",
+    "python": "3.14",
+    "job": 126089547134,
+    "artifacts": 0,
+    "native_log_sha256": "973b4711ab092c4c386f0aa0b69fb827c1a32b9de41311bd04f4e4a16f1526da",
+    "command_guards": {
+      "passed": 9
+    },
+    "native_tier": {
+      "passed": 4117,
+      "skipped": 16,
+      "warnings": 590,
+      "skip_reasons": {
+        "ackredit_not_installed": 14,
+        "unyt_not_installed": 1,
+        "astropy_not_installed": 1
+      }
+    },
+    "addon_tier": {
+      "passed": 2523,
+      "skipped": 4,
+      "warnings": 1609,
+      "skip_reasons": {
+        "ackredit_not_installed": 4
+      }
+    }
+  },
+  "connected_main_inventory": {
+    "exposed": 144,
+    "reviewed": 244,
+    "note": "Main source receipt retains the pre-integration inventory; the qualified owner branch exposes 148/244."
+  },
+  "owner_head": "3c13ba1a5c248de11622ff015b24551f72c59846",
+  "owner_commits": [
+    "4e1a06ee1ba698937696fd9b1e9dbb5f072a17b4",
+    "3c13ba1a5c248de11622ff015b24551f72c59846"
+  ],
+  "distribution_followup": {
+    "issue": "uibcdf/molsysmt#537",
+    "source": "3c13ba1a5c248de11622ff015b24551f72c59846",
+    "receipt": "devtools/data/sdist_directory_validation_receiving_20261103.json",
+    "result": {
+      "schema": "molsysmt.sdist-directory-validation-receiving@1",
+      "date": "2026-11-03",
+      "issue": "uibcdf/molsysmt#537",
+      "source_before_fix": "4e1a06ee1ba698937696fd9b1e9dbb5f072a17b4",
+      "delivery": "Prepared on addon/supported-reports-20261103; owner-main integration pending.",
+      "mechanism": "TarInfo directory types were lost by converting entries directly to PurePosixPath. Addon directory entries were then mistaken for unreviewed files.",
+      "change": "Retain all entries for archive structure and forbidden-content checks; use non-directory entries for required source files and exact addon-file inventory.",
+      "guards": [
+        "devtools/tests/test_validate_rust_sdist.py::test_real_addon_directories_are_not_unreviewed_files",
+        "devtools/tests/test_validate_rust_sdist.py::test_directory_cannot_satisfy_a_required_file"
+      ],
+      "regression": {
+        "before": {
+          "failed": 4,
+          "passed": 0,
+          "junit_sha256": "8e9daa38d40cf5e8339f2f7dfe2006b5ade825ad03856f233a377e9d3d50a93a"
+        },
+        "after": {
+          "failed": 0,
+          "passed": 4,
+          "junit_sha256": "2e82aac6871c38a70d6a155e02e008e7d3923ee752bd3a0c5576843b2a23155f"
+        },
+        "package_and_ci_controls": {
+          "passed": 36,
+          "failed": 0,
+          "skipped": 0,
+          "junit_sha256": "bd4162be40ea5bc4ee8749b47499edd419ae2fa7a365a322be4a834d5eef71b5"
+        },
+        "ruff_lint_and_format": "passed"
+      },
+      "real_source_archive": {
+        "file": "molsysmt-0.23.0+373.g4e1a06ee1.tar.gz",
+        "bytes": 59026468,
+        "sha256": "58e05d28c440f48dde845993b5744f9d4f5182b426f4f5e08df5c83af68a6a5a",
+        "supported_module_matches_source": true,
+        "original_validator": "Rejects four addon directory entries as retired or unreviewed files.",
+        "corrected_validator": "Accepts the same unchanged archive bytes.",
+        "scope": "Local development source archive only; no wheel, native build, installation, upload or release qualification."
+      },
+      "limits": [
+        "Directory entries cannot satisfy required file paths.",
+        "Retired and unknown addon files still fail; no inventory wildcard or ignored error was added.",
+        "The 2527-case addon runtime result belongs to the unchanged feature source, separately from this distribution-validator fix.",
+        "No package version, tag, release, dependency floor or publication changes."
+      ]
+    },
+    "integration": "Pending; issue remains open until owner-main delivery."
+  },
+  "installed_receiving_followup": {
+    "issue": "uibcdf/molsysmt#533",
+    "source_correction": "2797c5425f5735568422325928520ae591c3676a",
+    "state": "Provider repair published; Viewer installed-pair receiving has not been rerun against it.",
+    "scope": "Provider issue retains local noneditable Linux evidence and pending broader hosted qualification; not evidence for this addon contribution branch."
+  }
+}

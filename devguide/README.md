@@ -45,6 +45,14 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Supported reports source increment — 2026-11-03:** owner branch `4e1a06ee1`
+  implements the four metadata reports; 2,527 addon cases pass, including 74 new
+  cases. Branch exposure is 148/244, with no host change and main integration
+  pending. The [receipt](molsysmt_supported_tools_receiving_20261103.json) retains
+  scoped checks and successful source-smoke receiving (four optional Ackredit
+  skips in the hosted addon tier). #264 remains partial;
+  no installed pair or release is claimed.
+
 - **Addon metadata preparation — 2026-11-03:** #264 retains 144/244 exposed
   paths. The [review](molsysmt_metadata_tools_review_20261103.md) dispositions
   all 100 unexposed paths and prepares eleven explicit-input metadata contracts,

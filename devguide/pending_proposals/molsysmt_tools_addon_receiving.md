@@ -14,6 +14,41 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Supported reports implemented on owner branch — 2026-11-03
+
+The maintainer authorized the four `supported` reports as an independent source
+increment while #269's installed receiving waits. Owner commit
+`4e1a06ee1ba698937696fd9b1e9dbb5f072a17b4` on
+`addon/supported-reports-20261103` provides explicit forms, conversions,
+dependencies and syntax reports with an open-empty-view contract. The Viewer
+host needs no code change. Owner `main` is unchanged by this increment;
+branch exposure is 148/244 while the earlier main-source inventory stays
+144/244 until integration.
+
+The complete owner-addon selection passes 2,527 cases without failures/errors/
+skips, including 74 new metadata cases. Five help-doctest/inventory checks,
+519 native-report/notebook-schema checks and 32 package/CI controls pass in
+separate scopes. The guide example executes and course code/outputs/schema are
+preserved. Cold-process guards retain the actual native alias outcome before
+and after the facade; no #534/#535 workaround is introduced. Metadata reads do
+not synchronize pending edits or change molecular data, scene or history.
+
+The [receiving receipt](../molsysmt_supported_tools_receiving_20261103.json)
+records commit, hashes, initial test/manifest corrections and limits. Source
+smoke 41685357103 succeeds on the exact owner commit: 2,523 addon cases pass,
+four attribution cases skip because optional Ackredit is absent. Local receiving
+above executes all 2,527. The code is published
+on the contribution branch, with owner integration pending; no PR exists.
+#264 stays partial. There is no new installed, package, platform or release claim.
+
+A separate follow-up at `3c13ba1a5` fixes MolSysMT#537: the sdist validator
+mistook real tar directory entries for unreviewed addon files. Four new cases
+fail before and pass after the correction; 36 distribution/CI controls pass,
+and the same real source archive validates without accepting retired/unknown
+files or directories in place of required files. The hosted source smoke above
+uses the earlier feature commit and is not evidence for this later validator
+change. Both owner commits await integration; #537 remains open.
+
 ## Metadata block prepared — 2026-11-03
 
 The [receiving review](../molsysmt_metadata_tools_review_20261103.md) refreshes

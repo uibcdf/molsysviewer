@@ -1,5 +1,23 @@
 # Development checkpoint
 
+**Supported reports source increment — 2026-11-03:** owner commit `4e1a06ee1`
+on `addon/supported-reports-20261103` implements four explicit capability reports
+for empty or loaded views, without molecular/scene/history or pending-edit
+effects. Complete owner-addon receiving passes 2,527 cases, including 74 new
+ones, zero failures/errors/skips. The [receipt](molsysmt_supported_tools_receiving_20261103.json)
+retains separate 5/519/32 scoped controls, source and backend hashes, doc/course
+checks and initial corrections. Owner follow-up `3c13ba1a5` fixes the independent
+sdist-directory validator defect MolSysMT#537, with four red/green regressions,
+36 package/CI controls and the unchanged real source archive. Exact feature
+source smoke 41685357103 succeeds on `4e1a06ee1` (2,523 addon passes, four
+optional Ackredit skips); it does not certify
+the later packaging-validator change. Branch exposure is 148/244; main stays at
+the earlier inventory until owner integration. No PR was created; delivery awaits the approved integration
+route. #264 remains partial. #269/MolSysMT#533 retains separate installed
+receiving; published provider repair `2797c5425` is identified but has not been
+received by a new Viewer installed-pair run.
+No release, tag, dependency floor or canonical package changes.
+
 **Addon metadata preparation — 2026-11-03:** #264 refreshes the owner's
 inventory at provider `f72ab0e6`: 144/244 paths exposed, with next dispositions
 for all 100 remaining paths. Eleven `supported`/`attribute` utility contracts

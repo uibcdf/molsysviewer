@@ -665,6 +665,15 @@ initialization findings are owned by MolSysMT#534/#535. Installed receiving
 remains separate under #269/MolSysMT#533. This preparation does not override the
 fixed-provider receiving requirement for subsequent expert implementation.
 
+The maintainer subsequently authorized an isolated implementation of the four
+metadata reports, without a new installed-pair claim. Owner branch commit
+`4e1a06ee1` now passes the complete 2,527-case addon selection (74 new cases),
+plus scoped documentation/inventory and distribution controls. The
+[source receipt](molsysmt_supported_tools_receiving_20261103.json) records its
+148/244 branch exposure and pending owner-main integration. The remaining
+attribute tools and native findings are separate; no host scientific API or
+automatic molecular observation is added.
+
 Freeze a provider commit and classify every public tool in its inventory as
 implemented, conditional on a named engine/prerequisite, pending adaptation, or
 excluded with a concrete justification. Record aliases/support types separately;
