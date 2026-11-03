@@ -6,7 +6,24 @@ coordinated with `uibcdf/molsysmt#255` and `uibcdf/molsyssuite#155`.
 This guide does not establish a new published dependency minimum or installed
 artifact qualification.
 
-## Current source receiving — 2026-11-02
+## Current follow-up — 2026-11-03
+
+Provider source is now available on main. Scoped receiving of committed
+`bd28d57f2b0b31a6215d206dea27602f5f72e70d` passes 164 real Viewer cases with
+no skips, including the five independent-copy cases. Its extraction-label dtype
+fix is received using an isolated committed-source snapshot and the unchanged
+shared Rust backend; sibling worktree edits are excluded. This does not claim
+a rebuilt or installed provider artifact. The
+[follow-up receipt](chemical_domain_receiving_20261103.json) keeps exact inputs.
+
+The installed Rust-manifest mismatch remains unchanged and is now owned by
+uibcdf/molsysmt#533; the broader #255 refactor is completed. Do not repeat the
+same failing installed-source matrix or filter its unexpected export. Review
+the owner's exact repair, then qualify one fixed pair. Old-provider public/source
+Pandas4Warning failures remain separate from new-source compatibility and the
+passing JavaScript coverage steps.
+
+## Previous source receiving — 2026-11-02
 
 Receive provider `de7ffad2aef18ff3bccd184133dc69e081cb506e` on
 `dev/chemical-states-separation-255`, following the new request in #269. The

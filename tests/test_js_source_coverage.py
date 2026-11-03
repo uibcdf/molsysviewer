@@ -17,9 +17,7 @@ CHECK = JS / "scripts/check-source-coverage.mjs"
 
 def _run(*arguments):
     assert NODE is not None, "Node is required for the JS tooling guards"
-    return subprocess.run(
-        [NODE, *map(str, arguments)], cwd=JS, capture_output=True, text=True, timeout=90
-    )
+    return subprocess.run([NODE, *map(str, arguments)], cwd=JS, capture_output=True, text=True, timeout=90)
 
 
 @pytest.fixture(scope="module")
@@ -37,23 +35,30 @@ def reports(tmp_path_factory):
         '  assert.equal(model.get("viewer_mode"), "standard");\n'
         '  model.set("viewer_mode", "cinema");\n'
         '  assert.equal(model.get("viewer_mode"), "cinema");\n'
-        '});\n',
+        "});\n",
         encoding="utf-8",
     )
     for name in ("mapped", "unmapped"):
         bundle = directory / f"{name}.mjs"
         built = _run(
-            "--input-type=module", "-e",
+            "--input-type=module",
+            "-e",
             "import {buildSync} from 'esbuild'; buildSync({entryPoints:[process.argv[1]],"
             "bundle:true,platform:'node',format:'esm',outfile:process.argv[2],"
             "sourcemap:process.argv[3]==='mapped'});",
-            probe, bundle, name,
+            probe,
+            bundle,
+            name,
         )
         assert built.returncode == 0, built.stderr
         report = directory / name
         measured = _run(
-            JS / "node_modules/c8/bin/c8.js", "--config=.c8rc.json",
-            f"--reports-dir={report}", "node", "--test", bundle,
+            JS / "node_modules/c8/bin/c8.js",
+            "--config=.c8rc.json",
+            f"--reports-dir={report}",
+            "node",
+            "--test",
+            bundle,
         )
         assert measured.returncode == 0, measured.stdout + measured.stderr
         assert "# pass 1" in measured.stdout, measured.stdout

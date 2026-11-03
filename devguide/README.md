@@ -45,6 +45,15 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Chemical-domain follow-up — 2026-11-03:** isolated committed provider
+  `bd28d57f` passes 164 directed Viewer cases without skips. The completed
+  refactor #255 is separate from the remaining installed Rust-manifest defect,
+  now owned by MolSysMT#533; #269 remains blocked and no unchanged installed
+  matrix is repeated. Original three-platform JUnit confirms the known
+  old-provider documentation warning failures and passing coverage controls.
+  The [follow-up receipt](chemical_domain_receiving_20261103.json) retains scope
+  and the separate formatter-only policy correction.
+
 - **JavaScript source coverage — 2026-11-03:** #290 corrects esbuild maps and
   c8 filtering and rejects empty, unmapped and non-production reports. All 335
   unit cases and seven real-tooling/negative controls pass; 93 production sources

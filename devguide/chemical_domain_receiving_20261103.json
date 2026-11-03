@@ -1,0 +1,133 @@
+{
+  "source": "bd28d57f2b0b31a6215d206dea27602f5f72e70d",
+  "provider_archive_sha256": "3fa9eb178db9da1fb5c83f346d2878c2bc5dd08f38567c60d1d110ccbc92c0ae",
+  "backend_source_note": "Rust tree identical to previously received de7ffad2; reuse of current shared native backend for source-only checks, not a new installed build.",
+  "binary": "/home/diego/repos@uibcdf/molsysmt/molsysmt/_rust.abi3.so",
+  "binary_sha256": "f32ed73f7ef3cf3225e12fbc56b9c4236a4452d758c94661f41860ad00d82c1c",
+  "preserved_sibling_worktree": "No sibling edits copied into the snapshot or modified.",
+  "schema": "molsysviewer.source-receiving@1",
+  "date": "2026-11-03",
+  "issue": "uibcdf/molsysviewer#269",
+  "consumer_base": "15e0459d6d2beb59e11f89f4c4a896109baef706",
+  "provider_blocker": "uibcdf/molsysmt#533",
+  "scoped_source": {
+    "passed": 164,
+    "failed": 0,
+    "skipped": 0,
+    "native_copy_cases": 5,
+    "warnings": {
+      "LegacyH5MSMWarning": 109,
+      "StructuralAttributeDropWarning": 1
+    },
+    "junit": ".pytest_cache/chemical-receiving-20261103/current-provider-scoped.xml",
+    "junit_sha256": "de4fff8d13d75dfa563ae5d38e4d1b760be5400e36a72f4f3f1eb0c5694cde8c",
+    "selection": [
+      "tests/loaders/test_array_native_molsys.py",
+      "tests/test_active_selection.py",
+      "tests/test_composite_load.py",
+      "tests/test_structure_edit_correspondence.py",
+      "tests/test_native_copy_receiving.py",
+      "tests/test_extract_migrates_whole_overlays.py",
+      "tests/test_session_bundle.py",
+      "tests/test_interactions_api.py"
+    ]
+  },
+  "native_manifest": {
+    "expected": 101,
+    "actual_shared_backend": 102,
+    "missing": [],
+    "unexpected": [
+      "get_vectors"
+    ],
+    "scope": "Committed source inspection and shared diagnostic; original installed failures in 41577620754 retained."
+  },
+  "old_source_matrix": {
+    "run": 41667711485,
+    "viewer": "87de7eab2023c697a4de193fc2af6306fd0ee3f0",
+    "provider": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+    "conclusion": "failure",
+    "platforms": {
+      "source-receiving-Windows-py3.14": {
+        "junit_sha256": "2e0d4c6bc22d5a1606a7b769642909857bca146d7fe9b0f335bd88b1e954379b",
+        "tests": 3375,
+        "failures": [
+          "tests.test_documentation_pages_run::test_the_page_runs_as_written[docs/content/user/scene_management/selections.md]",
+          "tests.test_documentation_pages_run::test_the_page_runs_as_written[docs/content/user/overlays/measurements.md]",
+          "tests.test_documentation_pages_run::test_the_page_runs_as_written[docs/content/user/export/state.md]"
+        ],
+        "skipped": 56,
+        "coverage_controls_passed": 7
+      },
+      "source-receiving-Linux-py3.14": {
+        "junit_sha256": "aaa9b20628bc01ceb3275df62377fd811cdb31b0df76ffcfd1892893ceb5c05d",
+        "tests": 3375,
+        "failures": [
+          "tests.test_documentation_pages_run::test_the_page_runs_as_written[docs/content/user/scene_management/selections.md]",
+          "tests.test_documentation_pages_run::test_the_page_runs_as_written[docs/content/user/overlays/measurements.md]",
+          "tests.test_documentation_pages_run::test_the_page_runs_as_written[docs/content/user/export/state.md]"
+        ],
+        "skipped": 29,
+        "coverage_controls_passed": 7
+      },
+      "source-receiving-macOS-py3.14": {
+        "junit_sha256": "bfa070b985b34f735316c8ee128631360d525f9ead7d75228ccd6f44ff8e03ea",
+        "tests": 3375,
+        "failures": [
+          "tests.test_documentation_pages_run::test_the_page_runs_as_written[docs/content/user/scene_management/selections.md]",
+          "tests.test_documentation_pages_run::test_the_page_runs_as_written[docs/content/user/overlays/measurements.md]",
+          "tests.test_documentation_pages_run::test_the_page_runs_as_written[docs/content/user/export/state.md]"
+        ],
+        "skipped": 56,
+        "coverage_controls_passed": 7
+      }
+    }
+  },
+  "coverage_format_followup": {
+    "policy_run": 41667713327,
+    "failure": "Check Python formatting, only tests/test_js_source_coverage.py",
+    "correction": "Ruff formatter only; no assertion or scientific-input changes.",
+    "directed_guards_passed": 7,
+    "policy_recovery": "pending",
+    "ast_unchanged": true
+  },
+  "limits": [
+    "Not a complete fresh core/addon regression or installed/platform certificate for the new provider.",
+    "Provider sibling dirty work excluded and preserved; no source pin, Rust export filtering or warning suppression.",
+    "No repeated installed-source dispatch while #533 remains unrepaired.",
+    "No dependency floor, release/tag, candidate freeze or publication change."
+  ],
+  "typed_extraction_probe": {
+    "result": {
+      "operation": "View.extract(selection=[0,1]) of explicit-coordinate CC.CC",
+      "source_atoms": 4,
+      "extracted_atoms": 2,
+      "label_dtypes": {
+        "component_name": "string",
+        "component_type": "string"
+      },
+      "source_labels_unchanged": true
+    },
+    "script_sha256": "84776ebee33e377e129b8d8116c454c3f0c6d5359b4f339cee95f777c3d163fc",
+    "scope": "Separate public View.extract probe, not another pytest case. An initial probe used a nonexistent data field; corrected to the actual values/null_mask contract before asserting preservation."
+  },
+  "record_guards": {
+    "passed": 299,
+    "junit_sha256": "7e2f00b6a7a64db2cf340f10b45026edc1b07eca0b20d67fe6bb3c3ecef32645"
+  },
+  "source_frontend_status": {
+    "viewer": "87de7eab2023c697a4de193fc2af6306fd0ee3f0",
+    "core_browser": {
+      "run": 41667711795,
+      "conclusion": "success"
+    },
+    "qt_experimental": {
+      "run": 41667711977,
+      "conclusion": "success"
+    },
+    "notebooks": {
+      "run": 41667711724,
+      "conclusion": "success"
+    },
+    "limits": "Independent existing provider contexts; not new-provider installed qualification."
+  }
+}

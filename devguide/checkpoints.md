@@ -1,5 +1,17 @@
 # Development checkpoint
 
+**Chemical-domain follow-up — 2026-11-03:** #269 remains blocked on the specific
+installed Rust-export mismatch in MolSysMT#533; the parent #255 refactor is
+completed. Latest committed provider `bd28d57f` passes 164 directed Viewer
+cases without skips on isolated source, including all five protected-copy
+cases. Its Rust source is unchanged; the reused shared backend does not
+establish a newly built artifact. Original JUnit from 41667711485 confirms
+the same three old-provider documentation failures on all hosts and passing
+coverage controls on Linux/macOS/Windows. General Linux 3.14 confirms Node
+22.23.4 / 335 JS passes; policy's new-test formatting failure has a separate
+formatter-only correction. The [follow-up receipt](chemical_domain_receiving_20261103.json)
+keeps original identities and results. No duplicate blocked dispatch or release.
+
 **JavaScript source coverage — 2026-11-03:** #290 keeps the full 335-case unit
 index and corrects source maps/c8 URL filtering. Seven real-tooling and negative
 guards pass. LCOV now measures 93 production sources with 28,347/42,599 lines
@@ -592,7 +604,7 @@ previous qualification records retain their original candidate and environment.
 
 **Current handoff — 2026-11-03:** #290's exact-source hosted JS receiving is
 complete as described at the top of this checkpoint. Resume #269's installed
-provider/Rust-manifest boundary and the partial #264 expert addon inventory
+provider/Rust-manifest boundary after MolSysMT#533 and the partial #264 expert addon inventory
 (144/244 reviewed paths). #259/#285/#288/#289 have source/tooling receiving;
 the later unit-coverage receipt supersedes earlier empty-LCOV limitations only
 within its stated scope. Load human smoke remains explicitly deferred.
@@ -2196,7 +2208,7 @@ documents carry it.
 Resume toward **1.0** in this order:
 
 **Current order — 2026-11-03:** #290's hosted unit-coverage receiving is complete.
-Receive #269 against the provider's corrected installed Rust manifest; continue
+Receive #269 after MolSysMT#533 corrects the installed Rust manifest; continue
 the remaining expert addon surface under #264 before GUI and documentation
 completion. Freeze and qualify original candidate artifacts only when the
 maintainer resumes that separate phase. Earlier source receiving, public

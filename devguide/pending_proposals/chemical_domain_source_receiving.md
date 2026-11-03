@@ -8,11 +8,43 @@ verification: measured
 area: [molsysmt, loading, interactions, addons]
 guard:
 normative: devguide/chemical_domain_receiving.md
-blocked_by: [uibcdf/molsysmt#255]
+blocked_by: [uibcdf/molsysmt#533]
 supersedes: []
 ---
 
 # Current ChemicalStates source receiving
+
+## Follow-up — 2026-11-03
+
+The provider refactor #255 is merged and closed; the remaining installed-export
+defect now has its own owner, uibcdf/molsysmt#533. Committed main
+`bd28d57f2b0b31a6215d206dea27602f5f72e70d` still expects 101 private exports
+while Rust registers `get_vectors` as the 102nd. No matching repair issue existed
+outside the completed refactor discussion. Keep the exact export guard active
+and wait for an identified correction before repeating the installed matrix.
+
+The latest provider commit adds typed component-label preservation during
+extraction. An isolated archive of its committed package/addon sources excludes
+the sibling's unrelated work. With the unchanged shared native backend (Rust
+sources match the previously received checkpoint), 164 directed Viewer cases
+pass without skips, including all five protected-copy cases, loading, hierarchy,
+composition, atom/structure correspondence, extraction, sessions and interactions.
+This is scoped source receiving, not a new build or installed qualification.
+An independent public `View.extract` probe also preserves literal `string`
+label dtypes, values and null masks for a complete CC component, with the
+source labels unchanged; it is separate from the 164 pytest cases.
+The [follow-up receipt](../chemical_domain_receiving_20261103.json) retains exact
+sources, backend hash, selection and original JUnit.
+
+The three original JUnit files from current public-baseline source run
+41667711485 all retain exactly the known three Pandas4Warning documentation
+failures. Seven new coverage controls pass on each platform. General CI's
+Linux 3.14 job likewise passes all 335 JS cases and fails those same three
+Python examples. Its independent policy failure is formatting of the new
+coverage guard, corrected without changing assertions. No warning suppression,
+provider-source edit, new minimum or candidate publication is introduced.
+
+## Previous receiving — 2026-11-02
 
 The [operational contract](../chemical_domain_receiving.md) owns runtime state
 selection and missing-domain semantics. The [dated receipt](../chemical_domain_receiving_20261102.json)

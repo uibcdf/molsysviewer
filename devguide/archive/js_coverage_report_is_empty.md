@@ -78,3 +78,15 @@ identities, hashes, counts and limitations. The normative coverage rule is in
 [developer testing](../../docs/content/developer/testing.md) explains execution.
 No production runtime, lockfile, numerical acceptance threshold or public
 artifact changes. Provider receiving under #269 and addon #264 remain separate.
+
+## Later hosted observation — 2026-11-03
+
+The completed Linux job log confirms Node 22.23.4 and 335/335 JS cases. The
+enclosing Python job fails exactly the three previously identified old-provider
+Pandas4Warning documentation examples. Original JUnit from source run
+41667711485 verifies all seven report controls passing separately on Linux,
+macOS and Windows; that run uses the old provider source, not the newly received
+chemical-domain source. Policy run 41667713327 separately rejects formatting in
+the new Python test. Its formatter-only correction preserves all assertions;
+seven directed controls pass afterward. The follow-up source/CI disposition is
+kept in [the receiving receipt](../chemical_domain_receiving_20261103.json).

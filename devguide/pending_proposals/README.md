@@ -35,7 +35,7 @@ archived documents link there; its location does not reopen its release scope.
 
 ### Blocked (2)
 
-- [`chemical_domain_source_receiving.md`](chemical_domain_source_receiving.md) — [#269](https://github.com/uibcdf/molsysviewer/issues/269) — Receive independent MolSysMT chemical domains through Viewer and the expert addon. *(measured)* — waiting on uibcdf/molsysmt#255
+- [`chemical_domain_source_receiving.md`](chemical_domain_source_receiving.md) — [#269](https://github.com/uibcdf/molsysviewer/issues/269) — Receive independent MolSysMT chemical domains through Viewer and the expert addon. *(measured)* — waiting on uibcdf/molsysmt#533
 - [`molsysmt_known_source_form_and_large_string_detection.md`](molsysmt_known_source_form_and_large_string_detection.md) — [#42](https://github.com/uibcdf/molsysviewer/issues/42) — Adopt a public source-form hint when MolSysMT provides it; historical extension detection is repaired. *(measured)* — waiting on uibcdf/molsysmt#151
 
 ### Open (3)

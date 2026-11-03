@@ -97,7 +97,20 @@
     },
     "lcov_identical_to_local": true,
     "summary_totals_identical_to_local": true,
-    "test_stdout": "Not yet available while the enclosing Python job runs; do not claim a downloaded hosted TAP count."
+    "test_stdout": {
+      "node": "22.23.4",
+      "tests": 335,
+      "passed": 335,
+      "log_sha256": "3f3655c6b62531139d5d42a11d1b8d1624c42b43b7f62eb16997940e79fbdf2b",
+      "enclosing_job": "failure: three known public-provider Pandas4Warning documentation cases; no coverage control failures."
+    },
+    "cross_platform_controls": {
+      "run": 41667711485,
+      "Linux": 7,
+      "macOS": 7,
+      "Windows": 7,
+      "scope": "Original JUnit inspected; old provider source baseline, not new ChemicalStates installed receiving."
+    }
   },
   "limits": [
     "V8 remapped unit-bundle metrics; not all repository sources or browser/Qt coverage.",
