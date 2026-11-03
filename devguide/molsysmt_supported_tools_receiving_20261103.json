@@ -88,9 +88,11 @@
   "owner_commit": "4e1a06ee1ba698937696fd9b1e9dbb5f072a17b4",
   "owner_branch": "addon/supported-reports-20261103",
   "delivery": {
-    "state": "branch_published_owner_main_unmodified",
-    "pull_request": "not_created",
-    "note": "Implementation and evidence are concrete on the owner branch; integration route requires maintainer clarification after PR creation was rejected by automatic permission review."
+    "state": "pull_request_open_owner_review_pending",
+    "pull_request": "https://github.com/uibcdf/molsysmt/pull/538",
+    "integration_owner": "MolSysMT development team",
+    "note": "Maintainer explicitly requires PR delivery for MolSysMT contributions. No direct main push or PR merge is authorized from this Viewer session.",
+    "prior_attempt": "An earlier PR creation attempt was rejected by automatic review before explicit PR authorization; no PR was created by that attempt."
   },
   "hosted": {
     "run": 41685357103,

@@ -12,8 +12,11 @@ sdist-directory validator defect MolSysMT#537, with four red/green regressions,
 source smoke 41685357103 succeeds on `4e1a06ee1` (2,523 addon passes, four
 optional Ackredit skips); it does not certify
 the later packaging-validator change. Branch exposure is 148/244; main stays at
-the earlier inventory until owner integration. No PR was created; delivery awaits the approved integration
-route. #264 remains partial. #269/MolSysMT#533 retains separate installed
+the earlier inventory until owner integration. The maintainer confirmed the
+owner-reviewed route: [MolSysMT PR #538](https://github.com/uibcdf/molsysmt/pull/538)
+delivers both commits for its development team's review and integration.
+No direct main push or merge is authorized for that repository. #264 remains
+partial. #269/MolSysMT#533 retains separate installed
 receiving; published provider repair `2797c5425` is identified but has not been
 received by a new Viewer installed-pair run.
 No release, tag, dependency floor or canonical package changes.

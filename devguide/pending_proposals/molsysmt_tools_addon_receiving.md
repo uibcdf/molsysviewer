@@ -38,7 +38,10 @@ records commit, hashes, initial test/manifest corrections and limits. Source
 smoke 41685357103 succeeds on the exact owner commit: 2,523 addon cases pass,
 four attribution cases skip because optional Ackredit is absent. Local receiving
 above executes all 2,527. The code is published
-on the contribution branch, with owner integration pending; no PR exists.
+on the contribution branch, delivered in
+[MolSysMT PR #538](https://github.com/uibcdf/molsysmt/pull/538). Its development
+team owns review and integration; Viewer contributors do not push to its main
+branch or merge the PR.
 #264 stays partial. There is no new installed, package, platform or release claim.
 
 A separate follow-up at `3c13ba1a5` fixes MolSysMT#537: the sdist validator

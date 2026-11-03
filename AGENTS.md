@@ -20,10 +20,15 @@ This document provides critical instructions for all AI assistants or automation
 
 ## Development with the principal maintainer
 
-For changes authorized by the principal maintainer, use reviewed commits and
-direct pushes to `main`. Do not open pull requests unless the user requests one.
+Within this MolSysViewer repository, for changes authorized by the principal
+maintainer, use reviewed commits and direct pushes to `main`. Do not open pull
+requests unless the user requests one.
 Keep the applicable validation and CI evidence, synchronize remote changes, and
 preserve unrelated local work before integrating or publishing commits.
+
+Contributions to MolSysMT, including `molsysviewer_molsysmt`, must be delivered
+as pull requests. Its development team owns review and integration. Do not push
+directly to MolSysMT `main` or merge those pull requests from this session.
 
 For local development with the principal maintainer, use the Conda environment
 `molsyssuite@uibcdf_3.14`. Select its interpreter explicitly or activate it for

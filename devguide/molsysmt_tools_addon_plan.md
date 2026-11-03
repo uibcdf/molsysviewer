@@ -674,6 +674,12 @@ plus scoped documentation/inventory and distribution controls. The
 attribute tools and native findings are separate; no host scientific API or
 automatic molecular observation is added.
 
+Contributions implementing this plan in MolSysMT, including its addon package,
+are delivered as pull requests for the MolSysMT development team's review and
+integration. The direct-push workflow used within Viewer does not apply to
+MolSysMT. The current increment is delivered in
+[MolSysMT PR #538](https://github.com/uibcdf/molsysmt/pull/538).
+
 Freeze a provider commit and classify every public tool in its inventory as
 implemented, conditional on a named engine/prerequisite, pending adaptation, or
 excluded with a concrete justification. Record aliases/support types separately;
