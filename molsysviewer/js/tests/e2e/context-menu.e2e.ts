@@ -45,9 +45,16 @@ async function run() {
     // Real demo and Python scene snapshot: no fabricated molecular topology.
     const fixture = spawnSync(process.env.PYTHON || "python", ["-c", `
 import json
+import molsysmt as msm
 import molsysviewer as msv
 from molsysviewer.interactions import _to_plain
-view = msv.new_view(msv.demo["pentalanine"].molsys, structure_indices=[0, 8, 3])
+with msv.demo["pentalanine"] as original:
+    system = msm.extract(original.molsys, structure_indices=[0, 8, 3], to_form="molsysmt.MolSys")
+# This positive scope scenario declares its chain explicitly. Legacy demo
+# files can retain a chain row without assigning atoms to it; missing and
+# partial memberships are exercised independently below.
+msm.set(system, element="atom", chain_index=0)
+view = msv.new_view(system)
 view.whole.set_representation("ball-and-stick")
 snapshot = view._build_embedded_runtime_snapshot()
 view._ready = True
@@ -250,10 +257,14 @@ view.close()
         const backend = spawnSync(process.env.PYTHON || "python", ["-c", `
 import json, sys
 import molsysviewer as msv
+import molsysmt as msm
 from molsysviewer.interactions import _to_plain
 from molsysviewer.viewer.panel_actions import dispatch_panel_action
 payload = json.load(sys.stdin)
-view = msv.new_view(msv.demo["pentalanine"].molsys, structure_indices=[0, 8, 3])
+with msv.demo["pentalanine"] as original:
+    system = msm.extract(original.molsys, structure_indices=[0, 8, 3], to_form="molsysmt.MolSys")
+msm.set(system, element="atom", chain_index=0)
+view = msv.new_view(system)
 view.active_selection.set(payload["selection"])
 view._ready = True
 sent = []
