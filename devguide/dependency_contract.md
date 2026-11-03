@@ -63,6 +63,14 @@ existing tag is not removed. The workflow ordering is guarded by
 `tests/test_source_workflow_coverage.py`; the development tagging policy is
 guarded by `tests/test_python_ecosystem_contract.py`.
 
+For a manual development handoff, use `source_receiving=true` with the exact
+provider commit. It builds/reinstalls the development runtime and assigns no
+candidate version tags to either source. This mode preserves the same origin,
+native, Python, browser and notebook checks and original per-platform JUnit.
+The default false mode retains frozen-candidate handling. The
+[2026-11-02 review](runtime_dependency_review_20261102.md) records runtime floor
+rationale, optionality, actual delivery routes and remaining release prerequisites.
+
 The scientific source baseline also supplies the pinned provider's own runtime
 floors and runs `python -m pip check` immediately after both installations.
 This catches dependency metadata contradictions introduced by `--no-deps`;
@@ -80,3 +88,9 @@ updates without implicitly updating Mol* (`uibcdf/molsysviewer#242`). The offlin
 guard in `tests/test_javascript_dependency_audit.py` checks the affected ranges
 observed on 2026-10-13 at every lockfile depth; the live audit finds later notices.
 Neither a clean audit nor severity alone proves browser exploitability.
+
+The 2026-11-02 review additionally qualifies test-exclude-scoped glob/minimatch
+overrides under #289. They affect only coverage tooling; remove them when its
+maintained dependency ranges admit unaffected versions and requalify traversal,
+unit execution and the full audit. The pre-existing empty LCOV remains #290;
+successful test execution does not establish numerical source coverage.

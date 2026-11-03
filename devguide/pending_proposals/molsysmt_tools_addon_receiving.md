@@ -14,6 +14,31 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Current chemical-domain receiving — 2026-11-02
+
+Viewer `481319a9` receives provider `de7ffad2` in the shared Python 3.14.7
+environment. All 2,453 addon nodes execute: 2,452 pass in the initial invocation
+from Viewer; the one relative-template fixture passes when selectively rerun
+from the provider repository's documented working directory. No scientific or
+assertion changes are made. This is an original run plus selective recovery,
+not one fresh complete passing suite. Native `chemical_states` graph paths,
+deferred edits and retry-without-replaying-science remain active.
+
+The provider's maintained inventory tool still finds 144 exposed / 244 reviewed
+callable paths. The nine graph paths are under `chemical_states`; two sequence
+paths remain under `topology`. Unreceived paths are 19 build/preparation, six
+mechanics, 57 element helpers, seven attribute helpers, four capability reports,
+four historical hbond aliases, `basic.view` and two explicit native MD stubs.
+These are not 100 implemented scientific algorithms waiting for generic wrappers.
+Keep explicit inputs for utilities without a primary system; classify aliases,
+the View bridge and native stubs deliberately. No automatic mirror is introduced.
+
+Continue expert growth on a fixed, received provider after the installed-source
+blocker in #269 is repaired. Graphical task design remains after expert contracts;
+source exposure does not imply a panel, package or optional-engine qualification.
+The exact pair, original JUnit and scoped inventory are retained in
+`devguide/chemical_domain_receiving_20261102.json`. #264 remains partial.
+
 **Reported:** 2026-10-22, accepted maintainer direction after reviewing the
 [addon plan](../molsysmt_tools_addon_plan.md).
 **Status:** partial implementation: the new discovery route, closed-view boundary

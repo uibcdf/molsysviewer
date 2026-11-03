@@ -13,13 +13,16 @@ ROOT = Path(__file__).resolve().parents[1]
 # graph (uibcdf/molsysviewer#242). This offline regression guard complements
 # the live registry audit; it cannot enumerate future or other-major advisories.
 # body-parser 2.x also includes GHSA-27r3-jxmh-p828 (uibcdf/molsysviewer#266).
+# The 2026-11-02 coverage graph adds GHSA-3g3m-2fjr-6pw4 and
+# GHSA-g3hv-75wg-m249 (uibcdf/molsysviewer#289).
 KNOWN_AFFECTED = {
     "body-parser": ">=2.0.0,<2.4.0",
     "brace-expansion": ">=2.0.0,<2.1.7",
     "compression": "<1.8.2",
     "form-data": ">=4.0.0,<4.0.6",
     "immutable": ">=5.0.0-beta.1,<5.1.8",
-    "minimatch": ">=9.0.0,<9.0.7",
+    "glob": ">=9.0.0,<=14.0.1",
+    "minimatch": "<11.0.1",
     "path-to-regexp": ">=8.0.0,<8.4.0",
     "proxy-addr": ">=1.1.0,<2.0.8",
     "qs": "<6.16.0",

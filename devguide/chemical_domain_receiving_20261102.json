@@ -42,7 +42,34 @@
       "scope": "directed source checks; not an additive complete-suite total"
     }
   },
-  "hosted_new_provider": "pending exact-source dispatch",
+  "hosted_new_provider": {
+    "run": 41577620754,
+    "source": "481319a9a31af4dabe7482fdae0118752e229b91",
+    "provider": "de7ffad2aef18ff3bccd184133dc69e081cb506e",
+    "event": "workflow_dispatch",
+    "source_receiving": true,
+    "conclusion": "failure",
+    "platforms": {
+      "linux": {
+        "job": 125724702645,
+        "conclusion": "failure",
+        "log_sha256": "7bb4f53194ddd0ce2dca78b2f487b1266d89848467e185764e7525f6727afaff"
+      },
+      "macos": {
+        "job": 125724702427,
+        "conclusion": "failure",
+        "log_sha256": "3a469d77b708fb349aa77edb7538445f66dcc648a6a3b1ab901c7e2707e4fedb"
+      },
+      "windows": {
+        "job": 125724702694,
+        "conclusion": "failure",
+        "log_sha256": "1202824bacb7c85729cd3478744bb350ae0135cc6079732346c28c8f869b3322"
+      }
+    },
+    "failure": "installed Rust export contract: missing=[], unexpected=[get_vectors]",
+    "owner": "uibcdf/molsysmt#255",
+    "scientific_tests": "not reached; no installed-source qualification"
+  },
   "historical_hosted": {
     "general": 41148560029,
     "source_pair": 41148560031,
@@ -62,5 +89,164 @@
     ],
     "disposition": "Preserve unrelated tools; no clean environment or installed-artifact qualification claimed."
   },
-  "ci_checkpoint_route": "Guard/workflow-only interim checkpoint; existing public-provider failures retained. One explicitly authorized manual source-pair execution will qualify the exact checkpoint against de7ffad2, including all normal Python/browser/notebook checks. Experimental Qt unchanged and separately qualified; no release qualification."
+  "ci_checkpoint_route": "Guard/workflow-only interim checkpoint; existing public-provider failures retained. One explicitly authorized manual source-pair execution will qualify the exact checkpoint against de7ffad2, including all normal Python/browser/notebook checks. Experimental Qt unchanged and separately qualified; no release qualification.",
+  "addon_receiving": {
+    "initial": {
+      "cases": 2453,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "junit_sha256": "35bd8fadefdaf11bad6b008e5f604be07ea6605b823eae648789d14be68bdb5b"
+    },
+    "selective_recovery": {
+      "cases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "junit_sha256": "df5398bfe0e4744df85337e6d0c7b3793e0228d922cf69b6194e8a2f2fc2be4e"
+    },
+    "distinct_passing_nodes": 2453,
+    "initial_failure": "One owner test uses molsysmt/data/pdb/ala3.pdb relative to its repository; initial command ran from Viewer.",
+    "recovery": "Same failed node passes from provider repository; no runtime or assertion changed. Not one fresh full passing invocation.",
+    "inventory": {
+      "native_paths": 244,
+      "exposed_paths": 144,
+      "explicit_unimplemented_native_stubs": 2,
+      "missing_paths": 100
+    },
+    "source": "de7ffad2aef18ff3bccd184133dc69e081cb506e",
+    "next_scope": "Continue the explicitly classified remaining expert paths under #264 after fixed provider receiving. No new wrapper or graphical availability is claimed."
+  },
+  "distribution_receiving": {
+    "checks": {
+      "cases": 69,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "junit_sha256": "0222170b72a222954d6d5a1cc57ef780e47b2b37eb4e2ad8e2b3c34cfa5bf7ab"
+    },
+    "diagnostics": {
+      "cases": 20,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "junit_sha256": "993b93c119020d2ea665f41ec550ee871cd952283c2f62c8f9804fbb2fa4accd"
+    },
+    "depdigest_floor_source": "0da46d9ff31fbe2f92e4e667a32868aebe840b39",
+    "depdigest_floor_probe": "pass after retaining diagnostic detail; source API probe, not clean installation",
+    "review": "devguide/runtime_dependency_review_20261102.md"
+  },
+  "commands": {
+    "affected_core": "python -m pytest --receptor=llm tests/loaders/test_array_native_molsys.py tests/test_active_selection.py tests/test_tools_basic.py tests/test_interactions_api.py tests/test_interactions_scene.py tests/test_interactions_public_completion.py tests/test_session_bundle.py tests/test_session_rejection.py tests/test_composite_load.py tests/test_live_edit_rebuild.py tests/test_managed_axis_growth.py tests/test_structure_edit_correspondence.py",
+    "copy": "python -m pytest --receptor=llm tests/test_native_copy_receiving.py",
+    "addon_initial": "python -m pytest --receptor=llm -n 2 ../molsysmt/tests/molsysviewer_molsysmt (cwd Viewer; cache/basetemp/JUnit under owned task directory)",
+    "addon_selective_recovery": "python -m pytest --receptor=llm tests/molsysviewer_molsysmt/test_chemical_assignment_readers_tools.py::test_forcefield_charges_use_unchanged_real_alanine_template (cwd provider)",
+    "dependencies": "python devtools/audit_dependency_contract.py; python -m pytest --receptor=llm tests/test_dependency_contract.py tests/test_dependency_installation_hints.py tests/test_distribution_artifact.py tests/test_public_installation_contract.py",
+    "diagnostics": "python -m pytest --receptor=llm tests/test_smonitor_integration.py tests/test_smonitor_application_policy.py tests/test_smonitor_signal_passthrough.py",
+    "hosted": "gh workflow run ci-python-314-source-pair.yaml --ref main -f source_receiving=true -f molsysmt_sha=de7ffad2aef18ff3bccd184133dc69e081cb506e",
+    "full_source": "python -m pytest --receptor=llm -m \"not qt_runtime\" tests --basetemp=/tmp/msv-chem-final-20261102"
+  },
+  "reviewed_input_sha256": {
+    "pyproject.toml": "839425b4982586d329412fce4f1fb4838dbabab1e642b65f776fcc8a8d47f24f",
+    "devtools/conda-build/meta.yaml": "14fce48d97744b62e5cbe2d2ed6cb0c176bf72fba8283eb38e397222cfe7c685",
+    "devtools/dependency_contract.toml": "1cacf56fc45b0323b6213d4e7a62e92c98668d54b2eacee4bd18f499281878e1",
+    "molsysviewer/_depdigest.py": "890ac428b213eb818cb5d8418a70f6c0fe82cf88f3e1d95d76dac0fa8ea0eee7",
+    "molsysviewer/_private/smonitor/catalog.py": "1f091282a60473e26da54f60d1aa723c4fd898ec1a4567223f51274dfbdc5576",
+    "molsysviewer/_private/exceptions/library_not_found_error.py": "579e388148a4af54bb2525f99c408d6c460caa4f7bb8296db753f2173bc92f80",
+    "tests/test_dependency_installation_hints.py": "b9da72979cebbdd6ace5a2acc94fccdff2d474bcd071f7170ec1e636b853ab2e",
+    "tests/test_native_copy_receiving.py": "a23fd04e09efecc843746cafac8b095b30eb1b14f576490fbae693707710c39e",
+    "tests/test_distribution_artifact.py": "9b2d159279304795f3ff714106d5904b7011cd6d5486a05184c811cf82c7e6bb",
+    ".github/workflows/ci-python-314-source-pair.yaml": "8e15ffaeda44683f876f1b4d1d475304d0996a83fe90fd9f3eff2fd3cf53da37",
+    "devtools/conda-envs/development_env.yaml": "d160ab0cfee0f0fa3842c6055fc2f579a867707cccdc33b780503e534eb1ee7b",
+    "devtools/conda-envs/build_env.yaml": "e040a39ecd25450ce8f68fe988609db855dd00d202fd3f3d2dfda8046afca200",
+    "devtools/conda-envs/test_env.yaml": "6df2321677c0aaa1a80846a7ac213e1c2037322865c8a1bbef3e5fc1297ba2db",
+    "devtools/conda-envs/docs_env.yaml": "8533b6c5e90f7e366b570fe0daa2129a66fdb6defb464801c83cda2bae951d9c",
+    "devtools/conda-envs/test_source_pair_py314.yaml": "9dec276e4f0c7f722d4042849d11ebcf9015ed67951f612a702b1aa5293bae03",
+    "molsysviewer/js/package.json": "f6180d221468dc029068c300b6c335891fd339897d30b352631bfa8f69363601",
+    "molsysviewer/js/package-lock.json": "d20e7b34bbc9901925e8a2c7d4109794c21ec4ee911245d402dcbe36a5c0a3fd",
+    "molsysviewer/js/tests/unit/coverage-dependencies.test.ts": "040d9d815921f54037b47ed231bd540553340bcd4a8d520395a58109e7969e54",
+    "tests/test_python_ecosystem_contract.py": "973e5dce45786760deb1d436c8db849d80a026cd1fbe324d8c896c80bfae18ba",
+    "tests/test_javascript_dependency_audit.py": "f8a0614bdc751387223d710d8e3e86d95d3d8ef3280b2be542f867596554eddd"
+  },
+  "retained_foreign_work": {
+    "viewer": "Pre-existing sandbox notebooks/design scratch files remain unstaged and unchanged by this work. The related #259 draft unblock correction was reviewed and included in its archive.",
+    "provider": [
+      " M docs/api/build/autosummary/molsysmt.build.merge_nonpolar_hydrogens.rst",
+      " M docs/api/interactions/autosummary/molsysmt.interactions.ionic.get_ionic_interactions.rst",
+      " M docs/api/physchem/autosummary/molsysmt.physchem.get_charge_centers.rst",
+      " M docs/api/physchem/autosummary/molsysmt.physchem.normalize_aromatic_bond_orders.rst"
+    ]
+  },
+  "full_source_initial": {
+    "cases": 3364,
+    "failures": 5,
+    "errors": 0,
+    "skips": 21,
+    "junit_sha256": "9703cb84ebed9ad67fb9b6e8791246c9e6e475ac5163459fdf4829b4304c27d5",
+    "diagnosis": "Five administrative failures: document moved while the run used the old collection (three), unstaged new link target (one), one old literal workflow expectation (one). Corrected and 304 affected guards pass; no scientific expectation changed."
+  },
+  "full_source_final": {
+    "cases": 3365,
+    "failures": 0,
+    "errors": 0,
+    "skips": 21,
+    "junit_sha256": "79ba65bc14da1f5aed41335fcb0c3dd9d984692e1f44217bf81e61d89fd22b06",
+    "passed": 3344,
+    "qt_deselected": 14,
+    "seconds": 510.93,
+    "provider_head_at_start": "7ef48701d68c0aa890db96ab4fc9fa086f4e94e6",
+    "provider_difference_from_requested": "Documentation only; no changes under molsysmt, molsysviewer_molsysmt or rust compared with de7ffad2. Runtime hashes checked separately.",
+    "provider_runtime_files_unchanged_during_run": 3074
+  },
+  "javascript_tooling": {
+    "issue": 289,
+    "original_lock_sha256": "1b93a1efa914dd348b963062ca146f47dec62435270ea61630f17001dee372f3",
+    "corrected_lock_sha256": "d20e7b34bbc9901925e8a2c7d4109794c21ec4ee911245d402dcbe36a5c0a3fd",
+    "original_audit": {
+      "exit": 1,
+      "total": 4,
+      "moderate": 4,
+      "sha256": "6edec4706f4fb84be5734991f313c79965eb5832de8bc109c75d2f4726b626f9"
+    },
+    "corrected_audit": {
+      "exit": 0,
+      "total": 0,
+      "sha256": "961948f82400d1fa11b4b4c507e812cbfb69cb7efb5d713b84228ab2037969f4"
+    },
+    "production_graph_unchanged": true,
+    "overrides": {
+      "test-exclude": {
+        "glob": "^14.0.3",
+        "minimatch": "^11.0.4"
+      }
+    },
+    "c8": "10.1.3 unchanged",
+    "molstar": "5.4.1 unchanged",
+    "native_node": "22.22.1",
+    "baseline_tests": 334,
+    "final_tests": 335,
+    "final_tests_log_sha256": "78143985711bbe636232fd6812b2f99a3d49bcc894d8b09852efc580829b4d4d",
+    "coverage": {
+      "issue": 290,
+      "before_lcov_bytes": 0,
+      "after_lcov_bytes": 0,
+      "claim": "Real test execution only; empty LCOV is not measured source coverage."
+    },
+    "sandbox_controls": "Unrestricted IPC receiving gives real case counts; sandbox runs showing a single container are not counted as complete execution."
+  },
+  "temporary_resources": {
+    "removed_owned_completed_test_roots": [
+      "/tmp/msv-chem-20261102",
+      "/tmp/msv-chem-final-20261102"
+    ],
+    "retained": "Original logs, JUnit, registry audits, manifests and scoped probes under the task cache; no user scratch/shared environment removed."
+  },
+  "final_record_and_route_checks": {
+    "cases": 348,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "junit_sha256": "bf24055ee156a5d05776afda78918602e1de4057666482464e553adc23f993ce"
+  },
+  "final_checkpoint_route": "Reviewed local commits batched into one unskipped main push. Local full Python and separately scoped final metadata/JS checks retain their inputs. Applicable hosted observations remain separate, especially the failed provider native manifest and public-0.23.0 warning context. No release/candidate qualification."
 }

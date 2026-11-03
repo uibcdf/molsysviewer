@@ -222,7 +222,7 @@ reacquisition checks; qualify old molecular/analysis handles separately.
 Current provider source at the inventory baseline exposes `MolSys.copy(deep=…)`
 with independent ownership and deferred protected geometry in its documented
 contract. That is more recent source evidence than the analysis-only checkpoint
-in the local [#259 receiving record](pending_proposals/native_copy_contract_receiving.md).
+in the local [#259 receiving record](archive/native_copy_contract_receiving.md).
 It is not a new published dependency floor or consumer qualification. Review
 and receive the complete contract before selecting it for revision storage;
 inspect raw aliases, non-coordinate domains and failed edits as well as nominal

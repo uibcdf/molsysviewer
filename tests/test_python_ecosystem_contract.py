@@ -24,7 +24,7 @@ def test_source_pair_main_pushes_validate_development_without_retagging_releases
     candidate = next(
         step for step in steps if step.get("name") == "Validate and locally tag the exact Viewer source candidate"
     )
-    assert candidate["if"] == "github.event_name == 'workflow_dispatch'"
+    assert candidate["if"] == "github.event_name == 'workflow_dispatch' && inputs.source_receiving != true"
     assert 'test "$(git rev-list -n 1 "$EXPECTED_VERSION")" = "$GITHUB_SHA"' in candidate["run"]
     checkout = next(step for step in steps if step.get("with", {}).get("repository") == "uibcdf/molsysmt")
     assert re.fullmatch(r"\$\{\{ inputs\.molsysmt_sha \|\| '[0-9a-f]{40}' \}\}", checkout["with"]["ref"])

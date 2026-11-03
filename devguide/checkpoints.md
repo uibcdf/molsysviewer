@@ -1,5 +1,23 @@
 # Development checkpoint
 
+**Chemical-domain receiving — 2026-11-02:** Viewer `481319a9` receives requested
+MolSysMT `de7ffad2` with 265 affected core and five protected-copy cases passing.
+All 2,453 addon nodes pass across the original 2,452-pass run and one cwd-corrected
+selective recovery; this is not one fresh complete pass. #259 source receiving
+is [archived](archive/native_copy_contract_receiving.md); #264 remains partial at
+144/244 inventoried paths. Exact-source matrix 41577620754 fails before scientific
+tests on Linux/macOS/Windows: the provider Rust manifest omits `get_vectors`.
+Evidence is reported to MolSysMT#255; #269 stays open and no duplicate dispatch
+is made. The [receiving receipt](chemical_domain_receiving_20261102.json) and
+[dependency/distribution review](runtime_dependency_review_20261102.md) keep
+source, installation, public-provider warnings and future release scope distinct.
+The final local core invocation passes 3,344 / 21 justified skips / 14 Qt
+cases deselected; provider `7ef48701` adds only documentation over `de7ffad2`.
+#289 fixes new tooling-only glob/minimatch advisories: live audit zero and
+335 real Node 22 cases pass. #290 separately tracks the pre-existing empty
+LCOV; no numerical JS-coverage claim is made. Load human smoke remains deferred;
+no tag/package/1.0 publication is authorized.
+
 **Load automatic closeout complete — 2026-10-31 UTC:** exact-source Qt
 41149452645 passes on 62508cfd with 14/14 cases and no failure/error/skip.
 Original JUnit/report receipts verify actual Cancel/Open completion, exactly
@@ -660,7 +678,7 @@ is complete. Do not request those observations again without a concrete regressi
 The bounded CI cleanup under uibcdf/molsysviewer#256 and #260 is complete;
 [receiving](pre_documentation_cleanup_20261022.json) preserves its scope. Broad
 documentation follows actual capabilities and the accepted core/add-on boundary; new add-on scope remains to be agreed.
-[#259 receiving](pending_proposals/native_copy_contract_receiving.md)
+[#259 receiving](archive/native_copy_contract_receiving.md)
 remains scoped consumer receiving after upstream uibcdf/molsysmt#121 closed; it is not a new core defect or
 release blocker. #93 remains partial only for the central immutable admission
 snapshot and its reviewed caller/badge adoption. Central acknowledgement accepts
@@ -2275,7 +2293,7 @@ Resume toward **1.0** in this order:
 2. Receive the central immutable policy/caller/badge reference for #93 when
    delivered, validate, archive and close. This administrative step needs no
    repeat scientific campaign. #259 remains scoped
-   [consumer receiving](pending_proposals/native_copy_contract_receiving.md):
+   [consumer receiving](archive/native_copy_contract_receiving.md):
    upstream uibcdf/molsysmt#121 is now closed, but Viewer qualification remains
    pending. No new dependency floor or migration is adopted by that closure.
 3. After documentation and explicit candidate freeze, qualify the new exact

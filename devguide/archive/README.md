@@ -1,5 +1,9 @@
 # Archived implementation plans
 
+- [Coverage dependency advisories](js_coverage_glob_minimatch_advisories.md) — #289 qualifies tooling-only glob/minimatch overrides, a clean audit and real traversal; empty source coverage is tracked separately in #290.
+
+- [Native copy consumer receiving](native_copy_contract_receiving.md) — #259 qualifies independent molecular/analysis/visual edits, retained snapshots and copied-session/remapping behavior in source.
+
 - [Qt Load dialog completion](qt_load_dialog_completion_readiness.md) — #287 receives genuine filename input and observed dialog results with hosted 14/14 recovery; manual smoke remains deferred.
 
 - [Studio Load polish](studio_load_usability_and_file_selection.md) — #286 simplifies short-canvas loading, keeps its action visible and adds explicit host-file acquisition.

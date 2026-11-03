@@ -45,6 +45,17 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Source and distribution receiving — 2026-11-02:** #259 receives independent
+  molecular/analysis/visual copies in source. The complete current-provider core
+  passes 3,344 cases with 21 justified omissions and 14 Qt cases deselected;
+  #269 remains blocked on the provider's installed Rust export manifest. #264
+  stays partial at 144/244 inventoried expert paths. #285/#288 receive runtime
+  floors and the [maintained route review](runtime_dependency_review_20261102.md).
+  #289 qualifies coverage-tool-only advisory corrections with zero live npm
+  advisories and 335 real Node 22 tests; #290 owns the independently reproduced
+  empty LCOV. The [receipt](chemical_domain_receiving_20261102.json) preserves
+  exact sources, prior failures and qualification limits. No tag or package.
+
 - **Standalone final source review — 2026-10-29:** the shared live Qt workbench
   now also honors full-system visual selections and negotiates its real binary
   path before numeric JSON. Related contracts, JS units and native/software Qt
@@ -226,7 +237,7 @@ documents, and historical audits.
   and prior scientific source scopes separate. #261 repairs the final board
   verifier's truncated inventory; complete live reconciliation passes. Both
   handoff anchors are current.
-  [#259](pending_proposals/native_copy_contract_receiving.md) remains scoped
+  [#259](archive/native_copy_contract_receiving.md) remains scoped
   provider receiving; #93 waits for immutable policy/caller/badge adoption.
   These gates cover the existing baseline. The former Studio expansion plan
   is withdrawn; new add-on scope needs its own review. No candidate freeze or publication.

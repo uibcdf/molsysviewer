@@ -44,6 +44,17 @@ environment repair, clean-install claim or installed-Rust-wheel validation is
 inferred from source execution. Sibling dirty changes are limited to maintained
 documentation and are preserved; qualified runtime input uses the exact source.
 
+The final local core invocation passes 3,344 cases, with 21 justified skips and
+14 experimental Qt cases deselected. The provider had advanced to documentation
+checkpoint `7ef48701` before this invocation; the diff from requested `de7ffad2`
+contains no runtime changes, and 3,074 provider runtime file hashes remain stable
+through execution. Exact hosted run 41577620754 fails all three platforms on
+the missing `get_vectors` Rust-manifest entry before science. The
+[active receiving report](pending_proposals/chemical_domain_source_receiving.md)
+keeps that prerequisite open. Final Viewer metadata/diagnostic and tooling
+receiving remains separately identified in the dated receipt; no full hosted,
+installed-artifact or numerical JS-coverage claim follows.
+
 ## Projecting a molecular system
 
 Topology supplies stable inventory. Read covalent bonds through
