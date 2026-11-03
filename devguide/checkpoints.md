@@ -1,5 +1,20 @@
 # Development checkpoint
 
+**ChemicalStates source receiving completed — 2026-11-03:** #269 receives
+Linux recovery 41714550124 on Viewer `c1137ebb` / MolSysMT `d8ea626a`:
+3,358 Python passes / 25 skips, all five copy guards, 102 installed Rust
+exports, three path and two integration guards, 44/44 core browser suites and
+25/25 notebooks. Original ZIP/JUnit integrity is verified. Original successful
+Windows/macOS cells remain received at their original source; earlier Linux
+failure and superseded cancellation are preserved. The
+[resolved record](archive/chemical_domain_source_receiving.md) and
+[receipt](chemical_domain_installed_receiving_20261103.json) distinguish this
+aggregate source receiving from a new three-host/public-artifact certificate.
+#291's 30 frame guards separately pass all three hosts; its source-matrix
+failures are exactly the three retained old-provider Pandas4Warning examples.
+Browser/Qt/notebook/policy/Ruff checks pass; general CI is still pending.
+Continue #264 expert addon work; no candidate, floor or publication change.
+
 **Python player notifications resolved in source — 2026-11-03:** #291 uses one
 accepted-state dispatcher for navigation/playback and frontend feedback, with
 ordered reentrancy, detached events, duplicate suppression and explicit close.
@@ -711,14 +726,16 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**Current handoff — 2026-11-03:** #290's exact-source hosted JS receiving is
-complete as described at the top of this checkpoint. Resume #269's installed
-provider/Rust-manifest boundary after MolSysMT#533 and the partial #264 expert addon inventory
-(144/244 reviewed paths). #259/#285/#288/#289 have source/tooling receiving;
-the later unit-coverage receipt supersedes earlier empty-LCOV limitations only
-within its stated scope. Load human smoke remains explicitly deferred.
-No candidate is frozen and both 1.0 publications remain paused. The dated
-rounds below retain their original evidence and do not select a new release.
+**Current handoff — 2026-11-03:** #269 source receiving is complete with the
+verified original Windows/macOS cells and corrected full Linux recovery
+41714550124. #291's 30 callback guards also pass on all three hosts; its source
+matrix remains failed only on the three old-provider warning-strict examples.
+Its browser, Qt, notebooks, Ruff and policy jobs pass; general CI remains
+pending. Continue #264's expert addon API after reviewing owner PR #538/#540;
+main's 144/244 baseline and branch/combined inventories are distinct until
+integration. #259/#285/#288/#289/#290 retain their source/tooling evidence.
+Load human smoke remains explicitly deferred. No candidate is frozen and both
+1.0 publications remain paused. Dated rounds below keep their original scope.
 
 The latest user-directed standalone round is summarized in the
 [final review](standalone_final_review_20261029.md). Receive its remaining
@@ -2316,13 +2333,14 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current order — 2026-11-03:** #290's hosted unit-coverage receiving is complete.
-Receive #269 after MolSysMT#533 corrects the installed Rust manifest; continue
-the remaining expert addon surface under #264 before GUI and documentation
-completion. Freeze and qualify original candidate artifacts only when the
-maintainer resumes that separate phase. Earlier source receiving, public
-packages and human observations retain their recorded scopes. The dated
-inventory below is historical progression, not authorization to publish.
+**Current order — 2026-11-03:** #269 is resolved in source; #291 runtime
+receiving is identified separately. Review the owner-integrated inventory,
+then continue `element` helpers under #264, preserving explicit versus implicit
+inputs and the owner-reviewed PR route. Resolve or record native limits before
+preparation/mechanics and GUI tasks. Broad documentation and exact frozen
+artifact qualification follow the accepted product work. Earlier source
+receiving/public packages/human observations retain their scopes; neither 1.0
+publication nor a candidate freeze is authorized.
 
 **Current order — 2026-10-26:**
 

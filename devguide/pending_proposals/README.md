@@ -25,9 +25,8 @@ archived documents link there; its location does not reopen its release scope.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (2)
+### Being worked on (1)
 
-- [`chemical_domain_source_receiving.md`](chemical_domain_source_receiving.md) — [#269](https://github.com/uibcdf/molsysviewer/issues/269) — Receive independent MolSysMT chemical domains through Viewer and the expert addon. *(measured)*
 - [`migrate_standalone_qt_to_canonical_pyside6_6_11_2.md`](migrate_standalone_qt_to_canonical_pyside6_6_11_2.md) — [#109](https://github.com/uibcdf/molsysviewer/issues/109) — Migrate the optional standalone Qt host to canonical PySide6 6.11.2. *(measured)*
 
 ### Partially done (1)

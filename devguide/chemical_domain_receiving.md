@@ -6,40 +6,36 @@ coordinated with `uibcdf/molsysmt#255` and `uibcdf/molsyssuite#155`.
 This guide does not establish a new published dependency minimum or installed
 artifact qualification.
 
-## Current follow-up — 2026-11-03
+## Source receiving completed — 2026-11-03
 
-The provider's exact-export repair `2797c5425` is published in checkpoint
-`d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42`. Consumer installed-source campaign
-41690488611 receives that checkpoint against Viewer
-`d72f93f7aa8a3d89b2848bef905a48a00102f8e1`, on Linux/macOS/Windows with Python
-3.14. The [campaign receipt](chemical_domain_installed_receiving_20261103.json)
-retains results separately from the previous failed inputs. This is a single
-source-receiving dispatch, without version tags or release qualification.
+#269 receives provider `d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42`, including
+exact-export repair `2797c5425`. Original campaign 41690488611 at Viewer
+`d72f93f7aa8a3d89b2848bef905a48a00102f8e1` supplies successful Windows/macOS
+cells (3,320 Python passes / 52 skips each) and all five protected-copy cases
+per host. Its Linux browser-fixture failure remains preserved.
 
-Linux and Windows pass their full Python selections (3,347/25 skips and
-3,320/52 skips), including all five copy cases, and Linux executes all 25
-notebooks. The hosted browser failure is a positive context-menu fixture that
-assumed chain membership absent from its legacy input. Test-only correction
-`383721ea` declares that membership, preserves unknown/partial cases and passes
-the affected suite and all 44 core suites locally with the exact provider
-snapshot and unchanged reused backend. This local recovery does not rewrite
-the hosted job's failure or qualify a new installed build. macOS has now passed
-its whole cell: 3,320 Python passes, 52 skips and all five copy cases executed.
-The three-host Python results are received; #269 remains open for the hosted
-Linux recovery against the corrected fixture.
+Corrected Linux recovery [41714550124](https://github.com/uibcdf/molsysviewer/actions/runs/41714550124)
+at Viewer `c1137ebb21812c15d941fa3c5154bd655e329f85` completes successfully:
+3,358 Python passes / 25 skips / 14 Qt cases deselected, all five copy guards,
+102 installed Rust exports and minimum-image 2.5, three native-path guards,
+two integration cases, 44/44 core browser suites and 25/25 notebooks. Its
+original ZIP matches GitHub's SHA-256; original JUnit and job log are retained
+in the [campaign receipt](chemical_domain_installed_receiving_20261103.json).
 
-Recovery run [41714550124](https://github.com/uibcdf/molsysviewer/actions/runs/41714550124)
-uses exact Viewer `c1137ebb21812c15d941fa3c5154bd655e329f85` and the same
-provider `d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42`. It has one Linux job,
-queued without executed steps at this receipt. The three original artifact
-ZIPs match their GitHub digests and their JUnit bytes; successful original
-Windows/macOS results remain separate from the pending recovery.
-This replaces run 41707479800, cancelled after local full regression exposed
-two distribution guards still parsing the former YAML matrix. The corrected
-guards read the actual default JSON matrix and retain all three platform/version
-requirements. Seven coverage controls also pass with an explicit TAP reporter.
-No production runtime changes are included in this recovery source; #291's
-player changes remain an independent receiving scope.
+This is an original three-host campaign plus a Linux recovery, not a new
+single-SHA three-host certificate. Production runtime is unchanged between
+the original consumer and recovery; the package-path delta is the positive
+context-menu fixture declaring its actual chain membership. Distribution
+checks read the default JSON matrix without reducing platform assertions;
+coverage probes choose TAP explicitly. Superseded run 41707479800 remains
+cancelled. No original failure is rewritten.
+
+The [resolved receiving record](archive/chemical_domain_source_receiving.md)
+names the reference-state, ambiguity and missing/empty-domain guard. The new
+#291 runtime has its own source/callback receipt. Public old-provider
+Pandas4Warning failures retain their separate dependency context. Neither
+this source closure nor the private native-extension check establishes a new
+published floor, canonical artifact qualification or release authorization.
 
 For source-only platform recovery, dispatch
 `ci-python-314-source-pair.yaml` with `source_receiving=true`, the exact
@@ -109,8 +105,8 @@ checkpoint `7ef48701` before this invocation; the diff from requested `de7ffad2`
 contains no runtime changes, and 3,074 provider runtime file hashes remain stable
 through execution. Exact hosted run 41577620754 fails all three platforms on
 the missing `get_vectors` Rust-manifest entry before science. The
-[active receiving report](pending_proposals/chemical_domain_source_receiving.md)
-keeps that prerequisite open. Final Viewer metadata/diagnostic and tooling
+[resolved receiving report](archive/chemical_domain_source_receiving.md)
+retains that original failure. Final Viewer metadata/diagnostic and tooling
 receiving remains separately identified in the dated receipt; no full hosted,
 installed-artifact or numerical JS-coverage claim follows.
 

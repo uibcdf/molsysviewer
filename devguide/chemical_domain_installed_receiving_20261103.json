@@ -358,7 +358,7 @@
   },
   "temporary_resources": "Owned local provider snapshot and archive removed after integrity checks; original logs, JUnit files, source identities and digests retained in ignored task evidence. PR contribution worktree retained separately for owner review.",
   "hosted_linux_recovery": {
-    "state": "queued",
+    "state": "completed",
     "provider_source": "d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42",
     "scope": "One Linux-only replacement after the prior run completed cancelled; same exact provider and unchanged production runtime. Original macOS/Windows receipts are preserved. This does not include the independent #291 runtime work.",
     "guard_cases": 17,
@@ -380,7 +380,7 @@
       "molsysmt_sha": "d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42"
     },
     "dispatch_count": 1,
-    "conclusion": null,
+    "conclusion": "success",
     "matrix_observations": {
       "default_push": {
         "run": 41707301185,
@@ -406,7 +406,59 @@
       "distribution_cases": 2,
       "passed": 19,
       "source": "Local selective recovery; no hosted result inferred."
-    }
+    },
+    "python": {
+      "artifact": 13272523389,
+      "zip_sha256": "267db26f05e84bd87b0576510b134102735b72f99f82f7afbec81447e6966c53",
+      "junit_sha256": "08b1b2ad1c16f602c66ef2d50d56a41edbb4d32ff6f4a045cb6cde05cb68e5fe",
+      "counts": {
+        "tests": 3383,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 25,
+        "passed": 3358
+      },
+      "copy_cases": [
+        "test_view_copy_isolates_controlled_edits_and_retains_old_analysis_handles[coordinates]",
+        "test_view_copy_isolates_controlled_edits_and_retains_old_analysis_handles[box]",
+        "test_view_copy_isolates_controlled_edits_and_retains_old_analysis_handles[chemistry]",
+        "test_failed_native_edit_and_visual_edits_do_not_change_the_other_view",
+        "test_copied_analysis_survives_nonconsecutive_extraction_and_session"
+      ],
+      "skip_reasons": {
+        "Legacy MolSysMT entry point is not installed": 1,
+        "template has no placeholders": 14,
+        "Optional headless PNG backend": 1,
+        "Requires installed scientific artifacts": 2,
+        "requires an explicitly selected real Chromium/GPU environment": 2,
+        "imageio is installed; cannot test ImportError path": 1,
+        "molsysviewer_elastnetmt is not installed": 1,
+        "molsysviewer_pharmacophoremt is not installed": 1,
+        "molsysviewer_topomt is not installed": 1,
+        "Windows process memory API": 1
+      }
+    },
+    "core_browser_suites": {
+      "passed": 44,
+      "total": 44
+    },
+    "notebooks": {
+      "executed": 25,
+      "total": 25,
+      "failed": 0
+    },
+    "installed_rust": {
+      "exports": 102,
+      "minimum_image": 2.5,
+      "inside_installed_prefix": true
+    },
+    "native_path_guards": {
+      "passed": 3
+    },
+    "integration": {
+      "passed": 2
+    },
+    "job_log_sha256": "f2b0d06193df2c397d57d3b8ace1b284906562042cbd844b5c6eca2d76e1fcb1"
   },
   "original_artifact_verification": {
     "Linux": {
@@ -469,5 +521,13 @@
       },
       "reason": "The local full regression reproduces two distribution guards that only parse the former YAML matrix. The JSON workflow itself retains the correct default; c1137ebb repairs the guards without changing production runtime or reducing platforms."
     }
-  ]
+  ],
+  "resolution": {
+    "issue": "uibcdf/molsysviewer#269",
+    "date": "2026-11-03",
+    "scope": "Independent ChemicalStates source receiving complete: original successful Windows/macOS cells plus corrected full Linux recovery. Not a single new three-host run or public package/release certificate.",
+    "guard": "tests/loaders/test_array_native_molsys.py",
+    "retained_failures": "Original browser-fixture failure and cancelled superseded guard-input campaign keep their original conclusions.",
+    "reuse_basis": "Production runtime unchanged between original d72f93f7 and c1137ebb; package-path delta is only the explicit-chain E2E fixture. CI guard changes preserve all default/candidate platforms."
+  }
 }

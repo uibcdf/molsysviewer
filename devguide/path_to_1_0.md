@@ -1,5 +1,15 @@
 # Path to 1.0.0 (Unified Release Plan)
 
+**Chemical-domain receiving complete — 2026-11-03:** #269 combines the verified
+original Windows/macOS cells with corrected Linux source recovery 41714550124,
+including 44/44 core browser suites and 25/25 notebooks. The
+[resolved record](archive/chemical_domain_source_receiving.md) preserves source
+identities and original failures. #291 callback receiving is separate; its
+30 guards pass on all three hosts while old-provider warning-strict examples
+keep their original failures. Continue #264 expert addon work by owner-reviewed
+PR, then GUI/documentation and later exact-candidate qualification. 0.25.0
+remains unfrozen and both 1.0 publications remain paused.
+
 **Python admission adoption complete — 2026-10-30:** #93 receives immutable
 MolSysSuite `policy-v1.5.10` and its public-core Python 3.11–3.14 admission.
 The caller and canonical badge are adopted together; hosted owner policy

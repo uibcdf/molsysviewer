@@ -130,5 +130,90 @@
     "state_at_receipt": "queued",
     "scope": "CI guards only; production runtime unchanged. Does not contain this independent #291 source change."
   },
-  "temporary_resources": "Views close through context managers or test teardown. Native logs/JUnit/manifests remain in ignored task evidence; disposable Sphinx HTML removed after successful receipt. No new environment, provider edit or Rust build."
+  "temporary_resources": "Views close through context managers or test teardown. Native logs/JUnit/manifests remain in ignored task evidence; disposable Sphinx HTML removed after successful receipt. No new environment, provider edit or Rust build.",
+  "hosted_source_receiving": {
+    "consumer_source": "78ede79e2e345593db5bfe80d246d3f6c70bd005",
+    "run": 41716925255,
+    "provider_source": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+    "conclusion": "failure",
+    "platforms": {
+      "Linux": {
+        "artifact": 13275710116,
+        "zip_sha256": "3801aabffeb6d22924a7d42e8a13e1939c4a32190d8bc3332b8b8cf2c9d5bb50",
+        "junit_sha256": "1928eedb7d73c2341fff0aafba714b284ceafde6c2048210d3789e512212817e",
+        "counts": {
+          "tests": 3414,
+          "failures": 3,
+          "errors": 0,
+          "skipped": 29
+        },
+        "frame_guard_passed": 30,
+        "failed_cases": [
+          "test_the_page_runs_as_written[docs/content/user/scene_management/selections.md]",
+          "test_the_page_runs_as_written[docs/content/user/overlays/measurements.md]",
+          "test_the_page_runs_as_written[docs/content/user/export/state.md]"
+        ]
+      },
+      "Windows": {
+        "artifact": 13273872373,
+        "zip_sha256": "2460e73fead0dd528ddeb4a517adc64035417d3bd629862188e939599150f09a",
+        "junit_sha256": "cf3b59b165b8378b5350132e55140b50e41e1183f26a3a5ed36cc8ee8dc6b13d",
+        "counts": {
+          "tests": 3414,
+          "failures": 3,
+          "errors": 0,
+          "skipped": 56
+        },
+        "frame_guard_passed": 30,
+        "failed_cases": [
+          "test_the_page_runs_as_written[docs/content/user/scene_management/selections.md]",
+          "test_the_page_runs_as_written[docs/content/user/overlays/measurements.md]",
+          "test_the_page_runs_as_written[docs/content/user/export/state.md]"
+        ]
+      },
+      "macOS": {
+        "artifact": 13273289305,
+        "zip_sha256": "e018aaba7b058d398869e8b1fce569ab5004f4e16787c18df3eff3d5f61dc202",
+        "junit_sha256": "c57d6a229f8f5a98a030c04c85c04e6dddb2874f779bf31e24de4212e8674b49",
+        "counts": {
+          "tests": 3414,
+          "failures": 3,
+          "errors": 0,
+          "skipped": 56
+        },
+        "frame_guard_passed": 30,
+        "failed_cases": [
+          "test_the_page_runs_as_written[docs/content/user/scene_management/selections.md]",
+          "test_the_page_runs_as_written[docs/content/user/overlays/measurements.md]",
+          "test_the_page_runs_as_written[docs/content/user/export/state.md]"
+        ]
+      }
+    },
+    "failure_boundary": "Exactly the three warning-strict documentation pages fail on each host, with native Pandas4Warning from the retained old provider. All 30 frame guards execute and pass on each host; this does not turn the whole run green.",
+    "core_browser": {
+      "run": 41716925217,
+      "conclusion": "success"
+    },
+    "experimental_qt": {
+      "run": 41716925206,
+      "conclusion": "success"
+    },
+    "notebooks": {
+      "run": 41716925283,
+      "conclusion": "success"
+    },
+    "ruff": {
+      "run": 41716925211,
+      "conclusion": "success"
+    },
+    "policy": {
+      "run": 41716925701,
+      "conclusion": "success"
+    },
+    "main_ci": {
+      "run": 41716925011,
+      "state_at_receipt": "queued",
+      "conclusion": null
+    }
+  }
 }

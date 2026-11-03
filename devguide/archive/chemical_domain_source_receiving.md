@@ -1,18 +1,22 @@
 ---
 summary: Receive independent MolSysMT chemical domains through Viewer and the expert addon.
 issue: uibcdf/molsysviewer#269
-status: active
+status: resolved
 opened: 2026-10-29
-closed:
+closed: 2026-11-03
 verification: measured
 area: [molsysmt, loading, interactions, addons]
-guard:
+guard: tests/loaders/test_array_native_molsys.py
 normative: devguide/chemical_domain_receiving.md
 blocked_by: []
 supersedes: []
 ---
 
 # Current ChemicalStates source receiving
+
+**Resolved in source — 2026-11-03.** The resolution at the end receives the
+successful original Windows/macOS cells and the complete corrected Linux run;
+earlier pending and failed observations below keep their historical meaning.
 
 ## Corrected installed-source campaign — 2026-11-03
 
@@ -135,3 +139,37 @@ public-0.23.0 Pandas4Warning failures as their own dependency context. Return
 actual sources, results and remaining limitations to #269 and MolSysSuite#155
 at closeout. Installed artifacts and later release qualification remain separate;
 neither a complete local selection nor an upstream closure certifies them.
+
+
+## Resolution — 2026-11-03
+
+The actual runtime migration is published in `8aff97e9`, with compatible
+receiving fixtures in `ca7ebea6`. The provider's exact-export repair is received
+from `d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42`. The static renderer honors the
+explicit reference state and refuses ambiguity, retaining absent/zero/unknown/
+known-empty chemistry; selection preserves unknown membership without inventing
+assignments. `tests/loaders/test_array_native_molsys.py` guards the reference
+and missing/empty-domain failure mechanism, including both payload encoders.
+
+Original Windows/macOS cells in 41690488611 pass 3,320 Python cases each, with
+52 explained skips and all five copy cases executed on each host. Corrected
+Linux recovery 41714550124 on Viewer `c1137ebb` passes its whole cell: 3,358
+Python cases / 25 skips / 14 Qt cases deselected, five copy cases, 102 installed
+Rust exports, minimum image 2.5, three native-path checks, two integration
+checks, 44/44 real core browser suites and 25/25 notebooks. Its original ZIP
+matches GitHub SHA-256 `267db26f05e84bd87b0576510b134102735b72f99f82f7afbec81447e6966c53`;
+the campaign receipt retains exact JUnit/job-log hashes and skip reasons.
+
+Reuse of successful Windows/macOS results is bounded: production runtime is
+unchanged between original Viewer `d72f93f7` and recovery `c1137ebb`; the
+package-path difference is the positive E2E fixture declaring its actual chain
+membership. Workflow/parser/reporter corrections preserve all candidate/default
+platforms. This is original three-host evidence plus one Linux recovery, not
+a new single-SHA three-host run. Original Linux failure and cancelled
+superseded recovery 41707479800 keep their official conclusions.
+
+This closes the independent-domain source receiving requested under #269 and
+uibcdf/molsyssuite#155. The newer #291 runtime, incomplete addon inventory/GUI,
+old-provider warning context, canonical installed artifacts, published floors
+and future candidate qualification retain independent owners and evidence.
+No scientific assertion, tag, package or publication is changed by this closure.

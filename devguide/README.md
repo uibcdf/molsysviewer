@@ -51,7 +51,7 @@ documents, and historical audits.
   [receipt](molsysmt_attribute_tools_receiving_20261103.json) separates native
   repair receiving, source qualification and pending owner integration. Branch
   exposure is 151/244; integration with #538 requires 155/244. #264 stays partial;
-  #269/macOS and #537/#539 remain separate. No new host or release claim.
+  #537/#539 and owner integration remain separate. No new host or release claim.
 
 - **Supported reports source increment — 2026-11-03:** owner branch `4e1a06ee1`
   implements the four metadata reports; 2,527 addon cases pass, including 74 new
@@ -69,21 +69,7 @@ documents, and historical audits.
   separately under #269 after #533's repair. Owner-side API references remain
   in MolSysMT.
 
-- **Chemical-domain installed-source receiving — 2026-11-03:** #269 is active
-  on one corrected pair: Viewer `d72f93f7` / MolSysMT `d8ea626a`, run 41690488611,
-  Linux/macOS/Windows Python 3.14. Provider repair #533 retains exact Rust-export
-  equality. The [campaign receipt](chemical_domain_installed_receiving_20261103.json)
-  retains 3,347 Linux / 3,320 Windows Python passes, zero failures, all five
-  copy cases per host, 25 Linux notebooks and a local 44-suite browser recovery
-  after explicitly declaring the positive menu fixture's chain. The original
-  hosted Linux job remains failed; macOS now passes 3,320 cases with 52 skips
-  and all five copy cases. Hosted Linux recovery
-  [41714550124](https://github.com/uibcdf/molsysviewer/actions/runs/41714550124)
-  is dispatched on Viewer `c1137ebb` with the same provider and remains queued;
-  the default complete candidate matrix is protected. This is
-  separate from the earlier
-  164-case [scoped source result](chemical_domain_receiving_20261103.json) and
-  old-provider warning failures. No candidate or release is selected.
+- **Chemical-domain source receiving completed — 2026-11-03:** #269 combines the successful original Windows/macOS cells with Linux recovery 41714550124 (3,358 Python passes, five copy guards, 44/44 browser suites and 25/25 notebooks); the [resolved record](archive/chemical_domain_source_receiving.md) and [receipt](chemical_domain_installed_receiving_20261103.json) retain exact sources, original failures and artifact hashes without a new release claim.
 
 - **JavaScript source coverage — 2026-11-03:** #290 corrects esbuild maps and
   c8 filtering and rejects empty, unmapped and non-production reports. All 335

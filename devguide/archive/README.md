@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Independent chemical-domain receiving](chemical_domain_source_receiving.md) — #269 receives reference-state projection, unknown hierarchy and protected copies with successful original Windows/macOS cells plus full corrected Linux Python/browser/notebook execution.
+
 - [Python player frame notifications](python_player_omits_frame_notifications.md) — #291 delivers accepted-state callbacks for Python navigation/playback, deduplicated feedback, ordered reentrancy and closed-view cleanup.
 
 - [Coverage dependency advisories](js_coverage_glob_minimatch_advisories.md) — #289 qualifies tooling-only glob/minimatch overrides, a clean audit and real traversal; empty source coverage is tracked separately in #290.
