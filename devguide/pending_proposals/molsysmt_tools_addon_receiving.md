@@ -14,6 +14,37 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## All primary-element paths delivered in the owner PR — 2026-11-03
+
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) now publishes
+`506805c890d409085f3d954c8d6f14e751af1fc7`. Twelve further paths add five
+molecule readers, five component readers, group type and the legacy amino-acid
+name heuristic. All 21 primary-input element paths now have explicit bindings;
+eight label utilities remain independent of the primary. Stable topology and
+state-local components stay distinct, with native reference/selector, unknown,
+projection and error behavior. No assignment, hidden chemistry, frame-state
+choice or scene/history reconciliation is introduced. The legacy name pattern
+is explicitly not chemical/stereochemical validation.
+
+Owner source `55f18aef` is received by merge `8e2f2c1f1`, with no authored
+scientific/Rust patch. Its graph/donor/reference regressions pass 354 cases and
+the molecule/component/group baseline passes 117. Complete addon regression
+passes 2,805 without failures/errors/skips, including 118 new cases. The final
+352 element/integration controls pass after import-order-only lint polish;
+original broad input hashes and unchanged function/class bodies are retained.
+Structural package/inventory/notebook controls pass 530, guide examples execute,
+course code/output/IDs are preserved and Ruff passes. The
+[receipt](../molsysmt_element_domains_receiving_20261103.json) keeps scopes,
+fixture corrections and exact provenance separate from hosted qualification.
+
+Branch exposure is 173/244, including 29/57 element paths. The independent
+metadata PRs #538/#540 remain unintegrated here: 184/244 is a hypothetical union.
+Twenty-eight explicit-input element utilities remain for review. #264 is still
+partial; final-head hosted CI, owner integration, actual archives, optional
+engines/platforms, installed packages and GUI tasks retain separate gates.
+No host runtime, floor, candidate, tag or publication changes. Earlier records
+below keep their original frozen native source rather than claiming these fixes.
+
 ## Chain/entity readers delivered in the element PR — 2026-11-03
 
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) is expanded at

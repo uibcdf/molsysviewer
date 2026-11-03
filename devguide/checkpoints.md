@@ -1,5 +1,18 @@
 # Development checkpoint
 
+**Primary-element source mirror delivered — 2026-11-03:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
+`506805c89`, adds twelve paths and receives native owner `55f18aef` through
+merge `8e2f2c1f1`. All 21 primary-input element paths are explicit bindings;
+eight utilities retain empty-view access. Complete addon regression passes
+2,805 without failures/errors/skips, with 118 new cases; final import-sensitive
+receiving passes 352, owner repair checks 354 and native domain checks 117.
+The [receipt](molsysmt_element_domains_receiving_20261103.json) retains broad
+input hashes, import-order-only polish, exact native provenance and scopes.
+Branch exposure is 173/244; 184/244 with #538/#540 is hypothetical. Remaining
+28 explicit utilities, owner integration and final-head hosted/package/platform
+qualification are pending. No host runtime, candidate, floor or publication.
+
 **Current-primary chain/entity readers delivered — 2026-11-03:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), final source
 `2cb4c8f01`, adds nine managed readers beside eight explicit utilities.
@@ -758,10 +771,10 @@ matrix remains failed only on the three old-provider warning-strict examples.
 Its browser, Qt, notebooks, Ruff and policy jobs pass; general CI remains
 pending, with three completed Linux failures confined to the same old-provider
 warning-strict examples. Continue #264 after owner review of PR #538/#540/#543;
-#543 receives seventeen element paths (2,687 complete addon passes), including
-nine current-primary readers and eight explicit utilities. Main's 144/244
-baseline, #543's 161/244 branch and the hypothetical 172/244 union
-remain distinct until integration. #259/#285/#288/#289/#290 retain their
+#543 receives twenty-nine element paths (2,805 complete addon passes), including
+all 21 primary-input paths and eight explicit utilities, on received native
+`55f18aef`. Main's 144/244 baseline, #543's 173/244 branch and the hypothetical
+184/244 union remain distinct until integration. #259/#285/#288/#289/#290 retain their
 source/tooling evidence.
 Load human smoke remains explicitly deferred. No candidate is frozen and both
 1.0 publications remain paused. Dated rounds below keep their original scope.
@@ -2364,8 +2377,9 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-03:** #269 is resolved in source; #291 runtime
 receiving is identified separately. Review the owner-integrated inventory,
-then continue the 12 primary-input and 28 remaining explicit-input `element`
-paths under #264 after reviewing all seventeen paths delivered in owner PR #543.
+then continue the 28 remaining explicit-input `element` utilities under #264
+after reviewing all twenty-nine paths delivered in owner PR #543. All 21 primary
+paths are now exposed; imported owner fixes retain their exact-source evidence.
 Preserve explicit versus implicit inputs and the owner-reviewed PR route.
 Resolve or record native limits before
 preparation/mechanics and GUI tasks. Broad documentation and exact frozen

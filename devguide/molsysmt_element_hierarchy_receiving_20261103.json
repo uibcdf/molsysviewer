@@ -247,5 +247,10 @@
     "failures": 0,
     "errors": 0,
     "scope": "Scoped reporting/link/architecture/board-tool tests; no repeat scientific regression or hosted-CI inference."
+  },
+  "follow_up": {
+    "owner_head": "506805c890d409085f3d954c8d6f14e751af1fc7",
+    "receipt": "molsysmt_element_domains_receiving_20261103.json",
+    "scope": "The same PR now adds twelve paths and receives committed owner fixes. Earlier 03050a16 native and broad-test results remain evidence of that old source; use the new receipt for current receiving."
   }
 }
