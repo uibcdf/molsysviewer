@@ -1,0 +1,134 @@
+{
+  "schema": "molsysviewer.player-frame-notifications-receiving@1",
+  "date": "2026-11-03",
+  "issue": "uibcdf/molsysviewer#291",
+  "consumer": "uibcdf/dockingmt#60",
+  "source_base": "c1137ebb21812c15d941fa3c5154bd655e329f85",
+  "source_identity": "Working-source file hashes below; the resulting publication commit is named in the issue closure.",
+  "environment": {
+    "conda": "molsyssuite@uibcdf_3.14",
+    "python": "3.14.7",
+    "provider_source": "402bdc6e4b852453da4e3a95dcae867ddd5fa686",
+    "provider_integrity": {
+      "python": "3.14.7",
+      "provider_files": 3034,
+      "unchanged": true,
+      "manifest_sha256": "a17960931acd061eab6b24da5bd925e3e0fd974c5b6240b562985b1b15af215b"
+    },
+    "backend_sha256": "f32ed73f7ef3cf3225e12fbc56b9c4236a4452d758c94661f41860ad00d82c1c",
+    "scope": "Existing editable environment and unchanged reused backend. No new installation, wheel, solver closure or public package qualification. Four unrelated provider autosummary edits remain untouched."
+  },
+  "contract": {
+    "payload": [
+      "event",
+      "frame",
+      "is_playing"
+    ],
+    "index_space": "Current loaded MolSys, identical to player.index; input/source correspondence remains separate.",
+    "meaning": "Accepted Python authority state. Direct Python navigation/playback notifies synchronously; frontend feedback notifies when accepted. No rendered-frame or GPU-completion guarantee.",
+    "delivery": "Suppress consecutive identical frame/playback states; preserve reentrant acceptance order and per-subscriber dictionaries; errors cannot interrupt tracking; close releases subscriptions and queued events.",
+    "limits": "No molecular transaction, arbitrary edit observer, new scientific calculation or public dependency-floor change. Managed-edit subscription guards remain in effect."
+  },
+  "validation": {
+    "initial_red": {
+      "tests": 21,
+      "failed": 20,
+      "passed": 1,
+      "junit_sha256": "aef638429eb1c83d54074d574e3e5b4c1f969358498926b7bade5f2024a51808"
+    },
+    "initial_boundaries": {
+      "tests": 166,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 166,
+      "junit_sha256": "029c5d3efcf17fff4bcb7afce6cf1cae451a79b03ce6342c5204b1e9e01ba1fd"
+    },
+    "initial_complete": {
+      "tests": 3414,
+      "failures": 4,
+      "errors": 6,
+      "skipped": 21,
+      "passed": 3383,
+      "junit_sha256": "2d207dc9ca708d7f28725e2371bb6daef55fbc2e6dacaee1800000e39d27ff54"
+    },
+    "initial_complete_findings": "Two distribution guards still parsed YAML rather than JSON; six coverage cases were blocked by one unspecified-reporter fixture; one measurement fixture used a dummy molecular system; one clean-checkout link referenced an unstaged new file.",
+    "complete_after_recovery": {
+      "tests": 3414,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 21,
+      "passed": 3393,
+      "junit_sha256": "abbcfc8a5fb078520e25c762651296d9dd713d1f74b99f598f95f8c40797e02c",
+      "qt_deselected": 14,
+      "seconds": 516.28,
+      "phase": "Complete fresh invocation before final play/pause delivery polish; not represented as a fresh complete invocation of the later source."
+    },
+    "final_all_player_callers": {
+      "tests": 327,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 327,
+      "junit_sha256": "79826d295d987490067e52894433c83b30897f8a56690f7ca0685cd90bec4f3b",
+      "new_guard_cases": 30,
+      "seconds": 71.49,
+      "selection": [
+        "tests/test_box_assignment.py",
+        "tests/test_canvas_popup_mirror.py",
+        "tests/test_html_scene_sidecar.py",
+        "tests/test_index_mapper.py",
+        "tests/test_interaction_events.py",
+        "tests/test_interactions_api.py",
+        "tests/test_interactions_public_completion.py",
+        "tests/test_measurements.py",
+        "tests/test_playback_digesters.py",
+        "tests/test_player_frame_notifications.py",
+        "tests/test_popup_snapshot_completeness.py",
+        "tests/test_rebuild_visibility.py",
+        "tests/test_scene_object_summaries.py",
+        "tests/test_scene_transfer.py",
+        "tests/test_session_bundle.py",
+        "tests/test_state_view_state.py",
+        "tests/test_structure_edit_correspondence.py",
+        "tests/test_studio_shape_creation.py",
+        "tests/test_studio_work_persistence.py",
+        "tests/test_trajectory_plot.py",
+        "tests/test_view_lifecycle.py"
+      ],
+      "scope": "All test modules calling public player navigation/playback plus callbacks, box, index, summaries and lifetime boundaries. This follows the last playback/empty-view adjustment."
+    },
+    "docs": "Strict Sphinx (-W --keep-going) passes; callback recipe executed successfully on real pentalanine.",
+    "sphinx_log_sha256": "3eaedd12fed4061c6a31af4fd9cc97425439c514e1ead68cdc946e477927c647",
+    "ruff": "Whole-tree check and format pass, 946 files.",
+    "playback_red_junit_sha256": "af5b0066a62c0805f8f1606d2fbd55e2a75d531004e1bf672ca8840f5dd41a6d",
+    "empty_playback_red_junit_sha256": "0e4e1721a1e9adddd5444992e5f0f8a9a2aea9e774696b0f7bb2b2150867eaf0",
+    "record_checks": {
+      "passed": 307,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit_sha256": "0468a2c58cb8c525c2ea3f9a5181aa25410b364e5c2c9fe6dc4909df35367f2b"
+    },
+    "indexes": "Generated indexes are current; staged changes pass git diff --check."
+  },
+  "source_sha256": {
+    "molsysviewer/player.py": "cd36ef8135490aa94c5f3e445a9932abf601d3926b534df368de1c41e8ce1fc6",
+    "molsysviewer/viewer/core.py": "448fddaac8049f74d618cd735ffdf9451b4398289cff69a781784a43be35bdfa",
+    "molsysviewer/viewer/interaction.py": "04c05061884e7abebc53dfbef0e8a2448b149dd2c74b81f65eb681f709066972",
+    "tests/test_player_frame_notifications.py": "d5365198ce3120309b08829338a2efe1f533fd7ec392d73b9374b9e104de84bc",
+    "tests/test_measurements.py": "f502b6c555e1e1f670fa766fe91b8a0e831cc8e117aac7fde25888eef1da7a78",
+    "docs/content/developer/public_api.md": "fb7b8d7cfd07d70633e02e5512c29a24aa3f7cbefe20161223f5fc3d56a2ccdd",
+    "docs/content/user/movie/playback.md": "08ef904532fa16c56da1c7dc05734ba851514089a24e500ded0c04cfe31d9c2f"
+  },
+  "separate_269": {
+    "superseded_run": 41707479800,
+    "superseded_conclusion": "cancelled",
+    "replacement_run": 41714550124,
+    "consumer_source": "c1137ebb21812c15d941fa3c5154bd655e329f85",
+    "provider_source": "d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42",
+    "state_at_receipt": "queued",
+    "scope": "CI guards only; production runtime unchanged. Does not contain this independent #291 source change."
+  },
+  "temporary_resources": "Views close through context managers or test teardown. Native logs/JUnit/manifests remain in ignored task evidence; disposable Sphinx HTML removed after successful receipt. No new environment, provider edit or Rust build."
+}

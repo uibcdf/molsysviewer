@@ -117,5 +117,21 @@
     "No new percentage threshold; no artifact/installed/scientific qualification.",
     "Unrelated provider/source CI failures remain separate; publications stay paused."
   ],
-  "source_commit": "87de7eab2023c697a4de193fc2af6306fd0ee3f0"
+  "source_commit": "87de7eab2023c697a4de193fc2af6306fd0ee3f0",
+  "reporter_portability_followup": {
+    "date": "2026-11-03",
+    "commit": "c1137ebb21812c15d941fa3c5154bd655e329f85",
+    "node": "24.21.0",
+    "observation": "Native Node default output uses the spec reporter; the fixture expected TAP without choosing it.",
+    "fix": "Select --test-reporter=tap for both actual c8 probe executions, preserving exit/count/named-subtest and coverage assertions.",
+    "validation": {
+      "passed": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit_sha256": "9fe256f58a85f48cf3c28a47650f687607a7e182e1526f87048670a072ff9163"
+    },
+    "bounded_attempt": "An earlier restricted-sandbox TAP attempt exposed only the file container. Its named-subtest guard correctly failed; it is not a passing native test result.",
+    "report_offer": "A separate issue was offered to the maintainer; the response is pending. Original #290 LCOV repair and original native Node 22 evidence remain unchanged."
+  }
 }

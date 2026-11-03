@@ -78,8 +78,8 @@ documents, and historical audits.
   after explicitly declaring the positive menu fixture's chain. The original
   hosted Linux job remains failed; macOS now passes 3,320 cases with 52 skips
   and all five copy cases. Hosted Linux recovery
-  [41707479800](https://github.com/uibcdf/molsysviewer/actions/runs/41707479800)
-  is dispatched on Viewer `d51d9f44` with the same provider and remains queued;
+  [41714550124](https://github.com/uibcdf/molsysviewer/actions/runs/41714550124)
+  is dispatched on Viewer `c1137ebb` with the same provider and remains queued;
   the default complete candidate matrix is protected. This is
   separate from the earlier
   164-case [scoped source result](chemical_domain_receiving_20261103.json) and

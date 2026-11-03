@@ -1,5 +1,26 @@
 # Development checkpoint
 
+**Python player notifications resolved in source — 2026-11-03:** #291 uses one
+accepted-state dispatcher for navigation/playback and frontend feedback, with
+ordered reentrancy, detached events, duplicate suppression and explicit close.
+Invalid/empty targets and failed commands do not publish successful frames.
+The [receipt](player_frame_notifications_receiving_20261103.json) retains a
+fresh complete core pass (3,393 / 21 skips / 14 Qt deselected), followed by
+327 final player/callback/lifetime cases, including 30 new guards. Strict
+Sphinx, the real-demo callback recipe and full-tree Ruff pass. The provider's
+3,034 code/backend files stay unchanged. Committed-head CI and installed/GUI
+qualification remain separate; #269 is not closed by this source result.
+
+**ChemicalStates recovery input repaired — 2026-11-03:** local full regression
+finds two distribution guards still parsing the old YAML matrix. Commit
+`c1137ebb` inspects its JSON default and preserves exact three-host/Python
+assertions; it also makes coverage probes explicitly TAP (seven controls pass).
+Run 41707479800 is cancelled and preserved. Its single replacement
+[41714550124](https://github.com/uibcdf/molsysviewer/actions/runs/41714550124)
+uses `c1137ebb` with the unchanged provider `d8ea626a` and is queued. Production
+runtime is unchanged; original Windows/macOS results remain applicable. #269
+stays open. The independent #291 player implementation is not in that source.
+
 **ChemicalStates hosted recovery dispatched — 2026-11-03:** the original run
 41690488611 now completes macOS successfully (3,320 passes / 52 skips), including
 all five copy cases and exact installed Rust validation. Its Linux and Windows

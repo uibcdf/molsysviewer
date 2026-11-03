@@ -405,6 +405,21 @@ the same tag; APIs resolve identity as `(domain, tag)`.
   - multiple callbacks per event type are supported; `off_*` removes a specific one
   - the first hover callback enables hover telemetry without reloading; removing
     the last disables it unless `hover_telemetry_enabled` was explicitly set
+- `view.on_frame_change(callback)` / `view.off_frame_change(callback)`
+  - callbacks receive independent dictionaries containing `event="frame_changed"`,
+    `frame` and `is_playing`; `frame` uses the current loaded MolSys index space,
+    also used by `view.player.index`, not the input's pre-extraction index space
+  - successful Python player navigation/playback notifies synchronously after state and
+    visible-box updates; canvas navigation uses the same owner, while playback
+    feedback notifies when received by Python
+  - these events describe accepted Python authority state, not completed GPU
+    rendering; repeated seeks or identical frame/playback echoes do not duplicate
+    events, and playback-state changes notify at the same frame
+  - callback dictionaries are detached, callback failures do not stop delivery,
+    reentrant navigation retains event order, and closing releases subscriptions
+  - invalid frame indices, provider/transport failures and closed views do not
+    publish successful navigation; callback management retains the existing
+    managed-edit guard, while close always releases registered subscribers
 - `view.export_state()` → JSON-serializable dict
   - captures annotations, measurements, selections, regions, shapes, layers, clipping sections, and whole state
 - `view.import_state(state, *, clear_first=True)`

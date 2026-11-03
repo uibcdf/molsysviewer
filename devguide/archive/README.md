@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Python player frame notifications](python_player_omits_frame_notifications.md) — #291 delivers accepted-state callbacks for Python navigation/playback, deduplicated feedback, ordered reentrancy and closed-view cleanup.
+
 - [Coverage dependency advisories](js_coverage_glob_minimatch_advisories.md) — #289 qualifies tooling-only glob/minimatch overrides, a clean audit and real traversal; empty source coverage is tracked separately in #290.
 
 - [Native copy consumer receiving](native_copy_contract_receiving.md) — #259 qualifies independent molecular/analysis/visual edits, retained snapshots and copied-session/remapping behavior in source.

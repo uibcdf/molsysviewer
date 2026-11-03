@@ -63,6 +63,26 @@ if not view.player.is_playing:
     view.player.go_to_structure(view.player.n_structures // 2)
 ```
 
+To keep another Python display in step with navigation, register a callback:
+
+```python
+view.player.pause()
+events = []
+callback = events.append
+view.on_frame_change(callback)
+view.player.go_to_first()
+view.player.go_to_structure(1)
+assert events[-1] == {"event": "frame_changed", "frame": 1, "is_playing": False}
+view.off_frame_change(callback)
+```
+
+`frame` uses the same zero-based index as `view.player.index` in the loaded
+system. Python navigation, `play()` and `pause()` call your callback when they
+change that state, before returning; canvas playback
+updates it when feedback arrives. The event reports Python's current state and
+does not certify that rendering has finished. Repeating the same frame and
+playback state produces no additional event. Closing the view removes callbacks.
+
 ## Playing an authored movie
 
 `view.movie.play()` sends the timeline to the browser and starts a

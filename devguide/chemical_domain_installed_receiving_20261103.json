@@ -358,9 +358,9 @@
   },
   "temporary_resources": "Owned local provider snapshot and archive removed after integrity checks; original logs, JUnit files, source identities and digests retained in ignored task evidence. PR contribution worktree retained separately for owner review.",
   "hosted_linux_recovery": {
-    "state": "dispatched",
+    "state": "queued",
     "provider_source": "d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42",
-    "scope": "Linux-only source receiving; complete default and candidate qualification retain all three platforms. All Linux installation, audit, Rust, Python, browser and notebook steps remain active.",
+    "scope": "One Linux-only replacement after the prior run completed cancelled; same exact provider and unchanged production runtime. Original macOS/Windows receipts are preserved. This does not include the independent #291 runtime work.",
     "guard_cases": 17,
     "guard_junit_sha256": "8a3de317931720b5335341b5e582566ddbea2efaf6978e0354d11e81cafb49fe",
     "retained_results": "Original macOS and Windows successes remain applicable: no production source changes, only the test fixture and CI/review records.",
@@ -371,8 +371,8 @@
       "passed": 299,
       "junit_sha256": "0c0c97a8bf51a88efa12e284f7cc2da94a9845f74914b7518cab36f75a5812b2"
     },
-    "run": 41707479800,
-    "consumer_source": "d51d9f445ef504d17e0d43235a1a890d162d5d16",
+    "run": 41714550124,
+    "consumer_source": "c1137ebb21812c15d941fa3c5154bd655e329f85",
     "event": "workflow_dispatch",
     "inputs": {
       "source_receiving": "true",
@@ -391,12 +391,21 @@
         ]
       },
       "scoped_dispatch": {
-        "run": 41707479800,
+        "run": 41714550124,
         "platforms": [
           "ubuntu-latest"
         ]
       },
       "scope_guard": "All 17 local workflow tests pass; candidate mode rejects partial selections."
+    },
+    "job": 126191032769,
+    "supersedes_run": 41707479800,
+    "correction": "Distribution guards inspect the actual default JSON matrix and retain exact three-platform/Python assertions. Coverage probes request TAP explicitly; seven actual c8/esbuild controls pass on Node 24.21.0.",
+    "scope_guard_receiving": {
+      "matrix_and_bash_cases": 17,
+      "distribution_cases": 2,
+      "passed": 19,
+      "source": "Local selective recovery; no hosted result inferred."
     }
   },
   "original_artifact_verification": {
@@ -415,5 +424,50 @@
       "zip_matches_github_digest": true,
       "junit_matches_original_zip": true
     }
-  }
+  },
+  "superseded_hosted_recoveries": [
+    {
+      "state": "cancelled_superseded",
+      "provider_source": "d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42",
+      "scope": "Linux-only source receiving; complete default and candidate qualification retain all three platforms. All Linux installation, audit, Rust, Python, browser and notebook steps remain active.",
+      "guard_cases": 17,
+      "guard_junit_sha256": "8a3de317931720b5335341b5e582566ddbea2efaf6978e0354d11e81cafb49fe",
+      "retained_results": "Original macOS and Windows successes remain applicable: no production source changes, only the test fixture and CI/review records.",
+      "production_package_changed_paths": [
+        "molsysviewer/js/tests/e2e/context-menu.e2e.ts"
+      ],
+      "record_checks": {
+        "passed": 299,
+        "junit_sha256": "0c0c97a8bf51a88efa12e284f7cc2da94a9845f74914b7518cab36f75a5812b2"
+      },
+      "run": 41707479800,
+      "consumer_source": "d51d9f445ef504d17e0d43235a1a890d162d5d16",
+      "event": "workflow_dispatch",
+      "inputs": {
+        "source_receiving": "true",
+        "platform": "ubuntu-latest",
+        "molsysmt_sha": "d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42"
+      },
+      "dispatch_count": 1,
+      "conclusion": "cancelled",
+      "matrix_observations": {
+        "default_push": {
+          "run": 41707301185,
+          "platforms": [
+            "ubuntu-latest",
+            "macos-15",
+            "windows-2025"
+          ]
+        },
+        "scoped_dispatch": {
+          "run": 41707479800,
+          "platforms": [
+            "ubuntu-latest"
+          ]
+        },
+        "scope_guard": "All 17 local workflow tests pass; candidate mode rejects partial selections."
+      },
+      "reason": "The local full regression reproduces two distribution guards that only parse the former YAML matrix. The JSON workflow itself retains the correct default; c1137ebb repairs the guards without changing production runtime or reducing platforms."
+    }
+  ]
 }

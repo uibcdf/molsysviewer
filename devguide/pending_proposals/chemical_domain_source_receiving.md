@@ -56,13 +56,21 @@ commit so the successful original macOS/Windows receipts remain applicable.
 No release or preserved-artifact gate follows from this source recovery.
 
 The single hosted recovery is dispatched as run
-[41707479800](https://github.com/uibcdf/molsysviewer/actions/runs/41707479800),
-Viewer `d51d9f445ef504d17e0d43235a1a890d162d5d16` against the same provider.
+[41714550124](https://github.com/uibcdf/molsysviewer/actions/runs/41714550124),
+Viewer `c1137ebb21812c15d941fa3c5154bd655e329f85` against the same provider.
 GitHub expands exactly one Linux job; the default push still expands all three
 platforms. The recovery is queued with no executed steps at receipt. Independent
 downloads verify all three original ZIP digests and exact JUnit bytes. These
 integrity checks do not turn the original browser failure or queued recovery
 into success; #269 remains active.
+
+The previous recovery 41707479800 is cancelled and retained after the local
+full regression identifies two distribution guards that still parse the former
+YAML syntax. Commit `c1137ebb` reads the actual JSON default without relaxing
+the three-platform assertions, and selects TAP explicitly in real coverage
+probes. Nineteen matrix/distribution guards and seven coverage controls pass.
+Replacement 41714550124 is dispatched only after the old run is terminal;
+its production runtime is unchanged and excludes the independent #291 work.
 
 ## Follow-up — 2026-11-03
 

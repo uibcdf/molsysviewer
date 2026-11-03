@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+from collections import deque
+from numbers import Integral
 from typing import Any
 
 import molsysmt as msm
 from smonitor import signal
 
 from ._private.argdigest import digest
+from ._private.exceptions import ArgumentError
 
 
 class PlayerManager:
@@ -34,6 +37,34 @@ class PlayerManager:
         self._mode: str = "loop"
         self._direction: str = "forward"
         self._is_playing: bool = False
+        self._frame_events: deque[dict] = deque()
+        self._dispatching_frame_events = False
+
+    def _notify_frame_change(self, previous: tuple[int, bool]) -> None:
+        """Publish accepted authority state, not a rendering acknowledgement."""
+        state = (self.index, self.is_playing)
+        if self._view.closed or state == previous:
+            return
+        self._frame_events.append({"event": "frame_changed", "frame": state[0], "is_playing": state[1]})
+        if self._dispatching_frame_events:
+            return
+        self._dispatching_frame_events = True
+        try:
+            while self._frame_events and not self._view.closed:
+                event = self._frame_events.popleft()
+                for callback in list(self._view._frame_change_callbacks):  # noqa: SLF001
+                    if self._view.closed:
+                        break
+                    if callback not in self._view._frame_change_callbacks:  # noqa: SLF001
+                        continue
+                    try:
+                        callback(dict(event))
+                    except Exception:
+                        # User callbacks cannot interrupt accepted frame tracking.
+                        pass
+        finally:
+            self._dispatching_frame_events = False
+            self._frame_events.clear()
 
     def _playback_message(self, *, action: str | None = None) -> dict:
         msg = {
@@ -119,8 +150,19 @@ class PlayerManager:
         Parameters
         ----------
         index
-            Zero-based frame index to display.
+            Zero-based index in the loaded system. Invalid indices are rejected.
+
+        Frame callbacks run synchronously after Python accepts the navigation;
+        they do not acknowledge browser rendering. Seeking the current frame
+        does not notify subscribers again.
         """
+        if self._view.closed:
+            raise RuntimeError("Cannot navigate a closed view.")
+        molsys = self._view.molsys
+        count = 0 if molsys is None else int(msm.get(molsys, element="system", n_structures=True))
+        if isinstance(index, bool) or not isinstance(index, Integral) or not 0 <= index < count:
+            raise ArgumentError("index", value=index)
+        previous = (self.index, self.is_playing)
         self._view._send({"op": "set_trajectory_frame", "index": int(index)})  # noqa: SLF001
         self._view._current_structure_index = int(index)  # noqa: SLF001
         self._sync_summary()
@@ -134,6 +176,7 @@ class PlayerManager:
                 structure_indices=int(index),
                 skip_digestion=True,
             )
+        self._notify_frame_change(previous)
 
     @signal(tags=["structures"])
     @digest()
@@ -200,6 +243,10 @@ class PlayerManager:
         step_size
             Number of structures to advance per tick.
         """
+        if self._view.closed:
+            raise RuntimeError("Cannot play a closed view.")
+        has_frames = self.n_structures > 0
+        previous = (self.index, self.is_playing)
         if fps is not None:
             self._fps = int(fps)
         if mode is not None:
@@ -213,15 +260,23 @@ class PlayerManager:
         self._store_state()
         self._view._send(self._playback_message(action="play"))  # noqa: SLF001
         self._sync_summary()
+        if has_frames:
+            self._notify_frame_change(previous)
 
     @signal(tags=["structures"])
     @digest()
     def pause(self, skip_digestion: bool = False) -> None:
         """Pause playback."""
+        if self._view.closed:
+            raise RuntimeError("Cannot pause a closed view.")
+        has_frames = self.n_structures > 0
+        previous = (self.index, self.is_playing)
         self._view._send({"op": "set_trajectory_playback", "action": "stop"})  # noqa: SLF001
         self._is_playing = False
         self._store_state()
         self._sync_summary()
+        if has_frames:
+            self._notify_frame_change(previous)
 
     # ── Setters ────────────────────────────────────────────────────────────
 

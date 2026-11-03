@@ -133,6 +133,8 @@ class MolSysView(
         if self._closed:
             return
         self._closed = True
+        self._frame_change_callbacks.clear()
+        self.player._frame_events.clear()  # noqa: SLF001
         self._unmount_all_addon_panels()
         self.addons._close_runtime()  # noqa: SLF001
         self._cancel_binary_structure_stream("view closed")
@@ -1837,7 +1839,10 @@ class MolSysView(
                 raise ValueError("trajectory_plot_hidden requires a tag.")
             self.trajectory_plot.hide(tag)
         elif event == "trajectory_frame_changed":
+            if self.closed:
+                return
             # Emitted by TS when playback stops; update Python-side frame index and NPT box.
+            previous = (self.player.index, self.player.is_playing)
             frame = int(content.get("frame", 0))
             self._current_structure_index = frame
             self.player._is_playing = bool(content.get("is_playing", False))  # noqa: SLF001
@@ -1846,18 +1851,6 @@ class MolSysView(
                 self._send_runtime_only({"op": "set_trajectory_frame", "index": frame})
             self._sync_trajectory_summary_runtime()
             self._sync_measurement_summaries_runtime()
-            if self._frame_change_callbacks:
-                frame_event = {
-                    "event": "frame_changed",
-                    "frame": frame,
-                    "is_playing": bool(content.get("is_playing", False)),
-                }
-                for cb in list(self._frame_change_callbacks):
-                    try:
-                        cb(frame_event)
-                    except Exception:
-                        # A misbehaving user callback must not break frame tracking.
-                        pass
             if self._box_record is not None:
                 self.show_box(
                     color=self._box_record["color"],
@@ -1866,6 +1859,7 @@ class MolSysView(
                     structure_indices=frame,
                     skip_digestion=True,
                 )
+            self.player._notify_frame_change(previous)  # noqa: SLF001
         elif event == "request_dynamic_region_evaluation":
             self._handle_dynamic_region_evaluation_request(content)
         elif event == "panel_mode_state":

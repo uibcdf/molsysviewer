@@ -1,6 +1,7 @@
+import molsysmt as msm
 import pytest
 
-from molsysviewer import MolSysView
+from molsysviewer import MolSysView, demo, new_view
 from molsysviewer import pyunitwizard as puw
 
 
@@ -110,34 +111,11 @@ def test_measurements_info_reports_centroid_endpoint_policy_for_multi_atom_picks
     ]
 
 
-def test_measurement_series_preserves_all_coordinate_frames(monkeypatch):
-    view = MolSysView()
-    view._molsys = object()  # noqa: SLF001
-
-    coordinates_by_atom = {
-        0: [[[0.0, 0.0, 0.0]], [[0.0, 0.0, 0.0]]],
-        1: [[[0.1, 0.0, 0.0]], [[0.2, 0.0, 0.0]]],
-    }
-
-    def fake_get(_molsys, *, selection, coordinates=False, **_kwargs):
-        atoms = [int(item) for item in selection]
-        if coordinates:
-            frames = []
-            for frame_index in range(2):
-                frames.append([coordinates_by_atom[atom][frame_index][0] for atom in atoms])
-            # The real `msm.get(..., coordinates=True)` returns a PyUnitWizard
-            # quantity in nm, not bare numbers. The double returned bare numbers
-            # and so did not exercise the unit conversion the production code
-            # performs; keeping it faithful is what lets that conversion be
-            # explicit instead of an implicit downcast.
-            return {"coordinates": puw.quantity(frames, "nanometer")}
-        return {
-            "atom_name": [f"A{atom}" for atom in atoms],
-            "group_name": ["RES" for _atom in atoms],
-            "group_type": ["other" for _atom in atoms],
-        }
-
-    monkeypatch.setattr("molsysviewer.measurements.msm.get", fake_get)
+def test_measurement_series_preserves_all_coordinate_frames():
+    with demo["pentalanine"] as source:
+        molsys = msm.extract(source.molsys, selection=[0, 1], structure_indices=[0, 1], to_form="molsysmt.MolSys")
+    msm.set(molsys, coordinates=puw.quantity([[[0, 0, 0], [0.1, 0, 0]], [[0, 0, 0], [0.2, 0, 0]]], "nm"))
+    view = new_view(molsys)
 
     view.measurements.add_distance([0], [1], tag="d01")
 

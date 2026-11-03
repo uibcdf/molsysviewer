@@ -28,12 +28,18 @@ its whole cell: 3,320 Python passes, 52 skips and all five copy cases executed.
 The three-host Python results are received; #269 remains open for the hosted
 Linux recovery against the corrected fixture.
 
-Recovery run [41707479800](https://github.com/uibcdf/molsysviewer/actions/runs/41707479800)
-uses exact Viewer `d51d9f445ef504d17e0d43235a1a890d162d5d16` and the same
+Recovery run [41714550124](https://github.com/uibcdf/molsysviewer/actions/runs/41714550124)
+uses exact Viewer `c1137ebb21812c15d941fa3c5154bd655e329f85` and the same
 provider `d8ea626a0ab6dbd976d0e04ad9299019e4ae0a42`. It has one Linux job,
 queued without executed steps at this receipt. The three original artifact
 ZIPs match their GitHub digests and their JUnit bytes; successful original
 Windows/macOS results remain separate from the pending recovery.
+This replaces run 41707479800, cancelled after local full regression exposed
+two distribution guards still parsing the former YAML matrix. The corrected
+guards read the actual default JSON matrix and retain all three platform/version
+requirements. Seven coverage controls also pass with an explicit TAP reporter.
+No production runtime changes are included in this recovery source; #291's
+player changes remain an independent receiving scope.
 
 For source-only platform recovery, dispatch
 `ci-python-314-source-pair.yaml` with `source_receiving=true`, the exact

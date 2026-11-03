@@ -159,14 +159,21 @@ class InteractionMixin:
     @signal(tags=["interaction", "callback"])
     @digest()
     def on_frame_change(self, callback, *, skip_digestion: bool = False) -> None:
-        """Register a callback invoked whenever the trajectory frame changes.
+        """Register a callback for accepted player/trajectory state changes.
 
-        The callback receives an event dict with ``event`` (``"frame_changed"``),
-        ``frame`` (the 0-based original-structure index) and ``is_playing``.
-        Useful to drive synchronized views such as the 2D trajectory plot.
+        The callback receives a detached dict with ``event`` (``"frame_changed"``),
+        ``frame`` (the 0-based index in the currently loaded system) and
+        ``is_playing``. Python navigation/playback notifies synchronously after acceptance;
+        canvas playback notifies when its feedback reaches Python. This is an
+        authority-state notification, not a GPU/render-completion certificate.
+        Identical frame/playback feedback is not delivered twice; a playback
+        state change may notify at the same frame. Reentrant navigation is
+        delivered in acceptance order. Closing the view releases subscribers.
 
         Call :meth:`off_frame_change` with the same callable to unregister.
         """
+        if self.closed:
+            raise RuntimeError("Cannot register frame callbacks on a closed view.")
         if callback not in self._frame_change_callbacks:
             self._frame_change_callbacks.append(callback)
 
