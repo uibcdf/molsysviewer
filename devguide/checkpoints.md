@@ -11,6 +11,8 @@ coverage controls on Linux/macOS/Windows. General Linux 3.14 confirms Node
 22.23.4 / 335 JS passes; policy's new-test formatting failure has a separate
 formatter-only correction. The [follow-up receipt](chemical_domain_receiving_20261103.json)
 keeps original identities and results. No duplicate blocked dispatch or release.
+Policy recovery 41672576821 passes both required jobs on exact corrected
+source `48221c3a`; source-pair qualification still awaits MolSysMT#533.
 
 **JavaScript source coverage — 2026-11-03:** #290 keeps the full 335-case unit
 index and corrects source maps/c8 URL filtering. Seven real-tooling and negative

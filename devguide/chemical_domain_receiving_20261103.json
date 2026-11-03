@@ -87,7 +87,17 @@
     "failure": "Check Python formatting, only tests/test_js_source_coverage.py",
     "correction": "Ruff formatter only; no assertion or scientific-input changes.",
     "directed_guards_passed": 7,
-    "policy_recovery": "pending",
+    "policy_recovery": {
+      "run": 41672576821,
+      "source": "48221c3af6f3966c85879290745b3fff63dadc78",
+      "event": "workflow_dispatch",
+      "conclusion": "success",
+      "required_jobs": {
+        "Dependency metadata audit": "success",
+        "policy / conformance": "success"
+      },
+      "scope": "Single exact-head policy rerun; no duplicate broad scientific or blocked installed-source matrix."
+    },
     "ast_unchanged": true
   },
   "limits": [
@@ -129,5 +139,9 @@
       "conclusion": "success"
     },
     "limits": "Independent existing provider contexts; not new-provider installed qualification."
+  },
+  "temporary_cleanup": {
+    "provider_snapshot": "Removed after all scoped checks and the public extraction probe completed; original sibling checkout untouched.",
+    "retained_evidence": "Original JUnit, downloaded platform JUnit, policy log, source/backend hashes and corrected probe under .pytest_cache/chemical-receiving-20261103."
   }
 }

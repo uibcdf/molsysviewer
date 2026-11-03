@@ -90,3 +90,8 @@ chemical-domain source. Policy run 41667713327 separately rejects formatting in
 the new Python test. Its formatter-only correction preserves all assertions;
 seven directed controls pass afterward. The follow-up source/CI disposition is
 kept in [the receiving receipt](../chemical_domain_receiving_20261103.json).
+
+Policy recovery 41672576821 passes both metadata and conformance jobs on exact
+formatter-corrected source `48221c3af6f3966c85879290745b3fff63dadc78`.
+The correction has an identical Python AST and retains all seven passing
+controls. No broad scientific or blocked installed-source matrix is duplicated.

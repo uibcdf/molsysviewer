@@ -52,7 +52,8 @@ documents, and historical audits.
   matrix is repeated. Original three-platform JUnit confirms the known
   old-provider documentation warning failures and passing coverage controls.
   The [follow-up receipt](chemical_domain_receiving_20261103.json) retains scope
-  and the separate formatter-only policy correction.
+  and the separate formatter-only policy correction, verified by successful
+  policy run 41672576821 on source `48221c3a`.
 
 - **JavaScript source coverage — 2026-11-03:** #290 corrects esbuild maps and
   c8 filtering and rejects empty, unmapped and non-production reports. All 335
