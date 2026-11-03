@@ -6,6 +6,44 @@ coordinated with `uibcdf/molsysmt#255` and `uibcdf/molsyssuite#155`.
 This guide does not establish a new published dependency minimum or installed
 artifact qualification.
 
+## Current source receiving — 2026-11-02
+
+Receive provider `de7ffad2aef18ff3bccd184133dc69e081cb506e` on
+`dev/chemical-states-separation-255`, following the new request in #269. The
+previous `97f6b58f` observations remain historical. The initial 265 affected
+Viewer cases pass on Python 3.14.7, including native/JSON loading, unavailable
+hierarchy, nonconsecutive interaction queries, extraction, composition and
+session persistence. Five additional real-demo copy guards receive the native
+protected-edit contract through View owners: changes to coordinates, box,
+chemistry and visual objects remain independent; prior analysis/query handles,
+units, source maps, periodic images and persistence remain meaningful.
+
+`tests/test_native_copy_receiving.py` is conditional on the public native copy
+capability in older-provider compatibility lanes. It must execute all five
+cases without skips when qualifying this provider source. This does not adopt
+a new published minimum or promise allocation sharing for View copying.
+
+The source-pair workflow accepts `source_receiving=true` with an exact provider
+SHA. This development route creates no candidate-version tags, builds the
+development runtime, retains normal validation, and uploads original JUnit
+results on each platform. Its candidate mode remains independent and unchanged
+when the option is false. Do not pass development commits off as frozen release
+versions. Hosted execution and broad source qualification remain due.
+
+The latest preserved general/source runs 41148560029/41148560031 fail exactly
+the three warning-strict documentation examples, with deprecated native pandas
+operations in the retained public 0.23.0 provider; the six general jobs and three
+source-pair jobs were inspected through original logs. This is the #431
+dependency context, not a ChemicalStates failure or a reason to weaken warnings.
+MolSysMT#524 owns dependency floors, not the original warning defect.
+
+The shared editable environment has unrelated `pip check` failures in
+packmol-memgen, proprep, ndfes, fetkutils and edgembar. Their actual missing or
+incompatible dependencies are retained in the receiving receipt. No global
+environment repair, clean-install claim or installed-Rust-wheel validation is
+inferred from source execution. Sibling dirty changes are limited to maintained
+documentation and are preserved; qualified runtime input uses the exact source.
+
 ## Projecting a molecular system
 
 Topology supplies stable inventory. Read covalent bonds through

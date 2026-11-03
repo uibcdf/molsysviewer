@@ -17,6 +17,11 @@ on:
       - docs/**
   workflow_dispatch:
     inputs:
+      source_receiving:
+        description: Receive development sources without assigning candidate versions or tags
+        required: true
+        default: false
+        type: boolean
       molsysmt_sha:
         description: Full MolSysMT source candidate commit SHA
         required: true
@@ -105,7 +110,7 @@ jobs:
 
       - name: Validate and locally tag the exact Viewer source candidate
         id: viewer-candidate-tag
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' && inputs.source_receiving != true
         shell: bash -l {0}
         working-directory: molsysviewer-source
         env:
@@ -124,6 +129,7 @@ jobs:
 
       - name: Locally tag the exact MolSysMT candidate version
         id: provider-candidate-tag
+        if: inputs.source_receiving != true
         shell: bash -l {0}
         working-directory: molsysmt-source
         env:
@@ -176,7 +182,7 @@ jobs:
         run: npm ci
 
       - name: Synchronize the development runtime before source validation
-        if: github.event_name != 'workflow_dispatch'
+        if: github.event_name != 'workflow_dispatch' || inputs.source_receiving == true
         shell: bash -l {0}
         working-directory: molsysviewer-source/molsysviewer/js
         run: |
@@ -219,7 +225,15 @@ jobs:
       - name: Run MolSysViewer Python tests
         shell: bash -l {0}
         working-directory: molsysviewer-source
-        run: python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci -m "not qt_runtime" tests/
+        run: python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci -m "not qt_runtime" tests/ --junitxml=source-receiving.xml
+
+      - name: Preserve the original source-receiving JUnit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-receiving-${{ runner.os }}-py${{ matrix.cfg.python-version }}
+          path: molsysviewer-source/source-receiving.xml
+          if-no-files-found: warn
 
       # Keep the published/staging notebook and E2E gates independent. This
       # Linux source observation supplies the coordinated development handoff;

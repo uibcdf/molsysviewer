@@ -31,7 +31,7 @@ def test_exact_source_pair_executes_all_notebooks_and_core_browser_suites():
     assert notebooks["run"] == "python docs/execute_notebooks.py -q -n 4 -r -f docs/content"
     assert "always()" in notebooks["if"] and "steps.notebook-kernel.outcome == 'success'" in notebooks["if"]
     assert "E2E_ALLOW_SKIP" not in str(steps)
-    logs = next(step for step in steps if step.get("uses") == "actions/upload-artifact@v4")
+    logs = next(step for step in steps if step.get("name") == "Preserve source-pair notebook failure logs")
     assert "failure()" in logs["if"]
     assert "molsysviewer-source/docs/content/**/*.nbconvert.log" in logs["with"]["path"]
     environment = yaml.safe_load((ROOT / "devtools/conda-envs/test_source_pair_py314.yaml").read_text(encoding="utf-8"))
@@ -110,7 +110,7 @@ def test_automatic_source_pair_uses_the_prepared_runtime_version():
     tag = next(step for step in steps if step.get("id") == "viewer-candidate-tag")
     cleanup = next(step for step in steps if step["name"] == "Remove the temporary Viewer tag after installation")
     install = next(step for step in steps if step["name"] == "Install both exact source candidates")
-    assert tag["if"] == "github.event_name == 'workflow_dispatch'"
+    assert tag["if"] == "github.event_name == 'workflow_dispatch' && inputs.source_receiving != true"
     assert tag["env"]["EXPECTED_VERSION"] == cleanup["env"]["EXPECTED_VERSION"] == "${{ inputs.viewer_version }}"
     assert "validate_python_wheel_runtime.py" in tag["run"]
     assert steps.index(tag) < steps.index(install) < steps.index(cleanup)
@@ -138,10 +138,29 @@ def test_development_runtime_is_installed_before_source_validation():
         < steps.index(audit)
         < steps.index(tests)
     )
-    assert runtime["if"] == "github.event_name != 'workflow_dispatch'"
+    assert runtime["if"] == "github.event_name != 'workflow_dispatch' || inputs.source_receiving == true"
     assert runtime["working-directory"] == "molsysviewer-source/molsysviewer/js"
     lines = runtime["run"].splitlines()
     assert lines.index("npm run build:runtime") < lines.index(
         "python -m pip install --no-deps --no-build-isolation ../.."
     )
     assert "git tag" not in runtime["run"] and "npm run build\n" not in runtime["run"]
+
+
+def test_development_receiving_preserves_source_identity_and_original_test_results():
+    workflow = yaml.load(
+        (ROOT / ".github/workflows/ci-python-314-source-pair.yaml").read_text(encoding="utf-8"),
+        Loader=yaml.BaseLoader,
+    )
+    option = workflow["on"]["workflow_dispatch"]["inputs"]["source_receiving"]
+    assert option["type"] == "boolean" and option["default"] == "false"
+    steps = workflow["jobs"]["source-pair"]["steps"]
+    provider = next(step for step in steps if step.get("id") == "provider-candidate-tag")
+    assert provider["if"] == "inputs.source_receiving != true"
+    native_tests = next(step for step in steps if step.get("name") == "Run MolSysViewer Python tests")
+    assert '--receptor=ci -m "not qt_runtime" tests/' in native_tests["run"]
+    assert "--junitxml=source-receiving.xml" in native_tests["run"]
+    receipt = next(step for step in steps if step.get("name") == "Preserve the original source-receiving JUnit")
+    assert receipt["if"] == "always()"
+    assert receipt["with"]["path"] == "molsysviewer-source/source-receiving.xml"
+    assert "runner.os" in receipt["with"]["name"]
