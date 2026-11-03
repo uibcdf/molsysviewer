@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import json
 import os
 import re
 import shutil
@@ -373,6 +374,21 @@ def _matrix_versions(workflow: str, pattern: str) -> set[str]:
     return set(re.findall(pattern, text))
 
 
+def _source_pair_cells() -> set[tuple[str, str]]:
+    """Inspect the actual default of the explicitly bounded JSON matrix."""
+    workflow = yaml.load(
+        (ROOT / ".github/workflows/ci-python-314-source-pair.yaml").read_text(encoding="utf-8"),
+        Loader=yaml.BaseLoader,
+    )
+    expression = workflow["jobs"]["source-pair"]["strategy"]["matrix"]["cfg"]
+    prefix, suffix = "${{ fromJSON('", "')[inputs.platform || 'all'] }}"
+    assert expression.startswith(prefix) and expression.endswith(suffix)
+    matrices = json.loads(expression[len(prefix) : -len(suffix)])
+    default = workflow["on"]["workflow_dispatch"]["inputs"]["platform"]["default"]
+    assert default == "all"
+    return {(cfg["os"], cfg["python-version"]) for cfg in matrices[default]}
+
+
 def test_the_published_python_matrix_is_the_one_we_actually_test():
     """Candidate metadata must match the required source-test coverage.
 
@@ -402,7 +418,7 @@ def test_the_published_python_matrix_is_the_one_we_actually_test():
     tested = _matrix_versions("CI.yaml", r'python-version:\s*"(3\.\d+)"')
     # Routine installed-dependency CI covers every minor itself. A separate
     # source-pair feasibility lane cannot stand in for its 3.14 cells.
-    assert _matrix_versions("ci-python-314-source-pair.yaml", r'python-version:\s*"(3\.\d+)"') == {"3.14"}
+    assert {version for _platform, version in _source_pair_cells()} == {"3.14"}
     assert tested == set(SUPPORTED_PYTHON_VERSIONS), (
         f"the test matrices run {sorted(tested)} against candidate {sorted(SUPPORTED_PYTHON_VERSIONS)}"
     )
@@ -441,7 +457,7 @@ def test_every_supported_version_is_tested_on_linux_and_macos_with_windows_314()
     # Assert each owner separately: the source pair must not conceal a missing
     # regular Linux/macOS 3.14 cell.
     assert cells("CI.yaml") == expected_main
-    assert cells("ci-python-314-source-pair.yaml") == expected_pair
+    assert _source_pair_cells() == expected_pair
 
 
 def test_python_314_source_pair_uses_exact_provider_commit_without_metadata_bypass():

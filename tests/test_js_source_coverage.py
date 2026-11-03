@@ -58,6 +58,7 @@ def reports(tmp_path_factory):
             f"--reports-dir={report}",
             "node",
             "--test",
+            "--test-reporter=tap",
             bundle,
         )
         assert measured.returncode == 0, measured.stdout + measured.stderr
