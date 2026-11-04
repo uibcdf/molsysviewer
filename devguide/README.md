@@ -45,6 +45,17 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Native reference-map repair received by the addon — 2026-11-04:**
+  [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
+  `8fc115e2eb8aff41345696d067e600819c6ad51d`, receives the owner's #554
+  commit without changing addon runtime or Rust/backend bytes. All 3,796 addon
+  cases pass with zero omissions, including 178 new consumer guards; 720
+  directed native/template and 533 route/documentation checks pass separately.
+  Source exposure stays 216/244. New-head CI and owner acceptance remain
+  pending; #549, remaining tools, GUI and installed receiving stay separate.
+  Viewer #295 still awaits macOS CI; browser/Qt and all four Linux cells pass
+  on `793a92db`. No candidate, tag, package or publication.
+
 - **Public-provider CI and distribution source recovery — 2026-11-04:**
   [Receiving](public_provider_ci_compatibility_20261104.md) identifies the
   immutable 0.23.0 provider's #431 boundary and selects pandas 2.3.3 for its CI;
@@ -73,7 +84,8 @@ documents, and historical audits.
   [receipt](molsysmt_name_projection_receiving_20261104.json) separates those
   inputs, original failed CI and pending new-head/owner/installed qualification.
   Branch exposure is 216/244, build 15/30. #548/#550/#552 are received;
-  #549/#554 remain native limits. Continue public-provider CI and distribution
+  #549/#554 remain native limits of that input; the newer #554 receiving is above.
+  Continue public-provider CI and distribution
   #292–#294 before further breadth. #264 stays partial; no release or candidate.
 
 - **Detached build preparation received — 2026-11-03:**

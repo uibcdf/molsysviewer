@@ -1,5 +1,23 @@
 # Development checkpoint
 
+**Native reference-map repair received by the addon — 2026-11-04:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) is updated to
+`8fc115e2eb8aff41345696d067e600819c6ad51d`, receiving owner #554 source
+`5f3af9374f2bf4ce9c3598450e22d43ca14509ae`. Fourteen old-provider controls
+fail; the received combination passes 720 directed native/template cases and
+the complete 3,796-case addon regression with zero failures/errors/skips.
+The 178 new consumer cases preserve native diagnostics and valid maps without
+an addon runtime change. All recorded source hashes remain unchanged during
+regression; Rust/backend bytes are retained. Another 533 route/documentation
+checks, one public guide block, four exact notebook-owner comparisons, the
+156-notebook course, 246 docstrings, dependencies and Ruff pass in their scopes.
+The PR's canonical receipt records inputs, warnings and separate hosted scope.
+Source exposure remains 216/244; #549 stays native. Exact new-head CI and owner
+acceptance remain pending; the older d257b678 matrix keeps its original inputs.
+Viewer `793a92db` passes four Linux cells, core browser and experimental Qt;
+#295 remains partial until macOS completes. No candidate, package, tag or
+publication; both 1.0 publications remain paused.
+
 **Public-provider CI and distribution source recovery — 2026-11-04:**
 Public MolSysMT 0.23.0 predates native #431; its CI now selects pandas 2.3.3.
 Corrected-source/pandas-3 receiving remains independently selectable, with
@@ -792,12 +810,13 @@ execution profile; aggregate source evidence does not qualify a hosted matrix.
 hosted matrix passes Linux; macOS fails only the input-guard cases under
 [#295](pending_bugs/source_pair_pandas_guard_portability.md). Receive the
 explicit-rejection follow-up's CI before claiming full hosted recovery.
-Browser/experimental Qt pass independently. MolSysMT PR #543 `d257b6789` has
-successful smoke/performance and administrative gates; seven full cells pass,
-and its unacquired macOS Python 3.12 job is selectively retried. Full CI and
-owner integration remain pending.
+Browser/experimental Qt pass independently. MolSysMT PR #543 now publishes
+`8fc115e2e`, receiving the owner's #554 repair without changing addon runtime.
+The complete local regression passes 3,796 cases; exact new-head CI and owner
+acceptance remain pending. The older `d257b6789` seven-cell results and selective
+macOS retry remain separate evidence for that input.
 Its 216/244 contribution exposure differs from main's 155/244 metadata baseline;
-#548/#550/#552 are received and #549/#554 remain native limits. Continue
+#548/#550/#552/#554 are received and #549 remains a native limit. Continue
 remaining expert/GUI work after the artifact decision. Load human smoke stays
 deferred; no candidate is frozen and both 1.0 publications remain paused.
 
@@ -2399,9 +2418,11 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-04:**
 
-1. Receive new-head CI and owner review of MolSysMT PR #543. Local complete
-   receiving and native-doc follow-up are published; preserve their measured
-   inputs and the older failed matrix. The audit adds no broad refactor gate.
+1. Receive exact-head CI and owner review of MolSysMT PR #543 `8fc115e2e`,
+   including the native #554 input and 178 new consumer controls. The complete
+   local addon regression passes 3,796 cases. Preserve the older source matrices
+   and their recovery; they do not qualify this changed native input. The audit
+   adds no broad refactor gate.
 2. Receive hosted general CI with the bounded public-provider/pandas baseline;
    local warning-strict and failed-case recovery are complete. Retain native
    #431 delivery ownership and the documented baseline removal trigger.
@@ -2414,8 +2435,8 @@ Resume toward **1.0** in this order:
    Package production/publication still requires its separate accepted route.
 4. Continue fifteen build and six mechanics expert paths under #264, then
    disposition the basic.view bridge, historical aliases and native MD stubs.
-   Receive #549/#554 fixes from MolSysMT without facade scientific repairs;
-   #548/#550/#552 are already received. Preserve explicit inputs and the PR route.
+   Receive #549 from MolSysMT without facade scientific repairs;
+   #548/#550/#552/#554 are already received. Preserve explicit inputs and the PR route.
 5. Build task-oriented addon GUI over qualified expert operations, consolidate
    documentation and qualify the exact frozen candidate and installed files.
    Existing core/addon ownership and source/public distinctions remain in force.
