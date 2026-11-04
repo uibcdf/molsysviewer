@@ -1,21 +1,22 @@
 # Development checkpoint
 
-**Element source exposure completed — 2026-11-03:**
+**Detached preparation and label-repair receiving completed — 2026-11-03:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
-`807dde8a5`, adds fourteen explicit reference-template queries. All 57
-reviewed element paths are exposed (21 primary, 36 explicit). Complete addon
-regression passes 3,314 without failures/errors/skips, including 338 new cases;
-final element/integration/examples pass 861, native element 239 and structural
-controls 534. The [receipt](molsysmt_element_templates_receiving_20261103.json)
-retains exact inputs/hashes, explicit ownership and invocation diagnostics.
-Branch exposure is 201/244; the 212/244 union with #538/#540 is hypothetical.
-Native #548 documents returned index pairs versus advertised name pairs; #550
-tracks the three failing NumPy atom-name array routes without facade coercion.
-#545/#547 and the separate #546 docstring-only candidate retain their scopes.
-Owner integration and final-head hosted/package/platform qualification remain
-pending. Next review remaining build/mechanics, bridge/alias decisions and GUI
-tasks. No host runtime, floor, candidate, tag or publication change. Earlier
-label receiving stays in its [receipt](molsysmt_element_labels_receiving_20261103.json).
+`3889ad75a`, receives published native `333d0808c` by merge `e05cc9185`.
+Canonical codes and protected-end cap semantics are received; #546 is integrated
+by its owner. Three detached build routes preserve scientific inputs/results,
+source/scene ownership, native units and explicit model/state/structure choices.
+Complete addon regression passes 3,368 without failures/errors/skips, including
+44 new cases; native/received-repair controls pass 446, final changed-area 63
+and structural controls 534. A final 44-case follow-up receives a test-only
+replacement-guard refinement with unchanged runtime. The
+[receipt](molsysmt_build_assignments_receiving_20261103.json) retains exact inputs,
+hashes, received floors and test/example corrections. Branch exposure is 204/244
+(build 14/30, element 57/57); 215/244 with #538/#540 is hypothetical. Remaining
+native #548/#549/#550, final-head hosted and owner/artifact receiving retain
+separate gates. Continue sixteen build and six mechanics paths, bridge/alias
+decisions and GUI tasks. No host runtime, authored floor, candidate, tag or
+publication change. Earlier source limits remain in their frozen receipts.
 
 **Current-primary chain/entity readers delivered — 2026-11-03:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), final source
@@ -775,11 +776,11 @@ matrix remains failed only on the three old-provider warning-strict examples.
 Its browser, Qt, notebooks, Ruff and policy jobs pass; general CI remains
 pending, with three completed Linux failures confined to the same old-provider
 warning-strict examples. Continue #264 after owner review of PR #538/#540/#543;
-#543 receives all 57 element paths (3,314 complete addon passes), including
-21 primary-input and 36 explicit paths, on owner source `c0e8742d` with the prior
-#546 docstring-only candidate fix. Main's 144/244 baseline, #543's 201/244 branch
-and hypothetical 212/244 union remain distinct until integration. Native
-#545/#547/#548/#550 remain owner work. #259/#285/#288/#289/#290 retain their
+#543 receives all 57 element paths and three detached build routes (3,368
+complete addon passes) on published owner `333d0808c`. Canonical codes, cap
+semantics and #546 examples are received; native #548/#549/#550 remain separate.
+Main's 144/244 baseline, #543's 204/244 branch and hypothetical 215/244 union
+remain distinct until owner integration. #259/#285/#288/#289/#290 retain their
 source/tooling evidence.
 Load human smoke remains explicitly deferred. No candidate is frozen and both
 1.0 publications remain paused. Dated rounds below keep their original scope.
@@ -2383,11 +2384,11 @@ Resume toward **1.0** in this order:
 **Current order — 2026-11-03:** #269 is resolved in source; #291 runtime
 receiving is identified separately. Review the owner-integrated inventory,
 then continue remaining preparation/build and mechanics expert wrappers under
-#264 after reviewing all 57 element paths delivered in owner PR #543. Its 21
-primary and 36 explicit paths retain separate binding/effect contracts; imported
-owner fixes keep their exact-source evidence. Resolve native #545/#547/#548/#550
-and receive the #546 docstring fix through owner review without facade science
-patches. The basic.view bridge and legacy aliases require explicit decisions.
+#264 after reviewing owner PR #543: all 57 element paths and three independent
+build routes now have source receiving. Sixteen build and six mechanics paths
+remain, alongside the basic.view bridge and legacy-alias decisions. Receive
+native #548/#549/#550 through owner fixes without facade science patches; the
+333d0808 canonical/cap and #546 repairs already retain their exact-source proof.
 Preserve explicit versus implicit inputs and the owner-reviewed PR route.
 Resolve or record native limits before
 preparation/mechanics and GUI tasks. Broad documentation and exact frozen

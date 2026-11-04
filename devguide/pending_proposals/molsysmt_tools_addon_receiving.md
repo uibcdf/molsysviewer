@@ -14,6 +14,48 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Detached preparation and native label-repair receiving — 2026-11-03
+
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) publishes
+`3889ad75ab8def7ad20ac5dcee1fe7bd28bc9466` after receiving native `333d0808c` through merge
+`e05cc9185`. Canonical XLE/J and XAA/X, protected peptide-end cap classification
+and the coordinated native consumer/resources are received. The identical #546
+docstring fix/guard is now integrated and closed by the owner. Ancestor Pandas,
+H5MSM structure-index and runtime API-floor repairs retain their own ownership;
+all producer input hashes and the unchanged Rust backend agree. No native
+algorithm/data change is authored in the facade.
+
+Three build methods bind the current primary through the serialized reader:
+infer_covalent_bonds, assign_autodock_atom_types and assign_partial_charges.
+They return native independent systems/reports without adoption or scene/history/
+pending synchronization. Required methods/schemes, states, structures, providers,
+units and provenance remain explicit. Inference invalidates only output analyses;
+mechanical assignments preserve snapshots and experimental storage. No implicit
+chemistry, full-parameterization or out-of-core claim is added. H5MSM 0.5 rejects
+MolecularMechanics persistence.
+
+Complete addon receiving passes 3,368 without failures/errors/skips, including
+44 new cases. Native repairs/preparation/API controls pass 446; final changed-area
+receiving passes 63 and structural package/inventory/license/notebook controls
+534. A final 44-case build-module follow-up strengthens three replacement guards
+with changed coordinates; runtime and other tests stay unchanged. Four guide
+blocks execute, canonical course validation passes 156 notebooks,
+and Module 06 code/output/counts/IDs/schema remain preserved. The
+[receipt](../molsysmt_build_assignments_receiving_20261103.json) retains exact
+source/backend/result hashes and test/example corrections.
+
+Old XLE and cap warnings are replaced by received native semantics. Legacy
+protonation-name vocabulary remains uibcdf/molsysmt#549, with template return
+and NumPy input limits under uibcdf/molsysmt#548 and uibcdf/molsysmt#550.
+Earlier receipts keep their original input limits rather than retroactively
+claiming repair qualification.
+
+Branch exposure is 204/244 (element 57/57, build 14/30). Independent #538/#540
+are absent; 215/244 is hypothetical until owner integration. Final-head hosted,
+owner integration, remaining build/mechanics, bridge/alias decisions, GUI,
+actual archives and installed qualification remain separate. #264 stays partial.
+No host runtime, authored runtime floor, candidate, tag or publication change.
+
 ## Reference-template utilities complete element exposure — 2026-11-03
 
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) publishes

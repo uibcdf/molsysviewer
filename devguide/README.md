@@ -45,14 +45,14 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- **Element source exposure completed — 2026-11-03:**
-  [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) now exposes
-  57/57 element paths (21 primary, 36 explicit), after fourteen reference-template
-  queries. Complete addon regression passes 3,314 cases, including 338 new cases.
-  The [receipt](molsysmt_element_templates_receiving_20261103.json) records
-  201/244 branch exposure and native #548/#550 return/container issues. Existing
-  #545/#547 limits and #546's candidate fix remain separate. Owner integration
-  and final-head hosted qualification remain pending; #264 is partial.
+- **Detached build preparation received — 2026-11-03:**
+  [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) adds independent
+  covalent inference, AutoDock typing and charge assignment. Native `333d0808c`
+  repairs canonical codes and protected-end cap names; obsolete live warnings
+  are updated. Complete addon receiving passes 3,368 cases, including 44 new ones.
+  The [receipt](molsysmt_build_assignments_receiving_20261103.json) records
+  204/244 branch exposure (build 14/30, element 57/57), remaining native limits
+  and separate hosted/owner/installed gates. #264 stays partial.
 
 - **Chain/entity readers delivered — 2026-11-03:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) now contains

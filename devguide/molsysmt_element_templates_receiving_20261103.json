@@ -251,5 +251,10 @@
     "errors": 0,
     "junit_sha256": "8132c7db1d3da20f7fe75dc3cc03193b040564dc231dce81e08b9cea016045b7",
     "scope": "Scoped reporting, link, architecture and board-tool controls; not hosted or scientific qualification."
+  },
+  "follow_up": {
+    "owner_commit": "3889ad75ab8def7ad20ac5dcee1fe7bd28bc9466",
+    "record": "molsysmt_build_assignments_receiving_20261103.json",
+    "scope": "Receives published native 333d0808, including #545/#546/#547 repairs; source warnings updated while prior receipts preserve frozen earlier limits. Adds three detached build routes, 204/244 branch exposure, with 3368 complete addon passes. Remaining native #548/#549/#550 and final-head/owner/artifact receiving are separate."
   }
 }
