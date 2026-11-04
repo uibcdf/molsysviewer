@@ -1,17 +1,20 @@
 # Development checkpoint
 
-**Primary-element source mirror delivered — 2026-11-03:**
+**Element label utilities delivered — 2026-11-03:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
-`506805c89`, adds twelve paths and receives native owner `55f18aef` through
-merge `8e2f2c1f1`. All 21 primary-input element paths are explicit bindings;
-eight utilities retain empty-view access. Complete addon regression passes
-2,805 without failures/errors/skips, with 118 new cases; final import-sensitive
-receiving passes 352, owner repair checks 354 and native domain checks 117.
-The [receipt](molsysmt_element_domains_receiving_20261103.json) retains broad
-input hashes, import-order-only polish, exact native provenance and scopes.
-Branch exposure is 173/244; 184/244 with #538/#540 is hypothetical. Remaining
-28 explicit utilities, owner integration and final-head hosted/package/platform
-qualification are pending. No host runtime, candidate, floor or publication.
+`b41810c26`, adds fourteen explicit name/type/code helpers without molecular
+reading, normalization or scene/history effects. Complete addon regression
+passes 2,976 without failures/errors/skips, including 171 new cases; final
+focused receiving passes 524 and structural controls 552. The
+[receipt](molsysmt_element_labels_receiving_20261103.json) retains exact input
+and result hashes, owner build-metadata intake `c0e8742d` and qualification limits.
+Branch exposure is 187/244, including 43/57 element paths. The 198/244 union
+with independent #538/#540 remains hypothetical. Native #545/#547 await owner
+semantic/data resolution; #546 has a docstring-only guarded candidate fix in
+the PR. Fourteen explicit template utilities, owner integration and final-head
+hosted/package/platform qualification remain pending. No host runtime,
+candidate, authored runtime floor or publication change. Earlier primary-domain
+receiving is retained in its [receipt](molsysmt_element_domains_receiving_20261103.json).
 
 **Current-primary chain/entity readers delivered — 2026-11-03:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), final source
@@ -771,10 +774,11 @@ matrix remains failed only on the three old-provider warning-strict examples.
 Its browser, Qt, notebooks, Ruff and policy jobs pass; general CI remains
 pending, with three completed Linux failures confined to the same old-provider
 warning-strict examples. Continue #264 after owner review of PR #538/#540/#543;
-#543 receives twenty-nine element paths (2,805 complete addon passes), including
-all 21 primary-input paths and eight explicit utilities, on received native
-`55f18aef`. Main's 144/244 baseline, #543's 173/244 branch and the hypothetical
-184/244 union remain distinct until integration. #259/#285/#288/#289/#290 retain their
+#543 receives forty-three element paths (2,976 complete addon passes), including
+all 21 primary-input paths and 22 explicit utilities, on owner source `c0e8742d`
+with the guarded docstring-only #546 candidate fix. Main's 144/244 baseline,
+#543's 187/244 branch and the hypothetical 198/244 union remain distinct until
+integration. Native #545/#547 remain owner work. #259/#285/#288/#289/#290 retain their
 source/tooling evidence.
 Load human smoke remains explicitly deferred. No candidate is frozen and both
 1.0 publications remain paused. Dated rounds below keep their original scope.
@@ -2377,9 +2381,11 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-03:** #269 is resolved in source; #291 runtime
 receiving is identified separately. Review the owner-integrated inventory,
-then continue the 28 remaining explicit-input `element` utilities under #264
-after reviewing all twenty-nine paths delivered in owner PR #543. All 21 primary
-paths are now exposed; imported owner fixes retain their exact-source evidence.
+then continue the 14 remaining explicit-input `element` group-data/template
+utilities under #264 after reviewing all forty-three paths delivered in owner
+PR #543. All 21 primary paths and 22 explicit utilities are exposed; imported
+owner fixes retain their exact-source evidence. Resolve native #545/#547 and
+receive the #546 docstring fix through owner review without facade science patches.
 Preserve explicit versus implicit inputs and the owner-reviewed PR route.
 Resolve or record native limits before
 preparation/mechanics and GUI tasks. Broad documentation and exact frozen

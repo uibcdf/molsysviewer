@@ -14,6 +14,39 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Explicit label utilities delivered in the owner PR — 2026-11-03
+
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) publishes
+`b41810c26c36984a68781e7706f3e933e8589c66`. Fourteen explicit name/type/code
+helpers work on an open empty or loaded view without reading the primary,
+preparing chemistry, assigning results or synchronizing scene/history. Native
+scalar inputs, case/aliases, values, errors and None conventions remain intact;
+locally consumed skip controls are keyword-only. Catalogue membership is not
+chemical validation or a query of the displayed system.
+
+Complete addon regression passes 2,976 cases without failures/errors/skips,
+including 171 new label cases. Final element/integration/native-example controls
+pass 524; distribution/inventory/license/notebook structural controls pass 552.
+Guide examples execute and course code/output/counts/IDs remain unchanged. The
+[receipt](../molsysmt_element_labels_receiving_20261103.json) retains exact
+sources, result hashes, corrected consumer-fixture assertions and all scopes.
+Owner build-metadata repair `c0e8742d` is received through merge `787a4d656`;
+no native scientific algorithm/data or Rust change is authored by this increment.
+
+MolSysMT#545 records the unreachable XLE-to-J mapping; #547 records the cap
+N/C table/help contradiction. The addon preserves native behavior and documents
+these limits, without qualifying end-specific preparation. #546 has a docstring-
+only candidate correction and a four-example red/green guard in the PR; native
+integration and issue closure remain owner work. All three issues are open.
+
+Branch exposure is 187/244, including 43/57 element paths: all 21 primary paths
+and 22 explicit utilities. Fourteen explicit group-data/template utilities remain.
+The union with independent #538/#540 would be 198/244; it is not integrated or
+qualified. Final-head hosted checks are queued at delivery. #264 stays partial;
+owner integration, actual archives, optional engines/platforms, installed
+packages and GUI tasks retain separate gates. Host runtime and publication
+remain unchanged.
+
 ## All primary-element paths delivered in the owner PR — 2026-11-03
 
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) now publishes

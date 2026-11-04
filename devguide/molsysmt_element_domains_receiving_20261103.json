@@ -248,5 +248,10 @@
     "failures": 0,
     "errors": 0,
     "scope": "Scoped reporting, link, architecture and board-tool checks; not hosted or scientific qualification."
+  },
+  "follow_up": {
+    "owner_commit": "b41810c26c36984a68781e7706f3e933e8589c66",
+    "record": "molsysmt_element_labels_receiving_20261103.json",
+    "scope": "Fourteen further explicit utilities; 43/57 element paths and 187/244 branch exposure, with 2976 complete addon passes. Earlier counts/native inputs remain historical evidence of their own source. Owner integration and hosted/artifact qualification remain separate."
   }
 }
