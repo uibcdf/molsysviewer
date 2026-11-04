@@ -14,6 +14,40 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Reference-template utilities complete element exposure — 2026-11-03
+
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) publishes
+`807dde8a530a486bfb80a8200ba86e40c2fe751b`. Fourteen additional
+explicit queries expose bond pairs, five family databases and expected amino-acid heavy/hydrogen names. Index labels
+and chemical context stay caller-owned; there is no primary molecular reader,
+assignment, graph inference, preparation, protonation, caching or scene/history
+synchronization. Native containers/layouts, fallback, family support and errors
+remain. Two native skip controls pass through; twelve local controls are
+keyword-only. Fixed pH rules do not predict environment-dependent pKa values.
+
+Complete addon regression passes 3,314 without failures/errors/skips, including
+338 new cases; final element/integration/examples pass 861, native element 239
+and structural package/inventory/license/notebook controls 534. Guide examples
+execute and canonical course validation passes 156 notebooks with code/output/
+counts/IDs/schema preserved. The
+[receipt](../molsysmt_element_templates_receiving_20261103.json) retains exact
+sources, hashes, invocation diagnostics and qualification limits.
+
+Authorized uibcdf/molsysmt#548 records name/string-pair documentation versus
+actual integer index pairs; native docs/tests resolution stays with the owner.
+Separate uibcdf/molsysmt#550 records valid NumPy atom-name arrays failing in
+three bond helper families. Working list routes and failing array routes stay
+explicit, with no facade coercion. Existing uibcdf/molsysmt#545 and
+uibcdf/molsysmt#547, and the uibcdf/molsysmt#546 docstring-only candidate repair,
+retain their separate scope. This increment authors no new native scientific/data/docstring patch.
+
+Branch exposure is 201/244, including all 57 element paths: 21 primary and
+36 explicit. #538/#540 remain independent; 212/244 is a hypothetical union.
+Final-head hosted results and owner integration remain separate from local
+receiving; #264 stays partial. Build/mechanics, bridge/alias decisions, GUI tasks,
+actual archives, optional-engine/platform and installed qualification remain.
+No host runtime, floor, frozen candidate or publication change.
+
 ## Explicit label utilities delivered in the owner PR — 2026-11-03
 
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) publishes

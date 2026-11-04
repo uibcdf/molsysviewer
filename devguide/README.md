@@ -45,14 +45,14 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- **Element label utilities delivered — 2026-11-03:**
+- **Element source exposure completed — 2026-11-03:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) now exposes
-  43/57 element paths (21 primary and 22 explicit). Complete addon regression
-  passes 2,976 cases, including 171 new label guards. The
-  [receipt](molsysmt_element_labels_receiving_20261103.json) records 187/244
-  branch exposure, fourteen remaining template utilities and native issues
-  #545/#547. #546 has a docstring-only candidate fix in the PR. Final-head CI
-  and owner integration remain pending; #264 is partial.
+  57/57 element paths (21 primary, 36 explicit), after fourteen reference-template
+  queries. Complete addon regression passes 3,314 cases, including 338 new cases.
+  The [receipt](molsysmt_element_templates_receiving_20261103.json) records
+  201/244 branch exposure and native #548/#550 return/container issues. Existing
+  #545/#547 limits and #546's candidate fix remain separate. Owner integration
+  and final-head hosted qualification remain pending; #264 is partial.
 
 - **Chain/entity readers delivered — 2026-11-03:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) now contains

@@ -260,5 +260,10 @@
     "errors": 0,
     "junit_sha256": "d06ccb1c11aeb9993b73b0639df5846c936dd5c6c34633c46dbde943067b4462",
     "scope": "Scoped reporting, links, architecture and board-tool controls; not hosted or scientific qualification."
+  },
+  "follow_up": {
+    "owner_commit": "807dde8a530a486bfb80a8200ba86e40c2fe751b",
+    "record": "molsysmt_element_templates_receiving_20261103.json",
+    "scope": "Fourteen template utilities complete reviewed element exposure at 57/57 (201/244 branch), with 3314 complete addon passes. Earlier counts/native inputs retain their own historical scopes; integration and hosted/artifact receiving remain separate."
   }
 }
