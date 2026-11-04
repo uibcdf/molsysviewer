@@ -1,26 +1,33 @@
 # Development checkpoint
 
-**Mechanical energy expert tool delivered by owner PR — 2026-11-04:**
+**Mechanical minimization delivered by owner PR — 2026-11-04:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) now publishes
-`8357622508d1b87bc6d13ba90c624a9b7ede6fdc`, adding primary-bound total/decomposed
-potential energy on unchanged native owner `5f3af9374`, after resource lookup
-and mechanical degree counting. The complete addon regression passes 3,857
-cases without failures/errors/skips, with all 3,138 recorded source/test files
-unchanged during execution and the retained Rust backend. All 61 mechanical
-controls pass. A separately constructed OpenMM NoCutoff/HBonds CPU model verifies
-the total and each force-name term under kJ/mol and kcal/mol application
-policies. Pending geometry is read without scene synchronization; cached tools
-resolve replacement and reject closed/empty owners. Another 562 package/route/
-docs checks, three guide blocks, the 156-notebook course, 247 native docstrings,
-dependencies and whole-tree Ruff pass. The PR's canonical energy receipt keeps
-source/dataset/JUnit hashes, warnings and the corrected incomplete test-unit
-policy; its initial mechanics receipt preserves its original 3,838-case input.
-Exposure is 219/244, mechanics 3/6; no GUI or new host runtime is added. Native
-#559 owns platform-name rejection, #560 shared resource lists and #561 mixed
-partition selections in nonbonded energy. No facade scientific repair is added.
+`6cdace2b7fd84555fcd0da7304955df0e1599fbd`, adding native minimization on unchanged
+native owner `5f3af9374`. Default independent results are not adopted; explicit
+in-place coordinates use the existing retained-axis edit receiver. Native
+validation, parameterization, analysis invalidation and local-minimum semantics
+are preserved, with projection-only deferral/retry. The complete addon regression
+passes 3,888 cases without failures/errors/skips; all 3,139 recorded source/test
+files and the retained Rust backend remain unchanged during execution. The 31
+new controls use a separate OpenMM NoCutoff/HBonds CPU reference under kJ/mol
+and kcal/mol policies, retaining strict energy/coordinate tolerances. Actual
+native Context inspection verifies one-thread execution and restoration of the
+prior process default. The canonical receipt preserves the initial test-control
+failures and corrected rejected-attempt metadata expectation. A dated correction
+appended to the earlier energy receipt withdraws its unverified native one-thread
+claim, preserving the original numerical/source evidence. Another 562 package/
+route/docs checks, five guide blocks, 156 course structures, 247 native docstrings,
+dependencies and whole-tree Ruff pass. One course Markdown cell gains the addon
+contract; all notebook code, outputs and metadata remain unchanged.
+Exposure is 220/244, mechanics 4/6; no new host runtime or GUI is added. Native
+#559/#560/#561 stay owner work; #562 now reports the native course's unsupported
+tolerance keyword and ignored independent outputs. Complete biological course
+scenarios are not qualified by the structural check. No facade scientific repair is added.
 #549's naming cutover remains separate. Exact new-head CI, owner acceptance and
-installed qualification remain pending. On `835762250`, full CI 41929056731 is
-queued; smoke 41929056702 and performance 41929056615 are active, while guide,
+installed qualification remain pending. On `6cdace2b7`, full CI 41933666242,
+smoke 41933666196, performance 41933666201 and administrative checks are queued.
+On `835762250`, full CI 41929056731 is
+queued; smoke 41929056702 and performance 41929056615 pass, as do guide,
 dependency, Ruff, publication-governance and suite-policy checks pass.
 Earlier d257b678 CI completes 8/8 at
 its own source; 2cb996ad's ongoing matrix retains its own input. #295 is closed
@@ -847,12 +854,12 @@ fourteen cases verified in each original JUnit. General CI has seven passing
 cells and one unacquired macOS Python 3.12 cancellation, selectively retried
 in attempt 2; do not claim that separate overall matrix is green.
 Browser/experimental Qt pass independently. MolSysMT PR #543 now publishes
-`835762250`, adding potential energy after its first two mechanical routes.
-The complete local regression passes 3,857 cases; exact new-head CI and owner
+`6cdace2b7`, adding native minimization after its first three mechanical routes.
+The complete local regression passes 3,888 cases; exact new-head CI and owner
 acceptance remain pending. The older `d257b6789` matrix now completes 8/8 and
 retains its own source, initial runner cancellation and selective recovery.
-Its 219/244 contribution exposure differs from the main metadata-only baseline;
-#548/#550/#552/#554 are received; #549/#559/#560/#561 remain native owner work. Continue
+Its 220/244 contribution exposure differs from the main metadata-only baseline;
+#548/#550/#552/#554 are received; #549/#559/#560/#561/#562 remain native owner work. Continue
 remaining expert/GUI work after the artifact decision. Load human smoke stays
 deferred; no candidate is frozen and both 1.0 publications remain paused.
 
@@ -2454,9 +2461,9 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-04:**
 
-1. Receive exact-head CI and owner review of MolSysMT PR #543 `835762250`,
-   including all three mechanical routes. The complete local addon regression
-   passes 3,857 cases. Preserve older source matrices and their recovery, including
+1. Receive exact-head CI and owner review of MolSysMT PR #543 `6cdace2b7`,
+   including all four mechanical routes. The complete local addon regression
+   passes 3,888 cases. Preserve older source matrices and their recovery, including
    the now-successful d257b678 8/8; they do not qualify this changed input. The audit
    adds no broad refactor gate.
 2. Receive hosted general CI with the bounded public-provider/pandas baseline;
@@ -2470,9 +2477,9 @@ Resume toward **1.0** in this order:
    artifact for #294's already delivered scene
    handle/player contracts; do not require all addon tools to finish first.
    Package production/publication still requires its separate accepted route.
-4. Continue fifteen build and three remaining mechanics expert paths under #264, then
+4. Continue fifteen build and two remaining mechanics expert paths under #264, then
    disposition the basic.view bridge, historical aliases and native MD stubs.
-   Receive #549/#559/#560/#561 from MolSysMT without facade scientific repairs;
+   Receive #549/#559/#560/#561/#562 from MolSysMT without facade scientific repairs;
    #548/#550/#552/#554 are already received. Preserve explicit inputs and the PR route.
 5. Build task-oriented addon GUI over qualified expert operations, consolidate
    documentation and qualify the exact frozen candidate and installed files.
