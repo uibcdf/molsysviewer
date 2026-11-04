@@ -45,15 +45,19 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- **Initial mechanical expert tools delivered by owner PR — 2026-11-04:**
+- **Mechanical energy expert tool delivered by owner PR — 2026-11-04:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
-  `2cb996ad92b388c14d385fe9f2e2ee9bdf7d7444`, adds explicit engine-resource lookup
-  and serialized primary-bound degree counting. All 3,838 addon cases pass,
-  including 42 new controls; 562 structure/documentation controls and both guide
-  blocks pass. Exposure is 218/244, mechanics 2/6. Native #559 platform names
-  and #560 shared resource lists remain explicit owner work. Current-head CI,
+  `8357622508d1b87bc6d13ba90c624a9b7ede6fdc`, adds serialized primary-bound
+  total/decomposed potential energy after resource lookup and degree counting.
+  All 3,857 addon cases pass, including 61 mechanical controls; an independent
+  OpenMM model verifies energy and force-name terms under two unit policies.
+  Another 562 structure/documentation controls and all three guide blocks pass.
+  Exposure is 219/244, mechanics 3/6. Native #559 platform names, #560 shared
+  resource lists and #561 mixed nonbonded selections remain owner work. Current-head CI,
   owner acceptance and installed qualification remain pending; no new artifact.
   #295 is closed with all fourteen guard cases verified on three source hosts.
+  General CI retains seven passing cells; only macOS Python 3.12 is retried
+  after GitHub cancelled it without acquiring a runner.
 
 - **Native reference-map repair received by the addon — 2026-11-04:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
