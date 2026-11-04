@@ -15,8 +15,10 @@ The PR's canonical receipt records inputs, warnings and separate hosted scope.
 Source exposure remains 216/244; #549 stays native. Exact new-head CI and owner
 acceptance remain pending; the older d257b678 matrix keeps its original inputs.
 Viewer `793a92db` passes four Linux cells, core browser and experimental Qt;
-#295 remains partial until macOS completes. No candidate, package, tag or
-publication; both 1.0 publications remain paused.
+#295 is resolved by source-pair 41899772394 on Linux, Windows and macOS:
+original ZIPs match GitHub and all fourteen guard cases pass on each host.
+The separate general matrix still awaits four macOS cells. No candidate,
+package, tag or publication; both 1.0 publications remain paused.
 
 **Public-provider CI and distribution source recovery — 2026-11-04:**
 Public MolSysMT 0.23.0 predates native #431; its CI now selects pandas 2.3.3.
@@ -35,9 +37,10 @@ rebuilt-wheel license proof; #293 adopts immutable Conda provider v2.3.0 with
 #294 remains partial for a covering artifact and exact private initialization
 receiving. Hosted CI on `afd61eb1` passes all four Linux minors (3,396 each)
 and Linux/Windows source-pair; macOS isolates three invalid pandas-input guard
-cases. [#295](pending_bugs/source_pair_pandas_guard_portability.md) receives
+cases. [#295](archive/source_pair_pandas_guard_portability.md) receives
 explicit rejection and its [local checks](ci_guard_portability_receiving_20261104.json);
-committed-head hosted recovery remains pending. Browser/Qt and other controls
+hosted recovery was pending at that checkpoint; the later three-host source
+receiving resolves #295 while general-matrix macOS remains queued. Browser/Qt and other controls
 pass independently. Addon PR #543 source `d257b6789`
 retains 216/244 exposure and its separate 3,618-case / 1,081-case
 [receiving](molsysmt_name_projection_receiving_20261104.json); smoke/performance
@@ -806,10 +809,11 @@ a qualified provider containing #431 arrives; current-source/pandas-3 tests
 pass separately. All 31 local failed/error cases recover under the declared
 execution profile; aggregate source evidence does not qualify a hosted matrix.
 #292/#293 source corrections and guarded distribution reviews are complete;
-#294 retains artifact and private initialization receiving. The `afd61eb1`
-hosted matrix passes Linux; macOS fails only the input-guard cases under
-[#295](pending_bugs/source_pair_pandas_guard_portability.md). Receive the
-explicit-rejection follow-up's CI before claiming full hosted recovery.
+#294 retains artifact and private initialization receiving.
+[#295](archive/source_pair_pandas_guard_portability.md) receives the explicit
+rejection on `793a92db`: source pair 41899772394 passes three hosts, with all
+fourteen cases verified in each original JUnit. General CI still awaits four
+macOS cells; do not claim that separate overall matrix is green.
 Browser/experimental Qt pass independently. MolSysMT PR #543 now publishes
 `8fc115e2e`, receiving the owner's #554 repair without changing addon runtime.
 The complete local regression passes 3,796 cases; exact new-head CI and owner
@@ -2426,8 +2430,8 @@ Resume toward **1.0** in this order:
 2. Receive hosted general CI with the bounded public-provider/pandas baseline;
    local warning-strict and failed-case recovery are complete. Retain native
    #431 delivery ownership and the documented baseline removal trigger.
-   Receive #295's explicit shell input rejection on macOS; the previous
-   committed-head matrix already passes all four Linux minors.
+   #295's input rejection is received on all three source hosts. Finish the
+   separate general matrix's four queued macOS cells; its Linux minors pass.
    Triage #294's separate import-order observation with its controlled inputs.
 3. #292/#293 source reviews and guards are complete. Scope a covering pre-1.0
    artifact for #294's already delivered scene

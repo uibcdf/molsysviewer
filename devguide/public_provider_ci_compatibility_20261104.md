@@ -74,8 +74,13 @@ examples pass. Source pair 41884513993 passes Linux and Windows, with the same
 macOS guard failures. Core browser 41884513801, experimental Qt 41884513672,
 Ruff, suite policy and Conda governance pass independently.
 
-[#295](pending_bugs/source_pair_pandas_guard_portability.md) owns explicit
-shell-independent input rejection and its hosted follow-up. These are completed
-partial results, not a successful overall Python matrix. The
+[#295](archive/source_pair_pandas_guard_portability.md) resolves explicit
+shell-independent input rejection on `793a92db`. Source pair 41899772394
+passes Linux, Windows and macOS; three original ZIP hashes match GitHub and
+all fourteen input guards pass in each JUnit without omissions. Its 10,173
+Python passes and 141 other skips retain their three-host scope. General CI
+41899772338 passes four Linux minors while its four macOS cells remain queued;
+it is not described as overall success. The initial
 [follow-up receipt](ci_guard_portability_receiving_20261104.json) retains exact
-failure and local recovery evidence. No publisher or package qualification runs.
+failure and local recovery evidence; the resolved record adds hosted hashes.
+No publisher or installed-package qualification runs.

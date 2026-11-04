@@ -53,8 +53,9 @@ documents, and historical audits.
   directed native/template and 533 route/documentation checks pass separately.
   Source exposure stays 216/244. New-head CI and owner acceptance remain
   pending; #549, remaining tools, GUI and installed receiving stay separate.
-  Viewer #295 still awaits macOS CI; browser/Qt and all four Linux cells pass
-  on `793a92db`. No candidate, tag, package or publication.
+  Viewer #295 is resolved by original ZIP/JUnit receiving on all three source
+  hosts; the separate general matrix still awaits four macOS cells. Browser/Qt
+  and all four Linux cells pass on `793a92db`. No candidate or publication.
 
 - **Public-provider CI and distribution source recovery — 2026-11-04:**
   [Receiving](public_provider_ci_compatibility_20261104.md) identifies the
@@ -68,12 +69,12 @@ documents, and historical audits.
   remains partial for a covering artifact and private initialization receiving.
   The [receipt](public_provider_distribution_receiving_20261104.json) preserves
   inputs, original failures and scope. No release/candidate or runtime change.
-  Committed-head CI now passes all four Linux minors; macOS isolates three
-  workflow input-guard failures under
-  [#295](pending_bugs/source_pair_pandas_guard_portability.md). Linux/Windows
-  source-pair, core browser and experimental Qt pass. The explicit rejection
-  fix retains its own [receiving](ci_guard_portability_receiving_20261104.json)
-  and pending hosted scope; neither Python matrix is declared wholly green.
+  The earlier macOS input-guard failures are resolved in
+  [#295](archive/source_pair_pandas_guard_portability.md): source pair
+  41899772394 passes Linux, Windows and macOS, with original ZIP hashes and all
+  fourteen guard cases verified on each host. Four general-matrix macOS cells
+  remain queued; that overall matrix is not declared green. The initial
+  [receiving](ci_guard_portability_receiving_20261104.json) retains its inputs.
 
 - **Combined addon receiving published — 2026-11-04:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source

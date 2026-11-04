@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Portable source-pair input rejection](source_pair_pandas_guard_portability.md) — #295 replaces implicit shell exit with explicit rejection; original ZIP/JUnit verifies all fourteen guard cases on Linux, Windows and macOS while the separate general matrix remains pending.
+
 - [SPDX-compatible build backend](build_backend_spdx_compatibility.md) — #292 aligns the Setuptools minimum and verifies project/font notices through wheel, sdist and rebuilt wheel on minimum/current tools.
 - [Conda provider v2.3.0](conda_provider_2_3_adoption.md) — #293 pins local build/upload and promotion while preserving package-test, qualification and evidence gates; no publisher is executed.
 
