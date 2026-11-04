@@ -91,7 +91,10 @@ jobs:
           PANDAS_VERSION: ${{ inputs.pandas_version || '2.3.3' }}
         run: |
           set -euo pipefail
-          [[ "$PANDAS_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          if [[ ! "$PANDAS_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::pandas_version must be an exact numeric X.Y.Z version"
+            exit 1
+          fi
           case "$SELECTED_PLATFORM" in
             all|ubuntu-latest|macos-15|windows-2025) ;;
             *) echo "::error::Unknown source-receiving platform"; exit 1 ;;

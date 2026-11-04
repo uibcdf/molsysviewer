@@ -19,6 +19,10 @@ list.
 
 <!-- generated: devguide_index -->
 
+### Partially done (1)
+
+- [`source_pair_pandas_guard_portability.md`](source_pair_pandas_guard_portability.md) — [#295](https://github.com/uibcdf/molsysviewer/issues/295) — Reject invalid source-pair pandas versions explicitly across Bash implementations. *(medium, reproduced)*
+
 ### Open (1)
 
 - [`qt_dbus_conda_prefix_address.md`](qt_dbus_conda_prefix_address.md) — [#278](https://github.com/uibcdf/molsysviewer/issues/278) — Qt startup reports an invalid D-Bus system address in Conda prefixes containing @. *(low, reproduced)*

@@ -57,6 +57,12 @@ documents, and historical audits.
   remains partial for a covering artifact and private initialization receiving.
   The [receipt](public_provider_distribution_receiving_20261104.json) preserves
   inputs, original failures and scope. No release/candidate or runtime change.
+  Committed-head CI now passes all four Linux minors; macOS isolates three
+  workflow input-guard failures under
+  [#295](pending_bugs/source_pair_pandas_guard_portability.md). Linux/Windows
+  source-pair, core browser and experimental Qt pass. The explicit rejection
+  fix retains its own [receiving](ci_guard_portability_receiving_20261104.json)
+  and pending hosted scope; neither Python matrix is declared wholly green.
 
 - **Combined addon receiving published — 2026-11-04:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source

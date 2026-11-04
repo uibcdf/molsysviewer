@@ -1,0 +1,202 @@
+{
+  "schema": "molsysviewer.ci_guard_portability_receiving@1",
+  "date": "2026-11-04",
+  "issue": "uibcdf/molsysviewer#295",
+  "scope": "Workflow validation and source receiving; no runtime, artifact, release or installed-pair qualification.",
+  "source": {
+    "parent": "afd61eb16024a43042095a450609774202167363",
+    "fixed_inputs": [
+      {
+        "path": ".github/workflows/ci-python-314-source-pair.yaml",
+        "sha256": "04ac4bb934dd0d32fc5d6cb8523b38c2d525a769f6e70fe22c7297c13f158bfe",
+        "size_bytes": 13662
+      },
+      {
+        "path": "tests/test_source_workflow_coverage.py",
+        "sha256": "c0b4bd145182bac3bd342eaa5140fcac43d57a921dc425c9e54946330d259b9d",
+        "size_bytes": 13755
+      }
+    ]
+  },
+  "local_environment": {
+    "python": "3.14.7",
+    "executable": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "platform": "linux",
+    "bash": "GNU bash, version 5.3.9(1)-release (x86_64-pc-linux-gnu)",
+    "shared_environment_changed": false
+  },
+  "hosted_parent": {
+    "general": {
+      "run_id": 41884513983,
+      "conclusion": "failure",
+      "linux": {
+        "cells": 4,
+        "python": [
+          "3.11",
+          "3.12",
+          "3.13",
+          "3.14"
+        ],
+        "passed_per_cell": 3396,
+        "skipped_per_cell": 29,
+        "qt_deselected_per_cell": 14
+      },
+      "macos": {
+        "cells": 4,
+        "failed_per_cell": 3,
+        "passed_per_cell": 3366,
+        "skipped_per_cell": 56,
+        "qt_deselected_per_cell": 14,
+        "only_failure": "invalid pandas versions reach the final successful echo"
+      }
+    },
+    "source_pair": {
+      "run_id": 41884513993,
+      "conclusion": "failure",
+      "linux": "success, 3396 Python passes, 44/44 core browser suites, notebooks successful",
+      "windows": "success, 3369 Python passes",
+      "macos": "failure, same 3 invalid-input cases; 3366 passes"
+    },
+    "independent_success": {
+      "core_browser": 41884513801,
+      "experimental_qt": 41884513672,
+      "ruff": 41884513875,
+      "suite_policy": 41884514498,
+      "conda_governance": 41884514599
+    },
+    "captures": [
+      {
+        "path": ".pytest_cache/ci-afd61eb1-20261104/run.json",
+        "sha256": "dc30e2527670c57643cd4fc5bc6bd2d3313f683394d1bbcff7f7e405dabb1eb9",
+        "size_bytes": 13478
+      },
+      {
+        "path": ".pytest_cache/ci-afd61eb1-20261104/jobs.json",
+        "sha256": "0d26ff32a33a1cbfd2803df74304c66657fed4f3d563c874d0315c578babdb1f",
+        "size_bytes": 58395
+      },
+      {
+        "path": ".pytest_cache/ci-afd61eb1-20261104/logs.zip",
+        "sha256": "c58c1a071dadb0d2cd181f30456e640be2091f8e20c7cc281a4fa27bb9340322",
+        "size_bytes": 1968449
+      },
+      {
+        "path": ".pytest_cache/source-afd61eb1-20261104/run.json",
+        "sha256": "a514dde21571257a95e84e7d7193fc380520f4598931ee5166aaf930c30bc1ef",
+        "size_bytes": 13522
+      },
+      {
+        "path": ".pytest_cache/source-afd61eb1-20261104/jobs.json",
+        "sha256": "d905a8da0916faf0c125d8667682a8aed193b140fe0f16e4d5b1d441baa053e9",
+        "size_bytes": 28956
+      },
+      {
+        "path": ".pytest_cache/source-afd61eb1-20261104/logs.zip",
+        "sha256": "d05e0ed5eb68f23f09b636d66c8c28a7038ed498e0e19e820981da7255cc3f03",
+        "size_bytes": 207615
+      }
+    ]
+  },
+  "local_receiving": {
+    "red_mechanism_control": {
+      "selection": "test_source_receiving_rejects_nonversion_pandas_inputs_before_provisioning",
+      "changed_input": "regression expanded before fixing the workflow; includes disabled implicit errexit",
+      "exit_code": 1,
+      "passed": 9,
+      "failed": 5,
+      "junit": {
+        "path": ".pytest_cache/pandas-guard-295-red-20261104.xml",
+        "sha256": "23fd1afe1916323e28f6070441b05a421b44ecac3f1c09e92d03399f461e025d",
+        "size_bytes": 13764
+      }
+    },
+    "final_contracts": {
+      "command": "python -m pytest --receptor=llm tests/test_source_workflow_coverage.py tests/test_distribution_artifact.py tests/test_release_route.py tests/test_conda_receptor_evidence.py tests/test_dependency_contract.py",
+      "exit_code": 0,
+      "passed": 100,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit": {
+        "path": ".pytest_cache/pandas-guard-295-contracts-20261104.xml",
+        "sha256": "0a6aface942e6ba1a90297a592b233187c0536b67e9c0b422a86ad2a732d2ea2",
+        "size_bytes": 16544
+      }
+    },
+    "limit": "Linux shell mechanism receiving, not a local macOS execution or a new complete Viewer suite.",
+    "devguide": {
+      "initial_unstaged_inventory": {
+        "exit_code": 1,
+        "passed": 313,
+        "failed": 1,
+        "cause": "clean-checkout link guard correctly rejects new files not yet added to Git",
+        "junit": {
+          "path": ".pytest_cache/pandas-guard-295-devguide-20261104.xml",
+          "sha256": "1448319881c32e6582017dd2564b90a6c3ef4fdebdaeb0215d22c5d4b4cd8cba",
+          "size_bytes": 58097
+        }
+      },
+      "staged_recovery": {
+        "exit_code": 0,
+        "passed": 314,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "junit": {
+          "path": ".pytest_cache/pandas-guard-295-devguide-staged-20261104.xml",
+          "sha256": "cc20b66c4eebc4a151b5a1854ade5b7276ec67cd94b5c9aacad588c9d78abcbb",
+          "size_bytes": 54218
+        }
+      }
+    },
+    "ruff": {
+      "check": "pass",
+      "format_check": "pass, 946 files"
+    }
+  },
+  "molsysmt_pr": {
+    "number": 543,
+    "head": "d257b67893c9f673f315462a1308d4ee7df44723",
+    "run_id": 41876733234,
+    "original_attempt": 1,
+    "original_conclusion": "failure",
+    "successful_scientific_cells": 7,
+    "cancelled_job_id": 126738213801,
+    "cancelled_cell": "macos-15 Python 3.12",
+    "executed_steps": 0,
+    "annotation": "The job was not acquired by Runner of type hosted even after multiple attempts",
+    "additional_annotation": "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.",
+    "recovery": "Only job 126738213801 requested again; attempt 2 observed queued on unchanged head. No duplicate full dispatch, source edit or merge.",
+    "capture": [
+      {
+        "path": ".pytest_cache/mt-d257b678-20261104/run.json",
+        "sha256": "0b48e98d8fd05a82f43b060ab7d08ff045d5601938dafba756056bff7e9f36c6",
+        "size_bytes": 13787
+      },
+      {
+        "path": ".pytest_cache/mt-d257b678-20261104/jobs.json",
+        "sha256": "556c32fdde81e3444884d0e427889f4101ec9419927560a568a4d961a489e764",
+        "size_bytes": 53769
+      },
+      {
+        "path": ".pytest_cache/mt-d257b678-20261104/checks.json",
+        "sha256": "deeafddd08d719c5d324210a0e70a85bff3a05ff0f482e11ea4f72b6af787c62",
+        "size_bytes": 52901
+      },
+      {
+        "path": ".pytest_cache/mt-d257b678-20261104/logs.zip",
+        "sha256": "c452eceb87edcb2deaaaa85364d2f2ec30a4b28816713ecb41832043fb814704",
+        "size_bytes": 371856
+      }
+    ]
+  },
+  "remaining": [
+    "Receive committed-head Viewer CI, especially macOS; do not label original overall matrices success.",
+    "Receive the single MolSysMT retry and dependent aggregate; owner integration remains separate.",
+    "Keep #294 artifact scope and private initialization receiving separate; both 1.0 publications paused."
+  ],
+  "temporary_resources": {
+    "new": "Only ignored .pytest_cache captures/JUnit for this follow-up; retained until hosted review and issue closeout.",
+    "preserved": "Existing public-provider overlays, Node 22, license-build evidence and addon contribution worktree remain owned by their prior receiving tasks. No new Conda environment."
+  }
+}

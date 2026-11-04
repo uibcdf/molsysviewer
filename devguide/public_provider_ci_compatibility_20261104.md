@@ -64,3 +64,18 @@ failure remains unclassified; no import-order workaround is recommended.
 A covering additive artifact needs its own scope, exact files and qualification.
 Its delivery need not wait for every addon function. Both 1.0 publications
 remain paused.
+
+## Committed-head hosted review
+
+On `afd61eb16024a43042095a450609774202167363`, general CI 41884513983
+passes all four Linux minors with 3,396 tests each. The four macOS cells fail
+only three new invalid-input regression cases; the previous strict Pandas4Warning
+examples pass. Source pair 41884513993 passes Linux and Windows, with the same
+macOS guard failures. Core browser 41884513801, experimental Qt 41884513672,
+Ruff, suite policy and Conda governance pass independently.
+
+[#295](pending_bugs/source_pair_pandas_guard_portability.md) owns explicit
+shell-independent input rejection and its hosted follow-up. These are completed
+partial results, not a successful overall Python matrix. The
+[follow-up receipt](ci_guard_portability_receiving_20261104.json) retains exact
+failure and local recovery evidence. No publisher or package qualification runs.

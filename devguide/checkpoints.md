@@ -15,10 +15,17 @@ inputs, original conclusions and actual public-payload byte verification.
 rebuilt-wheel license proof; #293 adopts immutable Conda provider v2.3.0 with
 91 publication/dependency contracts passing and no publisher operation.
 #294 remains partial for a covering artifact and exact private initialization
-receiving. Hosted recovery remains pending. Addon PR #543 source `d257b6789`
+receiving. Hosted CI on `afd61eb1` passes all four Linux minors (3,396 each)
+and Linux/Windows source-pair; macOS isolates three invalid pandas-input guard
+cases. [#295](pending_bugs/source_pair_pandas_guard_portability.md) receives
+explicit rejection and its [local checks](ci_guard_portability_receiving_20261104.json);
+committed-head hosted recovery remains pending. Browser/Qt and other controls
+pass independently. Addon PR #543 source `d257b6789`
 retains 216/244 exposure and its separate 3,618-case / 1,081-case
 [receiving](molsysmt_name_projection_receiving_20261104.json); smoke/performance
-and administrative checks pass, full CI and owner integration remain pending.
+and administrative checks pass. Seven full-matrix cells pass; one unacquired
+macOS Python 3.12 runner is cancelled by GitHub and selectively retried in
+attempt 2 of 41876733234. Full CI and owner integration remain pending.
 Next receive committed-head CI and scope #294's additive artifact, then resume
 fifteen build/six mechanics paths and GUI. No Viewer runtime, runtime floor,
 candidate, tag or publication change; both 1.0 publications remain paused.
@@ -781,10 +788,14 @@ a qualified provider containing #431 arrives; current-source/pandas-3 tests
 pass separately. All 31 local failed/error cases recover under the declared
 execution profile; aggregate source evidence does not qualify a hosted matrix.
 #292/#293 source corrections and guarded distribution reviews are complete;
-#294 retains artifact and private initialization receiving. Receive the new
-committed-head CI before claiming hosted recovery. Browser/experimental Qt
-remain separate. MolSysMT PR #543 `d257b6789` has successful smoke/performance
-and administrative gates; full CI and owner integration remain pending.
+#294 retains artifact and private initialization receiving. The `afd61eb1`
+hosted matrix passes Linux; macOS fails only the input-guard cases under
+[#295](pending_bugs/source_pair_pandas_guard_portability.md). Receive the
+explicit-rejection follow-up's CI before claiming full hosted recovery.
+Browser/experimental Qt pass independently. MolSysMT PR #543 `d257b6789` has
+successful smoke/performance and administrative gates; seven full cells pass,
+and its unacquired macOS Python 3.12 job is selectively retried. Full CI and
+owner integration remain pending.
 Its 216/244 contribution exposure differs from main's 155/244 metadata baseline;
 #548/#550/#552 are received and #549/#554 remain native limits. Continue
 remaining expert/GUI work after the artifact decision. Load human smoke stays
@@ -2394,6 +2405,8 @@ Resume toward **1.0** in this order:
 2. Receive hosted general CI with the bounded public-provider/pandas baseline;
    local warning-strict and failed-case recovery are complete. Retain native
    #431 delivery ownership and the documented baseline removal trigger.
+   Receive #295's explicit shell input rejection on macOS; the previous
+   committed-head matrix already passes all four Linux minors.
    Triage #294's separate import-order observation with its controlled inputs.
 3. #292/#293 source reviews and guards are complete. Scope a covering pre-1.0
    artifact for #294's already delivered scene

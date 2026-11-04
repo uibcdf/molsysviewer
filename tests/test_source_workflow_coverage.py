@@ -65,23 +65,42 @@ def test_source_recovery_guard_executes_without_waiving_candidate_platforms(plat
 
 @pytest.mark.parametrize(
     ("version", "accepted"),
-    [("2.3.3", True), ("3.1.0", True), ("latest", False), ("3.1", False), ("3.1.0 --override-channels", False)],
+    [
+        ("2.3.3", True),
+        ("3.1.0", True),
+        ("latest", False),
+        ("3.1", False),
+        ("3.1.0 --override-channels", False),
+        ("", False),
+        ("3.1.0\n", False),
+    ],
 )
-def test_source_receiving_rejects_nonversion_pandas_inputs_before_provisioning(version, accepted):
+@pytest.mark.parametrize("implicit_errexit", [True, False])
+def test_source_receiving_rejects_nonversion_pandas_inputs_before_provisioning(version, accepted, implicit_errexit):
     workflow = yaml.load(
         (ROOT / ".github/workflows/ci-python-314-source-pair.yaml").read_text(), Loader=yaml.BaseLoader
     )
     guard = workflow["jobs"]["source-pair"]["steps"][0]
+    script = guard["run"]
+    if not implicit_errexit:
+        # Validation must reject explicitly, including shells where errexit does
+        # not terminate after a failed conditional command (hosted macOS #295).
+        assert script.startswith("set -euo pipefail\n")
+        script = script.replace("set -euo pipefail\n", "set -uo pipefail\n", 1)
     bash = shutil.which("bash")
     assert bash is not None, "The workflow guard regression requires Bash"
     result = subprocess.run(
         [bash],
-        input=guard["run"],
+        input=script,
         text=True,
         capture_output=True,
         env=dict(os.environ, SELECTED_PLATFORM="all", SOURCE_RECEIVING="true", PANDAS_VERSION=version),
     )
     assert (result.returncode == 0) is accepted, result.stdout + result.stderr
+    if not accepted:
+        assert result.returncode == 1
+        assert "Platform scope:" not in result.stdout
+        assert "pandas_version must be an exact numeric X.Y.Z version" in result.stdout
 
 
 def test_exact_source_pair_executes_all_notebooks_and_core_browser_suites():
