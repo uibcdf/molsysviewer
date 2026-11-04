@@ -48,7 +48,9 @@ The Python side is intentionally layered:
     undo. Calculation publishes a complete snapshot only if the system revision
     still matches. Tagged visual sets, current-frame observed-position Mol*
     meshes and the native Studio subpanel now use those scientific snapshots.
-    Provider-release qualification remains open under `uibcdf/molsysviewer#114`.
+    The public 0.24.0 / 0.23.0 pair is qualified; later source changes require
+    their own candidate qualification. See
+    [the Interactions consumer contract](interactions_compatibility_contract.md).
 - **Loaders / private helpers**:
   - payload building, remapping, coordinate normalization, and export helpers.
 
@@ -220,16 +222,21 @@ public reconciliation primitive,
 `view.apply_system_edit(new_molsys, atom_index_map=…, load_blocks="keep"|"collapse"|"append")`.
 Native workflows such as loading, coordinate/cell assignment and interactions
 use the provider without requiring addon registration. Optional domain addons
-and advanced callers can also drive this primitive. The separate MolSysMT addon is retired under uibcdf/molsysviewer#186.
+and advanced callers can also drive this primitive. The legacy MolSysMT addon
+entry point is retired under uibcdf/molsysviewer#186; that retirement does not
+describe the redesigned tools facade.
 The native backend remains required; the viewer does not mirror every provider
 namespace. See `molsyssuite_addon_direction.md` for the boundary.
 
 The [accepted product boundary](core_and_addon_boundary.md) keeps visualization
 and exploration in core, including qualified calculations for visual content.
 Additional molecular tools belong to add-on/scientific interfaces. A redesigned
-MolSysMT tools add-on is now proposed; the legacy retirement above describes
-current runtime behavior. This does not introduce automatic edit observation,
-change the backend dependency or replace the existing reconciliation contract.
+MolSysMT tools add-on is approved and partially implemented in its owning
+provider as `molsysviewer_molsysmt.tools`, with receiving tracked under
+uibcdf/molsysviewer#264 and uibcdf/molsysmt#421. Source availability is separate
+from published-package compatibility. This does not introduce automatic edit
+observation, change the backend dependency or replace the existing
+reconciliation contract.
 
 When `apply_system_edit` runs:
 

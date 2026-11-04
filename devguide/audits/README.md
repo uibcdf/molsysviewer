@@ -3,6 +3,10 @@
 These are dated investigations retained as evidence for current contracts and
 regression guards. Findings marked closed must not be treated as open work.
 
+- [`library_scientific_design_review_2026_11_04.md`](library_scientific_design_review_2026_11_04.md)
+  — completed source/design review: sound foundation, bounded scientific evidence,
+  maintainability/scale limits and proposed growth; no new execution or release
+  qualification, and recommendations remain unimplemented.
 - [`python_js_boundary_audit_2026_07.md`](python_js_boundary_audit_2026_07.md)
 - [`standalone_qt_audit_2026_07.md`](standalone_qt_audit_2026_07.md)
 - [`standalone_qt_event_transport_diagnostic.md`](standalone_qt_event_transport_diagnostic.md)

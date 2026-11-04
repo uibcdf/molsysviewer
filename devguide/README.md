@@ -45,6 +45,18 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Combined addon receiving published — 2026-11-04:**
+  [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
+  `d257b6789`, retains integrated metadata #538/#540 and all 57 element paths,
+  adding independent export-name projection. Frozen addon regression passes
+  3,618 cases; a later docstring-only native merge passes 1,081 scoped cases
+  and sixteen examples with executable AST equivalence retained. The
+  [receipt](molsysmt_name_projection_receiving_20261104.json) separates those
+  inputs, original failed CI and pending new-head/owner/installed qualification.
+  Branch exposure is 216/244, build 15/30. #548/#550/#552 are received;
+  #549/#554 remain native limits. Continue public-provider CI and distribution
+  #292–#294 before further breadth. #264 stays partial; no release or candidate.
+
 - **Detached build preparation received — 2026-11-03:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) adds independent
   covalent inference, AutoDock typing and charge assignment. Native `333d0808c`

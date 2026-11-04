@@ -14,6 +14,37 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Combined metadata and export-name projection received — 2026-11-04
+
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) publishes
+`d257b67893c9f673f315462a1308d4ee7df44723`, retaining owner `8b6e6d10e` and both
+integrated metadata contributions. Source inventory is 216/244: element 57/57,
+build 15/30, supported 4/4 and attribute 7/7. Fifteen build and six mechanics
+paths, aliases/bridge decisions, GUI and installed qualification remain.
+
+`build.project_atom_names` is primary-bound independent export-label projection,
+with a required naming constraint, full axes/IDs and composable identity maps.
+It does not write a file, infer chemistry, recertify assignments, adopt results
+or synchronize pending edits. Native protected geometry can remain shared until
+a public edit detaches it; mutable domains retain native ownership.
+
+Frozen contribution `953ef4633` passes all 3,618 addon cases with zero failures,
+errors or skips. The subsequent owner merge changes only four native docstrings
+in executable source; AST equivalence and a 1,081-case follow-up retain their
+separate proof. Six guide blocks and sixteen new native examples execute;
+246 docstrings, 156 course notebooks, dependency checks and Ruff pass.
+Module 06 changes only its documented prose cell. No scientific algorithm,
+reference table, Rust input or backend correction is authored here.
+
+The [receipt](../molsysmt_name_projection_receiving_20261104.json) retains
+original matrix 41753549618 as failed, with all eight original ZIP digests and
+JUnit identities. Native #552 repairs its two obsolete test expectations in
+received source; it does not qualify an old failed run. Native #548/#550 are
+received too; #549/#554 remain explicit without facade repairs. New PR-head CI,
+owner review/integration and package qualification remain separate. #264 stays
+partial. No Viewer runtime, dependency floor, package, candidate or publication
+change is introduced by this receiving increment.
+
 ## Detached preparation and native label-repair receiving — 2026-11-03
 
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) publishes

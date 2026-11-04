@@ -1,22 +1,24 @@
 # Development checkpoint
 
-**Detached preparation and label-repair receiving completed — 2026-11-03:**
+**Combined addon receiving published — 2026-11-04:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
-`3889ad75a`, receives published native `333d0808c` by merge `e05cc9185`.
-Canonical codes and protected-end cap semantics are received; #546 is integrated
-by its owner. Three detached build routes preserve scientific inputs/results,
-source/scene ownership, native units and explicit model/state/structure choices.
-Complete addon regression passes 3,368 without failures/errors/skips, including
-44 new cases; native/received-repair controls pass 446, final changed-area 63
-and structural controls 534. A final 44-case follow-up receives a test-only
-replacement-guard refinement with unchanged runtime. The
-[receipt](molsysmt_build_assignments_receiving_20261103.json) retains exact inputs,
-hashes, received floors and test/example corrections. Branch exposure is 204/244
-(build 14/30, element 57/57); 215/244 with #538/#540 is hypothetical. Remaining
-native #548/#549/#550, final-head hosted and owner/artifact receiving retain
-separate gates. Continue sixteen build and six mechanics paths, bridge/alias
-decisions and GUI tasks. No host runtime, authored floor, candidate, tag or
-publication change. Earlier source limits remain in their frozen receipts.
+`d257b6789`, receives main `8b6e6d10e`, integrated metadata #538/#540 and native
+#548/#550/#552. Independent export-name projection retains source/scene
+ownership, required naming policy, full axes/IDs and composable identity maps.
+Frozen contribution `953ef4633` passes all 3,618 addon cases; a subsequent
+native docstring-only merge passes 1,081 scoped cases and sixteen examples,
+with executable AST equivalence. Intake 875, changed-area 531 and structural
+565 cases retain their own inputs. Six guide blocks, 246 docstrings,
+156 course notebooks, dependencies and Ruff pass. The
+[receipt](molsysmt_name_projection_receiving_20261104.json) preserves source
+hashes and all eight original failed JUnit ZIPs from 41753549618. New-head CI,
+owner integration and installed qualification remain separate. Branch exposure
+is 216/244 (build 15/30, element 57/57); native #549/#554 remain explicit.
+Next recover Viewer public-provider CI and attend distribution #292–#294,
+then continue fifteen build/six mechanics paths and GUI work. The dated
+[library audit](audits/library_scientific_design_review_2026_11_04.md) is indexed;
+its A5 architecture prose is reconciled. No host runtime, new floor, candidate,
+tag or publication change; both 1.0 publications remain paused.
 
 **Current-primary chain/entity readers delivered — 2026-11-03:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), final source
@@ -769,21 +771,20 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**Current handoff — 2026-11-03:** #269 source receiving is complete with the
-verified original Windows/macOS cells and corrected full Linux recovery
-41714550124. #291's 30 callback guards also pass on all three hosts; its source
-matrix remains failed only on the three old-provider warning-strict examples.
-Its browser, Qt, notebooks, Ruff and policy jobs pass; general CI remains
-pending, with three completed Linux failures confined to the same old-provider
-warning-strict examples. Continue #264 after owner review of PR #538/#540/#543;
-#543 receives all 57 element paths and three detached build routes (3,368
-complete addon passes) on published owner `333d0808c`. Canonical codes, cap
-semantics and #546 examples are received; native #548/#549/#550 remain separate.
-Main's 144/244 baseline, #543's 204/244 branch and hypothetical 215/244 union
-remain distinct until owner integration. #259/#285/#288/#289/#290 retain their
-source/tooling evidence.
-Load human smoke remains explicitly deferred. No candidate is frozen and both
-1.0 publications remain paused. Dated rounds below keep their original scope.
+**Current handoff — 2026-11-04:** #269 source receiving is complete; #291's
+callback guards retain their three-host scope. General Viewer CI 41849778171
+remains failed: Linux/Python 3.14 has 3,380 passes and three warning-strict
+documentation failures using public MolSysMT 0.23.0; cancelled macOS cells are
+not qualified. Browser and experimental Qt runs remain separate. PR #538/#540
+are owner-integrated, while #543 source `d257b6789` awaits owner review and
+new-head CI. The 3,618-case frozen regression and 1,081-case native-doc follow-up
+retain distinct inputs in the [receipt](molsysmt_name_projection_receiving_20261104.json).
+Owner metadata baseline 155/244 and contribution exposure 216/244 are distinct;
+#548/#550/#552 are received, #549/#554 remain native limits. Next recover
+public-provider CI and triage #294's initialization/artifact boundary, review
+#292's build metadata and #293's delivered Conda provider reference, then resume
+remaining expert API/GUI work. Load human smoke stays explicitly deferred.
+No candidate is frozen and both 1.0 publications remain paused.
 
 The latest user-directed standalone round is summarized in the
 [final review](standalone_final_review_20261029.md). Receive its remaining
@@ -2381,20 +2382,29 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current order — 2026-11-03:** #269 is resolved in source; #291 runtime
-receiving is identified separately. Review the owner-integrated inventory,
-then continue remaining preparation/build and mechanics expert wrappers under
-#264 after reviewing owner PR #543: all 57 element paths and three independent
-build routes now have source receiving. Sixteen build and six mechanics paths
-remain, alongside the basic.view bridge and legacy-alias decisions. Receive
-native #548/#549/#550 through owner fixes without facade science patches; the
-333d0808 canonical/cap and #546 repairs already retain their exact-source proof.
-Preserve explicit versus implicit inputs and the owner-reviewed PR route.
-Resolve or record native limits before
-preparation/mechanics and GUI tasks. Broad documentation and exact frozen
-artifact qualification follow the accepted product work. Earlier source
-receiving/public packages/human observations retain their scopes; neither 1.0
-publication nor a candidate freeze is authorized.
+**Current order — 2026-11-04:**
+
+1. Receive new-head CI and owner review of MolSysMT PR #543. Local complete
+   receiving and native-doc follow-up are published; preserve their measured
+   inputs and the older failed matrix. The audit adds no broad refactor gate.
+2. Recover general Viewer CI with its public-provider composition; diagnose
+   the three Pandas4Warning failures without silently weakening the examples.
+   Triage #294's separate import-order observation with its controlled inputs.
+3. Review build/license metadata #292 and the immutable Conda-provider delivery
+   #293. Scope a covering pre-1.0 artifact for #294's already delivered scene
+   handle/player contracts; do not require all addon tools to finish first.
+   Package production/publication still requires its separate accepted route.
+4. Continue fifteen build and six mechanics expert paths under #264, then
+   disposition the basic.view bridge, historical aliases and native MD stubs.
+   Receive #549/#554 fixes from MolSysMT without facade scientific repairs;
+   #548/#550/#552 are already received. Preserve explicit inputs and the PR route.
+5. Build task-oriented addon GUI over qualified expert operations, consolidate
+   documentation and qualify the exact frozen candidate and installed files.
+   Existing core/addon ownership and source/public distinctions remain in force.
+
+Earlier source receiving, public packages and human observations retain their
+scopes; no new candidate freeze or publication is authorized. Both 1.0
+publications remain paused.
 
 **Current order — 2026-10-26:**
 
