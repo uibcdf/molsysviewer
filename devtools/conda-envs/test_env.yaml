@@ -7,7 +7,7 @@ dependencies:
   - python>=3.11,<3.15
   - pip
   - python-build
-  - setuptools>=64
+  - setuptools>=77.0.3
   - versioningit
   - wheel
   - pytest
@@ -28,7 +28,11 @@ dependencies:
   - pyunitwizard>=0.25.0
   - smonitor>=0.13.0
   - traitlets>=5
-  - pandas
+  # Public MolSysMT 0.23.0 predates its #431 Pandas 3.1 warning-strict repair.
+  # Keep this received CI baseline until the repaired package is public;
+  # current-source receiving selects Pandas separately. Not a runtime bound.
+  # Owner/removal: devguide/public_provider_ci_compatibility_20261104.md (#294).
+  - pandas==2.3.3
   - imageio>=2.16.0
   # Node 26 currently breaks the bundled JS coverage tool's CommonJS loader.
   - nodejs>=22,<23

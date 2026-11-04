@@ -1,24 +1,27 @@
 # Development checkpoint
 
-**Combined addon receiving published — 2026-11-04:**
-[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
-`d257b6789`, receives main `8b6e6d10e`, integrated metadata #538/#540 and native
-#548/#550/#552. Independent export-name projection retains source/scene
-ownership, required naming policy, full axes/IDs and composable identity maps.
-Frozen contribution `953ef4633` passes all 3,618 addon cases; a subsequent
-native docstring-only merge passes 1,081 scoped cases and sixteen examples,
-with executable AST equivalence. Intake 875, changed-area 531 and structural
-565 cases retain their own inputs. Six guide blocks, 246 docstrings,
-156 course notebooks, dependencies and Ruff pass. The
-[receipt](molsysmt_name_projection_receiving_20261104.json) preserves source
-hashes and all eight original failed JUnit ZIPs from 41753549618. New-head CI,
-owner integration and installed qualification remain separate. Branch exposure
-is 216/244 (build 15/30, element 57/57); native #549/#554 remain explicit.
-Next recover Viewer public-provider CI and attend distribution #292–#294,
-then continue fifteen build/six mechanics paths and GUI work. The dated
-[library audit](audits/library_scientific_design_review_2026_11_04.md) is indexed;
-its A5 architecture prose is reconciled. No host runtime, new floor, candidate,
-tag or publication change; both 1.0 publications remain paused.
+**Public-provider CI and distribution source recovery — 2026-11-04:**
+Public MolSysMT 0.23.0 predates native #431; its CI now selects pandas 2.3.3.
+Corrected-source/pandas-3 receiving remains independently selectable, with
+strict examples unchanged. The local full passage retains its original
+25 failures / 6 errors, 3,365 passes and 26 skips. All 31 failed/error cases
+recover in a 36-case run using declared Node 22 and permitted localhost/Chrome;
+the moving devguide index is regenerated. This is aggregate evidence, not a
+new single full green run. Five strict documentation tests pass on each
+public/pandas-2 and corrected-source/pandas-3 composition. The
+[receipt](public_provider_distribution_receiving_20261104.json) retains all
+inputs, original conclusions and actual public-payload byte verification.
+#292 receives aligned Setuptools 77.0.3 and minimum/current wheel, sdist and
+rebuilt-wheel license proof; #293 adopts immutable Conda provider v2.3.0 with
+91 publication/dependency contracts passing and no publisher operation.
+#294 remains partial for a covering artifact and exact private initialization
+receiving. Hosted recovery remains pending. Addon PR #543 source `d257b6789`
+retains 216/244 exposure and its separate 3,618-case / 1,081-case
+[receiving](molsysmt_name_projection_receiving_20261104.json); smoke/performance
+and administrative checks pass, full CI and owner integration remain pending.
+Next receive committed-head CI and scope #294's additive artifact, then resume
+fifteen build/six mechanics paths and GUI. No Viewer runtime, runtime floor,
+candidate, tag or publication change; both 1.0 publications remain paused.
 
 **Current-primary chain/entity readers delivered — 2026-11-03:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), final source
@@ -771,20 +774,21 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**Current handoff — 2026-11-04:** #269 source receiving is complete; #291's
-callback guards retain their three-host scope. General Viewer CI 41849778171
-remains failed: Linux/Python 3.14 has 3,380 passes and three warning-strict
-documentation failures using public MolSysMT 0.23.0; cancelled macOS cells are
-not qualified. Browser and experimental Qt runs remain separate. PR #538/#540
-are owner-integrated, while #543 source `d257b6789` awaits owner review and
-new-head CI. The 3,618-case frozen regression and 1,081-case native-doc follow-up
-retain distinct inputs in the [receipt](molsysmt_name_projection_receiving_20261104.json).
-Owner metadata baseline 155/244 and contribution exposure 216/244 are distinct;
-#548/#550/#552 are received, #549/#554 remain native limits. Next recover
-public-provider CI and triage #294's initialization/artifact boundary, review
-#292's build metadata and #293's delivered Conda provider reference, then resume
-remaining expert API/GUI work. Load human smoke stays explicitly deferred.
-No candidate is frozen and both 1.0 publications remain paused.
+**Current handoff — 2026-11-04:** #269 and #291 retain source receiving.
+The [public-provider recovery](public_provider_distribution_receiving_20261104.json)
+keeps old hosted/local failures explicit: public CI selects pandas 2.3.3 until
+a qualified provider containing #431 arrives; current-source/pandas-3 tests
+pass separately. All 31 local failed/error cases recover under the declared
+execution profile; aggregate source evidence does not qualify a hosted matrix.
+#292/#293 source corrections and guarded distribution reviews are complete;
+#294 retains artifact and private initialization receiving. Receive the new
+committed-head CI before claiming hosted recovery. Browser/experimental Qt
+remain separate. MolSysMT PR #543 `d257b6789` has successful smoke/performance
+and administrative gates; full CI and owner integration remain pending.
+Its 216/244 contribution exposure differs from main's 155/244 metadata baseline;
+#548/#550/#552 are received and #549/#554 remain native limits. Continue
+remaining expert/GUI work after the artifact decision. Load human smoke stays
+deferred; no candidate is frozen and both 1.0 publications remain paused.
 
 The latest user-directed standalone round is summarized in the
 [final review](standalone_final_review_20261029.md). Receive its remaining
@@ -2387,11 +2391,12 @@ Resume toward **1.0** in this order:
 1. Receive new-head CI and owner review of MolSysMT PR #543. Local complete
    receiving and native-doc follow-up are published; preserve their measured
    inputs and the older failed matrix. The audit adds no broad refactor gate.
-2. Recover general Viewer CI with its public-provider composition; diagnose
-   the three Pandas4Warning failures without silently weakening the examples.
+2. Receive hosted general CI with the bounded public-provider/pandas baseline;
+   local warning-strict and failed-case recovery are complete. Retain native
+   #431 delivery ownership and the documented baseline removal trigger.
    Triage #294's separate import-order observation with its controlled inputs.
-3. Review build/license metadata #292 and the immutable Conda-provider delivery
-   #293. Scope a covering pre-1.0 artifact for #294's already delivered scene
+3. #292/#293 source reviews and guards are complete. Scope a covering pre-1.0
+   artifact for #294's already delivered scene
    handle/player contracts; do not require all addon tools to finish first.
    Package production/publication still requires its separate accepted route.
 4. Continue fifteen build and six mechanics expert paths under #264, then

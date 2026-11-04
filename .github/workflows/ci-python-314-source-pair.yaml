@@ -36,6 +36,11 @@ on:
         description: Full MolSysMT source candidate commit SHA
         required: true
         type: string
+      pandas_version:
+        description: Exact pandas baseline; use 3.1.0 only with a provider containing repair 431
+        required: false
+        default: '2.3.3'
+        type: string
       molsysmt_version:
         description: Intended MolSysMT version at the exact source candidate
         required: true
@@ -83,8 +88,10 @@ jobs:
         env:
           SELECTED_PLATFORM: ${{ inputs.platform || 'all' }}
           SOURCE_RECEIVING: ${{ inputs.source_receiving || false }}
+          PANDAS_VERSION: ${{ inputs.pandas_version || '2.3.3' }}
         run: |
           set -euo pipefail
+          [[ "$PANDAS_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
           case "$SELECTED_PLATFORM" in
             all|ubuntu-latest|macos-15|windows-2025) ;;
             *) echo "::error::Unknown source-receiving platform"; exit 1 ;;
@@ -132,6 +139,9 @@ jobs:
         with:
           environment-file: molsysviewer-source/devtools/conda-envs/test_source_pair_py314.yaml
           environment-name: source-pair
+          # The historical default source is public 0.23.0. New-source receiving
+          # can request pandas_version=3.1.0 explicitly after #431.
+          create-args: pandas=${{ inputs.pandas_version || '2.3.3' }}
           condarc: |
             channels:
               - uibcdf

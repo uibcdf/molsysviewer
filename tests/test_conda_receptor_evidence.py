@@ -19,7 +19,9 @@ def test_noarch_conda_publishers_retain_structured_producer_evidence():
         build = next(step for step in steps if step.get("id") == build_id)
         evidence = next(step for step in steps if step.get("name") == evidence_name)
 
-        assert build["uses"] == "uibcdf/action-build-and-upload-conda-packages@v2.1.0"
+        assert build["uses"] == (
+            "uibcdf/action-build-and-upload-conda-packages@87c70b1443d5f22d738ee3ddf812bdbe0152f6c2"
+        )
         assert "evidence_matrix_index" not in build["with"]
         assert evidence["if"] == f"${{{{ always() && steps.{build_id}.outputs.evidence_path != '' }}}}"
         assert evidence["uses"] == UPLOAD_ACTION

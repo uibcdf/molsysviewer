@@ -35,6 +35,7 @@ def test_source_recovery_matrix_keeps_complete_default_and_whitelisted_subsets()
     assert steps[0]["env"] == {
         "SELECTED_PLATFORM": "${{ inputs.platform || 'all' }}",
         "SOURCE_RECEIVING": "${{ inputs.source_receiving || false }}",
+        "PANDAS_VERSION": "${{ inputs.pandas_version || '2.3.3' }}",
     }
 
 
@@ -54,10 +55,33 @@ def test_source_recovery_guard_executes_without_waiving_candidate_platforms(plat
         input=script,
         text=True,
         capture_output=True,
-        env=dict(os.environ, SELECTED_PLATFORM=platform, SOURCE_RECEIVING=str(receiving).lower()),
+        env=dict(
+            os.environ, SELECTED_PLATFORM=platform, SOURCE_RECEIVING=str(receiving).lower(), PANDAS_VERSION="2.3.3"
+        ),
     )
     accepted = platform != "unknown" and (platform == "all" or receiving)
     assert result.returncode == (0 if accepted else 1), result.stdout + result.stderr
+
+
+@pytest.mark.parametrize(
+    ("version", "accepted"),
+    [("2.3.3", True), ("3.1.0", True), ("latest", False), ("3.1", False), ("3.1.0 --override-channels", False)],
+)
+def test_source_receiving_rejects_nonversion_pandas_inputs_before_provisioning(version, accepted):
+    workflow = yaml.load(
+        (ROOT / ".github/workflows/ci-python-314-source-pair.yaml").read_text(), Loader=yaml.BaseLoader
+    )
+    guard = workflow["jobs"]["source-pair"]["steps"][0]
+    bash = shutil.which("bash")
+    assert bash is not None, "The workflow guard regression requires Bash"
+    result = subprocess.run(
+        [bash],
+        input=guard["run"],
+        text=True,
+        capture_output=True,
+        env=dict(os.environ, SELECTED_PLATFORM="all", SOURCE_RECEIVING="true", PANDAS_VERSION=version),
+    )
+    assert (result.returncode == 0) is accepted, result.stdout + result.stderr
 
 
 def test_exact_source_pair_executes_all_notebooks_and_core_browser_suites():

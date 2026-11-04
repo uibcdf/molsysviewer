@@ -14,6 +14,7 @@ dependencies:
   # Python packaging helpers
   - pip
   - python-build
+  - setuptools>=77.0.3
   - wheel
   # Metadata-only dependency audit, before wheel or Conda builds.
   - packaging>=23

@@ -7,6 +7,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tarfile
 import tomllib
 import zipfile
 from email.parser import BytesParser
@@ -72,6 +73,7 @@ def _conda_run_dependencies(recipe: str) -> set[str]:
 def _copy_wheel_source(destination: Path) -> None:
     shutil.copy2(ROOT / "pyproject.toml", destination / "pyproject.toml")
     shutil.copy2(ROOT / "README.md", destination / "README.md")
+    shutil.copy2(ROOT / "LICENSE", destination / "LICENSE")
     shutil.copytree(
         ROOT / "molsysviewer",
         destination / "molsysviewer",
@@ -284,6 +286,13 @@ def test_built_wheel_imports_from_packaged_runtime_manifest(tmp_path):
         metadata = BytesParser().parsebytes(archive.read(metadata_paths[0]))
         wheel_dependencies = _dependency_names(metadata.get_all("Requires-Dist", []))
         assert REQUIRED_RUNTIME_DEPENDENCIES <= wheel_dependencies
+        assert metadata["License-Expression"] == "MIT"
+        assert "LICENSE" in metadata.get_all("License-File", [])
+        license_members = [name for name in members if name.endswith(".dist-info/licenses/LICENSE")]
+        assert len(license_members) == 1
+        assert archive.read(license_members[0]) == (ROOT / "LICENSE").read_bytes()
+        font_notice = "molsysviewer/VARELA_ROUND_OFL.txt"
+        assert archive.read(font_notice) == (ROOT / font_notice).read_bytes()
 
     site = tmp_path / "site"
     subprocess.run(
@@ -319,6 +328,70 @@ assert ACTION_CATEGORIES == data['actions']
         capture_output=True,
         text=True,
     )
+
+
+def test_declared_build_tools_support_spdx_on_every_no_isolation_route():
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text())
+    assert project["project"]["license"] == "MIT"
+    assert project["project"]["license-files"] == ["LICENSE"]
+    declarations = [_dependencies_by_name(project["build-system"]["requires"])["setuptools"]]
+    for filename in ("test_env.yaml", "test_source_pair_py314.yaml", "build_env.yaml"):
+        dependencies = yaml.safe_load((ROOT / "devtools/conda-envs" / filename).read_text())["dependencies"]
+        declarations.append(_conda_dependencies_by_name(dependencies)["setuptools"])
+    recipe = (ROOT / "devtools/conda-build/meta.yaml").read_text()
+    host = recipe.split("  host:\n", 1)[1].split("  run:\n", 1)[0]
+    declarations.append(_dependencies_by_name(re.findall(r"^\s*-\s*(setuptools[^\n]*)", host, re.M))["setuptools"])
+    for requirement in declarations:
+        assert Version("77.0.3") in requirement.specifier
+        assert Version("76.1.0") not in requirement.specifier
+    assert "license_file: LICENSE" in recipe
+
+
+def test_source_archive_and_rebuilt_wheel_preserve_license_metadata_and_notices(tmp_path):
+    source = tmp_path / "source"
+    source.mkdir()
+    _copy_wheel_source(source)
+    dist = tmp_path / "sdist"
+    build = subprocess.run(
+        [sys.executable, "-m", "build", "--sdist", "--no-isolation", "--outdir", str(dist)],
+        cwd=source,
+        capture_output=True,
+        text=True,
+    )
+    assert build.returncode == 0, build.stdout + build.stderr
+    archives = list(dist.glob("*.tar.gz"))
+    assert len(archives) == 1
+    unpacked = tmp_path / "unpacked"
+    with tarfile.open(archives[0]) as archive:
+        archive.extractall(unpacked, filter="data")
+    directories = list(unpacked.iterdir())
+    assert len(directories) == 1
+    restored = directories[0]
+    assert (restored / "LICENSE").read_bytes() == (ROOT / "LICENSE").read_bytes()
+    metadata = BytesParser().parsebytes((restored / "PKG-INFO").read_bytes())
+    assert metadata["License-Expression"] == "MIT"
+    assert "LICENSE" in metadata.get_all("License-File", [])
+    rebuilt = tmp_path / "rebuilt"
+    build = subprocess.run(
+        [sys.executable, "-m", "build", "--wheel", "--no-isolation", "--outdir", str(rebuilt)],
+        cwd=restored,
+        capture_output=True,
+        text=True,
+    )
+    assert build.returncode == 0, build.stdout + build.stderr
+    wheels = list(rebuilt.glob("*.whl"))
+    assert len(wheels) == 1
+    with zipfile.ZipFile(wheels[0]) as archive:
+        names = archive.namelist()
+        metadata_name = next(name for name in names if name.endswith(".dist-info/METADATA"))
+        metadata = BytesParser().parsebytes(archive.read(metadata_name))
+        assert metadata["License-Expression"] == "MIT"
+        assert "LICENSE" in metadata.get_all("License-File", [])
+        notice = next(name for name in names if name.endswith(".dist-info/licenses/LICENSE"))
+        assert archive.read(notice) == (ROOT / "LICENSE").read_bytes()
+        font = "molsysviewer/VARELA_ROUND_OFL.txt"
+        assert archive.read(font) == (ROOT / font).read_bytes()
+        assert REQUIRED_RUNTIME_RESOURCES <= set(names)
 
 
 def test_every_declared_console_script_resolves():
@@ -564,6 +637,11 @@ def test_hosted_python_suite_installs_its_build_and_example_requirements():
     node_specifier = _dependencies_by_name(env["dependencies"])["nodejs"].specifier
     assert Version("22.0") in node_specifier
     assert Version("26.0") not in node_specifier
+    # The public 0.23.0 provider lacks native #431; keep its strict examples
+    # on the received pandas baseline until a repaired public file is qualified.
+    pandas_specifier = _dependencies_by_name(env["dependencies"])["pandas"].specifier
+    assert Version("2.3.3") in pandas_specifier
+    assert Version("3.1.0") not in pandas_specifier
 
     workflow_path = ROOT / ".github" / "workflows" / "CI.yaml"
     workflow = yaml.safe_load(workflow_path.read_text(encoding="utf-8"))
@@ -575,6 +653,24 @@ def test_hosted_python_suite_installs_its_build_and_example_requirements():
         if step.get("working-directory") == "molsysviewer/js" and "npm ci" in step.get("run", "")
     ]
     assert npm_steps and min(npm_steps) < test_index
+
+
+def test_source_receiving_can_select_a_distinct_validated_pandas_version():
+    workflow = yaml.safe_load((ROOT / ".github/workflows/ci-python-314-source-pair.yaml").read_text())
+    # YAML 1.1 may interpret the unquoted workflow key 'on' as True.
+    events = workflow.get("on", workflow.get(True))
+    option = events["workflow_dispatch"]["inputs"]["pandas_version"]
+    assert option["type"] == "string" and option["default"] == "2.3.3"
+    steps = workflow["jobs"]["source-pair"]["steps"]
+    create_index = next(i for i, step in enumerate(steps) if "environment-file" in step.get("with", {}))
+    assert "inputs.pandas_version" in steps[create_index]["with"]["create-args"]
+    validations = [
+        step
+        for step in steps[:create_index]
+        if "PANDAS_VERSION" in step.get("env", {}) and "PANDAS_VERSION" in step.get("run", "")
+    ]
+    assert len(validations) == 1
+    assert "inputs.pandas_version" in validations[0]["env"]["PANDAS_VERSION"]
 
 
 def test_the_recommended_version_is_the_one_the_single_version_jobs_use():

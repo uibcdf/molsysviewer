@@ -45,6 +45,19 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Public-provider CI and distribution source recovery — 2026-11-04:**
+  [Receiving](public_provider_ci_compatibility_20261104.md) identifies the
+  immutable 0.23.0 provider's #431 boundary and selects pandas 2.3.3 for its CI;
+  corrected-source/pandas-3 receiving remains explicit. The original local
+  full failure retains 3,365 passes; all 31 failed/error cases recover in a
+  36-case pass with Node 22 and permitted localhost/Chrome. This is aggregate
+  evidence, not a new single full green run or hosted matrix. #292 receives
+  minimum/current wheel/sdist/license proof and #293 immutable local publisher
+  adoption. [#294](pending_proposals/public_artifact_current_scene_contracts.md)
+  remains partial for a covering artifact and private initialization receiving.
+  The [receipt](public_provider_distribution_receiving_20261104.json) preserves
+  inputs, original failures and scope. No release/candidate or runtime change.
+
 - **Combined addon receiving published — 2026-11-04:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
   `d257b6789`, retains integrated metadata #538/#540 and all 57 element paths,

@@ -1,0 +1,308 @@
+{
+  "schema": "molsysviewer.public-ci-distribution-receiving@1",
+  "date": "2026-11-04",
+  "issues": [
+    "uibcdf/molsysviewer#292",
+    "uibcdf/molsysviewer#293",
+    "uibcdf/molsysviewer#294",
+    "uibcdf/molsysmt#431"
+  ],
+  "source_parent": "e27e0dafe976a1d0630ee3dde7cb6626a98c2abb",
+  "source_inputs_sha256": {
+    "pyproject.toml": "14febf49952088c6788189fe5a17cb5a959e4587e26b57ee55245406c58535f5",
+    "devtools/conda-build/meta.yaml": "411cac959ed2ea2df97ef767b834709e5b9833b0f5556d7407f89862c37a74d6",
+    "devtools/conda-envs/build_env.yaml": "cb74f5dc002c380b761beb1fdd6817ffa0f2610a3b4b1286f65d591da29f638d",
+    "devtools/conda-envs/test_env.yaml": "0a5da08d888e85d223a0f96494639b6d0270328f35b02ac40230f0a50a4144a4",
+    "devtools/conda-envs/test_source_pair_py314.yaml": "120e4207069d0f923fd3e4903789fe7b5d21dac0315ab8a75200f1c6245ca6cf",
+    ".github/workflows/ci-python-314-source-pair.yaml": "9f4980ded82e780a6ca0bbac2c8976ef2ccaa437f76abeb4621ca34f175bbb08",
+    ".github/workflows/build_and_upload_conda_packages.yaml": "f1b1ef77fd4a171b8cbc168c1e250072d460fb6eb07157933b76f74e2a534c39",
+    ".github/workflows/promote_conda_package.yaml": "b1d79ed43368b6fde18181e08ed15f5e4d90a682b5fadc2a75137ba4bee61e8e",
+    "tests/test_distribution_artifact.py": "396d864747fd6f6ec6ffe2a239cc2591d8950f611e80c903ff18d6ff016c7a71",
+    "tests/test_source_workflow_coverage.py": "31ff27b6e1841dbdc802e751d7216edb1944429b24f3179c38b0e93ac2046f6d",
+    "tests/test_conda_receptor_evidence.py": "4749e5fa73a4768b3f50cb689936dfff661ac67f089a8a7fd1cfa46c22436d39",
+    "tests/test_release_route.py": "c50a9e24ecdca1d928f7dfe089910749149dd7b04d305d9710121978060fc00a"
+  },
+  "environment": {
+    "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+    "name": "molsyssuite@uibcdf_3.14",
+    "numpy": "2.4.6",
+    "installed_pandas": "2.3.3",
+    "scope": "Existing development dependency closure; explicit public-package and tool overlays, not a new Conda solve."
+  },
+  "public_payloads": [
+    {
+      "archive": "molsysmt-0.23.0-pyabi3h03bb3b7_0.conda",
+      "sha256": "7ff102db1ceb3a6098b5c020193a2bef1c5eaa4dbcbc5a0b472ee2fa44a1971b",
+      "verified_python_native_manifest_files": 2852,
+      "member_manifest_sha256": "bf1a786abad35b07532cfad0bdc5aa65838ecb90653914b9c7f66ff4c41f2caf"
+    },
+    {
+      "archive": "molsysviewer-0.24.0-py_1.tar.bz2",
+      "sha256": "e31dfb114ab2e49f22b372992d0201455b91849f2631d0165b802069e13abeaa",
+      "verified_python_native_manifest_files": 617,
+      "member_manifest_sha256": "0c8f622d0e86d904a5d7299bfac61fda43378803fb5ee80994fac018cbd6f2d0"
+    }
+  ],
+  "original_hosted_failure": {
+    "run": 41849778171,
+    "source": "139fa422c9bd5f0c07006d7ac99b7d1333ab845f",
+    "conclusion": "failure",
+    "observed_packages": {
+      "molsysmt": "0.23.0 pyabi3h03bb3b7_0",
+      "pandas": "3.1.0 np2py314h9e1d7c2_0",
+      "numpy": "2.5.4 py314hd3a7d6b_0"
+    },
+    "scope": "Three strict documentation failures; original conclusion unchanged."
+  },
+  "pandas_compatibility": {
+    "wheel_sha256": "e4455cdcc03e42c17233184e8e4ea65c3ed2925d8b1d9d7dd8e6fced3f6e43c1",
+    "public_provider_pandas31": {
+      "tests": 3,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "junit_sha256": "a274237a0fd87380ff43edc8f02dc50d5fddf52b25fc03d2d25f8366bc7bcae8",
+      "log_sha256": "4a8d31ed40378cd84198eaad912ad51283b2329a8438f9d02b9dc8bf5830b3a6"
+    },
+    "public_provider_pandas23": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit_sha256": "2ab6eaad23a159c37a57cdbaca6b01f5b2fe9b69b805fb594e04957ff9b5c593",
+      "log_sha256": "1242e1397682eac6e60c9f75ebabf3988f5c7265d0dc9d597d74c625a454c68d"
+    },
+    "corrected_source_pandas31": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit_sha256": "f21bc37044b8b5a3e914fe1025ea9401c635db31f2b736432fb496bea5958331",
+      "log_sha256": "70bb0500dbac7d87456818c6f692f230e886d86af097a8100c65bbc6cb846d74"
+    },
+    "corrected_provider": "d257b67893c9f673f315462a1308d4ee7df44723",
+    "native_repair": "128a0bbb94e6804f5663e58a45313c77de1cc30d",
+    "limit": "Local red reproduction gives two failures/one pass, not all three original CI outcomes. Public-provider CI selects pandas 2.3.3; runtime bounds and warning-as-error examples are unchanged.",
+    "removal": "Viewer #294 owner review by 2026-11-11 or when a compatible public provider containing #431 arrives; qualify exact bytes and strict examples/matrix before revising the CI baseline."
+  },
+  "complete_local_passage": {
+    "original": {
+      "tests": 3422,
+      "failures": 25,
+      "errors": 6,
+      "skipped": 26,
+      "junit_sha256": "08a04f4b8102c3aafc5145066c3dd04146d3849f5dd4bbb10e95dca32062b741",
+      "log_sha256": "e361e8e1f11211f57b83e52264c2a049e87d44155b929708e4b6b5381ce150f9"
+    },
+    "recovery": {
+      "tests": 36,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit_sha256": "96605fe5e35fd292f79bc108b7cddff89fd0609ce885ab80bb65c65eb38ce1b0",
+      "log_sha256": "ebbc7413da58c2d2b212a3eeb179d6d87c2da777bd171424d3d5b35169eb03b8"
+    },
+    "failed_node_ids": [
+      "tests.test_exported_page_opens_from_disk::test_a_matching_pair_stays_quiet",
+      "tests.test_exported_page_opens_from_disk::test_a_scene_from_another_release_says_so",
+      "tests.test_exported_page_opens_from_disk::test_a_self_contained_export_renders_with_no_server_and_no_network",
+      "tests.test_exported_page_opens_from_disk::test_failed_scene_restoration_never_declares_the_export_rendered",
+      "tests.test_exported_page_opens_from_disk::test_the_exported_file_is_the_only_file_needed",
+      "tests.test_exported_page_opens_from_disk::test_the_notice_names_both_versions",
+      "tests.test_exported_page_opens_from_disk::test_the_studio_says_it_cannot_act_here",
+      "tests.test_headless_export_resources::test_html_server_releases_socket_thread_and_workspace_on_exit[False]",
+      "tests.test_headless_export_resources::test_html_server_releases_socket_thread_and_workspace_on_exit[True]",
+      "tests.test_headless_export_resources::test_real_png_export_from_read_only_package",
+      "tests.test_internal_render_worker_host::test_internal_host_authenticates_registration_and_preserves_binary_frames",
+      "tests.test_internal_render_worker_host::test_internal_host_rejects_a_worker_with_the_wrong_session_identity",
+      "tests.test_js_source_coverage::test_real_production_functions_are_covered_and_unmapped_runner_is_rejected",
+      "tests.test_js_source_coverage::test_report_gate_rejects_broken_or_nonproduction_coverage[empty]",
+      "tests.test_js_source_coverage::test_report_gate_rejects_broken_or_nonproduction_coverage[false-full]",
+      "tests.test_js_source_coverage::test_report_gate_rejects_broken_or_nonproduction_coverage[harness]",
+      "tests.test_js_source_coverage::test_report_gate_rejects_broken_or_nonproduction_coverage[missing-lines]",
+      "tests.test_js_source_coverage::test_report_gate_rejects_broken_or_nonproduction_coverage[missing]",
+      "tests.test_preview_server::test_blocking_preview_exits_on_interrupt_and_preserves_caller_directory",
+      "tests.test_preview_server::test_preview_moves_on_when_the_port_is_taken",
+      "tests.test_preview_server::test_preview_serves_the_directory",
+      "tests.test_remote_cli::test_client_rendering_cli_runs_a_real_demo_session_and_emits_json",
+      "tests.test_remote_cli::test_foreground_server_process_reports_ready_and_stops",
+      "tests.test_remote_cli::test_load_worker_and_bind_failures_have_distinct_exit_codes",
+      "tests.test_remote_session_service::test_auth_and_client_websocket_have_limits_separate_from_molecular_uploads",
+      "tests.test_remote_session_service::test_authentication_failures_are_bounded_without_locking_out_the_valid_token",
+      "tests.test_remote_session_service::test_client_rendering_uses_the_same_authenticated_gateway_without_a_worker",
+      "tests.test_remote_session_service::test_rejected_websocket_peers_do_not_poison_health_or_consume_the_client_slot",
+      "tests.test_remote_session_service::test_session_auth_registration_signaling_input_and_command_share_one_identity",
+      "tests.test_remote_session_service::test_two_loopback_sessions_keep_cookies_and_artifacts_isolated",
+      "tests.test_reporting_protocol::test_the_generated_indexes_are_current"
+    ],
+    "all_original_failures_recovered": true,
+    "recovery_extra_tests": 5,
+    "disposition": {
+      "retained_passes": 3365,
+      "recovered_original_cases": 31,
+      "skipped": 26,
+      "deselected": 14,
+      "unresolved_original_failures": 0
+    },
+    "causes": "Original run retained failure: restricted sandbox blocked localhost/Chrome, Node 24 violated the declared Node 22 tooling profile, and indexes changed during documentation editing. Recovery uses permitted localhost/Chrome, official Node 22.23.4 and regenerated indexes; no assertion/skip or product algorithm change.",
+    "node_receipt": {
+      "url": "https://nodejs.org/dist/v22.23.4/node-v22.23.4-linux-x64.tar.xz",
+      "sha256": "1805bcd35e6815559bd2eb97db438d3fdb0eb3a5e6a977b7c1badca76337e9ce",
+      "checksum_source": "https://nodejs.org/dist/v22.23.4/SHASUMS256.txt"
+    },
+    "scope": "Aggregate retained and scoped evidence, not a new single full green run or hosted matrix. Source/config changes after this measurement require their appropriate checks."
+  },
+  "license_292": {
+    "minimum": "77.0.3",
+    "development": "84.0.0",
+    "minimum_wheel_sha256": "67122e78221da5cf550ddd04cf8742c8fe12094483749a792d56cd669d6cf58c",
+    "current_tests": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit_sha256": "740f6d1384e1f67511fdb7965e02e50d4441e94dc82641d4505399d8bc52215e",
+      "log_sha256": "1a8e194edd75d12bf731170e2ea8b5cc482ab33c267fd6a0b5ace874e99c2a10"
+    },
+    "minimum_tests": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit_sha256": "131ba0b89a93227d040b89610f4b34e8a6095f32b5b44568a8c32c1142856fbc",
+      "log_sha256": "edcc3473d6a2a2767d0235b0da7d33b8f900c76ace6c2b36f8d60b631e588b98"
+    },
+    "artifacts": [
+      {
+        "profile": "current",
+        "backend": "84.0.0",
+        "path": "test_built_wheel_imports_from_0/dist/molsysviewer-0+unknown-py3-none-any.whl",
+        "sha256": "debd43c08a5ce3054ff5070d1052eeb9ef4732c8bb809f25137b0f4456f59a61",
+        "bytes": 2046594
+      },
+      {
+        "profile": "current",
+        "backend": "84.0.0",
+        "path": "test_source_archive_and_rebuil0/rebuilt/molsysviewer-0+unknown-py3-none-any.whl",
+        "sha256": "4da191514e95fd3960ff1d128d7aa5c2029ea77f07143f90000d20b0d5979e34",
+        "bytes": 2046594
+      },
+      {
+        "profile": "current",
+        "backend": "84.0.0",
+        "path": "test_source_archive_and_rebuil0/sdist/molsysviewer-0+unknown.tar.gz",
+        "sha256": "d011bd59398e6a0ef691809fe51086022921301a4b61bc195e41c636de30d260",
+        "bytes": 1826569
+      },
+      {
+        "profile": "minimum",
+        "backend": "77.0.3",
+        "path": "test_built_wheel_imports_from_0/dist/molsysviewer-0+unknown-py3-none-any.whl",
+        "sha256": "9fbf02d2c2aa3c041dd7f9cc54081ec454d161d1c3d8dc7bea014f6dd1135469",
+        "bytes": 2046593
+      },
+      {
+        "profile": "minimum",
+        "backend": "77.0.3",
+        "path": "test_source_archive_and_rebuil0/rebuilt/molsysviewer-0+unknown-py3-none-any.whl",
+        "sha256": "6056a32c247cdd303400e4d41a96c07ccd0061793ce2a611951f2b9ae3e704fa",
+        "bytes": 2046593
+      },
+      {
+        "profile": "minimum",
+        "backend": "77.0.3",
+        "path": "test_source_archive_and_rebuil0/sdist/molsysviewer-0+unknown.tar.gz",
+        "sha256": "ff56d66233370efafe20f61d2d11d927c60e6500d1d5f15e92eddf1dace45982",
+        "bytes": 1821082
+      }
+    ],
+    "initial_test_development_failure": {
+      "tests": 3,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "junit_sha256": "747aff25ab9979fdf1f8e5e34d37ec30dc7d583ea6732374b1a7024b01dcaa35",
+      "log_sha256": "a4dc01cbe23b255636e6c00e155cb663d1360bc7253d92f3af4b7953eedf49cb"
+    },
+    "contract": "SPDX MIT, explicit LICENSE and preserved original project/font bytes in wheel, sdist and rebuilt wheel; coherent no-isolation tool floors. Source-copy version fallback, not release artifacts.",
+    "notice_sha256": {
+      "LICENSE": "89774af33c83f6ac673838d2621666d25f65b18f6d15fd67a04004901bd90b01",
+      "molsysviewer/VARELA_ROUND_OFL.txt": "ad2c1b0bfa7858001177505c85eb51798102a08b0e3587e1ccf95d337e8d8eb3"
+    }
+  },
+  "conda_293": {
+    "provider": "87c70b1443d5f22d738ee3ddf812bdbe0152f6c2",
+    "central_delivery": "95f693be10c9205ab9b912cb53453710a207bf45",
+    "reviewed_scopes": [
+      "local staging build/upload",
+      "local direct build/upload",
+      "exact-file promotion"
+    ],
+    "validation": {
+      "tests": 91,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit_sha256": "58192877d10c4b1c431cf666c0b44733f3d10a4f021cda9e611d96416ebf99a7",
+      "log_sha256": "df1e9501643737acc00be80e4400d5158ce8131909f419c8181a04b67b90b0a7"
+    },
+    "scope": "Inputs/outputs and retained governance, staging, mandatory tests and receipt contracts; no registry operation or publisher dispatch."
+  },
+  "artifact_294": {
+    "old_public_shape": {
+      "mode": "shape",
+      "version": "0.24.0",
+      "origin": "/home/diego/Myopt/miniconda3/pkgs/molsysviewer-0.24.0-py_1/site-packages/molsysviewer/__init__.py",
+      "observed": {
+        "shape_info_callable": false
+      },
+      "scope": "Public Viewer archive with public MT 0.23.0 and development pandas 2.3.3; not the complete DockingMT controlled composition."
+    },
+    "old_public_player": {
+      "mode": "frames",
+      "version": "0.24.0",
+      "origin": "/home/diego/Myopt/miniconda3/pkgs/molsysviewer-0.24.0-py_1/site-packages/molsysviewer/__init__.py",
+      "observed": {
+        "structures": 3,
+        "index": 2,
+        "notifications": 0
+      },
+      "scope": "Public Viewer archive with public MT 0.23.0 and development pandas 2.3.3; not the complete DockingMT controlled composition."
+    },
+    "current_public_composition": {
+      "python": "3.14.7",
+      "viewer_origin": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/__init__.py",
+      "molsysmt_origin": "/home/diego/Myopt/miniconda3/pkgs/molsysmt-0.23.0-pyabi3h03bb3b7_0/site-packages/molsysmt/__init__.py",
+      "pandas": "2.3.3",
+      "pandas_origin": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/lib/python3.14/site-packages/pandas/__init__.py",
+      "shape_info": true,
+      "frame_index": 2,
+      "frame_notifications": 1,
+      "import_order": "Viewer class before MolSysMT",
+      "scope": "Fresh-process source Viewer probe; DockingMT and its controlled private composition are not present."
+    },
+    "current_source_composition": {
+      "python": "3.14.7",
+      "viewer_origin": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/__init__.py",
+      "molsysmt_origin": "/tmp/msv-element-1103/molsysmt/__init__.py",
+      "pandas": "3.1.0",
+      "pandas_origin": "/tmp/msv-ci-public-20261104/overlay/pandas/__init__.py",
+      "shape_info": true,
+      "frame_index": 2,
+      "frame_notifications": 1,
+      "import_order": "Viewer class before MolSysMT",
+      "scope": "Fresh-process source Viewer probe; DockingMT and its controlled private composition are not present."
+    },
+    "remaining": "Covering artifact producer/files/installed qualification and the exact private DockingMT initialization composition remain pending. No import-order workaround or new public compatibility claim."
+  },
+  "remaining": "Hosted CI on the committed input, exact release/artifact/platform qualification and separately authorized publication. Both 1.0 publications remain paused.",
+  "documentation_validation": {
+    "tests": 310,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "junit_sha256": "1b4fd5fb1424befa9d101d83c0c9b18758c2a674242362aa64895e181d29dfa7",
+    "scope": "Final reporting, local/clean-checkout links, architecture status and issue tooling; generated indexes and full Ruff pass."
+  },
+  "temporary_resources": "No Conda environment or shared installation modified. Task-specific pandas, Setuptools and Node overlays/artifacts remain bounded in /tmp for exact-head hosted follow-up; original caches and unrelated worktrees are retained."
+}

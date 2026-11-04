@@ -131,7 +131,9 @@ def test_promotion_requires_exact_release_and_installed_pair_evidence():
     assert "--pair-run-id" in identity["run"]
     assert "--windows-run-id" in identity["run"]
     assert steps.index(identity) < steps.index(promotion)
-    assert promotion["uses"] == "uibcdf/action-build-and-upload-conda-packages/promote@v2.2.2"
+    assert promotion["uses"] == (
+        "uibcdf/action-build-and-upload-conda-packages/promote@87c70b1443d5f22d738ee3ddf812bdbe0152f6c2"
+    )
     assert promotion["with"]["from-label"] == "staging"
     assert promotion["with"]["to-label"] == "main"
     assert promotion["with"]["expected-sha256"] == "${{ inputs.sha256 }}"

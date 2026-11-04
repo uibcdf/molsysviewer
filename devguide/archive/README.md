@@ -1,5 +1,8 @@
 # Archived implementation plans
 
+- [SPDX-compatible build backend](build_backend_spdx_compatibility.md) — #292 aligns the Setuptools minimum and verifies project/font notices through wheel, sdist and rebuilt wheel on minimum/current tools.
+- [Conda provider v2.3.0](conda_provider_2_3_adoption.md) — #293 pins local build/upload and promotion while preserving package-test, qualification and evidence gates; no publisher is executed.
+
 - [Independent chemical-domain receiving](chemical_domain_source_receiving.md) — #269 receives reference-state projection, unknown hierarchy and protected copies with successful original Windows/macOS cells plus full corrected Linux Python/browser/notebook execution.
 
 - [Python player frame notifications](python_player_omits_frame_notifications.md) — #291 delivers accepted-state callbacks for Python navigation/playback, deduplicated feedback, ordered reentrancy and closed-view cleanup.

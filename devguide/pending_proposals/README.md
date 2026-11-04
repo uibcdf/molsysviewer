@@ -29,9 +29,10 @@ archived documents link there; its location does not reopen its release scope.
 
 - [`migrate_standalone_qt_to_canonical_pyside6_6_11_2.md`](migrate_standalone_qt_to_canonical_pyside6_6_11_2.md) — [#109](https://github.com/uibcdf/molsysviewer/issues/109) — Migrate the optional standalone Qt host to canonical PySide6 6.11.2. *(measured)*
 
-### Partially done (1)
+### Partially done (2)
 
 - [`molsysmt_tools_addon_receiving.md`](molsysmt_tools_addon_receiving.md) — [#264](https://github.com/uibcdf/molsysviewer/issues/264) — Qualify the redesigned MolSysMT addon host and molecular-edit reconciliation. *(inspected)*
+- [`public_artifact_current_scene_contracts.md`](public_artifact_current_scene_contracts.md) — [#294](https://github.com/uibcdf/molsysviewer/issues/294) — Deliver a public artifact covering current scene handles and frame notifications. *(upstream)*
 
 ### Blocked (1)
 
