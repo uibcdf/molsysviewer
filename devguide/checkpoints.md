@@ -1,5 +1,31 @@
 # Development checkpoint
 
+**Initial mechanical expert tools delivered by owner PR — 2026-11-04:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) now publishes
+`2cb996ad92b388c14d385fe9f2e2ee9bdf7d7444`, adding resource-name lookup and
+primary-bound mechanical degree counting on unchanged native owner `5f3af9374`.
+The complete addon regression passes 3,838 cases without failures/errors/skips,
+including 42 new controls; all runtime/Rust/build source hashes remain frozen.
+A separate direct OpenMM system verifies 62 particles and 32 constraints
+under the native 3*N-N_constraints definition (154); replacement by Trp-Cage
+gives the separate 762-count lifecycle control. Another 562 package/route/docs
+checks, both guide blocks, the 156-notebook course, dependencies and Ruff pass.
+The PR's canonical receipt records initial test-helper failure, source/dataset
+hashes and qualified scope. A subsequent owner-doc merge `5ccad1d8a` resolves
+the conflict that prevented PR CI. All tested code and tests remain identical
+to the feature input `60450a7f0`; 562 affected checks pass after the doc merge.
+Exposure is 218/244, mechanics 2/6; no GUI or new
+host runtime is added. Native #559 owns documented platform-name rejection and
+#560 owns shared resource lists affecting later matching parameterizations.
+Their reports are independently reproduced and filed with maintainer approval;
+the addon preserves native behavior and documents the source limits. #549's
+naming cutover remains separate. Exact new-head CI, owner acceptance and
+installed qualification remain pending. Earlier d257b678 CI now completes
+8/8 at its own source; it does not qualify 8fc115e2 or this new mechanical head.
+#295 is closed with original three-host ZIP/JUnit evidence. Four general-CI
+macOS cells remain unfinished (one running, three queued at receiving).
+No candidate, tag, package or publication; both 1.0 publications remain paused.
+
 **Native reference-map repair received by the addon — 2026-11-04:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) is updated to
 `8fc115e2eb8aff41345696d067e600819c6ad51d`, receiving owner #554 source
@@ -815,12 +841,12 @@ rejection on `793a92db`: source pair 41899772394 passes three hosts, with all
 fourteen cases verified in each original JUnit. General CI still awaits four
 macOS cells; do not claim that separate overall matrix is green.
 Browser/experimental Qt pass independently. MolSysMT PR #543 now publishes
-`8fc115e2e`, receiving the owner's #554 repair without changing addon runtime.
-The complete local regression passes 3,796 cases; exact new-head CI and owner
-acceptance remain pending. The older `d257b6789` seven-cell results and selective
-macOS retry remain separate evidence for that input.
-Its 216/244 contribution exposure differs from main's 155/244 metadata baseline;
-#548/#550/#552/#554 are received and #549 remains a native limit. Continue
+`2cb996ad9`, adding two mechanical routes after native #554 receiving.
+The complete local regression passes 3,838 cases; exact new-head CI and owner
+acceptance remain pending. The older `d257b6789` matrix now completes 8/8 and
+retains its own source, initial runner cancellation and selective recovery.
+Its 218/244 contribution exposure differs from the main metadata-only baseline;
+#548/#550/#552/#554 are received; #549/#559/#560 remain native owner work. Continue
 remaining expert/GUI work after the artifact decision. Load human smoke stays
 deferred; no candidate is frozen and both 1.0 publications remain paused.
 
@@ -2422,10 +2448,10 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-04:**
 
-1. Receive exact-head CI and owner review of MolSysMT PR #543 `8fc115e2e`,
-   including the native #554 input and 178 new consumer controls. The complete
-   local addon regression passes 3,796 cases. Preserve the older source matrices
-   and their recovery; they do not qualify this changed native input. The audit
+1. Receive exact-head CI and owner review of MolSysMT PR #543 `2cb996ad9`,
+   including both initial mechanical routes. The complete local addon regression
+   passes 3,838 cases. Preserve older source matrices and their recovery, including
+   the now-successful d257b678 8/8; they do not qualify this changed input. The audit
    adds no broad refactor gate.
 2. Receive hosted general CI with the bounded public-provider/pandas baseline;
    local warning-strict and failed-case recovery are complete. Retain native
@@ -2437,9 +2463,9 @@ Resume toward **1.0** in this order:
    artifact for #294's already delivered scene
    handle/player contracts; do not require all addon tools to finish first.
    Package production/publication still requires its separate accepted route.
-4. Continue fifteen build and six mechanics expert paths under #264, then
+4. Continue fifteen build and four remaining mechanics expert paths under #264, then
    disposition the basic.view bridge, historical aliases and native MD stubs.
-   Receive #549 from MolSysMT without facade scientific repairs;
+   Receive #549/#559/#560 from MolSysMT without facade scientific repairs;
    #548/#550/#552/#554 are already received. Preserve explicit inputs and the PR route.
 5. Build task-oriented addon GUI over qualified expert operations, consolidate
    documentation and qualify the exact frozen candidate and installed files.

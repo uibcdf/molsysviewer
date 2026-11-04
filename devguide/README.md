@@ -45,6 +45,16 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- **Initial mechanical expert tools delivered by owner PR — 2026-11-04:**
+  [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
+  `2cb996ad92b388c14d385fe9f2e2ee9bdf7d7444`, adds explicit engine-resource lookup
+  and serialized primary-bound degree counting. All 3,838 addon cases pass,
+  including 42 new controls; 562 structure/documentation controls and both guide
+  blocks pass. Exposure is 218/244, mechanics 2/6. Native #559 platform names
+  and #560 shared resource lists remain explicit owner work. Current-head CI,
+  owner acceptance and installed qualification remain pending; no new artifact.
+  #295 is closed with all fourteen guard cases verified on three source hosts.
+
 - **Native reference-map repair received by the addon — 2026-11-04:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
   `8fc115e2eb8aff41345696d067e600819c6ad51d`, receives the owner's #554
