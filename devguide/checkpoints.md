@@ -1,42 +1,37 @@
 # Development checkpoint
 
-**Mechanical minimization delivered by owner PR — 2026-11-04:**
-[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) now publishes
-`6cdace2b7fd84555fcd0da7304955df0e1599fbd`, adding native minimization on unchanged
-native owner `5f3af9374`. Default independent results are not adopted; explicit
-in-place coordinates use the existing retained-axis edit receiver. Native
-validation, parameterization, analysis invalidation and local-minimum semantics
-are preserved, with projection-only deferral/retry. The complete addon regression
-passes 3,888 cases without failures/errors/skips; all 3,139 recorded source/test
-files and the retained Rust backend remain unchanged during execution. The 31
-new controls use a separate OpenMM NoCutoff/HBonds CPU reference under kJ/mol
-and kcal/mol policies, retaining strict energy/coordinate tolerances. Actual
-native Context inspection verifies one-thread execution and restoration of the
-prior process default. The canonical receipt preserves the initial test-control
-failures and corrected rejected-attempt metadata expectation. A dated correction
-appended to the earlier energy receipt withdraws its unverified native one-thread
-claim, preserving the original numerical/source evidence. Another 562 package/
-route/docs checks, five guide blocks, 156 course structures, 247 native docstrings,
-dependencies and whole-tree Ruff pass. One course Markdown cell gains the addon
-contract; all notebook code, outputs and metadata remain unchanged.
-Exposure is 220/244, mechanics 4/6; no new host runtime or GUI is added. Native
-#559/#560/#561 stay owner work; #562 now reports the native course's unsupported
-tolerance keyword and ignored independent outputs. Complete biological course
-scenarios are not qualified by the structural check. No facade scientific repair is added.
-#549's naming cutover remains separate. Exact new-head CI, owner acceptance and
-installed qualification remain pending. On `6cdace2b7`, full CI 41933666242,
-smoke 41933666196, performance 41933666201 and administrative checks are queued.
-On `835762250`, full CI 41929056731 is
-queued; smoke 41929056702 and performance 41929056615 pass, as do guide,
-dependency, Ruff, publication-governance and suite-policy checks pass.
-Earlier d257b678 CI completes 8/8 at
-its own source; 2cb996ad's ongoing matrix retains its own input. #295 is closed
-with original three-host ZIP/JUnit evidence. General CI 41899772338 retains
-seven passing cells. Its only cancellation, macOS Python 3.12/job 126818777630,
-has runner_id=0 and no steps; GitHub cites hosted-runner capacity. Only that
-job is retried in attempt 2 (126910648349), currently queued. No passing cell
-is deliberately repeated and the original cancellation remains preserved.
-No candidate, tag, package or publication; both 1.0 publications remain paused.
+**Independent construction delivered by owner PR — 2026-11-04:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) publishes
+`32435e6fd300e1753c6d843cb100aaabfc44787e`, adding declared biological
+assemblies and explicit AutoDock4 nonpolar-H projection on unchanged native
+owner `5f3af9374`. Both use the serialized current primary and return independent
+results. Declared chains/operators, structure order/repeats, unit-bearing
+translations, typed charge/inventory prerequisites and direct/merged lineage
+remain explicit. No automatic chemistry preparation or view adoption is added.
+
+All 3,951 addon cases pass without failures/errors/skips, including 63 new
+construction cases. All 3,140 frozen files, native Rust tree and retained backend
+bytes remain unchanged during execution. Independent transform/charge oracles,
+nondefault units and real Barnase–Barstar/caffeine provenance controls pass.
+Another 47 directed native and 562 route/documentation checks pass. Both new
+guide blocks execute; Ruff, 156 course structures, 247 native docstrings and
+dependencies pass. One existing course Markdown cell gains guidance; original
+code, outputs, IDs and metadata remain unchanged. The
+[receipt](molsysmt_independent_build_receiving_20261104.json) preserves inputs,
+JUnit/dataset identities and initial test-only corrections. Prior minimization/
+energy receipts and the dated thread-control correction retain their own inputs.
+
+Exposure is 222/244, build 17/30 and mechanics 4/6. New full 41937569331,
+smoke 41937569345, performance 41937569351 and administrative runs are registered
+but incomplete; owner review and installed qualification remain pending.
+Parent `6cdace2b7` performance and administrative checks pass; its full/smoke
+remain pending and do not qualify the changed input. #295 retains verified
+three-host source-pair receiving. General CI 41899772338 has seven passing cells;
+the macOS Python 3.12 retry has acquired a runner and is running tests. Preserve
+the original cancellation; the matrix is not yet green. Native #549/#559–#562
+remain owner work without facade scientific repairs. Next receive CI/review and
+continue remaining expert tools before graphical tasks. No frozen candidate,
+package, tag, Release or promotion; both 1.0 publications remain paused.
 
 **Native reference-map repair received by the addon — 2026-11-04:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) is updated to
@@ -854,13 +849,16 @@ fourteen cases verified in each original JUnit. General CI has seven passing
 cells and one unacquired macOS Python 3.12 cancellation, selectively retried
 in attempt 2; do not claim that separate overall matrix is green.
 Browser/experimental Qt pass independently. MolSysMT PR #543 now publishes
-`6cdace2b7`, adding native minimization after its first three mechanical routes.
-The complete local regression passes 3,888 cases; exact new-head CI and owner
-acceptance remain pending. The older `d257b6789` matrix now completes 8/8 and
-retains its own source, initial runner cancellation and selective recovery.
-Its 220/244 contribution exposure differs from the main metadata-only baseline;
-#548/#550/#552/#554 are received; #549/#559/#560/#561/#562 remain native owner work. Continue
-remaining expert/GUI work after the artifact decision. Load human smoke stays
+`32435e6fd`, adding two independent build routes after the four mechanical
+routes. The complete local regression passes 3,951 cases with 3,140 frozen
+files and backend bytes unchanged. Exposure is 222/244, build 17/30 and mechanics
+4/6. New-head full 41937569331 and smoke 41937569345 are incomplete; owner
+acceptance remains pending. The
+[receipt](molsysmt_independent_build_receiving_20261104.json) retains analytic,
+unit, mapping, lifecycle and initial test-diagnostic evidence. Older campaigns
+retain their own inputs. #548/#550/#552/#554 are received; #549/#559–#562 remain
+native owner work. The general macOS Python 3.12 retry is now running tests.
+Continue expert/GUI work after the artifact decision. Load human smoke stays
 deferred; no candidate is frozen and both 1.0 publications remain paused.
 
 The latest user-directed standalone round is summarized in the
@@ -2461,9 +2459,10 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-04:**
 
-1. Receive exact-head CI and owner review of MolSysMT PR #543 `6cdace2b7`,
-   including all four mechanical routes. The complete local addon regression
-   passes 3,888 cases. Preserve older source matrices and their recovery, including
+1. Receive exact-head CI and owner review of MolSysMT PR #543 `32435e6fd`,
+   including both independent construction routes and all four mechanical
+   routes. The complete local addon regression passes 3,951 cases. Preserve
+   older source matrices and their recovery, including
    the now-successful d257b678 8/8; they do not qualify this changed input. The audit
    adds no broad refactor gate.
 2. Receive hosted general CI with the bounded public-provider/pandas baseline;
@@ -2471,13 +2470,14 @@ Resume toward **1.0** in this order:
    #431 delivery ownership and the documented baseline removal trigger.
    #295's input rejection is received on all three source hosts. Finish the
    separate general matrix's only pending cell, macOS Python 3.12, selectively
-   retried after a hosted-runner acquisition cancellation; seven cells pass.
+   retried after a hosted-runner acquisition cancellation; it is now running
+   tests and seven other cells pass.
    Triage #294's separate import-order observation with its controlled inputs.
 3. #292/#293 source reviews and guards are complete. Scope a covering pre-1.0
    artifact for #294's already delivered scene
    handle/player contracts; do not require all addon tools to finish first.
    Package production/publication still requires its separate accepted route.
-4. Continue fifteen build and two remaining mechanics expert paths under #264, then
+4. Continue thirteen build and two remaining mechanics expert paths under #264, then
    disposition the basic.view bridge, historical aliases and native MD stubs.
    Receive #549/#559/#560/#561/#562 from MolSysMT without facade scientific repairs;
    #548/#550/#552/#554 are already received. Preserve explicit inputs and the PR route.

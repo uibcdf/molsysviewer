@@ -45,21 +45,21 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- **Mechanical minimization delivered by owner PR — 2026-11-04:**
+- **Independent construction delivered by owner PR — 2026-11-04:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
-  `6cdace2b7fd84555fcd0da7304955df0e1599fbd`, adds native minimization with
-  independent output by default and managed in-place coordinate updates.
-  All 3,888 addon cases pass, including 31 new minimization controls. Independent
-  OpenMM CPU receiving preserves strict tolerances under two unit policies;
-  deferred edits and synchronization-only retry preserve scene/source identity.
-  Another 562 structure/documentation controls and all five guide blocks pass.
-  Exposure is 220/244, mechanics 4/6. Native #559/#560/#561 and the new course
-  defect #562 remain owner work. The earlier energy receipt gains a dated
-  thread-control correction without changing its numerical outcomes. Current-head CI,
-  owner acceptance and installed qualification remain pending; no new artifact.
-  #295 is closed with all fourteen guard cases verified on three source hosts.
-  General CI retains seven passing cells; only macOS Python 3.12 is retried
-  after GitHub cancelled it without acquiring a runner.
+  `32435e6fd300e1753c6d843cb100aaabfc44787e`, adds declared biological
+  assemblies and explicit AutoDock4 nonpolar-H projection. Results remain
+  independent, with no automatic preparation or view replacement. All 3,951
+  addon cases pass, including 63 new construction cases; 47 directed native
+  and 562 route/documentation checks pass separately. Analytic geometry/charge,
+  nondefault units, maps, provenance and lifetime checks retain unchanged
+  source/backend bytes. The [receipt](molsysmt_independent_build_receiving_20261104.json)
+  records 222/244 exposure (build 17/30, mechanics 4/6), preserved course code/
+  outputs and initial test-only corrections. CI full 41937569331, smoke
+  41937569345 and owner review remain pending. Viewer general CI retains seven
+  passing cells; macOS Python 3.12 is running after runner acquisition.
+  Native #549/#559–#562 and installed/GUI receiving remain separate; no new
+  candidate or publication.
 
 - **Native reference-map repair received by the addon — 2026-11-04:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
