@@ -1,0 +1,201 @@
+{
+  "schema": "molsysviewer.molsysmt-alternate-site-receiving@1",
+  "date": "2026-11-05",
+  "issues": [
+    "uibcdf/molsysmt#421",
+    "uibcdf/molsysviewer#264",
+    "uibcdf/molsysmt#569",
+    "uibcdf/molsysmt#570",
+    "uibcdf/molsysmt#571"
+  ],
+  "pull_request": "https://github.com/uibcdf/molsysmt/pull/543",
+  "owner_commit": "738f752cc6543f45452f833f85046066a1e67d72",
+  "native_owner_basis": "5f3af9374f2bf4ce9c3598450e22d43ca14509ae",
+  "owner_receipt": {
+    "path": "devtools/data/molsysviewer_tools_alternate_site_receiving_20261105.json",
+    "file": "molsysviewer_tools_alternate_site_receiving_20261105.json",
+    "sha256": "d840ba386c60cc414a9fea0bc9124ce15317a8b956a3e6a06064244f6d6bdab4",
+    "size_bytes": 15194
+  },
+  "viewer_basis": "004464dfca7e49e924b14c4af56b3826bda648d9",
+  "viewer_runtime_logic": "78ede79e2e345593db5bfe80d246d3f6c70bd005",
+  "behavior": {
+    "path": "build.solve_atoms_with_alternate_location",
+    "signature": "Native primary omitted, scientific parameters/defaults preserved, plus keyword-only update_view=True and addon-only skip_digestion=False. Native function has no skip parameter; ordinary native validation is always used.",
+    "ownership": "Native in-place None return. No invented in_place control, independent result, molecular-system argument or root alias. Requires loaded coordinates and open owner.",
+    "effects": "Retained atom/structure/chemical identity; selected stored coordinates, native per-structure B-factor sets and global atom-ID labels. Native alternate-site records remain and analysis invalidation follows actual coordinate publication. Source correspondence uses retained indices, not labels.",
+    "binding": "Native location list binds sorted unique selected atoms; the first processed selected structure chooses each global atom label. Nonconsecutive structure order remains native and no visible structure is substituted.",
+    "noop": "No selected-site publication preserves revision/history/coverage; update_view=True may still synchronize prior pending work. Equal numerical values alone do not establish no-op.",
+    "failure_receiving": "The reviewed native route publishes protected coordinates before any metadata writes. With loaded coordinates, an unchanged geometry publication token certifies a clean rejection; a changed token on error enters uncertain state and requires explicit replacement. Native error classes/messages remain.",
+    "sync_retry": "A separate scene failure carries science_completed=True/scientific_result=None. Real native-call profiling across a transport failure plus retry observes one scientific call; retries only reconstruct projection.",
+    "host": "Existing generic coordinator is sufficient; no Viewer runtime logic or scientific algorithm changes."
+  },
+  "checks": {
+    "focused": {
+      "file": "alternate-focused-complete-20261105.xml",
+      "sha256": "a94791b33c68d43314ed40c27e108764eaa7d83950cf8cd3567bc18e734ad733",
+      "size_bytes": 5511,
+      "tests": 30,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 20.694
+    },
+    "edit_integration": {
+      "file": "alternate-edit-integration-20261105.xml",
+      "sha256": "61adfd5997e068bc47acacb176b7c72393f83168a06cc4dc2ab0e75ec8d52780",
+      "size_bytes": 180929,
+      "tests": 999,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 302.784
+    },
+    "native": {
+      "file": "alternate-native-20261105.xml",
+      "sha256": "af6beb78b13f00aa6c60e4447f6e5e88faec1f8970b44c6f846b1b250529739f",
+      "size_bytes": 6279,
+      "tests": 34,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 9.544
+    },
+    "package_reporting": {
+      "file": "alternate-package-reporting-20261105.xml",
+      "sha256": "96acbfcfcc1ef0370f2eb9415f6ebac0dc52ddc3994f1b82a93f7958762abf5f",
+      "size_bytes": 13130,
+      "tests": 87,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 6.368
+    },
+    "docs": {
+      "file": "alternate-docs-20261105.xml",
+      "sha256": "867df49e0b1b5176adc59f0aa97ef87163bf51e18fb0a2a00dd3dd2faebe7388",
+      "size_bytes": 9930,
+      "tests": 56,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 26.83
+    }
+  },
+  "source_freeze": {
+    "count": 3147,
+    "source_sha256": "e402940b1953e30ab6378e820e04097ea4b6aaeb578115ba399abd513927a705",
+    "manifest": {
+      "file": "alternate-sources-before-20261105.json",
+      "sha256": "851ae8da72af0392d5c9a4af5ddcb31d3469e70c94de317be341254ee38b48b8",
+      "size_bytes": 386657
+    },
+    "postcheck": {
+      "file": "alternate-postcheck-20261105.json",
+      "sha256": "6440c58192561a98b98088aa3dda0f63f48412e103e11e3943af4505e571d889",
+      "size_bytes": 320
+    },
+    "native_unchanged_count": 3034,
+    "backend_sha256": "f32ed73f7ef3cf3225e12fbc56b9c4236a4452d758c94661f41860ad00d82c1c",
+    "rust_tree": "32cfb07b9c26ae9ad3ed379c1b76fab85669cf67",
+    "native_algorithm_changes": false
+  },
+  "native_reports": {
+    "569": {
+      "url": "https://github.com/uibcdf/molsysmt/issues/569",
+      "observed": "Maximum 0.5 can incorrectly select lower-occupancy A; report requests native policy tests."
+    },
+    "570": {
+      "url": "https://github.com/uibcdf/molsysmt/issues/570",
+      "observed": "Primary occupancy remains old; observation is reproduced, intended semantics await owner clarification."
+    },
+    "571": {
+      "url": "https://github.com/uibcdf/molsysmt/issues/571",
+      "observed": "Invalid later location can leave earlier coordinates/B factors written and raises malformed choice-constructor TypeError; native partial state is not automatically recovered."
+    },
+    "authority": "Explicit maintainer approval to open all three issues; searched open and closed reports. No scientific fix or compensating normalization in the addon.",
+    "opening_verification": "Final issue examples were executed literally. Two opening ID queries were corrected to request element=atom; this fixes reproduction queries, not the scientific observations. The first partial-write probe used aliased dictionaries and was refuted; final independent dictionaries reproduce partial publication."
+  },
+  "documentation": {
+    "course_preservation": {
+      "file": "alternate-guide-course-20261105.json",
+      "sha256": "609dc1d98e1298f5f99b78b4c6c0354d87dfffa73fc8e576b56cc58f76c21f4a",
+      "size_bytes": 126
+    },
+    "course_structure": "156 notebooks validate; one existing Markdown cell changes, original code/outputs/IDs/metadata unchanged.",
+    "native_docstrings": "246 functions pass the fresh-process structural/default/content checker; scope is that execution, not an all-import-orders coverage claim.",
+    "guide": "One new owning guide block executes. Guide/microinstructions/manifest and Module 12 prose updated with explicit native limitations.",
+    "lint": "Ruff package/tests pass; all 90 addon and addon-test Python files pass formatting.",
+    "devguide": "Three owning reports and generated queue index are synchronized; owner integrity/index checks pass."
+  },
+  "inventory": {
+    "exposed": 232,
+    "declared": 244,
+    "build": "27/30",
+    "mechanics": "4/6",
+    "file": {
+      "file": "alternate-inventory-20261105.json",
+      "sha256": "11f60ff5eb1a714e6b4bdb226afac8cf40d594c167f2ac3d118de4c5c7105ed1",
+      "size_bytes": 122428
+    },
+    "scope": "Source function-path exposure, not distinct algorithms or installed compatibility. Two raw FASTA utilities remain outside this inventory."
+  },
+  "delivery": {
+    "owner_branch": "addon/element-utilities-20261103",
+    "remote_verified": true,
+    "pr_description_updated": true,
+    "new_head_ci": [
+      {
+        "conclusion": "success",
+        "id": 42075591129,
+        "name": "Developer guide integrity",
+        "status": "completed"
+      }
+    ],
+    "scope": "New source CI only; required campaigns remain pending. No installed/public artifact qualification."
+  },
+  "prior_ci": {
+    "source": "a1dbe0fb67373c32b0ca3276aa40f52250ff9554",
+    "smoke": 42062370918,
+    "conclusion": "success",
+    "command_guards_passed": 32,
+    "native_passed": 5397,
+    "native_optional_skips": 16,
+    "addon_passed": 4151,
+    "addon_optional_skips": 4,
+    "smoke_manifest": {
+      "file": "manifest.json",
+      "sha256": "540c5344074c6295e1d0ea7faa40edcf2e7dd16172b4e2502c06a4726bb98f14",
+      "size_bytes": 1650
+    },
+    "native_log": {
+      "file": "bond-inventory-success-smoke-20261105.log",
+      "sha256": "82a9bf5007b3570c26dcf3327b8c5eee976157e04fc26fd93cc2f0647992244a",
+      "size_bytes": 383121
+    },
+    "full_matrix": 42062370977,
+    "full_scope": "Last inspection: three full test cells passed, one in progress, four queued; wheel passed. No complete result or independently verified certificate bodies is claimed.",
+    "scope": "These are earlier source outcomes; neither this new source nor an installed-public pair is qualified by them."
+  },
+  "viewer_prior_ci": {
+    "source": "004464dfca7e49e924b14c4af56b3826bda648d9",
+    "run": 42062771914,
+    "last_observed": "Four Linux test cells success; four macOS cells queued. Core E2E 42062771488, experimental Qt 42062771744, policy 42062772640 and Conda governance 42062772858 succeed.",
+    "scope": "These prior-head controls do not qualify this new documentation follow-up. No new runtime logic or browser behavior changes."
+  },
+  "working_state": "Human Viewer sandbox files are preserved. Concurrent owner main is nine commits ahead with four dirty API stubs at refreshed inspection; none adopted or edited. The contribution retains the frozen native basis.",
+  "remaining": "Three build routes, two mechanical routes, basic.view, aliases/stubs, owner #569/#570/#571 clarification/fixes and other native pending work, task GUI and installed qualification remain separately owned.",
+  "retention": "Source/JUnit/reproduction/capture files and the existing contribution worktree retained through owner/CI receiving; review by 2026-11-11.",
+  "publication": "PR-only owner contribution. No owner-main push/merge, native algorithm/Rust/backend or dependency-floor change, candidate, package, tag, Release or promotion. Both 1.0 publications remain paused.",
+  "viewer_reporting": {
+    "file": "alternate-viewer-reporting-20261105.xml",
+    "sha256": "57874bdfb2aad605bb186788307dd5b5991aafced6a70d71fbe370cd24bce037",
+    "size_bytes": 52691,
+    "tests": 304,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "index_check": "Pass",
+    "scope": "Current Viewer reporting/link guards; no new native algorithm or frontend behavior."
+  }
+}

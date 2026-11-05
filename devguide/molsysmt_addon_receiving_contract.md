@@ -6,7 +6,8 @@ This contract tracks receiving under uibcdf/molsysviewer#264 and
 uibcdf/molsysmt#421. Source implements managed native removal, synchronization
 controls, the coordinates/box routes of `basic.set`, native translation/rotation/reflection/fitting/centering, single-structure
 displacement, principal-axis alignment, both dihedral editors, admitted prefix
-additions, retained-axis reference-chemistry bond publication and a generic host
+additions, retained-axis reference-chemistry bond publication, stored alternate-site
+coordinate/metadata publication and a generic host
 service. Family-specific receiving is detailed below and in the owning addon
 receipts. Remaining effect families, task panels and installed compatibility
 remain unqualified; no release follows from this work.
@@ -163,6 +164,15 @@ arbitrary dictionary/array comparison proves an operation is atomic. A final
 `changed=False` preserves revisions, coverage and history, while `update_view=True`
 may still synchronize earlier pending work. The attempted call retains an audit
 operation identifier.
+
+For the received native alternate-site resolver, present protected coordinates
+are an admission requirement. Every metadata write in that reviewed route
+follows a coordinate publication. Its provider token can therefore distinguish
+rejection before any write from a later partial failure without copying full
+geometry. A partial failure enters `uncertain`; projection retry is reserved
+for completed science. Atom-ID labels may change while atom/structure index
+correspondence remains retained. This is a family-specific proof, not observation
+of arbitrary raw metadata or a guarantee for unreviewed native implementations.
 The provider remains responsible for scientific validation and the truth of
 these declarations. Empty atom/structure results still reject before native
 execution. The explicit axis_growth capability receives qualified prefix

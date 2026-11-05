@@ -45,21 +45,22 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- **Managed missing-bond addition received — 2026-11-05:**
-  [PR #543](https://github.com/uibcdf/molsysmt/pull/543), `a1dbe0fb6`, delivers
-  `build.add_missing_bonds` with native ownership/defaults, retained identities,
-  true no-op preservation and synchronization-only retry. The
-  [receipt](molsysmt_bond_addition_receiving_20261105.json) records
-  24/492/53/58 addon/native/docs cases, 10 host and 300 reporting cases, preserved
-  sources/backend and course content. Exposure is 231/244, build 26/30.
-  [Recovery](molsysmt_bond_inventory_recovery_20261105.json) registers the new
-  private source in the exact distribution contract after the first smoke
-  failure; all 32 command/package guards pass without scientific changes.
-  Previous PR head passes full 8/8 source CI, smoke/performance; new-head CI
-  and owner review remain required. Viewer `a18bf7c4` one-cell recovery succeeds
-  while preserving its original provisioning failure; prior main `40935da7`
-  now passes all eight general-CI cells. New Viewer-head CI remains pending. Native issues, remaining tools, GUI
-  and installed qualification keep their own scopes. No candidate/publication.
+- **Managed alternate-site resolution received — 2026-11-05:**
+  [PR #543](https://github.com/uibcdf/molsysmt/pull/543), `738f752cc`, adds
+  native stored-site coordinate/B-factor/label publication with retained index
+  identity, no-op preservation and clean-versus-partial failure receiving.
+  [Evidence](molsysmt_alternate_site_receiving_20261105.json) records 30 focused,
+  999 edit-integration, 34 native, 87 package/reporting and 56 docs cases, no
+  failures/errors/skips; native/backend/Rust remain unchanged. Exposure is
+  232/244, build 27/30. Native #569/#570/#571 are open without consumer repair.
+  Earlier source smoke passes 5,397 native / 4,151 addon cases with recorded
+  optional skips; new-head CI and owner review remain pending. Viewer prior
+  head has four Linux cells success/four macOS queued; core browser/Qt pass.
+  No candidate/publication; remaining tools, GUI and installed qualification
+  keep their separate scopes.
+
+- Missing-bond receiving and its strict inventory recovery are complete in source;
+  [original evidence](molsysmt_bond_inventory_recovery_20261105.json) is retained.
 
 - **Native reference-map repair received by the addon — 2026-11-04:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
