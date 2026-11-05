@@ -1,26 +1,29 @@
 # Development checkpoint
 
-**Independent protonation reconciliation received — 2026-11-05:**
-[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `ac1f6dbad`, adds the native
-`build.reconcile_protonation` signature minus the bound primary. Only
-in_place=False is received. Managed True rejects before scientific execution
-pending [native #576](https://github.com/uibcdf/molsysmt/issues/576), which requests
-public removal correspondence and explicit no-op/failure semantics. The addon
-calls no private chemistry helper and infers no identity from labels or geometry.
-Independent output is not adopted; current source, scene/history and completed
-pending edits remain owned by the view.
+**Expert navigation and native repair receiving — 2026-11-05:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `442a2771e`, receives published
+native 8486ea59c after the independent visualization and historical-alias work.
+Basic.view and its native root alias return a separate caller-owned visualization
+of the serialized loaded primary. Parent scene/camera/history and pending
+projection remain independent. Four historical hbonds functions reuse their
+exact canonical bound methods; native NVT/NPT stubs are not offered as tools.
 
-All 4,363 addon/integration cases pass without failures/errors/skips; 103
-directed and 118 docs controls pass separately.
-The [receipt](molsysmt_protonation_receiving_20261105.json) records the fixed-label
-villin reference control (596 atoms at pH 7.4, 590 at pH 12), all retained poses,
-native units/analyses and named-state/unassessed limits. This qualifies bounded
-reference-rule behavior, not environmental pKa or chemical readiness. Exposure
-is 235/244, build 29/30 and mechanics 5/6, with the in-place mode limit explicit.
-Remaining water-box #564, forces #572, energy #561, solvate #574/#575 and managed
-protonation #576 stay native owner work. Exact-head CI, owner review, compatibility
-decisions, task GUI and installed qualification remain separate. Both 1.0
-publications stay paused; no candidate or publication.
+Final combined receiving passes 4,398 addon/integration cases without omissions,
+22 native water-cell guards and 118 docs/source controls.
+The [receipt](molsysmt_navigation_receiving_20261105.json) preserves the earlier
+navigation gate, final combined inputs, source hashes and native receiving.
+Native #568 selection is repaired on the atom axis and its skip flag forwarded.
+Native #564 now clips whole waters correctly in the tested row-vector cells;
+its factory remains unexposed until consumer receiving. Source exposure stays
+240/244: two native stubs, that pending factory and native MolSys forces #572.
+Protonation managed in-place remains unreceived under #576; native default-empty
+view behavior is separately tracked under #578. Neither changes the admitted
+loaded-view bridge. Exact-head CI, owner review, native scientific limits, GUI
+and installed qualification remain separate. Both 1.0 publications stay paused.
+No candidate or publication is introduced.
+
+Earlier independent protonation retains its
+[original receipt](molsysmt_protonation_receiving_20261105.json).
 
 Earlier solvation/#504 receiving and #574/#575 reporting retain their
 [original receipt](molsysmt_solvation_receiving_20261105.json) and
@@ -877,16 +880,16 @@ rejection on `793a92db`: source pair 41899772394 passes three hosts, with all
 fourteen cases verified in each original JUnit. General CI 41899772338 attempt 2
 now passes all eight test cells; each import/test/coverage step is verified.
 The initial macOS Python 3.12 acquisition cancellation remains preserved.
-Browser/experimental Qt pass independently. MolSysMT PR #543 now adds the independent
-`build.reconcile_protonation` mirror with native parameters and current-primary
-binding. Its [receipt](molsysmt_protonation_receiving_20261105.json) preserves
-source/scene ownership, all-structure reference-rule receiving and explicit
-named-state/unassessed limits. Managed in_place=True rejects before science
-pending public correspondence #576. Exposure is 235/244, build 29/30 and
-mechanics 5/6; a callable path is not complete mode coverage. Native
-#561/#564/#572/#574/#575/#576, exact-head CI and owner review remain pending.
-Continue compatibility decisions and receive the remaining native contracts
-before task GUI and installed qualification. Both 1.0 publications remain paused.
+Browser/experimental Qt pass independently. MolSysMT PR #543 now receives the loaded-primary
+basic.view bridge, four exact historical hbonds aliases and native #568/#564
+repairs. Its [receipt](molsysmt_navigation_receiving_20261105.json) keeps exact
+source/gate identities, source/scene ownership and qualification limits explicit.
+Native MD stubs remain unavailable. Exposure is 240/244; the remaining callable
+work is corrected make_water_box consumer receiving and native forces #572,
+plus the independent-only protonation mode under #576. Empty native basic.view
+validation is #578, outside the loaded-primary admission. Exact-head CI, owner
+review, native limits, task GUI and installed qualification remain pending.
+Both 1.0 publications remain paused.
 
 The latest user-directed standalone round is summarized in the
 [final review](standalone_final_review_20261029.md). Receive its remaining
@@ -894,10 +897,10 @@ human check and reconcile its recorded provider/qualification limits before
 resuming the independent addon work below; no Qt
 support admission or release follows from that round.
 
-Current composition receiving is summarized at the top of this checkpoint;
-its native #520 limitation and exact-source CI remain explicit. Next finish
-that CI, decide the separate `basic.view` bridge, then qualify mechanics and
-remaining preparation/editing tools before GUI tasks or artifact candidates.
+Earlier composition/mechanics records retain their own source scopes. The
+basic.view and compatibility decisions are now received in source. Finish
+exact-head CI/owner review and the remaining provider/consumer receiving before
+claiming complete modes, task GUI or artifact qualification.
 
 **Current priority — 2026-10-27:** the approved
 [core/add-on boundary](core_and_addon_boundary.md) gives core visualization and
@@ -2486,11 +2489,10 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-05:**
 
-1. Receive exact-head CI and owner review of MolSysMT PR #543 `ac1f6dbad`,
-   including the independent protonation mirror. Keep native reference/naming rules and the bounded pKa
-   scope explicit. Managed in_place=True remains unreceived under #576;
-   no identity inference or duplicated private science is permitted.
-   Exposure is 235/244; source results do not qualify installed artifacts.
+1. Receive exact-head CI and owner review of MolSysMT PR #543 `442a2771e`, covering navigation,
+   compatibility and native #568/#564 receiving. Keep the original gate/source
+   identities. Exposure is 240/244; two native MD stubs are intentionally absent.
+   Callable exposure is not complete scientific/mode or installed qualification.
 2. Receive the three remaining macOS cells of prior Viewer `004464df`
    (42062771914), earlier addon full source and applicable new heads. Preserve
    previous successful recoveries/acquisition failures; no duplicate dispatch.
@@ -2499,12 +2501,11 @@ Resume toward **1.0** in this order:
 3. #292/#293 source reviews and guards are complete. Scope a covering pre-1.0
    artifact for #294's delivered scene handle/player contracts; package
    production/publication still requires its separate accepted route.
-4. Receive water-box #564, native MolSys forces #572 and managed protonation #576
-   under #264,
-   then disposition basic.view, historical aliases and native MD stubs. Receive
-   #549/#559–#562/#564/#568/#572/#574/#575/#576 from MolSysMT without facade scientific repairs;
-   water-box #564 keeps that factory unexposed. Preserve explicit inputs and
-   the PR-only owner contribution route.
+4. Receive the corrected make_water_box factory as an explicit-input tool,
+   then native MolSys forces #572 and managed protonation #576. Basic.view,
+   historical aliases and MD-stub disposition are complete in source. Receive
+   native #549/#559–#562/#572/#574/#575/#576/#578 without consumer scientific
+   repairs. Preserve PR-only delivery to the owner and separate installed scope.
 5. Build task-oriented addon GUI over qualified expert operations, consolidate
    documentation and qualify the exact frozen candidate and installed files.
    Core/addon ownership and source/public distinctions remain in force.

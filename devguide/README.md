@@ -45,19 +45,21 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- **Independent protonation source receiving — 2026-11-05:**
-  [PR #543](https://github.com/uibcdf/molsysmt/pull/543), `ac1f6dbad`, adds the exact native
-  `build.reconcile_protonation` signature with the current system implicit.
-  Only `in_place=False` is received; True rejects before science pending native
-  correspondence under uibcdf/molsysmt#576. Source/scene/pending state remain
-  owned by the view; no private chemistry helper or identity matching is added.
-  [Evidence](molsysmt_protonation_receiving_20261105.json) separates bounded
-  reference-rule controls from environmental-pKa, hosted and installed claims.
-  All 4,363 addon/integration cases pass without omissions; 103 directed and
-  118 docs controls pass separately. Exposure is 235/244, build 29/30 and
-  mechanics 5/6, with the mode limit explicit.
-  Owner review, exact-head CI, native limits, remaining compatibility decisions,
+- **Expert navigation and native repair receiving — 2026-11-05:**
+  [PR #543](https://github.com/uibcdf/molsysmt/pull/543), `442a2771e`, adds the loaded-primary
+  `basic.view` bridge and native root alias, plus four historical hbonds aliases
+  using the canonical bound methods. Native MD stubs remain unavailable.
+  [Evidence](molsysmt_navigation_receiving_20261105.json) records the navigation
+  and native #568/#564 receiving with preserved source and qualification scopes.
+  Final combined receiving passes 4,398 addon/integration cases without omissions,
+  22 native water-cell guards and 118 docs/source controls. Exposure is 240/244:
+  two unexposed native stubs, corrected water-box factory awaiting consumer receiving and native MolSys forces pending #572. Managed
+  protonation remains independent-only under #576. Native empty-view digestion
+  is reported under #578. Exact-head CI, owner review, remaining native limits,
   task GUI and installed qualification remain separate. No publication.
+
+- Earlier independent protonation receiving retains its
+  [original receipt](molsysmt_protonation_receiving_20261105.json).
 
 - Earlier independent solvation and native #504 receiving retain their
   [original receipt](molsysmt_solvation_receiving_20261105.json); native #574/#575

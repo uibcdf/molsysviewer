@@ -1,20 +1,22 @@
 # MolSysMT tools add-on — implementation plan
 
 **Current received contribution — 2026-11-05:**
-[PR #543](https://github.com/uibcdf/molsysmt/pull/543), `ac1f6dbad`, exposes 235/244 declared
-expert paths, including element 57/57, build 29/30 and mechanics 5/6.
-`build.reconcile_protonation` now mirrors the native parameters and independent
-result with the current primary implicit. Only in_place=False is received:
-managed True rejects before science pending public correspondence #576.
-Native approximate pH/reference/naming criteria, unassessed groups, all-structure
-subset behavior and analysis remapping stay explicit. No hidden preparation,
-private chemistry helper or identity inference is added. The
-[receipt](molsysmt_protonation_receiving_20261105.json) records bounded controls,
-source/scene ownership and actual mode availability: 4,363 addon/integration
-passes without omissions, plus 103 directed and 118 docs controls. Native #561/#564/#572/
-#574/#575/#576, owner review, exact-head CI, compatibility decisions, task GUI
-and installed/public qualification remain separate. Dated stages below keep
-their own inputs/counts.
+[PR #543](https://github.com/uibcdf/molsysmt/pull/543), `442a2771e`, exposes 240/244 declared
+functional paths, including basic 26/26, historical hbonds 4/4, build 29/30 and
+mechanics 5/6. Basic.view creates a separate caller-owned visualization of the
+loaded current primary, without parent scene cloning or synchronization. Four
+historical functions are exact aliases of the canonical bound methods; two
+native MD stubs remain unexposed. Native #568 and #564 repairs are received
+without scientific consumer corrections. The corrected water-box factory still
+needs explicit-input consumer receiving; native forces remain under #572 and
+managed protonation under #576. Empty native view validation is separately
+reported under #578; the bound visualization route requires a loaded owner.
+The [receipt](molsysmt_navigation_receiving_20261105.json) preserves exact inputs,
+source/scene ownership, mode limits and separate hosted/installed scope. Final
+combined receiving passes 4,398 addon/integration cases without omissions,
+22 native water-cell guards and 118 docs/source controls. Owner
+review, exact-head CI, native scientific limits, task GUI and installed/public
+qualification remain separate. Dated receipts retain their original inputs.
 
 **Status: partial source implementation; installed qualification pending —
 2026-10-28.** The maintainer authorizes the Viewer development effort to implement
