@@ -20,13 +20,18 @@ integration hashes; final focused cases pass on delivered bytes. One guide block
 course code/outputs/IDs/metadata are retained. Exposure is 231/244, build 26/30
 and mechanics 4/6. The [receipt](molsysmt_bond_addition_receiving_20261105.json)
 links canonical owner evidence and keeps initial test-fixture corrections explicit.
+Current delivery `a1dbe0fb6` registers the helper in the exact source/distribution
+contract after smoke 42061378731 caught that missing registration. All 32
+command/package guards pass, including missing-helper rejection; no scientific
+source changes. Its [recovery](molsysmt_bond_inventory_recovery_20261105.json)
+retains the original failure and the new-head CI state.
 
 Previous PR head `dea6d680f` passes full eight-cell source CI 42048290587,
 smoke and performance; this does not qualify the new head or installed artifacts.
 Viewer `a18bf7c4` general CI 41960770647 attempt 2 succeeds on all eight cells
 after its single failed-job recovery; the original pre-test acquisition failure
-is retained. Prior main `40935da7` general CI 42049329738 has seven cells success
-and macOS Python 3.13 in progress at receiving. Exact new-head CI and owner
+is retained. Prior main `40935da7` general CI 42049329738 now passes all eight cells.
+Exact new-head CI and owner
 integration remain separate. Native #549/#559–#562/#564/#567/#568 retain their
 owners; continue four build/two mechanics routes, explicit compatibility decisions
 and task GUI. Human/concurrent owner work remains untouched. Both 1.0
@@ -848,7 +853,8 @@ fourteen cases verified in each original JUnit. General CI 41899772338 attempt 2
 now passes all eight test cells; each import/test/coverage step is verified.
 The initial macOS Python 3.12 acquisition cancellation remains preserved.
 Browser/experimental Qt pass independently. MolSysMT PR #543 now delivers
-`cb03d4bff`: managed missing-bond addition with true no-op preservation,
+`a1dbe0fb6` (scientific source `cb03d4bff`): managed missing-bond addition
+with true no-op preservation,
 retained axes, native coverage invalidation and synchronization-only retry.
 Exposure is 231/244, build 26/30, mechanics 4/6. The
 [receipt](molsysmt_bond_addition_receiving_20261105.json) retains scoped
@@ -857,7 +863,10 @@ failures and canonical owner evidence. The prior `dea6d680f` head passes full
 8/8 source CI, smoke and performance; new-head CI and owner review stay separate.
 Viewer `a18bf7c4` succeeds in the one failed-job-only recovery (41960770647,
 attempt 2); its original acquisition failure is preserved. Prior main `40935da7`
-has seven test cells success and macOS Python 3.13 in progress. #568 remains
+now passes all eight test cells. The new helper registration is received by
+[32 command/package guards](molsysmt_bond_inventory_recovery_20261105.json),
+retaining the original failed smoke without scientific changes. New Viewer-head
+CI remains pending. #568 remains
 native; #549/#559–#562/#564 and #567 retain their owners. Continue four build/
 two mechanics routes, explicit alias/bridge/stub decisions, then task GUI.
 Load human smoke stays deferred; both 1.0 publications remain paused.
@@ -2460,13 +2469,14 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-05:**
 
-1. Receive exact-head CI and owner review of MolSysMT PR #543 `cb03d4bff`.
+1. Receive exact-head CI and owner review of MolSysMT PR #543 `a1dbe0fb6`.
    Native missing-bond receiving passes its scoped checks with 231/244 exposure;
    previous `dea6d680f` passes the full eight-cell source campaign, smoke and
    performance. Keep original source identities, #568 and #567 outcomes explicit;
    source results are not installed-public qualification.
-2. Receive the remaining macOS Python 3.13 cell of prior Viewer main `40935da7`
-   (42049329738) and the new applicable head. The earlier `a18bf7c4` one-cell
+2. Prior Viewer main `40935da7` passes all eight cells (42049329738). Receive
+   applicable CI of the new head; no automatic run is visible yet for `991549bd`.
+   The earlier `a18bf7c4` one-cell
    recovery succeeds without product/workflow changes; retain original failure.
    #295 three-host receiving and the bounded public-provider/pandas baseline
    remain intact. Triage #294's import-order observation with controlled inputs.
