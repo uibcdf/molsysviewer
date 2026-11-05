@@ -54,8 +54,10 @@ documents, and historical audits.
   hosted qualification retain their scopes. Exposure is 234/244, build 28/30
   and mechanics 5/6.
   Owner acceptance, exact-head CI, remaining tools, task GUI and installed
-  qualification remain separate. Two native solvate limits await authorization
-  to file their reports. No candidate or publication.
+  qualification remain separate. Native solvate limits are reported under
+  uibcdf/molsysmt#574 (IDs) and #575 (explicit ion counts); their
+  [documentation handoff](molsysmt_solvation_issue_handoff_20261105.json) is in
+  PR #543 `b285d7fb8`, with unchanged runtime inputs. No candidate or publication.
 
 - Earlier nonbonded-energy receiving and native force request #572 retain their
   [original receipt](molsysmt_nonbonded_receiving_20261105.json).

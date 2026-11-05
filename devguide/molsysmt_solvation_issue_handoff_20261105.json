@@ -1,0 +1,45 @@
+{
+  "schema": "molsysviewer.molsysmt-solvation-issue-handoff@1",
+  "date": "2026-11-05",
+  "issues": {
+    "atom_ids": "uibcdf/molsysmt#574",
+    "explicit_ion_counts": "uibcdf/molsysmt#575"
+  },
+  "related": [
+    "uibcdf/molsysmt#421",
+    "uibcdf/molsysviewer#264"
+  ],
+  "owner_pr": "https://github.com/uibcdf/molsysmt/pull/543",
+  "owner_documentation_commit": "b285d7fb8a4bcf2fb852c8ce3899d7158063a202",
+  "scientific_receiving_basis": "6a14ac271d593d961d369acd5aafe35530e49982",
+  "native_owner_basis": "ccff2557f576f004461c96950d36a8b6e465e91f",
+  "reports": [
+    "devguide/pending_bugs/openmm_solvate_rejects_nonnumeric_atom_ids.md",
+    "devguide/pending_bugs/openmm_solvate_ignores_explicit_ion_counts.md"
+  ],
+  "filing": "Open/closed search found no equivalent. Both native issues opened separately with bug/component:molsysviewer labels, standalone reproductions, measured scope and native pytest acceptance requests.",
+  "change_scope": "Only developer documents and generated pending-bug index changed. Native/addon/runtime/test inputs and the prior 4,334-case addon/integration receiving retain their exact basis. The earlier receipts keep their original pre-filing status.",
+  "validation": [
+    {
+      "file": "solvation-issues-owner-reporting-20261105.xml",
+      "sha256": "c4fd7f2c4d9e1d6d982698ce05e355c09c4195543f5459df26c7721762bc2dbb",
+      "scope": "Owner devguide validators, issue labels and workflow contracts; developer guide and indexes also pass.",
+      "tests": 59,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 1.171
+    },
+    {
+      "file": "solvation-issues-viewer-reporting-20261105.xml",
+      "sha256": "6d56886bcb5b98d7b125ffadd5fa54a79a4981d496fce70477a4f156f198c0a7",
+      "scope": "Viewer reporting/lifecycle, devguide links/architecture and issue-tool contracts.",
+      "tests": 311,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 2.155
+    }
+  ],
+  "publication": "PR-only contribution to MolSysMT; no owner main commit or merge. Both 1.0 publications remain paused; no candidate or publication."
+}

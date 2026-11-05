@@ -10,7 +10,7 @@ scalar/vector results to the existing `is_solvated` mirror, without aggregation.
 The [receipt](molsysmt_solvation_receiving_20261105.json) records independent
 OpenMM parity, bounded geometry and final combined receiving: 4,334 addon/
 integration passes without omissions, plus 126 directed and 60 docs controls. OpenMM
-identifier/ion-count limits await authorization to file two native reports.
+identifier/ion-count limits are reported under uibcdf/molsysmt#574 and #575.
 Native #561/#564/#572, remaining protonation/remapping and compatibility decisions
 stay explicit. Exact-head CI, owner review, task GUI and installed/public
 qualification remain separate. Dated stages below keep their own inputs/counts.

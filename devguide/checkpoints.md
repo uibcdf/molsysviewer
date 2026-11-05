@@ -18,7 +18,9 @@ owner; backend/Rust and Viewer runtime remain unchanged.
 
 Exposure is 234/244, build 28/30 and mechanics 5/6. Two independently reproduced
 OpenMM solvate limitations (nonnumeric atom IDs and ignored explicit ion counts)
-await maintainer authorization to file native reports. Remaining preparation/
+are reported under uibcdf/molsysmt#574 and #575. Their
+[documentation handoff](molsysmt_solvation_issue_handoff_20261105.json) is in
+PR #543 `b285d7fb8`; the scientific receiving basis stays `6a14ac271`. Remaining preparation/
 remapping, #564 water boxes, #561 nonbonded selections, #572 native MolSys forces,
 owner review, exact-head CI, GUI and installed qualification remain separate.
 Both 1.0 publications stay paused; no candidate or publication is introduced.
@@ -879,8 +881,8 @@ delivers independent
 `build.solvate` and receives native #504's per-structure `is_solvated` contract.
 The [receipt](molsysmt_solvation_receiving_20261105.json) records final combined
 receiving, independent OpenMM construction/geometry and retained source/scene
-ownership. Exposure is 234/244, build 28/30 and mechanics 5/6. Two native solvate
-limits await authorization to file reports. #561/#564/#572 retain their native
+ownership. Exposure is 234/244, build 28/30 and mechanics 5/6. Native solvate
+limits are reported under uibcdf/molsysmt#574 and #575. #561/#564/#572 retain their native
 work; #504's earlier ambiguous-array limitation is source-corrected. Exact-head
 CI and owner review remain pending. Continue the remaining two build paths,
 force contract and compatibility decisions before task GUI and installed
@@ -2484,11 +2486,11 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-05:**
 
-1. Receive exact-head CI and owner review of MolSysMT PR #543, `6a14ac271`,
+1. Receive exact-head CI and owner review of MolSysMT PR #543, `b285d7fb8`,
    combining independent solvation and native #504 predicate correction. Keep explicit
    preparation, native result ownership and the bounded OpenMM/TIP3P scope.
-   Receive the two new native solvate reports only after maintainer approval;
-   identifier and explicit-ion-count limits stay visible. Exposure is 234/244;
+   Receive native solvate identifier and explicit-ion-count corrections under
+   uibcdf/molsysmt#574 and #575; limits stay visible. Exposure is 234/244;
    source results do not qualify installed artifacts.
 2. Receive the three remaining macOS cells of prior Viewer `004464df`
    (42062771914), earlier addon full source and applicable new heads. Preserve
