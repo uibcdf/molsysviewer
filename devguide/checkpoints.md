@@ -1,44 +1,38 @@
 # Development checkpoint
 
-**Independent hydrogen/terminal preparation delivered by owner PR — 2026-11-04:**
+**Detached builder and overlap filtering delivered by owner PR — 2026-11-04:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) publishes
-`53d90adc07ce40ce2e1704dff6e8c660074022f2`, adding
-`build.add_missing_hydrogens` and `build.add_missing_terminal_cappings`.
-Both read the serialized current primary and return independent systems without
-scene adoption. Fixed-state RDKit retains declared chemistry/inventory, one
-source component/state/structure, heavy pose, parent maps and H5MSM history.
-Legacy pH preparation retains approximate rules and optional-engine limits.
-Capping can also complete the opposite free terminus; native reordering,
-attribute loss and output-only analysis invalidation stay explicit.
+`2d192399665111794cdd68d53342ce322d524310`, adding `build.editable` and
+`build.remove_overlapping_molecules`. The native builder copies supported
+domains, omits mechanics/named analyses and has independent edit/build lifetime.
+Overlap filtering removes complete candidate molecules using one explicit
+structure, retaining native remapping and a primary alias when no removal is
+needed. The default reference is the atom complement, including unselected
+same-molecule partners. Neither route adopts results or synchronizes the scene;
+the overlap local skip flag never bypasses native validation.
 
-Complete regression retains 4,057 passes and three failures from an obsolete
-negative availability assertion for the new hydrogen wrapper. Correcting that
-test passes its complete 18-case file. All 4,060 semantic cases are received
-across those runs, including 50 new cases; this is not a new single green full
-execution. Scientific/runtime sources, backend/Rust and datasets remain unchanged;
-the one later test correction and original-byte reconstruction are identified.
-Another 56 directed native and 562 route/documentation controls pass; both guide
-blocks execute. Ruff, 156 course structures, 247 native docstrings and dependencies
-pass. Course code, outputs, IDs and metadata remain intact. The
-[receipt](molsysmt_hydrogen_terminal_receiving_20261104.json) retains exact inputs,
-initial capping-count corrections, full failure and scoped recovery. Exposure
-is 226/244, build 21/30 and mechanics 4/6. New-head full 41956040459,
-smoke 41956040421 and performance 41956040841 are registered; completion,
-owner review and installed qualification remain pending.
+All 37 new cases and 387 build/serialized-reader integration cases pass with
+zero failures/errors/skips. Five directed native and 562 route/documentation
+cases pass separately. Both exact guide blocks execute, including real bundled
+lysozyme filtering. All 3,143 frozen sources/tests, backend/Rust and reference
+data match after execution. Ruff, 156 course structures, 247 docstrings and
+dependencies pass; original course code, outputs, IDs and metadata remain intact.
+The [receipt](molsysmt_builder_overlap_receiving_20261104.json) retains source
+identity, units/geometry, ownership, warnings and corrected fixture/complement
+expectations. Exposure is 228/244, build 23/30 and mechanics 4/6. This is not a
+new full-addon, installed-package or platform certificate. New-head full
+41958120506, smoke 41958120548 and performance 41958120472 are registered;
+completion and owner review/integration remain pending.
 
-Parent `ee1153d98` smoke 41949691156 attempt 2 passes 5,397 native cases
-(16 optional skips) and 4,006 addon cases (four optional Ackredit skips).
-Its performance 41949690963 attempt 2 executes measurements but fails solely
-on MDTraj centering +32.11%, with every measured MolSysMT route improving.
-[MolSysMT #567](https://github.com/uibcdf/molsysmt/issues/567), explicitly
-authorized by the maintainer, owns baseline comparability and third-party gate
-semantics. The Python 3.13/dirty historical reference, original provisioning
-failures, failed gate and unchanged 15% threshold remain preserved; no further
-retry or benchmark-policy change is authored. Native #549/#559–#562/#564 stay
-with MolSysMT; triclinic water construction remains unexposed. Viewer general
-CI retains its verified 8/8 source result and #295 its three-host receiving.
-Next receive exact CI/review and continue nine build/two mechanics routes
-before task-oriented GUI. No frozen candidate, package, tag, Release or
+Parent `53d90adc0` performance 41956040841 and five administrative controls
+pass without another retry or threshold change. Its smoke/full remain pending
+at inspection. The older `ee1153d98` smoke and failed MDTraj benchmark retain
+their original inputs; #567's comparability/third-party gating decision remains
+open. Native #549/#559–#562/#564 stay with MolSysMT; water construction remains
+unexposed. Previous Viewer source receiving retains its original scopes.
+Continue seven remaining build/two mechanics paths and explicit compatibility
+dispositions before task-oriented GUI. Owner-main concurrent work and human
+sandbox files remain untouched. No frozen candidate, package, tag, Release or
 promotion; both 1.0 publications remain paused.
 
 **Native reference-map repair received by the addon — 2026-11-04:**
@@ -857,21 +851,20 @@ fourteen cases verified in each original JUnit. General CI 41899772338 attempt 2
 now passes all eight test cells; each import/test/coverage step is verified.
 The initial macOS Python 3.12 acquisition cancellation remains preserved.
 Browser/experimental Qt pass independently. MolSysMT PR #543 now publishes
-`53d90adc0`, adding independent H-generation and terminal-capping routes.
-The complete addon run retains 4,057 passes and three stale negative-availability
-failures; the corrected diagnostic file passes all 18 cases. All 4,060 semantic
-cases are received across those runs, without claiming a new single full pass.
-Science/backend/data stay unchanged; the final test-only correction is identified.
-Exposure is 226/244, build 21/30 and mechanics 4/6. The
-[receipt](molsysmt_hydrogen_terminal_receiving_20261104.json) retains inputs,
-geometry/unit, identity, history/H5MSM and lifecycle evidence. New-head full
-41956040459, smoke 41956040421 and performance 41956040841 are pending.
-Parent smoke passes; its failed MDTraj benchmark remains under MolSysMT#567
-for comparability/blocking-scope decisions, without a threshold change or retry.
-Older campaigns retain their own inputs. #548/#550/#552/#554 are received;
-#549/#559–#562/#564 remain native owner work and water construction stays unexposed.
-Continue expert/GUI work after the artifact decision. Owner acceptance and
-installed qualification stay separate. Load human smoke remains deferred;
+`2d1923996`, adding detached native builder staging and conditional whole-molecule
+overlap filtering. Its 387-case build/reader integration includes all 37 new
+cases and passes without failures/errors/skips; 562 route/documentation and
+five directed native controls pass separately. All frozen source/backend/data
+hashes match. The [receipt](molsysmt_builder_overlap_receiving_20261104.json)
+retains ownership, units, native complement/alias behavior, examples and initial
+fixture corrections. Exposure is 228/244, build 23/30 and mechanics 4/6.
+Parent `53d90adc0` keeps its aggregate 4,060-case scope and passing performance;
+no new complete 4,097-case execution is claimed. New-head full 41958120506,
+smoke 41958120548 and performance 41958120472 remain pending. #567 stays open
+for baseline/gating decisions and the older failed audit remains preserved.
+#548/#550/#552/#554 are received; #549/#559–#562/#564 retain native ownership.
+Continue remaining expert routes, artifact decisions and GUI with owner review
+and installed qualification separate. Load human smoke remains deferred;
 no candidate is frozen and both 1.0 publications remain paused.
 
 The latest user-directed standalone round is summarized in the
@@ -2472,15 +2465,13 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-04:**
 
-1. Receive exact-head CI and owner review of MolSysMT PR #543 `53d90adc0`,
-   including independent H-generation/capping and all four mechanical routes.
-   Aggregate local receiving covers 4,060 semantic cases: preserve the original
-   4,057-pass/3-failure complete run and 18-case diagnostic recovery. Parent
-   smoke passes; performance remains failed under MolSysMT#567 for its owner
-   comparability/third-party gating decision, without changing the threshold. Preserve
-   older source matrices and their recovery, including
-   the now-successful d257b678 8/8; they do not qualify this changed input. The audit
-   adds no broad refactor gate.
+1. Receive exact-head CI and owner review of MolSysMT PR #543 `2d1923996`.
+   Its 387-case build/reader integration and 562 route/docs checks pass; no new
+   full-addon or installed qualification is claimed. Parent `53d90adc0`
+   performance passes and retains its separate aggregate 4,060-case receiving.
+   Preserve older source matrices, their recoveries and failed audit under
+   MolSysMT#567; later success does not close the comparability/gating proposal.
+   The audit adds no broad refactor gate.
 2. General CI 41899772338 is received: all eight source test cells pass,
    including the recovered macOS Python 3.12 cell. Preserve the original runner
    cancellation and bounded public-provider/pandas baseline. Local warning-strict
@@ -2491,7 +2482,7 @@ Resume toward **1.0** in this order:
    artifact for #294's already delivered scene
    handle/player contracts; do not require all addon tools to finish first.
    Package production/publication still requires its separate accepted route.
-4. Continue nine build and two remaining mechanics expert paths under #264, then
+4. Continue seven build and two remaining mechanics expert paths under #264, then
    disposition the basic.view bridge, historical aliases and native MD stubs.
    Receive #549/#559/#560/#561/#562 from MolSysMT without facade scientific repairs;
    #548/#550/#552/#554 are already received. Native water-box #564 keeps that

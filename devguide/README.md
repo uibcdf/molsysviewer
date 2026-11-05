@@ -45,23 +45,21 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- **Independent hydrogen/terminal preparation delivered by owner PR — 2026-11-04:**
+- **Detached builder and overlap filtering delivered by owner PR — 2026-11-04:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
-  `53d90adc07ce40ce2e1704dff6e8c660074022f2`, adds native hydrogen generation
-  and terminal completion/capping as independent results. Fixed-state chemistry,
-  legacy pH limits, opposite free-end completion, maps/history and output-only
-  analysis invalidation remain explicit. Complete regression retains 4,057 passes
-  and three stale availability assertions; the corrected diagnostic file passes
-  18/18. All 4,060 semantic cases are received across those runs, including
-  50 new cases, without claiming a new single full pass. Scientific sources,
-  backend/data and course code/outputs remain unchanged. The
-  [receipt](molsysmt_hydrogen_terminal_receiving_20261104.json) retains source
-  identity, scoped 56/562 checks, examples, original failures and recovery.
-  Exposure is 226/244 (build 21/30, mechanics 4/6); new-head CI/review and installed
-  qualification remain pending. Parent smoke passes; its MDTraj performance
-  failure remains under [MolSysMT #567](https://github.com/uibcdf/molsysmt/issues/567)
-  for comparability/gating review without changing thresholds or retrying.
-  Native #549/#559–#562/#564 stay with MolSysMT; no new candidate or publication.
+  `2d192399665111794cdd68d53342ce322d524310`, adds native builder staging and
+  whole-molecule overlap filtering. Builder domains/lifetime, one-structure
+  decisions, atom-complement references and conditional primary alias remain
+  explicit; neither route adopts results. All 37 new cases and 387 build/reader
+  integration cases pass without failures/errors/skips; five native and 562
+  route/docs controls pass separately. Guide examples execute, frozen source/
+  backend/data hashes match, and course code/outputs remain intact. The
+  [receipt](molsysmt_builder_overlap_receiving_20261104.json) preserves inputs,
+  warnings, fixture corrections and actual scope. Exposure is 228/244
+  (build 23/30, mechanics 4/6); new-head CI, owner review and installed receiving
+  remain pending. Parent performance passes without another retry or threshold
+  change; the earlier failure and MolSysMT#567 remain preserved. Native
+  #549/#559–#562/#564 stay with their owner; no candidate or publication.
 
 - **Native reference-map repair received by the addon — 2026-11-04:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
