@@ -1,45 +1,45 @@
 # Development checkpoint
 
-**Independent atom expansion delivered by owner PR — 2026-11-04:**
+**Independent hydrogen/terminal preparation delivered by owner PR — 2026-11-04:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) publishes
-`ee1153d983a37416eaee85710c5b97e0acb2ecc1`, adding `add_terminal_atoms` and
-`add_missing_heavy_atoms` on unchanged native owner `5f3af9374`. Both use the
-serialized current primary and return independent results without scene adoption
-or synchronization. Terminal attachment preserves declared parents, supplied
-all-structure coordinates, old indices and historical reports. Heavy repair
-retains bounded templates, possible reordering and unassessed warnings. Native
-attribute policies, output-only analysis invalidation and optional-engine limits
-remain explicit; no physical-refinement or hidden-preparation claim is added.
+`53d90adc07ce40ce2e1704dff6e8c660074022f2`, adding
+`build.add_missing_hydrogens` and `build.add_missing_terminal_cappings`.
+Both read the serialized current primary and return independent systems without
+scene adoption. Fixed-state RDKit retains declared chemistry/inventory, one
+source component/state/structure, heavy pose, parent maps and H5MSM history.
+Legacy pH preparation retains approximate rules and optional-engine limits.
+Capping can also complete the opposite free terminus; native reordering,
+attribute loss and output-only analysis invalidation stay explicit.
 
-The complete addon regression passes 4,010 cases without failures/errors/skips,
-including 59 new controls. All 3,141 frozen sources, backend/Rust and reference
-data remain unchanged. Another 39 directed native and 562 route/documentation
-checks pass; both guide blocks execute. Ruff, 156 course structures, 247 native
-docstrings and dependencies pass. One course Markdown cell gains guidance;
-all original code, outputs, IDs and metadata remain unchanged. The
-[receipt](molsysmt_atom_expansion_receiving_20261104.json) retains source/JUnit/
-data identity and initial test-only corrections. Exposure is 224/244, build
-19/30 and mechanics 4/6; new-head hosted, owner and installed receiving remain
-separate. Smoke 41949691156 and performance 41949690963 attempt 1 fail in
-environment setup: native logs identify a uibcdf repodata download timeout,
-followed by cleanup ENOENT, before package installation or tests. A public
-transfer probe now returns HTTP 200. One failed-job retry per run is requested
-without source/workflow changes; outcomes and full CI remain pending.
-Administrative checks pass. Parent `32435e6fd` smoke,
-performance and administrative checks pass; its full matrix remains queued
-at inspection and does not qualify the changed input.
+Complete regression retains 4,057 passes and three failures from an obsolete
+negative availability assertion for the new hydrogen wrapper. Correcting that
+test passes its complete 18-case file. All 4,060 semantic cases are received
+across those runs, including 50 new cases; this is not a new single green full
+execution. Scientific/runtime sources, backend/Rust and datasets remain unchanged;
+the one later test correction and original-byte reconstruction are identified.
+Another 56 directed native and 562 route/documentation controls pass; both guide
+blocks execute. Ruff, 156 course structures, 247 native docstrings and dependencies
+pass. Course code, outputs, IDs and metadata remain intact. The
+[receipt](molsysmt_hydrogen_terminal_receiving_20261104.json) retains exact inputs,
+initial capping-count corrections, full failure and scoped recovery. Exposure
+is 226/244, build 21/30 and mechanics 4/6. New-head full 41956040459,
+smoke 41956040421 and performance 41956040841 are registered; completion,
+owner review and installed qualification remain pending.
 
-[MolSysMT #564](https://github.com/uibcdf/molsysmt/issues/564), explicitly
-authorized by the maintainer, records 111/266 oxygen sites outside a requested
-triclinic cell, with an orthogonal control 0/268 and public reproduction. Its
-native report/index and independent pytest acceptance criteria are delivered
-through the PR. No native repair is authored; the water-box factory remains
-unexposed. Native #549/#559–#562 stay separate owner work. Viewer general CI
-41899772338 retains its verified 8/8 result on `793a92db`, including recovered
-macOS Python 3.12; #295 retains three-host source-pair receiving. Those earlier
-inputs do not qualify new addon code or installed artifacts. Next receive
-CI/review and continue remaining expert tools before GUI. No frozen candidate,
-package, tag, Release or promotion; both 1.0 publications remain paused.
+Parent `ee1153d98` smoke 41949691156 attempt 2 passes 5,397 native cases
+(16 optional skips) and 4,006 addon cases (four optional Ackredit skips).
+Its performance 41949690963 attempt 2 executes measurements but fails solely
+on MDTraj centering +32.11%, with every measured MolSysMT route improving.
+[MolSysMT #567](https://github.com/uibcdf/molsysmt/issues/567), explicitly
+authorized by the maintainer, owns baseline comparability and third-party gate
+semantics. The Python 3.13/dirty historical reference, original provisioning
+failures, failed gate and unchanged 15% threshold remain preserved; no further
+retry or benchmark-policy change is authored. Native #549/#559–#562/#564 stay
+with MolSysMT; triclinic water construction remains unexposed. Viewer general
+CI retains its verified 8/8 source result and #295 its three-host receiving.
+Next receive exact CI/review and continue nine build/two mechanics routes
+before task-oriented GUI. No frozen candidate, package, tag, Release or
+promotion; both 1.0 publications remain paused.
 
 **Native reference-map repair received by the addon — 2026-11-04:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) is updated to
@@ -857,19 +857,22 @@ fourteen cases verified in each original JUnit. General CI 41899772338 attempt 2
 now passes all eight test cells; each import/test/coverage step is verified.
 The initial macOS Python 3.12 acquisition cancellation remains preserved.
 Browser/experimental Qt pass independently. MolSysMT PR #543 now publishes
-`ee1153d98`, adding independent terminal attachment and bounded heavy-atom repair.
-Complete local regression passes 4,010 cases with 3,141 frozen files, reference
-data and backend bytes unchanged. Exposure is 224/244, build 19/30 and mechanics
-4/6. New-head smoke/performance first fail on repodata transfer before tests;
-a bounded failed-job recovery is requested on unchanged source. Full CI, owner
-acceptance and installed qualification remain pending. The
-[receipt](molsysmt_atom_expansion_receiving_20261104.json) retains geometry/unit,
-identity, history/H5MSM, lifecycle and test-diagnostic evidence. Older campaigns
-retain their own inputs. #548/#550/#552/#554 are received; #549/#559–#562 remain
-native owner work. New MolSysMT#564 reports a separate native triclinic water-box
-defect; the factory stays unexposed without a consumer fix. Continue expert/GUI
-work after the artifact decision. Load human smoke stays deferred; no candidate
-is frozen and both 1.0 publications remain paused.
+`53d90adc0`, adding independent H-generation and terminal-capping routes.
+The complete addon run retains 4,057 passes and three stale negative-availability
+failures; the corrected diagnostic file passes all 18 cases. All 4,060 semantic
+cases are received across those runs, without claiming a new single full pass.
+Science/backend/data stay unchanged; the final test-only correction is identified.
+Exposure is 226/244, build 21/30 and mechanics 4/6. The
+[receipt](molsysmt_hydrogen_terminal_receiving_20261104.json) retains inputs,
+geometry/unit, identity, history/H5MSM and lifecycle evidence. New-head full
+41956040459, smoke 41956040421 and performance 41956040841 are pending.
+Parent smoke passes; its failed MDTraj benchmark remains under MolSysMT#567
+for comparability/blocking-scope decisions, without a threshold change or retry.
+Older campaigns retain their own inputs. #548/#550/#552/#554 are received;
+#549/#559–#562/#564 remain native owner work and water construction stays unexposed.
+Continue expert/GUI work after the artifact decision. Owner acceptance and
+installed qualification stay separate. Load human smoke remains deferred;
+no candidate is frozen and both 1.0 publications remain paused.
 
 The latest user-directed standalone round is summarized in the
 [final review](standalone_final_review_20261029.md). Receive its remaining
@@ -2469,9 +2472,12 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-04:**
 
-1. Receive exact-head CI and owner review of MolSysMT PR #543 `ee1153d98`,
-   including both independent atom-expansion routes and all four mechanical
-   routes. The complete local addon regression passes 4,010 cases. Preserve
+1. Receive exact-head CI and owner review of MolSysMT PR #543 `53d90adc0`,
+   including independent H-generation/capping and all four mechanical routes.
+   Aggregate local receiving covers 4,060 semantic cases: preserve the original
+   4,057-pass/3-failure complete run and 18-case diagnostic recovery. Parent
+   smoke passes; performance remains failed under MolSysMT#567 for its owner
+   comparability/third-party gating decision, without changing the threshold. Preserve
    older source matrices and their recovery, including
    the now-successful d257b678 8/8; they do not qualify this changed input. The audit
    adds no broad refactor gate.
@@ -2485,7 +2491,7 @@ Resume toward **1.0** in this order:
    artifact for #294's already delivered scene
    handle/player contracts; do not require all addon tools to finish first.
    Package production/publication still requires its separate accepted route.
-4. Continue eleven build and two remaining mechanics expert paths under #264, then
+4. Continue nine build and two remaining mechanics expert paths under #264, then
    disposition the basic.view bridge, historical aliases and native MD stubs.
    Receive #549/#559/#560/#561/#562 from MolSysMT without facade scientific repairs;
    #548/#550/#552/#554 are already received. Native water-box #564 keeps that
