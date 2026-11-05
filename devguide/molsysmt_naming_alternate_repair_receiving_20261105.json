@@ -1,0 +1,364 @@
+{
+  "schema": "molsysviewer.molsysmt-naming-alternate-repair-receiving@1",
+  "date": "2026-11-05",
+  "issues": [
+    "uibcdf/molsysviewer#264",
+    "uibcdf/molsysmt#421",
+    "uibcdf/molsysmt#549",
+    "uibcdf/molsysmt#569",
+    "uibcdf/molsysmt#570",
+    "uibcdf/molsysmt#571"
+  ],
+  "pull_request": "https://github.com/uibcdf/molsysmt/pull/543",
+  "owner_commit": "04b9fbbda4654516c01d6c34e9c19ad17c1be0fb",
+  "native_owner_basis": "532d036228c9673c5ddd63beaa8093220b06b6b2",
+  "previous_contribution": "738f752cc6543f45452f833f85046066a1e67d72",
+  "naming_merge": "39375779514772e75faa67820bf17e7f5b27712f",
+  "viewer_runtime_logic": "78ede79e2e345593db5bfe80d246d3f6c70bd005",
+  "owner_receipts": {
+    "molsysviewer_tools_naming_cutover_receiving_20261105.json": {
+      "path": "devtools/data/molsysviewer_tools_naming_cutover_receiving_20261105.json",
+      "sha256": "6be7a15d1bfe2e9b11b91394017111f25b632c07e8151215084202b2daac3e38",
+      "size_bytes": 8026
+    },
+    "molsysviewer_tools_alternate_site_repaired_receiving_20261105.json": {
+      "path": "devtools/data/molsysviewer_tools_alternate_site_repaired_receiving_20261105.json",
+      "sha256": "f84ba93034d94cd40550b2c95057dfc97adad0f02e798b2e12af4eeb5cb50780",
+      "size_bytes": 9041
+    }
+  },
+  "behavior": {
+    "naming": "Canonical group-level code query only, retired amino-acid path absent; explicit native naming/digestion/context forwarded without aliases or chemistry substitution.",
+    "alternate_sites": "Native corrected maximum-occupancy choice, coherent primary observations and whole-request scientific preflight received. Location vectors follow selection order; selected structures must agree on stable labels. Native skip_digestion forwarded, plus update_view; scientific site validation remains active.",
+    "ownership": "Independent scientific outputs remain native. Always-in-place alternate resolution returns None, retains scene/source index correspondence and defers only projection when requested. Projection retry never repeats science.",
+    "failure_boundary": "Invalid selected native requests preserve observations, named analyses and prior pending edits. Unexpected mutable-adapter failures retain their partial-write limit; loaded-coordinate publication tokens remain the reviewed receiving boundary.",
+    "host": "No Viewer runtime, native scientific algorithm, Rust/backend build or dependency floor authored."
+  },
+  "validation": [
+    {
+      "file": "alternate-corrected-native-all-addon-20261105.xml",
+      "sha256": "7feceb941d71f16e83ce237c5297de5769beec1aeb33d4f54b71c06c5b76d614",
+      "scope": "Final complete addon plus 32 native-host/distribution/inventory/command guards; four workers, immutable public PyUnitWizard source overlay.",
+      "tests": 4273,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 295.7
+    },
+    {
+      "file": "alternate-corrected-native-focused-received-20261105.xml",
+      "sha256": "8ce1e833d538c0469facc7679f4b576ef64e6fca130914ae2cc15e7cea0978ed",
+      "scope": "Forty alternate-site facade cases, including literal occupancy/coordinate/B-factor controls, consistent labels, clean late rejection with both digestion modes and prior pending work, units, no-ops and synchronization-only retry.",
+      "tests": 40,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 20.595
+    },
+    {
+      "file": "alternate-corrected-native-directed-20261105.xml",
+      "sha256": "797e5aad0e5ca85dc1fb60e6ee5b8221fdedc1a4f3f1701f61aac7a347b1842f",
+      "scope": "348 owner-native alternate-site/observation-setter and naming/sequence controls.",
+      "tests": 348,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 17.959
+    },
+    {
+      "file": "alternate-corrected-native-docs-20261105.xml",
+      "sha256": "c2ec546145e14fa3e377f16d182b6c943d6ad7ad7f945012e4b3a3996fc553b0",
+      "scope": "88 documentation, package/discovery, course navigation and smoke-command guards.",
+      "tests": 88,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 24.122
+    }
+  ],
+  "source_freeze": {
+    "files": 4229,
+    "sha256": "07e9b66b5766a01d48f6733ff86f6198e7429a815d653229ff289fe1e255e101",
+    "backend_sha256": "f32ed73f7ef3cf3225e12fbc56b9c4236a4452d758c94661f41860ad00d82c1c",
+    "rust_tree": "32cfb07b9c26ae9ad3ed379c1b76fab85669cf67",
+    "postcheck": {
+      "primary_files": 4229,
+      "primary_changed": [],
+      "provider_files": 91,
+      "provider_changed": [],
+      "other_support_changed": {
+        "argdigest": [],
+        "smonitor": [],
+        "depdigest": []
+      },
+      "backend_sha256": "f32ed73f7ef3cf3225e12fbc56b9c4236a4452d758c94661f41860ad00d82c1c",
+      "native_authored_diff": []
+    }
+  },
+  "provider_snapshot": {
+    "provider": "pyunitwizard",
+    "public_commit": "02d0015fa7d3149d92c0e632b8e584f6a47c37dc",
+    "archive_sha256": "15837de15b443f3f0853d484da9990da74cc444b9c562e4aafe9fbf86642cdbd",
+    "files": 91,
+    "scope": "Immutable public git-archive source overlay; no environment installation or owner-checkout edits. Distribution metadata does not identify this source snapshot.",
+    "other_checked_support_sources": {
+      "argdigest": {
+        "file_count": 39,
+        "sha256": "615dda2c31aa8b94feb25fc03421418215d20bc220fb0245918863fa47d40e87",
+        "changed": []
+      },
+      "smonitor": {
+        "file_count": 41,
+        "sha256": "c944f2bccca3990284ada1899ddf0a52ba0ecdb1fa4ad9b62aba3b2c1a8939e8",
+        "changed": []
+      },
+      "depdigest": {
+        "file_count": 17,
+        "sha256": "754a91aeefd5593b8af0474bc002dd1d6b635aad39abca11dae267012cacab95",
+        "changed": []
+      }
+    }
+  },
+  "preserved_failed_runs": [
+    {
+      "file": "alternate-corrected-native-initial-20261105.xml",
+      "sha256": "0071dc16c6d24f6636046578a3c96ed624c3c015ec15bac1890f1f7ccfe1791f",
+      "scope": "Old addon fixture used inconsistent cross-structure IDs, duplicate local/native skip signature and obsolete uncertain-state expectation.",
+      "tests": 30,
+      "failures": 20,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 16.937
+    },
+    {
+      "file": "alternate-corrected-native-focused-20261105.xml",
+      "sha256": "dcdc661a0c4c0b8ed03a74caf125ae69853f5a8a9b54f2c065765a73bafb8ab9",
+      "scope": "Remaining old selection-vector order, diagnostic skip-control mismatch and overly strict operation-ID equality.",
+      "tests": 33,
+      "failures": 7,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 18.339
+    },
+    {
+      "file": "alternate-corrected-native-focused-final-20261105.xml",
+      "sha256": "2a5dd37df90c307d33e9b4e93f5dff819d828a3157fe9d74494c34de3625f696",
+      "scope": "Four test-only identity expectations compared immutable analysis references against copies; actual pre-call analysis identity is now retained explicitly.",
+      "tests": 40,
+      "failures": 4,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 21.743
+    }
+  ],
+  "naming_receiving": {
+    "published_native_basis": "d3650cc09735ccfc7bf02d35ca4e0a746f83f96f",
+    "validation": [
+      {
+        "file": "naming-context-new-20261105.xml",
+        "sha256": "ea0c8e84ac1d00f66e9b46950910b48f3331273834b95b2a35de303852931c29",
+        "scope": "Forty new explicit-context, native-signature/error and independent-output ownership cases.",
+        "tests": 40,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 3.027
+      },
+      {
+        "file": "naming-integration-all-addon-fixed-provider-20261105.xml",
+        "sha256": "5eba68ffb0485b7a0e1c275c332633c48ecc0e3c75eb2b325dde1ab37d7adc68",
+        "scope": "Full addon and 32 structural/package guards; four workers and immutable public PyUnitWizard source.",
+        "tests": 4263,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 297.298
+      },
+      {
+        "file": "naming-integration-native-20261105.xml",
+        "sha256": "a180aec6bed3d971e10ece20fbe242d58333770f73b14193fd8ac57b9a9dd796",
+        "scope": "Directed native group naming, code, peptide source context and sequence identity; four workers.",
+        "tests": 298,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 11.463
+      },
+      {
+        "file": "naming-integration-docs-final-20261105.xml",
+        "sha256": "dab3dc82e94b9f9eadd91cf7c03fb0cff58586f84c0827430953231c9f6eb633",
+        "scope": "Final seven-file documentation/package/course contract receiving with corrected miniature Sphinx fixture.",
+        "tests": 88,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 24.102
+      }
+    ],
+    "preserved_failures": [
+      {
+        "file": "naming-integration-initial-20261105.xml",
+        "sha256": "8f946fc8fe914cd4c3ec50a949ad84f1c1534f6a694d23df0fa50df9b0efb1a9",
+        "scope": "Stale addon paths/signatures, local/native skip assumptions and doctest contexts/counts.",
+        "tests": 1093,
+        "failures": 54,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 208.314
+      },
+      {
+        "file": "naming-integration-focused-corrected-20261105.xml",
+        "sha256": "2fa2e28a2ea2315384081377fb876aef0396cec4f332f3f24136f98fadc1f08a",
+        "scope": "Two UNK controls used sequence context; native UNK declaration belongs to explicit legacy.",
+        "tests": 922,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 144.965
+      },
+      {
+        "file": "naming-unk-legacy-recovery-20261105.xml",
+        "sha256": "0d32eb20115e2544a6375fccda85f3d760d038e6d2adee65f1b6bbaa8d80b953",
+        "scope": "Two recovered UNK controls using actual native legacy declaration.",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 2.657
+      },
+      {
+        "file": "naming-integration-docs-contracts-20261105.xml",
+        "sha256": "74f452c9253b1e5cc2dd124960bbca587462d202f9aa55566da17e9d3f2ea2a6",
+        "scope": "Miniature Sphinx fixture lacked the real naming-schemes foundation label.",
+        "tests": 88,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 23.008
+      },
+      {
+        "file": "naming-course-navigation-recovery-20261105.xml",
+        "sha256": "fe2574f2e80f8a6e52ddb471d6d4ebd6043ddae7770eb1170cfc3f4ee890a419",
+        "scope": "Real foundation label retained and rendered; production links not suppressed.",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 3.431
+      }
+    ],
+    "earlier_provider_drift": {
+      "initial_full_run": {
+        "file": "naming-integration-all-addon-20261105.xml",
+        "sha256": "fb33f09d8f137ec0faf66374578558e8eefe8fb434dfbdfdc6ef9c32335052b5",
+        "scope": "All cases passed but four live PyUnitWizard source files changed during this run; not a fixed-provider certificate.",
+        "tests": 4263,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 310.482
+      },
+      "disposition": "Preserved original result and repeated the complete addon run using the public immutable provider snapshot. Native/addon sources and other checked support sources did not drift."
+    }
+  },
+  "documentation": {
+    "guide_blocks_executed": 3,
+    "docstrings": 246,
+    "course_notebooks": 156,
+    "soft_dependency_scan": "passed",
+    "ruff_addon_and_test_files": 91,
+    "dependency_contract_audit": "passed",
+    "devguide_indexes": "passed"
+  },
+  "integration_review": {
+    "intermediate_unpublished_merge": "393757795",
+    "finding": "Final merge review found that intermediate conflict resolution had omitted native-owner documentation sections.",
+    "correction": "Restore every section from owner current addon proposal/status and the complete owner manifest. Keep contribution-only receiving sections additively; only the addon manifest description differs. Reuse owner Sphinx fixture exactly.",
+    "owner_module_12_cells": 35,
+    "changed_markdown_ids": [
+      "96ebdbc9",
+      "4fb55a86",
+      "f158b27f"
+    ],
+    "all_owner_code_outputs_ids_and_metadata_preserved": true,
+    "older_receipts": "Preserved immutable; their tests retain their original input sources. The corrected final tree is separately verified."
+  },
+  "native_issue_status": {
+    "569": "Closed by native owner; maximum-occupancy correction received.",
+    "570": "Closed by native owner; selected occupancy/optional observations contract received.",
+    "571": "Closed by native owner; preflight and clean later-site rejection received.",
+    "reports": "Original consumer reproductions retained as archived reports with owner guards; no issue reopened or duplicated."
+  },
+  "exposure": {
+    "exposed": 232,
+    "declared": 244,
+    "element": [
+      57,
+      57
+    ],
+    "build": [
+      27,
+      30
+    ],
+    "molecular_mechanics": [
+      4,
+      6
+    ]
+  },
+  "ci": {
+    "new_contribution": {
+      "head": "04b9fbbda4654516c01d6c34e9c19ad17c1be0fb",
+      "base": "532d036228c9673c5ddd63beaa8093220b06b6b2",
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "meaning": "No source merge conflict; required checks/review are not claimed complete.",
+      "runs": {
+        "smoke": 42084552460,
+        "full": 42084552205,
+        "performance": 42084552241,
+        "ruff": 42084552415,
+        "dependencies": 42084552083,
+        "devguide_pr": 42084552338,
+        "devguide_branch": 42084543631,
+        "data": 42084543591,
+        "suite_policy": 42084552869,
+        "publication_governance": 42084553211
+      },
+      "observed": "Dependency contract and branch devguide success; full in progress, other listed PR controls queued. No new-head all-green claim."
+    },
+    "prior_viewer": {
+      "run": 42062771914,
+      "source": "004464dfca7e49e924b14c4af56b3826bda648d9",
+      "test_success": 5,
+      "test_queued": 3,
+      "conclusion": null
+    },
+    "prior_addon": {
+      "run": 42062370977,
+      "source": "a1dbe0fb67373c32b0ca3276aa40f52250ff9554",
+      "test_success": 4,
+      "test_in_progress": 1,
+      "test_queued": 3,
+      "conclusion": null
+    },
+    "scope": "Read-only GH Run Receptor inspection; original artifact bodies not independently received in this increment. No retry or duplicate dispatch."
+  },
+  "limits": [
+    "Unexpected failures within mutable adapters retain their existing partial-write and invalidation boundary; no arbitrary-backend transaction promised.",
+    "The geometry publication token requires loaded native coordinates; no automatic observation of raw edits is introduced.",
+    "Existing Linux/Python 3.14.7 source environment only; no clean solve, installed/public artifact, platform admission, candidate, tag or release.",
+    "Owner review and new-head hosted CI remain separate and pending at local preparation."
+  ],
+  "delivery": "Existing MolSysMT owner PR only; Viewer reviewed metadata commits directly to main. No candidate/package/tag/Release/promotion; both 1.0 publications remain paused.",
+  "viewer_basis": "a801a5d382bda17e3e5bf13d977964729729b287",
+  "viewer_record_checks": {
+    "file": "naming-alternate-viewer-reporting-20261105.xml",
+    "sha256": "fe53d1162d6f21c1ca7afad22ca1ef237237102f48f3ff3dd53dff6e5a37152e",
+    "tests": 311,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 2.283,
+    "scope": "Reporting protocol, devguide links/architecture status and issue-tool contracts; generated indexes and staged diff checks also pass."
+  }
+}

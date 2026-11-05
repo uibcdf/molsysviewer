@@ -1,46 +1,37 @@
 # Development checkpoint
 
-**Managed alternate-site resolution received — 2026-11-05:**
+**Naming cutover and alternate-site repairs received — 2026-11-05:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
-`738f752cc6543f45452f833f85046066a1e67d72`, adds the explicit native
-`build.solve_atoms_with_alternate_location` mirror. It preserves native
-always-in-place None ownership, selection/sorted-location binding, structure
-order, coordinates/B factors/global labels and retained index/chemical/source
-identity. The existing host coordinator needs no runtime change. Reviewed
-protected-coordinate publication distinguishes clean rejection from partial
-native work; projection retries never repeat science.
+`04b9fbbda4654516c01d6c34e9c19ad17c1be0fb`, receives published native
+`532d03622`. Explicit naming contexts and native digestion flags are mirrored;
+the canonical group-level code query replaces its retired amino-acid path.
+Native #569/#570/#571 are closed and their repairs are received: the chosen
+primary observations stay coherent, cross-structure labels must agree and
+invalid selected requests are checked before publication. Location vectors
+follow native selection order. Projection retry remains separate from science;
+unexpected mutable-adapter failures retain their explicit partial-write limit.
 
-All 30 focused, 999 edit-integration, 34 native, 87 package/reporting and 56
-docs cases pass without failures/errors/skips. All 3,147 recorded source/test
-files, including unchanged 3,034 native files, retained backend and Rust, match.
-The guide block executes; 156 notebooks validate, original course code/outputs/
-IDs/metadata remain, 246 native docstrings pass in the fresh-process scope and
-all 90 addon/test files pass formatting. Exposure is 232/244, build 27/30 and
-mechanics 4/6. The [receipt](molsysmt_alternate_site_receiving_20261105.json)
-links canonical owner evidence and preserves the separate source/installed scope.
+The final complete addon/integration run passes **4,273 cases**, without
+failures/errors/skips; forty facade, 348 directed native and 88 documentation
+cases pass separately. All 4,229 primary source files, the 91-file immutable
+published PyUnitWizard snapshot and checked support sources remain unchanged.
+Backend/Rust is retained. Three guide blocks, 246 docstrings, 156 course
+notebooks, dependency scan/audit and Ruff pass. All owner status/proposal sections,
+the complete manifest and every owner executable course cell/output/ID/metadata
+entry are preserved; only three Module 12 Markdown cells gain addon prose.
+The [receipt](molsysmt_naming_alternate_repair_receiving_20261105.json) retains
+original failures, intermediate merge correction and separate input scopes.
+Earlier alternate-site evidence retains its old native source in the
+[original receipt](molsysmt_alternate_site_receiving_20261105.json).
 
-Native [#569](https://github.com/uibcdf/molsysmt/issues/569),
-[#570](https://github.com/uibcdf/molsysmt/issues/570) and
-[#571](https://github.com/uibcdf/molsysmt/issues/571) are open with authorized
-standalone reproductions: occupancy choice below maximum, primary occupancy
-retention needing an owner contract decision, and a late malformed rejection
-after partial writes. Final opening examples execute; no scientific correction
-or downstream compensation is authored. Earlier #549/#559–#562/#564/#567/#568
-retain their owners and original evidence.
-
-Previous addon source `a1dbe0fb6` smoke 42062370918 passes 32 command guards,
-5,397 native cases (16 optional skips), 4,151 addon cases (four optional skips),
-and performance 42062370953 succeeds. Full 42062370977 is still partial at
-receiving; none of those runs qualifies this new source. Viewer prior head
-`004464df` general CI 42062771914 has four Linux cells success/four macOS queued;
-core E2E, experimental Qt, policy and Conda governance pass. Exact new-head
-CI and owner review remain pending. Continue three build/two mechanics routes,
-explicit bridge/alias/stub decisions and task GUI. Human sandbox and concurrent
-owner-main work are preserved; both 1.0 publications remain paused.
-
-Missing-bond receiving and inventory recovery remain complete in source;
-[original evidence](molsysmt_bond_inventory_recovery_20261105.json) is retained.
-No candidate, package, tag, Release or promotion is authorized by this work.
+Exposure stays 232/244, build 27/30 and mechanics 4/6. The contribution is
+pushed only to the existing owner PR; owner review and exact-head CI remain
+pending. Prior Viewer general CI now has five test cells success/three macOS
+queued; prior addon full CI has four success/one running/three queued. These
+old runs do not certify this new source; no rerun is dispatched. Continue the
+remaining expert paths and explicit compatibility/stub decisions before GUI
+and installed qualification. Human sandbox and owner working changes remain
+preserved; both 1.0 publications remain paused. No candidate or publication.
 
 **Native reference-map repair received by the addon — 2026-11-04:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) is updated to
@@ -858,20 +849,18 @@ fourteen cases verified in each original JUnit. General CI 41899772338 attempt 2
 now passes all eight test cells; each import/test/coverage step is verified.
 The initial macOS Python 3.12 acquisition cancellation remains preserved.
 Browser/experimental Qt pass independently. MolSysMT PR #543 now delivers
-`738f752cc`: managed alternate-site resolution, retained index/chemical/source
-identity and explicit clean-versus-partial rejection. Source exposure is
-232/244, build 27/30 and mechanics 4/6. The
-[receipt](molsysmt_alternate_site_receiving_20261105.json) records 30 focused,
-999 integration, 34 native, 87 package/reporting and 56 docs cases, frozen
-source/backend inputs and separate source-versus-installed scope. Native
-#569/#570/#571 are open; no consumer scientific repair is introduced. Earlier
-native issues remain owned. Previous source `a1dbe0fb6` smoke passes 5,397
-native and 4,151 addon cases with optional omissions recorded; its performance
-passes and full CI remains partial. New-head CI and owner review are pending.
-Viewer prior `004464df` passes core browser/experimental Qt and four Linux
-cells; four macOS cells remain queued. Continue three build/two mechanics
-routes, explicit compatibility decisions and task GUI. Load human smoke stays
-deferred; both 1.0 publications remain paused.
+`04b9fbbda`: explicit native naming-context mirrors and the owner's corrected
+alternate-site observations/preflight. All 4,273 addon/integration cases pass,
+with forty facade, 348 native and 88 docs cases received separately. The
+[receipt](molsysmt_naming_alternate_repair_receiving_20261105.json) retains fixed
+source/provider inputs, original failures and repaired merge preservation.
+Native #569/#570/#571 are closed and received; no scientific compensation is
+implemented in the facade. Exposure stays 232/244, build 27/30 and mechanics
+4/6. New-head hosted CI and owner review remain separate and pending. Prior
+Viewer general CI has five test cells success/three macOS queued; prior addon
+full CI has four success/one running/three queued. Load human smoke remains
+deferred; continue remaining expert paths and GUI qualification without
+candidate publication. Both 1.0 publications remain paused.
 
 The latest user-directed standalone round is summarized in the
 [final review](standalone_final_review_20261029.md). Receive its remaining
@@ -2471,23 +2460,23 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-05:**
 
-1. Receive exact-head CI and owner review of MolSysMT PR #543 `738f752cc`.
-   Alternate-site receiving passes its scoped 30/999/34/87/56 checks with
-   232/244 exposure. Native #569/#570/#571 require owner decisions/fixes;
-   partial scientific work is uncertain, never a successful projection retry.
-   Prior source smoke/performance success and partial full matrix retain
-   their own hashes. Source results are not installed-public qualification.
-2. Receive the four remaining macOS cells of prior Viewer `004464df`
-   (42062771914) and the new applicable head. Preserve earlier successful
-   recoveries and original acquisition failures; no duplicate matrix dispatch.
-   Keep #295 three-host receiving and the bounded public-provider/pandas
-   baseline. Triage #294's import-order observation with controlled inputs.
+1. Receive exact-head CI and owner review of MolSysMT PR #543 `04b9fbbda`.
+   Naming/alternate-site receiving passes the final 4,273-case addon/integration
+   regression, forty facade, 348 native and 88 docs cases without omissions.
+   Native #569/#570/#571 are closed and received; arbitrary mutable-adapter
+   failures keep their declared limit. Exposure stays 232/244. Preserve original
+   failed runs, corrected test premises and source-versus-installed scope.
+2. Receive the three remaining macOS cells of prior Viewer `004464df`
+   (42062771914), earlier addon full source and applicable new heads. Preserve
+   previous successful recoveries/acquisition failures; no duplicate dispatch.
+   Keep #295 three-host receiving and public-provider/pandas baseline.
+   Triage #294's import-order observation with controlled inputs.
 3. #292/#293 source reviews and guards are complete. Scope a covering pre-1.0
    artifact for #294's delivered scene handle/player contracts; package
    production/publication still requires its separate accepted route.
 4. Continue three build and two remaining mechanics expert paths under #264,
    then disposition basic.view, historical aliases and native MD stubs. Receive
-   #549/#559–#562/#564/#568–#571 from MolSysMT without facade scientific repairs;
+   #549/#559–#562/#564/#568 from MolSysMT without facade scientific repairs;
    water-box #564 keeps that factory unexposed. Preserve explicit inputs and
    the PR-only owner contribution route.
 5. Build task-oriented addon GUI over qualified expert operations, consolidate

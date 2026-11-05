@@ -45,19 +45,16 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- **Managed alternate-site resolution received — 2026-11-05:**
-  [PR #543](https://github.com/uibcdf/molsysmt/pull/543), `738f752cc`, adds
-  native stored-site coordinate/B-factor/label publication with retained index
-  identity, no-op preservation and clean-versus-partial failure receiving.
-  [Evidence](molsysmt_alternate_site_receiving_20261105.json) records 30 focused,
-  999 edit-integration, 34 native, 87 package/reporting and 56 docs cases, no
-  failures/errors/skips; native/backend/Rust remain unchanged. Exposure is
-  232/244, build 27/30. Native #569/#570/#571 are open without consumer repair.
-  Earlier source smoke passes 5,397 native / 4,151 addon cases with recorded
-  optional skips; new-head CI and owner review remain pending. Viewer prior
-  head has four Linux cells success/four macOS queued; core browser/Qt pass.
-  No candidate/publication; remaining tools, GUI and installed qualification
-  keep their separate scopes.
+- **Naming and alternate-site repairs received — 2026-11-05:**
+  [PR #543](https://github.com/uibcdf/molsysmt/pull/543), `04b9fbbda`, receives
+  owner naming-context and #569/#570/#571 corrections. All 4,273 addon/integration
+  cases pass without omissions; forty facade, 348 native and 88 docs cases pass
+  separately with fixed recorded inputs. [Evidence](molsysmt_naming_alternate_repair_receiving_20261105.json)
+  retains original failures, immutable provider receiving and owner documentation
+  preservation. Exposure stays 232/244, build 27/30. New-head CI and owner review
+  remain pending; prior Viewer general CI has five success/three macOS queued.
+  No candidate/publication; remaining expert tools, GUI and installed receiving
+  remain separate. Earlier alternate-site input retains its original receipt.
 
 - Missing-bond receiving and its strict inventory recovery are complete in source;
   [original evidence](molsysmt_bond_inventory_recovery_20261105.json) is retained.
