@@ -45,21 +45,20 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- **Detached builder and overlap filtering delivered by owner PR — 2026-11-04:**
+- **Independent peptide construction/substitution delivered by owner PR — 2026-11-04:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
-  `2d192399665111794cdd68d53342ce322d524310`, adds native builder staging and
-  whole-molecule overlap filtering. Builder domains/lifetime, one-structure
-  decisions, atom-complement references and conditional primary alias remain
-  explicit; neither route adopts results. All 37 new cases and 387 build/reader
-  integration cases pass without failures/errors/skips; five native and 562
-  route/docs controls pass separately. Guide examples execute, frozen source/
-  backend/data hashes match, and course code/outputs remain intact. The
-  [receipt](molsysmt_builder_overlap_receiving_20261104.json) preserves inputs,
-  warnings, fixture corrections and actual scope. Exposure is 228/244
-  (build 23/30, mechanics 4/6); new-head CI, owner review and installed receiving
-  remain pending. Parent performance passes without another retry or threshold
-  change; the earlier failure and MolSysMT#567 remain preserved. Native
-  #549/#559–#562/#564 stay with their owner; no candidate or publication.
+  `7bd844fa5e05570c013a8b8fdd59507fbcf48bbb`, adds fresh sequence-based peptide
+  construction and bounded independent mutation. Pose/trajectory ownership,
+  incomplete-side-chain warnings, native H/provider/mask limits and local-only
+  skip flags remain explicit. All 34 new and 421 build/reader integration cases
+  pass; 37 native and 562 route/docs checks pass separately. Guide blocks execute,
+  frozen sources/backend/data match and course code/outputs remain intact. The
+  [receipt](molsysmt_peptide_sequence_receiving_20261104.json) retains initial
+  reference corrections and independently reproduced native mask failures;
+  their owner report is prepared/offered pending the maintainer response.
+  Exposure is 230/244 (build 25/30, mechanics 4/6); new-head CI, owner review and
+  installed receiving remain separate. Parent smoke passes; its MDTraj audit
+  fails +18.54% under #567 with unchanged thresholds. No candidate or publication.
 
 - **Native reference-map repair received by the addon — 2026-11-04:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
