@@ -385,5 +385,61 @@
     "indexes": "Generated indexes pass --check.",
     "profile": "Python 3.14 explicit interpreter; source provider isolated through PYTHONPATH=/tmp/msv-element-1103.",
     "scope": "Devguide-only checks; source runtime, installed artifacts and unrelated sandbox work are unchanged."
+  },
+  "hosted_ci_follow_up": {
+    "date": "2026-11-04",
+    "head": "ee1153d983a37416eaee85710c5b97e0acb2ecc1",
+    "original_attempts": [
+      {
+        "run": 41949691156,
+        "attempt": 1,
+        "conclusion": "failure",
+        "phase": "Setup conda env, before package installation or tests",
+        "primary_native_log_error": "libmamba download timeout (28), less than 30 bytes/sec for 60 seconds at uibcdf/noarch/repodata.json.zst",
+        "secondary": "setup-micromamba post-job cleanup ENOENT; not the initial failure",
+        "manifest_sha256": "36423fe09b92d1ceb6986cddedfafd0207e359c107dc7f72f6d7bf5dd2d02ee0",
+        "logs_zip_sha256": "61d55dafb9994706102a5b05b75d3b6e0a2ffa177f09057dd984616d6e73a012"
+      },
+      {
+        "run": 41949690963,
+        "attempt": 1,
+        "conclusion": "failure",
+        "phase": "Setup conda env, before package installation or tests",
+        "primary_native_log_error": "libmamba download timeout (28), less than 30 bytes/sec for 60 seconds at uibcdf/noarch/repodata.json.zst",
+        "secondary": "setup-micromamba post-job cleanup ENOENT; not the initial failure",
+        "manifest_sha256": "37af4748426ac4b1012498342c1f1c04abbb3b9c7b4e9100c9022c7f9ddcedd0",
+        "logs_zip_sha256": "7278fedaaa8b62685ac2586f04254020c8bd6b546e3969f7e2c3aed84aeaf079"
+      }
+    ],
+    "diagnosis": "Native logs show identical public-index download timeout before either scientific suite. No addon failure is observed in those attempts; the jobs retain failure conclusions.",
+    "route_probe": {
+      "url": "https://conda.anaconda.org/uibcdf/noarch/repodata.json.zst",
+      "http_status": 200,
+      "download_bytes": 6352,
+      "seconds": 8.837174,
+      "scope": "Current public-index transfer, not solver/installation or scientific qualification."
+    },
+    "recovery": "One failed-jobs-only retry requested for each run; source unchanged, no workflow/solver policy alteration and no repeat of passing jobs. Recovery results remain pending.",
+    "receptor_limit": "Local gh extension reports version 1.1.1 and highlights cleanup ENOENT. Native fallback restores the primary timeout. This is covered by the previously closed uibcdf/gh-run-receptor#61 at the older tool version; no new provider defect or duplicate issue is asserted.",
+    "devguide_checks": {
+      "tests": 311,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "file": "build-expansion-viewer-ci-followup-20261104.xml",
+      "sha256": "af4677eaf227556b7c214d5a51b1fe49dcaaab0d9b2afb8bd46439f29a38ead7"
+    },
+    "observed_retries": {
+      "smoke": {
+        "run": 41949691156,
+        "attempt": 2,
+        "status": "in_progress"
+      },
+      "performance": {
+        "run": 41949690963,
+        "attempt": 2,
+        "status": "in_progress"
+      }
+    }
   }
 }

@@ -56,8 +56,10 @@ documents, and historical audits.
   outputs and metadata remain unchanged. The
   [receipt](molsysmt_atom_expansion_receiving_20261104.json) records unchanged
   sources/backend/data and 224/244 exposure (build 19/30, mechanics 4/6).
-  Exact new-head full 41949691118, smoke 41949691156, owner review and installed
-  receiving remain pending. [MolSysMT #564](https://github.com/uibcdf/molsysmt/issues/564)
+  New-head smoke 41949691156 and performance 41949690963 first fail while
+  downloading Conda repodata, before tests. One failed-job retry per run is
+  requested after transfer recovery; full CI, owner and installed receiving
+  remain pending. [MolSysMT #564](https://github.com/uibcdf/molsysmt/issues/564)
   records a separate triclinic water-box defect; its factory remains unexposed.
   Earlier Viewer CI retains its verified 8/8 source result. No new candidate
   or publication.

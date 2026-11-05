@@ -20,8 +20,12 @@ all original code, outputs, IDs and metadata remain unchanged. The
 [receipt](molsysmt_atom_expansion_receiving_20261104.json) retains source/JUnit/
 data identity and initial test-only corrections. Exposure is 224/244, build
 19/30 and mechanics 4/6; new-head hosted, owner and installed receiving remain
-separate. Full 41949691118 is queued, smoke 41949691156 and performance
-41949690963 are active; administrative checks pass. Parent `32435e6fd` smoke,
+separate. Smoke 41949691156 and performance 41949690963 attempt 1 fail in
+environment setup: native logs identify a uibcdf repodata download timeout,
+followed by cleanup ENOENT, before package installation or tests. A public
+transfer probe now returns HTTP 200. One failed-job retry per run is requested
+without source/workflow changes; outcomes and full CI remain pending.
+Administrative checks pass. Parent `32435e6fd` smoke,
 performance and administrative checks pass; its full matrix remains queued
 at inspection and does not qualify the changed input.
 
@@ -856,8 +860,9 @@ Browser/experimental Qt pass independently. MolSysMT PR #543 now publishes
 `ee1153d98`, adding independent terminal attachment and bounded heavy-atom repair.
 Complete local regression passes 4,010 cases with 3,141 frozen files, reference
 data and backend bytes unchanged. Exposure is 224/244, build 19/30 and mechanics
-4/6. New-head full 41949691118 and smoke 41949691156 remain incomplete; owner
-acceptance and installed qualification are pending. The
+4/6. New-head smoke/performance first fail on repodata transfer before tests;
+a bounded failed-job recovery is requested on unchanged source. Full CI, owner
+acceptance and installed qualification remain pending. The
 [receipt](molsysmt_atom_expansion_receiving_20261104.json) retains geometry/unit,
 identity, history/H5MSM, lifecycle and test-diagnostic evidence. Older campaigns
 retain their own inputs. #548/#550/#552/#554 are received; #549/#559–#562 remain
