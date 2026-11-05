@@ -45,20 +45,18 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- **Mutation-mask issue delivered / source CI received — 2026-11-05:**
-  [MolSysMT#568](https://github.com/uibcdf/molsysmt/issues/568) records direct
-  syntax/atom-versus-group mask failures and requests native target-identity
-  tests. [PR #543](https://github.com/uibcdf/molsysmt/pull/543) metadata
-  `dea6d680f` delivers its report/index and links, with executable source and
-  backend unchanged. Scientific source `7bd844fa5` passes all eight full-matrix
-  cells, smoke/performance and administrative controls. The
-  [handoff](molsysmt_mutation_mask_handoff_20261105.json) retains original scoped
-  evidence without an installed-public certificate. Exposure stays 230/244.
-  Viewer general CI on `a18bf7c4` retains seven passing cells and a pre-test
-  macOS Python 3.12 micromamba acquisition failure; one failed-job-only recovery
-  is requested after official availability checks. Original failure and pending
-  recovery remain explicit. Owner fixes/integration and new-head CI remain
-  separate; no candidate or publication.
+- **Managed missing-bond addition received — 2026-11-05:**
+  [PR #543](https://github.com/uibcdf/molsysmt/pull/543), `cb03d4bff`, adds
+  `build.add_missing_bonds` with native ownership/defaults, retained identities,
+  true no-op preservation and synchronization-only retry. The
+  [receipt](molsysmt_bond_addition_receiving_20261105.json) records
+  24/492/53/58 addon/native/docs cases, 10 host and 300 reporting cases, preserved
+  sources/backend and course content. Exposure is 231/244, build 26/30.
+  Previous PR head passes full 8/8 source CI, smoke/performance; new-head CI
+  and owner review remain required. Viewer `a18bf7c4` one-cell recovery succeeds
+  while preserving its original provisioning failure; prior main `40935da7`
+  still has one macOS cell in progress. Native issues, remaining tools, GUI
+  and installed qualification keep their own scopes. No candidate/publication.
 
 - **Native reference-map repair received by the addon — 2026-11-04:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source

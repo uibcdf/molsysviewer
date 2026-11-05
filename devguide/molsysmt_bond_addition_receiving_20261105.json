@@ -1,0 +1,404 @@
+{
+  "schema": "molsysviewer.molsysmt-bond-addition-receiving@1",
+  "date": "2026-11-05",
+  "issues": [
+    "uibcdf/molsysviewer#264",
+    "uibcdf/molsysmt#421"
+  ],
+  "pull_request": "https://github.com/uibcdf/molsysmt/pull/543",
+  "owner_commit": "cb03d4bff95743c226ba3e4d0024e6a3952836f3",
+  "owner_receipt": {
+    "path": "devtools/data/molsysviewer_tools_bond_addition_receiving_20261105.json",
+    "url": "https://github.com/uibcdf/molsysmt/blob/cb03d4bff95743c226ba3e4d0024e6a3952836f3/devtools/data/molsysviewer_tools_bond_addition_receiving_20261105.json",
+    "file": "molsysviewer_tools_bond_addition_receiving_20261105.json",
+    "sha256": "085e4afedb7c7142a7af6ecc2ab9af91dc1e80c73a0c829bd04045f829f0f9d6",
+    "size_bytes": 16149
+  },
+  "native_owner_basis": "5f3af9374f2bf4ce9c3598450e22d43ca14509ae",
+  "viewer_runtime_source": "78ede79e2e345593db5bfe80d246d3f6c70bd005",
+  "scope": "Source-only managed add_missing_bonds receiving; no Viewer runtime logic or native scientific algorithm change. Existing coordinator contract is made explicit and protected by two additional real-science tests.",
+  "behavior": {
+    "path": "build.add_missing_bonds",
+    "signature": "Native scientific signature without primary molecular input, plus keyword-only update_view=True; declared native skip_digestion is forwarded.",
+    "ownership": "Native default in_place=True returns None and mutates the current primary; False returns independent data without adoption.",
+    "effects": "Native atomic graph/component publication in reference chemistry retains atom/structure/state identities and geometry; native invalidation owns saved analyses. No new native algorithm or host runtime behavior.",
+    "noop": "Reviewed publication identities classify real effects after one native call; empty candidates preserve revisions, analyses and scene history. update_view=True can still synchronize earlier pending work.",
+    "failures": "Read-only publication tokens receive native atomic rejection; uncertain writes require explicit recovery. A completed write followed by scene failure carries science_completed/result; sync retry does not rerun science."
+  },
+  "checks": {
+    "focused_final": {
+      "file": "bond-edit-final-formatted-20261105.xml",
+      "sha256": "f2b804417c2cd79417c2481aa7fae9d51ee6c13867386798b2bbf95e7ca389d9",
+      "size_bytes": 4374,
+      "tests": 24,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 6.437
+    },
+    "build_removal_composition": {
+      "file": "bond-edit-build-integration-20261105.xml",
+      "sha256": "0f018231bffc5e9d39132b1c8e901331c5a0bef4ff790c088274dd8e6fd20ef3",
+      "size_bytes": 87996,
+      "tests": 492,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 138.005
+    },
+    "native": {
+      "file": "bond-edit-native-20261105.xml",
+      "sha256": "0964308913749c2e819bf8079fd60f85af51720069546d50af87398eff11b85d",
+      "size_bytes": 8497,
+      "tests": 53,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 3.717
+    },
+    "route_docs": {
+      "file": "bond-edit-structure-docs-20261105.xml",
+      "sha256": "350f2fd50aacd2a49048b173499f88483d6321bcbc4918149a956c8d8daa224a",
+      "size_bytes": 10246,
+      "tests": 58,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 23.588
+    },
+    "viewer_host_frozen_provider": {
+      "file": "bond-edit-host-frozen-20261105.xml",
+      "sha256": "13476f1095f33b4499dbfe984f1f7487727e34a1eed6d9122b1656c30652b923",
+      "size_bytes": 1763,
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 4.603
+    },
+    "viewer_reporting": {
+      "file": "bond-edit-viewer-reporting-20261105.xml",
+      "sha256": "494b4ce5835be7f04bcaddf6f0063190521f7381db1406bcdcde909f0be1a1aa",
+      "size_bytes": 52230,
+      "tests": 300,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 1.781
+    }
+  },
+  "source_freeze": {
+    "frozen_files_match": true,
+    "count": 3146,
+    "source_sha256": "aec4d3b5a09f2dd41cd8387b8c4d5aae5c742458abbdcece3cec7547f7410d62",
+    "backend_sha256": "f32ed73f7ef3cf3225e12fbc56b9c4236a4452d758c94661f41860ad00d82c1c",
+    "rust_tree": "32cfb07b9c26ae9ad3ed379c1b76fab85669cf67",
+    "manifest": {
+      "file": "bond-edit-final-sources-20261105.json",
+      "sha256": "2e51d2dfbd594db3f0c761f7c8250b14bc051634fa3031695eed1e7e6a1ab82d",
+      "size_bytes": 386524
+    },
+    "native_unchanged_count": 3034,
+    "native_algorithm_changes": false,
+    "preformat_integration": {
+      "manifest": {
+        "file": "bond-edit-sources-before-20261105.json",
+        "sha256": "33c521db4776f61117dbf49fdd140c481c59392e3a56cf73d63991ca7343437f",
+        "size_bytes": 386524
+      },
+      "postcheck": {
+        "file": "bond-edit-postcheck-20261105.json",
+        "sha256": "5f73a70b405ecfbb78e2432f804765c8870b85fb698bbe2f5eb1c6cdd4f61331",
+        "size_bytes": 351
+      },
+      "format_equivalence": {
+        "file": "bond-edit-format-equivalence-20261105.json",
+        "sha256": "f095647a351b453f740ddd388e76139b0b98c833118ddb0140eb81a4d3bd63e6",
+        "size_bytes": 532
+      },
+      "scope": "492-case integration and 58 route/docs cases retain original preformat hashes. Only two files were line-wrapped afterwards with identical AST; final focused 24 cases pass on delivered bytes. Native sources/backend remain unchanged."
+    }
+  },
+  "documentation": "Owner guide/example/microinstructions/manifest and Module 12 prose updated; all original notebook code/outputs/IDs/metadata preserved. Viewer receiving contract clarifies provider finalization of changed after one native call; maps/policy remain prepared before science.",
+  "inventory": {
+    "exposed": 231,
+    "declared": 244,
+    "build": "26/30",
+    "mechanics": "4/6",
+    "scope": "Source function paths, not independent algorithms or complete scientific/input qualification."
+  },
+  "prior_ci": {
+    "owner_metadata_parent": {
+      "sha": "dea6d680fe8ba6648789f943aba6bc24173d3888",
+      "full": 42048290587,
+      "full_matrix_cells": 8,
+      "full_conclusion": "success",
+      "smoke": 42048290665,
+      "smoke_conclusion": "success",
+      "performance": 42048290625,
+      "performance_conclusion": "success",
+      "scope": "Official previous-source outcomes, not qualification of this new source or independently reverified certificate bodies. Earlier #567 benchmark failures retain their original inputs."
+    },
+    "new_head": "Not yet dispatched by this receipt; exact-head CI and owner review remain required."
+  },
+  "viewer_ci": {
+    "previous_bounded_recovery": {
+      "run": 41960770647,
+      "head": "a18bf7c4204081a016d233396862f8a0d47f86fb",
+      "attempt": 2,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "Test on macos-15, Python 3.12",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check skipped-commit backlog",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.12",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on macos-15, Python 3.14",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.14",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on macos-15, Python 3.11",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.11",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on macos-15, Python 3.13",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.13",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "PR full suite",
+          "status": "completed",
+          "conclusion": "skipped"
+        }
+      ],
+      "manifest": {
+        "file": "manifest.json",
+        "sha256": "9c42c437dc7e77ab9e6936896bc88629e8bcdc36dda0e869bae4c90e07d9ed43",
+        "size_bytes": 1657
+      },
+      "scope": "Official run/job metadata; certificate bodies are not independently downloaded/reverified in this receiving."
+    },
+    "previous_failure": "41960770647 attempt 1 provisioning failure remains recorded in molsysmt_mutation_mask_handoff_20261105.json; its single failed-job-only retry succeeds without source/workflow changes. No cause beyond the retained acquisition evidence is inferred.",
+    "current_prior_head": {
+      "run": 42049329738,
+      "head": "40935da7021d87dd03d57bd5599385d439c13deb",
+      "attempt": 1,
+      "status": "in_progress",
+      "conclusion": null,
+      "jobs": [
+        {
+          "name": "Check skipped-commit backlog",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.13",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on macos-15, Python 3.11",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.11",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.12",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.14",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on macos-15, Python 3.14",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on macos-15, Python 3.12",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on macos-15, Python 3.13",
+          "status": "in_progress",
+          "conclusion": null
+        }
+      ],
+      "manifest": {
+        "file": "manifest.json",
+        "sha256": "79f34603a68a2a6761dda5f84a11915162d3b4f23f9176cd41bf8b47778d4d47",
+        "size_bytes": 1657
+      },
+      "scope": "Official run/job metadata; certificate bodies are not independently downloaded/reverified in this receiving."
+    }
+  },
+  "initial_failures": {
+    "attempts": [
+      {
+        "file": "bond-edit-focused-20261105.xml",
+        "sha256": "ff2da27267baff7b03d54057b274fa2b62d2f06fbc0adfd1764f41901e42f1f5",
+        "size_bytes": 64708,
+        "tests": 20,
+        "failures": 1,
+        "errors": 19,
+        "skipped": 0,
+        "seconds": 4.522
+      },
+      {
+        "file": "bond-edit-focused-corrected-20261105.xml",
+        "sha256": "dc27a82d70183bef6e42ae58ec16aef7335037894991bcd83206717912ce6b66",
+        "size_bytes": 9536,
+        "tests": 20,
+        "failures": 3,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 5.605
+      },
+      {
+        "file": "bond-edit-focused-final-20261105.xml",
+        "sha256": "b25dd899b22aab1b41d947a18dc220dbeb50b5e68359e428d4d2ee99eaafce02",
+        "size_bytes": 5900,
+        "tests": 24,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 7.125
+      }
+    ],
+    "diagnosis": "New fixture first replaced structure axes without redeclaring state association. Subsequent test-only corrections use shape records and array payload metadata, their actual public objects; no product defect or native repair is inferred.",
+    "host_input_correction": "Initial 10-case host pass imported the concurrent owner checkout and is not used for frozen-provider qualification; rerun with explicit contribution import passes all 10."
+  },
+  "working_state": "Viewer human sandbox files are preserved. Concurrent MolSysMT owner main is eight commits ahead with 23 dirty paths at latest refreshed inspection; none adopted or edited. Contribution stays on frozen native basis.",
+  "remaining": "Four build routes, two mechanical routes, basic.view and deliberate alias/stub disposition; task-oriented GUI, owner integration, installed compatibility and candidates retain separate scope. Native #549/#559-562/#564/#567/#568 remain with owner.",
+  "retention": "Raw JUnit, source manifests, captures and existing contribution worktree retained through owner/CI receiving; review by 2026-11-11.",
+  "publication": "No owner-main push/merge, native algorithm/Rust/backend change, dependency-floor change, candidate, package, tag, Release or promotion. Both 1.0 publications remain paused.",
+  "delivery": {
+    "owner_commit": "cb03d4bff95743c226ba3e4d0024e6a3952836f3",
+    "branch": "addon/element-utilities-20261103",
+    "remote_verified": true,
+    "pull_request_description_updated": true,
+    "new_head_ci": [
+      {
+        "conclusion": null,
+        "id": 42061379499,
+        "name": "Conda publication governance",
+        "sha": "cb03d4bff95743c226ba3e4d0024e6a3952836f3",
+        "status": "queued"
+      },
+      {
+        "conclusion": null,
+        "id": 42061378731,
+        "name": "CI smoke",
+        "sha": "cb03d4bff95743c226ba3e4d0024e6a3952836f3",
+        "status": "in_progress"
+      },
+      {
+        "conclusion": null,
+        "id": 42061378808,
+        "name": "Performance Regression Audit",
+        "sha": "cb03d4bff95743c226ba3e4d0024e6a3952836f3",
+        "status": "in_progress"
+      },
+      {
+        "conclusion": null,
+        "id": 42061378706,
+        "name": "CI full",
+        "sha": "cb03d4bff95743c226ba3e4d0024e6a3952836f3",
+        "status": "queued"
+      },
+      {
+        "conclusion": "success",
+        "id": 42061378818,
+        "name": "Ruff",
+        "sha": "cb03d4bff95743c226ba3e4d0024e6a3952836f3",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "id": 42061379315,
+        "name": "MolSysSuite policy",
+        "sha": "cb03d4bff95743c226ba3e4d0024e6a3952836f3",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "id": 42061378650,
+        "name": "Developer guide integrity",
+        "sha": "cb03d4bff95743c226ba3e4d0024e6a3952836f3",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "id": 42061378822,
+        "name": "Dependency contract",
+        "sha": "cb03d4bff95743c226ba3e4d0024e6a3952836f3",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "id": 42061365201,
+        "name": "Developer guide integrity",
+        "sha": "cb03d4bff95743c226ba3e4d0024e6a3952836f3",
+        "status": "completed"
+      }
+    ],
+    "scope": "Automatic source CI only; no manual dispatch or new installed qualification.",
+    "transport": "SSH without login agent failed; existing gh OAuth lacks workflow scope. The existing login-shell SSH agent successfully pushed the complete fast-forward, with no credential/configuration/rule changes."
+  },
+  "viewer_final_reporting": {
+    "combined": {
+      "file": "bond-edit-viewer-final-20261105.xml",
+      "sha256": "425fc28fbd475ecc74fa1fa6eefbe4ab400d8e2045dc15d06fa115e3e95a47f5",
+      "size_bytes": 56809,
+      "passed": 313,
+      "failed": 1,
+      "scope": "Initial clean-checkout link guard failed because the new receipt was not yet in the Git index. Existing scientific/reporting assertions passed; no product defect inferred."
+    },
+    "corrected_links": {
+      "file": "bond-edit-viewer-links-20261105.xml",
+      "sha256": "fa9d69f4453fb81d50ffa4aca42d4ef1e8060a735ce4458b09afce7e7f1fae76",
+      "size_bytes": 702,
+      "passed": 4,
+      "failed": 0,
+      "scope": "After including the new receipt, all link guards pass; combined 314 cases are covered in aggregate, not a new single full run."
+    },
+    "index_check": "Pass"
+  }
+}

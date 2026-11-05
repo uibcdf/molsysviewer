@@ -1,12 +1,15 @@
 # MolSysMT tools addon — receiving contract
 
-**Status: partial source implementation — 2026-10-22.** The product direction and
+**Status: partial source implementation — 2026-11-05.** The product direction and
 edit/update policy are approved in the [implementation plan](molsysmt_tools_addon_plan.md).
 This contract tracks receiving under uibcdf/molsysviewer#264 and
 uibcdf/molsysmt#421. Source implements managed native removal, synchronization
 controls, the coordinates/box routes of `basic.set`, native translation/rotation/reflection/fitting/centering, single-structure
-displacement, principal-axis alignment, both dihedral editors and a generic host service. Other effect families, task panels and
-installed compatibility remain unqualified; no release follows from this work.
+displacement, principal-axis alignment, both dihedral editors, admitted prefix
+additions, retained-axis reference-chemistry bond publication and a generic host
+service. Family-specific receiving is detailed below and in the owning addon
+receipts. Remaining effect families, task panels and installed compatibility
+remain unqualified; no release follows from this work.
 
 ## Bound calls and integration controls
 
@@ -151,6 +154,15 @@ serializes bound readers with managed writes, without copying native returns.
 preparation callback returning a plan: `run`, explicit `changed`, optional
 operation-relative retained atom/structure maps, `interactions_policy` and a
 reviewed optional `failure_atomic` declaration. The native operation runs once.
+An admitted provider may finalize only the `changed` boolean from inside `run`,
+using its reviewed native publication contract after the call returns. The host
+reads that final boolean; correspondence maps, counts and validity policy are
+prepared before science and must not be revised by `run`. This supports a native
+no-op without precomputing its scientific work. Neither equal counts nor an
+arbitrary dictionary/array comparison proves an operation is atomic. A final
+`changed=False` preserves revisions, coverage and history, while `update_view=True`
+may still synchronize earlier pending work. The attempted call retains an audit
+operation identifier.
 The provider remains responsible for scientific validation and the truth of
 these declarations. Empty atom/structure results still reject before native
 execution. The explicit axis_growth capability receives qualified prefix

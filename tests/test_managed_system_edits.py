@@ -46,6 +46,41 @@ def test_uncertain_scientific_write_is_not_recognized_from_unchanged_counts(view
     assert manager.get_status()["state"] == "synchronized"
 
 
+@pytest.mark.parametrize("write", [False, True])
+def test_reviewed_plan_finalizes_its_effect_after_one_native_call(view, write):
+    manager = view.addons.manager.system_edits
+    coordinates = msm.get(view.molsys, element="atom", coordinates=True).copy()
+    original = msm.pyunitwizard.get_value(coordinates).copy()
+    history = (list(view.history._undo), list(view.history._redo))
+    calls = []
+
+    def prepare(target):
+        def run():
+            calls.append(target)
+            if write:
+                msm.set(target, coordinates=coordinates + msm.pyunitwizard.quantity(0.1, "nm"))
+            plan["changed"] = write
+
+        # The preflight value deliberately differs from the final outcome.
+        plan = {"run": run, "changed": not write, "interactions_policy": "preserve"}
+        return plan
+
+    assert manager.execute(prepare, name="receiving.final-effect", update_view=False) is None
+    assert calls == [view.molsys]
+    status = manager.get_status()
+    assert status["target_revision"] == int(write)
+    assert status["state"] == ("pending" if write else "synchronized")
+    if not write:
+        assert (view.history._undo, view.history._redo) == history
+        np.testing.assert_array_equal(msm.pyunitwizard.get_value(view.molsys.structures.coordinates), original)
+    else:
+        manager.synchronize()
+        np.testing.assert_allclose(
+            msm.pyunitwizard.get_value(view.molsys.structures.coordinates, to_unit="nm"),
+            msm.pyunitwizard.get_value(coordinates, to_unit="nm") + 0.1,
+        )
+
+
 def test_conflicting_scene_calls_reject_while_science_runs(view):
     entered, release = Event(), Event()
     errors = []
