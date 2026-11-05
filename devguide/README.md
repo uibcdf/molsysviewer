@@ -45,20 +45,20 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- **Independent peptide construction/substitution delivered by owner PR — 2026-11-04:**
-  [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
-  `7bd844fa5e05570c013a8b8fdd59507fbcf48bbb`, adds fresh sequence-based peptide
-  construction and bounded independent mutation. Pose/trajectory ownership,
-  incomplete-side-chain warnings, native H/provider/mask limits and local-only
-  skip flags remain explicit. All 34 new and 421 build/reader integration cases
-  pass; 37 native and 562 route/docs checks pass separately. Guide blocks execute,
-  frozen sources/backend/data match and course code/outputs remain intact. The
-  [receipt](molsysmt_peptide_sequence_receiving_20261104.json) retains initial
-  reference corrections and independently reproduced native mask failures;
-  their owner report is prepared/offered pending the maintainer response.
-  Exposure is 230/244 (build 25/30, mechanics 4/6); new-head CI, owner review and
-  installed receiving remain separate. Parent smoke passes; its MDTraj audit
-  fails +18.54% under #567 with unchanged thresholds. No candidate or publication.
+- **Mutation-mask issue delivered / source CI received — 2026-11-05:**
+  [MolSysMT#568](https://github.com/uibcdf/molsysmt/issues/568) records direct
+  syntax/atom-versus-group mask failures and requests native target-identity
+  tests. [PR #543](https://github.com/uibcdf/molsysmt/pull/543) metadata
+  `dea6d680f` delivers its report/index and links, with executable source and
+  backend unchanged. Scientific source `7bd844fa5` passes all eight full-matrix
+  cells, smoke/performance and administrative controls. The
+  [handoff](molsysmt_mutation_mask_handoff_20261105.json) retains original scoped
+  evidence without an installed-public certificate. Exposure stays 230/244.
+  Viewer general CI on `a18bf7c4` retains seven passing cells and a pre-test
+  macOS Python 3.12 micromamba acquisition failure; one failed-job-only recovery
+  is requested after official availability checks. Original failure and pending
+  recovery remain explicit. Owner fixes/integration and new-head CI remain
+  separate; no candidate or publication.
 
 - **Native reference-map repair received by the addon — 2026-11-04:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source

@@ -1,41 +1,39 @@
 # Development checkpoint
 
-**Independent peptide construction/substitution delivered by owner PR — 2026-11-04:**
-[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) publishes
-`7bd844fa5e05570c013a8b8fdd59507fbcf48bbb`, adding `build.build_peptide` and
-`build.mutate`. Construction produces a fresh native model from the loaded
-sequence, without source-pose or trajectory transfer. Substitution preserves
-native key/engine behavior, H rebuilding and unassessed incomplete-side-chain
-warnings. Canonical VAL-to-GLY and separate heavy-only three-structure receiving
-retain observed backbone/axis behavior; explicit PDBFixer receives inventory
-without a pose certificate. Local skip flags never bypass native validation;
-no result is adopted and no scene synchronization is introduced.
+**Mutation-mask issue delivered and source CI received — 2026-11-05:**
+[MolSysMT#568](https://github.com/uibcdf/molsysmt/issues/568) is open with the
+maintainer-authorized standalone reproduction: MDTraj masks reach a MolSysMT
+parser, and equivalent atom indices reach a group-index mask boundary in
+`build.mutate`. Native-expression success and unsupported diagnostics remain
+separate. Its report/index and consumer links are delivered by
+[PR #543](https://github.com/uibcdf/molsysmt/pull/543), metadata source
+`dea6d680fe8ba6648789f943aba6bc24173d3888`. No native or consumer scientific
+correction is authored; the issue requests a native pytest matrix covering
+actual target identity, mask modes and source preservation.
 
-All 34 new cases and 421 build/serialized-reader integration cases pass without
-failures/errors/skips. Another 37 directed native and 562 route/documentation
-controls pass. Two exact guide blocks execute. All 3,144 frozen sources/tests,
-backend/Rust and template data match after execution; course code, outputs,
-IDs and metadata remain intact. Ruff, 156 course structures, 247 docstrings and
-dependencies pass. The [receipt](molsysmt_peptide_sequence_receiving_20261104.json)
-retains original unit-policy reference failures and native-mask diagnostics.
-Exposure is 230/244, build 25/30 and mechanics 4/6. This is scoped receiving,
-not a new complete addon/platform/installed certificate. New-head full
-41960424914, smoke 41960424938 and performance 41960424853 are registered;
-scientific completion and owner review/integration remain pending.
+Scientific source `7bd844fa5` now passes full CI 41960424914: all eight Linux/
+macOS Python 3.11–3.14 cells and every cell step succeed. Smoke, performance
+and five administrative controls also pass on that source. All 3,144 recorded
+executable source/test hashes and backend bytes remain unchanged in this
+report/link follow-up; 54 reporting controls and owner devguide/index checks
+pass. Original 34/421/37/562 scoped receiving and source/JUnit records remain
+intact. The [handoff](molsysmt_mutation_mask_handoff_20261105.json) retains official
+run/job/step evidence without claiming independently reverified certificates or
+an installed-public pair. Exposure stays 230/244, build 25/30 and mechanics 4/6.
+Metadata-head CI and owner review/integration remain separate; #549/#559–#562/
+#564 and benchmark-contract #567 retain their owners and original outcomes.
 
-Native masked mutation independently parses MDTraj masks as MolSysMT and
-interprets equivalent atom indices as group indices. Supported native-expression
-paths and rejected masks are distinguished; no consumer translation is authored.
-The owner report is prepared/offered and awaits the maintainer response before
-issue creation. Native naming #549 and #559–#562/#564 retain their owners.
-Parent `2d1923996` smoke 41958120548 passes 5,397 native cases (16 optional
-skips), 4,093 addon cases (four optional skips) and 31 command guards. Its audit
-41958120472 fails solely on MDTraj centering +18.54% at the unchanged 15% limit;
-#567 retains the comparability decision and prior success/failure inputs. Full
-CI remains queued at that inspection. No retry or benchmark-policy change.
-Continue five remaining build/two mechanics routes and explicit compatibility
-dispositions before task-oriented GUI. Human sandbox and concurrent owner-main
-work stay untouched. No candidate, package, tag, Release or promotion;
+Viewer `a18bf7c4` passes core E2E, experimental Qt, policy and Conda governance.
+General CI 41960770647 attempt 1 retains seven passing cells and one macOS/
+Python 3.12 provisioning failure before tests: micromamba binary lookup fails,
+then cleanup reports JSON input error. The release lists the osx-arm64 asset;
+a first HEAD probe returns 504 and a later official checksum transfer succeeds.
+One failed-job-only recovery is requested on unchanged source; its completion
+is pending and the original failure remains preserved. No product fix, threshold
+change or duplicate full dispatch is inferred from this acquisition event.
+Continue five build/two mechanics routes and explicit compatibility decisions,
+then task-oriented GUI. Human sandbox and concurrent owner-main work stay
+untouched. No candidate, package, tag, Release or promotion;
 both 1.0 publications remain paused.
 
 **Native reference-map repair received by the addon — 2026-11-04:**
@@ -853,23 +851,21 @@ rejection on `793a92db`: source pair 41899772394 passes three hosts, with all
 fourteen cases verified in each original JUnit. General CI 41899772338 attempt 2
 now passes all eight test cells; each import/test/coverage step is verified.
 The initial macOS Python 3.12 acquisition cancellation remains preserved.
-Browser/experimental Qt pass independently. MolSysMT PR #543 now publishes
-`7bd844fa5`, adding independent peptide construction from the loaded sequence
-and bounded native substitution. All 34 new and 421 build/reader integration
-cases pass; 37 directed native and 562 route/docs controls pass separately.
-Sources/backend/template hashes match. The
-[receipt](molsysmt_peptide_sequence_receiving_20261104.json) retains source
-identity, physical-unit/geometry checks, incomplete-side-chain diagnostics and
-native-mask limits. Exposure is 230/244, build 25/30 and mechanics 4/6.
-Native masked mutation's syntax/atom-versus-group defect is reproduced; an
-owner report is prepared/offered pending the maintainer response. The addon
-preserves diagnostics without translation. Parent `2d1923996` smoke passes;
-its performance fails solely on MDTraj centering +18.54% under #567. New-head
-full 41960424914, smoke 41960424938 and performance 41960424853 remain pending.
-Previous aggregate/full scopes retain their inputs; no new complete addon
-regression or installed qualification is inferred. #549/#559–#562/#564 remain
-native owner work. Continue remaining routes, artifact decisions and GUI;
-Load human smoke stays deferred and both 1.0 publications remain paused.
+Browser/experimental Qt pass independently. MolSysMT PR #543 scientific source
+`7bd844fa5` passes all eight full-matrix cells in 41960424914, smoke/performance
+and administrative controls. #568 is filed with direct mutation-mask reproduction
+and native pytest acceptance criteria; metadata `dea6d680f` delivers its report,
+index and consumer links with executable source/backend hashes unchanged. The
+[handoff](molsysmt_mutation_mask_handoff_20261105.json) preserves exact source,
+original scoped/source-JUnit evidence and the absence of an installed-public pair.
+Exposure stays 230/244, build 25/30 and mechanics 4/6. Viewer `a18bf7c4` general
+CI retains seven successful cells and a pre-test macOS Python 3.12 acquisition
+failure; one failed-job recovery is requested after official release/checksum
+verification. Original failure and pending recovery stay separate. New metadata
+CI and owner integration remain pending. #549/#559–#562/#564/#568 and #567's
+benchmark-policy decision retain native ownership. Continue remaining routes,
+artifact decisions and GUI; Load human smoke stays deferred and both 1.0
+publications remain paused.
 
 The latest user-directed standalone round is summarized in the
 [final review](standalone_final_review_20261029.md). Receive its remaining
@@ -2469,19 +2465,20 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-04:**
 
-1. Receive exact-head CI and owner review of MolSysMT PR #543 `7bd844fa5`.
-   Its 421-case build/reader integration and 562 route/docs checks pass; no new
-   complete-addon or installed certificate is claimed. Parent `2d1923996` smoke
-   passes and its MDTraj-only performance failure stays under MolSysMT#567.
-   Retain all prior input-specific success/failure evidence and the native
-   mutation-mask report prepared/offered pending the maintainer response.
-   The audit adds no broad refactor gate.
+1. Receive metadata-head CI and owner review of MolSysMT PR #543 `dea6d680f`.
+   Scientific source `7bd844fa5` passes the complete eight-cell matrix, smoke,
+   performance and administrative controls; its retained hashes and scoped
+   receiving remain applicable to unchanged executable source. No installed
+   certificate is inferred. MolSysMT#568 now owns the masked-mutation correction
+   and native pytest matrix. Keep #567's decision and original failures visible.
 2. General CI 41899772338 is received: all eight source test cells pass,
    including the recovered macOS Python 3.12 cell. Preserve the original runner
    cancellation and bounded public-provider/pandas baseline. Local warning-strict
    and failed-case recovery and #295 three-host receiving are complete. Retain
    native #431 delivery ownership and the documented baseline removal trigger.
-   Next triage #294's separate import-order observation with controlled inputs.
+   Current `a18bf7c4` retains a separate pre-test macOS Python 3.12 acquisition
+   failure; one failed-job recovery is requested without source changes. Then
+   triage #294's import-order observation with controlled inputs.
 3. #292/#293 source reviews and guards are complete. Scope a covering pre-1.0
    artifact for #294's already delivered scene
    handle/player contracts; do not require all addon tools to finish first.
