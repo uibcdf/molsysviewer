@@ -26,9 +26,10 @@ smoke 41937569345, performance 41937569351 and administrative runs are registere
 but incomplete; owner review and installed qualification remain pending.
 Parent `6cdace2b7` performance and administrative checks pass; its full/smoke
 remain pending and do not qualify the changed input. #295 retains verified
-three-host source-pair receiving. General CI 41899772338 has seven passing cells;
-the macOS Python 3.12 retry has acquired a runner and is running tests. Preserve
-the original cancellation; the matrix is not yet green. Native #549/#559–#562
+three-host source-pair receiving. General CI 41899772338 attempt 2 now passes
+all eight test cells on Viewer `793a92db`; each import/test/coverage step passes.
+The last macOS Python 3.12 retry succeeds, preserving the original cancellation.
+This source matrix does not qualify the later addon head or installed artifacts. Native #549/#559–#562
 remain owner work without facade scientific repairs. Next receive CI/review and
 continue remaining expert tools before graphical tasks. No frozen candidate,
 package, tag, Release or promotion; both 1.0 publications remain paused.
@@ -845,9 +846,9 @@ execution profile; aggregate source evidence does not qualify a hosted matrix.
 #294 retains artifact and private initialization receiving.
 [#295](archive/source_pair_pandas_guard_portability.md) receives the explicit
 rejection on `793a92db`: source pair 41899772394 passes three hosts, with all
-fourteen cases verified in each original JUnit. General CI has seven passing
-cells and one unacquired macOS Python 3.12 cancellation, selectively retried
-in attempt 2; do not claim that separate overall matrix is green.
+fourteen cases verified in each original JUnit. General CI 41899772338 attempt 2
+now passes all eight test cells; each import/test/coverage step is verified.
+The initial macOS Python 3.12 acquisition cancellation remains preserved.
 Browser/experimental Qt pass independently. MolSysMT PR #543 now publishes
 `32435e6fd`, adding two independent build routes after the four mechanical
 routes. The complete local regression passes 3,951 cases with 3,140 frozen
@@ -857,7 +858,7 @@ acceptance remains pending. The
 [receipt](molsysmt_independent_build_receiving_20261104.json) retains analytic,
 unit, mapping, lifecycle and initial test-diagnostic evidence. Older campaigns
 retain their own inputs. #548/#550/#552/#554 are received; #549/#559–#562 remain
-native owner work. The general macOS Python 3.12 retry is now running tests.
+native owner work. The general macOS Python 3.12 retry is now complete.
 Continue expert/GUI work after the artifact decision. Load human smoke stays
 deferred; no candidate is frozen and both 1.0 publications remain paused.
 
@@ -2465,14 +2466,12 @@ Resume toward **1.0** in this order:
    older source matrices and their recovery, including
    the now-successful d257b678 8/8; they do not qualify this changed input. The audit
    adds no broad refactor gate.
-2. Receive hosted general CI with the bounded public-provider/pandas baseline;
-   local warning-strict and failed-case recovery are complete. Retain native
-   #431 delivery ownership and the documented baseline removal trigger.
-   #295's input rejection is received on all three source hosts. Finish the
-   separate general matrix's only pending cell, macOS Python 3.12, selectively
-   retried after a hosted-runner acquisition cancellation; it is now running
-   tests and seven other cells pass.
-   Triage #294's separate import-order observation with its controlled inputs.
+2. General CI 41899772338 is received: all eight source test cells pass,
+   including the recovered macOS Python 3.12 cell. Preserve the original runner
+   cancellation and bounded public-provider/pandas baseline. Local warning-strict
+   and failed-case recovery and #295 three-host receiving are complete. Retain
+   native #431 delivery ownership and the documented baseline removal trigger.
+   Next triage #294's separate import-order observation with controlled inputs.
 3. #292/#293 source reviews and guards are complete. Scope a covering pre-1.0
    artifact for #294's already delivered scene
    handle/player contracts; do not require all addon tools to finish first.

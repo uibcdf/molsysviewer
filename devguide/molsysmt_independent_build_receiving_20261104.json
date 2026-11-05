@@ -311,5 +311,25 @@
       "sha256": "dd91c53a12e563b5b6d08d05096a50e7cec706d8fa9c828e239d4d75d9794d75"
     },
     "indexes": "Generated indexes pass --check."
+  },
+  "viewer_general_ci_completion": {
+    "run": 41899772338,
+    "attempt": 2,
+    "source": "793a92db38c4074dd042d220ac1e49191a9b2905",
+    "conclusion": "success",
+    "passing_test_cells": 8,
+    "platforms": "ubuntu-latest and macos-15, Python 3.11-3.14",
+    "verification": "All eight test jobs and their import/test/coverage steps are success. The backlog/PR summary jobs are optional skips, not test-cell omissions. Original acquisition cancellation remains preserved.",
+    "receptor_manifest": ".pytest_cache/general-ci-41899772338-completed-20261104/manifest.json",
+    "receptor_manifest_sha256": "fdc7cf7cb3b67d1f0d1cf71cbf2ec919695a8e7d61ccb4e5e8c20a2bf7b3dea5",
+    "scope": "Hosted source CI for the recorded Viewer source; not the later addon head or an installed artifact.",
+    "devguide_checks": {
+      "tests": 311,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "file": "build-independent-viewer-ci-closeout-20261104.xml",
+      "sha256": "01153c666c4cde029546fa47b9c87107968cf8587e7ce231d58072d4c354b6a6"
+    }
   }
 }

@@ -56,8 +56,9 @@ documents, and historical audits.
   source/backend bytes. The [receipt](molsysmt_independent_build_receiving_20261104.json)
   records 222/244 exposure (build 17/30, mechanics 4/6), preserved course code/
   outputs and initial test-only corrections. CI full 41937569331, smoke
-  41937569345 and owner review remain pending. Viewer general CI retains seven
-  passing cells; macOS Python 3.12 is running after runner acquisition.
+  41937569345 and owner review remain pending. Viewer general CI 41899772338
+  now passes all eight test cells; the last macOS Python 3.12 retry completes
+  import, tests and coverage. Its original cancellation remains preserved.
   Native #549/#559–#562 and installed/GUI receiving remain separate; no new
   candidate or publication.
 
