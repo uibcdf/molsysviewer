@@ -45,15 +45,20 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- **Nonbonded-energy source receiving — 2026-11-05:**
-  [PR #543](https://github.com/uibcdf/molsysmt/pull/543), `10ef88c90`, adds the
-  expert nonbonded-energy reader with independent pair-energy references.
-  All 4,311 addon/integration cases pass without omissions; 132 mechanical and
-  142 docs cases pass separately. [Evidence](molsysmt_nonbonded_receiving_20261105.json)
-  records frozen inputs, units and scientific scope. Exposure is 233/244,
-  mechanics 5/6. Native #561 remains explicit; #572 requests the missing native
-  MolSys force route. New-head CI/owner review, remaining build tools, task GUI
-  and installed qualification remain separate. No candidate/publication.
+- **Solvation and per-structure predicate source receiving — 2026-11-05:**
+  [PR #543](https://github.com/uibcdf/molsysmt/pull/543), `6a14ac271`, adds the independent
+  `build.solvate` mirror and receives the owner's #504 per-structure
+  `is_solvated` correction. [Evidence](molsysmt_solvation_receiving_20261105.json)
+  records 4,334 addon/integration passes without omissions, 126 directed cases
+  and 60 docs controls. Native preparation/geometry, source/scene ownership and
+  hosted qualification retain their scopes. Exposure is 234/244, build 28/30
+  and mechanics 5/6.
+  Owner acceptance, exact-head CI, remaining tools, task GUI and installed
+  qualification remain separate. Two native solvate limits await authorization
+  to file their reports. No candidate or publication.
+
+- Earlier nonbonded-energy receiving and native force request #572 retain their
+  [original receipt](molsysmt_nonbonded_receiving_20261105.json).
 
 - Earlier naming/alternate-site receiving remains preserved in its
   [original receipt](molsysmt_naming_alternate_repair_receiving_20261105.json).

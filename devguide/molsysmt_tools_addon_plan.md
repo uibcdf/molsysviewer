@@ -1,15 +1,18 @@
 # MolSysMT tools add-on — implementation plan
 
 **Current received contribution — 2026-11-05:**
-[PR #543](https://github.com/uibcdf/molsysmt/pull/543), `10ef88c90`, exposes
-233/244 declared expert paths, including element 57/57, build 27/30 and mechanics
-5/6. The new nonbonded-energy mirror retains native model/selection/unit contracts
-and has independent pair-energy references. The
-[receipt](molsysmt_nonbonded_receiving_20261105.json) records 4,311 addon/integration
-passes with no omissions, separate mechanical/docs checks and fixed inputs.
-Native #561 retains a mixed-partition limit. Native MolSys forces are requested
-under #572; no always-rejected mirror or consumer parameterization is added.
-Current-head hosted CI, owner review, remaining tools, task GUI and installed/public
+[PR #543](https://github.com/uibcdf/molsysmt/pull/543), `6a14ac271`, exposes 234/244 declared
+expert paths, including element 57/57, build 28/30 and mechanics 5/6. The new
+`build.solvate` returns an independent native system; chemistry preparation and
+selection of one engine-ready structure stay explicit. It preserves the primary,
+scene and pending projection. Owner #504 adds explicit structure selections and
+scalar/vector results to the existing `is_solvated` mirror, without aggregation.
+The [receipt](molsysmt_solvation_receiving_20261105.json) records independent
+OpenMM parity, bounded geometry and final combined receiving: 4,334 addon/
+integration passes without omissions, plus 126 directed and 60 docs controls. OpenMM
+identifier/ion-count limits await authorization to file two native reports.
+Native #561/#564/#572, remaining protonation/remapping and compatibility decisions
+stay explicit. Exact-head CI, owner review, task GUI and installed/public
 qualification remain separate. Dated stages below keep their own inputs/counts.
 
 **Status: partial source implementation; installed qualification pending —

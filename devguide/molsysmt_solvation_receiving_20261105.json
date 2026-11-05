@@ -1,0 +1,242 @@
+{
+  "schema": "molsysviewer.molsysmt-solvation-source-receiving@1",
+  "date": "2026-11-05",
+  "issues": [
+    "uibcdf/molsysmt#421",
+    "uibcdf/molsysviewer#264",
+    "uibcdf/molsysmt#556",
+    "uibcdf/molsysmt#563",
+    "uibcdf/molsysmt#504",
+    "uibcdf/molsysmt#561",
+    "uibcdf/molsysmt#564",
+    "uibcdf/molsysmt#572"
+  ],
+  "pull_request": "https://github.com/uibcdf/molsysmt/pull/543",
+  "owner_commit": "6a14ac271d593d961d369acd5aafe35530e49982",
+  "native_owner_basis": "ccff2557f576f004461c96950d36a8b6e465e91f",
+  "viewer_basis": "97d8c7144927cdbba317fe3f01bb77b3e9892fed",
+  "viewer_runtime_logic": "78ede79e2e345593db5bfe80d246d3f6c70bd005",
+  "owner_receipts": [
+    {
+      "path": "devtools/data/molsysviewer_tools_solvation_receiving_20261105.json",
+      "sha256": "4f1a60023d9beb77e6cb1f2f1d622f047249ace6aa12637ffc48c370448f78cc",
+      "size_bytes": 10159
+    },
+    {
+      "path": "devtools/data/molsysviewer_tools_solvation_predicate_integration_20261105.json",
+      "sha256": "fb368e59f22f3acc41d4baa94e4fae3f6059999ad95a7df2b928a08ba8640e92",
+      "size_bytes": 5352
+    }
+  ],
+  "solvate_contract": {
+    "path": "build.solvate",
+    "signature": "All native scientific parameters/defaults with current primary implicit, plus keyword-only addon-only skip_digestion=False; no in_place, update_view, structure_indices or root alias.",
+    "ownership": "Native independent system returned; current molecular system, scene/history and pending projection stay unchanged. Input chemistry/terminal preparation and exact one-structure extraction remain explicit caller operations.",
+    "science": "Native engine/model and return-form contracts retained; no input renumbering, ion-count compensation, engine fallback, model selection or equilibration by the facade."
+  },
+  "predicate_contract": "Existing mirror receives owner #504 structure_indices keyword-only, preserving order/repetitions; bool for one structure, Boolean vector for multiple/empty selections. No first/any/all aggregation or visible-structure substitution.",
+  "scientific_reference": {
+    "model": "Separate public OpenMM Modeller + amber14-all.xml/amber14/tip3p.xml; neutral explicitly capped AlaValPro, cubic 0.35 nm padding, TIP3P, zero molar salt.",
+    "parity": "Box, population and all coordinates agree with direct OpenMM after a single rigid origin translation.",
+    "geometric_truth": "Solute relative coordinates retained; cubic/truncated-octahedral/rhombic-dodecahedral Gram matrices and nominal TIP3P O-H lengths/angle checked with explicit nm/degree units.",
+    "quantization": "Bundled TIP3P PDB stores 0.001 angstrom steps. A difference of two independently rounded 3D positions has vector error at most sqrt(3)*1e-4 nm; the corresponding two-vector angular bound is 2*asin(error/0.09572).",
+    "observed_direct_template_deviations": {
+      "maximum_length_nm": 0.00013379491705049762,
+      "maximum_angle_degrees": 0.06695439478647813
+    },
+    "scope": "Contract/parity and bounded geometry receiving, not equilibrium, packing-quality, ion-count or universal force-field qualification.",
+    "openmm_water_template": {
+      "file": "tip3p.pdb",
+      "sha256": "14fd37900d627c0e258d6086a14c6084e4bec1422e9d20fccfc83c3f814fd7ee"
+    }
+  },
+  "validation": [
+    {
+      "file": "solvation-504-all-addon-20261105.xml",
+      "sha256": "492470a41d4bd4cbd0be5aba1b9b096c856b03b61af6fd40fef92c187adf5816",
+      "scope": "Final complete addon plus 32 source/inventory/host/command guards, four workers, after receiving owner #504.",
+      "tests": 4334,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 295.244
+    },
+    {
+      "file": "solvation-504-focused-20261105.xml",
+      "sha256": "8ec12ed45d263fa3ddd31727cb705df9cc54d472c8d364194be07c9e5963b255",
+      "scope": "126 native per-structure predicate, existing audit mirror and new independent solvation cases.",
+      "tests": 126,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 64.478
+    },
+    {
+      "file": "solvation-504-docs-contracts-20261105.xml",
+      "sha256": "546c0918ab723803bd644b46d44e25ff8bf29a5d99c1dfc37d7410aa473cbc8a",
+      "scope": "60 documentation/course/source/inventory/command contracts after receiving owner #504.",
+      "tests": 60,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 81.76
+    }
+  ],
+  "earlier_validation_scope": "The original 4,333-case solvation gate remains in the first owner receipt on native 06c065d33. Final combined gate below receives native #504 from ccff2557f.",
+  "preserved_failures": [
+    {
+      "file": "solvation-focused-initial-20261105.xml",
+      "sha256": "d2c5235145abd75a6cb0c33ce567d8c473f066370895ce2a46cf9b9fbc232291",
+      "scope": "Ten authored tests overestimated ideal TIP3P precision; direct OpenMM template shows the same deviation. Fixed by a derived PDB-rounding bound without changing science.",
+      "tests": 22,
+      "failures": 10,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 22.475
+    },
+    {
+      "file": "solvation-cif-native-receiving-20261105.xml",
+      "sha256": "c674ea136b00bb54ad47ee78d23abae501a8168410cf926a776577ac163a2b14",
+      "scope": "35 local native CIF/assembly checks pass; one live 3U71 check fails DNS under the sandbox. This run remains failed.",
+      "tests": 36,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 148.176
+    }
+  ],
+  "native_network_recovery": {
+    "file": "solvation-cif-network-recovery-20261105.xml",
+    "sha256": "4afe7ec7281405d87b5661125d0d1d0631e91fa8e487e5da461135bcbb311e92",
+    "scope": "Only the original failed live-PDB case repeated with network permitted; passes. Aggregate receiving, not a new single green 36-case run.",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 2.044
+  },
+  "native_limitations": {
+    "identifier": "OpenMM route raises ValueError after attempting int(first_atom_id) for a valid nonnumeric label; missing IDs from bundled pentalanine reproduce the same boundary.",
+    "explicit_ion_counts": "Neutral pentalanine with n_anions=2/n_cations=2 and zero molar salt still gives zero ions/284 waters, identical to default-count construction.",
+    "reporting_state": "Open/closed issue search found no equivalent. Maintainer was asked to authorize two native issues; filing is pending an explicit reply. No pending-bug document with a fabricated issue number is created."
+  },
+  "source_freeze": {
+    "files": 4234,
+    "sha256": "20b21d71e2e7f056f7b237e2d38e34d17b0ac17ceaccecc1d6ebcee6bd11ab54",
+    "changed_from_original_solvation_gate": [
+      "molsysmt/build/is_solvated.py",
+      "molsysviewer_molsysmt/_basic.py",
+      "molsysviewer_molsysmt/_build.py",
+      "tests/build/is_solvated/test_structure_contract.py",
+      "tests/molsysviewer_molsysmt/test_build_audit_tools.py"
+    ],
+    "postcheck": {
+      "primary_files": 4234,
+      "primary_changed": [],
+      "support_changed": {
+        "argdigest": [],
+        "smonitor": [],
+        "depdigest": []
+      },
+      "provider_public_commit": "02d0015fa7d3149d92c0e632b8e584f6a47c37dc",
+      "provider_files": 106,
+      "provider_changed": [],
+      "backend_sha256": "f32ed73f7ef3cf3225e12fbc56b9c4236a4452d758c94661f41860ad00d82c1c",
+      "native_authored_diff": [],
+      "provider_python_files": 91
+    }
+  },
+  "provider_snapshot": {
+    "provider": "pyunitwizard",
+    "public_commit": "02d0015fa7d3149d92c0e632b8e584f6a47c37dc",
+    "archive_sha256": "15837de15b443f3f0853d484da9990da74cc444b9c562e4aafe9fbf86642cdbd",
+    "files": 91,
+    "scope": "Read-only source overlay; no environment installation or live provider edits. Distribution metadata does not identify this source snapshot."
+  },
+  "environment": {
+    "profile": "molsyssuite@uibcdf_3.14",
+    "python": "3.14.7",
+    "platform": "Linux",
+    "versions": {
+      "openmm": "8.6.1",
+      "numpy": "2.4.6",
+      "pandas": "2.3.3",
+      "pytest": "9.1.1",
+      "pytest-receptor": "1.2.1+22.g00a31c4",
+      "argdigest": "0.16.0+1.g6dabaf7",
+      "smonitor": "0.21.0+1.gd6b2394",
+      "depdigest": "0.15.1+3.ga27172b"
+    },
+    "cpu_control": "OPENMM_CPU_THREADS=1 requested by the test process; no universal native thread-limit guarantee asserted."
+  },
+  "static_validation": {
+    "whole_tree_ruff": "check and format pass, 4385 files",
+    "docstrings": 246,
+    "course_notebooks": 156,
+    "dependency_contract_audit": "passed",
+    "devguide_and_indexes": "passed after adding receipt",
+    "course_owner_cells": 35,
+    "modified_markdown_ids": [
+      "96ebdbc9",
+      "4fb55a86",
+      "f158b27f"
+    ],
+    "all_owner_executable_cells_outputs_ids_metadata_preserved": true
+  },
+  "warnings": {
+    "full_addon": 2474,
+    "legacy_h5msm": 2405,
+    "terminal_preparation_attribute_drop": 53,
+    "scope": "All warning groups retained; no suppression introduced."
+  },
+  "exposure": {
+    "exposed": 234,
+    "declared": 244,
+    "build": [
+      28,
+      30
+    ],
+    "molecular_mechanics": [
+      5,
+      6
+    ]
+  },
+  "ci": {
+    "head": "6a14ac271d593d961d369acd5aafe35530e49982",
+    "base": "ccff2557f576f004461c96950d36a8b6e465e91f",
+    "mergeable": true,
+    "mergeable_state": "blocked",
+    "meaning": "Source merges cleanly; required checks/owner review remain pending.",
+    "runs": {
+      "smoke": 42101082449,
+      "full": 42101082383,
+      "performance": 42101082567,
+      "ruff": 42101082457,
+      "dependency": 42101082619,
+      "devguide_pr": 42101082407,
+      "devguide_branch": 42101068675,
+      "suite_policy": 42101083141,
+      "publication_governance": 42101083124
+    },
+    "observed": "All listed runs queued at initial receiving; native inspection confirms smoke/full use the exact contribution head. No dispatch, retry or merge.",
+    "inspection": "gh-run-receptor attempted for smoke/full; both returned acquisition_failed/exit 5. Native gh run view fallback succeeds and retains queued source state; no green claim."
+  },
+  "limits": [
+    "Source integration and local receiving in the existing Linux/Python 3.14 environment with the same immutable public PyUnitWizard source overlay; not clean installed or platform qualification.",
+    "Exact-head CI and owner acceptance remain separate. No native main push or PR merge.",
+    "Remaining protonation/remapping, water-box #564, native MolSys forces #572, nonbonded selections #561, compatibility decisions and task GUI stay separate.",
+    "Both 1.0 publications remain paused; no candidate, dependency floor, package, tag, Release or promotion."
+  ],
+  "workspace": "Human sandbox and native-owner working changes preserved. Existing active PR worktree/source overlay retained for owner review and the remaining addon work; no environment installation or Rust rebuild.",
+  "publication": "Both 1.0 publications remain paused; no candidate, package, tag, Release or promotion.",
+  "viewer_record_checks": {
+    "file": "solvation-viewer-reporting-20261105.xml",
+    "sha256": "25a0a3d49105155366991190ee94f97945f973c076cad23e7070d7cf3742da3f",
+    "tests": 311,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 1.86,
+    "scope": "Reporting/lifecycle, devguide links/architecture and issue-tool contracts; generated indexes and staged diff checks pass."
+  }
+}

@@ -1,37 +1,30 @@
 # Development checkpoint
 
-**Nonbonded-energy reader received — 2026-11-05:**
-[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
-`10ef88c907aa6a1bef83c76efee7f1beffbddcdf`, adds the explicit
-`molecular_mechanics.get_non_bonded_potential_energy` mirror. It retains native
-scientific parameters, full-model internal/disjoint cross contributions,
-two-sided partition matrices and energy units. Existing serialized reads use
-completed pending edits without source/scene/history changes or engine adoption.
-Native mixed partition/flat #561 remains visible without scientific compensation.
+**Independent solvation and per-structure predicate received — 2026-11-05:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `6a14ac271`, adds the explicit
+`build.solvate` mirror and receives published native `ccff2557f`, including #504.
+Solvation returns a new system without adopting it or changing the current
+primary, scene/history or pending projection. Input preparation and exactly one
+engine-ready structure stay explicit. Separate OpenMM construction checks box,
+population and coordinates; TIP3P geometry uses a derived PDB precision bound.
+The existing `is_solvated` mirror now preserves explicit structure order and
+repetitions, returning bool for one structure or a Boolean vector for multiple
+or empty selections, without implicit aggregation. The
+[receipt](molsysmt_solvation_receiving_20261105.json) separates final combined
+receiving (4,334 addon/integration passes without omissions, 126 directed and
+60 docs controls) from the earlier 4,333-case solvation baseline and preserves its
+original failures and bounded recovery. Native scientific code comes from its
+owner; backend/Rust and Viewer runtime remain unchanged.
 
-All **4,311 addon/integration cases** pass without failures/errors/skips; 132
-mechanical/inventory and 142 documentation/reporting cases pass separately,
-including all 38 new reader cases. An independent Coulomb/Lennard-Jones pair
-oracle includes scaled/excluded exceptions from a separately constructed
-single-structure CPU NoCutoff AMBER14 model. Four numerical controls differ by
-at most 0.000107 kJ/mol; scalar/matrix, selection and unit-policy contracts pass.
-All 4,230 primary sources/tests, the 91-file immutable public PyUnitWizard
-snapshot and checked support sources retain their hashes. Backend/Rust and
-native scientific code remain unchanged. Whole-tree Ruff, 246 docstrings,
-156 notebooks, dependency audit and the exact guide block pass. Module 20 changes
-only Markdown cell 12; all original executable cells/outputs/IDs/metadata remain.
-The [receipt](molsysmt_nonbonded_receiving_20261105.json) retains canonical
-owner hashes, scientific scope and the separate source/installed boundary.
+Exposure is 234/244, build 28/30 and mechanics 5/6. Two independently reproduced
+OpenMM solvate limitations (nonnumeric atom IDs and ignored explicit ion counts)
+await maintainer authorization to file native reports. Remaining preparation/
+remapping, #564 water boxes, #561 nonbonded selections, #572 native MolSys forces,
+owner review, exact-head CI, GUI and installed qualification remain separate.
+Both 1.0 publications stay paused; no candidate or publication is introduced.
 
-The maintainer-authorized native request
-[#572](https://github.com/uibcdf/molsysmt/issues/572) records that get_forces lacks
-a MolSys input route, independently of Viewer. Its analytical OpenMM positive
-control passes; a bound force method remains unexposed. Exposure is now 233/244,
-including build 27/30 and mechanics 5/6. The existing PR merges cleanly; its new
-CI and owner review remain pending. Continue remaining build tools and receive
-native #561/#572 before claiming complete scientific coverage. GUI and exact
-installed qualification remain separate; both 1.0 publications remain paused.
-No candidate, package, tag, Release or promotion is introduced.
+Earlier nonbonded-energy receiving retains its
+[original receipt](molsysmt_nonbonded_receiving_20261105.json).
 
 **Naming cutover and alternate-site repairs received — 2026-11-05:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
@@ -881,18 +874,17 @@ rejection on `793a92db`: source pair 41899772394 passes three hosts, with all
 fourteen cases verified in each original JUnit. General CI 41899772338 attempt 2
 now passes all eight test cells; each import/test/coverage step is verified.
 The initial macOS Python 3.12 acquisition cancellation remains preserved.
-Browser/experimental Qt pass independently. MolSysMT PR #543 now delivers
-`10ef88c90`: a native nonbonded-energy reader after the naming/alternate-site
-receiving. All 4,311 addon/integration cases pass without omissions; 132 mechanical
-and 142 documentation controls pass separately. The
-[receipt](molsysmt_nonbonded_receiving_20261105.json) records independent pair-energy
-references, fixed source/provider inputs and source/scene ownership. Exposure is
-233/244, build 27/30 and mechanics 5/6. #561 retains the native mixed-partition
-failure; newly authorized #572 requests native MolSys forces, so that mirror stays
-unexposed. New-head CI and owner review remain pending. Native #569/#570/#571
-repairs keep their prior received source and receipts. Continue the remaining
-build tools, force contract and compatibility decisions before task GUI and
-installed qualification. Both 1.0 publications remain paused.
+Browser/experimental Qt pass independently. MolSysMT PR #543 `6a14ac271` now
+delivers independent
+`build.solvate` and receives native #504's per-structure `is_solvated` contract.
+The [receipt](molsysmt_solvation_receiving_20261105.json) records final combined
+receiving, independent OpenMM construction/geometry and retained source/scene
+ownership. Exposure is 234/244, build 28/30 and mechanics 5/6. Two native solvate
+limits await authorization to file reports. #561/#564/#572 retain their native
+work; #504's earlier ambiguous-array limitation is source-corrected. Exact-head
+CI and owner review remain pending. Continue the remaining two build paths,
+force contract and compatibility decisions before task GUI and installed
+qualification. Both 1.0 publications remain paused.
 
 The latest user-directed standalone round is summarized in the
 [final review](standalone_final_review_20261029.md). Receive its remaining
@@ -2492,11 +2484,12 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-05:**
 
-1. Receive exact-head CI and owner review of MolSysMT PR #543 `10ef88c90`.
-   The nonbonded-energy mirror passes the complete 4,311-case addon/integration
-   regression, 132 mechanical and 142 docs controls. Keep its independent pair
-   reference, single-structure CPU NoCutoff scope and native #561 limitation.
-   Exposure is 233/244; source results do not qualify installed artifacts.
+1. Receive exact-head CI and owner review of MolSysMT PR #543, `6a14ac271`,
+   combining independent solvation and native #504 predicate correction. Keep explicit
+   preparation, native result ownership and the bounded OpenMM/TIP3P scope.
+   Receive the two new native solvate reports only after maintainer approval;
+   identifier and explicit-ion-count limits stay visible. Exposure is 234/244;
+   source results do not qualify installed artifacts.
 2. Receive the three remaining macOS cells of prior Viewer `004464df`
    (42062771914), earlier addon full source and applicable new heads. Preserve
    previous successful recoveries/acquisition failures; no duplicate dispatch.
@@ -2505,7 +2498,7 @@ Resume toward **1.0** in this order:
 3. #292/#293 source reviews and guards are complete. Scope a covering pre-1.0
    artifact for #294's delivered scene handle/player contracts; package
    production/publication still requires its separate accepted route.
-4. Continue three build paths and receive the native MolSys force contract #572
+4. Continue two build paths and receive the native MolSys force contract #572
    under #264,
    then disposition basic.view, historical aliases and native MD stubs. Receive
    #549/#559–#562/#564/#568/#572 from MolSysMT without facade scientific repairs;
