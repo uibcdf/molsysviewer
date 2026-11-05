@@ -1,5 +1,38 @@
 # Development checkpoint
 
+**Nonbonded-energy reader received — 2026-11-05:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
+`10ef88c907aa6a1bef83c76efee7f1beffbddcdf`, adds the explicit
+`molecular_mechanics.get_non_bonded_potential_energy` mirror. It retains native
+scientific parameters, full-model internal/disjoint cross contributions,
+two-sided partition matrices and energy units. Existing serialized reads use
+completed pending edits without source/scene/history changes or engine adoption.
+Native mixed partition/flat #561 remains visible without scientific compensation.
+
+All **4,311 addon/integration cases** pass without failures/errors/skips; 132
+mechanical/inventory and 142 documentation/reporting cases pass separately,
+including all 38 new reader cases. An independent Coulomb/Lennard-Jones pair
+oracle includes scaled/excluded exceptions from a separately constructed
+single-structure CPU NoCutoff AMBER14 model. Four numerical controls differ by
+at most 0.000107 kJ/mol; scalar/matrix, selection and unit-policy contracts pass.
+All 4,230 primary sources/tests, the 91-file immutable public PyUnitWizard
+snapshot and checked support sources retain their hashes. Backend/Rust and
+native scientific code remain unchanged. Whole-tree Ruff, 246 docstrings,
+156 notebooks, dependency audit and the exact guide block pass. Module 20 changes
+only Markdown cell 12; all original executable cells/outputs/IDs/metadata remain.
+The [receipt](molsysmt_nonbonded_receiving_20261105.json) retains canonical
+owner hashes, scientific scope and the separate source/installed boundary.
+
+The maintainer-authorized native request
+[#572](https://github.com/uibcdf/molsysmt/issues/572) records that get_forces lacks
+a MolSys input route, independently of Viewer. Its analytical OpenMM positive
+control passes; a bound force method remains unexposed. Exposure is now 233/244,
+including build 27/30 and mechanics 5/6. The existing PR merges cleanly; its new
+CI and owner review remain pending. Continue remaining build tools and receive
+native #561/#572 before claiming complete scientific coverage. GUI and exact
+installed qualification remain separate; both 1.0 publications remain paused.
+No candidate, package, tag, Release or promotion is introduced.
+
 **Naming cutover and alternate-site repairs received — 2026-11-05:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
 `04b9fbbda4654516c01d6c34e9c19ad17c1be0fb`, receives published native
@@ -849,18 +882,17 @@ fourteen cases verified in each original JUnit. General CI 41899772338 attempt 2
 now passes all eight test cells; each import/test/coverage step is verified.
 The initial macOS Python 3.12 acquisition cancellation remains preserved.
 Browser/experimental Qt pass independently. MolSysMT PR #543 now delivers
-`04b9fbbda`: explicit native naming-context mirrors and the owner's corrected
-alternate-site observations/preflight. All 4,273 addon/integration cases pass,
-with forty facade, 348 native and 88 docs cases received separately. The
-[receipt](molsysmt_naming_alternate_repair_receiving_20261105.json) retains fixed
-source/provider inputs, original failures and repaired merge preservation.
-Native #569/#570/#571 are closed and received; no scientific compensation is
-implemented in the facade. Exposure stays 232/244, build 27/30 and mechanics
-4/6. New-head hosted CI and owner review remain separate and pending. Prior
-Viewer general CI has five test cells success/three macOS queued; prior addon
-full CI has four success/one running/three queued. Load human smoke remains
-deferred; continue remaining expert paths and GUI qualification without
-candidate publication. Both 1.0 publications remain paused.
+`10ef88c90`: a native nonbonded-energy reader after the naming/alternate-site
+receiving. All 4,311 addon/integration cases pass without omissions; 132 mechanical
+and 142 documentation controls pass separately. The
+[receipt](molsysmt_nonbonded_receiving_20261105.json) records independent pair-energy
+references, fixed source/provider inputs and source/scene ownership. Exposure is
+233/244, build 27/30 and mechanics 5/6. #561 retains the native mixed-partition
+failure; newly authorized #572 requests native MolSys forces, so that mirror stays
+unexposed. New-head CI and owner review remain pending. Native #569/#570/#571
+repairs keep their prior received source and receipts. Continue the remaining
+build tools, force contract and compatibility decisions before task GUI and
+installed qualification. Both 1.0 publications remain paused.
 
 The latest user-directed standalone round is summarized in the
 [final review](standalone_final_review_20261029.md). Receive its remaining
@@ -2460,12 +2492,11 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-05:**
 
-1. Receive exact-head CI and owner review of MolSysMT PR #543 `04b9fbbda`.
-   Naming/alternate-site receiving passes the final 4,273-case addon/integration
-   regression, forty facade, 348 native and 88 docs cases without omissions.
-   Native #569/#570/#571 are closed and received; arbitrary mutable-adapter
-   failures keep their declared limit. Exposure stays 232/244. Preserve original
-   failed runs, corrected test premises and source-versus-installed scope.
+1. Receive exact-head CI and owner review of MolSysMT PR #543 `10ef88c90`.
+   The nonbonded-energy mirror passes the complete 4,311-case addon/integration
+   regression, 132 mechanical and 142 docs controls. Keep its independent pair
+   reference, single-structure CPU NoCutoff scope and native #561 limitation.
+   Exposure is 233/244; source results do not qualify installed artifacts.
 2. Receive the three remaining macOS cells of prior Viewer `004464df`
    (42062771914), earlier addon full source and applicable new heads. Preserve
    previous successful recoveries/acquisition failures; no duplicate dispatch.
@@ -2474,9 +2505,10 @@ Resume toward **1.0** in this order:
 3. #292/#293 source reviews and guards are complete. Scope a covering pre-1.0
    artifact for #294's delivered scene handle/player contracts; package
    production/publication still requires its separate accepted route.
-4. Continue three build and two remaining mechanics expert paths under #264,
+4. Continue three build paths and receive the native MolSys force contract #572
+   under #264,
    then disposition basic.view, historical aliases and native MD stubs. Receive
-   #549/#559–#562/#564/#568 from MolSysMT without facade scientific repairs;
+   #549/#559–#562/#564/#568/#572 from MolSysMT without facade scientific repairs;
    water-box #564 keeps that factory unexposed. Preserve explicit inputs and
    the PR-only owner contribution route.
 5. Build task-oriented addon GUI over qualified expert operations, consolidate

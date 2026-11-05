@@ -1,15 +1,16 @@
 # MolSysMT tools add-on — implementation plan
 
 **Current received contribution — 2026-11-05:**
-[PR #543](https://github.com/uibcdf/molsysmt/pull/543), `04b9fbbda`, exposes
-232/244 declared expert paths, including element 57/57, build 27/30 and mechanics
-4/6. Native naming-context and alternate-site corrections are received without
-host scientific logic. The [combined receipt](molsysmt_naming_alternate_repair_receiving_20261105.json)
-records 4,273 addon/integration passes with zero omissions, separate native/docs
-checks, preserved source/provider inputs and pending owner review/hosted CI.
-Remaining source tools, GUI tasks, scientific limits and installed/public
-qualification remain separate. The dated implementation stages below retain
-their own earlier inputs and counts.
+[PR #543](https://github.com/uibcdf/molsysmt/pull/543), `10ef88c90`, exposes
+233/244 declared expert paths, including element 57/57, build 27/30 and mechanics
+5/6. The new nonbonded-energy mirror retains native model/selection/unit contracts
+and has independent pair-energy references. The
+[receipt](molsysmt_nonbonded_receiving_20261105.json) records 4,311 addon/integration
+passes with no omissions, separate mechanical/docs checks and fixed inputs.
+Native #561 retains a mixed-partition limit. Native MolSys forces are requested
+under #572; no always-rejected mirror or consumer parameterization is added.
+Current-head hosted CI, owner review, remaining tools, task GUI and installed/public
+qualification remain separate. Dated stages below keep their own inputs/counts.
 
 **Status: partial source implementation; installed qualification pending —
 2026-10-28.** The maintainer authorizes the Viewer development effort to implement

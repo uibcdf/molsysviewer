@@ -45,16 +45,18 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- **Naming and alternate-site repairs received — 2026-11-05:**
-  [PR #543](https://github.com/uibcdf/molsysmt/pull/543), `04b9fbbda`, receives
-  owner naming-context and #569/#570/#571 corrections. All 4,273 addon/integration
-  cases pass without omissions; forty facade, 348 native and 88 docs cases pass
-  separately with fixed recorded inputs. [Evidence](molsysmt_naming_alternate_repair_receiving_20261105.json)
-  retains original failures, immutable provider receiving and owner documentation
-  preservation. Exposure stays 232/244, build 27/30. New-head CI and owner review
-  remain pending; prior Viewer general CI has five success/three macOS queued.
-  No candidate/publication; remaining expert tools, GUI and installed receiving
-  remain separate. Earlier alternate-site input retains its original receipt.
+- **Nonbonded-energy source receiving — 2026-11-05:**
+  [PR #543](https://github.com/uibcdf/molsysmt/pull/543), `10ef88c90`, adds the
+  expert nonbonded-energy reader with independent pair-energy references.
+  All 4,311 addon/integration cases pass without omissions; 132 mechanical and
+  142 docs cases pass separately. [Evidence](molsysmt_nonbonded_receiving_20261105.json)
+  records frozen inputs, units and scientific scope. Exposure is 233/244,
+  mechanics 5/6. Native #561 remains explicit; #572 requests the missing native
+  MolSys force route. New-head CI/owner review, remaining build tools, task GUI
+  and installed qualification remain separate. No candidate/publication.
+
+- Earlier naming/alternate-site receiving remains preserved in its
+  [original receipt](molsysmt_naming_alternate_repair_receiving_20261105.json).
 
 - Missing-bond receiving and its strict inventory recovery are complete in source;
   [original evidence](molsysmt_bond_inventory_recovery_20261105.json) is retained.
