@@ -1,29 +1,30 @@
 # Development checkpoint
 
-**Independent solvation and per-structure predicate received — 2026-11-05:**
-[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `6a14ac271`, adds the explicit
-`build.solvate` mirror and receives published native `ccff2557f`, including #504.
-Solvation returns a new system without adopting it or changing the current
-primary, scene/history or pending projection. Input preparation and exactly one
-engine-ready structure stay explicit. Separate OpenMM construction checks box,
-population and coordinates; TIP3P geometry uses a derived PDB precision bound.
-The existing `is_solvated` mirror now preserves explicit structure order and
-repetitions, returning bool for one structure or a Boolean vector for multiple
-or empty selections, without implicit aggregation. The
-[receipt](molsysmt_solvation_receiving_20261105.json) separates final combined
-receiving (4,334 addon/integration passes without omissions, 126 directed and
-60 docs controls) from the earlier 4,333-case solvation baseline and preserves its
-original failures and bounded recovery. Native scientific code comes from its
-owner; backend/Rust and Viewer runtime remain unchanged.
+**Independent protonation reconciliation received — 2026-11-05:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `ac1f6dbad`, adds the native
+`build.reconcile_protonation` signature minus the bound primary. Only
+in_place=False is received. Managed True rejects before scientific execution
+pending [native #576](https://github.com/uibcdf/molsysmt/issues/576), which requests
+public removal correspondence and explicit no-op/failure semantics. The addon
+calls no private chemistry helper and infers no identity from labels or geometry.
+Independent output is not adopted; current source, scene/history and completed
+pending edits remain owned by the view.
 
-Exposure is 234/244, build 28/30 and mechanics 5/6. Two independently reproduced
-OpenMM solvate limitations (nonnumeric atom IDs and ignored explicit ion counts)
-are reported under uibcdf/molsysmt#574 and #575. Their
-[documentation handoff](molsysmt_solvation_issue_handoff_20261105.json) is in
-PR #543 `b285d7fb8`; the scientific receiving basis stays `6a14ac271`. Remaining preparation/
-remapping, #564 water boxes, #561 nonbonded selections, #572 native MolSys forces,
-owner review, exact-head CI, GUI and installed qualification remain separate.
-Both 1.0 publications stay paused; no candidate or publication is introduced.
+All 4,363 addon/integration cases pass without failures/errors/skips; 103
+directed and 118 docs controls pass separately.
+The [receipt](molsysmt_protonation_receiving_20261105.json) records the fixed-label
+villin reference control (596 atoms at pH 7.4, 590 at pH 12), all retained poses,
+native units/analyses and named-state/unassessed limits. This qualifies bounded
+reference-rule behavior, not environmental pKa or chemical readiness. Exposure
+is 235/244, build 29/30 and mechanics 5/6, with the in-place mode limit explicit.
+Remaining water-box #564, forces #572, energy #561, solvate #574/#575 and managed
+protonation #576 stay native owner work. Exact-head CI, owner review, compatibility
+decisions, task GUI and installed qualification remain separate. Both 1.0
+publications stay paused; no candidate or publication.
+
+Earlier solvation/#504 receiving and #574/#575 reporting retain their
+[original receipt](molsysmt_solvation_receiving_20261105.json) and
+[issue handoff](molsysmt_solvation_issue_handoff_20261105.json).
 
 Earlier nonbonded-energy receiving retains its
 [original receipt](molsysmt_nonbonded_receiving_20261105.json).
@@ -876,17 +877,16 @@ rejection on `793a92db`: source pair 41899772394 passes three hosts, with all
 fourteen cases verified in each original JUnit. General CI 41899772338 attempt 2
 now passes all eight test cells; each import/test/coverage step is verified.
 The initial macOS Python 3.12 acquisition cancellation remains preserved.
-Browser/experimental Qt pass independently. MolSysMT PR #543 `6a14ac271` now
-delivers independent
-`build.solvate` and receives native #504's per-structure `is_solvated` contract.
-The [receipt](molsysmt_solvation_receiving_20261105.json) records final combined
-receiving, independent OpenMM construction/geometry and retained source/scene
-ownership. Exposure is 234/244, build 28/30 and mechanics 5/6. Native solvate
-limits are reported under uibcdf/molsysmt#574 and #575. #561/#564/#572 retain their native
-work; #504's earlier ambiguous-array limitation is source-corrected. Exact-head
-CI and owner review remain pending. Continue the remaining two build paths,
-force contract and compatibility decisions before task GUI and installed
-qualification. Both 1.0 publications remain paused.
+Browser/experimental Qt pass independently. MolSysMT PR #543 now adds the independent
+`build.reconcile_protonation` mirror with native parameters and current-primary
+binding. Its [receipt](molsysmt_protonation_receiving_20261105.json) preserves
+source/scene ownership, all-structure reference-rule receiving and explicit
+named-state/unassessed limits. Managed in_place=True rejects before science
+pending public correspondence #576. Exposure is 235/244, build 29/30 and
+mechanics 5/6; a callable path is not complete mode coverage. Native
+#561/#564/#572/#574/#575/#576, exact-head CI and owner review remain pending.
+Continue compatibility decisions and receive the remaining native contracts
+before task GUI and installed qualification. Both 1.0 publications remain paused.
 
 The latest user-directed standalone round is summarized in the
 [final review](standalone_final_review_20261029.md). Receive its remaining
@@ -2486,12 +2486,11 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-05:**
 
-1. Receive exact-head CI and owner review of MolSysMT PR #543, `b285d7fb8`,
-   combining independent solvation and native #504 predicate correction. Keep explicit
-   preparation, native result ownership and the bounded OpenMM/TIP3P scope.
-   Receive native solvate identifier and explicit-ion-count corrections under
-   uibcdf/molsysmt#574 and #575; limits stay visible. Exposure is 234/244;
-   source results do not qualify installed artifacts.
+1. Receive exact-head CI and owner review of MolSysMT PR #543 `ac1f6dbad`,
+   including the independent protonation mirror. Keep native reference/naming rules and the bounded pKa
+   scope explicit. Managed in_place=True remains unreceived under #576;
+   no identity inference or duplicated private science is permitted.
+   Exposure is 235/244; source results do not qualify installed artifacts.
 2. Receive the three remaining macOS cells of prior Viewer `004464df`
    (42062771914), earlier addon full source and applicable new heads. Preserve
    previous successful recoveries/acquisition failures; no duplicate dispatch.
@@ -2500,10 +2499,10 @@ Resume toward **1.0** in this order:
 3. #292/#293 source reviews and guards are complete. Scope a covering pre-1.0
    artifact for #294's delivered scene handle/player contracts; package
    production/publication still requires its separate accepted route.
-4. Continue two build paths and receive the native MolSys force contract #572
+4. Receive water-box #564, native MolSys forces #572 and managed protonation #576
    under #264,
    then disposition basic.view, historical aliases and native MD stubs. Receive
-   #549/#559–#562/#564/#568/#572 from MolSysMT without facade scientific repairs;
+   #549/#559–#562/#564/#568/#572/#574/#575/#576 from MolSysMT without facade scientific repairs;
    water-box #564 keeps that factory unexposed. Preserve explicit inputs and
    the PR-only owner contribution route.
 5. Build task-oriented addon GUI over qualified expert operations, consolidate

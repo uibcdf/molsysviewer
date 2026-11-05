@@ -45,19 +45,23 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- **Solvation and per-structure predicate source receiving — 2026-11-05:**
-  [PR #543](https://github.com/uibcdf/molsysmt/pull/543), `6a14ac271`, adds the independent
-  `build.solvate` mirror and receives the owner's #504 per-structure
-  `is_solvated` correction. [Evidence](molsysmt_solvation_receiving_20261105.json)
-  records 4,334 addon/integration passes without omissions, 126 directed cases
-  and 60 docs controls. Native preparation/geometry, source/scene ownership and
-  hosted qualification retain their scopes. Exposure is 234/244, build 28/30
-  and mechanics 5/6.
-  Owner acceptance, exact-head CI, remaining tools, task GUI and installed
-  qualification remain separate. Native solvate limits are reported under
-  uibcdf/molsysmt#574 (IDs) and #575 (explicit ion counts); their
-  [documentation handoff](molsysmt_solvation_issue_handoff_20261105.json) is in
-  PR #543 `b285d7fb8`, with unchanged runtime inputs. No candidate or publication.
+- **Independent protonation source receiving — 2026-11-05:**
+  [PR #543](https://github.com/uibcdf/molsysmt/pull/543), `ac1f6dbad`, adds the exact native
+  `build.reconcile_protonation` signature with the current system implicit.
+  Only `in_place=False` is received; True rejects before science pending native
+  correspondence under uibcdf/molsysmt#576. Source/scene/pending state remain
+  owned by the view; no private chemistry helper or identity matching is added.
+  [Evidence](molsysmt_protonation_receiving_20261105.json) separates bounded
+  reference-rule controls from environmental-pKa, hosted and installed claims.
+  All 4,363 addon/integration cases pass without omissions; 103 directed and
+  118 docs controls pass separately. Exposure is 235/244, build 29/30 and
+  mechanics 5/6, with the mode limit explicit.
+  Owner review, exact-head CI, native limits, remaining compatibility decisions,
+  task GUI and installed qualification remain separate. No publication.
+
+- Earlier independent solvation and native #504 receiving retain their
+  [original receipt](molsysmt_solvation_receiving_20261105.json); native #574/#575
+  retain their [issue handoff](molsysmt_solvation_issue_handoff_20261105.json).
 
 - Earlier nonbonded-energy receiving and native force request #572 retain their
   [original receipt](molsysmt_nonbonded_receiving_20261105.json).
