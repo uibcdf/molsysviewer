@@ -45,22 +45,22 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- **Independent construction delivered by owner PR — 2026-11-04:**
+- **Independent atom expansion delivered by owner PR — 2026-11-04:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
-  `32435e6fd300e1753c6d843cb100aaabfc44787e`, adds declared biological
-  assemblies and explicit AutoDock4 nonpolar-H projection. Results remain
-  independent, with no automatic preparation or view replacement. All 3,951
-  addon cases pass, including 63 new construction cases; 47 directed native
-  and 562 route/documentation checks pass separately. Analytic geometry/charge,
-  nondefault units, maps, provenance and lifetime checks retain unchanged
-  source/backend bytes. The [receipt](molsysmt_independent_build_receiving_20261104.json)
-  records 222/244 exposure (build 17/30, mechanics 4/6), preserved course code/
-  outputs and initial test-only corrections. CI full 41937569331, smoke
-  41937569345 and owner review remain pending. Viewer general CI 41899772338
-  now passes all eight test cells; the last macOS Python 3.12 retry completes
-  import, tests and coverage. Its original cancellation remains preserved.
-  Native #549/#559–#562 and installed/GUI receiving remain separate; no new
-  candidate or publication.
+  `ee1153d983a37416eaee85710c5b97e0acb2ecc1`, adds explicit terminal attachment
+  and bounded missing-heavy-atom repair. Results remain independent; supplied
+  coordinates, atom identity, historical reports, native attribute loss and
+  output-only analysis invalidation retain their contracts. All 4,010 addon
+  cases pass, including 59 new cases; 39 directed native and 562 route/docs
+  controls pass separately. Both guide blocks execute; original course code,
+  outputs and metadata remain unchanged. The
+  [receipt](molsysmt_atom_expansion_receiving_20261104.json) records unchanged
+  sources/backend/data and 224/244 exposure (build 19/30, mechanics 4/6).
+  Exact new-head full 41949691118, smoke 41949691156, owner review and installed
+  receiving remain pending. [MolSysMT #564](https://github.com/uibcdf/molsysmt/issues/564)
+  records a separate triclinic water-box defect; its factory remains unexposed.
+  Earlier Viewer CI retains its verified 8/8 source result. No new candidate
+  or publication.
 
 - **Native reference-map repair received by the addon — 2026-11-04:**
   [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), source
