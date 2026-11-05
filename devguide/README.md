@@ -45,18 +45,27 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- **Expert navigation and native repair receiving — 2026-11-05:**
-  [PR #543](https://github.com/uibcdf/molsysmt/pull/543), `442a2771e`, adds the loaded-primary
-  `basic.view` bridge and native root alias, plus four historical hbonds aliases
-  using the canonical bound methods. Native MD stubs remain unavailable.
-  [Evidence](molsysmt_navigation_receiving_20261105.json) records the navigation
-  and native #568/#564 receiving with preserved source and qualification scopes.
-  Final combined receiving passes 4,398 addon/integration cases without omissions,
-  22 native water-cell guards and 118 docs/source controls. Exposure is 240/244:
-  two unexposed native stubs, corrected water-box factory awaiting consumer receiving and native MolSys forces pending #572. Managed
-  protonation remains independent-only under #576. Native empty-view digestion
-  is reported under #578. Exact-head CI, owner review, remaining native limits,
-  task GUI and installed qualification remain separate. No publication.
+**Explicit water-factory receiving — 2026-11-05:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `c0149a2d6`,
+adds `build.make_water_box` with explicit box/form inputs. It works from an open
+empty view and returns independent native water without reading or replacing
+the primary, synchronizing pending edits or changing scene/history. Native
+#564 owns construction and whole-water row-vector clipping; no consumer science
+or Viewer runtime change is introduced. Explicit `view.load(result)` is a
+separate action. Packing, force-field and equilibration limits remain visible.
+The [receipt](molsysmt_water_factory_receiving_20261105.json) preserves exact
+inputs, geometry/unit and ownership checks, native receiving and separate
+hosted/installed scope. Local receiving passes
+4,438 addon/integration cases without omissions and 118 docs/source controls.
+Exposure is 241/244, build 30/30:
+native MolSys forces #572 and two MD stubs remain unexposed; managed protonation
+remains independent-only under #576. Native empty visualization #578 is separate
+from this empty-workspace factory. Exact-head CI, owner review, remaining native
+limits, task GUI and installed qualification remain pending. Both 1.0
+publications stay paused; no candidate or publication.
+
+Earlier navigation and native repair receiving retains its
+[original receipt](molsysmt_navigation_receiving_20261105.json).
 
 - Earlier independent protonation receiving retains its
   [original receipt](molsysmt_protonation_receiving_20261105.json).

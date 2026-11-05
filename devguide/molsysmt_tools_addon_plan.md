@@ -1,22 +1,23 @@
 # MolSysMT tools add-on — implementation plan
 
-**Current received contribution — 2026-11-05:**
-[PR #543](https://github.com/uibcdf/molsysmt/pull/543), `442a2771e`, exposes 240/244 declared
-functional paths, including basic 26/26, historical hbonds 4/4, build 29/30 and
-mechanics 5/6. Basic.view creates a separate caller-owned visualization of the
-loaded current primary, without parent scene cloning or synchronization. Four
-historical functions are exact aliases of the canonical bound methods; two
-native MD stubs remain unexposed. Native #568 and #564 repairs are received
-without scientific consumer corrections. The corrected water-box factory still
-needs explicit-input consumer receiving; native forces remain under #572 and
-managed protonation under #576. Empty native view validation is separately
-reported under #578; the bound visualization route requires a loaded owner.
-The [receipt](molsysmt_navigation_receiving_20261105.json) preserves exact inputs,
-source/scene ownership, mode limits and separate hosted/installed scope. Final
-combined receiving passes 4,398 addon/integration cases without omissions,
-22 native water-cell guards and 118 docs/source controls. Owner
-review, exact-head CI, native scientific limits, task GUI and installed/public
-qualification remain separate. Dated receipts retain their original inputs.
+**Explicit water-factory receiving — 2026-11-05:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `c0149a2d6`,
+adds `build.make_water_box` with explicit box/form inputs. It works from an open
+empty view and returns independent native water without reading or replacing
+the primary, synchronizing pending edits or changing scene/history. Native
+#564 owns construction and whole-water row-vector clipping; no consumer science
+or Viewer runtime change is introduced. Explicit `view.load(result)` is a
+separate action. Packing, force-field and equilibration limits remain visible.
+The [receipt](molsysmt_water_factory_receiving_20261105.json) preserves exact
+inputs, geometry/unit and ownership checks, native receiving and separate
+hosted/installed scope. Local receiving passes
+4,438 addon/integration cases without omissions and 118 docs/source controls.
+Exposure is 241/244, build 30/30:
+native MolSys forces #572 and two MD stubs remain unexposed; managed protonation
+remains independent-only under #576. Native empty visualization #578 is separate
+from this empty-workspace factory. Exact-head CI, owner review, remaining native
+limits, task GUI and installed qualification remain pending. Both 1.0
+publications stay paused; no candidate or publication.
 
 **Status: partial source implementation; installed qualification pending —
 2026-10-28.** The maintainer authorizes the Viewer development effort to implement
