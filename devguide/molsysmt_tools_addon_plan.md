@@ -1,23 +1,25 @@
 # MolSysMT tools add-on — implementation plan
 
-**Explicit water-factory receiving — 2026-11-05:**
-[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `c0149a2d6`,
-adds `build.make_water_box` with explicit box/form inputs. It works from an open
-empty view and returns independent native water without reading or replacing
-the primary, synchronizing pending edits or changing scene/history. Native
-#564 owns construction and whole-water row-vector clipping; no consumer science
-or Viewer runtime change is introduced. Explicit `view.load(result)` is a
-separate action. Packing, force-field and equilibration limits remain visible.
-The [receipt](molsysmt_water_factory_receiving_20261105.json) preserves exact
-inputs, geometry/unit and ownership checks, native receiving and separate
-hosted/installed scope. Local receiving passes
-4,438 addon/integration cases without omissions and 118 docs/source controls.
-Exposure is 241/244, build 30/30:
-native MolSys forces #572 and two MD stubs remain unexposed; managed protonation
-remains independent-only under #576. Native empty visualization #578 is separate
-from this empty-workspace factory. Exact-head CI, owner review, remaining native
-limits, task GUI and installed qualification remain pending. Both 1.0
-publications stay paused; no candidate or publication.
+**Molecular tools GUI design and extraction repair — 2026-11-05:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `94548b434`,
+now carries a reviewable workspace design and disconnected interactive prototype:
+System, Geometry, Chemistry and Analysis, with one task form at a time. No GUI
+panel is registered. The first proposed flow resolves a selection, reviews
+all-structure atom removal and confirms once through the existing coordinator;
+expert scientific signatures/defaults remain unchanged. New-view presentation
+from Jupyter/Qt needs a qualified common host operation before that extraction
+destination is offered.
+The [receipt](molsysmt_gui_design_receiving_20261105.json) separates static-browser
+layout evidence, headless 1TCD feasibility and prior source gates. Viewer
+[#296](archive/extraction_numeric_region_recipe.md) is corrected: numeric region
+recipes transfer their mapped atoms and source evidence without text-regex
+failure or replay in the new index universe. Fifteen new guards and 119 related
+scene/region/session/source/edit checks pass; the 33 scoped cases are included
+in that total. Owner design-document checks pass 59 cases. The original 4,438
+expert cases retain their c0149a2d6 source/runtime input, not a fresh full gate.
+Native b8cdbd101 was published meanwhile with add_ions/solvate changes and still
+needs independent receiving. Hosted CI, owner review, live GUI/popups, #572/#576
+and installed qualification remain separate. Both 1.0 publications stay paused.
 
 **Status: partial source implementation; installed qualification pending —
 2026-10-28.** The maintainer authorizes the Viewer development effort to implement
@@ -740,6 +742,17 @@ receiving tests; preserve provider validation and units.
 
 ## Graphical interface
 
+**Design review input — 2026-11-05:** the owner contribution proposes a
+Molecular tools workspace identified as MolSysMT, with System, Geometry,
+Chemistry and Analysis panels. Each panel shows one task form at a time;
+the existing host navigation supplies the tabs. This is a reviewable design,
+not a registered GUI. The complete design/prototype lives with the owner under
+uibcdf/molsysmt#421 / PR #543. The first flow chooses atoms, reviews all-structure
+removal and confirms once; native selection categories are reusable inputs, not
+pre-cooked scientific actions. Review tokens must expire and be checked inside
+the serialized edit boundary. Core result presentation remains a separate gate.
+
+
 Use a clear MolSysMT tools workspace in Studio/Add-ons. Titles and action labels
 describe user tasks: inspecting a system, removing chosen atoms, preparing
 chemistry, transforming coordinates, comparing structures or saving results.
@@ -843,28 +856,22 @@ API or hide decisions that change scientific interpretation. This document
 plans the new add-on; it does not reintroduce the removed Studio expansion plan.
 
 
-### Next expert API families
+### Expert API handoff to GUI design — 2026-11-05
 
-The reviewed physchem surface is fully exposed at 34 paths, and build is now at
-11/30. The owning inventory under uibcdf/molsysmt#421 records the remaining
-functional routes: basic 7, build 19, molecular_mechanics 6, element helpers 57, H5MSM utilities 7, historical hbonds aliases 4, attribute
-helpers 7, supported-capability reports 4 and legacy MD declarations 2.
-These 113 unexposed paths include aliases/utilities and two native always-raise
-stubs, not 113 independent implemented scientific algorithms. Keep classification and source-versus-qualification clear.
+The dated c0149a2d6 inventory exposes 241/244 inspected functional paths, including
+build 30/30, basic 26/26 and all reviewed physchem/structure/element paths. Native
+MolSys forces #572 and two unconditional MD stubs remain unexposed; protonation's
+managed in-place mode awaits #576. Other scientific limits and installed
+qualification remain explicit. Future published owner exports require a fresh
+review; the snapshot is not a permanent completeness claim.
 
-Read-only build audits are received at this baseline. Four nested hydrogen-bond
-recognition/direction paths and all eleven canonical detection paths are
-received in source; continue independent/basic map utilities and explicit
-file/text operations. Receive molecular-mechanics diagnostics and
-energies/forces with explicit providers and units. In-place minimization,
-preparation and topology-changing basic/build operations need their own mapping,
-reconciliation, invalidation and recovery contracts. Element/file/attribute/supported utilities keep
-explicit inputs where no primary exists; collections and to/from-system targets
-must not be guessed. Decide historical aliases and the basic.view bridge
-deliberately. Class/adaptor/configuration APIs remain outside the functional
-mirror inventory. Graphical tasks cannot narrow the expert API or advertise
-unreceived operations. Native #503 remains a separate qualification limit.
-
+Proceed with task-oriented GUI design over these qualified operations while
+receiving CI and owner review. Preserve the expert API, native independent
+results and existing edit coordinator. The first slice is explicit atom
+selection and removal, followed by extraction/copy with qualified result
+destinations. Constructing a View is not a common host presentation operation;
+settle Jupyter/Qt presentation before advertising Open as new view. Do not
+revive the withdrawn core Studio expansion or expose unreceived capabilities.
 
 ### Eleven build audits received in source — 2026-10-27
 

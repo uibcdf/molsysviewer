@@ -45,24 +45,29 @@ documents, and historical audits.
 
 ## Current status and planning
 
-**Explicit water-factory receiving — 2026-11-05:**
-[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `c0149a2d6`,
-adds `build.make_water_box` with explicit box/form inputs. It works from an open
-empty view and returns independent native water without reading or replacing
-the primary, synchronizing pending edits or changing scene/history. Native
-#564 owns construction and whole-water row-vector clipping; no consumer science
-or Viewer runtime change is introduced. Explicit `view.load(result)` is a
-separate action. Packing, force-field and equilibration limits remain visible.
-The [receipt](molsysmt_water_factory_receiving_20261105.json) preserves exact
-inputs, geometry/unit and ownership checks, native receiving and separate
-hosted/installed scope. Local receiving passes
-4,438 addon/integration cases without omissions and 118 docs/source controls.
-Exposure is 241/244, build 30/30:
-native MolSys forces #572 and two MD stubs remain unexposed; managed protonation
-remains independent-only under #576. Native empty visualization #578 is separate
-from this empty-workspace factory. Exact-head CI, owner review, remaining native
-limits, task GUI and installed qualification remain pending. Both 1.0
-publications stay paused; no candidate or publication.
+**Molecular tools GUI design and extraction repair — 2026-11-05:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `94548b434`,
+now carries a reviewable workspace design and disconnected interactive prototype:
+System, Geometry, Chemistry and Analysis, with one task form at a time. No GUI
+panel is registered. The first proposed flow resolves a selection, reviews
+all-structure atom removal and confirms once through the existing coordinator;
+expert scientific signatures/defaults remain unchanged. New-view presentation
+from Jupyter/Qt needs a qualified common host operation before that extraction
+destination is offered.
+The [receipt](molsysmt_gui_design_receiving_20261105.json) separates static-browser
+layout evidence, headless 1TCD feasibility and prior source gates. Viewer
+[#296](archive/extraction_numeric_region_recipe.md) is corrected: numeric region
+recipes transfer their mapped atoms and source evidence without text-regex
+failure or replay in the new index universe. Fifteen new guards and 119 related
+scene/region/session/source/edit checks pass; the 33 scoped cases are included
+in that total. Owner design-document checks pass 59 cases. The original 4,438
+expert cases retain their c0149a2d6 source/runtime input, not a fresh full gate.
+Native b8cdbd101 was published meanwhile with add_ions/solvate changes and still
+needs independent receiving. Hosted CI, owner review, live GUI/popups, #572/#576
+and installed qualification remain separate. Both 1.0 publications stay paused.
+
+Earlier explicit water construction retains its
+[original receipt](molsysmt_water_factory_receiving_20261105.json).
 
 Earlier navigation and native repair receiving retains its
 [original receipt](molsysmt_navigation_receiving_20261105.json).

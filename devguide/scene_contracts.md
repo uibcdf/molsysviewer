@@ -809,6 +809,14 @@ Recipes reference other regions, so `import_state` must restore them in **topolo
 (dependencies before dependents). A state document whose graph cannot be topologically sorted is
 corrupt and must raise, not partially load.
 
+When extraction changes the atom universe, numeric query selectors and textual
+index queries are source-relative. Transfer their resolved atoms/colors through
+the explicit map, retain the original recipe as source evidence and freeze the
+result as a transferred static recipe; never replay source indices against the
+new system. Identity atom extraction preserves the original recipe, including
+when structures alone are reordered. Existing unsupported selector types remain
+subject to public argument validation.
+
 ### R.4 Consequences
 
 - **Rebuild becomes exact.** `apply_system_edit` re-evaluates recipes instead of remapping

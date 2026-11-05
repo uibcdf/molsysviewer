@@ -38,13 +38,17 @@ def _transfer_state(source, target, atom_map=None, frames=None, *, merge=False):
         record["atom_indices"] = atoms(region.atom_indices or [])
         record["color_layer"] = colors(record.get("color_layer", {}))
         recipe = record["provenance"]
+        expression = recipe.get("expression", "")
         if recipe.get("kind") == "active_selection":
             recipe["atom_indices"] = atoms(recipe.get("atom_indices", []))
         # Local hierarchy indices and a source-wide query cannot be replayed in
         # a different index space. Preserve the original recipe as evidence.
         if changed_indices and (
             recipe.get("kind") == "split"
-            or (recipe.get("kind") == "query" and (merge or re.search(r"\b\w+_index\b", recipe.get("expression", ""))))
+            or (
+                recipe.get("kind") == "query"
+                and (merge or not isinstance(expression, str) or re.search(r"\b\w+_index\b", expression))
+            )
         ):
             record["provenance"] = {
                 "kind": "transferred",

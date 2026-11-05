@@ -1,23 +1,28 @@
 # Development checkpoint
 
-**Explicit water-factory receiving — 2026-11-05:**
-[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `c0149a2d6`,
-adds `build.make_water_box` with explicit box/form inputs. It works from an open
-empty view and returns independent native water without reading or replacing
-the primary, synchronizing pending edits or changing scene/history. Native
-#564 owns construction and whole-water row-vector clipping; no consumer science
-or Viewer runtime change is introduced. Explicit `view.load(result)` is a
-separate action. Packing, force-field and equilibration limits remain visible.
-The [receipt](molsysmt_water_factory_receiving_20261105.json) preserves exact
-inputs, geometry/unit and ownership checks, native receiving and separate
-hosted/installed scope. Local receiving passes
-4,438 addon/integration cases without omissions and 118 docs/source controls.
-Exposure is 241/244, build 30/30:
-native MolSys forces #572 and two MD stubs remain unexposed; managed protonation
-remains independent-only under #576. Native empty visualization #578 is separate
-from this empty-workspace factory. Exact-head CI, owner review, remaining native
-limits, task GUI and installed qualification remain pending. Both 1.0
-publications stay paused; no candidate or publication.
+**Molecular tools GUI design and extraction repair — 2026-11-05:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `94548b434`,
+now carries a reviewable workspace design and disconnected interactive prototype:
+System, Geometry, Chemistry and Analysis, with one task form at a time. No GUI
+panel is registered. The first proposed flow resolves a selection, reviews
+all-structure atom removal and confirms once through the existing coordinator;
+expert scientific signatures/defaults remain unchanged. New-view presentation
+from Jupyter/Qt needs a qualified common host operation before that extraction
+destination is offered.
+The [receipt](molsysmt_gui_design_receiving_20261105.json) separates static-browser
+layout evidence, headless 1TCD feasibility and prior source gates. Viewer
+[#296](archive/extraction_numeric_region_recipe.md) is corrected: numeric region
+recipes transfer their mapped atoms and source evidence without text-regex
+failure or replay in the new index universe. Fifteen new guards and 119 related
+scene/region/session/source/edit checks pass; the 33 scoped cases are included
+in that total. Owner design-document checks pass 59 cases. The original 4,438
+expert cases retain their c0149a2d6 source/runtime input, not a fresh full gate.
+Native b8cdbd101 was published meanwhile with add_ions/solvate changes and still
+needs independent receiving. Hosted CI, owner review, live GUI/popups, #572/#576
+and installed qualification remain separate. Both 1.0 publications stay paused.
+
+Earlier explicit water construction retains its
+[original receipt](molsysmt_water_factory_receiving_20261105.json).
 
 Earlier navigation and native repair receiving retains its
 [original receipt](molsysmt_navigation_receiving_20261105.json).
@@ -880,14 +885,14 @@ rejection on `793a92db`: source pair 41899772394 passes three hosts, with all
 fourteen cases verified in each original JUnit. General CI 41899772338 attempt 2
 now passes all eight test cells; each import/test/coverage step is verified.
 The initial macOS Python 3.12 acquisition cancellation remains preserved.
-Browser/experimental Qt pass independently. MolSysMT PR #543 now adds
-explicit-input water construction, including open empty workspaces, over the received native #564 correction. Its independent
-result is never adopted or synchronized implicitly. The
-[receipt](molsysmt_water_factory_receiving_20261105.json) keeps source/gate
-identities and qualification limits explicit. Exposure is 241/244, build 30/30;
-native forces #572 and two MD stubs remain unexposed. Managed protonation #576
-and native empty visualization #578 remain separate. Exact-head CI, owner
-review, native limits, task GUI and installed qualification remain pending.
+Browser/experimental Qt pass independently. MolSysMT PR #543 now carries the
+four-panel GUI design and disconnected prototype over the c0149a2d6 expert API. No panel is registered. The
+[receipt](molsysmt_gui_design_receiving_20261105.json) separates layout checks,
+headless 1TCD feasibility and the Viewer #296 transfer repair (15 new guards,
+119 related cases). The original 4,438 expert cases retain their earlier input.
+New native b8cdbd101 adds ions and changes solvation/maps; receive that published
+source before claiming a current complete API inventory. CI, owner review,
+#572/#576, live GUI/popups and installed qualification remain pending.
 Both 1.0 publications remain paused.
 
 The latest user-directed standalone round is summarized in the
@@ -2488,25 +2493,30 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-05:**
 
-1. Receive exact-head CI and owner review of MolSysMT PR #543 `c0149a2d6`, covering navigation,
-   compatibility, native #568/#564 and explicit water-factory receiving. Keep the original gate/source
-   identities. Exposure is 241/244; two native MD stubs are intentionally absent.
+1. Receive exact-head CI and owner review of MolSysMT PR #543 `94548b434`, covering the expert source
+   and subsequent GUI design delivery, plus the Viewer #296 correction. Keep the original gate/source
+   identities. The c0149a2d6 inventory remains a dated 241/244 snapshot;
+   two native MD stubs are intentionally absent.
    Callable exposure is not complete scientific/mode or installed qualification.
-2. Receive the three remaining macOS cells of prior Viewer `004464df`
-   (42062771914), earlier addon full source and applicable new heads. Preserve
+2. Inspect/archive the original macOS jobs/artifacts of prior Viewer `004464df`
+   (42062771914): current metadata reports completed/success, but original
+   evidence receiving remains separate. Receive applicable new heads. Preserve
    previous successful recoveries/acquisition failures; no duplicate dispatch.
    Keep #295 three-host receiving and public-provider/pandas baseline.
    Triage #294's import-order observation with controlled inputs.
 3. #292/#293 source reviews and guards are complete. Scope a covering pre-1.0
    artifact for #294's delivered scene handle/player contracts; package
    production/publication still requires its separate accepted route.
-4. Receive native MolSys forces #572 and managed protonation #576. The
+4. Receive published native b8cdbd101 add_ions/solvate/map changes and refresh
+   the expert inventory; then native forces #572 and managed protonation #576. The
    corrected explicit-input water factory, basic.view, historical aliases and
    MD-stub disposition are complete in source. Receive
    native #549/#559–#562/#572/#574/#575/#576/#578 without consumer scientific
    repairs. Preserve PR-only delivery to the owner and separate installed scope.
-5. Build task-oriented addon GUI over qualified expert operations, consolidate
-   documentation and qualify the exact frozen candidate and installed files.
+5. Review the proposed System/Geometry/Chemistry/Analysis navigation, then
+   implement the selection/removal slice with atomic review validity. Qualify
+   extraction result presentation before Open as new view. Broaden the GUI,
+   consolidate documentation and qualify frozen sources/installed files.
    Core/addon ownership and source/public distinctions remain in force.
 
 Earlier source receiving, public packages and human observations retain their
