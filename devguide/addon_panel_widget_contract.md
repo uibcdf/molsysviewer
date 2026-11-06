@@ -44,6 +44,14 @@ is not a claim about every third-party provider or every live Jupyter host.
 
 ### Independent window ownership
 
+Canonical canvas and panel bootstrap projections carry the current addon
+catalogue and selection-dependent context items. A canvas opened after discovery
+must offer the same registered addons without forcing rediscovery. This metadata
+is defensively copied and does not contain another endpoint's live widget or
+confirmation state. Static export builds the shared addon projection once.
+`tests/test_popup_snapshot.py::test_canvas_popup_inherits_current_addon_catalogue_without_replaying_widgets`
+guards this boundary; actual Jupyter receiving is recorded separately.
+
 Each live window owns its mounted Python addon widget. Navigating or closing a
 panel in one window tears down only that window's instance. Actions must match
 both its endpoint and its addon/panel identifiers; late events from a closed

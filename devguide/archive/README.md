@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Canvas popup addon catalogue](canvas_popup_omits_addon_catalogue.md) — #300 reprojects current addon metadata without live widget replay; actual Jupyter and both popup lifecycles pass separately from human/Qt qualification.
+
 - [Addon diagnostic transport](addon_panel_pending_metadata.md) — #297 admits inherited host metadata helpers during managed-edit recovery without unblocking scientific or stale scene commands.
 - [Addon stylesheet lifetime](addon_panel_stylesheet_lifetime.md) — #298 keeps host CSS outside replaceable ESM content and removes it with the owning widget.
 

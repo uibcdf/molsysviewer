@@ -78,6 +78,35 @@ def test_canvas_snapshot_reprojects_hover_telemetry_but_panel_does_not():
     assert "set_hover_telemetry" not in {message.get("op") for message in panel}
 
 
+def test_canvas_popup_inherits_current_addon_catalogue_without_replaying_widgets():
+    from molsysviewer import addons, demo
+
+    existing = addons.get("dummy")
+    if existing is None:
+        addons.register_module("molsysviewer.addon_templates.dummy_addon")
+    try:
+        with demo["pentalanine"] as view:
+            view.addons.enable("dummy")
+            view.active_selection.set([0, 1])
+            expected = view._build_addon_runtime_summary_message()
+            assert "dummy" in expected["addons"]
+            canvas = view.build_popup_scene_snapshot("canvas")
+            panel = view.build_popup_scene_snapshot("panel")
+            assert next(m for m in canvas if m["op"] == expected["op"]) == expected
+            assert next(m for m in panel if m["op"] == expected["op"]) == expected
+            expected_items = view.addons.build_context_items(dict(view._last_active_selection_event))
+            assert next(m for m in canvas if m["op"] == "set_addon_context_items")["items"] == expected_items
+            assert {"mount_addon_panel", "addon_panel_message"}.isdisjoint(m["op"] for m in canvas)
+            exported = view._build_static_export_snapshot()
+            assert sum(m["op"] == expected["op"] for m in exported) == 1
+            assert sum(m["op"] == "set_addon_context_items" for m in exported) == 1
+            next(m for m in canvas if m["op"] == expected["op"])["workspace_specs"].clear()
+            assert view._build_addon_runtime_summary_message() == expected
+    finally:
+        if existing is None:
+            addons.unregister("dummy")
+
+
 # -- purity: no history, no send, no state change ----------------------------
 
 

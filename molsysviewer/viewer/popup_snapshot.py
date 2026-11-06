@@ -41,6 +41,8 @@ _PANEL_OPS_ALREADY_IN_CANVAS = frozenset(
         "save_selection",
         "set_active_selection",
         "set_measurement_settings",
+        "set_addon_runtime_summary",
+        "set_addon_context_items",
     }
 )
 
@@ -195,12 +197,16 @@ class PopupSnapshotMixin:
             if getattr(player, "_is_playing", False):  # noqa: SLF001
                 messages.append({"op": "set_trajectory_playback", "action": "play"})
 
+        # A late canvas also hosts Studio and contextual addon actions. Rebuild
+        # their current catalogue; existing widget instances remain endpoint-local.
+        messages.extend(self._build_addon_snapshot(mode="canvas"))
+
         # 14. camera is host-local ephemeral state, never in the Python snapshot.
         return messages
 
     # -- panel ----------------------------------------------------------------
 
-    def _build_panel_snapshot(self) -> list[dict]:
+    def _build_panel_snapshot(self, *, include_addons: bool = True) -> list[dict]:
         # UI-only projections. No molecular payload, topology, coordinates, or
         # structure-dependent visual operations may appear here.
         loaded = self._molsys is not None
@@ -249,23 +255,9 @@ class PopupSnapshotMixin:
                 "can_redo": self.history.can_redo(),
             },
             self._trajectory_summary_message(),
-            self._build_addon_runtime_summary_message(),
         ]
-        # Add-on context items: the only panel projection the projector could not
-        # carry, because the sole builder also pushed to the frontend. It is now
-        # split, so this stays pure.
-        addons = getattr(self, "addons", None)
-        if addons is not None and hasattr(addons, "build_context_items"):
-            try:
-                items = addons.build_context_items(dict(self._last_active_selection_event or {}))
-            except Exception as exc:
-                emit_suppressed_exception(
-                    "molsysviewer.viewer.popup_snapshot.addon_context_items",
-                    exc,
-                    context={"mode": "panel"},
-                )
-            else:
-                messages.append({"op": "set_addon_context_items", "items": items})
+        if include_addons:
+            messages.extend(self._build_addon_snapshot(mode="panel"))
         # Saved-selection records are complete `save_selection` messages.
         for record in self.selections.records(skip_digestion=True):
             messages.append(deepcopy(record))
@@ -277,6 +269,25 @@ class PopupSnapshotMixin:
             workspace = panel_state.get("workspace")
             if isinstance(workspace, str) and workspace:
                 messages.append({"op": "set_workspace", "workspace": workspace})
+        return deepcopy(messages)
+
+    def _build_addon_snapshot(self, *, mode: str) -> list[dict]:
+        messages = [self._build_addon_runtime_summary_message()]
+        # Add-on context items: the only panel projection the projector could not
+        # carry, because the sole builder also pushed to the frontend. It is now
+        # split, so this stays pure.
+        addons = getattr(self, "addons", None)
+        if addons is not None and hasattr(addons, "build_context_items"):
+            try:
+                items = addons.build_context_items(dict(self._last_active_selection_event or {}))
+            except Exception as exc:
+                emit_suppressed_exception(
+                    "molsysviewer.viewer.popup_snapshot.addon_context_items",
+                    exc,
+                    context={"mode": mode},
+                )
+            else:
+                messages.append({"op": "set_addon_context_items", "items": items})
         return deepcopy(messages)
 
     # -- static export --------------------------------------------------------
@@ -296,7 +307,7 @@ class PopupSnapshotMixin:
         ]
         messages.extend(
             msg
-            for msg in self._build_panel_snapshot()
+            for msg in self._build_panel_snapshot(include_addons=False)
             if msg.get("op") not in _PANEL_OPS_ALREADY_IN_CANVAS and msg.get("op") != "set_interaction_summaries"
         )
         messages.extend(self.interactions._static_messages())
