@@ -905,11 +905,12 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**Measurement integrity — 2026-11-06:** #309–#312 correct signed torsions,
-coordinate-value caches, effective endpoint positions and current-frame Studio
-summaries. #308 and #313 are reopened for compiler and physical-node deletion
-failures detected by complete CI/core receiving; their corrections are being
-received without discarding the failed executions. The
+**Measurement integrity — 2026-11-06:** #308–#313 are corrected in published
+`239c8dd7`, including the compiler and physical-node deletion followups.
+Complete local Python receives 3,569 passes/21 skips/15 Qt deselections and
+all 44 core browser suites pass, with 1,139 unchanged selected inputs and both
+source heads unchanged. Hosted core E2E and all four Linux Python cells pass;
+macOS/source-pair remainder is pending, not full CI or artifact qualification. The
 [receiving receipt](measurement_geometry_receiving_20261106.json) separates 160
 affected Python passes, complete scoped Mol*/widget/both-popup receiving and
 the final core/hosted gates. This is the prerequisite for trustworthy Analysis

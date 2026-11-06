@@ -464,3 +464,6 @@ Completed work, kept for the reasoning:
 - [Measurement coordinate cache](measurement_coordinate_cache.md) — #310 repairs affected live values after accepted coordinate edits without retaining stale numbers.
 - [Measurement effective positions](measurement_effective_positions.md) — #311 returns one effective position per endpoint and focuses every population in the visible structure.
 - [Player measurement summaries](player_measurement_summaries.md) — #312 projects current numerical measures on accepted navigation, including detached Studio.
+
+- [Centroid measurement rendering](centroid_measurement_rendering.md) — #308 aligns arithmetic-centroid geometry and passes real Mol* compiler/complete core receiving.
+- [Measurement reference lifecycle](measurement_reference_lifecycle.md) — #313 removes physical nodes before losing their deletion refs; native and centroid hide/show/delete/history guards pass.

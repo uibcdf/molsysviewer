@@ -1,7 +1,7 @@
 {
   "schema": "molsysviewer.measurement_geometry_receiving@1",
   "date": "2026-11-06",
-  "status": "followup corrections under receiving; 308 and 313 reopened; complete local and hosted gates pending",
+  "status": "source defects resolved at 239c8dd7; complete local and hosted Linux/E2E gates pass; macOS/source-pair/installed scope remains separate",
   "issues": [
     "uibcdf/molsysviewer#308",
     "uibcdf/molsysviewer#309",
@@ -102,7 +102,7 @@
       "log": "/tmp/msv-measurement-lifecycle-js-final-20261106.log"
     },
     "complete_core_browser": {
-      "state": "failed before registry/helper correction; exact final rerun pending",
+      "state": "initial failed receiving retained; subsequent corrected complete result is in followup_1187.final_239",
       "exit_code": 1,
       "seconds": 496.02,
       "failed_suite": "coordinate-edits",
@@ -375,6 +375,57 @@
       "molsysviewer/viewer.js": "75f054e87e3d2202469abe06adaf57cb2479fdc2fc223f1eef7423c6012b7fe1",
       "tests/test_panel_action_dispatch.py": "19d98b45b24fdfd5ab1f2d2d241daa4ae57f2553fb689078361c544737e876e6"
     },
-    "remaining_gate": "Complete Python/core browser and exact new-head hosted CI. Issues 308/313 remain open during this receiving."
+    "remaining_gate": "Corrected full local Python/core receiving passed at 239c8dd7. Hosted macOS and source-pair remainder, owner integration, installed artifacts and postponed human acceptance remain separate.",
+    "final_239": {
+      "viewer": "239c8dd74815a660159a95970e9136d7beebfdd2",
+      "owner": "7c7b92a7c396612671bbebec6b8db3afe97d241c",
+      "complete_python": {
+        "exit_code": 0,
+        "passed": 3569,
+        "skipped": 21,
+        "deselected": 15,
+        "warnings": 1409,
+        "pytest_seconds": 596.32,
+        "wrapper_seconds": 600.784964034101,
+        "selected_inputs": 1139,
+        "selected_inputs_unchanged": true,
+        "heads_unchanged": true,
+        "receipt": "/tmp/msv-measurement-delete-final-python-receipt-20261106.json",
+        "log": "/tmp/msv-measurement-delete-final-python-20261106.log",
+        "scope": "Complete default core collection excluding qt_runtime; native skip reasons retained."
+      },
+      "complete_core_browser": {
+        "exit_code": 0,
+        "passed_suites": 44,
+        "seconds": 1314.0856072318275,
+        "selected_inputs": 1139,
+        "selected_inputs_unchanged": true,
+        "heads_unchanged": true,
+        "receipt": "/tmp/msv-measurement-delete-final-core-receipt-20261106.json",
+        "log": "/tmp/msv-measurement-delete-final-core-20261106.log"
+      },
+      "hosted": {
+        "e2e": {
+          "run": 42262783177,
+          "conclusion": "success",
+          "expected_skip": 1
+        },
+        "python_matrix": {
+          "run": 42262783166,
+          "linux": "4/4 passed (3.11-3.14)",
+          "macos": "4 queued",
+          "expected_skip": 1
+        },
+        "source_pair": {
+          "run": 42262783072,
+          "observed": "one success, one active, macOS queued; no complete source-pair claim"
+        }
+      },
+      "limits": [
+        "No full eight-cell CI claim while macOS is queued",
+        "Source-pair remainder and owner PR integration stay separate",
+        "No installed artifact, human Qt or release qualification"
+      ]
+    }
   }
 }

@@ -1,9 +1,9 @@
 ---
 summary: Centroid measurements render bounding-sphere centers instead of geometric means
 issue: uibcdf/molsysviewer#308
-status: active
+status: resolved
 opened: 2026-11-06
-closed:
+closed: 2026-11-06
 severity: high
 verification: reproduced
 area: [measurements, rendering, trajectory]
@@ -13,7 +13,13 @@ blocked_by: []
 supersedes: []
 ---
 
-# Reopened: centroid measurement adapter compilation
+# Resolved: centroid measurement adapter and compilation
+
+Correction `239c8dd7` passes the complete applicable Python collection and
+all 44 core browser suites, with unchanged recorded sources. Hosted core E2E
+`42262783177` and the four Linux Python 3.11–3.14 cells also pass. This closes
+the geometric and compiler defects; it does not qualify the still-queued macOS
+matrix, the pending exact-source-pair jobs, public artifacts or human Qt.
 
 The geometric correction below is retained. Exact-source CI on `1187fc18`
 additionally rejects the adapter's `tooltip` field at all three native
@@ -30,8 +36,8 @@ two Python files (11.86 s), the JavaScript unit entry and four actual-browser
 suites, including the production context-owner checks. Two old unit assertions
 required the unsupported `tooltip` parameter; they now retain supported style
 and tagged-ownership checks. Actual picking is received in Mol*, not inferred
-from those unit assertions. Complete local and new-head hosted gates remain
-pending; the [followup receipt](../measurement_geometry_receiving_20261106.json)
+from those unit assertions. Subsequent complete local/hosted scope is stated
+above; the [followup receipt](../measurement_geometry_receiving_20261106.json)
 preserves the original failures and distinguishes their inputs.
 
 ## Geometric defect and initial correction

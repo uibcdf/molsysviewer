@@ -19,11 +19,6 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (2)
-
-- [`centroid_measurement_rendering.md`](centroid_measurement_rendering.md) — [#308](https://github.com/uibcdf/molsysviewer/issues/308) — Centroid measurements render bounding-sphere centers instead of geometric means *(high, reproduced)*
-- [`measurement_reference_lifecycle.md`](measurement_reference_lifecycle.md) — [#313](https://github.com/uibcdf/molsysviewer/issues/313) — Measurement visibility cycles retain deleted renderer references *(high, reproduced)*
-
 ### Open (2)
 
 - [`hosted_popup_context_menu_receiving.md`](hosted_popup_context_menu_receiving.md) — [#305](https://github.com/uibcdf/molsysviewer/issues/305) — Diagnose the hosted popup context-menu timeout after fullscreen controls receiving. *(medium, upstream)*

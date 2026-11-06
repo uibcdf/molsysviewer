@@ -1,9 +1,9 @@
 ---
 summary: Measurement visibility cycles retain deleted renderer references
 issue: uibcdf/molsysviewer#313
-status: active
+status: resolved
 opened: 2026-11-06
-closed:
+closed: 2026-11-06
 severity: high
 verification: reproduced
 area: [measurements, lifecycle, picking]
@@ -13,7 +13,18 @@ blocked_by: []
 supersedes: []
 ---
 
-# Reopened: measurement reference lifecycle
+# Resolved: measurement reference lifecycle
+
+Correction `239c8dd7` passes all 44 core browser suites in 1314.086 s and
+the complete applicable Python collection (3,569 passes, 21 skips, 15 Qt
+deselections; pytest 596.32 s, receiving wrapper 600.785 s). All 1,139 selected
+input hashes and both source heads remain unchanged. Hosted core E2E
+`42262783177` and all four Linux Python 3.11–3.14 cells in `42262783166`
+also pass. MacOS and the remaining exact-source-pair jobs are separate pending
+qualification, not part of a full-green CI or publication claim. The failed
+attempts below remain recorded in the [receipt](../measurement_geometry_receiving_20261106.json).
+
+## Reopening and correction
 
 The complete core run on `1187fc18` passes 24 suites, then fails in
 `measures-subpanel`: its old hide assertion expects dead refs to remain
@@ -34,7 +45,8 @@ The failed complete run is retained in
 1,139 selected input hashes and both source heads unchanged. Its remaining
 19 suites did not run. The stronger panel reproduction fails before the fix
 in `/tmp/msv-measures-panel-lifecycle-receiving-20261106.log`. A complete
-corrected core run and updated hosted evidence remain pending.
+corrected core run and updated hosted evidence were pending at reopening;
+their final received scope is stated above.
 
 The correction passes the four affected actual-browser suites (annotations,
 managed coordinate edits and live measurements, measurement panel, scene-object
@@ -42,8 +54,8 @@ panel roundtrip), including real widget/canvas/Studio popups. The measurement
 panel additionally uses nonbonded atoms `[0, 5]`, with independently calculated
 display values `0.277`, `0.312`, `0.322 nm`; a fixture assertion requires the
 first two displayed values to differ. This prevents a fixed covalent distance
-from making a stale frame value unobservable. Complete-gate receiving remains
-separate; see the [followup receipt](../measurement_geometry_receiving_20261106.json).
+from making a stale frame value unobservable. The followup receipt separates
+each scope and retains the preceding failed complete gate.
 
 ## Initial closure and retained evidence
 

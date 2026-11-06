@@ -16,9 +16,10 @@ supersedes: []
 
 ## Analysis and scientific-session receiving — 2026-11-06
 
-Viewer #309–#312 repair numerical measurement boundaries needed by upcoming
-Analysis row actions. #308/#313 are reopened for the remaining compiler and
-physical-node deletion failures; the stronger receiving is in progress.
+Viewer #308–#313 repair measurement boundaries needed by upcoming Analysis
+row actions. Published `239c8dd7` passes complete local Python and all 44 core
+browser suites, plus hosted E2E and all four Linux Python cells. MacOS and the
+remaining source-pair/owner/installed gates are separate pending work.
 [Independent and actual-browser receiving](../measurement_geometry_receiving_20261106.json)
 keeps that source correction distinct from the existing addon/hosted pins;
 Analysis scene adoption is still pending and no approved task family is removed.
