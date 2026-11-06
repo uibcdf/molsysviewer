@@ -71,8 +71,8 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 [A2 / #317](../pending_bugs/direct_state_rejection_erases_scene.md), now passing
 its final 180-case source selection and awaiting hosted receiving.
 A4 is delivered in `611c1574` under [#316](../pending_bugs/failed_factory_retains_owned_view.md),
-with 73 related factory/lifecycle/session/API checks passing; delivery and
-applicable hosted receiving are pending. Keep private handling where
+with 73 related factory/lifecycle/session/API checks passing; applicable hosted
+receiving remains pending. A2 is delivered in `ef7b1348`. Keep private handling where
 appropriate. Safe source investigation and B1's
 existing #314 diagnosis can proceed in parallel. E0 prevents premature cleanup
 or disclosure; it does not require all unrelated development to stop.
@@ -113,6 +113,14 @@ checks (overlapping scopes). It remains outside the completed numerator until
 its recorded delivery/closure conditions are satisfied; see the
 [receiving receipt](../factory_lifecycle_receiving_20261106.json).
 
+Current receiving checkpoint, observed 2026-11-06 UTC; inspect linked runs for
+subsequent transitions rather than reading this dated observation as live CI:
+
+| Work item / delivered source | Local receiving | Hosted receiving still required |
+| --- | --- | --- |
+| A4 / `611c1574aa82538d79e15b93667497fc1f27b9ce` | 73 related cases; causal failure retained | [General CI](https://github.com/uibcdf/molsysviewer/actions/runs/42307829448) and [source pair](https://github.com/uibcdf/molsysviewer/actions/runs/42307829326) queued; [core browser](https://github.com/uibcdf/molsysviewer/actions/runs/42307829340) in progress at observation |
+| A2 / `ef7b134835a539bcd2cf36536aeec131d468aa7c` | 180 combined cases plus 351 documentation/protocol cases; scopes separate | [General CI](https://github.com/uibcdf/molsysviewer/actions/runs/42310818888) and [source pair](https://github.com/uibcdf/molsysviewer/actions/runs/42310818936) queued; [core browser](https://github.com/uibcdf/molsysviewer/actions/runs/42310818882) in progress at observation |
+
 B3.6, B4, E3 and F1 remain separately tracked design decisions, outside this
 denominator until explicitly accepted. Any scope change records its date,
 rationale and the old/new denominator; do not improve the percentage by
@@ -150,7 +158,7 @@ values to the reporting protocol.
 | E0 | Received, 2026-11-06 | Principal maintainer accepted custody/destination; Viewer verified transfer; #315 | [Private inventory, hashes and actual restore received](../robustness_evidence_custody_20261106.json); disclosure and cleanup retain separate controls |
 | A1/A3 | P1 integrity; affected covering artifact and 1.0 | Viewer; scoped reports to be registered under #315 | Sanitized/private triage as appropriate, then real rejection/literal-text guards on the failing paths |
 | A2 | P1 scene rejection; affected covering artifact and 1.0 | Viewer; #317, implemented/source-verified | Final 180-case source selection includes direct/file rejection, real target conflicts and diagnostics; applicable hosted receiving remains |
-| A4 | P2 lifecycle; affected covering artifact and 1.0 | Viewer; #316, implemented/source-verified | Six real failure cases first reproduced the leak; 19 factory and 73 related checks pass. Reviewed delivery and applicable hosted receiving remain |
+| A4 | P2 lifecycle; affected covering artifact and 1.0 | Viewer; #316, delivered/source-verified | Six real failure cases first reproduced the leak; 19 factory and 73 related checks pass. Applicable hosted receiving remains |
 | A5–A6 | P2 investigation; gate depends on established effect | Viewer; scoped record when activated | Reproduce or record a bounded, evidenced disposition; do not delay unrelated fixes waiting for a hypothetical defect |
 | B1–B2 | P1 scientific reading/navigation; affected covering artifact and 1.0 | Viewer; #314 and a scoped precision report | Correlated Python/render acceptance and numerical-label truth; retain original failed runs |
 | B3.1–B3.5 | P2 robustness; applicable candidate/1.0 scope | Viewer; split by mechanism under #315 | Reproduce each inspected path, then receive its window/title/layout/keyboard/cleanup outcome |

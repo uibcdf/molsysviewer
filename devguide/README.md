@@ -51,8 +51,12 @@ under #315 owns the current action order, stable work IDs, evidence boundaries
 and closure criteria. Start with file/state integrity and lifecycle findings,
 then plot authority, scientific figures and integrated receiving. New design
 recommendations remain distinguishable from previously approved task families.
+Execution has started: approved private evidence custody is received; factory
+failure cleanup and non-destructive state validation are delivered with their
+scoped guards. Their hosted receiving remains separate. The active ledger owns
+the progress denominator, current percentage and remaining work.
 
-Current work is the provider-owned Molecular tools workspace: System tasks,
+The retained product scope includes the provider-owned Molecular tools workspace: System tasks,
 Geometry transforms/fitting/bounded periodic tasks, Chemistry inspection and
 preparation, and Analysis distance/neighborhood tasks with explicit core scene
 actions are implemented in contribution source. The expert force/reference
