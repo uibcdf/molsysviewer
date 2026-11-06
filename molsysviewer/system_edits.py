@@ -19,6 +19,7 @@ from ._private.structure_correspondence import normalize_structure_index_map, pr
 
 _INTERNAL = ContextVar("molsysviewer_system_edit_internal", default=None)
 _PREPARING = ContextVar("molsysviewer_system_edit_preparing", default=None)
+_PANEL_READER = ContextVar("molsysviewer_read_only_panel_action", default=None)
 
 # Confirmation may revalidate saved membership while holding the edit lock.
 # These are host-owned readers, not a general exemption for query-like names.
@@ -67,6 +68,19 @@ def _scene_call_guard(args, kwargs, name, *, function=None):
             yield
             return
         if _INTERNAL.get() is manager:
+            yield
+            return
+        reader = _PANEL_READER.get()
+        action = args[2] if len(args) > 2 else kwargs.get("action_id")
+        if (
+            reader is not None
+            and reader[0] is owner
+            and reader[1] == action
+            and name == "handle_action"
+            and manager._state in {"pending", "sync_failed"}
+        ):
+            # Only the declared handler gets through. A nested scene method has
+            # another owner/function and retains the ordinary pending guard.
             yield
             return
         camera_only = type(owner).__module__ == "molsysviewer.viewer.camera" and name in {
@@ -214,6 +228,16 @@ class SystemEditsManager:
             yield
         finally:
             _INTERNAL.reset(token)
+
+    @contextmanager
+    def _panel_reader(self, widget, action):
+        """Admit one declared handler without granting scene/edit privileges."""
+        allowed = self._state in {"pending", "sync_failed"} and action in widget.read_only_actions
+        token = _PANEL_READER.set((widget, action) if allowed else None)
+        try:
+            yield
+        finally:
+            _PANEL_READER.reset(token)
 
     def _view(self):
         view = self._view_ref()

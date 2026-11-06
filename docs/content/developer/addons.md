@@ -423,6 +423,29 @@ same-named consumer overrides. Existing endpoint and widget lifetimes still
 apply. After completed science with projection failure, use the host's
 synchronization recovery; do not repeat the scientific operation.
 
+An interactive panel may declare `read_only_actions = ("inspect", "page")` on
+its `AddonPanelWidget` subclass. The default is empty. While the molecular scene
+is `pending` or `sync_failed`, the host routes only exact declared action IDs
+from that mounted panel and its authenticated endpoint. The payload must be a
+dictionary. Direct widget comms use the same classification. Other action IDs,
+navigation, context queries and result presentation gain no exemption; editing,
+syncing, uncertain, unmounted and closed states remain guarded.
+
+Use `view.addons.manager.system_edits.read(callback)` inside a reader to inspect
+the current primary. Never reuse indices from the old scene while its update is
+pending. The declaration admits the handler only; nested scene methods remain
+blocked even with `skip_digestion=True`. It grants no internal edit privilege.
+The provider is responsible for declaring genuine readers and bounded outputs;
+addon Python is trusted code rather than a security sandbox. Check host
+capability availability before offering a panel that depends on this route,
+and retain separate source and installed-package qualification.
+
+The canvas recovery sheet still blocks pointer/keyboard interaction with the
+underlying Studio controls. Read-only request admission is a source transport
+capability; GUI access during recovery remains incomplete under
+`uibcdf/molsysviewer#304`. Do not advertise an interactive recovery workflow
+from the server declaration alone.
+
 Subscribe to `model.on("viewer:system-sync-changed", callback)` to invalidate
 reviews and refresh bounded context after managed edits. The immutable event
 contains `state`, `operation_id`, `target_revision`, `integration_revision`,

@@ -32,9 +32,12 @@ class AddonPanelWidget(anywidget.AnyWidget):
 
     _esm: str = T.Unicode("").tag(sync=True)
     _css: str = T.Unicode("").tag(sync=True)
+    read_only_actions: tuple[str, ...] = ()
 
     def __init__(self, view: Any = None, **kwargs: Any) -> None:
+        read_only_actions = _normalize_tuple(self.read_only_actions, "AddonPanelWidget.read_only_actions")
         super().__init__(**kwargs)
+        self.read_only_actions = read_only_actions
         self._view = view
         self._addon_name: str | None = None
         self.on_msg(self._route_frontend_message)
@@ -42,13 +45,23 @@ class AddonPanelWidget(anywidget.AnyWidget):
     def _route_frontend_message(self, widget: Any, content: Any, buffers: Any) -> None:
         if not isinstance(content, dict):
             return
+        if getattr(self._view, "closed", False) or (self._view is None and content.get("type") != "query"):
+            return
+        manager = getattr(self._view, "_system_edits", None)
+        if manager is not None and manager._blocked() and not AddonPanelWidget._accepts_pending_action(self, content):
+            manager._notify(self._view)
+            return
         msg_type = content.get("type")
         if msg_type == "action":
-            self.handle_action(
-                self._view,
-                content.get("id", ""),
-                content.get("payload") or {},
-            )
+            if manager is None:
+                self.handle_action(self._view, content.get("id", ""), content.get("payload") or {})
+            else:
+                with manager._locked():
+                    if manager._blocked() and not AddonPanelWidget._accepts_pending_action(self, content):
+                        manager._notify(self._view)
+                        return
+                    with manager._panel_reader(self, content.get("id", "")):
+                        self.handle_action(self._view, content.get("id", ""), content.get("payload") or {})
         elif msg_type == "query" and content.get("id") == "viewer.context":
             self.send({"type": "context", "context": self._build_viewer_context()})
         elif msg_type == "present_view":
@@ -61,6 +74,20 @@ class AddonPanelWidget(anywidget.AnyWidget):
             except Exception as exc:
                 error = str(exc)[:1000]
             self.send({"type": "presentation", "request_id": content.get("request_id"), "error": error})
+
+    def _accepts_pending_action(self, content: Any) -> bool:
+        """Classify a provider-declared reader without admitting scene commands."""
+        manager = getattr(self._view, "_system_edits", None)
+        return (
+            manager is not None
+            and manager._state in {"pending", "sync_failed"}
+            and isinstance(content, dict)
+            and content.get("type") == "action"
+            and isinstance(content.get("id"), str)
+            and isinstance(self.read_only_actions, tuple)
+            and content["id"] in self.read_only_actions
+            and isinstance(content.get("payload", {}), dict)
+        )
 
     def _build_viewer_context(self) -> dict[str, Any]:
         view = self._view

@@ -1451,6 +1451,23 @@ class MolSysView(
                     }
                 )
 
+    def _is_read_only_addon_request(self, content: Mapping[str, Any]) -> bool:
+        """Classify only a currently mounted, endpoint-owned panel action."""
+        from ..addons import AddonPanelWidget
+
+        if content.get("event") != "addon_panel_action":
+            return False
+        endpoint = content.get("_panel_endpoint_id")
+        if endpoint is not None and (not isinstance(endpoint, str) or endpoint not in self._endpoint_transfers.modes):
+            return False
+        active = self._active_panel_widgets.get(endpoint)
+        return bool(
+            active is not None
+            and (content.get("addon"), content.get("panel")) == active[:2]
+            and active[2]._view is self
+            and AddonPanelWidget._accepts_pending_action(active[2], content.get("content"))
+        )
+
     def _handle_frontend_event(self, content: Mapping[str, Any]) -> None:
         with self._system_edits._locked():
             self._handle_frontend_event_guarded(content)
@@ -1482,7 +1499,7 @@ class MolSysView(
                 "camera_snapshot",
                 "panel_unmount",
                 "js_log",
-            }:
+            } and not self._is_read_only_addon_request(content):
                 self._system_edits._notify(self)
                 return
         if event == "widget_resize":

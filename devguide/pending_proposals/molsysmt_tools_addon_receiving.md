@@ -32,8 +32,9 @@ box orientation and near-zero origin unit dependence. The addon implements no
 scientific repair. Temporary lower-triangular/fixed-temporal-cell admission has
 a 2026-11-13-or-owner-fix review/removal checkpoint; #608 remains an unrepaired
 qualification blocker. General periodic support and the cell editor remain
-required. The complete latest-source collection is running; the earlier
-4,568-case Center gate does not qualify this newer source. Owner integration,
+required. The clean published periodic source completed all 4,657 addon cases
+without skips in 1072.21 s; this does not qualify subsequent Chemistry changes.
+Owner integration,
 exact-head hosted, postponed human and installed gates remain pending.
 
 ## Superposition receiving — 2026-11-06

@@ -8,7 +8,8 @@ See [periodic receiving](molsysmt_periodic_receiving_20261106.json) and the
 [current work order](checkpoints.md#what-is-next). The clean prior Center source
 passes the complete 4,568-case addon gate; the periodic slice passes 356 affected
 System/Geometry/PBC cases and seven actual Jupyter scenarios (48 steps). Its
-complete collection is in progress. General periodic/cell qualification remains
+complete collection on clean source dd34c371c passes 4,657 cases without skips
+(1072.21 s). General periodic/cell qualification remains
 partial on native uibcdf/molsysmt#605/#606/#607/#608, with bounded temporary
 source admission and a 2026-11-13 review checkpoint. Continue those and further
 reference/orientation tasks while Rotate receives the native

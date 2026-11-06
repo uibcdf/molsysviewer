@@ -943,8 +943,10 @@ factories remain owned under uibcdf/molsysmt#605/#606/#607/#608. Temporary exact
 lower-triangular/fixed-temporal-cell admission has an explicit 2026-11-13-or-fix
 review/removal checkpoint. General periodic/cell completion remains required.
 The title receiving race (#609) is corrected using presentation acknowledgement;
-exact titles and original scientific assertions remain. A full latest-source
-addon collection is in progress. Continue exact-head CI/owner review and Geometry
+exact titles and original scientific assertions remain. The clean published
+periodic source passes all 4,657 addon cases without skips (1072.21 s), with
+its 2,732 warnings retained. Subsequent Chemistry changes have separate inputs
+and receiving. Continue exact-head CI/owner review and Geometry
 cell, sequence/reference and orientation tasks.
 Rotate awaits the public conversion contract in uibcdf/molsysmt#602; required
 Chemistry and Analysis families remain active work. Installed qualification,
