@@ -100,6 +100,9 @@ their exact gates and temporary-admission review/removal checkpoint. Remaining
 tasks retain their own gates
 in uibcdf/molsysmt#421/uibcdf/molsysviewer#264. Source receiving does not establish
 owner integration, human GUI acceptance or published package compatibility.
+Chemistry's stored-information and hydrogen inspection remains read-only; it
+does not perform molecular preparation. Declared pending-reader transport has
+its own host boundary under #304; recovery-sheet interaction is still pending.
 
 General automatic observation of external MolSysMT/native writes is not a
 requirement of this direction. Direct Python edits need explicit qualified

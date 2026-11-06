@@ -73,6 +73,13 @@ artifact or authorize either 1.0 publication.
 
 ## Broader source qualification — 2026-11-06
 
+Consumer PR #543 delivers its source at
+`9739f8dee1f8c71ae4e0043a19eb67acab8939ad`, pinned to host 63e79096. The
+[Chemistry receipt](../molsysmt_chemistry_receiving_20261106.json) records eight
+actual synchronized Jupyter/Mol*/popup scenarios (55 steps) alongside 363
+native/panel cases. Pending-state pointer/keyboard admission remains incomplete;
+this issue stays open.
+
 The full non-Qt selection initially passed 3,451 cases, with 24 failures and six
 setup errors in the restricted sandbox (531.24 s; 21 skips, 15 Qt deselections).
 The seven affected modules exercised loopback servers, Chromium and nested Node

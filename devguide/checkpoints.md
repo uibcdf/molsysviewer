@@ -908,9 +908,10 @@ previous qualification records retain their original candidate and environment.
 **Current handoff — 2026-11-06:** the owner contribution to
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) now implements
 System / Remove atoms, Extract subset and Copy system, plus Geometry / Translate
-and Center, Superpose structures and bounded periodic coordinate tasks, at
-`dd34c371cbe78ba2ddd884266c0915d0783fb831`.
-The [periodic receiving record](molsysmt_periodic_receiving_20261106.json) separates
+and Center, Superpose structures and bounded periodic coordinate tasks, plus
+Chemistry stored-information/hydrogen inspection, at
+`9739f8dee1f8c71ae4e0043a19eb67acab8939ad`.
+The [Chemistry receiving record](molsysmt_chemistry_receiving_20261106.json) separates
 native numerical checks, host tests, actual Jupyter/Mol*/popup receiving and
 remaining hosted/installed/human gates. Expert paths/defaults and native
 scientific algorithms are unchanged. Host #302 permits atomic selection
@@ -948,8 +949,17 @@ periodic source passes all 4,657 addon cases without skips (1072.21 s), with
 its 2,732 warnings retained. Subsequent Chemistry changes have separate inputs
 and receiving. Continue exact-head CI/owner review and Geometry
 cell, sequence/reference and orientation tasks.
+Chemistry passes 42 focused cases within 363 native/panel controls, 65 route/
+reporting/course guards and all eight actual Jupyter/Mol*/popup scenarios
+(55 steps, 355.50 s). The two explicit-state native reports have bounded
+source-index pages, native coverage/unknowns and no preparation or scene
+effects. Viewer 63e79096 adds declared pending-reader transport, pinned in all
+five owner routes; #304 remains partial because the recovery sheet still
+blocks pointer/keyboard access. The host's restricted full-core failures were
+received with approved permissions in the seven affected modules (64 passed,
+one existing skip), preserving the original 3,451-pass run and failures.
 Rotate awaits the public conversion contract in uibcdf/molsysmt#602; required
-Chemistry and Analysis families remain active work. Installed qualification,
+Chemistry preparation/construction and Analysis families remain active work. Installed qualification,
 broad documentation and a future candidate remain separate. 0.25.0 is unfrozen and both 1.0 publications
 remain paused. Earlier dated receipts retain their original source identities.
 

@@ -8,11 +8,41 @@ verification: inspected
 area: [addons, editing, api]
 guard:
 normative:
-blocked_by: [uibcdf/molsysmt#602, uibcdf/molsysmt#605, uibcdf/molsysmt#606, uibcdf/molsysmt#607, uibcdf/molsysmt#608]
+blocked_by: [uibcdf/molsysmt#602, uibcdf/molsysmt#605, uibcdf/molsysmt#606, uibcdf/molsysmt#607, uibcdf/molsysmt#608, uibcdf/molsysviewer#304]
 supersedes: []
 ---
 
 # Receiving the redesigned MolSysMT tools addon
+
+## Chemistry inspection receiving — 2026-11-06
+
+The packaging follow-up 9739f8dee adds exactly the two reviewed Chemistry
+modules to the explicit distribution inventory. Smoke run 42208445163 on
+408195fe8 failed before science (35 preflight passes, one missing-inventory
+failure); all 36 exact preflight cases now pass locally. Scientific/GUI inputs
+remain those of 408195fe8; hosted recovery is pending. The original failure
+and source-qualified results are retained separately.
+
+Owner PR #543 publishes `9739f8dee1f8c71ae4e0043a19eb67acab8939ad`, with two
+explicit-state native chemical-readiness/hydrogen reports. The
+[receipt](../molsysmt_chemistry_receiving_20261106.json) retains 42 focused cases,
+363 native/panel controls, 65 route/reporting/course guards and eight actual
+Jupyter/Mol*/popup scenarios (55 steps). Unknown counts, native coverage,
+connectivity scope, explicit units and unassessed checks stay distinct. One
+private mounted report supplies bounded 50-row pages; no preparation, molecular
+edit, scene adoption or generic H5MSM store follows. Original course code,
+outputs, IDs and metadata remain unchanged.
+
+Controlled host 63e79096 adds incoming declared reader transport under Viewer
+#304. The two requests rejected by the old guard now pass; source/scene indices
+remain separated during pending synchronization. The recovery sheet still
+blocks pointer/keyboard access, so #304 remains partial and active. All five
+owner source routes pin the published host; public package floors and installed
+compatibility are unchanged. Owner/latest-hosted/full-new-source, postponed
+human and installed gates remain pending. The earlier clean periodic source
+passed all 4,657 addon cases; that result does not qualify the new Chemistry
+source. Preparation/construction, Analysis and full-session persistence remain
+required work.
 
 ## Periodic coordinate receiving — 2026-11-06
 
