@@ -93,7 +93,11 @@ mirrors the qualified scientific module/function paths under
 `view.addons.molsysmt`, with lazy per-view state and closed-view guards. The
 [implementation plan](molsysmt_tools_addon_plan.md) links the dated inventory and
 receiving for each admitted family. Source panels offer System removal,
-extraction/copy and Geometry translation; remaining tasks retain their own gates
+extraction/copy and Geometry translation, centering and rigid fitting. Periodic
+coordinate tools have a bounded experimental source profile, with general-cell
+and unit-policy defects still owned by MolSysMT. The implementation plan retains
+their exact gates and temporary-admission review/removal checkpoint. Remaining
+tasks retain their own gates
 in uibcdf/molsysmt#421/uibcdf/molsysviewer#264. Source receiving does not establish
 owner integration, human GUI acceptance or published package compatibility.
 

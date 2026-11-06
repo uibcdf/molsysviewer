@@ -55,6 +55,17 @@ not qualify remote notebook output or native Qt windows. The initial source
 probe confirmed that ordinary new_view(native_result) makes another independent
 coordinate copy; no zero-copy or large-trajectory RAM bound is promised here.
 
+## Window acknowledgement receiving — 2026-11-06
+
+The source consumer under MolSysMT PR #543 now waits for the actual presentation
+acknowledgement before checking custom window titles (uibcdf/molsysmt#609).
+The child loading marker alone was too early; no Viewer runtime change was
+needed. The [periodic receiving record](../molsysmt_periodic_receiving_20261106.json)
+retains the original failure and seven passing actual Jupyter/Mol*/popup
+scenarios, including extract/copy, Translate, Center, fitting and periodic
+independent Views. Human visible-host acceptance and installed qualification
+remain postponed/pending; this does not close the broader presentation issue.
+
 ## Validation
 
 Source implementation passes 359 host boundary cases (including the eight

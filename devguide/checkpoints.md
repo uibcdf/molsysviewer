@@ -908,9 +908,9 @@ previous qualification records retain their original candidate and environment.
 **Current handoff — 2026-11-06:** the owner contribution to
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) now implements
 System / Remove atoms, Extract subset and Copy system, plus Geometry / Translate
-and Center, plus Superpose structures, at
-`de8cc8605bc23a0f86c5f7e3a02294142ef944be`.
-The [superposition receiving record](molsysmt_fit_receiving_20261106.json) separates
+and Center, Superpose structures and bounded periodic coordinate tasks, at
+`dd34c371cbe78ba2ddd884266c0915d0783fb831`.
+The [periodic receiving record](molsysmt_periodic_receiving_20261106.json) separates
 native numerical checks, host tests, actual Jupyter/Mol*/popup receiving and
 remaining hosted/installed/human gates. Expert paths/defaults and native
 scientific algorithms are unchanged. Host #302 permits atomic selection
@@ -934,8 +934,18 @@ trajectory arrays and actual Mol* positions against an independent SVD oracle.
 The GUI distinguishes moving atoms from fitting atoms and declares its
 same-system initial reference and positional correspondence. The expert API
 retains external references. The prior complete gate does not certify a full
-run on the newer slice. Continue exact-head CI/owner review and Geometry
-periodic/cell, sequence/reference and orientation tasks.
+run on the newer slice. The periodic slice passes 356 affected System/Geometry/
+PBC cases and 63 route/reporting controls; all seven actual Jupyter/Mol*/popup
+scenarios pass (48 steps, 322.92 s). Native near-zero reference points still
+depend on application units (#608); no addon scientific repair is supplied.
+General cell support, varying-cell temporal unwrapping and physical box
+factories remain owned under uibcdf/molsysmt#605/#606/#607/#608. Temporary exact
+lower-triangular/fixed-temporal-cell admission has an explicit 2026-11-13-or-fix
+review/removal checkpoint. General periodic/cell completion remains required.
+The title receiving race (#609) is corrected using presentation acknowledgement;
+exact titles and original scientific assertions remain. A full latest-source
+addon collection is in progress. Continue exact-head CI/owner review and Geometry
+cell, sequence/reference and orientation tasks.
 Rotate awaits the public conversion contract in uibcdf/molsysmt#602; required
 Chemistry and Analysis families remain active work. Installed qualification,
 broad documentation and a future candidate remain separate. 0.25.0 is unfrozen and both 1.0 publications

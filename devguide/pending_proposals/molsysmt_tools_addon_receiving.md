@@ -8,11 +8,33 @@ verification: inspected
 area: [addons, editing, api]
 guard:
 normative:
-blocked_by: []
+blocked_by: [uibcdf/molsysmt#602, uibcdf/molsysmt#605, uibcdf/molsysmt#606, uibcdf/molsysmt#607, uibcdf/molsysmt#608]
 supersedes: []
 ---
 
 # Receiving the redesigned MolSysMT tools addon
+
+## Periodic coordinate receiving — 2026-11-06
+
+PR #543 publishes `dd34c371cbe78ba2ddd884266c0915d0783fb831`, adding reviewed
+Wrap coordinates and Unwrap trajectory through public native operations and
+the existing current-edit/independent-result adapters. Explicit reference points,
+units, component/atomwise grouping, selected structure order, coverage and fixed
+boxes retain their native semantics. The [receipt](../molsysmt_periodic_receiving_20261106.json)
+records 58 periodic panel cases within 356 affected System/Geometry/PBC cases,
+63 route/reporting controls and seven actual Jupyter/Mol*/popup scenarios
+(48 steps). A title receiving race, uibcdf/molsysmt#609, is corrected by waiting
+for actual presentation acknowledgement, retaining exact titles and deadlines.
+
+Periodic readiness remains partial: native uibcdf/molsysmt#605/#606/#607/#608
+cover invalid cell factories, changing-cell temporal classification, rotated
+box orientation and near-zero origin unit dependence. The addon implements no
+scientific repair. Temporary lower-triangular/fixed-temporal-cell admission has
+a 2026-11-13-or-owner-fix review/removal checkpoint; #608 remains an unrepaired
+qualification blocker. General periodic support and the cell editor remain
+required. The complete latest-source collection is running; the earlier
+4,568-case Center gate does not qualify this newer source. Owner integration,
+exact-head hosted, postponed human and installed gates remain pending.
 
 ## Superposition receiving — 2026-11-06
 
