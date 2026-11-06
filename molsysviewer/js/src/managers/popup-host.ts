@@ -273,6 +273,13 @@ export class PopupHostManager {
 
         // Monitor closure
         const interval = window.setInterval(() => {
+            // A newer window may already own this mode. An old monitor must
+            // never clear its channel or continue polling its replacement.
+            if (this.channels.get(mode)?.popupEndpointId !== channel.popupEndpointId) {
+                this.router.unregisterEndpoint(channel.popupEndpointId);
+                window.clearInterval(interval);
+                return;
+            }
             if (mode === "canvas") {
                 if (!this.popoutWin || this.popoutWin.closed) {
                     const current = this.channels.get("canvas");

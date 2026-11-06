@@ -345,14 +345,19 @@ host transport. Return that View or `None`; do not create another transport,
 display implicitly or start an event loop. Failure closes partial resources.
 Native scientific wrappers keep their return types; `view.extract` continues
 returning a View with its scene-transfer policy.
+Initialize from an already calculated, independently owned result; this host
+service does not serialize arbitrary scientific inputs or observe external edits.
 
 After calculation, a panel may call
 `await model.present_view(handle, "notebook")` or
 `await model.present_view(handle, "window")`. Offer notebook only for a notebook
 host. A successful promise acknowledges presentation, not scientific
 qualification. A fresh browser click reserves the external window; failure
-retains the result and permits retry. Reopening the same destination reuses the
-View. Once shown below the source, use that View's canvas popup to detach it.
+retains the result and permits retry. Reopening or changing destination reuses
+the View. Moving back to the notebook closes its external presentation and
+preserves the scientific data. Its ordinary canvas popup is also available.
+An optional resolved string explains delivery hidden by fullscreen; a panel
+should display that notice instead of claiming that the result is visible.
 
 Jupyter displays results below the source output or uses an independent View's
 own popup transport with a sized offscreen authority. Both depend on the same

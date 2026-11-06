@@ -27,10 +27,15 @@ def test_preparation_is_headless_independent_and_keeps_native_return_types():
         extracted = msm.pyunitwizard.get_value(result.molsys.structures.coordinates, to_unit="nm")
         assert not np.shares_memory(original, extracted)
         np.testing.assert_equal(extracted, original[[2, 0], :3])
+        source.player.go_to_structure(2)
+        result.player.go_to_structure(1)
+        assert source.player.index == 2
+        assert result.player.index == 1
         assert service.records()[0]["state"] == "prepared"
         assert service._output is None
         assert handle not in _OPEN_PRESENTATIONS
         assert not source.widget.presentation_host_id
+        service.close(handle)
         service.close(handle)
         assert result.closed
         assert service.records() == []
@@ -67,7 +72,10 @@ def test_browser_ack_and_retry_reuse_result_and_source_close_preserves_it():
     assert service.get(handle) is result
     assert service.records()[0]["destination"] is None
     surface._route(surface, {"type": "show", "id": handle, "destination": "notebook", "request_id": 2}, [])
+    service._show(handle, "notebook", request=2, client_id="another-output")
     surface._route(surface, {"type": "shown", "id": handle, "request_id": 2}, [])
+    assert service.records()[0]["state"] == "opening"
+    surface._route(surface, {"type": "shown", "id": handle, "request_id": 2, "client_id": "another-output"}, [])
     assert service.records()[0]["state"] == "shown"
     source.close()
     assert not result.closed

@@ -1046,8 +1046,14 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
             ),
         });
         const enablePopout = !!model.get("enable_popout");
+        (el as any).molsysviewerClosePopup = () => popupMgr.close("canvas");
         (el as any).molsysviewerOpenPopup = async (win: Window) => {
             await controllerPromise;
+            if (popupMgr.popoutWin && !popupMgr.popoutWin.closed) {
+                if (popupMgr.popoutWin !== win) win.close();
+                popupMgr.popoutWin.focus();
+                return popupMgr.popoutWin;
+            }
             await popupMgr.open("canvas", win);
             const deadline = Date.now() + 30000;
             while (!popupMgr.isReady && !win.closed && !disposed && Date.now() < deadline) {
@@ -1057,6 +1063,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                 win.close();
                 throw new Error("The result window did not become ready. Try again without recalculating.");
             }
+            return win;
         };
         const openPanelPopup = (preopenedWindow?: Window | null, panel?: "navigate" | "addons") => {
             controllerPromise.then(async c => {

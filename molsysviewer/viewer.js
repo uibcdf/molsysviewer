@@ -138884,6 +138884,68 @@ var PluginContext = class {
   }
 };
 
+// src/messages/popup-channel.ts
+var POPUP_CHANNEL_PROTOCOL_VERSION = 1;
+function nonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+function createSecureRuntimeId(prefix2) {
+  const cryptography = globalThis.crypto;
+  const uuid = cryptography?.randomUUID?.();
+  if (uuid) return `${prefix2}-${uuid}`;
+  if (!cryptography?.getRandomValues) {
+    throw new Error("Secure popup channel identity requires Web Crypto");
+  }
+  const words = cryptography.getRandomValues(new Uint32Array(4));
+  return `${prefix2}-${[...words].map((word) => word.toString(16).padStart(8, "0")).join("")}`;
+}
+function createPopupChannelIdentity(viewerId, sessionId, mode, authorityEndpointId = "python", hostEndpointId = "host") {
+  if (!nonEmptyString(viewerId) || !nonEmptyString(sessionId) || !nonEmptyString(authorityEndpointId) || !nonEmptyString(hostEndpointId)) {
+    throw new Error("Popup channel requires viewer, session, authority, and host identity");
+  }
+  return {
+    protocolVersion: POPUP_CHANNEL_PROTOCOL_VERSION,
+    viewerId,
+    sessionId,
+    authorityEndpointId,
+    hostEndpointId,
+    popupEndpointId: createSecureRuntimeId(mode === "canvas" ? "canvas-popup" : "panel-popup"),
+    token: createSecureRuntimeId("token"),
+    mode
+  };
+}
+function isPopupChannelIdentity(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const channel = value;
+  return channel.protocolVersion === POPUP_CHANNEL_PROTOCOL_VERSION && nonEmptyString(channel.viewerId) && nonEmptyString(channel.sessionId) && nonEmptyString(channel.authorityEndpointId) && nonEmptyString(channel.hostEndpointId) && nonEmptyString(channel.popupEndpointId) && nonEmptyString(channel.token) && (channel.mode === "canvas" || channel.mode === "panel");
+}
+function samePopupChannel(actual, expected) {
+  if (!isPopupChannelIdentity(actual)) return false;
+  return actual.viewerId === expected.viewerId && actual.sessionId === expected.sessionId && actual.authorityEndpointId === expected.authorityEndpointId && actual.hostEndpointId === expected.hostEndpointId && actual.popupEndpointId === expected.popupEndpointId && actual.token === expected.token && actual.mode === expected.mode;
+}
+function encodePopupMessage(channel, envelope) {
+  return { channel, envelope };
+}
+function popupTargetOrigin(location2) {
+  const origin = location2?.origin;
+  return location2?.protocol === "file:" || !origin || origin === "null" || origin === "file://" ? "*" : origin;
+}
+function decodePopupMessage(value, expected) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const message = value;
+  if (!samePopupChannel(message.channel, expected)) return null;
+  if (!message.envelope || typeof message.envelope !== "object") return null;
+  return message;
+}
+function decodePopupEvent(event, expectedSource, expectedChannel, expectedEndpointIds) {
+  if (event.source !== expectedSource) return null;
+  const message = decodePopupMessage(event.data, expectedChannel);
+  if (!message || expectedEndpointIds && !expectedEndpointIds.has(message.envelope.endpointId)) {
+    return null;
+  }
+  return message;
+}
+
 // node_modules/molstar/lib/mol-plugin-state/animation/built-in/assembly-unwind.js
 var AnimateAssemblyUnwind = PluginStateAnimation.create({
   name: "built-in.animate-assembly-unwind",
@@ -169062,7 +169124,7 @@ var MolSysViewerController = class _MolSysViewerController {
               const open = this.presentResult || window.molsysviewer_present_result;
               if (open) return open(id, destination);
               return new Promise((resolve, reject) => {
-                const request = crypto.randomUUID();
+                const request = createSecureRuntimeId("presentation-request");
                 const timer2 = setTimeout(() => {
                   remove3();
                   reject(new Error("The host did not present the result."));
@@ -170586,68 +170648,6 @@ function frontendSceneProjection(event) {
   return null;
 }
 
-// src/messages/popup-channel.ts
-var POPUP_CHANNEL_PROTOCOL_VERSION = 1;
-function nonEmptyString(value) {
-  return typeof value === "string" && value.trim().length > 0;
-}
-function createSecureRuntimeId(prefix2) {
-  const cryptography = globalThis.crypto;
-  const uuid = cryptography?.randomUUID?.();
-  if (uuid) return `${prefix2}-${uuid}`;
-  if (!cryptography?.getRandomValues) {
-    throw new Error("Secure popup channel identity requires Web Crypto");
-  }
-  const words = cryptography.getRandomValues(new Uint32Array(4));
-  return `${prefix2}-${[...words].map((word) => word.toString(16).padStart(8, "0")).join("")}`;
-}
-function createPopupChannelIdentity(viewerId, sessionId, mode, authorityEndpointId = "python", hostEndpointId = "host") {
-  if (!nonEmptyString(viewerId) || !nonEmptyString(sessionId) || !nonEmptyString(authorityEndpointId) || !nonEmptyString(hostEndpointId)) {
-    throw new Error("Popup channel requires viewer, session, authority, and host identity");
-  }
-  return {
-    protocolVersion: POPUP_CHANNEL_PROTOCOL_VERSION,
-    viewerId,
-    sessionId,
-    authorityEndpointId,
-    hostEndpointId,
-    popupEndpointId: createSecureRuntimeId(mode === "canvas" ? "canvas-popup" : "panel-popup"),
-    token: createSecureRuntimeId("token"),
-    mode
-  };
-}
-function isPopupChannelIdentity(value) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
-  const channel = value;
-  return channel.protocolVersion === POPUP_CHANNEL_PROTOCOL_VERSION && nonEmptyString(channel.viewerId) && nonEmptyString(channel.sessionId) && nonEmptyString(channel.authorityEndpointId) && nonEmptyString(channel.hostEndpointId) && nonEmptyString(channel.popupEndpointId) && nonEmptyString(channel.token) && (channel.mode === "canvas" || channel.mode === "panel");
-}
-function samePopupChannel(actual, expected) {
-  if (!isPopupChannelIdentity(actual)) return false;
-  return actual.viewerId === expected.viewerId && actual.sessionId === expected.sessionId && actual.authorityEndpointId === expected.authorityEndpointId && actual.hostEndpointId === expected.hostEndpointId && actual.popupEndpointId === expected.popupEndpointId && actual.token === expected.token && actual.mode === expected.mode;
-}
-function encodePopupMessage(channel, envelope) {
-  return { channel, envelope };
-}
-function popupTargetOrigin(location2) {
-  const origin = location2?.origin;
-  return location2?.protocol === "file:" || !origin || origin === "null" || origin === "file://" ? "*" : origin;
-}
-function decodePopupMessage(value, expected) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
-  const message = value;
-  if (!samePopupChannel(message.channel, expected)) return null;
-  if (!message.envelope || typeof message.envelope !== "object") return null;
-  return message;
-}
-function decodePopupEvent(event, expectedSource, expectedChannel, expectedEndpointIds) {
-  if (event.source !== expectedSource) return null;
-  const message = decodePopupMessage(event.data, expectedChannel);
-  if (!message || expectedEndpointIds && !expectedEndpointIds.has(message.envelope.endpointId)) {
-    return null;
-  }
-  return message;
-}
-
 // ../runtime_actions.json
 var runtime_actions_default = {
   protocol_version: 1,
@@ -171973,6 +171973,11 @@ var PopupHostManager = class {
       console.error("[MolSysViewer Host] Failed to inject viewer to popup:", err);
     }
     const interval = window.setInterval(() => {
+      if (this.channels.get(mode)?.popupEndpointId !== channel.popupEndpointId) {
+        this.router.unregisterEndpoint(channel.popupEndpointId);
+        window.clearInterval(interval);
+        return;
+      }
       if (mode === "canvas") {
         if (!this.popoutWin || this.popoutWin.closed) {
           const current2 = this.channels.get("canvas");
@@ -172162,6 +172167,7 @@ var presentationSurface = {
     sourceHost.appendChild(sourceView.el);
     sourceView.trigger?.("displayed");
     const id = model.model_id || sourceModel.get("presentation_host_id");
+    const clientId = createSecureRuntimeId("presentation");
     let disposed = false, sequence = 0, queue = Promise.resolve();
     const entries3 = /* @__PURE__ */ new Map();
     const reservations = /* @__PURE__ */ new Map();
@@ -172179,6 +172185,10 @@ var presentationSurface = {
       const api = await popupApi(sourceView.el, "[data-molsysviewer-canvas-output]");
       api.molsysviewerOnPopupClosed = () => el.molsysviewerOnPopupClosed?.();
       return api.molsysviewerOpenPopup(win);
+    };
+    el.molsysviewerClosePopup = async () => {
+      const api = await popupApi(sourceView.el, "[data-molsysviewer-canvas-output]");
+      api.molsysviewerClosePopup();
     };
     const open = (resultId, destination) => {
       if (disposed) return Promise.reject(new Error("The notebook output has been removed."));
@@ -172204,15 +172214,16 @@ var presentationSurface = {
           reject(new Error("Presentation did not complete. The result can be recovered from Python."));
         }, 6e4);
         requests.set(request, { resolve, reject, timer: timer2 });
-        model.send({ type: "show", id: resultId, destination, request_id: request });
+        model.send({ type: "show", id: resultId, destination, request_id: request, client_id: clientId });
       });
     };
     surfaces.set(id, open);
     async function synchronize() {
       if (disposed) return;
-      const items = model.get("items") || [];
+      const items = (model.get("items") || []).filter((item2) => item2.client_id === clientId);
       const live = new Set(items.map((item2) => item2.id));
       for (const [key2, entry] of entries3) if (!live.has(key2)) {
+        entry.retired = true;
         entry.view.remove();
         entry.element.remove();
         entry.win?.close();
@@ -172249,6 +172260,7 @@ var presentationSurface = {
           }
           if (entry.request === item2.request_id) continue;
           entry.request = item2.request_id;
+          entry.destination = item2.destination;
           if (item2.destination === "window") {
             const win = reservations.get(item2.id);
             if (!win || win.closed) throw new Error("Click Open in new window to grant browser permission.");
@@ -172256,19 +172268,35 @@ var presentationSurface = {
             if (!entry.win || entry.win.closed) {
               entry.element.style.cssText = "position:fixed;left:-100000px;top:0;width:960px;height:520px";
               const child = await popupApi(entry.view.el, "[data-molsysviewer-presentation-surface]");
-              await child.molsysviewerOpenPopup(win);
+              const opened = await child.molsysviewerOpenPopup(win);
               child.molsysviewerOnPopupClosed = () => {
-                if (!disposed) model.send({ type: "close", id: item2.id });
+                if (!disposed && !entry.retired && entry.destination === "window") model.send({ type: "close", id: item2.id });
               };
-              entry.win = win;
-              win.document.title = item2.title;
+              entry.win = opened || win;
+              entry.win.document.title = item2.title;
             } else entry.win.focus();
-          } else entry.element.scrollIntoView({ block: "nearest" });
-          model.send({ type: "shown", id: item2.id, request_id: item2.request_id });
+          } else {
+            if (entry.win) {
+              const child = await popupApi(entry.view.el, "[data-molsysviewer-presentation-surface]");
+              await child.molsysviewerClosePopup();
+            }
+            entry.win?.close();
+            entry.win = null;
+            entry.element.style.cssText = "";
+            entry.element.scrollIntoView({ block: "nearest" });
+          }
+          const hiddenByFullscreen = item2.destination === "notebook" && document.fullscreenElement && !document.fullscreenElement.contains(entry.element);
+          model.send({
+            type: "shown",
+            id: item2.id,
+            request_id: item2.request_id,
+            client_id: clientId,
+            notice: hiddenByFullscreen ? "Result added to the notebook. Leave fullscreen to see it." : ""
+          });
         } catch (error2) {
           reservations.get(item2.id)?.close();
           reservations.delete(item2.id);
-          model.send({ type: "shown", id: item2.id, request_id: item2.request_id, error: String(error2) });
+          model.send({ type: "shown", id: item2.id, request_id: item2.request_id, client_id: clientId, error: String(error2) });
         }
       }
       sourceHost.hidden = model.get("source_closed") === true;
@@ -172277,13 +172305,13 @@ var presentationSurface = {
       queue = queue.then(synchronize).catch((error2) => console.error("Result presentation failed", error2));
     };
     const response = (message) => {
-      if (message?.type !== "response") return;
+      if (message?.type !== "response" || message.client_id !== clientId) return;
       const pending = requests.get(message.request_id);
       if (!pending) return;
       clearTimeout(pending.timer);
       requests.delete(message.request_id);
       if (message.error) pending.reject(new Error(message.error));
-      else pending.resolve();
+      else pending.resolve(message.notice);
     };
     model.on("change:items", changed);
     model.on("change:source_closed", changed);
@@ -175634,8 +175662,14 @@ function render({ model, el, runtimeSource }) {
     )
   });
   const enablePopout = !!model.get("enable_popout");
+  el.molsysviewerClosePopup = () => popupMgr.close("canvas");
   el.molsysviewerOpenPopup = async (win) => {
     await controllerPromise;
+    if (popupMgr.popoutWin && !popupMgr.popoutWin.closed) {
+      if (popupMgr.popoutWin !== win) win.close();
+      popupMgr.popoutWin.focus();
+      return popupMgr.popoutWin;
+    }
     await popupMgr.open("canvas", win);
     const deadline = Date.now() + 3e4;
     while (!popupMgr.isReady && !win.closed && !disposed && Date.now() < deadline) {
@@ -175645,6 +175679,7 @@ function render({ model, el, runtimeSource }) {
       win.close();
       throw new Error("The result window did not become ready. Try again without recalculating.");
     }
+    return win;
   };
   const openPanelPopup = (preopenedWindow, panel) => {
     controllerPromise.then(async (c8) => {

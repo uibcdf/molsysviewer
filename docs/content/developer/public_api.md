@@ -198,6 +198,13 @@ The user-facing translation table is in
   - unresolved managed edits block ordinary scene actions and load; raw external
     MolSysMT calls/array edits are not observed automatically
 - `extract(...)` — returns a new **view** of a structural subset, with the scene migrated
+- `addons.manager.presentations` — experimental source integration for independent
+  result Views: `prepare(initializer, title=...)`, `get(presentation_id)`,
+  `records()`, idempotent `close(presentation_id)` and host `destinations`.
+  Preparation returns a handle without displaying; `get` returns its View.
+  [The addon author contract](addons.md) defines explicit notebook/window
+  presentation and lifetime. Native addon extraction/copy still return molecular
+  data, and scientific wrappers never display implicitly.
 - `info(output_type="styler" | "dataframe" | "dictionary")`
   - **the scene**: one row per scene object across whole, loads, styles, regions,
     annotations, layers and the active selection. It says nothing about the molecular

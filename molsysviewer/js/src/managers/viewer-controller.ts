@@ -1,5 +1,6 @@
 import { getFloatingPanelSize } from "../ui/floating-panel-layout";
 import { PluginContext } from "molstar/lib/mol-plugin/context";
+import { createSecureRuntimeId } from "../messages/popup-channel";
 import { DefaultPluginSpec } from "molstar/lib/mol-plugin/spec";
 import { PluginBehaviors } from "molstar/lib/mol-plugin/behavior";
 import { StateObjectRef } from "molstar/lib/mol-state";
@@ -580,7 +581,7 @@ export function createMolSysViewerPluginSpec() {
 const CONTEXT_MENU_DRAG_THRESHOLD_PX = 5;
 
 export class MolSysViewerController {
-    presentResult?: (id: string, destination: "notebook" | "window") => Promise<void>;
+    presentResult?: (id: string, destination: "notebook" | "window") => Promise<string | void>;
     private readonly contextMenu: ViewerContextMenu;
     private readonly measurementTools: MeasurementToolController;
     private readonly activeSelection: ActiveSelectionController;
@@ -3064,7 +3065,7 @@ export class MolSysViewerController {
                             // Native Qt uses the same panel route; its host owns
                             // the new window and QApplication lifetime.
                             return new Promise<void>((resolve, reject) => {
-                                const request = crypto.randomUUID();
+                                const request = createSecureRuntimeId("presentation-request");
                                 const timer = setTimeout(() => { remove(); reject(new Error("The host did not present the result.")); }, 30000);
                                 const receive = (message: any) => {
                                     if (message?.type !== "presentation" || message.request_id !== request) return;

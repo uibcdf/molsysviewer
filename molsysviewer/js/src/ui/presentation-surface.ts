@@ -1,9 +1,10 @@
 /** Independent View presentation; molecular data stay in each View's own model. */
+import { createSecureRuntimeId } from "../messages/popup-channel";
 type Destination = "notebook" | "window";
-type OpenResult = (id: string, destination: Destination) => Promise<void>;
+type OpenResult = (id: string, destination: Destination) => Promise<string | void>;
 const surfaces = new Map<string, OpenResult>();
 
-export function presentResult(hostId: string, id: string, destination: Destination): Promise<void> {
+export function presentResult(hostId: string, id: string, destination: Destination): Promise<string | void> {
     const open = surfaces.get(hostId);
     if (!open) return Promise.reject(new Error("The notebook output is unavailable. Display the source View again."));
     return open(id, destination);
@@ -22,10 +23,11 @@ export const presentationSurface = {
         sourceHost.appendChild(sourceView.el);
         sourceView.trigger?.("displayed");
         const id = model.model_id || sourceModel.get("presentation_host_id");
+        const clientId = createSecureRuntimeId("presentation");
         let disposed = false, sequence = 0, queue = Promise.resolve();
         const entries = new Map<string, any>();
         const reservations = new Map<string, Window>();
-        const requests = new Map<number, { resolve(): void; reject(error: Error): void; timer: any }>();
+        const requests = new Map<number, { resolve(notice?: string): void; reject(error: Error): void; timer: any }>();
 
         async function popupApi(element: HTMLElement, selector: string): Promise<any> {
             const deadline = Date.now() + 30000;
@@ -40,6 +42,10 @@ export const presentationSurface = {
             const api = await popupApi(sourceView.el, "[data-molsysviewer-canvas-output]");
             api.molsysviewerOnPopupClosed = () => (el as any).molsysviewerOnPopupClosed?.();
             return api.molsysviewerOpenPopup(win);
+        };
+        (el as any).molsysviewerClosePopup = async () => {
+            const api = await popupApi(sourceView.el, "[data-molsysviewer-canvas-output]");
+            api.molsysviewerClosePopup();
         };
 
         const open: OpenResult = (resultId, destination) => {
@@ -57,7 +63,7 @@ export const presentationSurface = {
                 reservations.set(resultId, win);
             }
             const request = ++sequence;
-            return new Promise<void>((resolve, reject) => {
+            return new Promise<string | void>((resolve, reject) => {
                 const timer = setTimeout(() => {
                     requests.delete(request);
                     const win = reservations.get(resultId);
@@ -66,17 +72,17 @@ export const presentationSurface = {
                     reject(new Error("Presentation did not complete. The result can be recovered from Python."));
                 }, 60000);
                 requests.set(request, { resolve, reject, timer });
-                model.send({ type: "show", id: resultId, destination, request_id: request });
+                model.send({ type: "show", id: resultId, destination, request_id: request, client_id: clientId });
             });
         };
         surfaces.set(id, open);
 
         async function synchronize() {
             if (disposed) return;
-            const items = model.get("items") || [];
+            const items = (model.get("items") || []).filter((item: any) => item.client_id === clientId);
             const live = new Set(items.map((item: any) => item.id));
             for (const [key, entry] of entries) if (!live.has(key)) {
-                entry.view.remove(); entry.element.remove(); entry.win?.close(); entries.delete(key);
+                entry.retired = true; entry.view.remove(); entry.element.remove(); entry.win?.close(); entries.delete(key);
             }
             for (const item of items) {
                 if (disposed) return;
@@ -104,6 +110,7 @@ export const presentationSurface = {
                     }
                     if (entry.request === item.request_id) continue;
                     entry.request = item.request_id;
+                    entry.destination = item.destination;
                     if (item.destination === "window") {
                         const win = reservations.get(item.id);
                         if (!win || win.closed) throw new Error("Click Open in new window to grant browser permission.");
@@ -113,29 +120,42 @@ export const presentationSurface = {
                             // canvas uses the same qualified popup transport as other Views.
                             entry.element.style.cssText = "position:fixed;left:-100000px;top:0;width:960px;height:520px";
                             const child = await popupApi(entry.view.el, "[data-molsysviewer-presentation-surface]");
-                            await child.molsysviewerOpenPopup(win);
+                            const opened = await child.molsysviewerOpenPopup(win);
                             child.molsysviewerOnPopupClosed = () => {
-                                if (!disposed) model.send({ type: "close", id: item.id });
+                                if (!disposed && !entry.retired && entry.destination === "window") model.send({ type: "close", id: item.id });
                             };
-                            entry.win = win;
-                            win.document.title = item.title;
+                            entry.win = opened || win;
+                            entry.win.document.title = item.title;
                         } else entry.win.focus();
-                    } else entry.element.scrollIntoView({ block: "nearest" });
-                    model.send({ type: "shown", id: item.id, request_id: item.request_id });
+                    } else {
+                        // Moving the same authority back keeps its data/controls;
+                        // closing its external mirror must not close the View.
+                        if (entry.win) {
+                            const child = await popupApi(entry.view.el, "[data-molsysviewer-presentation-surface]");
+                            await child.molsysviewerClosePopup();
+                        }
+                        entry.win?.close(); entry.win = null;
+                        entry.element.style.cssText = "";
+                        entry.element.scrollIntoView({ block: "nearest" });
+                    }
+                    const hiddenByFullscreen = item.destination === "notebook" && document.fullscreenElement
+                        && !document.fullscreenElement.contains(entry.element);
+                    model.send({ type: "shown", id: item.id, request_id: item.request_id, client_id: clientId,
+                        notice: hiddenByFullscreen ? "Result added to the notebook. Leave fullscreen to see it." : "" });
                 } catch (error) {
                     reservations.get(item.id)?.close(); reservations.delete(item.id);
-                    model.send({ type: "shown", id: item.id, request_id: item.request_id, error: String(error) });
+                    model.send({ type: "shown", id: item.id, request_id: item.request_id, client_id: clientId, error: String(error) });
                 }
             }
             sourceHost.hidden = model.get("source_closed") === true;
         }
         const changed = () => { queue = queue.then(synchronize).catch(error => console.error("Result presentation failed", error)); };
         const response = (message: any) => {
-            if (message?.type !== "response") return;
+            if (message?.type !== "response" || message.client_id !== clientId) return;
             const pending = requests.get(message.request_id);
             if (!pending) return;
             clearTimeout(pending.timer); requests.delete(message.request_id);
-            if (message.error) pending.reject(new Error(message.error)); else pending.resolve();
+            if (message.error) pending.reject(new Error(message.error)); else pending.resolve(message.notice);
         };
         model.on("change:items", changed); model.on("change:source_closed", changed); model.on("msg:custom", response);
         await synchronize();

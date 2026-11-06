@@ -66,7 +66,7 @@ inventory deliberately increases from 732 to 736 digested callables and 446 to
 448 digesters, without missing digesters or undigested functions.
 
 Actual Jupyter/ipykernel/AnyWidget comms and real Mol* pass the existing six-step
-removal/popup receiving and the new five-step result scenario: ordered extraction,
+removal/popup receiving and the result scenario: ordered extraction,
 notebook output, an independent window, opening/closing from detached Studio,
 Python recovery and source-close independence. The known JupyterLab debugger
 error also occurs in a plain-notebook control and is retained separately; no new
@@ -74,6 +74,14 @@ page-error fingerprint is accepted. A first result-window attempt exposed the
 AnyWidget outer/inner element distinction; the host now waits for the actual
 inner presentation/canvas entrypoint before opening it. The result is retained
 on failure.
+
+The destination refinement also reuses one View through rapid window/notebook
+cycles, isolates delivery/acknowledgements by rendered output, makes closing a
+handle idempotent and reports when notebook delivery is hidden by fullscreen.
+Runtime bootstrap caching compares the served bundle digest and binds popup
+source to the resolved module's own source; a stale tab cache is not silently
+reused for a new presentation entrypoint. Final targeted receiving follows
+these refinements rather than inheriting an earlier runtime's verdict.
 
 Final input receiving, exact-head CI and owner integration remain in progress;
 visible human Jupyter/Qt review is still explicitly postponed. Native offscreen

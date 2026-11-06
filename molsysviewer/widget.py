@@ -1,3 +1,4 @@
+from hashlib import sha256
 from pathlib import Path
 
 import anywidget
@@ -20,8 +21,9 @@ async function importRuntimeFromSource(source) {
 function requestRuntimeModule(model) {
     const root = globalThis;
     const cached = root[CACHE_KEY];
-    if (cached?.module) return Promise.resolve(cached.module);
-    if (cached?.promise) return cached.promise;
+    const digest = model.get("runtime_bundle_digest") || "";
+    if (cached?.digest === digest && cached?.module) return Promise.resolve(cached);
+    if (cached?.digest === digest && cached?.promise) return cached.promise;
 
     const promise = new Promise((resolve, reject) => {
         let done = false;
@@ -41,9 +43,10 @@ function requestRuntimeModule(model) {
             }
             try {
                 const module = await importRuntimeFromSource(source);
-                root[CACHE_KEY] = { module, source };
+                const runtime = { module, source, digest };
+                root[CACHE_KEY] = runtime;
                 cleanup();
-                resolve(module);
+                resolve(runtime);
             } catch (error) {
                 root[CACHE_KEY] = undefined;
                 cleanup();
@@ -60,20 +63,21 @@ function requestRuntimeModule(model) {
         model.send({ event: "request_widget_runtime_source" });
     });
 
-    root[CACHE_KEY] = { promise };
+    root[CACHE_KEY] = { promise, digest };
     return promise;
 }
 
 export default {
     async render(context) {
-        const module = await requestRuntimeModule(context.model);
+        const runtime = await requestRuntimeModule(context.model);
+        const module = runtime.module;
         const entrypoint = context.model.get("runtime_entrypoint");
         const widget = entrypoint ? module[entrypoint] : module.default || module;
         if (!widget || typeof widget.render !== "function") {
             throw new Error("MolSysViewer runtime module does not export a render function");
         }
         // Bind the popup to the source that actually rendered this widget.
-        return widget.render({ ...context, runtimeSource: globalThis[CACHE_KEY]?.source });
+        return widget.render({ ...context, runtimeSource: runtime.source });
     },
 };
 """
@@ -82,6 +86,7 @@ export default {
 class MolSysViewerWidget(anywidget.AnyWidget):
     supports_array_native_buffers = True
     _viewer_js_source = _VIEWER_JS_PATH.read_text(encoding="utf-8")
+    _viewer_js_digest = sha256(_viewer_js_source.encode("utf-8")).hexdigest()
     _esm = _WIDGET_BOOTSTRAP_ESM
 
     initial_messages = T.List(default_value=[]).tag(sync=True)
@@ -93,6 +98,7 @@ class MolSysViewerWidget(anywidget.AnyWidget):
     runtime_viewer_id = T.Unicode(default_value="").tag(sync=True)
     runtime_session_id = T.Unicode(default_value="").tag(sync=True)
     presentation_host_id = T.Unicode(default_value="").tag(sync=True)
+    runtime_bundle_digest = T.Unicode(default_value=_viewer_js_digest).tag(sync=True)
     autohide_controls = T.Bool(default_value=True).tag(sync=True)
     autohide_scope = T.Enum(["controls", "canvas"], default_value="controls").tag(sync=True)
     debug_js = T.Bool(default_value=False).tag(sync=True)

@@ -53,7 +53,10 @@ class AddonPanelWidget(anywidget.AnyWidget):
             self.send({"type": "context", "context": self._build_viewer_context()})
         elif msg_type == "present_view":
             try:
-                self._view.addons.manager.presentations._show(content.get("id"), content.get("destination"))
+                service = self._view.addons.manager.presentations
+                if "notebook" in service.destinations:
+                    raise RuntimeError("Use the live notebook presentation controls to open this result.")
+                service._show(content.get("id"), content.get("destination"))
                 error = ""
             except Exception as exc:
                 error = str(exc)[:1000]

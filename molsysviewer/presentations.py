@@ -23,6 +23,7 @@ _OPEN_PRESENTATIONS = {}
 class _PresentationSurface(anywidget.AnyWidget):
     _esm = _WIDGET_BOOTSTRAP_ESM
     runtime_entrypoint = T.Unicode("presentationSurface").tag(sync=True)
+    runtime_bundle_digest = T.Unicode(MolSysViewerWidget._viewer_js_digest).tag(sync=True)
     source_id = T.Unicode().tag(sync=True)
     items = T.List(default_value=[]).tag(sync=True)
     source_closed = T.Bool(False).tag(sync=True)
@@ -42,9 +43,18 @@ class _PresentationSurface(anywidget.AnyWidget):
         elif content.get("type") == "show":
             request = content.get("request_id")
             try:
-                self._owner._show(content.get("id"), content.get("destination"), request=request)
+                self._owner._show(
+                    content.get("id"), content.get("destination"), request=request, client_id=content.get("client_id")
+                )
             except Exception as exc:
-                self.send({"type": "response", "request_id": request, "error": str(exc)[:1000]})
+                self.send(
+                    {
+                        "type": "response",
+                        "request_id": request,
+                        "client_id": content.get("client_id"),
+                        "error": str(exc)[:1000],
+                    }
+                )
         elif content.get("type") == "shown":
             self._owner._ack(content)
         elif content.get("type") == "close":
@@ -154,15 +164,17 @@ class ViewPresentations:
     @signal(tags=["viewer", "presentation"])
     @digest()
     def close(self, presentation_id, *, skip_digestion=False):
-        """Close a result and release its owned widgets/native window."""
-        self._record(presentation_id)["view"].close()
+        """Idempotently close a result and release its widgets/native window."""
+        record = self._records.get(presentation_id)
+        if record is not None:
+            record["view"].close()
 
     def _record(self, handle):
         if not isinstance(handle, str) or handle not in self._records:
             raise ValueError("This result view is no longer available.")
         return self._records[handle]
 
-    def _show(self, handle, destination, *, request=None):
+    def _show(self, handle, destination, *, request=None, client_id=None):
         record = self._record(handle)
         if destination not in {"notebook", "window"}:
             raise ValueError("Choose notebook or window as the destination.")
@@ -176,10 +188,8 @@ class ViewPresentations:
             record.update(destination=destination, state="shown", error="")
             _OPEN_PRESENTATIONS[handle] = self
             return
-        if record["destination"] is not None and record["destination"] != destination:
-            raise ValueError("This result is already presented. Use its canvas popup to detach it.")
         self._surface()
-        record.update(destination=destination, state="opening", error="", request=request)
+        record.update(destination=destination, state="opening", error="", request=request, client_id=client_id)
         _OPEN_PRESENTATIONS[handle] = self
         self._publish()
 
@@ -192,6 +202,7 @@ class ViewPresentations:
                     "model_id": record["view"].addons.manager.presentations._surface().model_id,
                     "destination": record["destination"],
                     "request_id": record["request"],
+                    "client_id": record.get("client_id"),
                 }
                 for key, record in self._records.items()
                 if record["destination"] is not None
@@ -199,7 +210,11 @@ class ViewPresentations:
 
     def _ack(self, content):
         record = self._records.get(content.get("id"))
-        if record is None or content.get("request_id") != record["request"]:
+        if (
+            record is None
+            or content.get("request_id") != record["request"]
+            or content.get("client_id") != record.get("client_id")
+        ):
             return
         error = content.get("error")
         record.update(state="error" if error else "shown", error=str(error or "")[:1000])
@@ -207,7 +222,15 @@ class ViewPresentations:
             record["destination"] = None
             _OPEN_PRESENTATIONS.pop(content["id"], None)
             self._publish()
-        self._output.send({"type": "response", "request_id": record["request"], "error": record["error"]})
+        self._output.send(
+            {
+                "type": "response",
+                "request_id": record["request"],
+                "client_id": record.get("client_id"),
+                "error": record["error"],
+                "notice": str(content.get("notice") or "")[:200],
+            }
+        )
 
     def _release(self, handle):
         record = self._records.pop(handle, None)
