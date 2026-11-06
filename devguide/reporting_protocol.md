@@ -404,3 +404,15 @@ names through actual runtime summaries, missing coordinate validation and
 explicit-zero recovery, and named scientific-analysis confirmation/cancellation
 with actual data deletion and history clearing. Its refinement fixture sends
 real live editing summaries rather than substituting embedded snapshot flags.
+
+### Addon panel unit guard profile
+
+The bounded selector `molsysviewer/js/tests/unit/addon-panel-lifecycle.test.ts`
+has no suffixes, globs or commands. From `molsysviewer/js`, run `npm run test:js`;
+the canonical Node test index imports this owner. Its content-replacement
+regression protects the host-owned CSS lifetime independently of consumer render
+contents; the same lane checks bounded managed-state events and panel cleanup.
+`tests/test_reporting_protocol.py::validate_guard` resolves the exact owner,
+regression name, index and build/runner. This is component behavior evidence;
+real browser, consumer/Python, popup and visible-host evidence retain their
+separate scope. Other unregistered unit targets retain the default profile.

@@ -1,5 +1,8 @@
 # Archived implementation plans
 
+- [Addon diagnostic transport](addon_panel_pending_metadata.md) — #297 admits inherited host metadata helpers during managed-edit recovery without unblocking scientific or stale scene commands.
+- [Addon stylesheet lifetime](addon_panel_stylesheet_lifetime.md) — #298 keeps host CSS outside replaceable ESM content and removes it with the owning widget.
+
 - [Numeric region extraction](extraction_numeric_region_recipe.md) — #296 transfers numeric selection recipes through the atom map without regex errors or replay in the new index universe; preserves identity extraction, colors and session round trips.
 
 - [Portable source-pair input rejection](source_pair_pandas_guard_portability.md) — #295 replaces implicit shell exit with explicit rejection; original ZIP/JUnit verifies all fourteen guard cases on Linux, Windows and macOS while the separate general matrix remains pending.

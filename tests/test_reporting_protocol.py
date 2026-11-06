@@ -49,11 +49,12 @@ WORKSPACE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts"
 STUDIO_LIST_BROWSER_GUARD = "molsysviewer/js/tests/e2e/studio-list-workflows.e2e.ts"
 STUDIO_BROWSER_GUARD = "molsysviewer/js/tests/e2e/studio-usability.e2e.ts"
 GROUP_PANEL_UNIT_GUARD = "molsysviewer/js/tests/unit/group-panel.test.ts"
+ADDON_PANEL_UNIT_GUARD = "molsysviewer/js/tests/unit/addon-panel-lifecycle.test.ts"
 
 
 def validate_guard(root: Path, selector: str) -> list[str]:
     """Resolve the default Python and explicitly adopted frontend profiles."""
-    if selector == GROUP_PANEL_UNIT_GUARD:
+    if selector in {GROUP_PANEL_UNIT_GUARD, ADDON_PANEL_UNIT_GUARD}:
         js_root = root / "molsysviewer/js"
         try:
             entry = (root / selector).read_text(encoding="utf-8")
@@ -61,11 +62,22 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             scripts = json.loads((js_root / "package.json").read_text(encoding="utf-8"))["scripts"]
         except (OSError, ValueError, KeyError) as error:
             return [f"guard {selector!r} cannot be indexed: {error}"]
+        owner_requirements = (
+            (
+                'import { GroupPanel } from "../../src/ui/group-panel";' in entry,
+                'test("GroupPanel test DOM resolves scoped options and preserves prepend order"' in entry,
+                'import "./group-panel.test";' in index,
+            )
+            if selector == GROUP_PANEL_UNIT_GUARD
+            else (
+                'import { MolSysViewerController } from "../../src/managers/viewer-controller";' in entry,
+                'test("addon CSS survives render content replacement"' in entry,
+                'import "./addon-panel-lifecycle.test";' in index,
+            )
+        )
         requirements = (
             'import test from "node:test";' in entry,
-            'import { GroupPanel } from "../../src/ui/group-panel";' in entry,
-            'test("GroupPanel test DOM resolves scoped options and preserves prepend order"' in entry,
-            'import "./group-panel.test";' in index,
+            *owner_requirements,
             "tests/unit/index.test.ts" in scripts.get("build:test:js", ""),
             "npm run build:test:js" in scripts.get("test:js", ""),
             "node --test tests/unit/dist-index.js" in scripts.get("test:js", ""),
@@ -516,6 +528,12 @@ def test_group_panel_unit_guard_is_bounded_and_registered() -> None:
     assert validate_guard(ROOT, GROUP_PANEL_UNIT_GUARD) == []
     assert validate_guard(Path("/nonexistent"), GROUP_PANEL_UNIT_GUARD)
     assert validate_guard(ROOT, GROUP_PANEL_UNIT_GUARD + "::FakeElement")
+
+
+def test_addon_panel_unit_guard_is_bounded_and_registered() -> None:
+    assert validate_guard(ROOT, ADDON_PANEL_UNIT_GUARD) == []
+    assert validate_guard(Path("/nonexistent"), ADDON_PANEL_UNIT_GUARD)
+    assert validate_guard(ROOT, ADDON_PANEL_UNIT_GUARD + "::FakeElement")
     assert validate_guard(ROOT, "molsysviewer/js/tests/unit/state-handler.test.ts")
 
 

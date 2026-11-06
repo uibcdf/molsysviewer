@@ -1,6 +1,6 @@
 # Add-On Panel Widget Contract
 
-Last update: 2026-10-13
+Last update: 2026-11-05
 
 This document defines the architectural decision and implementation contract for
 **interactive add-on panels** in MolSysViewer.
@@ -62,6 +62,32 @@ guarded by `tests/test_addon_panel_endpoints.py`, the popup replay unit test and
 the real Render/Clear/navigation/closing browser scenario above.
 
 ## Context
+
+### Render content, diagnostics and managed synchronization
+
+The host mounts `_css` in its own wrapper outside the replaceable ESM render
+element. Initial or later content replacement must preserve the stylesheet;
+normal widget teardown removes it after ESM cleanup. Selectors remain scoped
+by the addon author, without a shadow-root isolation promise.
+
+Inherited host `push_state`/`set_state` transport helpers can publish metadata
+during pending/failed synchronization or a foreign molecular read. The exemption
+identifies the host implementation, not a consumer method name. Scene commands
+and addon actions retain their managed-edit pause and endpoint lifetime checks.
+
+`viewer:system-sync-changed` publishes immutable scalar status metadata to
+mounted panels: state, operation_id, target_revision, integration_revision,
+pending_operations and reason. Consumers dispose subscriptions, invalidate
+transient reviews and requery as needed. This is managed-state notification,
+not automatic observation of arbitrary molecular writes. The frontend event
+never replaces an atomic Python precondition. See the maintained
+[authoring reference](../docs/content/developer/addons.md#3-panel-state-isolation).
+
+The CSS replacement and notification guard is
+`molsysviewer/js/tests/unit/addon-panel-lifecycle.test.ts`; metadata recovery is
+guarded by `tests/test_addon_panel_pending_state.py`.
+
+## Original design context
 
 The current add-on host (`molsyssuite_addon_direction.md`) supports workspaces,
 panel specs, context actions, workbench sections, and lifecycle hooks. Panel

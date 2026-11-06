@@ -35,7 +35,7 @@ class SystemEditSyncError(RuntimeError):
 
 
 @contextmanager
-def _scene_call_guard(args, kwargs, name):
+def _scene_call_guard(args, kwargs, name, *, function=None):
     """Guard before digestion/history so skip_digestion cannot bypass ownership."""
     for owner in (*args[:2], kwargs.get("view")):
         fields = getattr(owner, "__dict__", {})
@@ -43,6 +43,17 @@ def _scene_call_guard(args, kwargs, name):
         manager = getattr(view, "__dict__", {}).get("_system_edits")
         if manager is None or isinstance(owner, SystemEditsManager):
             continue
+        # The inherited panel transport helpers publish only addon metadata.
+        # Match the actual host function, not a subclass's method name: an
+        # overridden scientific action must retain the normal scene guard.
+        if getattr(function, "__module__", None) == "molsysviewer.addons" and getattr(
+            function, "__qualname__", None
+        ) in {
+            "AddonPanelWidget.push_state",
+            "AddonPanelWidget.set_state",
+        }:
+            yield
+            return
         if _INTERNAL.get() is manager:
             yield
             return

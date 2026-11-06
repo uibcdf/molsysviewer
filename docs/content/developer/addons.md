@@ -341,6 +341,27 @@ Always return a cleanup function from `render` if you register window event list
 ### 3. Panel State Isolation
 Use `model.get()`, `model.set()`, and `model.send()` to sync state. State properties are isolated and namespace-bound to the active add-on.
 
+The host owns the stylesheet declared by `AddonPanelWidget._css` outside the
+replaceable element passed to `render`. Using `el.innerHTML` or
+`el.replaceChildren()` does not remove that stylesheet. Scope selectors to the
+add-on; CSS remains document CSS rather than a shadow-root sandbox. Unmounting
+removes the stylesheet with its owning widget after ESM cleanup.
+
+Inherited `push_state` and `set_state` may deliver bounded diagnostic/draft
+metadata while molecular synchronization is pending, failed or busy. This does
+not permit scientific actions, old-index scene commands or bypasses through
+same-named consumer overrides. Existing endpoint and widget lifetimes still
+apply. After completed science with projection failure, use the host's
+synchronization recovery; do not repeat the scientific operation.
+
+Subscribe to `model.on("viewer:system-sync-changed", callback)` to invalidate
+reviews and refresh bounded context after managed edits. The immutable event
+contains `state`, `operation_id`, `target_revision`, `integration_revision`,
+`pending_operations` and `reason`, without molecular arrays. Remove the listener
+with `model.off` in ESM cleanup. This event reports the host's managed state;
+it does not observe arbitrary edits to `view.molsys` or raw arrays, and frontend
+revision checks do not replace serialized Python preconditions.
+
 ### 4. Panel Subsections and Tab Navigation (Nivel 3)
 Add-ons can organize panels into multiple sub-sections or tabs. MolSysViewer automatically renders tab buttons and manages visibility transitions when the following rules are met:
 

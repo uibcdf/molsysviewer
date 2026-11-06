@@ -168821,6 +168821,14 @@ var MolSysViewerController = class _MolSysViewerController {
         }
         case "set_system_sync_state":
           this.systemSyncOverlay.setState(msg);
+          this.triggerLocalAddonEvent("system-sync-changed", Object.freeze({
+            state: msg.state,
+            operation_id: msg.operation_id ?? null,
+            target_revision: msg.target_revision ?? 0,
+            integration_revision: msg.integration_revision ?? 0,
+            pending_operations: msg.pending_operations ?? 0,
+            reason: msg.reason ?? null
+          }));
           if (msg.state !== "synchronized") {
             await this.trajectory.setTrajectoryPlayback({ op: "set_trajectory_playback", action: "stop" });
           }
@@ -169033,14 +169041,17 @@ var MolSysViewerController = class _MolSysViewerController {
           const mKey = `${mAddon}:${mPanel}`;
           if (this.activePanelWidgetKey === mKey) break;
           this.cleanupActivePanelWidget(true);
+          const container = document.createElement("div");
+          Object.assign(container.style, { display: "flex", flexDirection: "column", width: "100%", minWidth: "0" });
           const el = document.createElement("div");
           Object.assign(el.style, { display: "flex", flexDirection: "column", gap: "8px", width: "100%" });
           let styleEl = null;
           if (mCss) {
             styleEl = document.createElement("style");
             styleEl.textContent = mCss;
-            el.appendChild(styleEl);
+            container.appendChild(styleEl);
           }
+          container.appendChild(el);
           const msgListeners = [];
           this.activePanelMsgListeners = msgListeners;
           const addonStateLocal = this.model ? { ...(this.model.get("addon_states") || {})[mAddon] || {} } : {};
@@ -169178,7 +169189,7 @@ var MolSysViewerController = class _MolSysViewerController {
             break;
           }
           this.activePanelWidgetKey = mKey;
-          this.addonsPanel.mountAddonWidget(el);
+          this.addonsPanel.mountAddonWidget(container);
           break;
         }
         case "addon_panel_message": {

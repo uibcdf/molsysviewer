@@ -2827,6 +2827,14 @@ export class MolSysViewerController {
                 }
                 case "set_system_sync_state":
                     this.systemSyncOverlay.setState(msg as any);
+                    this.triggerLocalAddonEvent("system-sync-changed", Object.freeze({
+                        state: (msg as any).state,
+                        operation_id: (msg as any).operation_id ?? null,
+                        target_revision: (msg as any).target_revision ?? 0,
+                        integration_revision: (msg as any).integration_revision ?? 0,
+                        pending_operations: (msg as any).pending_operations ?? 0,
+                        reason: (msg as any).reason ?? null,
+                    }));
                     if ((msg as any).state !== "synchronized") {
                         await this.trajectory.setTrajectoryPlayback({ op: "set_trajectory_playback", action: "stop" });
                     }
@@ -3028,14 +3036,17 @@ export class MolSysViewerController {
                     const mKey = `${mAddon}:${mPanel}`;
                     if (this.activePanelWidgetKey === mKey) break; // already mounted
                     this.cleanupActivePanelWidget(true);
+                    const container = document.createElement("div");
+                    Object.assign(container.style, { display: "flex", flexDirection: "column", width: "100%", minWidth: "0" });
                     const el = document.createElement("div");
                     Object.assign(el.style, { display: "flex", flexDirection: "column", gap: "8px", width: "100%" });
                     let styleEl: HTMLStyleElement | null = null;
                     if (mCss) {
                         styleEl = document.createElement("style");
                         styleEl.textContent = mCss;
-                        el.appendChild(styleEl);
+                        container.appendChild(styleEl);
                     }
+                    container.appendChild(el);
                     const msgListeners: Array<(msg: any) => void> = [];
                     this.activePanelMsgListeners = msgListeners;
 
@@ -3166,7 +3177,7 @@ export class MolSysViewerController {
                         break;
                     }
                     this.activePanelWidgetKey = mKey;
-                    this.addonsPanel.mountAddonWidget(el);
+                    this.addonsPanel.mountAddonWidget(container);
                     break;
                 }
 

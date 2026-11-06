@@ -9,6 +9,14 @@ class FakeElement {
     public textContent = "";
     public parentElement: FakeElement | null = null;
     public readonly attributes: Record<string, string> = {};
+    private content = "";
+
+    get innerHTML() { return this.content; }
+    set innerHTML(value: string) {
+        this.content = value;
+        for (const child of this.children) child.parentElement = null;
+        this.children.length = 0;
+    }
 
     setAttribute(name: string, value: string) {
         this.attributes[name] = value;
@@ -53,6 +61,66 @@ function installFakeDom() {
         URL.revokeObjectURL = previousRevokeObjectURL;
     };
 }
+
+test("managed synchronization emits immutable bounded addon metadata", async () => {
+    const controller: any = Object.create(MolSysViewerController.prototype);
+    const events: any[] = [];
+    const playback: any[] = [];
+    controller.addonListeners = new Map();
+    controller.systemSyncOverlay = { setState() {} };
+    controller.trajectory = { async setTrajectoryPlayback(value: any) { playback.push(value); } };
+    controller.applyWorkbenchMessage = () => {};
+    controller.refreshNavigatePanel = () => {};
+    controller.refreshAddonsPanel = () => {};
+    controller.syncStripOverlaysForMessage = () => {};
+    controller.registerAddonListener("consumer", "system-sync-changed", (value: any) => events.push(value));
+    await controller.handleMessage({
+        op: "set_system_sync_state", state: "pending", target_revision: 2,
+        integration_revision: 1, pending_operations: 1, coordinates: [99],
+    } as any);
+    assert.deepStrictEqual(events, [{
+        state: "pending", operation_id: null, target_revision: 2,
+        integration_revision: 1, pending_operations: 1, reason: null,
+    }]);
+    assert.ok(Object.isFrozen(events[0]));
+    assert.strictEqual(playback.length, 1);
+    await controller.handleMessage({ op: "set_system_sync_state", state: "synchronized", target_revision: 2 } as any);
+    assert.strictEqual(events.at(-1).state, "synchronized");
+    assert.strictEqual(playback.length, 1);
+});
+
+test("addon CSS survives render content replacement", async () => {
+    const restore = installFakeDom();
+    const controller: any = Object.create(MolSysViewerController.prototype);
+    let mounted: FakeElement | undefined;
+    try {
+        controller.model = undefined;
+        controller.activePanelMsgListeners = [];
+        controller.activePanelCleanup = null;
+        controller.activePanelWidgetKey = null;
+        controller.addonListeners = new Map();
+        controller.applyWorkbenchMessage = () => {};
+        controller.refreshNavigatePanel = () => {};
+        controller.refreshAddonsPanel = () => {};
+        controller.syncStripOverlaysForMessage = () => {};
+        controller.addonsPanel = {
+            mountAddonWidget(el: FakeElement) { mounted = el; },
+            unmountAddonWidget() {}, unmountAddonWidgetOnly() {},
+        };
+        const css = ".probe { display: flex; }";
+        await controller.handleMessage({
+            op: "mount_addon_panel", addon: "css-probe", panel: "main", css,
+            esm: `export function render({ el }) { el.innerHTML = "<section>initial</section>"; globalThis.__cssRenderElement = el; }`,
+        });
+        assert.ok(mounted?.children.some(child => child.textContent === css));
+        (globalThis as any).__cssRenderElement.innerHTML = "<section>next state</section>";
+        assert.ok(mounted?.children.some(child => child.textContent === css));
+    } finally {
+        controller.cleanupActivePanelWidget();
+        delete (globalThis as any).__cssRenderElement;
+        restore();
+    }
+});
 
 test("addon panel render cleanup runs before widget host unmount", async () => {
     const restore = installFakeDom();
