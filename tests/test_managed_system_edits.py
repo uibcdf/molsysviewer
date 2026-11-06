@@ -111,6 +111,70 @@ def test_conflicting_scene_calls_reject_while_science_runs(view):
     assert not worker.is_alive() and errors == []
 
 
+@pytest.mark.parametrize("skip", [False, True])
+def test_saved_selection_revalidation_is_limited_to_synchronized_preparation(view, skip):
+    manager = view.addons.manager.system_edits
+    selection = view.selections.add("chosen", atom_indices=[2, 4])
+    view.active_selection.set([2, 4])
+    before = view.export_state()
+    calls = []
+
+    def prepare(target):
+        assert view.selections.get("chosen", skip_digestion=skip) is selection
+        assert selection.atom_indices == [2, 4]
+        assert view.selections.info("chosen", skip_digestion=skip)["atom_indices"] == [2, 4]
+        assert view.active_selection.atom_indices == [2, 4]
+        # A readable selection is not permission to alter it or the scene.
+        with pytest.raises(SystemEditPendingError):
+            selection.delete(skip_digestion=skip)
+        with pytest.raises(SystemEditPendingError):
+            view.active_selection.set([0], skip_digestion=skip)
+
+        def run():
+            calls.append(target)
+            with pytest.raises(SystemEditPendingError):
+                view.selections.get("chosen", skip_digestion=skip)
+            with pytest.raises(SystemEditPendingError):
+                selection.info(skip_digestion=skip)
+            with pytest.raises(SystemEditPendingError):
+                view.active_selection.atom_indices
+
+        return {"run": run, "changed": False}
+
+    manager.execute(prepare, name="receiving.selection-confirmation")
+    assert calls == [view.molsys]
+    assert view.export_state() == before
+    assert selection.atom_indices == [2, 4]
+
+
+def test_preparation_selection_scope_resets_after_rejection_and_refuses_pending_scene(view):
+    manager = view.addons.manager.system_edits
+    selection = view.selections.add("chosen", atom_indices=[2, 4])
+
+    def reject(target):
+        assert selection.atom_indices == [2, 4]
+        raise ValueError("stale review")
+
+    with pytest.raises(ValueError, match="stale review"):
+        manager.execute(reject, name="receiving.rejected-review")
+    assert manager.get_status()["state"] == "synchronized"
+
+    coordinates = msm.get(view.molsys, coordinates=True).copy()
+    manager.execute(
+        lambda target: {"run": lambda: msm.set(target, coordinates=coordinates), "changed": True},
+        name="receiving.deferred",
+        update_view=False,
+    )
+    with pytest.raises(SystemEditPendingError):
+        selection.info(skip_digestion=True)
+    with pytest.raises(SystemEditPendingError):
+        manager.execute(lambda target: selection.info(), name="receiving.stale-scene")
+    assert manager.get_status()["state"] == "pending"
+    assert manager.get_status()["pending_operations"] == 1
+    manager.synchronize()
+    assert view.selections.get("chosen").atom_indices == [2, 4]
+
+
 def test_real_deferred_coordinate_edit_blocks_stale_actions_and_syncs_from_the_gui(view):
     target = view.molsys
     before = msm.pyunitwizard.get_value(target.structures.coordinates, to_unit="nm").copy()

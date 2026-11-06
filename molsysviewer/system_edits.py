@@ -18,6 +18,18 @@ from ._private.argdigest import digest
 from ._private.structure_correspondence import normalize_structure_index_map, prepare_structure_edit
 
 _INTERNAL = ContextVar("molsysviewer_system_edit_internal", default=None)
+_PREPARING = ContextVar("molsysviewer_system_edit_preparing", default=None)
+
+# Confirmation may revalidate saved membership while holding the edit lock.
+# These are host-owned readers, not a general exemption for query-like names.
+_SELECTION_READERS = {
+    ("molsysviewer.selections", "Selection.info"),
+    ("molsysviewer.selections", "SelectionsManager.get"),
+    ("molsysviewer.selections", "SelectionsManager.contains"),
+    ("molsysviewer.selections", "SelectionsManager.info"),
+    ("molsysviewer.selections", "SelectionsManager.records"),
+    ("molsysviewer.viewer.interaction", "InteractionMixin.get_last_active_selection_event"),
+}
 
 
 class SystemEditPendingError(RuntimeError):
@@ -74,7 +86,13 @@ def _scene_call_guard(args, kwargs, name, *, function=None):
                 with manager._internal():
                     yield
                 return
-            if manager._blocked() and not (camera_only or management):
+            preparation_read = (
+                _PREPARING.get() is manager
+                and manager._state == "editing"
+                and (getattr(function, "__module__", None), getattr(function, "__qualname__", None))
+                in _SELECTION_READERS
+            )
+            if manager._blocked() and not (camera_only or management or preparation_read):
                 raise SystemEditPendingError(manager._reason())
             yield
         return
@@ -339,6 +357,10 @@ class SystemEditsManager:
         new atoms/structures acquire no fabricated old scene/source identity.
         Preflight rejects unknown per-structure visual data before science.
         Retained maps and further additions compose across deferred edits.
+        When starting synchronized, preparation may revalidate saved selections
+        through the host's read-only selection methods. This permission ends
+        before native execution and never permits scene mutations or stale
+        selection reads while synchronization is pending.
         """
         if not isinstance(update_view, bool):
             raise TypeError("update_view must be a boolean.")
@@ -360,7 +382,11 @@ class SystemEditsManager:
             prior_state = self._state
             self._state = "editing"
             try:
-                plan = callback(target)
+                preparation = _PREPARING.set(self if prior_state == "synchronized" else None)
+                try:
+                    plan = callback(target)
+                finally:
+                    _PREPARING.reset(preparation)
                 if (
                     not isinstance(plan, dict)
                     or not callable(plan.get("run"))

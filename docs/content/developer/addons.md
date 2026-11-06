@@ -124,6 +124,15 @@ and any qualified atomic-rejection guarantee. Scientific semantics and map
 correctness remain the provider's responsibility. `read(callback)` serializes
 readers against managed writes while preserving native values and aliasing.
 
+A preparation callback that starts with a synchronized scene can revalidate
+saved membership through the host selection readers (`get`, `contains`, `info`,
+`records` and `Selection.info`) and active membership through
+`get_last_active_selection_event`. The permission is restricted to those host
+methods under the edit lock. It ends before `run`, does not admit scene edits,
+and does not expose stale selection records during deferred synchronization.
+Bind confirmation to the target/revision and actual selected indices; a GUI
+review token alone does not establish current membership.
+
 `update_view=False` defers projection only. Compatible edits compose their maps;
 old-index scene actions are rejected at Python and paused in live windows.
 `get_status()` returns detached metadata. `synchronize()` rebuilds from retained
