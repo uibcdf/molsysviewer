@@ -126,6 +126,20 @@ async function run() {
             const state = (window as any).__controller.plugin.state.data;
             return previous.every((item: any) => !state.tree.transforms.has(item.ref));
         }, visibleRefs), "hide left the label representation alive");
+        await applyMessages(page, [{ op: "show_layer", kind: "annotation", tag: "note" }]);
+        const restoredRefs = await page.evaluate(() =>
+            (window as any).Harness.inspectTaggedRefs((window as any).__controller, "annotation", "note")
+        );
+        assert.ok(restoredRefs.length > 0 && restoredRefs.every((item: any) => item.exists),
+            "show did not restore live annotation geometry");
+        await applyMessages(page, [{ op: "delete_layer", kind: "annotation", tag: "note" }]);
+        assert.deepStrictEqual(await page.evaluate(() =>
+            (window as any).Harness.inspectTaggedRefs((window as any).__controller, "annotation", "note")), [],
+            "delete kept retired annotation refs registered");
+        assert.ok(await page.evaluate(previous => {
+            const state = (window as any).__controller.plugin.state.data;
+            return previous.every((item: any) => !state.tree.transforms.has(item.ref));
+        }, restoredRefs), "delete left annotation geometry alive after retiring its refs");
         console.log("[E2E annotations-subpanel] passed");
     } finally {
         await browser.close();

@@ -280,8 +280,9 @@ export class MeasurementHandlers {
             if (Array.isArray(item) && item.length > 0) return item;
             return picks[index] ?? [];
         });
-        const styleParams = styleToVisualParams(style) ?? {};
-        const visualParams = { ...styleParams, tooltip: tag };
+        // Mol* measurement visuals have no tooltip parameter; ownership is
+        // resolved through their registered state refs, including centroid shapes.
+        const visualParams = styleToVisualParams(style) ?? {};
         const expected = kind === "distance" ? 2 : kind === "angle" ? 3 : 4;
         if (actualAtomIndices.length !== expected) return;
         if (measurementOptions.endpoint_kinds.includes("centroid")) {

@@ -2873,14 +2873,15 @@ export class MolSysViewerController {
                 case "show_layer": await this.state.showLayer(msg); break;
                 case "hide_layer": await this.state.hideLayer(msg); break;
                 case "delete_layer":
-                    if (msg.kind === "interaction" && msg.tag) this.interactions.drop(msg.tag);
-                    if ((msg as any).kind === "annotation" && typeof (msg as any).tag === "string" && this.annotations.hasTag((msg as any).tag)) {
-                        this.annotations.dropTag((msg as any).tag);
-                    }
-                    if ((msg as any).kind === "measurement" && typeof (msg as any).tag === "string" && this.measurements.hasTag((msg as any).tag)) {
-                        this.measurements.dropTag((msg as any).tag);
-                    }
-                    await this.state.deleteLayer(msg);
+                    await this.state.deleteLayer(msg, () => {
+                        if (msg.kind === "interaction" && msg.tag) this.interactions.drop(msg.tag);
+                        if (msg.kind === "annotation" && typeof msg.tag === "string" && this.annotations.hasTag(msg.tag)) {
+                            this.annotations.dropTag(msg.tag);
+                        }
+                        if (msg.kind === "measurement" && typeof msg.tag === "string" && this.measurements.hasTag(msg.tag)) {
+                            this.measurements.dropTag(msg.tag);
+                        }
+                    });
                     break;
                 case "set_layer_tag":
                     if (

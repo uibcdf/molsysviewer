@@ -1319,14 +1319,15 @@ export class StateHandlers {
         await this.toggleLayerVisibility(msg.tag, true, msg.kind);
     }
 
-    async deleteLayer(msg: DeleteLayerMessage) {
+    async deleteLayer(msg: DeleteLayerMessage, retire?: () => void) {
         const tag = msg.tag ?? "layer";
         const key = this.taggedKey(msg.kind, tag);
-        const refs = this.tagIndex.get(key);
-        if (refs && refs.size) {
-            await Promise.all(Array.from(refs).map(ref => this.removeStateObject(ref)));
-            this.tagIndex.delete(key);
-        }
+        // Handler retirement unregisters refs and prevents later rebuilds.
+        // Capture physical nodes before that callback can empty the registry.
+        const refs = Array.from(this.tagIndex.get(key) ?? []);
+        retire?.();
+        await Promise.all(refs.map(ref => this.removeStateObject(ref)));
+        this.tagIndex.delete(key);
         this.layerMeta.delete(key);
         this.callbacks.notify({ event: "layer_deleted", tag, kind: msg.kind });
     }

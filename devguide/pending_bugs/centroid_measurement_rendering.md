@@ -1,9 +1,9 @@
 ---
 summary: Centroid measurements render bounding-sphere centers instead of geometric means
 issue: uibcdf/molsysviewer#308
-status: resolved
+status: active
 opened: 2026-11-06
-closed: 2026-11-06
+closed:
 severity: high
 verification: reproduced
 area: [measurements, rendering, trajectory]
@@ -13,7 +13,28 @@ blocked_by: []
 supersedes: []
 ---
 
-# Resolved: centroid measurement rendering
+# Reopened: centroid measurement adapter compilation
+
+The geometric correction below is retained. Exact-source CI on `1187fc18`
+additionally rejects the adapter's `tooltip` field at all three native
+measurement calls (TS2559). Mol* 5.4.1 has that parameter for labels, not
+distance/angle/dihedral visuals. Remove the unsupported field, preserving
+styles and registered ownership, and run the real TypeScript compiler plus
+actual geometry/picking receiving. This is not a reason to cast away the
+compiler's check. The two affected Python tests reproduce both this failure
+and the old trajectory-message expectation after #312 (15.83 s, exit 1),
+retained at `/tmp/msv-measurement-ci-red-20261106.log`.
+
+The corrected source passes the real compiler and all 16 tests in the affected
+two Python files (11.86 s), the JavaScript unit entry and four actual-browser
+suites, including the production context-owner checks. Two old unit assertions
+required the unsupported `tooltip` parameter; they now retain supported style
+and tagged-ownership checks. Actual picking is received in Mol*, not inferred
+from those unit assertions. Complete local and new-head hosted gates remain
+pending; the [followup receipt](../measurement_geometry_receiving_20261106.json)
+preserves the original failures and distinguishes their inputs.
+
+## Geometric defect and initial correction
 
 The Python/Studio centroid contract computes arithmetic means, including repeated
 atom occurrences. The previous adapter passed complete structure loci to Mol*'s

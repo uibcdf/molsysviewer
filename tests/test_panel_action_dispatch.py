@@ -79,7 +79,10 @@ def test_trajectory_context_actions_mutate_python_authority_and_project_summary(
 
     dispatch_panel_action(view, {"action": "set_trajectory_frame", "index": 4})
     assert view.player.index == 4
-    assert sent[-2:] == [
+    assert sent[-1]["op"] == "set_measurement_summaries"
+    assert sent[-1]["structure_index"] == 4
+    assert sent[-1]["measurements"] == []
+    assert sent[-3:-1] == [
         {"op": "set_trajectory_frame", "index": 4},
         {
             "op": "set_trajectory_summary",

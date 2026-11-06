@@ -1,10 +1,10 @@
 ---
 summary: Measurement visibility cycles retain deleted renderer references
 issue: uibcdf/molsysviewer#313
-status: resolved
+status: active
 opened: 2026-11-06
-closed: 2026-11-06
-severity: medium
+closed:
+severity: high
 verification: reproduced
 area: [measurements, lifecycle, picking]
 guard: molsysviewer/js/tests/e2e/coordinate-edits.e2e.ts
@@ -13,7 +13,39 @@ blocked_by: []
 supersedes: []
 ---
 
-# Resolved: measurement reference lifecycle
+# Reopened: measurement reference lifecycle
+
+The complete core run on `1187fc18` passes 24 suites, then fails in
+`measures-subpanel`: its old hide assertion expects dead refs to remain
+registered. Replacing that expectation with an empty registry **and absence
+of the actual old Mol* nodes** reveals a real deletion-order regression.
+`dropTag()` unregisters refs before `StateHandlers.deleteLayer()` obtains
+them, so deletion can leave unregistered geometry alive. The annotation
+retirement path has the same ordering risk.
+
+The correction snapshots physical refs before retiring the handler's identity,
+then awaits removal of those nodes. Early retirement still prevents later
+rebuilds. Guards inspect the actual state cells after hide and delete, rebuild
+on show and restore on undo; the panel fixture now loads real pentalanine
+structures `[0, 8, 3]` with independent frame-value oracles.
+
+The failed complete run is retained in
+`/tmp/msv-measurement-final-core-receipt-20261106.json`: exit 1, 812.146 s,
+1,139 selected input hashes and both source heads unchanged. Its remaining
+19 suites did not run. The stronger panel reproduction fails before the fix
+in `/tmp/msv-measures-panel-lifecycle-receiving-20261106.log`. A complete
+corrected core run and updated hosted evidence remain pending.
+
+The correction passes the four affected actual-browser suites (annotations,
+managed coordinate edits and live measurements, measurement panel, scene-object
+panel roundtrip), including real widget/canvas/Studio popups. The measurement
+panel additionally uses nonbonded atoms `[0, 5]`, with independently calculated
+display values `0.277`, `0.312`, `0.322 nm`; a fixture assertion requires the
+first two displayed values to differ. This prevents a fixed covalent distance
+from making a stale frame value unobservable. Complete-gate receiving remains
+separate; see the [followup receipt](../measurement_geometry_receiving_20261106.json).
+
+## Initial closure and retained evidence
 
 The first complete core run for #308–#312 passes seven suites, then the new
 renamed-measure context assertion fails. Geometry/value receiving itself is

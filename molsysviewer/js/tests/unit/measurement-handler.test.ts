@@ -120,7 +120,7 @@ test("MeasurementHandlers can rename and drop measurement tags", async () => {
     assert.strictEqual(handlers.hasTag("m2"), false);
 });
 
-test("MeasurementHandlers.addDistance forwards style as visualParams with tooltip tag", async () => {
+test("MeasurementHandlers.addDistance forwards supported style and tagged ownership", async () => {
     const calls: any[] = [];
     const fakeMeasurement = {
         async addDistance(_a: any, _b: any, opts: any) {
@@ -144,12 +144,14 @@ test("MeasurementHandlers.addDistance forwards style as visualParams with toolti
     assert.strictEqual(calls.length, 1);
     const vp = calls[0].visualParams;
     assert.ok(vp !== undefined, "visualParams must be set");
-    assert.strictEqual(vp.tooltip, "d1");
+    assert.strictEqual(vp.tooltip, undefined, "tooltip is not a Mol* measurement visual parameter");
+    assert.deepStrictEqual(calls[0].selectionTags, ["d1"]);
+    assert.deepStrictEqual(calls[0].reprTags, ["d1"]);
     assert.strictEqual(typeof vp.textColor, "number");
     assert.strictEqual(vp.textSize, 1.2);
 });
 
-test("MeasurementHandlers.addDistance without style still passes tooltip in visualParams", async () => {
+test("MeasurementHandlers.addDistance without style retains tagged ownership", async () => {
     const calls: any[] = [];
     const fakeMeasurement = {
         async addDistance(_a: any, _b: any, opts: any) {
@@ -172,9 +174,9 @@ test("MeasurementHandlers.addDistance without style still passes tooltip in visu
 
     assert.strictEqual(calls.length, 1);
     const vp = calls[0].visualParams;
-    assert.ok(vp !== undefined, "visualParams must be set for pickability");
-    assert.strictEqual(vp.tooltip, "d2");
-    assert.strictEqual(vp.textColor, undefined);
+    assert.deepStrictEqual(vp, {});
+    assert.deepStrictEqual(calls[0].selectionTags, ["d2"]);
+    assert.deepStrictEqual(calls[0].reprTags, ["d2"]);
 });
 
 test("MeasurementHandlers.setVisibility hides all measurements sharing a layer_tag", async () => {

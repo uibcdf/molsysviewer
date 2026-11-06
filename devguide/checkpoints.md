@@ -905,9 +905,11 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**Measurement integrity — 2026-11-06:** #308–#313 correct actual centroid
-rendering, signed torsions, coordinate-value caches, effective endpoint positions
-and current-frame Studio summaries, including renderer-reference cleanup. The
+**Measurement integrity — 2026-11-06:** #309–#312 correct signed torsions,
+coordinate-value caches, effective endpoint positions and current-frame Studio
+summaries. #308 and #313 are reopened for compiler and physical-node deletion
+failures detected by complete CI/core receiving; their corrections are being
+received without discarding the failed executions. The
 [receiving receipt](measurement_geometry_receiving_20261106.json) separates 160
 affected Python passes, complete scoped Mol*/widget/both-popup receiving and
 the final core/hosted gates. This is the prerequisite for trustworthy Analysis

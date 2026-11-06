@@ -1,7 +1,7 @@
 {
   "schema": "molsysviewer.measurement_geometry_receiving@1",
   "date": "2026-11-06",
-  "status": "source correction received; final core/hosted gates separate",
+  "status": "followup corrections under receiving; 308 and 313 reopened; complete local and hosted gates pending",
   "issues": [
     "uibcdf/molsysviewer#308",
     "uibcdf/molsysviewer#309",
@@ -214,5 +214,167 @@
     "General Analysis-to-scene actions and remaining approved task families still required",
     "Both 1.0 publications and candidate/tag/package operations remain paused",
     "Owner PR #543 integration and exact-head hosted receiving remain separate"
-  ]
+  ],
+  "followup_1187": {
+    "producer": "1187fc187247aa2d20d01791856a541d50562bcb",
+    "complete_core": {
+      "exit_code": 1,
+      "seconds": 812.1461291038431,
+      "passed_suites": 24,
+      "failed_suite": "measures-subpanel",
+      "remaining_suites_not_executed": 19,
+      "selected_inputs": 1139,
+      "selected_inputs_unchanged": true,
+      "heads_unchanged": true,
+      "receipt": "/tmp/msv-measurement-final-core-receipt-20261106.json",
+      "cause": "The old assertion required dead refs to remain registered after hide. Replacing it with registry and actual-cell assertions exposed a real delete-order regression."
+    },
+    "stronger_regression": {
+      "exit_code": 1,
+      "log": "/tmp/msv-measures-panel-lifecycle-receiving-20261106.log",
+      "assertion": "delete left existing measurement nodes in Mol*"
+    },
+    "hosted": {
+      "core_e2e": {
+        "run": 42257105253,
+        "state": "completed",
+        "conclusion": "failure",
+        "failed_suite": "measures-subpanel"
+      },
+      "python_matrix": {
+        "run": 42257105074,
+        "observed": "4 Linux failures, 4 macOS queued, 1 expected skip"
+      },
+      "source_pair": {
+        "run": 42257105068,
+        "observed": "Linux and Windows Python-test failure, macOS queued; later browser/notebook steps not executed"
+      },
+      "inspected_python_jobs": [
+        128027090943,
+        128027090242
+      ],
+      "each_inspected_result": {
+        "failed": 2,
+        "passed": 3551,
+        "skipped": 29,
+        "deselected": 15,
+        "causes": [
+          "Old trajectory message-tail expectation after #312",
+          "TS2559: unsupported tooltip parameter in the native atomic measurement adapter"
+        ]
+      }
+    },
+    "corrections": [
+      "Snapshot physical state refs before retiring object handlers, then await deletion; keep identity retirement synchronous",
+      "Assert actual Mol* node absence for centroid and native measurements and annotations, not just registry cleanup",
+      "Replace synthetic measurement-panel trajectory values with real pentalanine [0,8,3] and independent coordinate norms",
+      "Remove unsupported tooltip from distance/angle/dihedral visual parameters while retaining tagged ownership and supported styles",
+      "Retain the exact frame and trajectory-summary assertions; additionally require the current measurement summary"
+    ],
+    "focused_red": {
+      "exit_code": 1,
+      "failed": 2,
+      "seconds": 15.83,
+      "log": "/tmp/msv-measurement-ci-red-20261106.log"
+    },
+    "focused_python": {
+      "exit_code": 0,
+      "passed": 16,
+      "seconds": 11.86,
+      "warnings": 14,
+      "log": "/tmp/msv-measurement-ci-fix-20261106.log"
+    },
+    "first_delete_receiving": [
+      {
+        "suite": "annotations-subpanel",
+        "exit_code": 0,
+        "seconds": 17.274,
+        "log": "/tmp/msv-delete-fix-annotations-subpanel-20261106.log"
+      },
+      {
+        "suite": "coordinate-edits",
+        "exit_code": 0,
+        "seconds": 80.855,
+        "log": "/tmp/msv-delete-fix-coordinate-edits-20261106.log"
+      },
+      {
+        "suite": "scene-object-panel-roundtrip",
+        "exit_code": 0,
+        "seconds": 22.536,
+        "log": "/tmp/msv-delete-fix-scene-object-panel-roundtrip-20261106.log"
+      }
+    ],
+    "limits": [
+      "First scoped delete receiving precedes removal of unsupported visual parameter; final actual-browser receiving is separate",
+      "Complete corrected local core and hosted exact-head gates remain pending",
+      "Original failed runs and earlier source hashes retain their actual inputs and scope"
+    ],
+    "final_scoped_browser": {
+      "state": "passed",
+      "exit_code": 0,
+      "suites": [
+        "annotations-subpanel",
+        "coordinate-edits",
+        "measures-subpanel",
+        "scene-object-panel-roundtrip"
+      ],
+      "passed_suites": 4,
+      "log": "/tmp/msv-measurement-ci-focused-browser-20261106.log",
+      "scope": "Final production deletion order and supported visual parameters; actual geometry, ownership and widget/popups. The measurement-panel fixture was subsequently strengthened as recorded separately."
+    },
+    "nonbonded_panel": {
+      "state": "passed",
+      "exit_code": 0,
+      "log": "/tmp/msv-measurement-nonbonded-panel-final-20261106.log",
+      "atoms": [
+        0,
+        5
+      ],
+      "original_structure_indices": [
+        0,
+        8,
+        3
+      ],
+      "independent_display_values_nm": [
+        "0.277",
+        "0.312",
+        "0.322"
+      ],
+      "note": "The preceding real bonded pair rounded identically across frames. The final guard requires distinct frame-zero/frame-one display values before testing current-frame projection; no synthetic series."
+    },
+    "javascript_unit": {
+      "state": "passed",
+      "exit_code": 0,
+      "native_bundled_entries_passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 8.32123185,
+      "log": "/tmp/msv-measurement-ci-js-corrected-20261106.log",
+      "note": "Two old unit expectations required unsupported tooltip visual parameters; corrected to supported style and tagged ownership. Actual picking remains covered by the real-browser guard."
+    },
+    "developer_guide": {
+      "state": "passed",
+      "passed": 337,
+      "seconds": 2.33,
+      "log": "/tmp/msv-measurement-ci-devguide-final-20261106.log",
+      "queue_index_check": "passed"
+    },
+    "ruff": {
+      "check": "passed",
+      "format_check": "960 files formatted"
+    },
+    "correction_input_sha256": {
+      "molsysviewer/js/src/managers/handlers/measurement-handlers.ts": "7977eb784d2f47d11e7d9fec40f65d95b5e33c575bb09491d9b231336ccad6f6",
+      "molsysviewer/js/src/managers/handlers/state-handlers.ts": "1e218b587b56d1a3da88a75f53baba3376c4fb429ee9be996f9712a91983b0ce",
+      "molsysviewer/js/src/managers/viewer-controller.ts": "3cfc09f8f1d9cb1db907563f7fcbf5d47170d35cf9fd26e1fe772fe61bfc70da",
+      "molsysviewer/js/tests/e2e/annotations-subpanel.e2e.ts": "c3d506a5cdfc98063f0201b1c99b658b91c753b97f16a9d93990d2686bc10baa",
+      "molsysviewer/js/tests/e2e/centroid-measurements-scenarios.ts": "30eb566c99442d2b68bf7fdc7828910baaaa50cadfadae46f7d89b4446377bdb",
+      "molsysviewer/js/tests/e2e/measures-subpanel-bridge.py": "ef30c1f8d864664b5a566eb99fb966a0b2cdd248246779ee2bfcf3a0c33aede7",
+      "molsysviewer/js/tests/e2e/measures-subpanel.e2e.ts": "63d906776b57ae7c7b5733e979528269ff8033d558efec273f39d04d33541f63",
+      "molsysviewer/js/tests/unit/measurement-handler.test.ts": "331d9f03501ce431289f557003bcea0aaeb0eba3114e10ccc98e148bfe466e29",
+      "molsysviewer/viewer.js": "75f054e87e3d2202469abe06adaf57cb2479fdc2fc223f1eef7423c6012b7fe1",
+      "tests/test_panel_action_dispatch.py": "19d98b45b24fdfd5ab1f2d2d241daa4ae57f2553fb689078361c544737e876e6"
+    },
+    "remaining_gate": "Complete Python/core browser and exact new-head hosted CI. Issues 308/313 remain open during this receiving."
+  }
 }

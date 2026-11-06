@@ -143001,8 +143001,7 @@ var MeasurementHandlers = class {
       if (Array.isArray(item2) && item2.length > 0) return item2;
       return picks[index] ?? [];
     });
-    const styleParams = styleToVisualParams2(style) ?? {};
-    const visualParams = { ...styleParams, tooltip: tag };
+    const visualParams = styleToVisualParams2(style) ?? {};
     const expected = kind === "distance" ? 2 : kind === "angle" ? 3 : 4;
     if (actualAtomIndices.length !== expected) return;
     if (measurementOptions.endpoint_kinds.includes("centroid")) {
@@ -148410,14 +148409,13 @@ var StateHandlers = class {
   async hideLayer(msg) {
     await this.toggleLayerVisibility(msg.tag, true, msg.kind);
   }
-  async deleteLayer(msg) {
+  async deleteLayer(msg, retire) {
     const tag = msg.tag ?? "layer";
     const key2 = this.taggedKey(msg.kind, tag);
-    const refs = this.tagIndex.get(key2);
-    if (refs && refs.size) {
-      await Promise.all(Array.from(refs).map((ref) => this.removeStateObject(ref)));
-      this.tagIndex.delete(key2);
-    }
+    const refs = Array.from(this.tagIndex.get(key2) ?? []);
+    retire?.();
+    await Promise.all(refs.map((ref) => this.removeStateObject(ref)));
+    this.tagIndex.delete(key2);
     this.layerMeta.delete(key2);
     this.callbacks.notify({ event: "layer_deleted", tag, kind: msg.kind });
   }
@@ -169130,14 +169128,15 @@ var MolSysViewerController = class _MolSysViewerController {
           await this.state.hideLayer(msg);
           break;
         case "delete_layer":
-          if (msg.kind === "interaction" && msg.tag) this.interactions.drop(msg.tag);
-          if (msg.kind === "annotation" && typeof msg.tag === "string" && this.annotations.hasTag(msg.tag)) {
-            this.annotations.dropTag(msg.tag);
-          }
-          if (msg.kind === "measurement" && typeof msg.tag === "string" && this.measurements.hasTag(msg.tag)) {
-            this.measurements.dropTag(msg.tag);
-          }
-          await this.state.deleteLayer(msg);
+          await this.state.deleteLayer(msg, () => {
+            if (msg.kind === "interaction" && msg.tag) this.interactions.drop(msg.tag);
+            if (msg.kind === "annotation" && typeof msg.tag === "string" && this.annotations.hasTag(msg.tag)) {
+              this.annotations.dropTag(msg.tag);
+            }
+            if (msg.kind === "measurement" && typeof msg.tag === "string" && this.measurements.hasTag(msg.tag)) {
+              this.measurements.dropTag(msg.tag);
+            }
+          });
           break;
         case "set_layer_tag":
           if (msg.kind === "annotation" && typeof msg.tag === "string" && typeof msg.new_tag === "string" && this.annotations.hasTag(msg.tag)) {

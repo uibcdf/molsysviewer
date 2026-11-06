@@ -2778,6 +2778,10 @@ measurements per frame. Atomic/representative rendering retains the native route
 Removing rendered measurement objects unregisters their scene refs while keeping
 hidden recipes available for show. Picking resolves live geometry; visibility
 cycles and rename cannot retain a growing collection of deleted references.
+Deletion snapshots physical node refs before retiring the handler's identity,
+then awaits their removal; an empty registry alone does not establish that
+the geometry was deleted. Retirement must still precede asynchronous removal
+so it cannot schedule a later rebuild under the deleted identity.
 The wire continues to use explicit Å/degrees independently of application units.
 Guards: `tests/test_measurement_geometry_integrity.py` and the registered
 `molsysviewer/js/tests/e2e/coordinate-edits.e2e.ts` receiving owner. These source

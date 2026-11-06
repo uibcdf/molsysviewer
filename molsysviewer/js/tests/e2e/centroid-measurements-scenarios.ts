@@ -119,12 +119,20 @@ export async function checkCentroidMeasurements(context: BrowserContext, dir: st
             await check(page, fixture.before, 2);
             await frame(page, 0);
             for (const stage of fixture.stages) {
+                const retired = stage.name === "delete"
+                    ? (await registered(page, "renamed-distance")).map((item: { ref: string }) => item.ref) : [];
                 await page.evaluate(async messages => {
                     for (const message of messages) await (window as any).__controller.handleMessage(message);
                 }, stage.messages);
                 // Check immediately: a subsequent frame navigation must not mask
                 // missing dependency updates at the coordinate-edit completion.
                 await check(page, stage.oracle, 0, stage.name === "hide" ? ["centroid-distance"] : []);
+                if (stage.name === "delete") {
+                    assert.ok(retired.length > 0);
+                    assert.ok(await page.evaluate(refs => refs.every(ref =>
+                        !(window as any).__controller.plugin.state.data.cells.has(ref)), retired),
+                    "delete removed registration but retained actual centroid measurement nodes");
+                }
                 if (stage.name === "rename") {
                     const renamed = await page.evaluate(() => {
                         const w = window as any;
