@@ -45,6 +45,7 @@ INITIAL_WELCOME_BROWSER_GUARD = "molsysviewer/js/tests/e2e/initial-welcome.e2e.t
 MOVIE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/movie-playback.e2e.ts"
 CONTEXT_MENU_BROWSER_GUARD = "molsysviewer/js/tests/e2e/context-menu.e2e.ts"
 CONTROLS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/controls-visibility.e2e.ts"
+MANAGED_EDITS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/coordinate-edits.e2e.ts"
 WORKSPACE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts"
 STUDIO_LIST_BROWSER_GUARD = "molsysviewer/js/tests/e2e/studio-list-workflows.e2e.ts"
 STUDIO_BROWSER_GUARD = "molsysviewer/js/tests/e2e/studio-usability.e2e.ts"
@@ -90,6 +91,7 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         MOVIE_BROWSER_GUARD,
         CONTEXT_MENU_BROWSER_GUARD,
         CONTROLS_BROWSER_GUARD,
+        MANAGED_EDITS_BROWSER_GUARD,
         WORKSPACE_BROWSER_GUARD,
         STUDIO_BROWSER_GUARD,
         STUDIO_LIST_BROWSER_GUARD,
@@ -171,6 +173,21 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             (js_root / "tests/e2e/shape-only-workspace-scenarios.ts").is_file(),
             (js_root / "tests/e2e/shape_only_workspace_fixture.py").is_file(),
             (js_root / "tests/e2e/canvas-popup-fixture.ts").is_file(),
+        )
+    elif selector == MANAGED_EDITS_BROWSER_GUARD:
+        try:
+            receiving = (js_root / "tests/e2e/managed-system-edits-scenarios.ts").read_text(encoding="utf-8")
+            fixture = (js_root / "tests/e2e/managed-system-edits-bridge.py").read_text(encoding="utf-8")
+        except OSError as error:
+            return [f"guard {selector!r} has no managed-edit receiving owner: {error}"]
+        requirements += (
+            'import { checkManagedSystemEdits } from "./managed-system-edits-scenarios";' in entry,
+            "await checkManagedSystemEdits(page.context());" in entry,
+            "PythonFixtureBridge" in receiving,
+            'read_only_actions = ("inspect",)' in fixture,
+            'msv.demo["pentalanine"]' in fixture,
+            'first.keyboard.type("retained native reader")' in receiving,
+            'report.unit, "nm"' in receiving,
         )
     elif selector == CONTROLS_BROWSER_GUARD:
         requirements += (
@@ -520,6 +537,7 @@ def test_browser_guard_resolves_its_build_entrypoint_and_core_lane() -> None:
     assert validate_guard(ROOT, MOVIE_BROWSER_GUARD) == []
     assert validate_guard(ROOT, CONTEXT_MENU_BROWSER_GUARD) == []
     assert validate_guard(ROOT, CONTROLS_BROWSER_GUARD) == []
+    assert validate_guard(ROOT, MANAGED_EDITS_BROWSER_GUARD) == []
     assert validate_guard(ROOT, WORKSPACE_BROWSER_GUARD) == []
     assert validate_guard(ROOT, STUDIO_BROWSER_GUARD) == []
 
@@ -544,6 +562,8 @@ def test_browser_guard_rejects_missing_or_unadopted_targets(tmp_path: Path) -> N
     assert validate_guard(ROOT, INITIAL_WELCOME_BROWSER_GUARD + "::checkInitialView")
     assert validate_guard(tmp_path, MOVIE_BROWSER_GUARD)
     assert validate_guard(tmp_path, CONTROLS_BROWSER_GUARD)
+    assert validate_guard(tmp_path, MANAGED_EDITS_BROWSER_GUARD)
+    assert validate_guard(ROOT, MANAGED_EDITS_BROWSER_GUARD + "::run")
     assert validate_guard(tmp_path, WORKSPACE_BROWSER_GUARD)
     assert validate_guard(ROOT, WORKSPACE_BROWSER_GUARD + "::run")
     assert validate_guard(tmp_path, STUDIO_BROWSER_GUARD)

@@ -74,6 +74,56 @@ export async function checkManagedSystemEdits(browser: any): Promise<void> {
             });
             assert.deepEqual(size, [30, 40, 50]);
         }
+        const readerMount = await bridge.request([], "reader_mount");
+        const mounted = readerMount.messages.find((item: any) => item.op === "mount_addon_panel");
+        assert.deepEqual(mounted.read_only_actions, ["inspect"]);
+        await apply(first, readerMount.messages);
+        await overlay(first).evaluate(el => {
+            (el as any).__readerBaseline = new Map(Array.from(el.parentElement!.children)
+                .filter(child => child !== el).map(child => [child, (child as HTMLElement).inert]));
+        });
+        const readerPending = await bridge.request([], "reader_defer");
+        await apply(first, readerPending.messages);
+        const reader = overlay(first).locator('[data-molsysviewer-sync-reader="true"]');
+        await reader.waitFor({ state: "visible" });
+        const input = reader.locator("input");
+        const inputIdentity = await input.elementHandle();
+        await input.click();
+        await first.keyboard.type("retained native reader");
+        await first.evaluate(() => (window as any).__messages.length = 0);
+        await reader.locator("[data-reader-write]").click();
+        assert.equal(await first.evaluate(() => (window as any).__messages
+            .filter((item: any) => item.event === "addon_panel_action").length), 0);
+        await reader.locator("[data-reader-inspect]").focus();
+        for (const key of ["n", "w", "h", "v", "Escape"]) await first.keyboard.press(key);
+        assert.equal(await reader.isVisible(), true);
+        await first.keyboard.press("Enter");
+        const readEvents = await first.evaluate(() => (window as any).__messages
+            .filter((item: any) => item.event === "addon_panel_action"));
+        assert.equal(readEvents.length, 1);
+        const read = await bridge.request(readEvents);
+        assert.equal(read.status.state, "pending");
+        await apply(first, read.messages);
+        const report = JSON.parse(await reader.locator("output").innerText());
+        assert.deepEqual(report.box[0], [[4, 0, 0], [0, 5, 0], [0, 0, 6]]);
+        assert.equal(report.unit, "nm");
+        assert.equal(report.draft, "retained native reader");
+        // Old rendered cells remain untouched until the explicit recovery.
+        assert.deepEqual(await first.evaluate(() => Array.from((window as any).__controller
+            .getStructureData().units[0].model._staticPropertyData.model_symmetry.spacegroup.cell.size)), [30, 40, 50]);
+        await first.evaluate(() => (window as any).__messages.length = 0);
+        await overlay(first).getByRole("button", { name: "Update view" }).click();
+        const recovery = await first.evaluate(() => (window as any).__messages.filter((event: any) =>
+            event.event === "interaction_context_action" && event.action === "sync_system_edits"));
+        const readerUpdated = await bridge.request(recovery);
+        await apply(first, readerUpdated.messages);
+        assert.equal(await overlay(first).isVisible(), false);
+        assert.equal(await inputIdentity!.evaluate(el => el.isConnected && !!el.closest('[data-molsysviewer-addon-widget-host]')), true);
+        assert.equal(await inputIdentity!.evaluate(el => (el as HTMLInputElement).value), "retained native reader");
+        assert.equal(await overlay(first).evaluate(el => Array.from((el as any).__readerBaseline as Map<HTMLElement, boolean>)
+            .every(([node, inert]) => !node.isConnected || node.inert === inert)), true);
+        await inputIdentity!.dispose();
+        console.log("[managed-edits] declared reader keys/native primary, old scene inertness and exact mounted-DOM restoration pass");
         console.log(`[managed-edits] coordinate/box receiving, addon setter=${Boolean(boxUpdated.addon_set)}`);
     } finally {
         await first.close();

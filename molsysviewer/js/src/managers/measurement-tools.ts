@@ -94,6 +94,7 @@ export class MeasurementToolController {
         private readonly createManagedMeasurement?: CreateManagedMeasurement,
     ) {
         this.keydownHandler = (event: KeyboardEvent) => {
+            if (((event.composedPath?.()[0] ?? event.target) as HTMLElement)?.closest?.("[data-molsysviewer-system-sync]")) return;
             if (event.key !== "Escape") return;
             // A focused context menu owns the first Escape, even during a tool.
             if ((event.target as HTMLElement)?.closest?.("[data-molsysviewer-context-menu]")) return;

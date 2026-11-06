@@ -16,6 +16,12 @@ supersedes: []
 
 ## Chemistry inspection receiving — 2026-11-06
 
+The [pending-reader follow-up](../molsysmt_pending_reader_receiving_20261106.json)
+now adds the interactive recovery sheet and fixes editing-stage refresh
+lifecycle without changing the native methods. Eight synchronized scenarios
+pass; the new three-host pending case passes after its driver navigation
+correction. Keep those scopes and the original failed full attempt separate.
+
 The packaging follow-up 9739f8dee adds exactly the two reviewed Chemistry
 modules to the explicit distribution inventory. Smoke run 42208445163 on
 408195fe8 failed before science (35 preflight passes, one missing-inventory
@@ -35,8 +41,9 @@ outputs, IDs and metadata remain unchanged.
 
 Controlled host 63e79096 adds incoming declared reader transport under Viewer
 #304. The two requests rejected by the old guard now pass; source/scene indices
-remain separated during pending synchronization. The recovery sheet still
-blocks pointer/keyboard access, so #304 remains partial and active. All five
+remain separated during pending synchronization. The interactive recovery follow-up now provides source and actual
+Jupyter/both-popup pointer/keyboard receiving; #304 remains partial on
+hosted/owner qualification. All five
 owner source routes pin the published host; public package floors and installed
 compatibility are unchanged. Owner/latest-hosted/full-new-source, postponed
 human and installed gates remain pending. The earlier clean periodic source

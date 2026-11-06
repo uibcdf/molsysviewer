@@ -954,8 +954,12 @@ reporting/course guards and all eight actual Jupyter/Mol*/popup scenarios
 (55 steps, 355.50 s). The two explicit-state native reports have bounded
 source-index pages, native coverage/unknowns and no preparation or scene
 effects. Viewer 63e79096 adds declared pending-reader transport, pinned in all
-five owner routes; #304 remains partial because the recovery sheet still
-blocks pointer/keyboard access. The host's restricted full-core failures were
+five owner routes. The #304 follow-up now admits the mounted reader UI
+inside recovery while keeping the old scene inert, with native box/DOM oracles
+and actual Jupyter/canvas-popup/Studio-popup receiving. Its
+[record](molsysmt_pending_reader_receiving_20261106.json) retains the failed
+full nine-case attempt, eight passes and scoped final pending-case recovery.
+Exact-head hosted/owner qualification remains pending. The host's restricted full-core failures were
 received with approved permissions in the seven affected modules (64 passed,
 one existing skip), preserving the original 3,451-pass run and failures.
 Rotate awaits the public conversion contract in uibcdf/molsysmt#602; required

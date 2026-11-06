@@ -18,7 +18,7 @@ import { normalizeControlsMode, normalizeViewerMode } from "../ui/local-ui-model
 
 import { VARELA_ROUND_WOFF2_DATA_URL } from "../assets/varela-round/font-data";
 import { disposeControls } from "../ui/controls";
-import { ViewerMessage, KnownViewerMessage } from "../messages/viewer-messages";
+import { ViewerMessage, KnownViewerMessage, type SystemSyncStateMessage } from "../messages/viewer-messages";
 import { LoadedStructure } from "../plugin/structure";
 import { LoaderHandlers } from "./handlers/loader-handlers";
 import { AnnotationHandlers } from "./handlers/annotation-handlers";
@@ -594,6 +594,7 @@ export class MolSysViewerController {
     private readonly trajectoryPlotOverlay: TrajectoryPlotOverlay;
     private readonly webglStatusOverlay: WebGLStatusOverlay;
     private readonly systemSyncOverlay: SystemSyncOverlay;
+    private systemSyncState: SystemSyncStateMessage["state"] = "synchronized";
     private webglContextLost = false;
     private readonly groupPanel: GroupPanel;
     private readonly addonsPanel: AddonsPanel;
@@ -1874,6 +1875,7 @@ export class MolSysViewerController {
 
     private installGlobalEscapeHandler(): () => void {
         const onKeyDown = (event: KeyboardEvent) => {
+            if (((event.composedPath?.()[0] ?? event.target) as HTMLElement)?.closest?.("[data-molsysviewer-system-sync]")) return;
             if (this.host.contains(event.target as Node) && this.contextMenu.handleEscape(event)) return;
             if ((event.target as HTMLElement)?.closest?.("[data-molsysviewer-context-menu]")) return;
             if ((event.target as HTMLElement)?.closest?.("[data-molsysviewer-load-file-picker]")) return;
@@ -2831,6 +2833,7 @@ export class MolSysViewerController {
                     break;
                 }
                 case "set_system_sync_state":
+                    this.systemSyncState = (msg as SystemSyncStateMessage).state;
                     this.systemSyncOverlay.setState(msg as any);
                     this.triggerLocalAddonEvent("system-sync-changed", Object.freeze({
                         state: (msg as any).state,
@@ -3037,6 +3040,9 @@ export class MolSysViewerController {
                     const mPanel = (msg as any).panel as string | undefined;
                     const mEsm = (msg as any).esm as string | undefined;
                     const mCss = (msg as any).css as string | undefined;
+                    const readOnlyActions = new Set<string>(Array.isArray((msg as any).read_only_actions)
+                        ? (msg as any).read_only_actions.filter((value: unknown) => typeof value === "string" && value.length > 0)
+                        : []);
                     if (!mAddon || !mPanel || !mEsm) break;
                     const mKey = `${mAddon}:${mPanel}`;
                     if (this.activePanelWidgetKey === mKey) break; // already mounted
@@ -3063,6 +3069,9 @@ export class MolSysViewerController {
 
                     const panelModel = {
                         present_view: (id: string, destination: "notebook" | "window") => {
+                            if ((this.systemSyncState ?? "synchronized") !== "synchronized") {
+                                return Promise.reject(new Error("Update the view before presenting a result."));
+                            }
                             const open = this.presentResult || (window as any).molsysviewer_present_result;
                             if (open) return open(id, destination);
                             // Native Qt uses the same panel route; its host owns
@@ -3089,6 +3098,10 @@ export class MolSysViewerController {
                             });
                         },
                         send: (content: any) => {
+                            if ((this.systemSyncState ?? "synchronized") !== "synchronized" && !(readOnlyActions.has(content?.id)
+                                && content?.type === "action" && content?.payload && typeof content.payload === "object"
+                                && !Array.isArray(content.payload)
+                                && ["pending", "sync_failed"].includes(this.systemSyncState))) return;
                             this.notify?.({ event: "addon_panel_action", addon: mAddon, panel: mPanel, content });
                         },
                         on: (event: string, cb: (msg: any) => void) => {
@@ -3132,6 +3145,7 @@ export class MolSysViewerController {
                             return addonStateLocal[key];
                         },
                         set: (keyOrObj: any, val?: any) => {
+                            if ((this.systemSyncState ?? "synchronized") !== "synchronized") return;
                             const updates: Record<string, any> = {};
                             if (typeof keyOrObj === "string") {
                                 updates[keyOrObj] = val;
@@ -3211,6 +3225,7 @@ export class MolSysViewerController {
                     }
                     this.activePanelWidgetKey = mKey;
                     this.addonsPanel.mountAddonWidget(container);
+                    this.systemSyncOverlay?.setReader?.(readOnlyActions.size ? container : null);
                     break;
                 }
 
@@ -3980,6 +3995,7 @@ export class MolSysViewerController {
     }
 
     private cleanupActivePanelWidget(preserveWorkspaceChrome = false): void {
+        this.systemSyncOverlay?.setReader?.(null);
         if (this.activePanelWidgetKey) {
             const parts = this.activePanelWidgetKey.split(":");
             if (parts.length > 0) {

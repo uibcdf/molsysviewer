@@ -207,6 +207,23 @@ and build/core registration. Its exact entrypoint is
 `withFixtureWorkspace("controls-visibility", run).catch(...)`, importing the
 managed workspace owner; this preserves failing-exit checks through cleanup.
 
+### Managed-edit and pending-reader browser guard profile
+
+The bounded selector is exactly
+`molsysviewer/js/tests/e2e/coordinate-edits.e2e.ts`, without suffixes or globs.
+Build the harness and E2E entries with `npm run build:harness` and
+`npm run build:e2e:all` from `molsysviewer/js`, then run
+`node tests/e2e/coordinate-edits.e2e.js`. The entry is also required by
+`test:e2e:core`; browser/WebGL failure fails, and opt-out is not qualification.
+Its real Python/demo-system authority and Mol* endpoints receive coordinate
+and box edits. `managed-system-edits-scenarios.ts` additionally checks actual
+reader typing/activation, undeclared request rejection, current-primary native
+nm results versus the still-old rendered box, and exact retained reader DOM
+and original inert-state restoration. The offline validator verifies the entry,
+fixture/receiving owners and normal build/core registration. Actual Jupyter and
+popup receiving remains a separate consumer guard; this lane is not a human Qt
+observation or installed-package claim.
+
 ### GroupPanel unit guard profile
 
 The bounded frontend unit selector is exactly

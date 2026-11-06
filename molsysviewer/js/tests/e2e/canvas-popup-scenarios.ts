@@ -222,6 +222,10 @@ export async function checkNotebookCanvasPopup(page: Page, dir: string) {
         await checkProportionalStudio(popup);
         const canvas = await popup.locator("canvas").boundingBox();
         assert.ok(canvas);
+        console.log("[canvas popup context target]", await popup.evaluate(({x,y}) => {
+            const hit = document.elementFromPoint(x,y);
+            return {tag: hit?.tagName, title: hit?.getAttribute("title"), html: hit?.outerHTML.slice(0,300)};
+        }, {x:canvas.x+30,y:canvas.y+canvas.height-30}));
         await popup.mouse.click(canvas.x + 30, canvas.y + canvas.height - 30, { button: "right" });
         const menu = popup.locator('[data-molsysviewer-context-menu="true"]');
         await menu.waitFor({ state: "visible" });

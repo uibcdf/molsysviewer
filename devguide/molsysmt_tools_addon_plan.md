@@ -23,8 +23,9 @@ Chemistry's two read-only native reports have 42 focused cases within a
 (55 steps). Their state/structure, coverage, unknown-count and mounted-report
 contracts remain native, with bounded source-index pages and no preparation or
 scene changes. Viewer #304 adds declared pending-reader transport at 63e79096;
-the recovery sheet still blocks pointer/keyboard access and that frontend work
-remains required. Full latest-source/hosted, owner, human and installed gates
+the pending-reader follow-up now supplies interactive recovery in source,
+with actual three-host receiving and the same-DOM restoration contract. See
+[its receiving record](molsysmt_pending_reader_receiving_20261106.json). Full latest-source/hosted, owner, human and installed gates
 remain separate; the 4,657-case complete result retains the earlier periodic
 source. Chemistry preparation/construction and Analysis remain required work.
 
@@ -549,7 +550,7 @@ current System/Geometry slice; it does not declare the addon or 1.0 complete.
 | --- | --- | --- |
 | Inspect/select inventory; remove, extract and copy molecular data | Core System/selections plus owner System tasks; exact atom/structure maps, independent results and stale-confirmation guards | Implemented in contribution source; owner/hosted/installed and postponed human acceptance remain separate. |
 | Transform/align coordinates, choose structures and work with periodic cells | Owner Geometry over received native tools; analytical geometry, units, explicit references/structures, fixed-box effects and recovery guards | Translate, Center, same-system rigid fitting and bounded periodic coordinate tasks are numerically/browser checked in contribution source. General periodic/cell support remains partial pending uibcdf/molsysmt#605/#606/#607/#608; temporary guards have a 2026-11-13 review/removal checkpoint. Sequence/external-reference/orientation remain required. Rotate requests its native axis/angle constructor in uibcdf/molsysmt#602. |
-| Inspect chemistry and explicitly prepare/build systems | Owner Chemistry over qualified native reports and preparation/build functions; explicit method/state/model, before/after scientific checks, native maps or independent ownership | Stored-information and hydrogen reports have source and actual Jupyter/popup receiving. Preparation/construction tasks remain required; pending-reader pointer/keyboard admission is tracked in #304. Missing native effects stay owned and visible. |
+| Inspect chemistry and explicitly prepare/build systems | Owner Chemistry over qualified native reports and preparation/build functions; explicit method/state/model, before/after scientific checks, native maps or independent ownership | Stored-information and hydrogen reports have source and actual Jupyter/popup receiving. Preparation/construction tasks remain required; pending-reader pointer/keyboard recovery has source/actual-host receiving under #304, with hosted/owner integration still separate. Missing native effects stay owned and visible. |
 | Calculate and inspect scientific results | Owner Analysis; explicit units, method/engine, evaluated scope and bounded results; link core visual owners for representation | Expert routes are received by family; graphical tasks remain required work. |
 | Preserve and recover the result | Core load/export/session services and actual native format support; read back molecular data, supported named analyses and scene through their respective owners | Existing services are reused; the complete new task workflow still needs end-to-end receiving. No universal H5MSM result store is promised. |
 | Offer the same scientific operation through Python and GUI | Real bundled-system native/expert/GUI comparisons with the same resolved inputs; Jupyter, both popup types and applicable Qt observations | Current slices have bounded automated evidence. This is not whole-workspace or human acceptance. |

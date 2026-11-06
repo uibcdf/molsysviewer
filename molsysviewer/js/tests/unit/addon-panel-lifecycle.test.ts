@@ -122,6 +122,56 @@ test("addon CSS survives render content replacement", async () => {
     }
 });
 
+test("paused panel transport admits only declared readers and restores its mounted surface", async () => {
+    const restore = installFakeDom();
+    const controller: any = Object.create(MolSysViewerController.prototype);
+    const events: any[] = [], readers: any[] = [];
+    try {
+        controller.activePanelMsgListeners = [];
+        controller.addonListeners = new Map();
+        controller.notify = (event: any) => events.push(event);
+        controller.applyWorkbenchMessage = () => {};
+        controller.refreshNavigatePanel = () => {};
+        controller.refreshAddonsPanel = () => {};
+        controller.syncStripOverlaysForMessage = () => {};
+        controller.systemSyncOverlay = { setReader: (reader: any) => readers.push(reader) };
+        controller.addonsPanel = { mountAddonWidget() {}, unmountAddonWidget() {}, unmountAddonWidgetOnly() {} };
+        await controller.handleMessage({
+            op: "mount_addon_panel", addon: "reader", panel: "report", read_only_actions: ["inspect"],
+            esm: `export function render({model}) { globalThis.__receivingReaderModel = model; }`,
+        });
+        const model = (globalThis as any).__receivingReaderModel;
+        assert.ok(readers.at(-1));
+        for (const state of ["pending", "sync_failed"]) {
+            events.length = 0;
+            controller.systemSyncState = state;
+            model.send({ type: "action", id: "inspect", payload: {} });
+            model.send({ type: "action", id: "edit", payload: {} });
+            model.send({ type: "action", id: "inspect", payload: [] });
+            model.send({ type: "query", id: "inspect", payload: {} });
+            model.set("draft", "must not mutate shared state");
+            await assert.rejects(model.present_view("result", "window"), /Update the view/);
+            assert.deepStrictEqual(events.map(event => event.content?.id), ["inspect"]);
+            assert.strictEqual(model.get("draft"), undefined);
+        }
+        for (const state of ["editing", "syncing", "uncertain", "closed"]) {
+            controller.systemSyncState = state;
+            events.length = 0;
+            model.send({ type: "action", id: "inspect", payload: {} });
+            assert.deepStrictEqual(events, []);
+        }
+        controller.systemSyncState = "synchronized";
+        model.send({ type: "query", id: "viewer.context" });
+        assert.strictEqual(events.at(-1).content.type, "query");
+        controller.cleanupActivePanelWidget();
+        assert.strictEqual(readers.at(-1), null);
+    } finally {
+        controller.cleanupActivePanelWidget();
+        delete (globalThis as any).__receivingReaderModel;
+        restore();
+    }
+});
+
 test("addon panel render cleanup runs before widget host unmount", async () => {
     const restore = installFakeDom();
     try {

@@ -433,6 +433,7 @@ export const buildControls = (
     c.setHelpOpener(() => helpOverlay.show());
 
     const onHelpKey = (ev: KeyboardEvent) => {
+        if ((ev.composedPath()[0] as HTMLElement)?.closest?.("[data-molsysviewer-system-sync]")) return;
         if (ev.ctrlKey || ev.metaKey || ev.altKey || ev.isComposing || ev.repeat) return;
         if ((ev.target as HTMLElement)?.closest?.("input, textarea, [contenteditable]")) return;
         if (ev.key.toLowerCase() === "v") {

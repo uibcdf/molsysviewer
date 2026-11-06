@@ -19,8 +19,9 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Open (1)
+### Open (2)
 
+- [`hosted_popup_context_menu_receiving.md`](hosted_popup_context_menu_receiving.md) — [#305](https://github.com/uibcdf/molsysviewer/issues/305) — Diagnose the hosted popup context-menu timeout after fullscreen controls receiving. *(medium, upstream)*
 - [`qt_dbus_conda_prefix_address.md`](qt_dbus_conda_prefix_address.md) — [#278](https://github.com/uibcdf/molsysviewer/issues/278) — Qt startup reports an invalid D-Bus system address in Conda prefixes containing @. *(low, reproduced)*
 
 <!-- /generated -->

@@ -284,6 +284,7 @@ export class HelpOverlay {
         this.onVisibilityChange?.(true);
 
         const onKey = (ev: KeyboardEvent) => {
+            if ((ev.composedPath()[0] as HTMLElement)?.closest?.("[data-molsysviewer-system-sync]")) return;
             if (ev.ctrlKey || ev.metaKey || ev.altKey || ev.isComposing || ev.repeat) return;
             if ((ev.composedPath()[0] as HTMLElement)?.closest?.("input, textarea, [contenteditable]")) return;
             if (!ev.composedPath().includes(this.host)) return;

@@ -440,11 +440,23 @@ addon Python is trusted code rather than a security sandbox. Check host
 capability availability before offering a panel that depends on this route,
 and retain separate source and installed-package qualification.
 
-The canvas recovery sheet still blocks pointer/keyboard interaction with the
-underlying Studio controls. Read-only request admission is a source transport
-capability; GUI access during recovery remains incomplete under
-`uibcdf/molsysviewer#304`. Do not advertise an interactive recovery workflow
-from the server declaration alone.
+During `pending`/`sync_failed`, the recovery sheet temporarily hosts the same
+already mounted reader content. It does not create another widget or grant
+Studio navigation. Its inputs, buttons and bounded results remain usable;
+background scene controls remain inert. Keyboard and pointer events from the
+sheet do not reach scene shortcuts or Mol*. Synchronization returns the same
+DOM content to its original Studio host and restores each original inert state.
+Closing/unmounting releases that reader. Other synchronization states show no
+interactive reader. Panels without a declaration keep the full recovery guard.
+
+The frontend also filters undeclared requests, trait writes and result
+presentation while paused; the Python owner/endpoint checks remain authoritative.
+Providers should retire stale in-flight requests when synchronization state
+changes. Do not issue a refresh during editing/syncing/uncertain/closed: those
+states have no reader admission or promised response. Start a fresh read after
+entering synchronized/pending/sync_failed. See `uibcdf/molsysviewer#304` for
+exact-source receiving and remaining qualification; this source capability is
+not an installed-package or human visible-host claim.
 
 Subscribe to `model.on("viewer:system-sync-changed", callback)` to invalidate
 reviews and refresh bounded context after managed edits. The immutable event

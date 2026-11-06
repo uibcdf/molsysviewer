@@ -140499,6 +140499,7 @@ var HelpOverlay = class {
     this.closeButton.focus?.({ preventScroll: true });
     this.onVisibilityChange?.(true);
     const onKey = (ev) => {
+      if (ev.composedPath()[0]?.closest?.("[data-molsysviewer-system-sync]")) return;
       if (ev.ctrlKey || ev.metaKey || ev.altKey || ev.isComposing || ev.repeat) return;
       if (ev.composedPath()[0]?.closest?.("input, textarea, [contenteditable]")) return;
       if (!ev.composedPath().includes(this.host)) return;
@@ -141087,6 +141088,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
   release.push(() => helpOverlay.dispose());
   c8.setHelpOpener(() => helpOverlay.show());
   const onHelpKey = (ev) => {
+    if (ev.composedPath()[0]?.closest?.("[data-molsysviewer-system-sync]")) return;
     if (ev.ctrlKey || ev.metaKey || ev.altKey || ev.isComposing || ev.repeat) return;
     if (ev.target?.closest?.("input, textarea, [contenteditable]")) return;
     if (ev.key.toLowerCase() === "v") {
@@ -151085,6 +151087,7 @@ var MeasurementToolController = class {
     this.activeEndpointPolicy = "centroid";
     this.previousGranularity = null;
     this.keydownHandler = (event) => {
+      if ((event.composedPath?.()[0] ?? event.target)?.closest?.("[data-molsysviewer-system-sync]")) return;
       if (event.key !== "Escape") return;
       if (event.target?.closest?.("[data-molsysviewer-context-menu]")) return;
       if (!this.activeAction) return;
@@ -152095,16 +152098,24 @@ var SystemSyncOverlay = class {
     this.root = document.createElement("div");
     this.text = document.createElement("p");
     this.update = document.createElement("button");
+    this.readerHost = document.createElement("section");
+    this.reader = null;
+    this.readerSlot = null;
+    this.state = "synchronized";
     this.previousInert = /* @__PURE__ */ new Map();
     this.previousFocus = null;
     this.guardKey = (event) => {
-      if (this.root.style.display !== "none" && this.host.contains(event.target)) {
+      const target = event.composedPath()[0];
+      if (this.root.style.display !== "none" && this.host.contains(target)) {
+        if (this.root.contains(target)) return;
         event.stopImmediatePropagation();
       }
     };
     this.root.setAttribute("data-molsysviewer-system-sync", "true");
-    this.root.setAttribute("role", "status");
-    this.root.setAttribute("aria-live", "polite");
+    this.root.setAttribute("role", "region");
+    this.root.setAttribute("aria-label", "Molecular system update");
+    this.text.setAttribute("role", "status");
+    this.text.setAttribute("aria-live", "polite");
     Object.assign(this.root.style, {
       display: "none",
       position: "absolute",
@@ -152122,51 +152133,142 @@ var SystemSyncOverlay = class {
       fontSize: "14px",
       gap: "12px"
     });
+    Object.assign(this.text.style, { margin: "0", flexShrink: "0" });
     this.root.tabIndex = -1;
+    this.readerHost.setAttribute("data-molsysviewer-sync-reader", "true");
+    this.readerHost.setAttribute("aria-label", "Inspect the updated molecular system");
+    Object.assign(this.readerHost.style, {
+      display: "none",
+      width: "100%",
+      maxWidth: "720px",
+      minHeight: "0",
+      overflow: "auto",
+      textAlign: "left",
+      background: "#242a31",
+      border: "1px solid rgba(255,255,255,0.18)",
+      borderRadius: "10px",
+      padding: "16px",
+      boxSizing: "border-box",
+      flex: "0 1 auto"
+    });
     this.update.textContent = "Update view";
     this.update.type = "button";
+    Object.assign(this.update.style, {
+      padding: "8px 16px",
+      borderRadius: "8px",
+      border: "1px solid #7c8da4",
+      background: "#394a61",
+      color: "#fff",
+      font: "inherit",
+      cursor: "pointer",
+      flexShrink: "0"
+    });
     this.update.addEventListener("click", () => {
       this.update.disabled = true;
       onUpdate();
     });
-    this.root.append(this.text, this.update);
+    this.root.append(this.text, this.update, this.readerHost);
+    for (const name of [
+      "keydown",
+      "keyup",
+      "keypress",
+      "pointerdown",
+      "pointerup",
+      "pointermove",
+      "mousedown",
+      "mouseup",
+      "mousemove",
+      "click",
+      "dblclick",
+      "contextmenu",
+      "wheel",
+      "touchstart",
+      "touchmove"
+    ]) {
+      this.root.addEventListener(name, (event) => event.stopPropagation());
+    }
     this.host.appendChild(this.root);
     for (const name of ["keydown", "keyup", "keypress"]) window.addEventListener(name, this.guardKey, true);
   }
   setState(message) {
     const state = message.state;
+    const active = this.activeElement();
+    this.state = state;
     if (state === "synchronized") {
+      this.restoreReader();
       this.root.style.display = "none";
       this.restoreInteraction();
+      if (active instanceof HTMLElement && this.reader?.contains(active)) active.focus({ preventScroll: true });
       return;
     }
     if (this.root.style.display === "none") {
-      this.previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      this.previousFocus = active instanceof HTMLElement ? active : null;
     }
+    this.root.style.display = "flex";
+    this.updateReader();
     for (const child of Array.from(this.host.children)) {
       if (!(child instanceof HTMLElement) || child === this.root) continue;
       if (!this.previousInert.has(child)) this.previousInert.set(child, child.inert);
       child.inert = true;
     }
-    this.root.style.display = "flex";
     const retry = state === "pending" || state === "sync_failed";
     this.text.textContent = state === "pending" ? "The molecular system has changed. Update the view to continue." : state === "sync_failed" ? "The molecular edit is complete. Retry the view update to continue." : state === "uncertain" ? "The edit could not be verified. Replace the system explicitly to continue." : state === "closed" ? "This view is closed." : "Updating the molecular system\u2026";
+    if (retry && this.readerSlot) {
+      this.text.textContent += " You can still inspect the updated system below; the scene remains paused.";
+    }
     this.update.style.display = retry ? "block" : "none";
     this.update.disabled = !retry;
-    if (this.previousFocus && this.host.contains(this.previousFocus) && !this.root.contains(document.activeElement)) {
+    if (this.previousFocus && this.host.contains(this.previousFocus) && !this.root.contains(this.activeElement())) {
       (retry ? this.update : this.root).focus({ preventScroll: true });
     }
+  }
+  /** Host-owned, already mounted reader; never mounts or navigates an addon. */
+  setReader(reader) {
+    this.restoreReader();
+    this.reader = reader;
+    this.updateReader();
+  }
+  updateReader() {
+    if (this.state !== "pending" && this.state !== "sync_failed" || !this.reader) {
+      this.restoreReader();
+      return;
+    }
+    if (!this.readerSlot && this.host.contains(this.reader) && this.reader.parentNode) {
+      const active = this.activeElement();
+      this.readerSlot = document.createComment("mounted addon reader");
+      this.reader.before(this.readerSlot);
+      this.readerHost.appendChild(this.reader);
+      this.readerHost.scrollTop = 0;
+      this.readerHost.style.display = "block";
+      if (active instanceof HTMLElement && this.reader.contains(active)) active.focus({ preventScroll: true });
+    }
+  }
+  restoreReader() {
+    if (this.readerSlot) {
+      const active = this.activeElement();
+      if (this.reader && this.readerSlot.parentNode) this.readerSlot.replaceWith(this.reader);
+      else this.reader?.remove();
+      this.readerSlot.remove();
+      this.readerSlot = null;
+      if (active instanceof HTMLElement && this.reader?.contains(active)) active.focus({ preventScroll: true });
+    }
+    this.readerHost.style.display = "none";
   }
   restoreInteraction() {
     for (const [element, previous] of this.previousInert) element.inert = previous;
     this.previousInert.clear();
-    if (this.root.contains(document.activeElement) && this.previousFocus?.isConnected) {
+    if (this.root.contains(this.activeElement()) && this.previousFocus?.isConnected) {
       this.previousFocus.focus({ preventScroll: true });
     }
     this.previousFocus = null;
   }
+  activeElement() {
+    return this.host.getRootNode().activeElement;
+  }
   dispose() {
     for (const name of ["keydown", "keyup", "keypress"]) window.removeEventListener(name, this.guardKey, true);
+    this.restoreReader();
+    this.reader = null;
     this.restoreInteraction();
     this.root.remove();
   }
@@ -166721,6 +166823,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.notify = notify;
     this.initOptions = initOptions;
     this.applyingSelectionProjection = false;
+    this.systemSyncState = "synchronized";
     this.webglContextLost = false;
     this.pendingHtmlDownload = null;
     this.canvasInsetAnimFrame = null;
@@ -167917,6 +168020,7 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   installGlobalEscapeHandler() {
     const onKeyDown = (event) => {
+      if ((event.composedPath?.()[0] ?? event.target)?.closest?.("[data-molsysviewer-system-sync]")) return;
       if (this.host.contains(event.target) && this.contextMenu.handleEscape(event)) return;
       if (event.target?.closest?.("[data-molsysviewer-context-menu]")) return;
       if (event.target?.closest?.("[data-molsysviewer-load-file-picker]")) return;
@@ -168882,6 +168986,7 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         }
         case "set_system_sync_state":
+          this.systemSyncState = msg.state;
           this.systemSyncOverlay.setState(msg);
           this.triggerLocalAddonEvent("system-sync-changed", Object.freeze({
             state: msg.state,
@@ -169099,6 +169204,7 @@ var MolSysViewerController = class _MolSysViewerController {
           const mPanel = msg.panel;
           const mEsm = msg.esm;
           const mCss = msg.css;
+          const readOnlyActions = new Set(Array.isArray(msg.read_only_actions) ? msg.read_only_actions.filter((value) => typeof value === "string" && value.length > 0) : []);
           if (!mAddon || !mPanel || !mEsm) break;
           const mKey = `${mAddon}:${mPanel}`;
           if (this.activePanelWidgetKey === mKey) break;
@@ -169121,6 +169227,9 @@ var MolSysViewerController = class _MolSysViewerController {
           const changeListeners = {};
           const panelModel = {
             present_view: (id, destination) => {
+              if ((this.systemSyncState ?? "synchronized") !== "synchronized") {
+                return Promise.reject(new Error("Update the view before presenting a result."));
+              }
               const open = this.presentResult || window.molsysviewer_present_result;
               if (open) return open(id, destination);
               return new Promise((resolve, reject) => {
@@ -169156,6 +169265,7 @@ var MolSysViewerController = class _MolSysViewerController {
               });
             },
             send: (content) => {
+              if ((this.systemSyncState ?? "synchronized") !== "synchronized" && !(readOnlyActions.has(content?.id) && content?.type === "action" && content?.payload && typeof content.payload === "object" && !Array.isArray(content.payload) && ["pending", "sync_failed"].includes(this.systemSyncState))) return;
               this.notify?.({ event: "addon_panel_action", addon: mAddon, panel: mPanel, content });
             },
             on: (event, cb2) => {
@@ -169199,6 +169309,7 @@ var MolSysViewerController = class _MolSysViewerController {
               return addonStateLocal[key2];
             },
             set: (keyOrObj, val) => {
+              if ((this.systemSyncState ?? "synchronized") !== "synchronized") return;
               const updates = {};
               if (typeof keyOrObj === "string") {
                 updates[keyOrObj] = val;
@@ -169289,6 +169400,7 @@ var MolSysViewerController = class _MolSysViewerController {
           }
           this.activePanelWidgetKey = mKey;
           this.addonsPanel.mountAddonWidget(container);
+          this.systemSyncOverlay?.setReader?.(readOnlyActions.size ? container : null);
           break;
         }
         case "addon_panel_message": {
@@ -169905,6 +170017,7 @@ var MolSysViewerController = class _MolSysViewerController {
     return next;
   }
   cleanupActivePanelWidget(preserveWorkspaceChrome = false) {
+    this.systemSyncOverlay?.setReader?.(null);
     if (this.activePanelWidgetKey) {
       const parts = this.activePanelWidgetKey.split(":");
       if (parts.length > 0) {

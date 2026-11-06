@@ -46,10 +46,11 @@ documents, and historical audits.
 ## Current status and planning
 
 Current work is the provider-owned Molecular tools workspace: System tasks
-and Geometry / Translate are implemented in source. Follow the
+and Geometry transforms/fitting/bounded periodic tasks, plus Chemistry
+inspection, are implemented in contribution source. Follow the
 [current handoff](checkpoints.md#resume-in-one-page),
 [ordered next actions](checkpoints.md#what-is-next) and
-[receiving record](molsysmt_geometry_receiving_20261106.json). Human review is
+[receiving record](molsysmt_chemistry_receiving_20261106.json). Human review is
 postponed; hosted/owner/installed gates and future publication remain separate.
 The dated records below retain their original inputs.
 

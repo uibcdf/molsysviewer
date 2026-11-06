@@ -143,3 +143,15 @@ def test_default_admission_is_empty_and_invalid_declarations_fail_before_use():
 
     with pytest.raises(ValueError, match="tuple/list"):
         InvalidPanel()
+
+
+@pytest.mark.parametrize("endpoint", [None, "peer"])
+def test_mount_delivers_server_owned_reader_declaration_to_its_exact_endpoint(case, endpoint):
+    sent = []
+    case.widget.send = lambda message, buffers=None: sent.append(message)
+    case._ready = True
+    case._mount_addon_panel("readonly-receiving", "report", endpoint_id=endpoint)
+    mount = next(message for message in sent if message.get("op") == "mount_addon_panel")
+    assert mount["read_only_actions"] == ["inspect"]
+    assert mount.get("target_endpoint_id") == endpoint
+    assert case._active_panel_widgets[endpoint][2].read_only_actions == ("inspect",)

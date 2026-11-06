@@ -448,6 +448,7 @@ class PanelModeMixin:
                 "panel": panel_id,
                 "esm": widget._esm,
                 "css": getattr(widget, "_css", "") or "",
+                "read_only_actions": list(widget.read_only_actions),
                 **destination,
             }
         )
