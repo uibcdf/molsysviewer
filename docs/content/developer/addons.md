@@ -322,6 +322,56 @@ until a versioned opt-in projection/state contract is introduced.
 
 Add-on panels are loaded dynamically by the frontend as ES modules.
 
+### Presenting an independent result View
+
+The source integration under Viewer #301 provides
+`view.addons.manager.presentations`. This is a live-View host service, separate
+from scientific calculation and storage. Public calls use ArgDigest validation
+and `skip_digestion=False`.
+
+```python
+import molsysviewer as msv
+
+presentations = view.addons.manager.presentations
+handle = presentations.prepare(
+    lambda view_B: msv.new_view(molsys, view=view_B),
+    title="Independent result",
+)
+view_B = presentations.get(handle)
+```
+
+`prepare` initializes the supplied empty View synchronously using the correct
+host transport. Return that View or `None`; do not create another transport,
+display implicitly or start an event loop. Failure closes partial resources.
+Native scientific wrappers keep their return types; `view.extract` continues
+returning a View with its scene-transfer policy.
+
+After calculation, a panel may call
+`await model.present_view(handle, "notebook")` or
+`await model.present_view(handle, "window")`. Offer notebook only for a notebook
+host. A successful promise acknowledges presentation, not scientific
+qualification. A fresh browser click reserves the external window; failure
+retains the result and permits retry. Reopening the same destination reuses the
+View. Once shown below the source, use that View's canvas popup to detach it.
+
+Jupyter displays results below the source output or uses an independent View's
+own popup transport with a sized offscreen authority. Both depend on the same
+kernel. Qt creates another native window using the same QApplication, on its
+GUI thread, without starting another event loop.
+
+`records()` lists handles and presentation state; `get(handle)` recovers the
+View and `close(handle)` releases it. Providers must close unpresented handles
+when discarding a task or unmounting its panel. Presented Views survive source
+closure and panel navigation. They consume data/rendering resources until
+closed. Removing a notebook output removes its visual presentations; retain or
+recover Python references when needed. Kernel restart ends the live connection.
+Handles and live presentation state are not serialized scientific results or
+session-file promises. Ordinary loading preserves its independent-copy behavior;
+no zero-copy or universal RAM bound is promised.
+
+This is source functionality. Published package-pair compatibility, human
+visible Qt observations and installed qualification retain separate gates.
+
 ### 1. ESM Signature
 The panel entry script must export a `render` function:
 ```javascript

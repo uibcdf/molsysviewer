@@ -67,7 +67,8 @@ function requestRuntimeModule(model) {
 export default {
     async render(context) {
         const module = await requestRuntimeModule(context.model);
-        const widget = module.default || module;
+        const entrypoint = context.model.get("runtime_entrypoint");
+        const widget = entrypoint ? module[entrypoint] : module.default || module;
         if (!widget || typeof widget.render !== "function") {
             throw new Error("MolSysViewer runtime module does not export a render function");
         }
@@ -91,6 +92,7 @@ class MolSysViewerWidget(anywidget.AnyWidget):
     enable_popout = T.Bool(default_value=True).tag(sync=True)
     runtime_viewer_id = T.Unicode(default_value="").tag(sync=True)
     runtime_session_id = T.Unicode(default_value="").tag(sync=True)
+    presentation_host_id = T.Unicode(default_value="").tag(sync=True)
     autohide_controls = T.Bool(default_value=True).tag(sync=True)
     autohide_scope = T.Enum(["controls", "canvas"], default_value="controls").tag(sync=True)
     debug_js = T.Bool(default_value=False).tag(sync=True)

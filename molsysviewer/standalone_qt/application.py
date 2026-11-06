@@ -324,13 +324,14 @@ def create_standalone_qt0_window(
         def closeEvent(self, event):  # noqa: N802
             cleanup = self._molsysviewer_cleanup
             if cleanup is not None:
+                self._molsysviewer_cleanup = None
                 try:
                     cleanup()
                 except Exception:
+                    self._molsysviewer_cleanup = cleanup
                     logger.exception("Could not close the local Qt host cleanly")
                     event.ignore()
                     return
-                self._molsysviewer_cleanup = None
             super().closeEvent(event)
 
     window = StandaloneWindow()
@@ -367,6 +368,21 @@ def create_standalone_qt0_window(
         window, "Choose molecular input files", "", "All files (*)"
     )[0]
 
+    def independent_view_factory(result_title):
+        # Stay on the GUI callback thread and reuse QApplication. Never run a
+        # nested event loop or rebind an existing notebook View's transport.
+        if not app.thread().isCurrentThread():
+            raise RuntimeError("Independent desktop Views must be created on the Qt GUI thread.")
+        child_runtime = create_standalone_qt0_window(
+            None,
+            title=result_title,
+            include_popout=include_popout,
+            debug_js=debug_js,
+        )
+        return {**child_runtime, "view": child_runtime["webview"]._molsysviewer_view}
+
+    view._independent_view_factory = independent_view_factory
+
     _install_qt_fullscreen(window=window, webview=webview)
     _install_qt_downloads(window=window, webview=webview, QFileDialog=QFileDialog)
 
@@ -383,6 +399,7 @@ def create_standalone_qt0_window(
             if not download.isFinished():
                 download.cancel()
         view._studio_file_picker = None
+        view._independent_view_factory = None
         view.close()
         bridge._close()
         webview.stop()

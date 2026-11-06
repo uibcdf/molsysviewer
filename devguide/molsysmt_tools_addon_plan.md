@@ -1,5 +1,18 @@
 # MolSysMT tools add-on — implementation plan
 
+**Independent result presentation — 2026-11-05:** the maintainer approves
+explicit destinations after calculation, tracked in Viewer #301. The host
+prepares independent Views; Python recovers them through
+`view.addons.manager.presentations.get(handle)`. Jupyter supports below-source
+output or a browser window; Qt uses a new native window in the same application.
+Scientific wrapper returns and `view.extract` remain distinct. The owner PR
+adds System tasks for Extract subset and Copy system, with bounded candidate
+ownership and explicit structure order. Presentation retry reuses the result.
+Evidence and remaining gates are kept in
+[the active host report](pending_proposals/independent_result_view_presentation.md).
+Human visual review and publication remain postponed. Earlier dated receipts
+below retain their original narrower scope.
+
 **Actual Jupyter and mechanics repair receiving — 2026-11-05:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) is reconciled at
 `1c88e785b` with native `e614ba367` and received Viewer `36ab93b7`.

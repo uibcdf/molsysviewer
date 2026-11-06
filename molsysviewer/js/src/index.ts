@@ -7,6 +7,8 @@ import { trajectorySyncToAuthority } from "./messages/trajectory-intent";
 import { frontendSceneProjection, FRONTEND_CONTEXT_ACTIONS } from "./messages/frontend-scene-projection";
 import { bootPopup } from "./popup/popup-logic";
 import { PopupHostManager } from "./managers/popup-host";
+import { presentResult } from "./ui/presentation-surface";
+export { presentationSurface } from "./ui/presentation-surface";
 import { waitForCanvasDraw } from "./managers/canvas-draw";
 import { CameraSync } from "./managers/camera-sync";
 import { syncTrajectoryFrames } from "./managers/trajectory-sync";
@@ -833,6 +835,7 @@ function setupWidgetResizer(
  * Do not edit viewer.js directly; modify TS sources under js/src/ instead.
  */
 export function render({ model, el, runtimeSource }: { model: any; el: HTMLElement; runtimeSource?: string }) {
+        el.dataset.molsysviewerCanvasOutput = "true";
         const debug = !!model.get("debug_js");
         let disposed = false;
         const releaseRuntime: Array<() => void> = [];
@@ -1029,6 +1032,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
             sessionId: model.get("runtime_session_id"),
             onEndpointClosed: (mode, endpointId) => {
                 cancelSceneSnapshotsFor(mode);
+                if (mode === "canvas") (el as any).molsysviewerOnPopupClosed?.();
                 sendToPython({
                     event: "popup_endpoint_closed",
                     mode,
@@ -1042,6 +1046,18 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
             ),
         });
         const enablePopout = !!model.get("enable_popout");
+        (el as any).molsysviewerOpenPopup = async (win: Window) => {
+            await controllerPromise;
+            await popupMgr.open("canvas", win);
+            const deadline = Date.now() + 30000;
+            while (!popupMgr.isReady && !win.closed && !disposed && Date.now() < deadline) {
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+            if (!popupMgr.isReady || win.closed || disposed) {
+                win.close();
+                throw new Error("The result window did not become ready. Try again without recalculating.");
+            }
+        };
         const openPanelPopup = (preopenedWindow?: Window | null, panel?: "navigate" | "addons") => {
             controllerPromise.then(async c => {
                 // A reserved window came from the external canvas, which owns
@@ -1091,6 +1107,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
         // 4. Build UI Controls & Setup Sync
         controllerPromise.then(c => {
             if (disposed) { c.dispose(); return; }
+            c.presentResult = (id, destination) => presentResult(model.get("presentation_host_id"), id, destination);
             // Auto-expand Jupyter/VS Code cell output area to prevent scrolling of molsysviewer.
             // This is a strictly local change traversing up only our widget's parent chain.
             const removeOutputLimits = () => {

@@ -120398,17 +120398,17 @@ var CubeProvider = DataFormatProvider({
   },
   visuals: async (plugin, data) => {
     var _a, _b;
-    const surfaces = plugin.build();
+    const surfaces2 = plugin.build();
     const volumeReprs = [];
     const volumeData = (_b = (_a = data.volume.cell) === null || _a === void 0 ? void 0 : _a.obj) === null || _b === void 0 ? void 0 : _b.data;
     if (volumeData && Volume.isOrbitals(volumeData)) {
-      const volumePos = surfaces.to(data.volume).apply(StateTransforms.Representation.VolumeRepresentation3D, createVolumeRepresentationParams(plugin, volumeData, {
+      const volumePos = surfaces2.to(data.volume).apply(StateTransforms.Representation.VolumeRepresentation3D, createVolumeRepresentationParams(plugin, volumeData, {
         type: "isosurface",
         typeParams: { isoValue: Volume.IsoValue.relative(1), alpha: 0.4 },
         color: "uniform",
         colorParams: { value: ColorNames.blue }
       }));
-      const volumeNeg = surfaces.to(data.volume).apply(StateTransforms.Representation.VolumeRepresentation3D, createVolumeRepresentationParams(plugin, volumeData, {
+      const volumeNeg = surfaces2.to(data.volume).apply(StateTransforms.Representation.VolumeRepresentation3D, createVolumeRepresentationParams(plugin, volumeData, {
         type: "isosurface",
         typeParams: { isoValue: Volume.IsoValue.relative(-1), alpha: 0.4 },
         color: "uniform",
@@ -120416,7 +120416,7 @@ var CubeProvider = DataFormatProvider({
       }));
       volumeReprs.push(volumePos.selector, volumeNeg.selector);
     } else {
-      const volume = surfaces.to(data.volume).apply(StateTransforms.Representation.VolumeRepresentation3D, createVolumeRepresentationParams(plugin, volumeData, {
+      const volume = surfaces2.to(data.volume).apply(StateTransforms.Representation.VolumeRepresentation3D, createVolumeRepresentationParams(plugin, volumeData, {
         type: "isosurface",
         typeParams: { isoValue: Volume.IsoValue.relative(2), alpha: 0.4 },
         color: "uniform",
@@ -120425,7 +120425,7 @@ var CubeProvider = DataFormatProvider({
       volumeReprs.push(volume.selector);
     }
     const structure = await plugin.builders.structure.representation.applyPreset(data.structure, "auto");
-    await surfaces.commit();
+    await surfaces2.commit();
     const structureReprs = [];
     objectForEach(structure === null || structure === void 0 ? void 0 : structure.representations, (r) => {
       if (r)
@@ -145849,7 +145849,7 @@ function createGaussianSurfaceMeshes(structure, props, isoLevels, webgl) {
     const { transform: transform2, field: field2, idField, radiusFactor, resolution, maxRadius } = await computeStructureGaussianDensity(structure, sizeTheme, props).runInContext(ctx);
     const baseIso = Math.exp(-props.smoothness) / radiusFactor;
     const levels = isoLevels && isoLevels.length > 0 ? isoLevels : [baseIso];
-    const surfaces = [];
+    const surfaces2 = [];
     for (const level of levels) {
       const params = {
         isoLevel: level,
@@ -145867,9 +145867,9 @@ function createGaussianSurfaceMeshes(structure, props, isoLevels, webgl) {
       surface.meta.resolution = resolution;
       Mesh.computeNormals(surface);
       surface.setBoundingSphere(structure.boundary.sphere);
-      surfaces.push(surface);
+      surfaces2.push(surface);
     }
-    return surfaces;
+    return surfaces2;
   });
 }
 function buildColorMap(atomIndices, scalars, colorMap) {
@@ -169053,10 +169053,46 @@ var MolSysViewerController = class _MolSysViewerController {
           }
           container.appendChild(el);
           const msgListeners = [];
+          const pendingPresentations = /* @__PURE__ */ new Set();
           this.activePanelMsgListeners = msgListeners;
           const addonStateLocal = this.model ? { ...(this.model.get("addon_states") || {})[mAddon] || {} } : {};
           const changeListeners = {};
           const panelModel = {
+            present_view: (id, destination) => {
+              const open = this.presentResult || window.molsysviewer_present_result;
+              if (open) return open(id, destination);
+              return new Promise((resolve, reject) => {
+                const request = crypto.randomUUID();
+                const timer2 = setTimeout(() => {
+                  remove3();
+                  reject(new Error("The host did not present the result."));
+                }, 3e4);
+                const receive = (message) => {
+                  if (message?.type !== "presentation" || message.request_id !== request) return;
+                  remove3();
+                  if (message.error) reject(new Error(message.error));
+                  else resolve();
+                };
+                const remove3 = () => {
+                  clearTimeout(timer2);
+                  pendingPresentations.delete(cancel);
+                  const index = msgListeners.indexOf(receive);
+                  if (index >= 0) msgListeners.splice(index, 1);
+                };
+                const cancel = () => {
+                  remove3();
+                  reject(new Error("The panel was closed."));
+                };
+                pendingPresentations.add(cancel);
+                msgListeners.push(receive);
+                this.notify?.({
+                  event: "addon_panel_action",
+                  addon: mAddon,
+                  panel: mPanel,
+                  content: { type: "present_view", id, destination, request_id: request }
+                });
+              });
+            },
             send: (content) => {
               this.notify?.({ event: "addon_panel_action", addon: mAddon, panel: mPanel, content });
             },
@@ -169172,6 +169208,7 @@ var MolSysViewerController = class _MolSysViewerController {
               if (typeof result2 === "function") cleanup = result2;
             }
             this.activePanelCleanup = () => {
+              for (const cancel of pendingPresentations) cancel();
               if (typeof cleanup === "function") {
                 try {
                   cleanup();
@@ -171847,6 +171884,7 @@ var PopupHostManager = class {
     });
     win.molsysviewer_popup_channel = channel;
     if (this.controller) {
+      win.molsysviewer_present_result = this.controller.presentResult || window.molsysviewer_present_result;
       win.molsysviewer_init_options = {
         viewerMode: this.controller.getViewerMode(),
         controlsMode: this.controller.getControlsMode(),
@@ -172101,6 +172139,174 @@ var PopupHostManager = class {
       throw new Error(`Popup projection rejected: ${detail}`);
     }
     target.postMessage(encodePopupMessage(channel, envelope), this.targetOrigin());
+  }
+};
+
+// src/ui/presentation-surface.ts
+var surfaces = /* @__PURE__ */ new Map();
+function presentResult(hostId, id, destination) {
+  const open = surfaces.get(hostId);
+  if (!open) return Promise.reject(new Error("The notebook output is unavailable. Display the source View again."));
+  return open(id, destination);
+}
+var presentationSurface = {
+  async render({ model, el }) {
+    el.dataset.molsysviewerPresentationSurface = "true";
+    const manager = model.widget_manager;
+    if (!manager?.get_model || !manager?.create_view) throw new Error("This notebook cannot present child widgets.");
+    const sourceHost = document.createElement("div");
+    const resultsHost = document.createElement("div");
+    el.append(sourceHost, resultsHost);
+    const sourceModel = await manager.get_model(model.get("source_id"));
+    const sourceView = await manager.create_view(sourceModel);
+    sourceHost.appendChild(sourceView.el);
+    sourceView.trigger?.("displayed");
+    const id = model.model_id || sourceModel.get("presentation_host_id");
+    let disposed = false, sequence = 0, queue = Promise.resolve();
+    const entries3 = /* @__PURE__ */ new Map();
+    const reservations = /* @__PURE__ */ new Map();
+    const requests = /* @__PURE__ */ new Map();
+    async function popupApi(element, selector) {
+      const deadline = Date.now() + 3e4;
+      while (!disposed && Date.now() < deadline) {
+        const api = element.matches(selector) ? element : element.querySelector(selector);
+        if (typeof api?.molsysviewerOpenPopup === "function") return api;
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      }
+      throw new Error("The result canvas is not ready. Try opening it again.");
+    }
+    el.molsysviewerOpenPopup = async (win) => {
+      const api = await popupApi(sourceView.el, "[data-molsysviewer-canvas-output]");
+      api.molsysviewerOnPopupClosed = () => el.molsysviewerOnPopupClosed?.();
+      return api.molsysviewerOpenPopup(win);
+    };
+    const open = (resultId, destination) => {
+      if (disposed) return Promise.reject(new Error("The notebook output has been removed."));
+      if (destination !== "notebook" && destination !== "window") return Promise.reject(new Error("Choose notebook or window."));
+      if (destination === "window") {
+        const existing = entries3.get(resultId)?.win;
+        const win = existing && !existing.closed ? existing : window.open("", "_blank", "width=960,height=720");
+        if (!win) return Promise.reject(new Error("The browser blocked the window. Allow popups and try again; the result is retained."));
+        if (!existing || existing.closed) {
+          win.document.title = "Molecular result";
+          win.document.body.textContent = "Opening molecular result\u2026";
+        }
+        win.focus();
+        reservations.set(resultId, win);
+      }
+      const request = ++sequence;
+      return new Promise((resolve, reject) => {
+        const timer2 = setTimeout(() => {
+          requests.delete(request);
+          const win = reservations.get(resultId);
+          if (win && !entries3.get(resultId)?.win) win.close();
+          reservations.delete(resultId);
+          reject(new Error("Presentation did not complete. The result can be recovered from Python."));
+        }, 6e4);
+        requests.set(request, { resolve, reject, timer: timer2 });
+        model.send({ type: "show", id: resultId, destination, request_id: request });
+      });
+    };
+    surfaces.set(id, open);
+    async function synchronize() {
+      if (disposed) return;
+      const items = model.get("items") || [];
+      const live = new Set(items.map((item2) => item2.id));
+      for (const [key2, entry] of entries3) if (!live.has(key2)) {
+        entry.view.remove();
+        entry.element.remove();
+        entry.win?.close();
+        entries3.delete(key2);
+      }
+      for (const item2 of items) {
+        if (disposed) return;
+        let entry = entries3.get(item2.id);
+        try {
+          if (!entry) {
+            const widget = await manager.get_model(item2.model_id);
+            const view2 = await manager.create_view(widget);
+            if (disposed || !(model.get("items") || []).some((value) => value.id === item2.id)) {
+              view2.remove();
+              continue;
+            }
+            const element = document.createElement("section");
+            element.dataset.molsysviewerResult = item2.id;
+            const header2 = document.createElement("div");
+            header2.style.cssText = "display:flex;align-items:center;gap:12px;padding:12px 0;font:14px system-ui";
+            const title = document.createElement("strong");
+            title.textContent = item2.title;
+            const close = document.createElement("button");
+            close.textContent = "Close view";
+            close.style.cssText = "font:inherit;padding:5px 10px;border:1px solid #87909b;border-radius:6px;background:transparent;color:inherit;cursor:pointer";
+            close.onclick = () => model.send({ type: "close", id: item2.id });
+            header2.append(title, close);
+            element.append(header2, view2.el);
+            resultsHost.appendChild(element);
+            view2.trigger?.("displayed");
+            entry = { view: view2, element, destination: item2.destination, win: null, request: Symbol() };
+            entries3.set(item2.id, entry);
+            await popupApi(view2.el, "[data-molsysviewer-presentation-surface]");
+          }
+          if (entry.request === item2.request_id) continue;
+          entry.request = item2.request_id;
+          if (item2.destination === "window") {
+            const win = reservations.get(item2.id);
+            if (!win || win.closed) throw new Error("Click Open in new window to grant browser permission.");
+            reservations.delete(item2.id);
+            if (!entry.win || entry.win.closed) {
+              entry.element.style.cssText = "position:fixed;left:-100000px;top:0;width:960px;height:520px";
+              const child = await popupApi(entry.view.el, "[data-molsysviewer-presentation-surface]");
+              await child.molsysviewerOpenPopup(win);
+              child.molsysviewerOnPopupClosed = () => {
+                if (!disposed) model.send({ type: "close", id: item2.id });
+              };
+              entry.win = win;
+              win.document.title = item2.title;
+            } else entry.win.focus();
+          } else entry.element.scrollIntoView({ block: "nearest" });
+          model.send({ type: "shown", id: item2.id, request_id: item2.request_id });
+        } catch (error2) {
+          reservations.get(item2.id)?.close();
+          reservations.delete(item2.id);
+          model.send({ type: "shown", id: item2.id, request_id: item2.request_id, error: String(error2) });
+        }
+      }
+      sourceHost.hidden = model.get("source_closed") === true;
+    }
+    const changed = () => {
+      queue = queue.then(synchronize).catch((error2) => console.error("Result presentation failed", error2));
+    };
+    const response = (message) => {
+      if (message?.type !== "response") return;
+      const pending = requests.get(message.request_id);
+      if (!pending) return;
+      clearTimeout(pending.timer);
+      requests.delete(message.request_id);
+      if (message.error) pending.reject(new Error(message.error));
+      else pending.resolve();
+    };
+    model.on("change:items", changed);
+    model.on("change:source_closed", changed);
+    model.on("msg:custom", response);
+    await synchronize();
+    return () => {
+      disposed = true;
+      if (surfaces.get(id) === open) surfaces.delete(id);
+      model.off("change:items", changed);
+      model.off("change:source_closed", changed);
+      model.off("msg:custom", response);
+      for (const pending of requests.values()) {
+        clearTimeout(pending.timer);
+        pending.reject(new Error("The notebook output was removed."));
+      }
+      for (const win of reservations.values()) win.close();
+      for (const entry of entries3.values()) {
+        entry.win?.close();
+        entry.view.remove();
+      }
+      sourceView.remove();
+      el.replaceChildren();
+    };
   }
 };
 
@@ -175269,6 +175475,7 @@ function setupWidgetResizer(host, target, onResize) {
   host.appendChild(handle);
 }
 function render({ model, el, runtimeSource }) {
+  el.dataset.molsysviewerCanvasOutput = "true";
   const debug = !!model.get("debug_js");
   let disposed = false;
   const releaseRuntime = [];
@@ -175413,6 +175620,7 @@ function render({ model, el, runtimeSource }) {
     sessionId: model.get("runtime_session_id"),
     onEndpointClosed: (mode, endpointId) => {
       cancelSceneSnapshotsFor(mode);
+      if (mode === "canvas") el.molsysviewerOnPopupClosed?.();
       sendToPython({
         event: "popup_endpoint_closed",
         mode,
@@ -175426,6 +175634,18 @@ function render({ model, el, runtimeSource }) {
     )
   });
   const enablePopout = !!model.get("enable_popout");
+  el.molsysviewerOpenPopup = async (win) => {
+    await controllerPromise;
+    await popupMgr.open("canvas", win);
+    const deadline = Date.now() + 3e4;
+    while (!popupMgr.isReady && !win.closed && !disposed && Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    if (!popupMgr.isReady || win.closed || disposed) {
+      win.close();
+      throw new Error("The result window did not become ready. Try again without recalculating.");
+    }
+  };
   const openPanelPopup = (preopenedWindow, panel) => {
     controllerPromise.then(async (c8) => {
       if (!preopenedWindow) {
@@ -175468,6 +175688,7 @@ function render({ model, el, runtimeSource }) {
       c8.dispose();
       return;
     }
+    c8.presentResult = (id, destination) => presentResult(model.get("presentation_host_id"), id, destination);
     const removeOutputLimits = () => {
       let parent = target.parentElement;
       while (parent) {
@@ -175901,6 +176122,7 @@ export {
   index_default as default,
   mountControls,
   needsRunningSession,
+  presentationSurface,
   render
 };
 /*! Bundled license information:

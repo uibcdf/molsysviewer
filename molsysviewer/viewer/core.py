@@ -107,8 +107,12 @@ class MolSysView(
     """
 
     def _repr_mimebundle_(self, include=None, exclude=None):
-        """IPython/Jupyter display hook (delegates to the underlying widget)."""
-        return self.widget._repr_mimebundle_(include=include, exclude=exclude)
+        """Display a notebook host that can present independent result Views."""
+        if isinstance(self.widget, MolSysViewerWidget):
+            output = self.addons.manager.presentations._surface()
+        else:
+            output = self.widget
+        return output._repr_mimebundle_(include=include, exclude=exclude)
 
     def __enter__(self):
         return self
@@ -133,6 +137,12 @@ class MolSysView(
         if self._closed:
             return
         self._closed = True
+        presentations = getattr(self, "_presentations", None)
+        if presentations is not None:
+            presentations._source_closed()
+        callbacks, self._close_callbacks = self._close_callbacks, []
+        for callback in callbacks:
+            callback()
         self._frame_change_callbacks.clear()
         self.player._frame_events.clear()  # noqa: SLF001
         self._unmount_all_addon_panels()
@@ -178,6 +188,8 @@ class MolSysView(
         transport: Any = None,
     ) -> None:
         self._closed = False
+        self._close_callbacks = []
+        self._presentations = None
         self._system_edits = SystemEditsManager(self)
         # `transport` lets a non-Jupyter host (e.g. the standalone Qt shell) inject
         # its own widget-like channel (see standalone_qt.QtViewChannel). It must

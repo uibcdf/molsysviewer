@@ -51,6 +51,13 @@ class AddonPanelWidget(anywidget.AnyWidget):
             )
         elif msg_type == "query" and content.get("id") == "viewer.context":
             self.send({"type": "context", "context": self._build_viewer_context()})
+        elif msg_type == "present_view":
+            try:
+                self._view.addons.manager.presentations._show(content.get("id"), content.get("destination"))
+                error = ""
+            except Exception as exc:
+                error = str(exc)[:1000]
+            self.send({"type": "presentation", "request_id": content.get("request_id"), "error": error})
 
     def _build_viewer_context(self) -> dict[str, Any]:
         view = self._view
@@ -1127,10 +1134,22 @@ class _AddonsManagerProxy:
         """Generic scientific-edit coordination shared by this view's addons."""
         return self._manager._view._system_edits
 
+    @property
+    def presentations(self):
+        """Prepare/recover independent Views using the current host's transport."""
+        view = self._manager._view
+        if view._presentations is None:
+            from .presentations import ViewPresentations
+
+            view._presentations = ViewPresentations(view)
+        return view._presentations
+
     def __dir__(self) -> list[str]:
         # Show the management surface defined on the manager class; per-add-on
         # namespaces (resolved via __getattr__) are intentionally not listed here.
-        return sorted({"system_edits", *(a for a in dir(type(self._manager)) if not a.startswith("_"))})
+        return sorted(
+            {"system_edits", "presentations", *(a for a in dir(type(self._manager)) if not a.startswith("_"))}
+        )
 
 
 class ViewAddonsManager(_AddonAggregationMixin):

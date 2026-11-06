@@ -175,6 +175,8 @@ export class PopupHostManager {
             .molsysviewer_popup_channel = channel;
 
         if (this.controller) {
+            (win as any).molsysviewer_present_result = this.controller.presentResult
+                || (window as any).molsysviewer_present_result;
             (win as any).molsysviewer_init_options = {
                 viewerMode: this.controller.getViewerMode(),
                 controlsMode: this.controller.getControlsMode(),

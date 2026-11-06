@@ -580,6 +580,7 @@ export function createMolSysViewerPluginSpec() {
 const CONTEXT_MENU_DRAG_THRESHOLD_PX = 5;
 
 export class MolSysViewerController {
+    presentResult?: (id: string, destination: "notebook" | "window") => Promise<void>;
     private readonly contextMenu: ViewerContextMenu;
     private readonly measurementTools: MeasurementToolController;
     private readonly activeSelection: ActiveSelectionController;
@@ -3048,6 +3049,7 @@ export class MolSysViewerController {
                     }
                     container.appendChild(el);
                     const msgListeners: Array<(msg: any) => void> = [];
+                    const pendingPresentations = new Set<() => void>();
                     this.activePanelMsgListeners = msgListeners;
 
                     const addonStateLocal: Record<string, any> = this.model
@@ -3056,6 +3058,32 @@ export class MolSysViewerController {
                     const changeListeners: Record<string, Array<(model: any, val: any) => void>> = {};
 
                     const panelModel = {
+                        present_view: (id: string, destination: "notebook" | "window") => {
+                            const open = this.presentResult || (window as any).molsysviewer_present_result;
+                            if (open) return open(id, destination);
+                            // Native Qt uses the same panel route; its host owns
+                            // the new window and QApplication lifetime.
+                            return new Promise<void>((resolve, reject) => {
+                                const request = crypto.randomUUID();
+                                const timer = setTimeout(() => { remove(); reject(new Error("The host did not present the result.")); }, 30000);
+                                const receive = (message: any) => {
+                                    if (message?.type !== "presentation" || message.request_id !== request) return;
+                                    remove();
+                                    if (message.error) reject(new Error(message.error)); else resolve();
+                                };
+                                const remove = () => {
+                                    clearTimeout(timer);
+                                    pendingPresentations.delete(cancel);
+                                    const index = msgListeners.indexOf(receive);
+                                    if (index >= 0) msgListeners.splice(index, 1);
+                                };
+                                const cancel = () => { remove(); reject(new Error("The panel was closed.")); };
+                                pendingPresentations.add(cancel);
+                                msgListeners.push(receive);
+                                this.notify?.({ event: "addon_panel_action", addon: mAddon, panel: mPanel,
+                                    content: { type: "present_view", id, destination, request_id: request } });
+                            });
+                        },
                         send: (content: any) => {
                             this.notify?.({ event: "addon_panel_action", addon: mAddon, panel: mPanel, content });
                         },
@@ -3165,6 +3193,7 @@ export class MolSysViewerController {
                             if (typeof result === "function") cleanup = result;
                         }
                         this.activePanelCleanup = () => {
+                            for (const cancel of pendingPresentations) cancel();
                             if (typeof cleanup === "function") { try { cleanup(); } catch { /* ignore */ } }
                             if (this.model && onModelChange) {
                                 this.model.off("change:addon_states", onModelChange);
