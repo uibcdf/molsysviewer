@@ -917,7 +917,29 @@ the final core/hosted gates. This is the prerequisite for trustworthy Analysis
 row adoption, now implemented and received below. All remaining approved task
 families stay required. Human receiving and both 1.0 publications remain postponed.
 
-**Current handoff — Analysis scene adoption, 2026-11-06:**
+**Current handoff — expert forces and full Analysis baseline, 2026-11-06:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) publishes
+`38147a9f8b4e6c33b7d038ecf39603861495f541`. The explicit force reader mirrors
+native #572 through the serialized current-primary reader. It preserves
+complete-model filtering, first-structure versus explicit ordered axes, force
+quantities, pending reads and detached results without changing the scene.
+The [force receiving](molsysmt_force_receiving_20261106.json) records 149
+mechanical cases, 175 native/affected/preflight cases, one new guide block and
+six help doctests. Independent CPU/Reference, energy-gradient and selected
+Reference PME controls also verify source/scene/analysis preservation. All
+native scientific/Rust code and course executable cells remain unchanged.
+
+The clean reconciled parent `2bb52b77c` now passes all 4,827 addon cases
+without failures/skips in 1,134.99 s; 5,001 selected inputs, source heads and
+contribution status remain unchanged. That complete result predates the force
+addition. Keep its scope separate from latest-source hosted/full, owner,
+installed and postponed human acceptance. Current exposure is 243/248 paths:
+atom-name correspondence, chemical templates and protonation assessment still
+need expert admission; two MD declarations remain native stubs. All remaining
+GUI families and complete scientific-session acceptance stay required. Both
+1.0 publications and candidate/tag/package operations remain paused.
+
+**Prior Analysis handoff — 2026-11-06:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) publishes
 `2bb52b77c52edbca98a11c621cee499437a80832`, reconciling owner main `882b65b9c`
 without changing its scientific algorithms. Analysis rows now explicitly select
@@ -937,9 +959,9 @@ zero-page-error claim is made. The
 [consumer receipt](molsysmt_analysis_scene_receiving_20261106.json) binds the
 exact sources, numerical/geometry checks and separate acceptance scopes.
 
-Source exposure is 242/248 paths. Native forces, protonation assessment,
-atom-name correspondence and chemical-reference templates now exist on the
-owner basis but require their own bound-consumer admission. The two remaining
+At that pre-force snapshot, source exposure was 242/248 paths. The later force
+receiving is recorded above; protonation assessment, atom-name correspondence
+and chemical-reference templates still require bound-consumer admission. The two remaining
 MD entries are native stubs. Owner review, complete integrated/hosted gates,
 installed qualification, all remaining approved GUI families and postponed
 human Jupyter/visible Qt acceptance remain pending. Existing shared-environment
@@ -2626,7 +2648,7 @@ from current nonperiodic geometric Measures.
    receiving. Keep the old hosted #301 failures and local environment recovery
    distinct from the new head; queued jobs are not passing evidence.
 2. Receive exact-head CI for Analysis and session receiving, keeping the clean
-   4,821-case fa119ac12 result separate from the newly integrated owner source.
+   complete 4,827-case 2bb52b77c result separate from the later force source.
    Native #594–#598 are resolved by the owner; #612 and #613–#616 retain
    their distinct scopes and unsuccessful matrices remain historical.
    Continue required Geometry cell/reference/sequence/orientation, Chemistry
@@ -2634,9 +2656,10 @@ from current nonperiodic geometric Measures.
    awaits uibcdf/molsysmt#602; no task family is removed from the full objective.
 3. Keep the explicitly postponed human System/results/Geometry Jupyter/visible
    Qt review pending. Automated browser transport is received, not a substitute
-   for that acceptance. Owner #583/#584 repairs are received. Native #572/#576
-   and new correspondence/template routes need their own bound-consumer
-   admission; #582 and proposed addon/tool corrections retain their scopes.
+   for that acceptance. Owner #583/#584 and expert #572 force repairs are
+   received. Native #576 assessment/managed application and correspondence/
+   template routes still need bound-consumer admission; #582 and proposed
+   addon/tool corrections retain their scopes.
 4. Reconcile remaining owner/public-artifact receiving, including #294, without
    duplicate dispatches or downstream scientific substitutes.
 5. Consolidate documentation after the agreed functionality, then freeze and

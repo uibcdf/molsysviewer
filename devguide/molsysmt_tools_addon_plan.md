@@ -1,6 +1,17 @@
 # MolSysMT tools add-on — implementation plan
 
-**Current source scope — 2026-11-06:** System / Remove atoms, Extract subset and
+**Current receiving — 2026-11-06:** published PR #543 head `38147a9f8` adds the
+native atomic-force mirror with 149 mechanical and 175 native/affected controls
+passing; its guide block and six help doctests execute. The clean combined
+Analysis parent `2bb52b77c` separately passes 4,827 complete addon cases with
+unchanged selected inputs. See [force receiving](molsysmt_force_receiving_20261106.json)
+and the [current handoff](checkpoints.md#resume-in-one-page) for exact sources
+and remaining gates. Exposure is 243/248 paths, not a scientific completeness
+claim. Atom-name correspondence, chemical templates, protonation assessment/
+managed application, remaining GUI families and complete scientific-session
+acceptance remain required. Human acceptance and publications stay postponed.
+
+**Implemented GUI source scope — 2026-11-06:** System / Remove atoms, Extract subset and
 Copy system, plus Geometry / Translate, Center, Superpose structures and bounded
 periodic coordinate tasks, plus Chemistry stored-information/hydrogen
 inspection and explicit preparation, plus Analysis distances/extrema/neighbors,

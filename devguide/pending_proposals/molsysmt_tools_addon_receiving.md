@@ -14,6 +14,24 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Expert force reader and complete reconciled baseline — 2026-11-06
+
+PR #543 publishes `38147a9f8`, adding the explicit native #572 force reader.
+The [force receipt](../molsysmt_force_receiving_20261106.json) retains 149
+mechanical and 175 native/affected/preflight passes, one guide block and six
+help doctests. Complete-model selection, explicit structure order/repetition,
+empty axes, force quantities, pending reads and replacement/close lifetime
+preserve scientific domains, saved analyses, scene and history. Independent
+CPU/Reference, central energy-gradient and selected Reference PME checks do
+not imply arbitrary-model/GPU or graphical force-arrow qualification.
+
+Its clean `2bb52b77c` parent now passes the complete 4,827-case addon collection,
+with 5,001 unchanged selected inputs and both source heads. This receives the
+reconciled Analysis baseline, not the later force head. The next three native
+API admissions and all remaining GUI/scientific-session families stay required.
+Latest-source full/hosted, owner/installed and postponed human acceptance remain
+separate; publications stay paused.
+
 ## Analysis and scientific-session receiving — 2026-11-06
 
 Published contribution `2bb52b77c` reconciles owner main `882b65b9c` and
@@ -21,8 +39,9 @@ retains explicit Analysis row selection/focus/live core Measures. Its frozen
 pre-merge contribution `fa119ac12` passes 4,821 complete addon cases without
 failures/skips and with 4,957 unchanged selected inputs. The newer merged
 owner source separately passes 121 Analysis/preflight cases and 12 actual
-TcTIM/three-structure Jupyter steps through both popups. Its integrated full
-and hosted gates remain pending; these counts are not combined. The
+TcTIM/three-structure Jupyter steps through both popups. Its complete 4,827-case integrated parent gate subsequently passes as recorded
+above; latest-source hosted/owner/installed gates remain separate. Counts
+from different scopes are not combined. The
 [row-adoption receipt](../molsysmt_analysis_scene_receiving_20261106.json)
 keeps independent numerical/actual geometry checks, plain-Jupyter diagnostic
 controls and all qualification limits. Source exposure is 242/248; four new
