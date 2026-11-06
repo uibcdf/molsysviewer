@@ -1049,11 +1049,8 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
         (el as any).molsysviewerClosePopup = () => popupMgr.close("canvas");
         (el as any).molsysviewerOpenPopup = async (win: Window) => {
             await controllerPromise;
-            if (popupMgr.popoutWin && !popupMgr.popoutWin.closed) {
-                if (popupMgr.popoutWin !== win) win.close();
-                popupMgr.popoutWin.focus();
-                return popupMgr.popoutWin;
-            }
+            const existing = popupMgr.focusCanvasWindow(win);
+            if (existing) return existing;
             await popupMgr.open("canvas", win);
             const deadline = Date.now() + 30000;
             while (!popupMgr.isReady && !win.closed && !disposed && Date.now() < deadline) {

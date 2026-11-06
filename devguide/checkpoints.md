@@ -1,5 +1,8 @@
 # Development checkpoint
 
+Use [the current handoff](#resume-in-one-page) and [next actions](#what-is-next);
+the dated evidence below retains its original source scope.
+
 **Actual Jupyter and mechanics repair receiving — 2026-11-05:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) is reconciled at
 `1c88e785b` with native `e614ba367` and received Viewer `36ab93b7`.
@@ -902,28 +905,25 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**Current handoff — 2026-11-05:** #269 and #291 retain source receiving.
-The [public-provider recovery](public_provider_distribution_receiving_20261104.json)
-keeps old hosted/local failures explicit: public CI selects pandas 2.3.3 until
-a qualified provider containing #431 arrives; current-source/pandas-3 tests
-pass separately. All 31 local failed/error cases recover under the declared
-execution profile; aggregate source evidence does not qualify a hosted matrix.
-#292/#293 source corrections and guarded distribution reviews are complete;
-#294 retains artifact and private initialization receiving.
-[#295](archive/source_pair_pandas_guard_portability.md) receives the explicit
-rejection on `793a92db`: source pair 41899772394 passes three hosts, with all
-fourteen cases verified in each original JUnit. General CI 41899772338 attempt 2
-now passes all eight test cells; each import/test/coverage step is verified.
-The initial macOS Python 3.12 acquisition cancellation remains preserved.
-Browser/experimental Qt pass independently. MolSysMT PR #543 now carries the
-first real System / Remove atoms panel plus native 50854766d platform receiving. The
-[receipt](molsysmt_platform_receiving_20261105.json) identifies source
-e3d5d21a5, 4,512 addon cases, 481 native/tool controls and actual
-Mol*/ESM/Python receiving. The dated expert inventory is 242/245, build 31/31.
-The PR is mergeable; owner review and hosted CI remain pending. Native
-#583/#584 and broader #582 plus #572/#576, live Jupyter/Qt/popups and installed
-qualification retain their own scope.
-Both 1.0 publications remain paused.
+**Current handoff — 2026-11-06:** the owner contribution to
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) now implements
+System / Remove atoms, Extract subset and Copy system, plus Geometry / Translate.
+The [source receiving record](molsysmt_geometry_receiving_20261106.json) separates
+native numerical checks, host tests, actual Jupyter/Mol*/popup receiving and
+remaining hosted/installed/human gates. Expert paths/defaults and native
+scientific algorithms are unchanged. Host #302 permits atomic selection
+revalidation; #303 honors provider order/entry panels while preserving user
+choices. The prior three hosted failures under #301 have source corrections;
+old CI outcomes remain recorded, not relabeled.
+
+Independent results use the implemented host presentation service. Human
+Jupyter/visible Qt acceptance remains explicitly postponed. Owner #583/#584
+repairs are received on native ed09f6453; their earlier limits do not remain
+open consumer defects. Broader #582, #572 and #576 retain their owner scope.
+Continue exact-head CI/owner review and Rotate next, then other qualified
+Chemistry/Analysis tasks. Installed qualification, broad documentation and a
+future candidate remain separate. 0.25.0 is unfrozen and both 1.0 publications
+remain paused. Earlier dated receipts retain their original source identities.
 
 The latest user-directed standalone round is summarized in the
 [final review](standalone_final_review_20261029.md). Receive its remaining
@@ -2521,27 +2521,24 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current order — 2026-11-05:**
+**Current order — 2026-11-06:**
 
-1. Receive exact-head CI and owner review of PR #543 `1c88e785b`, native
-   `e614ba367` and received Viewer `36ab93b7`. The contribution is mergeable;
-   its current native/consumer/GUI scopes pass. Retain the complete 4,485-case
-   gate at its older basis and native #583/#584 limits; queued CI is not green.
-2. Human Jupyter/visible Qt/popup review is explicitly postponed. The actual-
-   Jupyter automated guard is received and does not replace that acceptance.
-   Continue independent remaining System/Geometry/Chemistry/Analysis tasks;
-   independent new-View presentation needs a qualified shared host path.
-3. Receive scientific-owner #583/#584 repairs; retain #582 effective recipes,
-   #572 force reading, #576 correspondence and #589 engine-state copy ownership.
-   Native #561/#588 repairs are received. Addon #590/#591 and #587's tool fix
-   remain in the owner PR. Shared inventory-awareness/adoption is tracked by
-   MolSysSuite#171 and MolI#85; three earlier label discrepancies remain separate.
-4. Receive applicable hosted artifacts, retaining the prior macOS and
-   #295 public-provider/pandas evidence. Triage #294's import-order observation
-   with controlled inputs; do not duplicate dispatches to bypass queues.
-5. Consolidate documentation and scope the next pre-1.0 artifact after remaining
-   work is accepted. Installed qualification and both paused 1.0 publication
-   decisions stay separate; no tag or package publication is authorized here.
+1. Complete and inspect the applicable exact-head Viewer CI and owner PR #543
+   receiving. Keep the old hosted #301 failures and local environment recovery
+   distinct from the new head; queued jobs are not passing evidence.
+2. Continue Geometry with Rotate after reviewing its native axis/angle tool and
+   explicit fixed/per-structure-center contract. Translate is implemented;
+   Chemistry, Analysis and other tasks still need individual qualification.
+3. Keep the explicitly postponed human System/results/Geometry Jupyter/visible
+   Qt review pending. Automated browser transport is received, not a substitute
+   for that acceptance. Owner #583/#584 repairs are received; #582/#572/#576 and
+   proposed addon/tool corrections retain their own review/integration scope.
+4. Reconcile remaining owner/public-artifact receiving, including #294, without
+   duplicate dispatches or downstream scientific substitutes.
+5. Consolidate documentation after the agreed functionality, then freeze and
+   qualify a new pre-1.0 candidate. Both 1.0 publications and tag/package actions
+   remain paused and require their separate authorization.
+
 
 Earlier source receiving, public packages and human observations retain their
 scopes; no new candidate freeze or publication is authorized. Both 1.0

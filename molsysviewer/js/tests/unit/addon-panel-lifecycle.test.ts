@@ -192,3 +192,34 @@ test("backend error ack shows a frontend toast", async () => {
         restore();
     }
 });
+
+// These normalization/selection methods need no DOM or molecular substitute.
+// The browser receiver separately exercises the registered provider and clicks.
+test("addon navigation honors declared order and entry without resetting a valid choice", () => {
+    const controller: any = Object.create(MolSysViewerController.prototype);
+    const workspace_specs = [
+        { addon: "z", id: "z", title: "First", order: -1, entry_panel: "system" },
+        { addon: "a", id: "a", title: "Second", order: 10 },
+    ];
+    controller.addonWorkspaces = controller.buildAddonWorkspaceSummary({ workspace_specs });
+    assert.deepStrictEqual(controller.addonWorkspaces.map((w: any) => w.id), ["z", "a"]);
+    controller.addonPanels = controller.buildAddonPanelSummary({workspace_specs, panel_specs: [
+        {addon: "z", id: "geometry", title: "Geometry", order: 0},
+        {addon: "z", id: "system", title: "System", order: 10},
+        {addon: "z", id: "last", title: "Last", order: 20},
+    ]});
+    assert.deepStrictEqual(controller.getWorkspacePanels("z").map((p: any) => p.id), ["geometry", "system", "last"]);
+    controller.currentWorkspacePanelByWorkspace = new Map();
+    assert.strictEqual(controller.ensureWorkspacePanelSelection("z"), "system");
+    controller.currentWorkspacePanelByWorkspace.set("z", "geometry");
+    assert.strictEqual(controller.ensureWorkspacePanelSelection("z"), "geometry");
+    controller.currentWorkspacePanelByWorkspace.set("z", "retired");
+    controller.addonWorkspaces[0].entryPanel = "missing";
+    assert.strictEqual(controller.ensureWorkspacePanelSelection("z"), "geometry");
+    assert.strictEqual(controller.ensureWorkspacePanelSelection("unknown"), null);
+    const fallback = controller.buildAddonPanelSummary({workspace_specs, panel_specs: [
+        {addon:"z",id:"z",title:"Z",order:NaN},
+        {addon:"z",id:"a",title:"A"},
+    ]});
+    assert.deepStrictEqual(fallback.map((p: any) => p.id), ["a","z"]);
+});

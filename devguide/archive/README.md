@@ -456,3 +456,6 @@ Completed work, kept for the reasoning:
 - [Qt initial load policy](qt_initial_load_policy.md) — #274 shares factory loading semantics with Qt, preserving the full system for visual selections.
 - [Qt live array references](qt_live_array_reference.md) — #275 negotiates the real lazy binary path, preserves raw payload identity and checks actual Qt delivery.
 - [Production TypeScript coverage](js_coverage_report_is_empty.md) — #290 restores measured source coverage, rejects invalid reports and verifies hosted LCOV against the local result.
+
+- [Managed edit selection confirmation](managed_edit_selection_confirmation.md) — #302 permits host selection revalidation only during synchronized edit preparation, preserving mutation/pending guards.
+- [Addon workspace entry and order](addon_workspace_entry_and_order.md) — #303 honors provider navigation order and initial panel while retaining user choices.

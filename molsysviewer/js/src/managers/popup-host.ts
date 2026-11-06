@@ -118,6 +118,15 @@ export class PopupHostManager {
         return this.panelWin && !this.panelWin.closed;
     }
 
+    /** Reuse the live canvas window without toggling or replacing its channel. */
+    focusCanvasWindow(reservation?: Window): Window | null {
+        const current = this.popoutWin;
+        if (!current || current.closed) return null;
+        if (reservation && reservation !== current) reservation.close();
+        current.focus();
+        return current;
+    }
+
     async open(mode: "canvas" | "panel" = "canvas", preopenedWindow?: Window | null,
         panelOptions: { panel?: "navigate" | "addons"; restoreHostPanel?: boolean } = {}) {
         const isOpen = mode === "canvas" ? this.isCanvasOpen : this.isPanelOpen;

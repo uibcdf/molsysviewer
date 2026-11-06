@@ -99,3 +99,21 @@ window ownership does not certify rendered Qt/GPU behavior.
 Unrelated human scratch files and all sibling worktrees are preserved. The suite
 state refresh reports missing PeptideMT and unrelated ahead/behind/dirty clones;
 none is merged or installed for this work.
+
+## Source CI correction and Geometry receiving — 2026-11-06
+
+Old run 42168035122 failed the same three assertions on all four Linux minors:
+a stale capability audit, direct access to a private popup window, and the
+obsolete mocked MIME expectation. The audit is regenerated, window reuse stays
+inside its manager, and real-widget representation/cleanup replaces the obsolete
+expectation. The complete qualified local core selection passes 3,464 cases
+with 21 justified skips and 15 deselected Qt-runtime cases. The initial sandbox
+full run and all original hosted failures are retained as failed observations.
+
+The shared consumer now adds Geometry / Translate, with explicit units, structures
+and update/result effects. All three actual-Jupyter scenarios pass (20 browser
+checks) alongside 83 System/Geometry, 142 overlapping geometry/native-transform
+and 36 distribution/smoke controls. #302/#303 close their host source defects;
+owner integration, hosted exact-head, human and installed gates stay separate.
+The [receiving record](../molsysmt_geometry_receiving_20261106.json) keeps exact
+source hashes, complete outcomes, initial failures and the plain Jupyter control.

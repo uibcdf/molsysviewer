@@ -162,6 +162,11 @@ promise bounded or incremental trajectory transfer for that route.
 
 ## How the host finds it
 
+Workspace and panel `order` values control navigation, with IDs as deterministic
+tie-breakers. A workspace's valid `entry_panel` selects its initial panel when
+there is no valid remembered user choice. Runtime refresh preserves an existing
+choice; a missing entry falls back to the first ordered available panel.
+
 Three routes, in decreasing order of preference. They are not equivalent, and the
 MolSysSuite add-ons do not all use the same one:
 

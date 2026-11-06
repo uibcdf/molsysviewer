@@ -128,6 +128,8 @@ type WorkspaceRuntime = {
     title: string;
     subtitle?: string;
     addon?: string;
+    order?: number;
+    entryPanel?: string;
     panelCount?: number;
     workbenchSectionCount?: number;
     workbenchSectionTitles?: string[];
@@ -140,6 +142,7 @@ type AddonPanelRuntime = {
     addon: string;
     id: string;
     title: string;
+    order?: number;
     description?: string;
     entry?: string;
     widget_class?: string;
@@ -3739,8 +3742,10 @@ export class MolSysViewerController {
                 id: item.id as string,
                 title: item.title as string,
                 addon: typeof item?.addon === "string" ? item.addon as string : undefined,
+                order: Number.isFinite(item?.order) ? item.order as number : 0,
+                entryPanel: typeof item?.entry_panel === "string" ? item.entry_panel as string : undefined,
             }))
-            .sort((left, right) => left.id.localeCompare(right.id));
+            .sort((left, right) => left.order - right.order || left.id.localeCompare(right.id));
     }
 
     private buildAddonPanelSummary(msg: any): AddonPanelRuntime[] {
@@ -3765,11 +3770,12 @@ export class MolSysViewerController {
                 addon: item.addon as string,
                 id: item.id as string,
                 title: item.title as string,
+                order: Number.isFinite(item?.order) ? item.order as number : 0,
                 description: typeof item?.description === "string" ? item.description as string : undefined,
                 entry: typeof item?.entry === "string" ? item.entry as string : undefined,
                 widget_class: typeof item?.widget_class === "string" ? item.widget_class as string : undefined,
             }))
-            .sort((left, right) => left.key.localeCompare(right.key));
+            .sort((left, right) => left.order - right.order || left.key.localeCompare(right.key));
     }
 
     private buildAddonRuntimeSummary(msg: any): AddonRuntimeSummary[] {
@@ -3967,7 +3973,8 @@ export class MolSysViewerController {
         }
         const current = this.currentWorkspacePanelByWorkspace.get(workspaceId);
         if (current && panels.some((item) => item.id === current)) return current;
-        const next = panels[0].id;
+        const entry = this.addonWorkspaces.find(item => item.id === workspaceId)?.entryPanel;
+        const next = panels.find(item => item.id === entry)?.id ?? panels[0].id;
         this.currentWorkspacePanelByWorkspace.set(workspaceId, next);
         return next;
     }

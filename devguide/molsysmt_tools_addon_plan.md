@@ -1,5 +1,12 @@
 # MolSysMT tools add-on — implementation plan
 
+**Current source scope — 2026-11-06:** System / Remove atoms, Extract subset and
+Copy system, plus Geometry / Translate, share selection and independent-result
+controls in the owner PR #543. Native science and expert defaults are unchanged.
+See [receiving](molsysmt_geometry_receiving_20261106.json) and the
+[current work order](checkpoints.md#what-is-next); Rotate is next. Human
+Jupyter/visible Qt review remains postponed and no release is authorized.
+
 **Independent result presentation — 2026-11-05:** the maintainer approves
 explicit destinations after calculation, tracked in Viewer #301. The host
 prepares independent Views; Python recovers them through

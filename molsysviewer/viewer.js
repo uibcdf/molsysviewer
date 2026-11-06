@@ -169730,8 +169730,10 @@ var MolSysViewerController = class _MolSysViewerController {
     return specs.filter((item2) => typeof item2?.id === "string" && typeof item2?.title === "string").map((item2) => ({
       id: item2.id,
       title: item2.title,
-      addon: typeof item2?.addon === "string" ? item2.addon : void 0
-    })).sort((left, right) => left.id.localeCompare(right.id));
+      addon: typeof item2?.addon === "string" ? item2.addon : void 0,
+      order: Number.isFinite(item2?.order) ? item2.order : 0,
+      entryPanel: typeof item2?.entry_panel === "string" ? item2.entry_panel : void 0
+    })).sort((left, right) => left.order - right.order || left.id.localeCompare(right.id));
   }
   buildAddonPanelSummary(msg) {
     const specs = Array.isArray(msg?.panel_specs) ? msg.panel_specs : [];
@@ -169749,10 +169751,11 @@ var MolSysViewerController = class _MolSysViewerController {
       addon: item2.addon,
       id: item2.id,
       title: item2.title,
+      order: Number.isFinite(item2?.order) ? item2.order : 0,
       description: typeof item2?.description === "string" ? item2.description : void 0,
       entry: typeof item2?.entry === "string" ? item2.entry : void 0,
       widget_class: typeof item2?.widget_class === "string" ? item2.widget_class : void 0
-    })).sort((left, right) => left.key.localeCompare(right.key));
+    })).sort((left, right) => left.order - right.order || left.key.localeCompare(right.key));
   }
   buildAddonRuntimeSummary(msg) {
     const records = Array.isArray(msg?.addon_records) ? msg.addon_records : [];
@@ -169896,7 +169899,8 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     const current2 = this.currentWorkspacePanelByWorkspace.get(workspaceId);
     if (current2 && panels.some((item2) => item2.id === current2)) return current2;
-    const next = panels[0].id;
+    const entry = this.addonWorkspaces.find((item2) => item2.id === workspaceId)?.entryPanel;
+    const next = panels.find((item2) => item2.id === entry)?.id ?? panels[0].id;
     this.currentWorkspacePanelByWorkspace.set(workspaceId, next);
     return next;
   }
@@ -171837,6 +171841,14 @@ var PopupHostManager = class {
   }
   get isPanelOpen() {
     return this.panelWin && !this.panelWin.closed;
+  }
+  /** Reuse the live canvas window without toggling or replacing its channel. */
+  focusCanvasWindow(reservation) {
+    const current2 = this.popoutWin;
+    if (!current2 || current2.closed) return null;
+    if (reservation && reservation !== current2) reservation.close();
+    current2.focus();
+    return current2;
   }
   async open(mode = "canvas", preopenedWindow, panelOptions = {}) {
     const isOpen = mode === "canvas" ? this.isCanvasOpen : this.isPanelOpen;
@@ -175665,11 +175677,8 @@ function render({ model, el, runtimeSource }) {
   el.molsysviewerClosePopup = () => popupMgr.close("canvas");
   el.molsysviewerOpenPopup = async (win) => {
     await controllerPromise;
-    if (popupMgr.popoutWin && !popupMgr.popoutWin.closed) {
-      if (popupMgr.popoutWin !== win) win.close();
-      popupMgr.popoutWin.focus();
-      return popupMgr.popoutWin;
-    }
+    const existing = popupMgr.focusCanvasWindow(win);
+    if (existing) return existing;
     await popupMgr.open("canvas", win);
     const deadline = Date.now() + 3e4;
     while (!popupMgr.isReady && !win.closed && !disposed && Date.now() < deadline) {

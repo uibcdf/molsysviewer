@@ -88,12 +88,14 @@ Exact receiving APIs, installation/discovery and panel layout still need
 implementation contracts and qualification.
 The runtime still refuses the retired legacy MolSysMT root entry point under
 uibcdf/molsysviewer#186. The redesigned provider-owned source integration uses
-`molsysviewer_molsysmt.tools` for discovery. Its source facade exposes bound
-`basic` queries, extraction, copies, conversion/preflight, removal and retained-axis
-coordinate/box setting under `view.addons.molsysmt`, with lazy per-view state and
-closed-view guards. Broader tools, edit families and panels remain pending in
-uibcdf/molsysmt#421/uibcdf/molsysviewer#264. Source receiving does not establish
-compatibility for a published package pair.
+`molsysviewer_molsysmt.tools` for discovery. Its experimental source facade
+mirrors the qualified scientific module/function paths under
+`view.addons.molsysmt`, with lazy per-view state and closed-view guards. The
+[implementation plan](molsysmt_tools_addon_plan.md) links the dated inventory and
+receiving for each admitted family. Source panels offer System removal,
+extraction/copy and Geometry translation; remaining tasks retain their own gates
+in uibcdf/molsysmt#421/uibcdf/molsysviewer#264. Source receiving does not establish
+owner integration, human GUI acceptance or published package compatibility.
 
 General automatic observation of external MolSysMT/native writes is not a
 requirement of this direction. Direct Python edits need explicit qualified
