@@ -459,3 +459,4 @@ Completed work, kept for the reasoning:
 
 - [Managed edit selection confirmation](managed_edit_selection_confirmation.md) — #302 permits host selection revalidation only during synchronized edit preparation, preserving mutation/pending guards.
 - [Addon workspace entry and order](addon_workspace_entry_and_order.md) — #303 honors provider navigation order and initial panel while retaining user choices.
+- [Numeric region selection recovery](numeric_region_selection_recovery.md) — #307 retains numeric selectors and repeated state/session exports without changing membership or transferred recipes.

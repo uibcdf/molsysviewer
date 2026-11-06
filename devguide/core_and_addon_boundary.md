@@ -100,9 +100,15 @@ their exact gates and temporary-admission review/removal checkpoint. Remaining
 tasks retain their own gates
 in uibcdf/molsysmt#421/uibcdf/molsysviewer#264. Source receiving does not establish
 owner integration, human GUI acceptance or published package compatibility.
-Chemistry's stored-information and hydrogen inspection remains read-only; it
-does not perform molecular preparation. Declared pending-reader transport has
-its own host boundary under #304; recovery-sheet interaction is still pending.
+Chemistry keeps stored-information and hydrogen inspection separate from its
+explicit heavy-atom/hydrogen preparation tasks. Preparation creates an
+independent result; applying it to the current view requires a reviewed,
+conditional replacement and an explicit scene-reset decision under #306.
+Analysis provides native distances, extrema and neighbors with bounded result
+pages. Calculated reports do not implicitly edit data or create scene objects.
+Declared pending-reader transport and interactive recovery-sheet admission have
+their own tested host boundary under #304. Remaining analysis, preparation,
+coordinate/reference and persistence families retain their individual gates.
 
 General automatic observation of external MolSysMT/native writes is not a
 requirement of this direction. Direct Python edits need explicit qualified

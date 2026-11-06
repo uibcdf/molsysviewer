@@ -3,8 +3,15 @@
 **Current source scope — 2026-11-06:** System / Remove atoms, Extract subset and
 Copy system, plus Geometry / Translate, Center, Superpose structures and bounded
 periodic coordinate tasks, plus Chemistry stored-information/hydrogen
-inspection, share selection and lifecycle controls in
+inspection and explicit preparation, plus Analysis distances/extrema/neighbors,
+share selection and lifecycle controls in
 the owner PR #543. Native science and expert defaults are unchanged.
+The [Analysis and session receiving](molsysmt_analysis_receiving_20261106.json)
+records all 4,775 addon cases passing on clean 8f8c442e with unchanged source
+inputs. Subsequent session receiving fixes numeric region metadata under #307;
+native continuation after an H5MSM round trip remains reported separately in
+uibcdf/molsysmt#616. This does not complete the required task-family ledger or
+qualify installed packages, owner integration or postponed human observations.
 See [Chemistry receiving](molsysmt_chemistry_receiving_20261106.json) and the
 [current work order](checkpoints.md#what-is-next). The clean prior Center source
 passes the complete 4,568-case addon gate; the periodic slice passes 356 affected

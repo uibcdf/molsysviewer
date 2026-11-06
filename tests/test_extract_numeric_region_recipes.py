@@ -1,5 +1,6 @@
 """Numeric region selectors retain source provenance across changed atom axes."""
 
+import json
 from copy import deepcopy
 
 import numpy as np
@@ -58,6 +59,39 @@ def test_identity_atom_extraction_preserves_numeric_recipe(source, kind):
     with source.extract(selection="all", structure_indices=[2, 0]) as result:
         assert result.regions["chosen"].atom_indices == region.atom_indices
         np.testing.assert_equal(dict(result.regions["chosen"].provenance), dict(region.provenance))
+
+
+@pytest.mark.parametrize("kind", ["list", "tuple", "array", "scalar"])
+@pytest.mark.parametrize("mode", ["static", "dynamic"])
+@pytest.mark.parametrize("route", ["state", "session"])
+def test_same_system_recovery_retains_numeric_selection_and_serialized_recipe(source, tmp_path, kind, mode, route):
+    region = source.regions.add(selection=selector(kind, source.molsys.get_n_atoms()), tag="chosen")
+    region.set_mode(mode)
+    region.set_color(0x112233)
+    payload = json.loads(json.dumps(source.export_state()))
+    expected = deepcopy(payload["regions"][0])
+    original_selection = deepcopy(region.selection)
+    if route == "session":
+        path = tmp_path / "numeric-selection.msv"
+        source.save_session(path)
+        restored = msv.load_session(path)
+    else:
+        restored = msv.new_view(source.molsys)
+        restored.import_state(payload)
+    with restored:
+        actual = restored.regions["chosen"]
+        np.testing.assert_equal(actual.selection, original_selection)
+        assert actual.atom_indices == region.atom_indices
+        assert actual.mode == mode
+        assert restored.export_state()["regions"][0] == expected
+        restored.import_state(json.loads(json.dumps(restored.export_state())))
+        np.testing.assert_equal(restored.regions["chosen"].selection, original_selection)
+        assert restored.export_state()["regions"][0] == expected
+        expression = payload["regions"][0]["provenance"]["expression"]
+        if isinstance(expression, list):
+            expression[0] = 0
+            np.testing.assert_equal(restored.regions["chosen"].selection, original_selection)
+            assert restored.export_state()["regions"][0] == expected
 
 
 def test_numeric_transferred_recipe_survives_reconstruction_and_session(source, tmp_path):

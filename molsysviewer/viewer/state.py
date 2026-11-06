@@ -1395,6 +1395,13 @@ class StateMixin:
         if not tag:
             return
         provenance = dict(record.get("provenance") or {"kind": "imported", "state_version": 1})
+        selection = record.get("selection")
+        if not isinstance(selection, str):
+            expression = provenance.get("expression")
+            # Non-string selectors are serialized in the query provenance.
+            # Keep their public metadata and the next export faithful without
+            # replaying source indices from transferred/non-query recipes.
+            selection = deepcopy(expression) if provenance.get("kind") == "query" and expression is not None else "all"
         if getattr(self, "_state_reindexing", False) and Region._is_reevaluable_provenance(provenance):  # noqa: SLF001
             # Contract R: a region is its recipe, not the atoms the recipe happened to
             # select. The document has carried the expression all along; until now
@@ -1409,7 +1416,7 @@ class StateMixin:
                     probe = Region(
                         self,
                         str(tag),
-                        record.get("selection") if isinstance(record.get("selection"), str) else "all",
+                        selection,
                         atom_indices=[],
                         uid=str(record["uid"]) if record.get("uid") is not None else None,
                         provenance=provenance,
@@ -1426,7 +1433,7 @@ class StateMixin:
             region = Region(
                 self,
                 tag,
-                record.get("selection") if isinstance(record.get("selection"), str) else "all",
+                selection,
                 atom_indices=[int(i) for i in atom_indices],
                 uid=str(record["uid"]) if record.get("uid") is not None else None,
                 provenance=provenance,

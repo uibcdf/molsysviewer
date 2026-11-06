@@ -1,0 +1,138 @@
+{
+  "schema": "molsysviewer.molsysmt-analysis-receiving@1",
+  "date": "2026-11-06",
+  "owner_pr": "https://github.com/uibcdf/molsysmt/pull/543",
+  "native_basis": "ed09f64539a5af6c1dbe9bd352c7ef65dcd4a7a6",
+  "provider_overlay": "PyUnitWizard 02d0015fa7d3149d92c0e632b8e584f6a47c37dc",
+  "environment": "molsyssuite@uibcdf_3.14 / Python 3.14.7 / Linux",
+  "current_graphical_scope": "System, Geometry, Chemistry inspection/preparation, Analysis distances/extrema/neighbors. Private task orchestration delegates science to unchanged expert/native APIs.",
+  "full_addon_collection": {
+    "source": "8f8c442e09edaf2f54492e0c09f6fe16ff4cd6f8",
+    "viewer_source": "e920faf95c375ff7d3fcb326c7c0d2f3d1951b3e",
+    "viewer_controlled_source": "177e19a8fa06e37484a801da1711cc99acbc8f2d",
+    "command": "python -m pytest --receptor=llm tests/molsysviewer_molsysmt",
+    "passed": 4775,
+    "skipped": 0,
+    "exit": 0,
+    "pytest_seconds": 1094.35,
+    "wrapper_seconds": 1099.5455537820235,
+    "warnings": 2794,
+    "warning_groups": 11,
+    "source_inputs": 4209,
+    "source_unchanged": true,
+    "source_inventory_sha256": "3ca89dc1d2f7a855c4ad116c5fc7b7ceef0f9a4bd983aba6ddd36aeb3f95c680",
+    "clean_addon_checkout": true,
+    "human_sandbox_status_preserved": true,
+    "evidence": {
+      "log": "msv-analysis-full-addon-20261106.log",
+      "sha256": "37c5e51aac7a63be9730bab8871a3fc4f6693062a14e6949b17d33fad80d939b",
+      "bytes": 2334
+    },
+    "scope": "Clean published Analysis source before the later Viewer #307 fix and two new scientific-session guards. Not a full collection on those later inputs."
+  },
+  "scientific_session": {
+    "guard": "tests/molsysviewer_molsysmt/test_scientific_session.py",
+    "guard_sha256": "417d8a5b5d2ef0f680fab0e131f4a14ba2cc05c59ac07e787b86dc8c9e6ad632",
+    "passed": 2,
+    "skipped": 0,
+    "seconds": 4.03,
+    "evidence": {
+      "log": "msv-scientific-session-final-qualified-20261106.log",
+      "sha256": "aee011aca5bd2b45fd7f3b8cd5ba681337058c60d4da22d6944049af5efc2b97",
+      "bytes": 287
+    },
+    "source_profile": "Native ed09f6453 / addon runtime 8f8c442e with the tested Viewer #307 correction over e920faf9; exact source commit/controlled routing remains a subsequent checkpoint.",
+    "tctim": {
+      "initial_atoms": 3983,
+      "removed_water_ion_atoms": 165,
+      "retained_atoms": 3818,
+      "alpha_carbons": 497,
+      "checks": "Exact retained/translated coordinates, independent RMSD and geometric radius oracle under pm policy, full stable inventory and chemical fields/nulls, structural attributes/box/time, region/selection/annotation/measurement state, H5MSM and session recovery, independent reopened view."
+    },
+    "ensemble": {
+      "source_structure_indices": [
+        0,
+        8,
+        2
+      ],
+      "processed_structure_indices": [
+        2,
+        0
+      ],
+      "checks": "Real nonempty Buch observations with default 0.23 nm criterion and independent H-A distance; evaluated-empty structure 0 versus unevaluated structure 1; full interaction dictionary, occurrence references, roles/participants, measurements/units/parameters/method and scene preserved."
+    },
+    "dtype_boundary": "Only declared nullable string representation is normalized for comparisons; source non-null values must be strings. This does not fix or qualify subsequent source append under MolSysMT #616.",
+    "not_qualified": "Headless expert workflow only; not the complete required family ledger, GUI session receiving, human review, installed packages or publication."
+  },
+  "viewer_numeric_region_recovery": {
+    "issue": "uibcdf/molsysviewer#307",
+    "guard": "tests/test_extract_numeric_region_recipes.py::test_same_system_recovery_retains_numeric_selection_and_serialized_recipe",
+    "failing_before": 16,
+    "focused_passed": 31,
+    "focused_seconds": 9.24,
+    "broader_passed": 102,
+    "broader_seconds": 26.5,
+    "before_evidence": {
+      "log": "msv-region-recovery-regression-before-20261106.log",
+      "sha256": "ff363a31de7e698dceec4c1a0985f527e0b38ce2c9c637c21630192a0118f635",
+      "bytes": 2213
+    },
+    "focused_evidence": {
+      "log": "msv-region-recovery-qualified-20261106.log",
+      "sha256": "de90dd5741fdc9084b78abefba489f341827db0a8d3c1da3a3a3152b01befd4a",
+      "bytes": 327
+    },
+    "broader_evidence": {
+      "log": "msv-region-recovery-state-regression-20261106.log",
+      "sha256": "77b443c81aaf418288e3a73fe6778ae4ea21d77fcb6223e56a1658d128c21305",
+      "bytes": 555
+    },
+    "source_sha256": "5cdd5fcada5413ee8fdf73c04bce3c5105452d01b7eb8b63cb69d37b03982f1e"
+  },
+  "affected_addon_preflight": {
+    "passed": 87,
+    "seconds": 15.95,
+    "evidence": {
+      "log": "msv-scientific-session-analysis-preflight-20261106.log",
+      "sha256": "f981b8f30ed970e9656c25a779c90b4148261eec6ab64d470a8e035d214d17e0",
+      "bytes": 501
+    },
+    "scope": "49 Analysis + two session + 36 packaging/route cases; later final two session guards additionally check full interaction dictionaries and evaluated status."
+  },
+  "native_followups": {
+    "uibcdf/molsysmt#613": "Concurrent configure-context leakage; no downstream synchronization fork.",
+    "uibcdf/molsysmt#614": "Shared actual-Jupyter header/navigation helper correction proposed; owner receiving/integration remains separate.",
+    "uibcdf/molsysmt#615": "Intermittent first-canvas timeout remains unexplained; scoped success does not close it.",
+    "uibcdf/molsysmt#616": "Native append rejects canonical H5MSM component-string storage; fresh-native control succeeds. Owner repair pending."
+  },
+  "pending": [
+    "Complete latest-source actual Jupyter collection and hosted gates; preserve native #594-#598/#612 scope.",
+    "Remaining Geometry/cell/reference, Chemistry assignment/construction/refinement, Analysis families and qualified visual adoption.",
+    "Full scientific-session GUI receiving, owner integration, postponed human Jupyter/visible Qt and exact installed qualification."
+  ],
+  "publication": "Both 1.0 publications remain paused; 0.25.0 unfrozen; no tag, artifact build or promotion.",
+  "analysis_hosted_smoke": {
+    "source": "8f8c442e09edaf2f54492e0c09f6fe16ff4cd6f8",
+    "run": 42233782220,
+    "conclusion": "success",
+    "preflight_passed": 36,
+    "native_passed": 6042,
+    "native_skipped": 23,
+    "native_seconds": 621.45,
+    "addon_passed": 4771,
+    "addon_skipped": 4,
+    "addon_seconds": 710.2,
+    "skip_reasons": {
+      "native": {
+        "ackredit_absent": 21,
+        "unyt_absent": 1,
+        "astropy_absent": 1
+      },
+      "addon": {
+        "ackredit_absent": 4
+      }
+    },
+    "log_sha256": "e48ebc5cd4bf10294c654d367d19df7455e3df60a86881bf45088da69b7429cd",
+    "scope": "Original published Analysis head and controlled Viewer 177e19a8, before subsequent Viewer #307/session receiving. Not installed artifact qualification."
+  }
+}

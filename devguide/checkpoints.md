@@ -906,48 +906,61 @@ previous qualification records retain their original candidate and environment.
 ## Resume in one page
 
 **Current handoff — 2026-11-06:** [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543)
-publishes `4f1710c5e66f7c9d5e9065fc82a7bd602824e611`, native basis `ed09f6453`,
-controlled Viewer `177e19a8fa06e37484a801da1711cc99acbc8f2d`. System provides
-reviewed removal and independent extraction/copy; Geometry provides Translate,
-Center, same-system superposition and bounded periodic coordinate tools.
-Chemistry provides stored-information/H-inventory inspection plus separate
-heavy-atom and hydrogen preparation. The [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md)
-keeps each earlier receipt's original inputs and the latest owner contribution.
+publishes Analysis runtime `8f8c442e09edaf2f54492e0c09f6fe16ff4cd6f8` over native
+`ed09f6453`, with controlled Viewer `177e19a8`. Its four task panels provide
+System removal/extraction/copy, Geometry translation/centering/same-system
+superposition and bounded periodic tools, Chemistry inspection plus independent
+heavy-atom/hydrogen preparation, and Analysis native distances/extrema/neighbors.
 Expert scientific signatures/defaults and native algorithms remain unchanged.
+The [current receipt](molsysmt_analysis_receiving_20261106.json) separates source,
+headless session, actual-Jupyter and hosted qualification.
+
+The complete clean addon collection passes **4,775 cases without skips** in
+1094.35 s on Viewer e920faf9 (runtime/public code unchanged from 177e19a8).
+The wrapper confirms all 4,209 source inputs and both worktree identities/status
+unchanged throughout. Preserve its 2,794 warnings. Later Viewer #307 and two new
+scientific-session guards are separately received; do not call this a full run
+on those subsequent inputs. Analysis has 49 independent/native cases and scoped
+seven-step actual-Jupyter/popup receiving. The shared driver fix under MolSysMT
+#614 is proposed, while the unrelated initialization timeout #615 remains open.
+
+Numeric region selection recovery under #307 now preserves public metadata and
+repeat exports: 16 cases fail before the fix, 31 focused and 102 state/session/
+transfer cases pass after it. Headless session receiving uses actual TcTIM,
+removes 165 water/ion atoms, preserves 3,818 remaining atoms, and independently
+checks coordinate changes, RMSD, radius of gyration and H5MSM/scene recovery.
+A three-conformation pentalanine case retains nonempty native Buch observations,
+roles/occurrence references/units and evaluated-empty versus unevaluated scope.
+Both final session guards pass; the broader affected addon/preflight gate passes
+87 cases. Canonical string storage is distinguished from scientific values.
+Native MolSysMT #616 still rejects appending the matching original source to the
+recovered system; the fresh-native control succeeds. No downstream repair is
+introduced, and that continuation requirement remains open.
 
 [Conditional replacement #306](pending_proposals/conditional_result_replacement.md)
-is now consumed for explicit preparation-result adoption. The reviewed candidate
-is copied, its managed identity/revision is checked, and the host atomically
-checks original source identity/revision before resetting the scene. Back,
-stale reviews and independent result lifetimes have direct guards. External
-raw-array edits remain unobserved. Human Jupyter/visible Qt review remains
-explicitly postponed.
+coordinates explicit preparation-result adoption using source identity/revision
+and an independent candidate. Back, stale reviews and unpresented result/token
+lifetimes have source and actual-Jupyter guards. External raw-array writes remain
+unobserved. Declared readers and the interactive recovery sheet under #304 keep
+pending native data distinct from the old scene. Human Jupyter/visible Qt review
+remains explicitly postponed.
 
-Current preparation receiving passes 250 affected task/preflight cases, followed
-by 69 final affected cases after explicit unmount-token refinement. Two actual
-Jupyter preparation/pending-reader scenarios pass 14 steps in 192.66 s. TcTIM
-stays unchanged until explicit adoption of an independent 7,868-atom result;
-B-factor/occupancy losses are visible and both popup inspection hosts work.
-Seventy documentation/dependency/devguide controls pass. The owner receipt and
-PR preserve all warnings, failed attempts and exact source hashes.
+Official smoke 42233782220 on 8f8c442e succeeds: 6,042 native cases/23 optional
+skips and 4,771 addon cases/four optional Ackredit skips. It retains its original
+controlled Viewer 177e19a8 and does not receive the later #307/session inputs.
 
-The earlier clean addon source 699fc69be on Viewer 2e17ee6f completed all 4,699
-cases without skips (1090.15 s). Smoke 42215709274 passes 6,042 native cases/23
-optional skips and 4,695 addon cases/four optional Ackredit skips. These results
-do not qualify the new preparation head. The earlier complete-source campaign
-42215709260 is unsuccessful: all four Linux test jobs failed; four macOS jobs
-remain queued. MolSysMT #594–#598 and #612 retain the native/import/isolation and
-fidelity/preflight follow-ups. No downstream scientific repair or test weakening
-is introduced. Viewer 177e19a8 E2E 42221924107 succeeds; CI 42221924099 has four
-Linux successes and four macOS jobs queued, not a completed matrix.
+Latest-source actual-Jupyter and hosted gates remain separate. Earlier full
+native matrices retain their observed failures and queued cells; MolSysMT
+#594–#598/#612 own those native/import/isolation/fidelity follow-ups. #613 tracks
+native concurrent configuration leakage; serial receiving is not concurrent
+qualification. Owner integration and exact installed artifacts remain pending.
 
-The whole-session objective remains incomplete: general Geometry/cell/reference/
-sequence/orientation, further Chemistry assignments/construction, Analysis and
-complete save/recovery still require implementation and receiving. Native
-#602/#605–#608, #572/#576 and #582/#592 remain owned requirements. Temporary
-lower-triangular/fixed-temporal-cell admission is reviewed on 2026-11-13 or an
-owner fix. Installed artifact qualification and owner integration remain separate.
-The 0.25.0 candidate is unfrozen and both 1.0 publications remain paused.
+The full objective still requires general Geometry/cell/reference/sequence/
+orientation, further Chemistry assignments/construction/refinement, remaining
+Analysis families and qualified visual adoption, and complete GUI save/recovery.
+Native #602/#605–#608, #572/#576 and #582/#592 retain their own owners. The
+bounded periodic source profile has its 2026-11-13 review/removal checkpoint.
+The 0.25.0 candidate is unfrozen; both 1.0 publications remain paused.
 Earlier receipts retain their original source scope.
 
 The latest user-directed standalone round is summarized in the
@@ -2551,10 +2564,11 @@ Resume toward **1.0** in this order:
 1. Complete and inspect the applicable exact-head Viewer CI and owner PR #543
    receiving. Keep the old hosted #301 failures and local environment recovery
    distinct from the new head; queued jobs are not passing evidence.
-2. Receive exact-head CI for the preparation source, keeping earlier full-addon
-   and unsuccessful full-source matrices separate. MolSysMT #594–#598/#612 own
-   the current full-suite failures. Continue required Geometry cell/reference/
-   sequence/orientation, Chemistry assignments/construction and Analysis. Rotate
+2. Receive exact-head CI for Analysis and session receiving, keeping the clean
+   4,775-case 8f8c442e result separate from later inputs and unsuccessful native
+   matrices. MolSysMT #594–#598/#612 and #613–#616 retain their own follow-ups.
+   Continue required Geometry cell/reference/sequence/orientation, Chemistry
+   assignments/construction/refinement and remaining Analysis families. Rotate
    awaits uibcdf/molsysmt#602; no task family is removed from the full objective.
 3. Keep the explicitly postponed human System/results/Geometry Jupyter/visible
    Qt review pending. Automated browser transport is received, not a substitute

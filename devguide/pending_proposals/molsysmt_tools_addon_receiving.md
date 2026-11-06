@@ -14,6 +14,36 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Analysis and scientific-session receiving — 2026-11-06
+
+PR #543 publishes Analysis runtime 8f8c442e with four native distance-family
+tasks and bounded pages. The [receipt](../molsysmt_analysis_receiving_20261106.json)
+records the complete clean 4,775-case addon gate (no skips, 1094.35 s), 4,209
+unchanged inputs, original host identities and warnings. That full run precedes
+the later Viewer #307 correction and two new session guards. Scoped Analysis
+Jupyter receiving passes seven real Mol*/popup steps; the combined earlier
+three-case attempt retains two passes and an unrelated first-canvas timeout.
+MolSysMT #614 proposes the shared header/helper correction; #615 retains the
+unexplained initialization observation and diagnostic trace requirements.
+
+Viewer #307 fixes numeric region metadata during state/session recovery, with
+31 focused and 102 broader passes. Two headless molecular-session guards use
+actual TcTIM and a real three-conformation ensemble: exact retained and edited
+coordinates, independent numerical controls, full chemical/structural values,
+H5MSM and independent scene recovery, nonempty native H-bond observations and
+coverage/occurrence identity. Eighty-seven affected addon/preflight cases pass;
+final session assertions pass separately. These are expert/source acceptance,
+not full GUI, installed or human qualification.
+
+Native MolSysMT #616 owns a reproduced continuation limitation: canonical H5MSM
+component string storage makes compatible source append fail, while a fresh-
+native control succeeds. Scientific-value comparisons allow the format's stated
+nullable string representation only; they do not bypass that append guard.
+#613 separately tracks native concurrent configuration leakage. No scientific
+algorithm, hidden preparation, expert default or generic result-store change is
+introduced. Remaining families and complete GUI session receiving stay required;
+owner/latest hosted/installed and postponed human gates remain separate.
+
 ## Explicit Chemistry preparation receiving — 2026-11-06
 
 MolSysMT PR #543 now publishes 4f1710c5e66f7c9d5e9065fc82a7bd602824e611 on native
