@@ -907,8 +907,9 @@ previous qualification records retain their original candidate and environment.
 
 **Current handoff — 2026-11-06:** the owner contribution to
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) now implements
-System / Remove atoms, Extract subset and Copy system, plus Geometry / Translate.
-The [source receiving record](molsysmt_geometry_receiving_20261106.json) separates
+System / Remove atoms, Extract subset and Copy system, plus Geometry / Translate
+and Center, at `55cb9f58f5fe84e1bfd506871f5bbc8ed8fa85c7`.
+The [Center source receiving record](molsysmt_center_receiving_20261106.json) separates
 native numerical checks, host tests, actual Jupyter/Mol*/popup receiving and
 remaining hosted/installed/human gates. Expert paths/defaults and native
 scientific algorithms are unchanged. Host #302 permits atomic selection
@@ -920,9 +921,15 @@ Independent results use the implemented host presentation service. Human
 Jupyter/visible Qt acceptance remains explicitly postponed. Owner #583/#584
 repairs are received on native ed09f6453; their earlier limits do not remain
 open consumer defects. Broader #582, #572 and #576 retain their owner scope.
-Continue exact-head CI/owner review and Rotate next, then other qualified
-Chemistry/Analysis tasks. Installed qualification, broad documentation and a
-future candidate remain separate. 0.25.0 is unfrozen and both 1.0 publications
+Center passes geometric/mass-weighted analytical checks, nondefault units and
+actual rendered-coordinate receiving. Shared native rejection diagnostics (#603)
+survive automatic refresh and expire with new input/context. The five actual
+Jupyter scenarios pass; 114 panel and 172 native/route checks retain separate,
+overlapping scopes. The full addon collection is running, not yet qualified.
+Continue exact-head CI/owner review and Geometry alignment/periodic/cell tasks.
+Rotate awaits the public conversion contract in uibcdf/molsysmt#602; required
+Chemistry and Analysis families remain active work. Installed qualification,
+broad documentation and a future candidate remain separate. 0.25.0 is unfrozen and both 1.0 publications
 remain paused. Earlier dated receipts retain their original source identities.
 
 The latest user-directed standalone round is summarized in the
@@ -2526,9 +2533,10 @@ Resume toward **1.0** in this order:
 1. Complete and inspect the applicable exact-head Viewer CI and owner PR #543
    receiving. Keep the old hosted #301 failures and local environment recovery
    distinct from the new head; queued jobs are not passing evidence.
-2. Continue Geometry with Rotate after reviewing its native axis/angle tool and
-   explicit fixed/per-structure-center contract. Translate is implemented;
-   Chemistry, Analysis and other tasks still need individual qualification.
+2. Receive the full addon collection and exact-head CI for Center/#603, then
+   continue Geometry alignment and periodic/cell task families. Rotate awaits
+   uibcdf/molsysmt#602's public axis/angle constructor. Translate and Center are
+   implemented; Chemistry, Analysis and remaining tasks still need qualification.
 3. Keep the explicitly postponed human System/results/Geometry Jupyter/visible
    Qt review pending. Automated browser transport is received, not a substitute
    for that acceptance. Owner #583/#584 repairs are received; #582/#572/#576 and

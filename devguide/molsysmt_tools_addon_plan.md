@@ -1,10 +1,13 @@
 # MolSysMT tools add-on — implementation plan
 
 **Current source scope — 2026-11-06:** System / Remove atoms, Extract subset and
-Copy system, plus Geometry / Translate, share selection and independent-result
+Copy system, plus Geometry / Translate and Center, share selection and independent-result
 controls in the owner PR #543. Native science and expert defaults are unchanged.
-See [receiving](molsysmt_geometry_receiving_20261106.json) and the
-[current work order](checkpoints.md#what-is-next); Rotate is next. Human
+See [Center receiving](molsysmt_center_receiving_20261106.json) and the
+[current work order](checkpoints.md#what-is-next). Center is qualified in source;
+continue alignment and periodic/cell tasks while Rotate receives the native
+constructor requested in uibcdf/molsysmt#602. Shared diagnostic retention is
+proposed and tested under uibcdf/molsysmt#603. Human
 Jupyter/visible Qt review remains postponed and no release is authorized.
 
 **Independent result presentation — 2026-11-05:** the maintainer approves
@@ -514,6 +517,47 @@ retain the original 231-path snapshot, expanded callable/stub classification,
 actual source identities and unsuccessful evidence. Do not add nonfunctional
 wrappers for native MD placeholders merely to claim complete exposure.
 
+
+## Accepted product milestone — 2026-11-06
+
+The maintainer adopts the next product objective: complete a scientifically
+reproducible working session, from loading a system to preserving the resulting
+molecular data and scene, through both the primary Python API and understandable
+GUI tasks. The existing core/addon boundary, owner contribution route and
+native scientific contracts remain normative. This extends the work beyond the
+current System/Geometry slice; it does not declare the addon or 1.0 complete.
+
+| Required capability | Owning surface and proof | Current disposition |
+| --- | --- | --- |
+| Inspect/select inventory; remove, extract and copy molecular data | Core System/selections plus owner System tasks; exact atom/structure maps, independent results and stale-confirmation guards | Implemented in contribution source; owner/hosted/installed and postponed human acceptance remain separate. |
+| Transform/align coordinates, choose structures and work with periodic cells | Owner Geometry over received native tools; analytical geometry, units, explicit references/structures, fixed-box effects and recovery guards | Translate and Center implemented and numerically/browser checked in contribution source; alignment and periodic/cell task families remain required work. Axis/angle conversion for Rotate is requested in uibcdf/molsysmt#602. |
+| Inspect chemistry and explicitly prepare/build systems | Owner Chemistry over qualified native reports and preparation/build functions; explicit method/state/model, before/after scientific checks, native maps or independent ownership | Expert routes are received by family; graphical tasks remain required work. Missing native effects stay owned and visible. |
+| Calculate and inspect scientific results | Owner Analysis; explicit units, method/engine, evaluated scope and bounded results; link core visual owners for representation | Expert routes are received by family; graphical tasks remain required work. |
+| Preserve and recover the result | Core load/export/session services and actual native format support; read back molecular data, supported named analyses and scene through their respective owners | Existing services are reused; the complete new task workflow still needs end-to-end receiving. No universal H5MSM result store is promised. |
+| Offer the same scientific operation through Python and GUI | Real bundled-system native/expert/GUI comparisons with the same resolved inputs; Jupyter, both popup types and applicable Qt observations | Current slices have bounded automated evidence. This is not whole-workspace or human acceptance. |
+
+The owner's maintained GUI design under uibcdf/molsysmt#421 / PR #543 owns the
+task-family matrix, not one button per scientific function. Viewer owns its
+integration and whole-session acceptance. New tools and missing provider
+capabilities follow their native owners; do not complete the goal by moving
+scientific algorithms into Viewer, weakening expert defaults or silently
+removing planned families. A scope change requires a recorded maintainer
+choice and the reason, rather than treating an unavailable operation as passed.
+
+Use bundled TcTIM / 1TCD for loading, inspection, inventory changes, extraction,
+explicit preparation where needed, analysis, visualization and save/readback.
+Add the genuine pentalanine ensemble for nonconsecutive structures, comparison
+and transform tests; repeating one structure is not evidence for distinct
+conformations. Retain independent analytical controls for scientific quantities:
+a plausible protein image or backend parity alone is insufficient.
+
+The acceptance ledger must keep implemented, scientifically checked, browser
+observed, human accepted, owner integrated, hosted and installed states separate.
+Human Jupyter/visible Qt review remains postponed by the maintainer. General
+automatic observation of raw edits, molecular Undo and copying Python code from
+Studio retain their earlier decisions; reproducibility does not silently add
+those capabilities. Broad documentation and the next pre-1.0 candidate follow
+the agreed functionality. Both 1.0 publications remain paused.
 
 ## Accepted requirements
 

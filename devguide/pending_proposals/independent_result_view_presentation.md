@@ -117,3 +117,16 @@ and 36 distribution/smoke controls. #302/#303 close their host source defects;
 owner integration, hosted exact-head, human and installed gates stay separate.
 The [receiving record](../molsysmt_geometry_receiving_20261106.json) keeps exact
 source hashes, complete outcomes, initial failures and the plain Jupyter control.
+
+
+## Center and rejected-operation receiving — 2026-11-06
+
+The owner contribution adds Center and shared rejection-diagnostic lifetime
+without changing this host boundary. All five actual Jupyter scenarios pass,
+including independent-result reuse, rendered Translate/Center coordinates,
+both popup types and unchanged data after native unit-policy rejection. The
+[Center receipt](../molsysmt_center_receiving_20261106.json) identifies owner
+commit 55cb9f58f, host runtime 49dba88a and the original startup/rejection failures.
+The host browser CI 42176308960 passes; core CI 42176308961 has four completed
+successes and four queued test cells at this checkpoint. Queued work, owner
+integration, postponed human acceptance and installed qualification remain open.

@@ -14,6 +14,20 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Whole-session milestone and Center receiving — 2026-11-06
+
+The accepted objective covers System, Geometry, Chemistry, Analysis and a real
+1TCD/ensemble workflow through save/readback; the [milestone ledger](../molsysmt_tools_addon_plan.md#accepted-product-milestone--2026-11-06)
+keeps the full scope and separate acceptance states. PR #543 publishes Center
+at `55cb9f58f5fe84e1bfd506871f5bbc8ed8fa85c7`, preserving native ed09f6453 and
+Viewer runtime 49dba88a. The [Center receipt](../molsysmt_center_receiving_20261106.json)
+records 114 panel cases, 172 native/route cases and all five actual Jupyter
+scenarios (32 steps), with overlapping scopes and original failures retained.
+Shared rejected-operation diagnostics (#603) now survive automatic refresh;
+Rotate requests its native constructor in #602. The full addon collection and
+new-head hosted CI are in progress, not complete. Owner integration, remaining
+task families, postponed human review and installed qualification remain pending.
+
 ## Actual Jupyter and native repair receiving — 2026-11-05
 
 PR #543 `1c88e785b` receives native `e614ba367` with Viewer `36ab93b7`.
