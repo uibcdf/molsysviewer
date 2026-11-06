@@ -905,14 +905,21 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**Current priority — plot authority and recovered API guard, 2026-11-06:**
-[Viewer #314](pending_bugs/trajectory_plot_seek_skips_python_authority.md) records
-an actual-Jupyter discrepancy after clicking a conformation plot: local Mol*
-reaches structure 1 but the later Python current-index assertion fails. The
-core callback lacks the authority intent used by ordinary trajectory controls.
-Fix and guard that boundary before accepting the new isolated/uncommitted
-conformation tasks. Their numerical cases and plotted geometry do not prove
-end-to-end frame synchronization; original R1/R2/R3 attempts remain separate.
+**Current priority — robustness audit and action ledger, 2026-11-06:**
+[The active #315 plan](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md)
+owns the work order and stable IDs. Start with its reproduced file/state
+integrity and lifecycle findings, then plot authority and scientific figures.
+It separates new design recommendations from the already approved complete
+addon/task-session scope. Recording the audit implements none of its repairs.
+
+[Viewer #314](pending_bugs/trajectory_plot_seek_skips_python_authority.md) has a
+local causal correction and isolated/actual-Jupyter passes, but its complete
+core-browser attempt fails at 43/44 on popup-to-Python navigation. A guard
+queue-order race is plausible, not an established exclusive cause. The addon
+conformation work is locally committed at e11995343, including owner
+reconciliation, and has 245 directed passes plus 17 real Jupyter steps; remote
+PR #543 remains at 8ab2f5474. These are not a complete green new-source gate or
+owner integration. Original failures and exact scopes are retained in the plan.
 
 PR #543 now publishes test-only correction `8ab2f5474`: the complete af8eabcd8
 local attempt executes all 4,974 cases, with 4,966 passes and eight failures
@@ -2676,47 +2683,36 @@ MolSysViewer does.** It is generated; regenerate with
 `guard` named at close. Adopted 2026-08-14 from MolSysMT; the queue
 documents carry it.
 
-Resume toward **1.0** in this order:
+Resume toward **1.0** through the
+[active audit ledger](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md).
+Its dashboard owns progress; use its stable IDs rather than adding another
+chronological status narrative here.
 
 **Current order — 2026-11-06:**
 
-Measurement integrity and explicit Analysis row adoption are implemented and
-locally received as recorded above. Finish their owner/integrated/hosted
-acceptance while preserving historical/PBC/mass-weighted results as distinct
-from current nonperiodic geometric Measures.
-
-1. Complete and inspect the applicable exact-head Viewer CI and owner PR #543
-   receiving. Keep the old hosted #301 failures and local environment recovery
-   distinct from the new head; queued jobs are not passing evidence.
-   First correct plot-origin Python authority under #314 and re-receive the
-   isolated conformation workflow, retaining its failing final Python assertion.
-2. Receive exact-head CI for Analysis and session receiving, keeping the clean
-   complete 4,827-case 2bb52b77c result separate from the later force/reference/
-   managed-protonation source af8eabcd8.
-   Native #594–#598 are resolved by the owner; #612 and #613–#616 retain
-   their distinct scopes and unsuccessful matrices remain historical.
-   Continue required Geometry cell/reference/sequence/orientation, Chemistry
-   assignments/construction/refinement and remaining Analysis families. Rotate
-   awaits uibcdf/molsysmt#602; no task family is removed from the full objective.
-3. Keep the explicitly postponed human System/results/Geometry Jupyter/visible
-   Qt review pending. Automated browser transport is received, not a substitute
-   for that acceptance. Owner #583/#584 and expert #572 force repairs are
-   received. Native #576 assessment/managed application and correspondence/
-   template routes are now source-received in af8eabcd8; their full/hosted/
-   installed gates remain separate. #582 and proposed addon/tool corrections
-   retain their scopes.
-4. Reconcile remaining owner/public-artifact receiving, including #294, without
-   duplicate dispatches or downstream scientific substitutes.
-5. Consolidate documentation after the agreed functionality, then freeze and
-   qualify a new pre-1.0 candidate. Both 1.0 publications and tag/package actions
-   remain paused and require their separate authorization.
+1. **A:** scope the new integrity/restoration/resource reports and qualify the
+   relevant rejection and cleanup boundaries.
+2. **B:** finish #314 and review DataCard text, precision, provenance, lifecycle
+   and accessible popup/result handling.
+3. **C:** deliver and receive the reconciled owner PR #543 and current host,
+   completing #264/#301/#304/#306 while retaining #305's unexplained failure.
+4. **D:** receive owner scientific corrections and every previously approved
+   Geometry/Chemistry/Analysis task family. New recommendations need their
+   recorded design decisions; existing required families are not dropped.
+5. **E:** complete the TcTIM/ensemble save–recover–continue workflow and
+   representative prolonged-use/scale receiving. Human review stays postponed.
+6. **F:** consolidate the named public compatibility contract and documentation
+   after the agreed functionality, keeping one current action ledger.
+7. **G:** prepare #294's covering artifact and exact installed/downstream
+   qualification when authorized. Candidate/tag/package actions and both 1.0
+   publications remain paused.
 
 
 Earlier source receiving, public packages and human observations retain their
 scopes; no new candidate freeze or publication is authorized. Both 1.0
 publications remain paused.
 
-**Current order — 2026-10-26:**
+**Earlier order — 2026-10-26 (historical context):**
 
 1. Apply the [core/add-on boundary](core_and_addon_boundary.md). The former
    native-Studio expansion plan is withdrawn and removed. Continue the accepted

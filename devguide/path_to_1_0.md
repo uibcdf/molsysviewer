@@ -1,5 +1,13 @@
 # Path to 1.0.0 (Unified Release Plan)
 
+**Current action ledger — 2026-11-06:** the
+[robustness audit and plan under #315](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md)
+records the new integrity/lifecycle findings, plot and scientific-figure work,
+pending contribution/native receiving and full-session/installed acceptance.
+Use its dashboard and stable IDs for progress. The dated checkpoints below
+retain their original scopes; none supersedes that current work order or
+authorizes a candidate or either 1.0 publication.
+
 **Chemical-domain receiving complete — 2026-11-03:** #269 combines the verified
 original Windows/macOS cells with corrected Linux source recovery 41714550124,
 including 44/44 core browser suites and 25/25 notebooks. The

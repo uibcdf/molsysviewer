@@ -25,9 +25,10 @@ archived documents link there; its location does not reopen its release scope.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (1)
+### Being worked on (2)
 
 - [`migrate_standalone_qt_to_canonical_pyside6_6_11_2.md`](migrate_standalone_qt_to_canonical_pyside6_6_11_2.md) — [#109](https://github.com/uibcdf/molsysviewer/issues/109) — Migrate the optional standalone Qt host to canonical PySide6 6.11.2. *(measured)*
+- [`pre_1_0_robustness_audit_and_action_plan_20261106.md`](pre_1_0_robustness_audit_and_action_plan_20261106.md) — [#315](https://github.com/uibcdf/molsysviewer/issues/315) — Track the November robustness audit and pre-1.0 action plan. *(measured)*
 
 ### Partially done (5)
 

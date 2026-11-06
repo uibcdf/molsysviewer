@@ -7,7 +7,8 @@ Git and `docs/content/developer/changes_notes.md` already preserve chronology.
 ## Read first
 
 For a new session aimed at 1.0, begin with the
-[current handoff](checkpoints.md#resume-in-one-page), then its
+[active robustness audit and action ledger](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md),
+then the [current handoff](checkpoints.md#resume-in-one-page), its
 [ordered next actions](checkpoints.md#what-is-next) and the
 [1.0 release plan](path_to_1_0.md). The middle of the checkpoint
 retains dated evidence: do not interpret earlier candidate coordinates
@@ -44,6 +45,12 @@ When documents disagree, the contracts and current code win over plans, vision
 documents, and historical audits.
 
 ## Current status and planning
+
+The [2026-11-06 robustness audit](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md)
+under #315 owns the current action order, stable work IDs, evidence boundaries
+and closure criteria. Start with file/state integrity and lifecycle findings,
+then plot authority, scientific figures and integrated receiving. New design
+recommendations remain distinguishable from previously approved task families.
 
 Current work is the provider-owned Molecular tools workspace: System tasks,
 Geometry transforms/fitting/bounded periodic tasks, Chemistry inspection and
