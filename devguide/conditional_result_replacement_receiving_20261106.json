@@ -95,5 +95,22 @@
     "ruff": "check/format pass, 958 files",
     "index": "generated queue index check passed",
     "frontend": "No TS or generated runtime change; Python integration only."
+  },
+  "consumer_receiving_20261106": {
+    "owner_pr": "https://github.com/uibcdf/molsysmt/pull/543",
+    "source": "4f1710c5e66f7c9d5e9065fc82a7bd602824e611",
+    "viewer_source": "177e19a8fa06e37484a801da1711cc99acbc8f2d",
+    "native_source": "ed09f64539a5af6c1dbe9bd352c7ef65dcd4a7a6",
+    "final_affected_cases": "69 passed in 18.86 s; warnings retained.",
+    "actual_jupyter": "Two preparation/pending-reader scenarios, 14 steps, 192.66 s; TcTIM source preserved until explicit independent adoption.",
+    "host_e2e": {
+      "run": 42221924107,
+      "outcome": "success"
+    },
+    "host_ci": {
+      "run": 42221924099,
+      "observed": "Four Linux successes, four macOS queued; incomplete."
+    },
+    "limitations": "Owner integration, complete exact-head hosted/installed and postponed human acceptance remain pending. Prior full-addon results do not qualify new source."
   }
 }

@@ -905,80 +905,50 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-Conditional result replacement under #306 now has source/focused receiving:
-[contract and evidence](pending_proposals/conditional_result_replacement.md).
-This enables reviewed preparation outputs to be adopted without a caller-side
-check/write race. The Chemistry preparation/adoption interface remains required
-work; no scientific method or implicit adoption is added.
+**Current handoff — 2026-11-06:** [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543)
+publishes `4f1710c5e66f7c9d5e9065fc82a7bd602824e611`, native basis `ed09f6453`,
+controlled Viewer `177e19a8fa06e37484a801da1711cc99acbc8f2d`. System provides
+reviewed removal and independent extraction/copy; Geometry provides Translate,
+Center, same-system superposition and bounded periodic coordinate tools.
+Chemistry provides stored-information/H-inventory inspection plus separate
+heavy-atom and hydrogen preparation. The [receiving record](pending_proposals/molsysmt_tools_addon_receiving.md)
+keeps each earlier receipt's original inputs and the latest owner contribution.
+Expert scientific signatures/defaults and native algorithms remain unchanged.
 
-The clean addon source 699fc69be on Viewer 2e17ee6f completed all 4,699 addon
-cases without skips (1090.15 s). Corrected smoke 42215709274 is officially
-successful: 6,042 native passes/23 optional skips and 4,695 addon passes/four
-optional Ackredit skips. These scopes do not qualify the newer conditional
-host slice or installed packages. The full matrices and owner review remain
-separate.
+[Conditional replacement #306](pending_proposals/conditional_result_replacement.md)
+is now consumed for explicit preparation-result adoption. The reviewed candidate
+is copied, its managed identity/revision is checked, and the host atomically
+checks original source identity/revision before resetting the scene. Back,
+stale reviews and independent result lifetimes have direct guards. External
+raw-array edits remain unobserved. Human Jupyter/visible Qt review remains
+explicitly postponed.
 
-**Current handoff — 2026-11-06:** the owner contribution to
-[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) now implements
-System / Remove atoms, Extract subset and Copy system, plus Geometry / Translate
-and Center, Superpose structures and bounded periodic coordinate tasks, plus
-Chemistry stored-information/hydrogen inspection, at
-`9739f8dee1f8c71ae4e0043a19eb67acab8939ad`.
-The [Chemistry receiving record](molsysmt_chemistry_receiving_20261106.json) separates
-native numerical checks, host tests, actual Jupyter/Mol*/popup receiving and
-remaining hosted/installed/human gates. Expert paths/defaults and native
-scientific algorithms are unchanged. Host #302 permits atomic selection
-revalidation; #303 honors provider order/entry panels while preserving user
-choices. The prior three hosted failures under #301 have source corrections;
-old CI outcomes remain recorded, not relabeled.
+Current preparation receiving passes 250 affected task/preflight cases, followed
+by 69 final affected cases after explicit unmount-token refinement. Two actual
+Jupyter preparation/pending-reader scenarios pass 14 steps in 192.66 s. TcTIM
+stays unchanged until explicit adoption of an independent 7,868-atom result;
+B-factor/occupancy losses are visible and both popup inspection hosts work.
+Seventy documentation/dependency/devguide controls pass. The owner receipt and
+PR preserve all warnings, failed attempts and exact source hashes.
 
-Independent results use the implemented host presentation service. Human
-Jupyter/visible Qt acceptance remains explicitly postponed. Owner #583/#584
-repairs are received on native ed09f6453; their earlier limits do not remain
-open consumer defects. Broader #582, #572 and #576 retain their owner scope.
-Center passes geometric/mass-weighted analytical checks, nondefault units and
-actual rendered-coordinate receiving. Shared native rejection diagnostics (#603)
-survive automatic refresh and expire with new input/context. The five actual
-Jupyter scenarios pass; 114 panel and 172 native/route checks retain separate,
-overlapping scopes. The clean Center source 55cb9f58f completed all 4,568 addon
-cases without skips (1040.89 s). The newer superposition source separately passes
-315 native/panel cases, 63 route controls and six real Jupyter scenarios, plus
-final caption/multiple-View checks. Its eight-step fitting flow checks native
-trajectory arrays and actual Mol* positions against an independent SVD oracle.
-The GUI distinguishes moving atoms from fitting atoms and declares its
-same-system initial reference and positional correspondence. The expert API
-retains external references. The prior complete gate does not certify a full
-run on the newer slice. The periodic slice passes 356 affected System/Geometry/
-PBC cases and 63 route/reporting controls; all seven actual Jupyter/Mol*/popup
-scenarios pass (48 steps, 322.92 s). Native near-zero reference points still
-depend on application units (#608); no addon scientific repair is supplied.
-General cell support, varying-cell temporal unwrapping and physical box
-factories remain owned under uibcdf/molsysmt#605/#606/#607/#608. Temporary exact
-lower-triangular/fixed-temporal-cell admission has an explicit 2026-11-13-or-fix
-review/removal checkpoint. General periodic/cell completion remains required.
-The title receiving race (#609) is corrected using presentation acknowledgement;
-exact titles and original scientific assertions remain. The clean published
-periodic source passes all 4,657 addon cases without skips (1072.21 s), with
-its 2,732 warnings retained. Subsequent Chemistry changes have separate inputs
-and receiving. Continue exact-head CI/owner review and Geometry
-cell, sequence/reference and orientation tasks.
-Chemistry passes 42 focused cases within 363 native/panel controls, 65 route/
-reporting/course guards and all eight actual Jupyter/Mol*/popup scenarios
-(55 steps, 355.50 s). The two explicit-state native reports have bounded
-source-index pages, native coverage/unknowns and no preparation or scene
-effects. Viewer 63e79096 adds declared pending-reader transport, pinned in all
-five owner routes. The #304 follow-up now admits the mounted reader UI
-inside recovery while keeping the old scene inert, with native box/DOM oracles
-and actual Jupyter/canvas-popup/Studio-popup receiving. Its
-[record](molsysmt_pending_reader_receiving_20261106.json) retains the failed
-full nine-case attempt, eight passes and scoped final pending-case recovery.
-Exact-head hosted/owner qualification remains pending. The host's restricted full-core failures were
-received with approved permissions in the seven affected modules (64 passed,
-one existing skip), preserving the original 3,451-pass run and failures.
-Rotate awaits the public conversion contract in uibcdf/molsysmt#602; required
-Chemistry preparation/construction and Analysis families remain active work. Installed qualification,
-broad documentation and a future candidate remain separate. 0.25.0 is unfrozen and both 1.0 publications
-remain paused. Earlier dated receipts retain their original source identities.
+The earlier clean addon source 699fc69be on Viewer 2e17ee6f completed all 4,699
+cases without skips (1090.15 s). Smoke 42215709274 passes 6,042 native cases/23
+optional skips and 4,695 addon cases/four optional Ackredit skips. These results
+do not qualify the new preparation head. The earlier complete-source campaign
+42215709260 is unsuccessful: all four Linux test jobs failed; four macOS jobs
+remain queued. MolSysMT #594–#598 and #612 retain the native/import/isolation and
+fidelity/preflight follow-ups. No downstream scientific repair or test weakening
+is introduced. Viewer 177e19a8 E2E 42221924107 succeeds; CI 42221924099 has four
+Linux successes and four macOS jobs queued, not a completed matrix.
+
+The whole-session objective remains incomplete: general Geometry/cell/reference/
+sequence/orientation, further Chemistry assignments/construction, Analysis and
+complete save/recovery still require implementation and receiving. Native
+#602/#605–#608, #572/#576 and #582/#592 remain owned requirements. Temporary
+lower-triangular/fixed-temporal-cell admission is reviewed on 2026-11-13 or an
+owner fix. Installed artifact qualification and owner integration remain separate.
+The 0.25.0 candidate is unfrozen and both 1.0 publications remain paused.
+Earlier receipts retain their original source scope.
 
 The latest user-directed standalone round is summarized in the
 [final review](standalone_final_review_20261029.md). Receive its remaining
@@ -2581,11 +2551,11 @@ Resume toward **1.0** in this order:
 1. Complete and inspect the applicable exact-head Viewer CI and owner PR #543
    receiving. Keep the old hosted #301 failures and local environment recovery
    distinct from the new head; queued jobs are not passing evidence.
-2. Receive exact-head CI for the superposition slice, retaining the prior
-   4,568-case complete Center gate separately. Continue Geometry periodic/cell,
-   sequence/reference and principal-axis tasks. Rotate awaits uibcdf/molsysmt#602.
-   Translate, Center and same-system rigid fitting are implemented; Chemistry,
-   Analysis and remaining task families still need qualification.
+2. Receive exact-head CI for the preparation source, keeping earlier full-addon
+   and unsuccessful full-source matrices separate. MolSysMT #594–#598/#612 own
+   the current full-suite failures. Continue required Geometry cell/reference/
+   sequence/orientation, Chemistry assignments/construction and Analysis. Rotate
+   awaits uibcdf/molsysmt#602; no task family is removed from the full objective.
 3. Keep the explicitly postponed human System/results/Geometry Jupyter/visible
    Qt review pending. Automated browser transport is received, not a substitute
    for that acceptance. Owner #583/#584 repairs are received; #582/#572/#576 and

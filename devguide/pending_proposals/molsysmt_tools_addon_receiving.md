@@ -14,6 +14,37 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Explicit Chemistry preparation receiving — 2026-11-06
+
+MolSysMT PR #543 now publishes 4f1710c5e66f7c9d5e9065fc82a7bd602824e611 on native
+ed09f6453 and controlled Viewer 177e19a8. Chemistry creates independent heavy-atom
+and hydrogen completion results through unchanged expert/native build tools.
+Whole-group/all-structure heavy completion and template-pH versus prepared-state
+RDKit H generation retain explicit prerequisites, attribute policies and native
+diagnostics. No implicit extraction, molecular preparation or readiness claim
+is added to inspection actions.
+
+Use in this view copies the reviewed candidate and uses #306 to condition scene-
+reset replacement on original source identity/revision. Back and stale managed
+source/candidate requests preserve current work. Unpresented results and tokens
+expire on unmount; presented result Views remain independent. External raw edits
+remain unobserved. Local receiving passes 250 affected task/preflight cases,
+then 69 final affected cases after explicit token-lifetime refinement. Actual
+TcTIM/Jupyter plus pending-reader recovery passes two scenarios/14 steps in
+192.66 s: 3,983 source atoms remain unchanged through Back, a separate 7,868-atom
+result exposes B-factor/occupancy losses and explicit adoption is inspected in
+both popup hosts. Owner documentation and source receipts retain the details.
+
+The earlier 699fc69be complete addon gate passes 4,699 cases; its smoke
+42215709274 passes both tiers with optional skips retained. Neither qualifies
+the new preparation head. Complete-source matrix 42215709260 has four Linux
+failures and four macOS jobs queued. Existing uibcdf/molsysmt#594–#598 and the
+new native fidelity/preflight follow-up uibcdf/molsysmt#612 retain the causes;
+no native workaround or weakened test is added. Owner/latest hosted/installed
+and postponed human qualification remain pending. Further Geometry, Chemistry
+assignments/construction, Analysis and the full save/recover session remain
+required; both 1.0 publications stay paused.
+
 ## Chemistry inspection receiving — 2026-11-06
 
 The [pending-reader follow-up](../molsysmt_pending_reader_receiving_20261106.json)
