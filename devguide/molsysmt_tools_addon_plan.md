@@ -1,6 +1,16 @@
 # MolSysMT tools add-on — implementation plan
 
-**Current receiving — 2026-11-06:** published PR #543 head `af8eabcd8` receives
+**Current continuation — 2026-11-06:** PR #543 publishes `8ab2f5474`, correcting
+the strict build namespace expectation after the complete af8eabcd8 attempt.
+The [recovery receipt](molsysmt_reference_full_recovery_20261106.json) retains
+4,966 original passes/eight failures, 63 affected recovery passes and 36 preflight
+passes without a single-green-full-run claim. New conformation tables/plots
+remain isolated and uncommitted while [Viewer #314](pending_bugs/trajectory_plot_seek_skips_python_authority.md)
+repairs their actual browser-to-Python navigation prerequisite. Every approved
+task family and full-session acceptance remains required; human/publication
+remain postponed.
+
+**Reference receiving — 2026-11-06:** published PR #543 head `af8eabcd8` receives
 atom-name correspondence, explicit CCD reference construction and native
 protonation assessment. Managed in-place reconciliation uses one public
 assessment and positional maps under the existing host edit lock, with deferred

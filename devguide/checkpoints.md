@@ -905,6 +905,26 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Current priority — plot authority and recovered API guard, 2026-11-06:**
+[Viewer #314](pending_bugs/trajectory_plot_seek_skips_python_authority.md) records
+an actual-Jupyter discrepancy after clicking a conformation plot: local Mol*
+reaches structure 1 but the later Python current-index assertion fails. The
+core callback lacks the authority intent used by ordinary trajectory controls.
+Fix and guard that boundary before accepting the new isolated/uncommitted
+conformation tasks. Their numerical cases and plotted geometry do not prove
+end-to-end frame synchronization; original R1/R2/R3 attempts remain separate.
+
+PR #543 now publishes test-only correction `8ab2f5474`: the complete af8eabcd8
+local attempt executes all 4,974 cases, with 4,966 passes and eight failures
+from one stale namespace expectation. All 5,288 selected inputs, heads and
+worktree statuses remain unchanged. The exact-set correction adds only
+assess_protonation; 63 affected cases and 36 preflight controls pass. The
+[recovery receipt](molsysmt_reference_full_recovery_20261106.json) retains the
+original hosted failure and optional skips. This is multi-attempt receiving,
+not one green full run. Corrected-head CI, all remaining task families,
+owner/installed and postponed human acceptance remain required; publication
+stays paused.
+
 **Measurement integrity — 2026-11-06:** #308–#313 are corrected in published
 `239c8dd7`, including the compiler and physical-node deletion followups.
 Complete local Python receives 3,569 passes/21 skips/15 Qt deselections and
@@ -2668,6 +2688,8 @@ from current nonperiodic geometric Measures.
 1. Complete and inspect the applicable exact-head Viewer CI and owner PR #543
    receiving. Keep the old hosted #301 failures and local environment recovery
    distinct from the new head; queued jobs are not passing evidence.
+   First correct plot-origin Python authority under #314 and re-receive the
+   isolated conformation workflow, retaining its failing final Python assertion.
 2. Receive exact-head CI for Analysis and session receiving, keeping the clean
    complete 4,827-case 2bb52b77c result separate from the later force/reference/
    managed-protonation source af8eabcd8.

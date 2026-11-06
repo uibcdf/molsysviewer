@@ -19,6 +19,10 @@ list.
 
 <!-- generated: devguide_index -->
 
+### Being worked on (1)
+
+- [`trajectory_plot_seek_skips_python_authority.md`](trajectory_plot_seek_skips_python_authority.md) — [#314](https://github.com/uibcdf/molsysviewer/issues/314) — Trajectory plot navigation changes the canvas without updating Python structure state. *(high, reproduced)*
+
 ### Open (2)
 
 - [`hosted_popup_context_menu_receiving.md`](hosted_popup_context_menu_receiving.md) — [#305](https://github.com/uibcdf/molsysviewer/issues/305) — Diagnose the hosted popup context-menu timeout after fullscreen controls receiving. *(medium, upstream)*

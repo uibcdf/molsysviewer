@@ -1,0 +1,18 @@
+{
+  "schema": "molsysviewer.molsysmt_reference_full_recovery@1",
+  "date": "2026-11-06",
+  "issues": ["uibcdf/molsysviewer#264", "uibcdf/molsysmt#421"],
+  "original_source": "af8eabcd8963b1684449044511ea98a057222914",
+  "corrected_contribution": "8ab2f5474b2e04c68d31ef2854a238984b645fc8",
+  "viewer": "d33e97bc04388330f6516f2902083dda96cff50d",
+  "viewer_code": "239c8dd74815a660159a95970e9136d7beebfdd2",
+  "owner_record": "https://github.com/uibcdf/molsysmt/blob/8ab2f5474b2e04c68d31ef2854a238984b645fc8/devtools/data/molsysviewer_tools_reference_full_recovery_20261106.json",
+  "local_complete_attempt": {"passed":4966,"failed":8,"skipped":0,"warnings":2907,"seconds":1390.71,"selected_inputs":5288,"inputs_heads_and_both_worktree_statuses_unchanged":true,"exit_code":1},
+  "hosted_original": {"run":42286603304,"conclusion":"failure","native_passed":6042,"native_skipped":23,"addon_passed":4960,"addon_failed":8,"addon_skipped":6,"addon_skip_reason":"Optional Ackredit unavailable"},
+  "correction": "Add assess_protonation to the existing exact build-namespace expectation; no runtime/scientific source or assertion weakening",
+  "affected_recovery": {"passed":63,"failed":0,"skipped":0,"seconds":15.69},
+  "preflight": {"passed":36,"failed":0,"skipped":0,"seconds":4.29},
+  "scope": "4974 distinct local cases covered across the original attempt and overlapping affected recovery, not one green complete run; corrected-head hosted/full/platform/installed and owner/human gates remain separate",
+  "new_gui_work": {"source":"isolated uncommitted conformation branch over af8eabcd8","status":"Numerical/table/plot receiving in progress; final actual Jupyter Python-index check identifies Viewer#314","human_acceptance":"postponed"},
+  "publication": "Both 1.0 and all candidate/tag/package operations remain paused"
+}

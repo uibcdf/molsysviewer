@@ -14,6 +14,18 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Full collection recovery and conformation prerequisite — 2026-11-06
+
+The [full collection receipt](../molsysmt_reference_full_recovery_20261106.json)
+retains 4,966 passes/eight strict-namespace failures on af8eabcd8 with all 5,288
+inputs/heads/statuses unchanged. Published PR correction 8ab2f5474 adds only
+assess_protonation to the expected set; 63 affected and 36 preflight cases pass.
+This is not one green complete run. Isolated new conformation tasks are not
+published: actual Jupyter reaches plotted/navigation/popup observations but
+the final Python index assertion identifies [#314](../pending_bugs/trajectory_plot_seek_skips_python_authority.md).
+Keep that core repair and complete receiving required; do not remove the tasks
+or weaken their scientific/session acceptance. Human/publication remain paused.
+
 ## Expert reference/protonation receiving — 2026-11-06
 
 PR #543 publishes `af8eabcd8`, including owner main `40bb54d05`. The expert
