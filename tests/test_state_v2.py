@@ -171,25 +171,28 @@ def test_import_clears_scene_history_without_recreating_a_replay_journal():
     assert target.history.can_undo() is False
 
 
-def test_import_suspends_checkpoints_while_rebuilding_regions(monkeypatch):
+@pytest.mark.parametrize("region_count", [1, 12])
+def test_import_suspends_checkpoints_while_rebuilding_regions(monkeypatch, region_count):
     source = _mute(demo["dialanine"])
-    region = source.regions.add(atom_indices=[0, 1], tag="site", skip_digestion=True)
-    region.set_representation("spacefill", skip_digestion=True)
+    for index in range(region_count):
+        region = source.regions.add(atom_indices=[0, 1], tag=f"site-{index}", skip_digestion=True)
+        region.set_representation("spacefill", skip_digestion=True)
     state = source.export_state()
     target = _mute(demo["dialanine"])
-    calls = 0
+    calls = []
     original = target.export_state
 
     def counted_export_state():
-        nonlocal calls
-        calls += 1
+        calls.append(target.history._suspended)
         return original()
 
     monkeypatch.setattr(target, "export_state", counted_export_state)
 
     target.import_state(state)
 
-    assert calls == 0
+    # One destination snapshot seeds isolated validation. Rebuilding either
+    # population must still make no per-operation history checkpoints.
+    assert calls == [False]
 
 
 def test_stored_tag_high_water_gap_is_restored_before_new_allocations():

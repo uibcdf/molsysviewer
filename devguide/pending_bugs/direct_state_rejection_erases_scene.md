@@ -1,13 +1,13 @@
 ---
 summary: Rejected direct state imports erase existing scene objects before validation finishes.
 issue: uibcdf/molsysviewer#317
-status: active
+status: partial
 opened: 2026-11-06
 closed:
 severity: high
 verification: reproduced
 area: [state, history, lifecycle]
-guard:
+guard: tests/test_state_rejection.py::test_rejected_state_preserves_live_scene_history_and_resources
 normative:
 blocked_by: []
 supersedes: []
@@ -15,9 +15,11 @@ supersedes: []
 
 # Direct state rejection erases open work
 
-**A2 — active; P1; covering artifact and accepted 1.0 scope.** Viewer owns #317
-under #315. A real-system rejection guard is the next observable gate, followed
-by restoration/history/session receiving. No scientific provider fix is needed.
+**A2 — implemented/source-verified; hosted receiving pending; P1.** Viewer
+owns #317 under #315, for the covering artifact and accepted 1.0 scope. Directed
+guards and the final 180-case combined selection pass. Source delivery
+accompanies this record; applicable hosted receiving remains the next gate.
+No provider fix is needed.
 
 ## Observation and duplicate review
 
@@ -49,3 +51,43 @@ universal transaction guarantee.
 
 Original private evidence remains under E0. Source checkpoint at activation is
 Viewer `8c594a3d5f5a9a9596640b8773e5373cf7ff32de`, with the local A4 correction.
+
+## Correction and receiving
+
+Public import now invokes the same authoritative restoration code on an
+isolated View that borrows the current molecular system and receives the
+destination's scene. Only after that succeeds does the destination restore the
+request. Merge and conflict semantics therefore use the actual target context;
+failed validation does not reconstruct or retire its existing live handles.
+The session validator reuses that private restore path on its already isolated
+owner without nesting another preflight.
+
+The destination contributes one scene snapshot and its current, read-only
+scientific identity/binding caches. An unchanged trajectory is not rehashed for
+each candidate. Real pentalanine/dialanine receiving checks reuse and explicit
+replacement invalidation. Existing announced-edit cache rules still apply;
+this does not add automatic observation of raw MolSys edits.
+
+The causal red guard observes scene changes after rejecting a later section.
+An earlier fixture setup error lacked explicit shape units and is not causal
+product evidence. The 24-way direct/file, clear/merge and conflict matrix then
+passes after correction. Further guards cover fatal/new versus already accepted
+overlap diagnostics and cached scientific correspondence, bringing the directed
+file to 29 passing cases. Import phases are per-View; diagnostic policy is not
+reconfigured globally, old overlap warnings are not replayed as new requests,
+and successful publication does not duplicate those warnings.
+
+The first broad attempt retains 164 passes and one failure: its old history
+guard counted the new explicit validation snapshot as an unwanted checkpoint.
+The strengthened guard receives one explicit snapshot for both one and twelve
+regions and no checkpoints during rebuilding. The subsequent 166- and 176-case
+selections pass on their respective inputs. A final combined run after binding
+cache reuse and three additional actual-target conflict cases passes all 180
+cases in 61.50 s, with selected sources/tests and native binaries unchanged.
+The [receipt](../state_import_rejection_receiving_20261106.json)
+retains source hashes, actual commands, warnings and limits. These overlapping
+counts are not one summed total.
+
+E0's approved custody is now received in
+[its verification record](../robustness_evidence_custody_20261106.json). The
+programme and this source correction remain open for their remaining acceptance.

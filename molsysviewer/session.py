@@ -81,7 +81,9 @@ def _validate_session_scene(molsys: Any, state: dict) -> None:
         candidate.apply_system_edit(molsys, load_blocks="collapse", interactions_policy="preserve")
         if state.get("sources") is not None and candidate._prepare_source_import(state["sources"]) is None:
             raise SessionFormatError("Session source maps refer to a different ordered molecular system.")
-        candidate.import_state(state)
+        # This owner is already isolated; use the same authoritative restore
+        # path without nesting another preflight View.
+        candidate._restore_state_contents(state, clear_first=True, on_conflict="raise")
 
 
 def save_session(view: Any, path: str | os.PathLike[str]) -> None:

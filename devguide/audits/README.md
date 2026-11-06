@@ -3,6 +3,8 @@
 These are dated investigations retained as evidence for current contracts and
 regression guards. Findings marked closed must not be treated as open work.
 
+- [Robustness evidence custody](robustness_evidence_custody_20261106.md) — E0 of #315 preserves the approved private collection with verified hashes and actual restoration; the programme and product findings remain open.
+
 - [`library_scientific_design_review_2026_11_04.md`](library_scientific_design_review_2026_11_04.md)
   — completed source/design review: sound foundation, bounded scientific evidence,
   maintainability/scale limits and proposed growth; no new execution or release

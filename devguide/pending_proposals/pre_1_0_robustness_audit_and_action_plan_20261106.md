@@ -67,9 +67,10 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
-**Next actions:** complete E0's evidence-custody handoff, scope A1/A3 and repair
-[A2 / #317](../pending_bugs/direct_state_rejection_erases_scene.md).
-A4 is implemented locally under [#316](../pending_bugs/failed_factory_retains_owned_view.md),
+**Next actions:** scope A1/A3 and finish
+[A2 / #317](../pending_bugs/direct_state_rejection_erases_scene.md), now passing
+its final 180-case source selection and awaiting hosted receiving.
+A4 is delivered in `611c1574` under [#316](../pending_bugs/failed_factory_retains_owned_view.md),
 with 73 related factory/lifecycle/session/API checks passing; delivery and
 applicable hosted receiving are pending. Keep private handling where
 appropriate. Safe source investigation and B1's
@@ -78,17 +79,18 @@ or disclosure; it does not require all unrelated development to stop.
 
 | Block | Current status | Owner and tracking | Exit evidence |
 | --- | --- | --- | --- |
-| A — integrity, restoration and cleanup | A4 implemented/source-verified under #316; A2 active under #317; A1/A3 await scoped handling; A5/A6 remain investigations | Viewer; coordination #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
+| A — integrity, restoration and cleanup | A4 delivered under #316, hosted receiving pending; A2 source-verified under #317; A1/A3 await scoped handling; A5/A6 remain investigations | Viewer; coordination #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
 | B — plots and DataCards | #314 correction/regression local; broad core failed; precision, provenance and card follow-up pending | Viewer and scientific producer; #314, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
 | C — contribution and host integration | Reconciled addon committed locally; remote PR older and reported conflicting; source gates incomplete | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421 and PR #543 | Reviewed delivery, current controlled pair, relevant full/hosted outcomes and explained failures |
 | D — scientific prerequisites and approved GUI families | Partial implementation; provider corrections and several task families remain | MolSysMT owns science; addon owns tasks; #264/#315 and uibcdf/molsysmt#421 | Received native fixes plus every required family/effect, without hidden preparation or copied algorithms |
-| E — integrated use, scale and human acceptance | Partial headless/Jupyter receiving; complete workflow and prolonged-use checks pending; human review postponed | Viewer/addon; maintainer owns human observations | TcTIM/ensemble save–recover–continue, independent lifetimes and representative measured limits |
+| E — integrated use, scale and human acceptance | E0 custody received; partial headless/Jupyter receiving; complete workflow/prolonged use pending; human review postponed | Viewer/addon; maintainer owns human observations | TcTIM/ensemble save–recover–continue, independent lifetimes and representative measured limits |
 | F — public contract and documentation | Digestion/meta checks pass; compatibility snapshot and documentation reconciliation pending | Viewer; #315 | Named stable/experimental contracts, verified references and one usable current handoff |
 | G — covering artifact and installed qualification | Pending; candidate/publication actions paused | Viewer #294; coordinated provider/downstream receiving | Authorized exact producer/files, clean installed checks and required distribution evidence |
 
 ### Execution progress
 
-**Baseline: 0/46 received work items, 0.0%.** This measures completion of the
+**Current: 1/46 received work items, 2.2%; baseline 0/46 on activation.** E0's
+approved private transfer and actual restore are received. This measures completion of the
 remaining work in this audit, not the maturity of the whole library or an
 estimate of time remaining. Each accepted leaf item has one vote; a difficult
 scientific family and a small defect have different effort despite equal weight.
@@ -102,7 +104,7 @@ does not count as a received item.
 | B | B1, B2, B3.1–B3.5 | 0 / 7 |
 | C | C1–C5 | 0 / 5 |
 | D | D1–D4, D5.1–D5.6, D6.1–D6.10 | 0 / 20 |
-| E | E0, E1, E2, E4 | 0 / 4 |
+| E | E0, E1, E2, E4 | 1 / 4 |
 | F | F2–F3 | 0 / 2 |
 | G | G1–G2 | 0 / 2 |
 
@@ -116,8 +118,9 @@ denominator until explicitly accepted. Any scope change records its date,
 rationale and the old/new denominator; do not improve the percentage by
 silently dropping work. A5/A6 require a verified resolution or evidenced
 approved disposition. Postponed human acceptance and paused publication stay
-pending. E0 currently has a protected, hash-verified private staging copy of
-15 original files (8,006,657 bytes), not an accepted durable custody handoff.
+pending. E0 is received in the
+[custody record](../audits/robustness_evidence_custody_20261106.md); local-disk
+retention and separately labelled reconstructed receiving remain explicit.
 
 ### Activation card and priorities
 
@@ -144,9 +147,9 @@ values to the reporting protocol.
 
 | ID | Priority / milestone | Closure owner and record | Dependency and next observable gate |
 | --- | --- | --- | --- |
-| E0 | P1 evidence handling; before cleanup/disclosure | Principal maintainer's custody decision; Viewer team verifies the transfer; #315 | Approve/reuse a private retention destination, identify custodian, verify content and restore; current temporary custody is not durable acceptance |
+| E0 | Received, 2026-11-06 | Principal maintainer accepted custody/destination; Viewer verified transfer; #315 | [Private inventory, hashes and actual restore received](../robustness_evidence_custody_20261106.json); disclosure and cleanup retain separate controls |
 | A1/A3 | P1 integrity; affected covering artifact and 1.0 | Viewer; scoped reports to be registered under #315 | Sanitized/private triage as appropriate, then real rejection/literal-text guards on the failing paths |
-| A2 | P1 scene rejection; affected covering artifact and 1.0 | Viewer; #317, active | Direct/file rejection guard preserving actual scene handles, history and runtime state, then restoration/session receiving |
+| A2 | P1 scene rejection; affected covering artifact and 1.0 | Viewer; #317, implemented/source-verified | Final 180-case source selection includes direct/file rejection, real target conflicts and diagnostics; applicable hosted receiving remains |
 | A4 | P2 lifecycle; affected covering artifact and 1.0 | Viewer; #316, implemented/source-verified | Six real failure cases first reproduced the leak; 19 factory and 73 related checks pass. Reviewed delivery and applicable hosted receiving remain |
 | A5–A6 | P2 investigation; gate depends on established effect | Viewer; scoped record when activated | Reproduce or record a bounded, evidenced disposition; do not delay unrelated fixes waiting for a hypothetical defect |
 | B1–B2 | P1 scientific reading/navigation; affected covering artifact and 1.0 | Viewer; #314 and a scoped precision report | Correlated Python/render acceptance and numerical-label truth; retain original failed runs |
@@ -388,24 +391,7 @@ Scene Undo must not be mistaken for molecular Undo.
 
 ## E — full-session, scale and human acceptance
 
-**E0 — durable evidence handoff pending:** principal-maintainer custody and
-destination approval must be recorded, or an existing approved private retention
-route reused. The Viewer team prepares and verifies the handoff; the actual
-custodian or approved delegate acknowledges it. At this checkpoint the audit
-receipts identify temporary artifacts only. No durable copy has been certified.
-
-| E0 stage | Evidence required before marking the stage complete |
-| --- | --- |
-| Locate and protect temporary custody | Timestamped inventory of originals, scripts/commands, benign fixtures or deterministic fixture generators, full outcomes, source/provider identities and environment manifests; compare recorded hashes and prohibit premature cleanup |
-| Record approved custody | Named custodian/delegate, approved private destination and access/retention rules; public ledger uses an opaque recoverable reference, while paths/access details remain private |
-| Transfer and verify | Copy the required evidence, compare hashes against the originals and perform a read/restore check through the private reference; reconstructed evidence must be labelled reconstructed |
-| Accept retention | Custodian acknowledgement, verification date and manifest digest; only then review temporary cleanup under the resource-ownership policy |
-
-E0 blocks destructive cleanup, uncontrolled disclosure and evidentiary closure
-of the affected findings. It does not block safe non-sensitive triage or
-unrelated source work while the temporary originals remain protected. Hashes
-alone do not preserve content. Keep its private access information out of the
-public issue and document.
+**E0 — received, 2026-11-06:** [approved custody, verified private transfer and actual session restore](../audits/robustness_evidence_custody_20261106.md); original evidence retained, reconstructed receiving labelled separately, wider disclosure/cleanup still controlled.
 
 **E1 — partial:** receive one continuous molecular working session through the
 expert API and the implemented GUI, rather than assembling completion from
@@ -661,11 +647,13 @@ of this coordination issue and authorization to publish 1.0 are separate facts.
 
 The sanitized audit receipt is `msv-repository-audit-20261106.json` in the
 maintainer's private temporary evidence collection. It records source states,
-complete board acquisition, test selections and artifact digests. **E0 owns
-durable preservation; accepted custody/destination/reference and verification
-are still pending.** Preserve the scripts/fixtures, environment and outcomes,
-not only this digest table. The following identify private records, not publicly
-downloadable artifacts or proof that a durable copy already exists.
+complete board acquisition, test selections and artifact digests. **E0's approved
+private custody and actual transfer/restore are received** in the
+[public verification receipt](../robustness_evidence_custody_20261106.json).
+Scripts/fixtures, environment and outcomes are retained alongside the originals;
+reconstructed command receiving remains explicitly labelled. The following
+identify private records, not publicly downloadable attachments or an off-host
+backup claim.
 
 | Evidence | SHA-256 / identity |
 | --- | --- |

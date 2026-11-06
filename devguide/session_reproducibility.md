@@ -60,6 +60,20 @@ Regions are restored in **topological order** (a recipe's operands, referenced
 by `uid`, exist before the dependent is rebuilt). A corrupt graph (a cycle or a
 missing operand) raises rather than loading half a session.
 
+Direct `import_state` and JSON `load_state` validate the complete requested
+restoration on an isolated scene before publishing it to the destination. The
+candidate borrows the current scientific system and receives the existing scene
+context, so merge/conflict rules are checked against the actual target. A
+document-validation rejection preserves existing live handles, molecular data,
+undo/redo and queued scene projection. Identity counters remain monotonic.
+Validation diagnostics concern the new request, not an already accepted overlap
+replayed while seeding that private context. A fatal warning rejects before
+publication without changing global diagnostic policy.
+
+This is a validation boundary, not a universal rollback guarantee for an
+arbitrary transport/runtime failure after a valid import. Guards:
+`tests/test_state_rejection.py` and `tests/test_session_rejection.py`.
+
 `save_state(path)` writes that same document atomically as UTF-8 JSON, and
 `load_state(path)` parses it before delegating to `import_state`. These helpers
 do not define a `.msv` bundle and do not broaden the reproducible unit: the

@@ -744,8 +744,17 @@ class RegionsMixin:
         exclude_tag: str | None = None,
         stacklevel: int = 3,
     ) -> None:
+        phase = getattr(self, "_state_import_phase", None)
+        if phase == "seed":
+            # Recreating an accepted destination on an isolated owner is not
+            # a new overlap request, including under warnings-as-errors.
+            return
         overlaps = self._overlapping_visual_region_tags(atom_indices, exclude_tag=exclude_tag)
         if not overlaps:
+            return
+        key = (tag, tuple(overlaps))
+        observed = getattr(self, "_state_import_warned_overlaps", None)
+        if phase == "apply" and observed is not None and key in observed:
             return
         warn(
             RegionOverlapWarning(
@@ -753,6 +762,8 @@ class RegionsMixin:
             ),
             stacklevel=stacklevel,
         )
+        if phase == "validate":
+            observed.add(key)
 
     def _resolve_user_preset(self, preset: str | None):
         return resolve_user_preset(self, preset)

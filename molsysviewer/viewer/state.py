@@ -415,6 +415,51 @@ class StateMixin:
         or a missing operand) is corrupt: this raises rather than loading part
         of the state.
         """
+        overlaps = self._preflight_state_import(state, clear_first=clear_first, on_conflict=on_conflict)
+        previous_phase = getattr(self, "_state_import_phase", None)
+        previous_overlaps = getattr(self, "_state_import_warned_overlaps", None)
+        self._state_import_phase = "apply"
+        self._state_import_warned_overlaps = overlaps
+        try:
+            self._restore_state_contents(state, clear_first=clear_first, on_conflict=on_conflict)
+        finally:
+            self._state_import_phase = previous_phase
+            self._state_import_warned_overlaps = previous_overlaps
+
+    def _preflight_state_import(self, state: dict, *, clear_first: bool, on_conflict: str) -> set:
+        """Validate the real restore path without retiring the destination's owners.
+
+        The isolated View borrows the scientific system. Seeding its current
+        scene preserves conflict and reference semantics for merge imports;
+        restoring only onto an empty View would miss target-dependent failures.
+        """
+        from . import MolSysView
+
+        if not isinstance(state, dict):
+            raise TypeError(f"state must be a dict, got {type(state).__name__}.")
+        if state.get("version") != STATE_VERSION:
+            raise ValueError(
+                f"Unsupported state version: {state.get('version')!r}. This build reads only "
+                f"version {STATE_VERSION}; version 1 documents are no longer supported."
+            )
+        baseline = self.export_state()
+        with MolSysView() as candidate:
+            if self._molsys is not None:
+                candidate.apply_system_edit(self._molsys, load_blocks="collapse", interactions_policy="preserve")
+            # The borrowed system has the same identity and announced-edit
+            # lifetime. Reuse its read-only metadata caches instead of hashing
+            # the unchanged trajectory again for each isolated validation.
+            for name in ("_structure_identity_memo", "_atom_identities_memo", "_source_binding_memo"):
+                setattr(candidate, name, getattr(self, name, None))
+            candidate._state_import_phase = "seed"
+            candidate._restore_state_contents(baseline, clear_first=True, on_conflict="raise")
+            candidate._state_import_phase = "validate"
+            candidate._state_import_warned_overlaps = set()
+            candidate._restore_state_contents(deepcopy(state), clear_first=clear_first, on_conflict=on_conflict)
+            return candidate._state_import_warned_overlaps
+
+    def _restore_state_contents(self, state: dict, *, clear_first: bool, on_conflict: str) -> None:
+        """Restore on an isolated preflight owner or a prevalidated destination."""
         if not isinstance(state, dict):
             raise TypeError(f"state must be a dict, got {type(state).__name__}.")
         version = state.get("version")
@@ -479,7 +524,7 @@ class StateMixin:
                     },
                 )
         reindexing = self._structure_changed(state.get("structure"))
-        if reindexing:
+        if reindexing and getattr(self, "_state_import_phase", None) not in {"seed", "apply"}:
             recorded = state.get("structure") or {}
             current = self._structure_identity() or {}
             warn(
@@ -772,7 +817,7 @@ class StateMixin:
             n_structures = int(getattr(player, "n_structures", 0) or 0)
             if 0 <= index < n_structures:
                 player.go_to_structure(index, skip_digestion=True)
-            else:
+            elif getattr(self, "_state_import_phase", None) not in {"seed", "apply"}:
                 warn(
                     StateStructureIndexOutOfRangeWarning(
                         extra={"saved_index": index, "n_structures": n_structures},

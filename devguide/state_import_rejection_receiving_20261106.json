@@ -1,0 +1,86 @@
+{
+  "schema": "molsysviewer.state_import_rejection_receiving@1",
+  "date": "2026-11-06",
+  "plan": "uibcdf/molsysviewer#315 / A2",
+  "issue": "uibcdf/molsysviewer#317",
+  "status": "implemented/source-verified; applicable exact-source hosted CI pending",
+  "source": {
+    "viewer_base": "611c1574aa82538d79e15b93667497fc1f27b9ce",
+    "changed_sources_sha256": {
+      "molsysviewer/viewer/state.py": "8dfce38fd6291914eb03a21cb63f31a57f032d18ee8e4c7fe72a7415878c9c30",
+      "molsysviewer/viewer/regions.py": "c56e7439b68eaa4d9293cb598f85102627b7e6ec49e4cb1d6e0fff05e31b02a4",
+      "molsysviewer/session.py": "7e8585169679f2250dc87e247ffb9fa9818daa236253e7826f9e753e7aca2a07",
+      "tests/test_state_rejection.py": "b0049a2afa3b9d684911c7f4956c14749fd5d5a6873cabad41aacd4cccb1c305",
+      "tests/test_state_v2.py": "40fd96eedb3041a5d731d27f44d82feb7a8cb4eb3b4025f2e9256ed9f26c8ae3"
+    },
+    "python": "3.14.7",
+    "molsysmt": "e119953435a25c72e9a65b7428f74b1c2430b4f1",
+    "pyunitwizard_snapshot": "02d0015fa7d3149d92c0e632b8e584f6a47c37dc"
+  },
+  "causal_red": {
+    "command": "python -m pytest --receptor=llm tests/test_state_rejection.py -x",
+    "exit_code": 1,
+    "failed": 1,
+    "executed": 1,
+    "collected": 24,
+    "seconds": 3.48,
+    "failure": "after rejecting a zero-normal section, exported scene gained incoming objects and changed identity/order metadata",
+    "excluded_setup_attempt": "Earlier fixture without explicit shape units failed before the intended operation; not causal product evidence."
+  },
+  "directed_receiving": {
+    "exit_code": 0,
+    "passed": 29,
+    "seconds": 19.91,
+    "scope": "24 direct/file/clear/merge/conflict/error cells plus existing/new/fatal diagnostics and real binding/replacement invalidation controls"
+  },
+  "final_combined": {
+    "command": "python -m pytest --receptor=llm -o 'receptor_rerun_command=python -m pytest' tests/test_state_focus_overlays.py tests/test_state_rejection.py tests/test_state_sections.py tests/test_state_serialization.py tests/test_state_structure_identity.py tests/test_state_v2.py tests/test_state_view_state.py tests/test_scene_history.py tests/test_session_rejection.py tests/test_session_bundle.py tests/test_source_records.py tests/test_workbench_figure_state.py tests/test_scene_object_identity.py tests/test_argdigest_public_api.py",
+    "exit_code": 0,
+    "passed": 180,
+    "seconds": 61.5,
+    "warnings": {
+      "LegacyH5MSMWarning": 186,
+      "RegionOverlapWarning": 22,
+      "StateStructureDiffersWarning": 1
+    },
+    "selected_sources_and_tests_unchanged": true,
+    "log_sha256": "ee691116fdcc88e9c6ed91fe0d7bf30b027f833ca7246e0d28e0b4395b36758d",
+    "native_binary_hashes": {
+      "molsysmt/_rust.abi3.so": "f32ed73f7ef3cf3225e12fbc56b9c4236a4452d758c94661f41860ad00d82c1c"
+    }
+  },
+  "retained_attempts": [
+    {
+      "passed": 164,
+      "failed": 1,
+      "cause": "old guard expected no explicit destination snapshot; received one preflight snapshot",
+      "disposition": "guard now receives one explicit snapshot for populations of one and twelve regions, without per-operation restoration checkpoints"
+    },
+    {
+      "passed": 166,
+      "scope": "before diagnostic-phase/cache completion"
+    },
+    {
+      "passed": 176,
+      "scope": "before same-system cache reuse"
+    },
+    {
+      "passed": 177,
+      "scope": "Before adding the three explicit invalid-conflict target-context cases; product code already unchanged."
+    }
+  ],
+  "validation_limits": [
+    "Scopes overlap; counts must not be summed.",
+    "These are real source-environment checks, not clean installed artifacts or cross-platform qualification.",
+    "Validation rejection is guarded; arbitrary runtime/transport failure after successful validation is not a universal rollback guarantee.",
+    "Human acceptance remains postponed; publications/candidates remain paused."
+  ],
+  "evidence_custody": "robustness_evidence_custody_20261106.json",
+  "additional_target_conflicts": {
+    "command": "python -m pytest --receptor=llm tests/test_state_rejection.py::test_validation_uses_actual_target_conflicts_before_inspecting_a_skipped_record",
+    "exit_code": 0,
+    "passed": 3,
+    "seconds": 4.65,
+    "scope": "Existing live section with an invalid incoming duplicate under skip/raise/rename; included in the final combined selection."
+  }
+}

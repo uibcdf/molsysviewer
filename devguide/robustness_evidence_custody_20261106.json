@@ -1,0 +1,21 @@
+{
+  "schema": "molsysviewer.private_audit_custody_verification@1",
+  "observed_at": "2026-11-06T22:57:23.122487+00:00",
+  "opaque_reference": "msv-robustness-audit-20261106",
+  "state": "retained_and_verified",
+  "custodian": "Diego Prada Gracia",
+  "manifest_sha256": "829c27cb60712526a21d8929c7ed62602fd70e01ed25c75459afc35c20c3ea6d",
+  "files_verified": 22,
+  "restored_atoms": 62,
+  "registry_preserved": true,
+  "originals_retained": true,
+  "authorization": "Principal maintainer explicitly confirmed destination and custody in this session on 2026-11-06.",
+  "retention": "Retain until affected work/evidence uses are complete and the custodian separately reviews cleanup. No original cleanup is authorized here.",
+  "limitations": [
+    "Local-disk custody, not an independently verified off-host backup.",
+    "Original inline command history was not captured; reconstructed receiving is labelled separately."
+  ],
+  "plan": "uibcdf/molsysviewer#315 / E0",
+  "status": "completed evidence-custody subtask; parent programme remains active",
+  "private_access": "Exact approved destination and inventory retained privately by the named custodian; this public receipt contains no crafted inputs or private access paths."
+}

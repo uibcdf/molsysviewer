@@ -15,10 +15,10 @@ supersedes: []
 
 # Failed factory initialization retains owned resources
 
-**A4 — implemented and source-verified; delivery/closure pending; P2.** Viewer
+**A4 — delivered in `611c1574`; hosted receiving/closure pending; P2.** Viewer
 owns #316 under #315, for the covering artifact and accepted 1.0 scope. The next
-gate is reviewed delivery and applicable hosted receiving, with E0 custody
-acceptance retained separately. No provider change is required.
+gate is applicable hosted receiving. E0 custody is received separately. No
+provider change is required.
 
 ## Observation and duplicate review
 
@@ -61,5 +61,6 @@ These scopes overlap. Ruff and formatting checks pass. The
 [receiving receipt](../factory_lifecycle_receiving_20261106.json) retains commands,
 source hashes and imported provider identities. This does not qualify an
 installed artifact or another host. The original private audit evidence is
-protected under E0; reviewed delivery and applicable hosted receiving remain
-pending, so the overall progress numerator has not advanced yet.
+protected in E0's approved private custody. Reviewed source is delivered in
+`611c1574aa82538d79e15b93667497fc1f27b9ce`; applicable hosted receiving is still
+pending, so A4 has not entered the completed progress numerator.

@@ -3,7 +3,7 @@
   "date": "2026-11-06",
   "plan": "uibcdf/molsysviewer#315 / A4",
   "issue": "uibcdf/molsysviewer#316",
-  "status": "implemented and source-verified; reviewed delivery/hosted receiving and private audit custody remain separate",
+  "status": "implemented and source-verified; delivered in 611c1574; exact-source hosted receiving pending",
   "source": {
     "viewer_base": "8c594a3d5f5a9a9596640b8773e5373cf7ff32de",
     "changed_sources_sha256": {
@@ -42,7 +42,7 @@
     "Scopes overlap; do not sum counts.",
     "Explicit source overlays in the routine Python 3.14 environment; not clean installed-package qualification.",
     "A6 general close-on-error resilience remains open.",
-    "Hosted exact-source CI is pending reviewed delivery.",
-    "E0 durable private evidence custody is not accepted yet."
+    "Hosted exact-source CI follows reviewed delivery 611c1574; queued results are not passes.",
+    "E0 custody subsequently received; see robustness_evidence_custody_20261106.json."
   ]
 }
