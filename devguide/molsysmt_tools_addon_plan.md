@@ -12,6 +12,9 @@ inputs. Subsequent session receiving fixes numeric region metadata under #307;
 native continuation after an H5MSM round trip remains reported separately in
 uibcdf/molsysmt#616. This does not complete the required task-family ledger or
 qualify installed packages, owner integration or postponed human observations.
+The clean b18d5d823 / Viewer 737f9bc3 implemented-task Jupyter collection now
+passes eleven scenarios and 76 steps in 671.62 s with unchanged source inputs.
+Its baseline debugger errors and earlier #615 uncertainty remain explicit.
 See [Chemistry receiving](molsysmt_chemistry_receiving_20261106.json) and the
 [current work order](checkpoints.md#what-is-next). The clean prior Center source
 passes the complete 4,568-case addon gate; the periodic slice passes 356 affected

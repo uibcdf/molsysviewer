@@ -906,8 +906,8 @@ previous qualification records retain their original candidate and environment.
 ## Resume in one page
 
 **Current handoff — 2026-11-06:** [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543)
-publishes Analysis runtime `8f8c442e09edaf2f54492e0c09f6fe16ff4cd6f8` over native
-`ed09f6453`, with controlled Viewer `177e19a8`. Its four task panels provide
+publishes `b18d5d82366808e8c170295f6fe483ffb58094bc`, with Analysis runtime
+`8f8c442e0` over native `ed09f6453` and controlled Viewer `737f9bc3`. Its four task panels provide
 System removal/extraction/copy, Geometry translation/centering/same-system
 superposition and bounded periodic tools, Chemistry inspection plus independent
 heavy-atom/hydrogen preparation, and Analysis native distances/extrema/neighbors.
@@ -949,7 +949,15 @@ Official smoke 42233782220 on 8f8c442e succeeds: 6,042 native cases/23 optional
 skips and 4,771 addon cases/four optional Ackredit skips. It retains its original
 controlled Viewer 177e19a8 and does not receive the later #307/session inputs.
 
-Latest-source actual-Jupyter and hosted gates remain separate. Earlier full
+Complete local actual-Jupyter receiving on clean b18d5d823 / Viewer 737f9bc3
+passes **11 scenarios and 76 steps** in 671.62 s; all 4,456 selected inputs and
+both checkout identities/status remain unchanged. All observed page-error
+fingerprints match the plain-Jupyter control. This receives implemented tasks
+without proving the cause of earlier #615, all remaining families, human review
+or installed packages. Record the receipt with the next functional checkpoint;
+its published tested source identities remain fixed.
+
+Latest-source hosted gates remain separate. Earlier full
 native matrices retain their observed failures and queued cells; MolSysMT
 #594–#598/#612 own those native/import/isolation/fidelity follow-ups. #613 tracks
 native concurrent configuration leakage; serial receiving is not concurrent

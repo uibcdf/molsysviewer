@@ -16,6 +16,14 @@ supersedes: []
 
 ## Analysis and scientific-session receiving — 2026-11-06
 
+Complete implemented-task actual-Jupyter receiving on clean b18d5d823 / Viewer
+737f9bc3 now passes 11 scenarios and 76 steps in 671.62 s, with all selected
+inputs unchanged. The receipt retains actual code identities, initial-cell
+timings and plain-Jupyter debugger-error classification; #615 remains open.
+The current five controlled routes use the published Viewer #307 fix. Hosted,
+owner, remaining-family, installed and postponed human gates remain separate.
+
+
 PR #543 publishes Analysis runtime 8f8c442e with four native distance-family
 tasks and bounded pages. The [receipt](../molsysmt_analysis_receiving_20261106.json)
 records the complete clean 4,775-case addon gate (no skips, 1094.35 s), 4,209
