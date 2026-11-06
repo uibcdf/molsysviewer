@@ -1,0 +1,48 @@
+{
+  "schema": "molsysviewer.factory_lifecycle_receiving@1",
+  "date": "2026-11-06",
+  "plan": "uibcdf/molsysviewer#315 / A4",
+  "issue": "uibcdf/molsysviewer#316",
+  "status": "implemented and source-verified; reviewed delivery/hosted receiving and private audit custody remain separate",
+  "source": {
+    "viewer_base": "8c594a3d5f5a9a9596640b8773e5373cf7ff32de",
+    "changed_sources_sha256": {
+      "molsysviewer/new_view.py": "ea5ecc5cdf13d664fd9ec63b48e23fb70f9ba1c769760fbdbfb81d9d8718e408",
+      "tests/test_new_view.py": "2e52502b8e1ee1e8813c0b23735c190d58ce8f947e45bfe1bca8441f5bbc5eb4"
+    },
+    "python": "3.14.7",
+    "molsysmt": "e119953435a25c72e9a65b7428f74b1c2430b4f1",
+    "pyunitwizard_snapshot": "02d0015fa7d3149d92c0e632b8e584f6a47c37dc",
+    "pyunitwizard_snapshot_files_verified": 106
+  },
+  "causal_red": {
+    "command": "python -m pytest --receptor=llm tests/test_new_view.py::test_failed_factory_releases_newly_owned_widgets",
+    "exit_code": 1,
+    "failed": 6,
+    "seconds": 3.65,
+    "failure": "two additional registered widgets after each first failed factory call, before teardown"
+  },
+  "factory_green": {
+    "command": "python -m pytest --receptor=llm tests/test_new_view.py",
+    "exit_code": 0,
+    "passed": 19,
+    "seconds": 5.1
+  },
+  "related_boundary": {
+    "command": "python -m pytest --receptor=llm -o 'receptor_rerun_command=python -m pytest' tests/test_new_view.py tests/test_view_lifecycle.py tests/test_session_rejection.py tests/test_session_bundle.py tests/test_public_api_hardening.py tests/test_public_api_inventory.py tests/test_argdigest_public_api.py",
+    "exit_code": 0,
+    "passed": 73,
+    "seconds": 17.2,
+    "warnings": {
+      "LegacyH5MSMWarning": 59
+    },
+    "log_sha256": "ae0fe42be1a9cb2c4fb721ca0144f479dd72e37c5fd2ae9c89b96eea4f00df36"
+  },
+  "validation_limits": [
+    "Scopes overlap; do not sum counts.",
+    "Explicit source overlays in the routine Python 3.14 environment; not clean installed-package qualification.",
+    "A6 general close-on-error resilience remains open.",
+    "Hosted exact-source CI is pending reviewed delivery.",
+    "E0 durable private evidence custody is not accepted yet."
+  ]
+}

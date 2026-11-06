@@ -72,7 +72,8 @@ def new_view(
           selection (it inherits the global representation or uses ``"auto"``).
     """
 
-    if view is None:
+    owns_view = view is None
+    if owns_view:
         view = MolSysView(
             debug_js=debug_js,
             viewer_mode=viewer_mode,
@@ -80,14 +81,24 @@ def new_view(
             panel_mode_style=panel_mode_style,
             height=height,
         )
-    return _load_initial_system(
-        view,
-        molecular_system,
-        selection=selection,
-        structure_indices=structure_indices,
-        syntax=syntax,
-        load_mode=load_mode,
-    )
+    try:
+        return _load_initial_system(
+            view,
+            molecular_system,
+            selection=selection,
+            structure_indices=structure_indices,
+            syntax=syntax,
+            load_mode=load_mode,
+        )
+    except BaseException as error:
+        if owns_view:
+            try:
+                view.close()
+            except BaseException as cleanup_error:
+                # Keep the original load/selection failure and its traceback.
+                # A separate close failure must remain visible without replacing it.
+                error.add_note(f"Factory-owned View cleanup also failed: {cleanup_error!r}")
+        raise
 
 
 def _load_initial_system(

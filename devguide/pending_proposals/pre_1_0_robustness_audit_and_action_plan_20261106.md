@@ -14,7 +14,7 @@ supersedes: []
 
 # Pre-1.0 robustness audit and action plan — 2026-11-06
 
-**Status: recording approved; proposed action plan; implementation incomplete.** This is the
+**Status: execution authorized; active action plan; implementation incomplete.** This is the
 active audit and execution ledger requested by the principal maintainer. It
 records what must improve, why, who owns it, what is already proved and the next
 acceptable transition. Writing this document completes the recording task; it
@@ -34,8 +34,9 @@ remain normative. It does not reopen the withdrawn native-Studio expansion.
 Qt remains experimental; human review is postponed. Both 1.0 publications and
 candidate/tag/package operations remain paused pending separate authorization.
 
-Approval to record this audit does not approve every new API or GUI design in
-it or start the corrections. Existing adopted requirements remain adopted.
+The principal maintainer authorized execution on 2026-11-06, after the recording
+and refinement commits. Corrections and previously adopted requirements can
+advance; that authorization does not settle every new API or GUI design in it.
 New design recommendations, especially B4, E3 and F1, need an explicit recorded
 scope/contract decision before implementation. Keep that decision and its date
 beside the stable ID; do not turn a recommendation into a release gate by
@@ -66,21 +67,57 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
-**Next actions:** activate E0's evidence-custody handoff and scope A1–A4,
-retaining private handling where appropriate. Safe source investigation and B1's
+**Next actions:** complete E0's evidence-custody handoff, scope A1/A3 and repair
+[A2 / #317](../pending_bugs/direct_state_rejection_erases_scene.md).
+A4 is implemented locally under [#316](../pending_bugs/failed_factory_retains_owned_view.md),
+with 73 related factory/lifecycle/session/API checks passing; delivery and
+applicable hosted receiving are pending. Keep private handling where
+appropriate. Safe source investigation and B1's
 existing #314 diagnosis can proceed in parallel. E0 prevents premature cleanup
-or disclosure; it does not require all unrelated development to stop. No product
-correction in this ledger is declared done by this document.
+or disclosure; it does not require all unrelated development to stop.
 
 | Block | Current status | Owner and tracking | Exit evidence |
 | --- | --- | --- | --- |
-| A — integrity, restoration and cleanup | Four reproduced findings await scoped reports/fixes; two further investigations are unconfirmed | Viewer; coordination #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
+| A — integrity, restoration and cleanup | A4 implemented/source-verified under #316; A2 active under #317; A1/A3 await scoped handling; A5/A6 remain investigations | Viewer; coordination #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
 | B — plots and DataCards | #314 correction/regression local; broad core failed; precision, provenance and card follow-up pending | Viewer and scientific producer; #314, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
 | C — contribution and host integration | Reconciled addon committed locally; remote PR older and reported conflicting; source gates incomplete | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421 and PR #543 | Reviewed delivery, current controlled pair, relevant full/hosted outcomes and explained failures |
 | D — scientific prerequisites and approved GUI families | Partial implementation; provider corrections and several task families remain | MolSysMT owns science; addon owns tasks; #264/#315 and uibcdf/molsysmt#421 | Received native fixes plus every required family/effect, without hidden preparation or copied algorithms |
 | E — integrated use, scale and human acceptance | Partial headless/Jupyter receiving; complete workflow and prolonged-use checks pending; human review postponed | Viewer/addon; maintainer owns human observations | TcTIM/ensemble save–recover–continue, independent lifetimes and representative measured limits |
 | F — public contract and documentation | Digestion/meta checks pass; compatibility snapshot and documentation reconciliation pending | Viewer; #315 | Named stable/experimental contracts, verified references and one usable current handoff |
 | G — covering artifact and installed qualification | Pending; candidate/publication actions paused | Viewer #294; coordinated provider/downstream receiving | Authorized exact producer/files, clean installed checks and required distribution evidence |
+
+### Execution progress
+
+**Baseline: 0/46 received work items, 0.0%.** This measures completion of the
+remaining work in this audit, not the maturity of the whole library or an
+estimate of time remaining. Each accepted leaf item has one vote; a difficult
+scientific family and a small defect have different effort despite equal weight.
+Update the numerator only after the applicable acceptance and closeout below.
+An implementation, report, local partial pass or provider issue closure alone
+does not count as a received item.
+
+| Block | Fixed leaf IDs | Received / total |
+| --- | --- | --- |
+| A | A1–A6 | 0 / 6 |
+| B | B1, B2, B3.1–B3.5 | 0 / 7 |
+| C | C1–C5 | 0 / 5 |
+| D | D1–D4, D5.1–D5.6, D6.1–D6.10 | 0 / 20 |
+| E | E0, E1, E2, E4 | 0 / 4 |
+| F | F2–F3 | 0 / 2 |
+| G | G1–G2 | 0 / 2 |
+
+A4 has a causal six-case failure followed by 19 factory and 73 related passing
+checks (overlapping scopes). It remains outside the completed numerator until
+its recorded delivery/closure conditions are satisfied; see the
+[receiving receipt](../factory_lifecycle_receiving_20261106.json).
+
+B3.6, B4, E3 and F1 remain separately tracked design decisions, outside this
+denominator until explicitly accepted. Any scope change records its date,
+rationale and the old/new denominator; do not improve the percentage by
+silently dropping work. A5/A6 require a verified resolution or evidenced
+approved disposition. Postponed human acceptance and paused publication stay
+pending. E0 currently has a protected, hash-verified private staging copy of
+15 original files (8,006,657 bytes), not an accepted durable custody handoff.
 
 ### Activation card and priorities
 
@@ -108,8 +145,9 @@ values to the reporting protocol.
 | ID | Priority / milestone | Closure owner and record | Dependency and next observable gate |
 | --- | --- | --- | --- |
 | E0 | P1 evidence handling; before cleanup/disclosure | Principal maintainer's custody decision; Viewer team verifies the transfer; #315 | Approve/reuse a private retention destination, identify custodian, verify content and restore; current temporary custody is not durable acceptance |
-| A1–A3 | P1 integrity; affected covering artifact and 1.0 | Viewer; scoped reports to be registered under #315 | Sanitized/private triage as appropriate, then real rejection/literal-text guards on the failing paths |
-| A4 | P2 lifecycle; affected covering artifact and 1.0 | Viewer; scoped report to be registered under #315 | Own-versus-caller View distinction, original error retained and resources released after repeated failures |
+| A1/A3 | P1 integrity; affected covering artifact and 1.0 | Viewer; scoped reports to be registered under #315 | Sanitized/private triage as appropriate, then real rejection/literal-text guards on the failing paths |
+| A2 | P1 scene rejection; affected covering artifact and 1.0 | Viewer; #317, active | Direct/file rejection guard preserving actual scene handles, history and runtime state, then restoration/session receiving |
+| A4 | P2 lifecycle; affected covering artifact and 1.0 | Viewer; #316, implemented/source-verified | Six real failure cases first reproduced the leak; 19 factory and 73 related checks pass. Reviewed delivery and applicable hosted receiving remain |
 | A5–A6 | P2 investigation; gate depends on established effect | Viewer; scoped record when activated | Reproduce or record a bounded, evidenced disposition; do not delay unrelated fixes waiting for a hypothetical defect |
 | B1–B2 | P1 scientific reading/navigation; affected covering artifact and 1.0 | Viewer; #314 and a scoped precision report | Correlated Python/render acceptance and numerical-label truth; retain original failed runs |
 | B3.1–B3.5 | P2 robustness; applicable candidate/1.0 scope | Viewer; split by mechanism under #315 | Reproduce each inspected path, then receive its window/title/layout/keyboard/cleanup outcome |

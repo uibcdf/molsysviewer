@@ -19,9 +19,14 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (1)
+### Being worked on (2)
 
+- [`direct_state_rejection_erases_scene.md`](direct_state_rejection_erases_scene.md) — [#317](https://github.com/uibcdf/molsysviewer/issues/317) — Rejected direct state imports erase existing scene objects before validation finishes. *(high, reproduced)*
 - [`trajectory_plot_seek_skips_python_authority.md`](trajectory_plot_seek_skips_python_authority.md) — [#314](https://github.com/uibcdf/molsysviewer/issues/314) — Trajectory plot navigation changes the canvas without updating Python structure state. *(high, reproduced)*
+
+### Partially done (1)
+
+- [`failed_factory_retains_owned_view.md`](failed_factory_retains_owned_view.md) — [#316](https://github.com/uibcdf/molsysviewer/issues/316) — Failed new_view initialization retains its unreturned View and widgets. *(medium, reproduced)*
 
 ### Open (2)
 

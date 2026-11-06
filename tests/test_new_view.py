@@ -1,6 +1,7 @@
 """Factory contracts on actual molecular systems and viewer owners."""
 
 import pytest
+from ipywidgets.widgets.widget import _instances
 from molsysviewer._private.exceptions import ArgumentError
 
 import molsysviewer as msv
@@ -59,6 +60,51 @@ def test_new_view_refuses_invalid_selection_before_hiding_whole(source):
 def test_new_view_rejects_invalid_load_mode(source):
     with pytest.raises(ArgumentError):
         msv.new_view(source, load_mode="invalid")
+
+
+@pytest.mark.parametrize("load_mode", ["selection", "all"])
+@pytest.mark.parametrize("failure_kind", ["selection", "missing_file", "structure"])
+def test_failed_factory_releases_newly_owned_widgets(source, tmp_path, load_mode, failure_kind):
+    system, options = source, {}
+    if failure_kind == "selection":
+        options["selection"] = "this is not a valid query!"
+    elif failure_kind == "missing_file":
+        system = tmp_path / "missing.pdb"
+    else:
+        options["structure_indices"] = [999999]
+
+    # The caller-owned route supplies the native error as an independent
+    # control. Factory cleanup must not replace that exception with its own.
+    with msv.new_view() as caller:
+        with pytest.raises(Exception) as control:
+            msv.new_view(system, load_mode=load_mode, view=caller, **options)
+        assert not caller.closed
+        baseline = set(_instances)
+        for _ in range(3):
+            with pytest.raises(type(control.value)) as failure:
+                msv.new_view(system, load_mode=load_mode, **options)
+            assert str(failure.value) == str(control.value)
+            assert set(_instances) == baseline
+            assert not caller.closed
+
+
+@pytest.mark.parametrize("load_mode", ["selection", "all"])
+def test_failed_factory_preserves_the_caller_view_and_unrelated_widgets(source, tmp_path, load_mode):
+    with msv.new_view(source) as caller, msv.new_view(source) as witness:
+        region = caller.regions.add([0, 1], tag="keep")
+        state = caller.export_state()
+        system = caller.molsys
+        baseline = set(_instances)
+
+        with pytest.raises(Exception):
+            msv.new_view(tmp_path / "missing.pdb", load_mode=load_mode, view=caller)
+
+        assert not caller.closed
+        assert not witness.closed
+        assert caller.molsys is system
+        assert caller.regions["keep"] is region
+        assert caller.export_state() == state
+        assert set(_instances) == baseline
 
 
 @pytest.mark.parametrize("load_mode,n_atoms,regions", [("selection", 2, []), ("all", 22, ["selection"])])
