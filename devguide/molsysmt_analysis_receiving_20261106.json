@@ -253,5 +253,25 @@
         "steps": 6
       }
     ]
+  },
+  "current_owner_checkpoint": {
+    "source": "7c7b92a7c396612671bbebec6b8db3afe97d241c",
+    "controlled_viewer": "737f9bc349e84414be75163e0566a42fe7e480d2",
+    "gui_source_unchanged_from": "b18d5d82366808e8c170295f6fe483ffb58094bc",
+    "previous_smoke": {
+      "run": 42239788034,
+      "state": "failure",
+      "addon_passed": 4772,
+      "addon_failed": 1,
+      "addon_skipped": 4,
+      "cause": "Consumer comparison did not admit equivalent NaN-backed StringDtype -> nullable string storage; pandas 3.1.1."
+    },
+    "test_only_correction": {
+      "local_session_cases": 10,
+      "affected_preflight_cases": 100,
+      "seconds": 8.39,
+      "contract": "Preserve all values and exact null masks while canonicalizing temporary string comparison copies. Negative controls reject real differences; native #616 remains open."
+    },
+    "current_hosted": "pending"
   }
 }

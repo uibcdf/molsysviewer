@@ -906,7 +906,7 @@ previous qualification records retain their original candidate and environment.
 ## Resume in one page
 
 **Current handoff — 2026-11-06:** [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543)
-publishes `b18d5d82366808e8c170295f6fe483ffb58094bc`, with Analysis runtime
+publishes `7c7b92a7c396612671bbebec6b8db3afe97d241c`, with Analysis runtime
 `8f8c442e0` over native `ed09f6453` and controlled Viewer `737f9bc3`. Its four task panels provide
 System removal/extraction/copy, Geometry translation/centering/same-system
 superposition and bounded periodic tools, Chemistry inspection plus independent
@@ -956,6 +956,13 @@ fingerprints match the plain-Jupyter control. This receives implemented tasks
 without proving the cause of earlier #615, all remaining families, human review
 or installed packages. Record the receipt with the next functional checkpoint;
 its published tested source identities remain fixed.
+
+The b18d5d823 smoke follow-up passes the native tier but fails one new session
+comparison under pandas 3.1.1 (4,772 addon passes, one failure, four optional
+skips). Its test-only string/null-storage correction is published in 7c7b92a7c:
+ten session/negative-control cases and 100 affected/preflight cases pass locally.
+All values/null masks remain checked; native #616 stays open. The new hosted
+recovery is pending. This changes no GUI runtime or Jupyter driver input.
 
 Latest-source hosted gates remain separate. Earlier full
 native matrices retain their observed failures and queued cells; MolSysMT
