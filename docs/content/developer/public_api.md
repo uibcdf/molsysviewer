@@ -192,6 +192,12 @@ The user-facing translation table is in
   - generic provider integration service: `read(callback)`,
     `execute(callback, name=..., update_view=True, rejection_check=None, axis_growth=None)`, `get_status()`,
     `synchronize()` and explicit recovery `replace(molecular_system)`
+  - replacement can opt into atomic review conditions with keyword-only
+    `expected_target` and `expected_revision`; a supplied nonnegative revision
+    checks exact primary identity (including an expected empty target) and the
+    view's managed revision before loading. Stale/uncertain reviews reject
+    without changing state. Ordinary replacement retains its explicit recovery
+    semantics; unobserved external/raw writes still need reconciliation
   - provider adapters own scientific execution and correspondence declarations;
     the host composes retained maps, guards old-index scene actions and retries
     scene synchronization without repeating science

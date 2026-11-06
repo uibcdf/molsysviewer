@@ -143,6 +143,27 @@ synchronization. A potentially partial scientific write instead needs explicit
 recovery through `replace(molecular_system)`, which discards pending scene
 reconciliation without undoing the scientific mutation.
 
+For a reviewed independent result, `replace(prepared_molsys,
+expected_target=reviewed_molsys, expected_revision=reviewed_revision)` checks
+both preconditions under the same lock as replacement. Obtain the target from
+`view.molsys` and the revision from `get_status()` when reviewing the operation;
+keep them in the provider's bounded server-side review, not in a browser packet.
+A nonnegative integer revision enables the condition. In that mode an expected
+target of None means an empty view. A nonempty expected target without a revision
+is invalid. Stale/uncertain/closed/busy reviews reject before load and leave
+data, scene, history and revision unchanged. The stale-state guard also applies
+with `skip_digestion=True`. Unconditional explicit recovery remains available.
+
+Revisions belong to this view's coordinator. Writes through another owner or
+raw arrays still require explicit reconciliation. The provider retains
+scientific copying, result ownership and explicit consent for the normal scene
+reset; the host does not infer correspondence or copy the independent output.
+A failed subsequent native load retains the existing uncertain recovery
+semantics, rather than promising rollback. The read callback must not be used
+to wrap a mutation or perform a caller-side check followed by replacement.
+This source capability needs its own host qualification; an older public
+dependency floor does not imply support for the new keyword arguments.
+
 Receiving supports retained nonempty axes and qualified native prefix additions.
 The explicit axis_growth="atoms" or "structures" keyword requires a plan
 added_count; old hosts reject the keyword before executing science. Providers

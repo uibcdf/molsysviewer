@@ -548,16 +548,43 @@ class SystemEditsManager:
 
     @signal(tags=["edit"])
     @digest()
-    def replace(self, molecular_system, *, skip_digestion=False):
+    def replace(self, molecular_system, *, expected_target=None, expected_revision=None, skip_digestion=False):
         """Explicitly discard pending scene reconciliation and load a replacement.
 
         This does not undo a scientific edit or modify caller-held old systems.
         Cached addon facades resolve the newly loaded target on their next call.
+
+        ``expected_revision`` opts into conditional replacement. It must be a
+        nonnegative integer and is checked together with exact ``expected_target``
+        object identity under the replacement lock. None is a valid expected
+        empty target in that mode. Supplying a nonempty target without a revision
+        is invalid. A stale review or an uncertain write is rejected before load;
+        these guards remain active with digestion skipped. Unconditional calls
+        retain explicit recovery from uncertain state.
+
+        Managed revisions belong to this view's coordinator; writes through
+        another owner or raw arrays still need explicit reconciliation.
+        Replacement keeps its existing scene-reset and failure
+        semantics. It does not copy scientific results or adopt them implicitly.
         """
         with self._locked():
             view = self._view()
             if self._state in {"editing", "syncing"}:
                 raise SystemEditPendingError("Cannot replace a system while an edit is executing.")
+            if expected_revision is None:
+                if expected_target is not None:
+                    raise ValueError("An expected target requires its reviewed revision.")
+            else:
+                if (
+                    isinstance(expected_revision, bool)
+                    or not isinstance(expected_revision, Integral)
+                    or expected_revision < 0
+                ):
+                    raise ValueError("The expected revision must be a nonnegative integer.")
+                if self._state == "uncertain":
+                    raise SystemEditPendingError("An uncertain edit invalidates conditional replacement review.")
+                if view.molsys is not expected_target or self._revision != expected_revision:
+                    raise SystemEditPendingError("The molecular system changed after review. Review replacement again.")
             try:
                 with self._internal():
                     view.load(molecular_system, mode="replace")

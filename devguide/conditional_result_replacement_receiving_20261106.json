@@ -1,0 +1,99 @@
+{
+  "schema": "molsysviewer.conditional-result-replacement@1",
+  "date": "2026-11-06",
+  "issue": "uibcdf/molsysviewer#306",
+  "source_basis": "2e17ee6f13333e5efd3726b353ade5c8cdc77b0b",
+  "native_basis": "ed09f64539a5af6c1dbe9bd352c7ef65dcd4a7a6",
+  "addon_source": "699fc69be57ac0e89f9bced3fd4f39139ccabf38",
+  "environment": "molsyssuite@uibcdf_3.14; PyUnitWizard overlay 02d0015fa7d3149d92c0e632b8e584f6a47c37dc",
+  "files": {
+    "molsysviewer/system_edits.py": {
+      "path": "molsysviewer/system_edits.py",
+      "sha256": "3f9d7178a9ef041e5ef8d7365dc6f4d73694d7cd9b6a4bebffa9e4c966735605",
+      "size_bytes": 26433
+    },
+    "molsysviewer/_private/argdigest/argument/expected_revision.py": {
+      "path": "molsysviewer/_private/argdigest/argument/expected_revision.py",
+      "sha256": "db6504e00ec0daad66d422e9f3a0ed35c6c34589fed0770b0e720b13fbb758df",
+      "size_bytes": 430
+    },
+    "molsysviewer/_private/argdigest/argument/expected_target.py": {
+      "path": "molsysviewer/_private/argdigest/argument/expected_target.py",
+      "sha256": "3a3fdc40549da07c8485449aa844c03f3f0a4d078d2b9c06d7533700cd9c2b48",
+      "size_bytes": 434
+    },
+    "tests/test_conditional_system_replacement.py": {
+      "path": "tests/test_conditional_system_replacement.py",
+      "sha256": "cb298179d0ba35f9d3bf4882312f05fda239fc0e7cf8bb6530edb78d5a33c3b8",
+      "size_bytes": 9946
+    },
+    "devtools/public_api_inventory_baseline.json": {
+      "path": "devtools/public_api_inventory_baseline.json",
+      "sha256": "155c5580ffc817666f08dce6da0ee3e251ce61e0f2a5f81a8af38453c2abbf64",
+      "size_bytes": 247
+    }
+  },
+  "contract": {
+    "conditional": "Optional expected_target and nonnegative integer expected_revision are checked under the same lock as replacement. None with a revision identifies an empty target; nonempty target without revision is invalid. Unconditional explicit recovery remains.",
+    "rejections": "Stale identity/revision, uncertain writes, busy or closed view refuse before load. Semantic revision checks stay active with digestion skipped. No changes by a refused replacement to molecular data, scene, history or managed revision.",
+    "ownership": "Per-view managed revisions and exact in-process primary identity; not raw-array/external-owner observation or origin authentication. Provider owns independent copying, explicit consent and review tokens. Actual load failures retain existing uncertain recovery, not rollback."
+  },
+  "checks": [
+    {
+      "scope": "33 new conditional cases inside managed-edit/reader/endpoint regression",
+      "passed": 72,
+      "skipped": 0,
+      "duration_seconds": 15.59,
+      "path": "/tmp/msv-conditional-replacement-regression-20261106.log",
+      "sha256": "00423fb566ec5fd3be4ce3765542459bfba7b46c77bc99a00c8933e2f8a1689c",
+      "size_bytes": 329
+    },
+    {
+      "scope": "Public digestion/inventory/docs/hardening/caller contracts",
+      "passed": 53,
+      "skipped": 0,
+      "duration_seconds": 10.53,
+      "path": "/tmp/msv-conditional-replacement-public-contracts-qualified-20261106.log",
+      "sha256": "7e17d81c7aa2e8ee1bd1f995f0208c27e715ca7e6be94dec42590efc1354fbd1",
+      "size_bytes": 326
+    },
+    {
+      "scope": "Reporting/link/architecture guards",
+      "passed": 329,
+      "skipped": 0,
+      "duration_seconds": 2.11,
+      "path": "/tmp/msv-conditional-replacement-records-20261106.log",
+      "sha256": "184433a272027df397c4ce66092e184efd55d7c655982fa0e715a0fc4d03f6a5"
+    }
+  ],
+  "inventory": {
+    "public_callables": 736,
+    "digested": 736,
+    "undigested": 0,
+    "declared_digesters": 450,
+    "missing_digesters": 0,
+    "change": "Exactly two argument validators added; baseline regenerated with its owning tool."
+  },
+  "preserved_initial_failures": [
+    {
+      "log": "/tmp/msv-conditional-replacement-focused-20261106.log",
+      "disposition": "Correct the validator import to the owning molsysmt.native namespace; use actual three-structure demo coordinates for an intervening edit; inspect retained scene metadata through the host checkpoint instead of weakening paused-scene export guards."
+    },
+    {
+      "log": "/tmp/msv-conditional-replacement-public-contracts-20261106.log",
+      "disposition": "Only the deliberate declared-digester total changed 448 to 450. Regenerate the inventory; keep all coverage/missing-validator assertions."
+    }
+  ],
+  "not_qualified": [
+    "exact-head hosted CI",
+    "consumer preparation/adoption GUI",
+    "installed packages",
+    "postponed human Jupyter/visible Qt acceptance"
+  ],
+  "publication": "No tag/candidate freeze/package/promotion; both 1.0 publications paused.",
+  "static_checks": {
+    "ruff": "check/format pass, 958 files",
+    "index": "generated queue index check passed",
+    "frontend": "No TS or generated runtime change; Python integration only."
+  }
+}

@@ -905,6 +905,19 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+Conditional result replacement under #306 now has source/focused receiving:
+[contract and evidence](pending_proposals/conditional_result_replacement.md).
+This enables reviewed preparation outputs to be adopted without a caller-side
+check/write race. The Chemistry preparation/adoption interface remains required
+work; no scientific method or implicit adoption is added.
+
+The clean addon source 699fc69be on Viewer 2e17ee6f completed all 4,699 addon
+cases without skips (1090.15 s). Corrected smoke 42215709274 is officially
+successful: 6,042 native passes/23 optional skips and 4,695 addon passes/four
+optional Ackredit skips. These scopes do not qualify the newer conditional
+host slice or installed packages. The full matrices and owner review remain
+separate.
+
 **Current handoff — 2026-11-06:** the owner contribution to
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) now implements
 System / Remove atoms, Extract subset and Copy system, plus Geometry / Translate
