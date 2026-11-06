@@ -1,0 +1,52 @@
+{
+  "schema": "molsysviewer.molsysmt_reference_receiving@1",
+  "date": "2026-11-06",
+  "issues": ["uibcdf/molsysviewer#264", "uibcdf/molsysmt#421", "uibcdf/molsysmt#557", "uibcdf/molsysmt#576"],
+  "status": "Three expert mirrors and managed protonation are source-received and published only to the owner PR; complete final-source gates remain pending",
+  "source": {
+    "contribution": "af8eabcd8963b1684449044511ea98a057222914",
+    "code_producer": "c877038d90c0979713bb66c2ce9f372bd6461322",
+    "owner_main": "40bb54d05182d4a87c48cc17a141b4152812421c",
+    "viewer_checkpoint": "069079137ee8882af6c4980b32a727c696324140",
+    "viewer_code": "239c8dd74815a660159a95970e9136d7beebfdd2",
+    "pyunitwizard": "02d0015fa7d3149d92c0e632b8e584f6a47c37dc",
+    "rust_tree": "32cfb07b9c26ae9ad3ed379c1b76fab85669cf67",
+    "rust_binary_sha256": "f32ed73f7ef3cf3225e12fbc56b9c4236a4452d758c94661f41860ad00d82c1c",
+    "owner_record": "https://github.com/uibcdf/molsysmt/blob/af8eabcd8963b1684449044511ea98a057222914/devtools/data/molsysviewer_tools_reference_receiving_20261106.json",
+    "pull_request": "https://github.com/uibcdf/molsysmt/pull/543",
+    "scope": "Python 3.14.7 named Linux development environment with explicit source overlay; source support is not clean solver-installed package compatibility"
+  },
+  "behavior": [
+    "Exact current-primary atom-name correspondence retains query/reference positional columns, order and native errors; labels do not authenticate chemical identity",
+    "Explicit CCD reference factory works before molecular loading and returns independent coordinate-free native output with source/method/H/descriptor/search policies and unassessed evidence",
+    "Read-only protonation assessment retains the ordinary native source-bound single-use object; raw apply is outside managed host synchronization",
+    "Managed in-place reconciliation prepares and applies one public decision under the existing edit lock, validates atom/structure maps and preserves native sparse analysis remapping",
+    "Independent default, source units, no-ops, deferred map composition, atomic prepublication rejection and synchronization-only recovery remain explicit",
+    "No consumer scientific algorithm, automatic H addition, charge assignment, environmental-pKa prediction or implicit independent-result adoption is added"
+  ],
+  "validation": {
+    "reference_affected_and_preflight": {"passed": 333, "failed": 0, "skipped": 0, "seconds": 174.69, "warnings": 128, "scope": "Earlier directed source before final six cases and owner-base reconciliation"},
+    "native_public_controls": {"passed": 99, "failed": 0, "skipped": 0, "seconds": 16.96},
+    "final_protonation_module": {"passed": 67, "failed": 0, "skipped": 0, "seconds": 28.56, "warnings": 1},
+    "deposited_reference_composition": {"passed": 2, "scope": "1HSG/MK1 and 1STP/BTN; repeated deposited poses are not a real experimental ensemble"},
+    "owner_base_integration": {"passed": 117, "failed": 0, "skipped": 0, "seconds": 5.85, "source": "c877038d90c0979713bb66c2ce9f372bd6461322", "scope": "Native correspondence/PDBQT/docs and addon API/source/hosted-command preflight; addon runtime/tests and Rust tree unchanged"},
+    "documentation": {"guide_blocks": 5, "inherited_help_doctests": 20, "failed": 0, "course_code_cells_preserved": 23, "course_outputs_ids_metadata_preserved": true, "course_structure": "156 notebooks, manifest, labels and navigation pass", "ruff": "4481 files check/format pass", "dependency_contract": "pass", "devguide": "pass"},
+    "scope": "Overlapping directed runs are not summed or represented as one complete gate; original failed test-authoring attempts remain in the owner receipt"
+  },
+  "host_documentation_checks": {
+    "initial": {"passed": 551, "failed": 1, "seconds": 12.69, "private_log": "msv-reference-host-docs-20261106.log", "cause": "Clean-checkout link guard correctly rejected the new evidence file while it was still untracked; no runtime/product failure"},
+    "correction": "Stage the reviewed evidence file and its four references; preserve the guard and unrelated sandbox work",
+    "affected_link_module": {"passed": 4, "failed": 0, "skipped": 0, "seconds": 1.05, "private_log": "msv-reference-host-links-final-20261106.log"},
+    "queue_index": "Up to date; no front-matter/lifecycle change",
+    "scope": "Initial passing results remain applicable; these attempts are not represented as a single green full run"
+  },
+  "inventory": {"exposed": 246, "declared": 248, "missing": ["molecular_dynamics.run_NPT_equilibration", "molecular_dynamics.run_NVT_equilibration"], "scope": "Only unconditional native stubs remain unexposed; path exposure is not complete scientific, mode or GUI qualification"},
+  "remaining": [
+    "Complete addon collection on the final frozen combined source; the 4827-case parent result predates force/reference/protonation additions",
+    "Exact-head hosted/platform, owner review/integration and installed-artifact qualification",
+    "All previously approved Geometry, Chemistry, Analysis/property/sequence/mechanics/plot and full TcTIM/ensemble scientific-session families",
+    "Postponed human Jupyter/visible Qt acceptance",
+    "Shared-workspace dependency findings remain under MolSysSuite#82; no dependency reinstall or clean installed claim",
+    "Both 1.0 publications and candidate/tag/package actions remain paused"
+  ]
+}

@@ -48,11 +48,11 @@ documents, and historical audits.
 Current work is the provider-owned Molecular tools workspace: System tasks,
 Geometry transforms/fitting/bounded periodic tasks, Chemistry inspection and
 preparation, and Analysis distance/neighborhood tasks with explicit core scene
-actions are implemented in contribution source. The expert force reader is
-received separately through unchanged native science. Follow the
+actions are implemented in contribution source. The expert force/reference
+readers and managed protonation consume native science and public maps. Follow the
 [current handoff](checkpoints.md#resume-in-one-page),
 [ordered next actions](checkpoints.md#what-is-next) and
-[receiving record](molsysmt_force_receiving_20261106.json). Human review is
+[receiving record](molsysmt_reference_receiving_20261106.json). Human review is
 postponed; hosted/owner/installed gates and future publication remain separate.
 The dated records below retain their original inputs.
 

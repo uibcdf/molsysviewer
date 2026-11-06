@@ -917,7 +917,28 @@ the final core/hosted gates. This is the prerequisite for trustworthy Analysis
 row adoption, now implemented and received below. All remaining approved task
 families stay required. Human receiving and both 1.0 publications remain postponed.
 
-**Current handoff — expert forces and full Analysis baseline, 2026-11-06:**
+**Current handoff — expert references and managed protonation, 2026-11-06:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) publishes
+`af8eabcd8963b1684449044511ea98a057222914`, executable source `c877038d9`,
+including owner main `40bb54d05`. Atom-name correspondence, explicit CCD reference
+construction and source-bound native protonation assessment retain scientific
+inputs, result classes and experimental limits. Managed in-place protonation
+uses one public assessment and its positional maps under the existing edit lock,
+preserving independent defaults, sparse named analyses, deferred composition,
+no-ops and synchronization-only recovery. Source path exposure is 246/248; the
+two omitted native MD paths are unconditional stubs.
+
+The [reference receipt](molsysmt_reference_receiving_20261106.json) keeps 333
+affected/preflight, 99 native, 67 final protonation and two deposited-reference
+passes separate from 117 owner-integration controls. Five guide blocks/twenty
+help doctests execute; all 23 existing Module 12/13 code cells, outputs, IDs and
+metadata remain unchanged. Complete final-source addon/hosted/installed gates,
+owner review and postponed human acceptance remain pending. The older complete
+4,827-case result below predates these changes. Every approved GUI/scientific-
+session family remains required; publication and candidate/tag/package actions
+remain paused.
+
+**Earlier force handoff — 2026-11-06:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) publishes
 `38147a9f8b4e6c33b7d038ecf39603861495f541`. The explicit force reader mirrors
 native #572 through the serialized current-primary reader. It preserves
@@ -2648,7 +2669,8 @@ from current nonperiodic geometric Measures.
    receiving. Keep the old hosted #301 failures and local environment recovery
    distinct from the new head; queued jobs are not passing evidence.
 2. Receive exact-head CI for Analysis and session receiving, keeping the clean
-   complete 4,827-case 2bb52b77c result separate from the later force source.
+   complete 4,827-case 2bb52b77c result separate from the later force/reference/
+   managed-protonation source af8eabcd8.
    Native #594–#598 are resolved by the owner; #612 and #613–#616 retain
    their distinct scopes and unsuccessful matrices remain historical.
    Continue required Geometry cell/reference/sequence/orientation, Chemistry
@@ -2658,8 +2680,9 @@ from current nonperiodic geometric Measures.
    Qt review pending. Automated browser transport is received, not a substitute
    for that acceptance. Owner #583/#584 and expert #572 force repairs are
    received. Native #576 assessment/managed application and correspondence/
-   template routes still need bound-consumer admission; #582 and proposed
-   addon/tool corrections retain their scopes.
+   template routes are now source-received in af8eabcd8; their full/hosted/
+   installed gates remain separate. #582 and proposed addon/tool corrections
+   retain their scopes.
 4. Reconcile remaining owner/public-artifact receiving, including #294, without
    duplicate dispatches or downstream scientific substitutes.
 5. Consolidate documentation after the agreed functionality, then freeze and

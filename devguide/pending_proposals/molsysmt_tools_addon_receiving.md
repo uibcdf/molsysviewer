@@ -14,6 +14,21 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Expert reference/protonation receiving — 2026-11-06
+
+PR #543 publishes `af8eabcd8`, including owner main `40bb54d05`. The expert
+facade receives exact atom-name correspondence, explicit CCD references and the
+native protonation assessment object. Managed in-place reconciliation consumes
+one public decision and its positional maps under the host edit lock; independent
+defaults, sparse analyses, no-ops and synchronization-only recovery are retained.
+The [reference receipt](../molsysmt_reference_receiving_20261106.json) separates
+333 affected/preflight, 99 native controls, 67 final protonation and two deposited
+composition passes from the 117-case merged-owner receiving. Guide/help and
+course-preservation checks pass. Source exposure is 246/248, omitting only native
+MD stubs; this does not close mode/scientific/GUI qualification. Complete frozen
+addon/hosted/installed gates, owner acceptance and every remaining approved task
+family remain required. Human acceptance and publications remain postponed.
+
 ## Expert force reader and complete reconciled baseline — 2026-11-06
 
 PR #543 publishes `38147a9f8`, adding the explicit native #572 force reader.

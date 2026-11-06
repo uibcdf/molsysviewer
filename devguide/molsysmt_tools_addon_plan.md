@@ -1,6 +1,20 @@
 # MolSysMT tools add-on — implementation plan
 
-**Current receiving — 2026-11-06:** published PR #543 head `38147a9f8` adds the
+**Current receiving — 2026-11-06:** published PR #543 head `af8eabcd8` receives
+atom-name correspondence, explicit CCD reference construction and native
+protonation assessment. Managed in-place reconciliation uses one public
+assessment and positional maps under the existing host edit lock, with deferred
+projection and synchronization-only retry. The native independent default and
+experimental scientific limits remain unchanged. Source exposure is 246/248;
+only two unconditional native MD stubs remain omitted. The
+[reference receiving record](molsysmt_reference_receiving_20261106.json) separates
+333 affected/preflight, 99 native, 67 final protonation and two deposited-reference
+passes from 117 merged-owner controls. Guide/help and course-preservation checks
+pass. Complete final-source addon/hosted/installed, owner and postponed human
+gates remain pending; all approved GUI and scientific-session families stay
+required. Publication remains paused.
+
+**Earlier force receiving — 2026-11-06:** published PR #543 head `38147a9f8` adds the
 native atomic-force mirror with 149 mechanical and 175 native/affected controls
 passing; its guide block and six help doctests execute. The clean combined
 Analysis parent `2bb52b77c` separately passes 4,827 complete addon cases with
