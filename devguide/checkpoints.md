@@ -1,28 +1,37 @@
 # Development checkpoint
 
-**Molecular tools System panel received in source — 2026-11-05:**
-[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `02c409e5b`, implements the
-first graphical task: System / Remove atoms, with native selection, bounded
-review and one serialized all-structure confirmation. Expert scientific APIs
-and defaults remain unchanged. Only this task is registered; Geometry,
-Chemistry, Analysis and other System tasks remain design. Host ecf4635e fixes
-[#297](archive/addon_panel_pending_metadata.md) diagnostic transport and
-[#298](archive/addon_panel_stylesheet_lifetime.md) CSS lifetime, and exposes a
-bounded managed-state event without raw-edit observation.
-The [receipt](molsysmt_system_panel_receiving_20261105.json) records 4,470
-addon/integration cases, 321 host/reporting controls, 86 owner documentation
-controls and 12 pinned-route checks, all passing without omissions. Counts
-have distinct scopes. Real Mol*/ESM/Python receiving removes 165 water atoms
-from 1TCD, updates the rendered 3,818-atom system and verifies host-only recovery,
-CSS and remount behavior. All 4,248 frozen primary sources, provider/support
-sources and retained native backend stay unchanged through validation.
-Native b8cdbd101 → d2c0882ed still needs receiving and document reconciliation.
-Hosted CI, owner review, live Jupyter,
-visible Qt/actual popups, #572/#576 and installed qualification remain separate.
-Both 1.0 publications stay paused; no candidate or publication.
+**Molecular tools and execution platforms received — 2026-11-05:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `e3d5d21a5`,
+receives native `50854766d` with document conflicts resolved. Expert exposure
+remains 242/245 dated functional paths (build 31/31); scientific algorithms and
+backend bytes remain native. Independent ions/solvation, distinct OBC models
+and native #559 engine-owned platform admission are received. Only System /
+Remove atoms is graphical; other tasks remain planned. Viewer runtime ecf4635e
+and its generic panel corrections are unchanged.
 
-The earlier design/prototype and #296 extraction correction retain their
-[original receipt](molsysmt_gui_design_receiving_20261105.json).
+The [current receipt](molsysmt_platform_receiving_20261105.json) records 4,512
+complete addon/integration passes, 481 native/tool controls, 85 owner docs
+controls and 17 Viewer boundary cases in separate overlapping scopes. CPU and
+Reference use independent energy, pair and minimization checks; GPU/device
+execution is not qualified. Real Mol*/ESM/Python receiving again checks 1TCD
+removal, rendering, CSS, remount and synchronization-only recovery. All 4,270
+final source/test inputs and recorded providers remain unchanged through the
+gate; owner course code/outputs/IDs/metadata remain preserved.
+
+Native #583 attribution and #584 constraints-query defects remain reported;
+#582 recipes and #572/#576 remain separate. The proposed #587 tool fix now
+acquires all issue pages: 519 live issues include old #22/#25. Its
+[receipt](molsysmt_board_pagination_receiving_20261105.json) preserves three
+genuine label discrepancies and the notices in
+[MolSysSuite#171](https://github.com/uibcdf/molsyssuite/issues/171) and
+[MolI#85](https://github.com/uibcdf/moli/issues/85). Notice is not canonical adoption.
+Owner review, queued exact-head CI, remaining tasks, live Jupyter/Qt/popups and
+installed qualification remain pending. Both 1.0 publications stay paused.
+
+Earlier native model/ion, board-tool and initial System-panel evidence keep
+[their original source scopes](molsysmt_native_model_ion_receiving_20261105.json).
+
+
 
 
 Earlier explicit water construction retains its
@@ -890,14 +899,13 @@ fourteen cases verified in each original JUnit. General CI 41899772338 attempt 2
 now passes all eight test cells; each import/test/coverage step is verified.
 The initial macOS Python 3.12 acquisition cancellation remains preserved.
 Browser/experimental Qt pass independently. MolSysMT PR #543 now carries the
-first real System / Remove atoms panel over the qualified expert API. The
-[receipt](molsysmt_system_panel_receiving_20261105.json) records 4,470 addon
-cases, 321 host/reporting controls and real Mol*/ESM/Python clicks. Host ecf4635e
-fixes #297/#298; owner controlled routes pin that published source. Remaining
-panels are design, not registered tasks.
-New native b8cdbd101 adds ions and changes solvation/maps; receive that published
-source before claiming a current complete API inventory. CI, owner review,
-#572/#576, live GUI/popups and installed qualification remain pending.
+first real System / Remove atoms panel plus native 50854766d platform receiving. The
+[receipt](molsysmt_platform_receiving_20261105.json) identifies source
+e3d5d21a5, 4,512 addon cases, 481 native/tool controls and actual
+Mol*/ESM/Python receiving. The dated expert inventory is 242/245, build 31/31.
+The PR is mergeable; owner review and hosted CI remain pending. Native
+#583/#584 and broader #582 plus #572/#576, live Jupyter/Qt/popups and installed
+qualification retain their own scope.
 Both 1.0 publications remain paused.
 
 The latest user-directed standalone round is summarized in the
@@ -2498,34 +2506,23 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-05:**
 
-1. Receive exact-head CI and owner review of MolSysMT PR #543, covering the expert source
-   and real System / Remove atoms panel, plus Viewer #296/#297/#298 corrections.
-   The current source receipt identifies the published contribution and host inputs;
-   keep original gate/source identities. The current PR reports owner-document conflicts
-   against newer main; reconcile that basis before merge or new-source qualification.
-   Then exercise live Jupyter/Qt/popups before extending remaining graphical tasks. The c0149a2d6 inventory remains a dated 241/244 snapshot;
-   two native MD stubs are intentionally absent.
-   Callable exposure is not complete scientific/mode or installed qualification.
-2. Inspect/archive the original macOS jobs/artifacts of prior Viewer `004464df`
-   (42062771914): current metadata reports completed/success, but original
-   evidence receiving remains separate. Receive applicable new heads. Preserve
-   previous successful recoveries/acquisition failures; no duplicate dispatch.
-   Keep #295 three-host receiving and public-provider/pandas baseline.
-   Triage #294's import-order observation with controlled inputs.
-3. #292/#293 source reviews and guards are complete. Scope a covering pre-1.0
-   artifact for #294's delivered scene handle/player contracts; package
-   production/publication still requires its separate accepted route.
-4. Receive published native b8cdbd101 add_ions/solvate/map changes and refresh
-   the expert inventory; then native forces #572 and managed protonation #576. The
-   corrected explicit-input water factory, basic.view, historical aliases and
-   MD-stub disposition are complete in source. Receive
-   native #549/#559–#562/#572/#574/#575/#576/#578 without consumer scientific
-   repairs. Preserve PR-only delivery to the owner and separate installed scope.
-5. Review the proposed System/Geometry/Chemistry/Analysis navigation, then
-   implement the selection/removal slice with atomic review validity. Qualify
-   extraction result presentation before Open as new view. Broaden the GUI,
-   consolidate documentation and qualify frozen sources/installed files.
-   Core/addon ownership and source/public distinctions remain in force.
+1. Receive exact-head CI and owner review of PR #543 e3d5d21a5, native
+   50854766d and controlled Viewer runtime ecf4635e. Conflicts are resolved;
+   the complete local addon gate passes 4,512 cases. Retain source identity
+   and known native #583/#584 warnings/errors; queued CI is not green.
+2. Perform live Jupyter, visible Qt and real-popup review with the updated
+   System notebook. Then implement remaining System/Geometry/Chemistry/Analysis
+   tasks. Independent new-View presentation needs a qualified shared host path.
+3. Receive scientific-owner #583/#584 repairs and retain #582 effective recipe,
+   #572 force-reader and #576 correspondence ownership. #587's paginated board
+   fix is proposed in the PR; three unrelated label discrepancies remain. Shared
+   awareness/adoption is tracked by MolSysSuite#171 and MolI#85.
+4. Receive applicable hosted artifacts, retaining the prior macOS and
+   #295 public-provider/pandas evidence. Triage #294's import-order observation
+   with controlled inputs; do not duplicate dispatches to bypass queues.
+5. Consolidate documentation and scope the next pre-1.0 artifact after remaining
+   work is accepted. Installed qualification and both paused 1.0 publication
+   decisions stay separate; no tag or package publication is authorized here.
 
 Earlier source receiving, public packages and human observations retain their
 scopes; no new candidate freeze or publication is authorized. Both 1.0

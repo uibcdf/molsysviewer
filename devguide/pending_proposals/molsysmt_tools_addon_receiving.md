@@ -14,6 +14,30 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Execution-platform receiving and shared warning — 2026-11-05
+
+PR #543 e3d5d21a5 receives native 50854766d (#559). The
+[receipt](../molsysmt_platform_receiving_20261105.json) records 4,512 addon
+passes, 481 native/tool checks, CPU/Reference references and real browser
+receiving. Original failures and earlier snapshots retain their inputs.
+The #587 tool fix and accepted local inventory-completeness instruction are
+proposed with 64 reporting guards; shared notices are delivered to
+uibcdf/molsyssuite#171 and uibcdf/moli#85, without claiming canonical adoption.
+Native #583/#584, owner review, exact-head CI, remaining tasks, live hosts and
+installed qualification stay pending. Both 1.0 publications remain paused.
+
+## Native model/ion source received — 2026-11-05
+
+PR #543 `8725a460c` receives native 8c2661293 and resolves its document conflicts.
+The [receipt](../molsysmt_native_model_ion_receiving_20261105.json) records the
+242/245 functional inventory, independent ion replacement and new solvation
+flags, native model/constraint/resource repairs and original failures. The
+complete source gate passes 4,506 cases; 362 native and 321 Viewer checks pass
+separately. Real Mol*/ESM/Python System-panel receiving passes without a host
+runtime change. Native #583/#584 are reported, without consumer workarounds.
+Owner review/queued CI, #582/#572/#576, live hosts, remaining tasks and installed
+qualification remain pending. Both 1.0 publications stay paused.
+
 ## First graphical System task received — 2026-11-05
 
 The [source receipt](../molsysmt_system_panel_receiving_20261105.json) covers

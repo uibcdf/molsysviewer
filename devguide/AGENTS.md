@@ -66,6 +66,12 @@ depends on the work at hand, not on a blanket rule.
 
 ## Writing in this directory
 
+Board reconciliation must acquire the complete paginated issue inventory before
+declaring a record's issue missing. Deliberately capped exploration is not an
+exhaustive audit; retain partial/acquisition failure status instead of treating
+it as absence or deleting a valid record. Shared review is tracked in
+uibcdf/molsyssuite#171 and uibcdf/moli#85; that notice is not central adoption.
+
 `README.md` §Maintenance rules is normative for anything added here: say "done" where a
 scan will hit it, keep a closed item to one line, and write the sentence rather than the
 bullet list when the bullets carry one idea each.

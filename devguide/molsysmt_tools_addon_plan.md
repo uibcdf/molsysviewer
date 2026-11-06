@@ -1,28 +1,37 @@
 # MolSysMT tools add-on — implementation plan
 
-**Molecular tools System panel received in source — 2026-11-05:**
-[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `02c409e5b`, implements the
-first graphical task: System / Remove atoms, with native selection, bounded
-review and one serialized all-structure confirmation. Expert scientific APIs
-and defaults remain unchanged. Only this task is registered; Geometry,
-Chemistry, Analysis and other System tasks remain design. Host ecf4635e fixes
-[#297](archive/addon_panel_pending_metadata.md) diagnostic transport and
-[#298](archive/addon_panel_stylesheet_lifetime.md) CSS lifetime, and exposes a
-bounded managed-state event without raw-edit observation.
-The [receipt](molsysmt_system_panel_receiving_20261105.json) records 4,470
-addon/integration cases, 321 host/reporting controls, 86 owner documentation
-controls and 12 pinned-route checks, all passing without omissions. Counts
-have distinct scopes. Real Mol*/ESM/Python receiving removes 165 water atoms
-from 1TCD, updates the rendered 3,818-atom system and verifies host-only recovery,
-CSS and remount behavior. All 4,248 frozen primary sources, provider/support
-sources and retained native backend stay unchanged through validation.
-Native b8cdbd101 → d2c0882ed still needs receiving and document reconciliation.
-Hosted CI, owner review, live Jupyter,
-visible Qt/actual popups, #572/#576 and installed qualification remain separate.
-Both 1.0 publications stay paused; no candidate or publication.
+**Molecular tools and execution platforms received — 2026-11-05:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `e3d5d21a5`,
+receives native `50854766d` with document conflicts resolved. Expert exposure
+remains 242/245 dated functional paths (build 31/31); scientific algorithms and
+backend bytes remain native. Independent ions/solvation, distinct OBC models
+and native #559 engine-owned platform admission are received. Only System /
+Remove atoms is graphical; other tasks remain planned. Viewer runtime ecf4635e
+and its generic panel corrections are unchanged.
 
-The earlier design/prototype and #296 extraction correction retain their
-[original receipt](molsysmt_gui_design_receiving_20261105.json).
+The [current receipt](molsysmt_platform_receiving_20261105.json) records 4,512
+complete addon/integration passes, 481 native/tool controls, 85 owner docs
+controls and 17 Viewer boundary cases in separate overlapping scopes. CPU and
+Reference use independent energy, pair and minimization checks; GPU/device
+execution is not qualified. Real Mol*/ESM/Python receiving again checks 1TCD
+removal, rendering, CSS, remount and synchronization-only recovery. All 4,270
+final source/test inputs and recorded providers remain unchanged through the
+gate; owner course code/outputs/IDs/metadata remain preserved.
+
+Native #583 attribution and #584 constraints-query defects remain reported;
+#582 recipes and #572/#576 remain separate. The proposed #587 tool fix now
+acquires all issue pages: 519 live issues include old #22/#25. Its
+[receipt](molsysmt_board_pagination_receiving_20261105.json) preserves three
+genuine label discrepancies and the notices in
+[MolSysSuite#171](https://github.com/uibcdf/molsyssuite/issues/171) and
+[MolI#85](https://github.com/uibcdf/moli/issues/85). Notice is not canonical adoption.
+Owner review, queued exact-head CI, remaining tasks, live Jupyter/Qt/popups and
+installed qualification remain pending. Both 1.0 publications stay paused.
+
+Earlier native model/ion, board-tool and initial System-panel evidence keep
+[their original source scopes](molsysmt_native_model_ion_receiving_20261105.json).
+
+
 
 
 **Status: partial source implementation; installed qualification pending —
