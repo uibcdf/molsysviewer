@@ -14,6 +14,22 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## First graphical System task received — 2026-11-05
+
+The [source receipt](../molsysmt_system_panel_receiving_20261105.json) covers
+native selection/review/removal, actual Mol*/ESM/Python actions and generic
+host #297/#298 corrections in ecf4635e. Only System / Remove atoms is registered;
+other tasks remain proposed. The complete addon gate passes 4,470 cases;
+321 host/reporting controls, 86 owner documentation controls and 12 route checks
+pass in their distinct scopes. Expert signatures/defaults and native algorithms
+are unchanged. Drafts survive navigation; executable tokens do not. The existing
+canvas Update view action recovers projection without repeating science.
+
+Owner review, exact-head CI, live Jupyter/visible Qt/popups, newer native source
+receiving and clean installed qualification remain pending. Both 1.0 publications
+remain paused. Historical design-only and earlier source receipts below retain
+their original scope.
+
 ## Combined metadata and export-name projection received — 2026-11-04
 
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) publishes

@@ -1,25 +1,29 @@
 # MolSysMT tools add-on — implementation plan
 
-**Molecular tools GUI design and extraction repair — 2026-11-05:**
-[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `94548b434`,
-now carries a reviewable workspace design and disconnected interactive prototype:
-System, Geometry, Chemistry and Analysis, with one task form at a time. No GUI
-panel is registered. The first proposed flow resolves a selection, reviews
-all-structure atom removal and confirms once through the existing coordinator;
-expert scientific signatures/defaults remain unchanged. New-view presentation
-from Jupyter/Qt needs a qualified common host operation before that extraction
-destination is offered.
-The [receipt](molsysmt_gui_design_receiving_20261105.json) separates static-browser
-layout evidence, headless 1TCD feasibility and prior source gates. Viewer
-[#296](archive/extraction_numeric_region_recipe.md) is corrected: numeric region
-recipes transfer their mapped atoms and source evidence without text-regex
-failure or replay in the new index universe. Fifteen new guards and 119 related
-scene/region/session/source/edit checks pass; the 33 scoped cases are included
-in that total. Owner design-document checks pass 59 cases. The original 4,438
-expert cases retain their c0149a2d6 source/runtime input, not a fresh full gate.
-Native b8cdbd101 was published meanwhile with add_ions/solvate changes and still
-needs independent receiving. Hosted CI, owner review, live GUI/popups, #572/#576
-and installed qualification remain separate. Both 1.0 publications stay paused.
+**Molecular tools System panel received in source — 2026-11-05:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `02c409e5b`, implements the
+first graphical task: System / Remove atoms, with native selection, bounded
+review and one serialized all-structure confirmation. Expert scientific APIs
+and defaults remain unchanged. Only this task is registered; Geometry,
+Chemistry, Analysis and other System tasks remain design. Host ecf4635e fixes
+[#297](archive/addon_panel_pending_metadata.md) diagnostic transport and
+[#298](archive/addon_panel_stylesheet_lifetime.md) CSS lifetime, and exposes a
+bounded managed-state event without raw-edit observation.
+The [receipt](molsysmt_system_panel_receiving_20261105.json) records 4,470
+addon/integration cases, 321 host/reporting controls, 86 owner documentation
+controls and 12 pinned-route checks, all passing without omissions. Counts
+have distinct scopes. Real Mol*/ESM/Python receiving removes 165 water atoms
+from 1TCD, updates the rendered 3,818-atom system and verifies host-only recovery,
+CSS and remount behavior. All 4,248 frozen primary sources, provider/support
+sources and retained native backend stay unchanged through validation.
+Native b8cdbd101 → d2c0882ed still needs receiving and document reconciliation.
+Hosted CI, owner review, live Jupyter,
+visible Qt/actual popups, #572/#576 and installed qualification remain separate.
+Both 1.0 publications stay paused; no candidate or publication.
+
+The earlier design/prototype and #296 extraction correction retain their
+[original receipt](molsysmt_gui_design_receiving_20261105.json).
+
 
 **Status: partial source implementation; installed qualification pending —
 2026-10-28.** The maintainer authorizes the Viewer development effort to implement
