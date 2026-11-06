@@ -183,6 +183,10 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         requirements += (
             'import { checkManagedSystemEdits } from "./managed-system-edits-scenarios";' in entry,
             "await checkManagedSystemEdits(page.context());" in entry,
+            'import { checkCentroidMeasurements } from "./centroid-measurements-scenarios";' in entry,
+            "await checkCentroidMeasurements(page.context(), dir);" in entry,
+            (js_root / "tests/e2e/centroid-measurements-scenarios.ts").is_file(),
+            (js_root / "tests/e2e/centroid-measurements-bridge.py").is_file(),
             "PythonFixtureBridge" in receiving,
             'read_only_actions = ("inspect",)' in fixture,
             'msv.demo["pentalanine"]' in fixture,

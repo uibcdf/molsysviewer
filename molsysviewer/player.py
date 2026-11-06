@@ -166,6 +166,7 @@ class PlayerManager:
         self._view._send({"op": "set_trajectory_frame", "index": int(index)})  # noqa: SLF001
         self._view._current_structure_index = int(index)  # noqa: SLF001
         self._sync_summary()
+        self._view._sync_measurement_summaries_runtime()  # noqa: SLF001
         # NPT: auto-update box when box is visible
         box_record = getattr(self._view, "_box_record", None)  # noqa: SLF001
         if box_record is not None:

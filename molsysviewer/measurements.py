@@ -293,7 +293,9 @@ class MeasurementsManager:
         }
         return layer
 
-    def _endpoint_positions_nm(self, pick: list[int], ea_indices: list[int], policy: str) -> "np.ndarray | None":
+    def _endpoint_positions_nm(
+        self, pick: list[int], ea_indices: list[int], policy: str, *, structure_indices: Any = "all"
+    ) -> "np.ndarray | None":
         molsys = self._view._molsys  # noqa: SLF001
         if molsys is None:
             return None
@@ -307,7 +309,13 @@ class MeasurementsManager:
             else:
                 return None
             result = msm.get(
-                molsys, element="atom", selection=atoms, output_type="dictionary", coordinates=True, skip_digestion=True
+                molsys,
+                element="atom",
+                selection=atoms,
+                structure_indices=structure_indices,
+                output_type="dictionary",
+                coordinates=True,
+                skip_digestion=True,
             )
             coords = result.get("coordinates")
             if coords is None:
@@ -339,11 +347,13 @@ class MeasurementsManager:
         picks_atom_indices: list[list[int]],
         endpoint_atom_indices: list[list[int]],
         endpoint_policy: str,
+        *,
+        structure_indices: Any = "all",
     ) -> "np.ndarray | None":
         positions = []
         for i, pick in enumerate(picks_atom_indices):
             ea = endpoint_atom_indices[i] if i < len(endpoint_atom_indices) else []
-            pos = self._endpoint_positions_nm(pick, ea, endpoint_policy)
+            pos = self._endpoint_positions_nm(pick, ea, endpoint_policy, structure_indices=structure_indices)
             if pos is None:
                 return None
             positions.append(pos)
@@ -378,7 +388,8 @@ class MeasurementsManager:
                         return None
                     n1 /= nn1
                     n2 /= nn2
-                    m1 = np.cross(n1, b2 / (np.linalg.norm(b2) or 1))
+                    # Same ordered, signed torsion as MolSysMT and Mol*.
+                    m1 = np.cross(b2 / (np.linalg.norm(b2) or 1), n1)
                     x = np.dot(n1, n2)
                     y = np.dot(m1, n2)
                     values.append(float(np.degrees(np.arctan2(y, x))))
@@ -391,6 +402,45 @@ class MeasurementsManager:
             )
             return None
         return None
+
+    def _refresh_values_after_coordinate_edit(self, atoms: list[int], structures: list[int]) -> None:
+        """Repair live values, reading only edited frames when a full cache exists."""
+        edited = set(atoms)
+        n_structures = self._view.player.n_structures
+        for record in self._view._measurement_history:  # noqa: SLF001
+            options = record.get("options", {})
+            picks = options.get("picks_atom_indices", [])
+            resolved = options.get("endpoint_atom_indices", [])
+            policy = options.get("endpoint_policy", self._endpoint_policy_default)
+            effective = [
+                pick if policy == "centroid" else (resolved[i] if i < len(resolved) and resolved[i] else pick[:1])
+                for i, pick in enumerate(picks)
+            ]
+            if not any(edited.intersection(endpoint) for endpoint in effective):
+                continue
+            cached = options.pop("value_series", None)
+            options.pop("value", None)
+            layer = self._measurement_layer(record.get("tag"))
+            if layer is not None and layer.broken:
+                continue
+            has_full_cache = isinstance(cached, list) and len(cached) == n_structures
+            values = self._compute_measurement_series(
+                record["op"],
+                picks,
+                resolved,
+                policy,
+                structure_indices=structures if has_full_cache else "all",
+            )
+            if values is None:
+                continue
+            if has_full_cache:
+                for index, value in zip(structures, values):
+                    cached[index] = float(value)
+            else:
+                cached = values.tolist()
+            options["value_series"] = cached
+            if cached:
+                options["value"] = float(cached[self._active_series_index(len(cached))])
 
     def _compute_measurement_value(
         self,

@@ -1426,7 +1426,7 @@ class Measurement(SceneObject):
     @signal()
     @digest()
     def get_coordinates(self, *, skip_digestion: bool = False):
-        """Return the 3D positions of the endpoint atoms as a ``puw`` quantity.
+        """Return the effective 3D endpoint positions as a ``puw`` quantity.
 
         The shape is ``(n_endpoints, 3)`` in the configured standard length unit, where ``n_endpoints`` is 2
         (distance), 3 (angle), or 4 (dihedral).  Positions are resolved from
@@ -1444,26 +1444,23 @@ class Measurement(SceneObject):
             raise ValueError(f"No measurement record found for tag {self.tag!r}.")
 
         options = record.get("options") or {}
+        picks: list[list[int]] = options.get("picks_atom_indices") or []
         endpoint_indices: list[list[int]] = options.get("endpoint_atom_indices") or []
-        flat = [idx for group in endpoint_indices for idx in (group or [])]
-        if not flat:
-            picks: list[list[int]] = options.get("picks_atom_indices") or []
-            flat = [idx for pick in picks for idx in (pick or [])]
-        if not flat:
+        if not picks or self.broken:
             raise ValueError(f"Measurement {self.tag!r} has no resolvable endpoint atoms.")
-
-        molsys = getattr(self._view, "_molsys", None)
-        if molsys is None:
+        if self._view._molsys is None:  # noqa: SLF001
             raise ValueError("No molecular system loaded.")
-        frame = getattr(self._view, "_current_structure_index", 0)
-        coords = molsys.structures.get_coordinates(
-            indices=flat,
-            structure_indices=[frame],
-            skip_digestion=True,
-        )
-        # coords shape: (1, n_endpoints, 3) → squeeze to (n_endpoints, 3)
-        arr = _np.asarray(puw.get_value(coords, to_unit="nm"))
-        return puw.standardize(puw.quantity(arr[0].tolist(), "nm"))
+        policy = options.get("endpoint_policy", "centroid")
+        positions = []
+        for index, pick in enumerate(picks):
+            resolved = endpoint_indices[index] if index < len(endpoint_indices) else []
+            position = self._view.measurements._endpoint_positions_nm(  # noqa: SLF001
+                pick, resolved, policy, structure_indices=[self._view.player.index]
+            )
+            if position is None:
+                raise ValueError(f"Measurement {self.tag!r} has no resolvable endpoint atoms.")
+            positions.append(position[0])
+        return puw.standardize(puw.quantity(_np.asarray(positions), "nm"))
 
     @signal()
     @digest()
@@ -1491,6 +1488,8 @@ class Measurement(SceneObject):
         self._assert_current()
         if duration_ms is not None:
             duration = duration_ms
+        if self.broken:
+            raise ValueError(f"Measurement {self.tag!r} has no resolvable endpoint atoms.")
         history = getattr(self._view, "_measurement_history", [])
         record = next((r for r in history if r.get("tag") == self.tag), None)
         if record is None:
@@ -1498,10 +1497,12 @@ class Measurement(SceneObject):
         options = record.get("options", {})
         # Prefer resolved endpoint atoms; fall back to raw picks for centroid endpoints.
         endpoint_indices: list[list[int]] = options.get("endpoint_atom_indices") or []
-        flat = [idx for group in endpoint_indices for idx in (group or [])]
-        if not flat:
-            picks: list[list[int]] = options.get("picks_atom_indices") or []
-            flat = [idx for pick in picks for idx in (pick or [])]
+        picks: list[list[int]] = options.get("picks_atom_indices") or []
+        flat = [
+            atom
+            for index, pick in enumerate(picks)
+            for atom in (endpoint_indices[index] if index < len(endpoint_indices) and endpoint_indices[index] else pick)
+        ]
         if not flat:
             return
 
@@ -1515,6 +1516,7 @@ class Measurement(SceneObject):
                     molsys,
                     element="atom",
                     selection=flat,
+                    structure_indices=[self._view.player.index],
                     output_type="dictionary",
                     coordinates=True,
                     skip_digestion=True,

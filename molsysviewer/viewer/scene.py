@@ -525,6 +525,7 @@ class SceneMixin:
         )
         if analyses:
             self._molsys.interactions = reconciled
+        self.measurements._refresh_values_after_coordinate_edit(atoms, structures)  # noqa: SLF001
         self.interactions._system_changed()
         self._source_binding_memo = None
         self.history.clear()

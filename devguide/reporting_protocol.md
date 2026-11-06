@@ -223,6 +223,14 @@ and original inert-state restoration. The offline validator verifies the entry,
 fixture/receiving owners and normal build/core registration. Actual Jupyter and
 popup receiving remains a separate consumer guard; this lane is not a human Qt
 observation or installed-package claim.
+The same entry's `centroid-measurements-scenarios.ts` and real pentalanine
+bridge compare actual distance/angle/dihedral shape endpoints and labels with
+independent coordinates under a non-default unit policy. They cover repeated
+atom occurrences, atomic/representative controls, applied frame/coordinate
+updates, visibility/rename/history/session replay and the real widget/canvas
+popup mirror. The mirror waits for applied geometry rather than treating a
+received frame summary as completion. The offline validator checks these
+receiving owners; a Python-only series assertion cannot guard a renderer defect.
 
 ### GroupPanel unit guard profile
 

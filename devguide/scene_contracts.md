@@ -2745,3 +2745,40 @@ queries and remapping use owned backing state, avoiding repeated defensive
 copies of large index lists. This changes visual-state ownership, not the
 experimental scientific result contract. Guards:
 `tests/test_public_api_followup.py` and `tests/test_interactions_scene.py`.
+
+### Live measurement geometry integrity — 2026-11-06
+
+A geometric-centroid endpoint is the arithmetic mean of its declared atom
+occurrences in the visible structure, including multiplicity. It is neither
+a bounding-sphere center nor a mass-weighted or periodic center. Python values,
+`Measurement.get_coordinates()` and actual canvas endpoints use that same
+definition. `get_coordinates()` returns exactly one position per endpoint,
+in current standard length units; representative policies use their resolved
+atoms. `focus()` includes every effective participant population in the visible
+structure and rejects broken/retired measurements before a camera command.
+
+Signed dihedrals follow the ordered-atom convention of MolSysMT and Mol*.
+State/session recovery already recomputes measurements from their recipes;
+historical cached opposite-sign values must not survive recovery. Coordinate
+edits repair affected live values before publishing summaries, including hidden
+measures. With a complete trajectory cache, repair reads only the edited
+structures and retains untouched values. An undefined result discards stale
+numbers. Invalid edits preserve existing data and caches.
+
+Accepted player navigation also publishes current measurement summaries before
+authority callbacks, including steps and first/last wrappers. The numerical
+Studio state must follow the accepted structure in both popup types. A frame
+summary is not proof that its asynchronous canvas projection has completed.
+
+Centroid representations are children of the molecular structure's Mol* state
+node, using the existing distance/angle/dihedral factories with point loci at
+the effective centers. Their dependency updates complete with normal trajectory
+and coordinate operations; do not add independent playback clocks or replay
+measurements per frame. Atomic/representative rendering retains the native route.
+Removing rendered measurement objects unregisters their scene refs while keeping
+hidden recipes available for show. Picking resolves live geometry; visibility
+cycles and rename cannot retain a growing collection of deleted references.
+The wire continues to use explicit Å/degrees independently of application units.
+Guards: `tests/test_measurement_geometry_integrity.py` and the registered
+`molsysviewer/js/tests/e2e/coordinate-edits.e2e.ts` receiving owner. These source
+checks do not qualify a public artifact or replace postponed human review.

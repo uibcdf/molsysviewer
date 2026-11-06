@@ -1,0 +1,218 @@
+{
+  "schema": "molsysviewer.measurement_geometry_receiving@1",
+  "date": "2026-11-06",
+  "status": "source correction received; final core/hosted gates separate",
+  "issues": [
+    "uibcdf/molsysviewer#308",
+    "uibcdf/molsysviewer#309",
+    "uibcdf/molsysviewer#310",
+    "uibcdf/molsysviewer#311",
+    "uibcdf/molsysviewer#312",
+    "uibcdf/molsysviewer#313"
+  ],
+  "source": {
+    "viewer_parent": "a994f89c5f7685109de16d668d837e1d7279cbef",
+    "owner_contribution": "7c7b92a7c396612671bbebec6b8db3afe97d241c",
+    "native_basis": "ed09f64539a5af6c1dbe9bd352c7ef65dcd4a7a6",
+    "pyunitwizard": "02d0015fa7d3149d92c0e632b8e584f6a47c37dc",
+    "python": "3.14.7",
+    "molstar": "5.4.1",
+    "profile": "explicit molsyssuite@uibcdf_3.14 with reviewed owner/PyUnitWizard source overlays"
+  },
+  "example": {
+    "structure_indices": [
+      0,
+      8,
+      3
+    ],
+    "first_endpoint": [
+      0,
+      2,
+      4
+    ],
+    "second_endpoint": [
+      5
+    ],
+    "unit": "angstrom",
+    "correct_distance": 2.2465548711121635,
+    "previous_canvas_distance": 1.912748437372685,
+    "rendered_fixed_rounded_distance": 2.25
+  },
+  "changes": {
+    "308": "structure-dependent geometric-mean point loci, existing MolStar visual factories; repeated occurrences retained",
+    "309": "ordered signed torsions agree with projected-bond oracle, native MolSysMT and MolStar",
+    "310": "affected measurement values repaired before summaries, edited frames only with complete cache",
+    "311": "one effective position per endpoint; current-frame focus includes all populations; broken/retired rejection",
+    "312": "accepted Player navigation emits current numerical measurement summaries",
+    "313": "unregister retired measurement refs on hide/clear/drop and resolve test contexts through production live loci"
+  },
+  "validation": {
+    "red_python": {
+      "tests": 13,
+      "failed": 11,
+      "passed": 2,
+      "seconds": 6.19,
+      "log": "/tmp/msv-measurement-geometry-before-20261106.log"
+    },
+    "final_python": {
+      "passed": 160,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 40.05,
+      "warnings": 138,
+      "log": "/tmp/msv-measurement-player-final-20261106.log",
+      "scope": [
+        "measurements and independent geometry",
+        "coordinate edits",
+        "scene/session/exports",
+        "public API hardening/followup",
+        "player notification and trajectory-plot boundaries"
+      ]
+    },
+    "scoped_browser": {
+      "exit_code": 0,
+      "seconds": 81.97,
+      "log": "/tmp/msv-measurement-lifecycle-e2e-final-20261106.log",
+      "scope": [
+        "real asymmetric distance/angle/dihedral endpoints and labels",
+        "duplicate atom occurrences",
+        "atomic/representative controls",
+        "frame seeking/stepping/playback",
+        "applied coordinate edits",
+        "hide/show/rename/delete/undo",
+        "session recovery",
+        "actual widget plus canvas-popup mirror",
+        "detached Studio popup pm/radian values and both navigation directions",
+        "bounded live registry across three atomic and centroid visibility cycles",
+        "production shape-context ownership before/after rename"
+      ],
+      "note": "Final code includes registry cleanup and actual production context ownership before/after rename."
+    },
+    "javascript_unit": {
+      "state": "passed",
+      "exit_code": 0,
+      "seconds": 8.625756462,
+      "native_summary": {
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "note": "Node runner reports one bundled entry; do not invent a per-assertion count.",
+      "log": "/tmp/msv-measurement-lifecycle-js-final-20261106.log"
+    },
+    "complete_core_browser": {
+      "state": "failed before registry/helper correction; exact final rerun pending",
+      "exit_code": 1,
+      "seconds": 496.02,
+      "failed_suite": "coordinate-edits",
+      "remaining_suites_not_executed": 36,
+      "log": "/tmp/msv-measurement-core-e2e-20261106.log",
+      "cause": "New renamed-owner assertion selected a stale registry ref; #313 cleanup and live-loci helper correction received subsequently.",
+      "passed_suites": 7
+    },
+    "ruff": {
+      "check": "passed",
+      "format_check": "960 files formatted"
+    },
+    "developer_guide": {
+      "state": "passed",
+      "passed": 336,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 2.33,
+      "log": "/tmp/msv-measurement-devguide-final3-20261106.log"
+    },
+    "previous_scoped_browser": {
+      "exit_code": 0,
+      "seconds": 81.83,
+      "log": "/tmp/msv-measurement-complete-e2e-20261106.log",
+      "scope": [
+        "real asymmetric distance/angle/dihedral endpoints and labels",
+        "duplicate atom occurrences",
+        "atomic/representative controls",
+        "frame seeking/stepping/playback",
+        "applied coordinate edits",
+        "hide/show/rename/delete/undo",
+        "session recovery",
+        "actual widget plus canvas-popup mirror",
+        "detached Studio popup pm/radian values and both navigation directions",
+        "bounded live registry across three atomic and centroid visibility cycles",
+        "production shape-context ownership before/after rename"
+      ],
+      "note": "Final owner-context assertions were added subsequently and are included in the active complete core run; production inputs unchanged."
+    },
+    "prior_javascript_unit": {
+      "state": "passed",
+      "exit_code": 0,
+      "seconds": 8.468705092,
+      "native_summary": {
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "note": "Node runner reports one bundled entry; do not invent a per-assertion count.",
+      "log": "/tmp/msv-measurement-js-final-20261106.log"
+    },
+    "registry_before_after": {
+      "before_exit_code": 1,
+      "after_exit_code": 0,
+      "cycles": 3,
+      "before_final_ref_counts": {
+        "centroid": 4,
+        "atomic": 8
+      },
+      "after_final_live_ref_counts": {
+        "centroid": 1,
+        "atomic": 2
+      },
+      "after_hidden_ref_count": 0,
+      "before_log": "/tmp/msv-measurement-ref-before-20261106.log",
+      "after_log": "/tmp/msv-measurement-ref-after-20261106.log",
+      "baseline": "exact staged pre-313 measurement handler/controller reconstructed through a temporary esbuild onLoad adapter; actual MolStar and demo coordinates retained"
+    },
+    "prior_developer_guide": {
+      "state": "passed",
+      "passed": 335,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 2.26,
+      "log": "/tmp/msv-measurement-devguide-final2-20261106.log",
+      "note": "New records/receipt staged before the clean-checkout link check; initial untracked-link failure retained separately."
+    }
+  },
+  "retained_diagnostics": {
+    "centroid_before": "/tmp/msv-centroid-render-before-20261106.json",
+    "native_signed_torsion": "/tmp/msv-dihedral-sign-native-20261106.log",
+    "browser_empty_line_label": "/tmp/msv-centroid-coordinate-e2e-20261106.log",
+    "popup_summary_before_applied_geometry": "/tmp/msv-centroid-coordinate-e2e-second-20261106.log",
+    "canonical_unit_test_expectation": "/tmp/msv-centroid-coordinate-e2e-studio-20261106.log",
+    "stale_player_summary": "/tmp/msv-centroid-coordinate-e2e-studio-final-20261106.log",
+    "controller_diagnostics": "/tmp/msv-centroid-panel-diagnostic-2-20261106.log",
+    "degenerate_test_float_roundtrip": "/tmp/msv-measurement-geometry-focused-final-20261106.log"
+  },
+  "input_sha256": {
+    "molsysviewer/measurements.py": "fe46b8c774aa95d47d943959dca21fce35e6ddff868bf1029aedcb8701bf6b97",
+    "molsysviewer/layers.py": "bc211a8be1faf1759446e6c10f857678188f9ea3d17f139d60827e1c75d68aa5",
+    "molsysviewer/player.py": "495bf91d86ca101178de3254d9f556cde0053d71b3beccfcb0914038b44e7a4c",
+    "molsysviewer/viewer/scene.py": "d16d3d6442adf5350f05e3ce0fa82de6be70cafa0a02c6533388138bff6cc7de",
+    "molsysviewer/js/src/managers/handlers/measurement-handlers.ts": "9214d159a4b1ac3e960c60c2e5998d19e8f109c48d8ac4b9174ee5b1b280a75c",
+    "molsysviewer/js/src/shapes/measurement-centroids.ts": "abd7e625bcc9e0cc0dbab5ca15c5581dc07922445240d35238048b7ad532fbed",
+    "molsysviewer/viewer.js": "d807f9027fbb390dde7847abbfa3e6a06abe0c00f6eecb0acc79b1db670d8420",
+    "tests/test_measurement_geometry_integrity.py": "33bdee6c39ef452356e3d3a8ac49931c449c7c13a0b49d93e817b6640fd08f4e",
+    "molsysviewer/js/tests/e2e/centroid-measurements-bridge.py": "c0f13a55d09b7ce6676428b7a16085ec73e5aabdce50f8d4a8d2723deba1bdbc",
+    "molsysviewer/js/tests/e2e/centroid-measurements-scenarios.ts": "3f198715a824e301e175988431d5e4539f4ce2f40adf204116b61072ae6bacb2",
+    "molsysviewer/js/tests/e2e/coordinate-edits.e2e.ts": "ad4cc3edd159a5604df6a5497be9d4cd697892ed5c96ade69f673ab229b28f1d",
+    "molsysviewer/js/tests/e2e/harness.ts": "6ce9e059270b3f8de8bb4778e7d99f213978e3cbb856ebb72a0000faaba8ac70",
+    "molsysviewer/js/src/managers/viewer-controller.ts": "1c01eaa6f989952077d604ccb5b3d3232079f517b9463d1e685788642822681e"
+  },
+  "limits": [
+    "Human Jupyter/visible Qt acceptance remains explicitly postponed",
+    "No installed artifact or provider publication qualification",
+    "No periodic or mass-weighted centroid promise",
+    "General Analysis-to-scene actions and remaining approved task families still required",
+    "Both 1.0 publications and candidate/tag/package operations remain paused",
+    "Owner PR #543 integration and exact-head hosted receiving remain separate"
+  ]
+}

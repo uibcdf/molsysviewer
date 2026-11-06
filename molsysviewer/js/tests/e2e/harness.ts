@@ -114,11 +114,8 @@ export function openSceneObjectContext(controller: MolSysViewerController, kind:
         (controller as any).openContextMenuForAnnotation(target, 80, 80, (controller as any).notify);
         return target;
     }
-    const ref = inspectTaggedRefs(controller, kind, tag)[0].ref;
-    const cells = controller.plugin.state.data.select(StateSelection.Generators.byRef(ref).subtree());
-    const repr = cells.map(cell => cell.obj?.data?.repr).find(repr => typeof repr?.getAllLoci === "function");
-    if (!repr) throw new Error(`No rendered geometry for ${kind} ${tag}`);
-    const loci = repr.getAllLoci()[0];
+    const loci = controller.state.resolveObjectLoci(kind, tag);
+    if (!loci) throw new Error(`No rendered geometry for ${kind} ${tag}`);
     const context: any = (controller as any).normalizeManagedContextPayload(normalizeContextInteractionEvent({ current: { loci } }), loci);
     const bounds = Loci.getBoundingSphere(loci);
     context.focusable = !!bounds && Number.isFinite(bounds.radius) && bounds.center.every(Number.isFinite);
@@ -149,6 +146,7 @@ declare global {
         inspectWholeRepresentationCells: typeof inspectWholeRepresentationCells;
         probeAtomColors: typeof probeAtomColors;
         inspectTaggedRefs: typeof inspectTaggedRefs;
+        inspectMeasurementGeometry: typeof inspectMeasurementGeometry;
         loadArrayNativeFixture: typeof loadArrayNativeFixture;
         probePopupChannel: typeof probePopupChannel;
         probePopupReconstruction: typeof probePopupReconstruction;
@@ -743,6 +741,29 @@ export function inspectTaggedRefs(
             hidden: cell?.state?.isHidden === true,
         };
     });
+}
+
+/** Inspect actual Mol* measurement geometry, not its Python message/summary. */
+export function inspectMeasurementGeometry(controller: MolSysViewerController, tag: string) {
+    const geometry: any[] = [];
+    for (const { ref, exists } of inspectTaggedRefs(controller, "measurement", tag)) {
+        if (!exists) continue;
+        const repr = controller.plugin.state.data.cells.get(ref)?.obj?.data?.repr;
+        if (!repr) continue;
+        for (const { shape } of repr.getAllLoci()) {
+            if (!shape) continue;
+            const data = shape.sourceData;
+            const bundle = (data.pairs ?? data.triples ?? data.quads)?.[0];
+            geometry.push({
+                ref, kind: shape.geometry.kind, label: shape.getLabel(0) || shape.name,
+                points: bundle?.loci.map((loci: Loci) => Array.from(Loci.getBoundingSphere(loci)!.center)),
+                labelAnchor: shape.geometry.kind === "text" ? Array.from(shape.geometry.centerBuffer.ref.value.slice(0, 3)) : null,
+                props: { textColor: repr.props.textColor, textSize: repr.props.textSize,
+                    background: repr.props.background, backgroundOpacity: repr.props.backgroundOpacity },
+            });
+        }
+    }
+    return { geometry, participants: controller.measurements.getSpec(tag)?.atom_indices ?? [] };
 }
 
 function readRepresentation(plugin: any, ref: string): RenderedRepresentation | null {
@@ -1934,6 +1955,7 @@ if (typeof window !== "undefined") {
         inspectWholeRepresentationCells,
         probeAtomColors,
         inspectTaggedRefs,
+        inspectMeasurementGeometry,
         loadArrayNativeFixture,
         probePopupChannel,
         probePopupReconstruction,

@@ -7,6 +7,7 @@ import { Structure, StructureElement, Unit } from "molstar/lib/mol-model/structu
 import { StructureSelection } from "molstar/lib/mol-model/structure/query";
 import { Vec3 } from "molstar/lib/mol-math/linear-algebra/3d/vec3";
 import { Color } from "molstar/lib/mol-util/color";
+import { measurementCentroid, renderCentroidMeasurement } from "../../shapes/measurement-centroids";
 
 import {
     AddAngleMeasurementMessage,
@@ -57,6 +58,7 @@ const DEFAULT_REPRESENTATIVE_ATOMS = {
 export interface MeasurementCallbacks {
     getStructure: () => Structure | undefined;
     registerRef: (ref?: StateObjectRef, tag?: string) => void;
+    unregisterRef?: (ref: string, tag: string) => void;
 }
 
 export class MeasurementHandlers {
@@ -89,6 +91,7 @@ export class MeasurementHandlers {
         if (this.measurementRefs.size === 0) return;
         const refs = Array.from(this.measurementRefs);
         this.measurementRefs.clear();
+        for (const [tag, registered] of this.refsByTag) for (const ref of registered) this.callbacks.unregisterRef?.(ref, tag);
         this.refsByTag.clear();
         await Promise.all(
             refs.map(ref => PluginCommands.State.RemoveObject(this.plugin, {
@@ -105,6 +108,7 @@ export class MeasurementHandlers {
         this.refsByTag.delete(tag);
         for (const ref of refs) {
             this.measurementRefs.delete(ref);
+            this.callbacks.unregisterRef?.(ref, tag);
         }
         await Promise.all(
             refs.map(ref => PluginCommands.State.RemoveObject(this.plugin, {
@@ -142,7 +146,11 @@ export class MeasurementHandlers {
         if (!spec) return undefined;
         const kind = spec.op === "add_distance_measurement" ? "distance"
             : spec.op === "add_angle_measurement" ? "angle" : "dihedral";
-        const atomIndices = (spec.options?.endpoint_atom_indices ?? []).flat();
+        const picks = spec.options?.picks_atom_indices ?? [];
+        const atomIndices = picks.flatMap((pick, index) => {
+            const resolved = spec.options?.endpoint_atom_indices?.[index];
+            return resolved?.length ? resolved : pick;
+        });
         return { kind, atom_indices: atomIndices };
     }
 
@@ -177,6 +185,7 @@ export class MeasurementHandlers {
         this.specsByTag.delete(tag);
         for (const ref of refs) {
             this.measurementRefs.delete(ref);
+            this.callbacks.unregisterRef?.(ref, tag);
         }
     }
 
@@ -271,12 +280,25 @@ export class MeasurementHandlers {
             if (Array.isArray(item) && item.length > 0) return item;
             return picks[index] ?? [];
         });
-        const locis = actualAtomIndices.map((pick) => this.buildLociFromAtomIndices(structure, pick)).filter(Boolean);
-        const expected = kind === "distance" ? 2 : kind === "angle" ? 3 : 4;
-        if (locis.length !== expected) return;
-
         const styleParams = styleToVisualParams(style) ?? {};
-        const visualParams = { ...styleParams, tooltip: tag } as any;
+        const visualParams = { ...styleParams, tooltip: tag };
+        const expected = kind === "distance" ? 2 : kind === "angle" ? 3 : 4;
+        if (actualAtomIndices.length !== expected) return;
+        if (measurementOptions.endpoint_kinds.includes("centroid")) {
+            // Mol*'s structure-loci measures use bounding-sphere centers. The
+            // public centroid policy instead needs the actual geometric means.
+            const ref = await renderCentroidMeasurement(this.plugin, structure, {
+                kind, tag, endpoints: actualAtomIndices.map(indices => [...indices]), visualParams,
+            });
+            if (ref) {
+                this.measurementRefs.add(ref);
+                this.refsByTag.set(tag, new Set([ref]));
+                this.callbacks.registerRef(ref, tag);
+            }
+            return;
+        }
+        const locis = actualAtomIndices.map((pick) => this.buildLociFromAtomIndices(structure, pick)).filter(Boolean);
+        if (locis.length !== expected) return;
 
         const measurement = this.plugin.managers.structure.measurement;
         let added:
@@ -326,30 +348,8 @@ export class MeasurementHandlers {
         }
     }
 
-    private atomPositionForIndex(structure: Structure | undefined, atomIndex: number): Vec3 | undefined {
-        if (!structure) return undefined;
-        for (const unit of structure.units) {
-            if (!Unit.isAtomic(unit)) continue;
-            const elements = unit.elements;
-            if (OrderedSet.indexOf(elements, atomIndex as any) < 0) continue;
-            const conformation = unit.model.atomicConformation;
-            return Vec3.create(conformation.x[atomIndex], conformation.y[atomIndex], conformation.z[atomIndex]);
-        }
-        return undefined;
-    }
-
     private centroidPosition(structure: Structure | undefined, atomIndices: number[]): Vec3 | undefined {
-        if (!atomIndices || atomIndices.length === 0) return undefined;
-        const sum = Vec3.zero();
-        let count = 0;
-        for (const idx of atomIndices) {
-            const pos = this.atomPositionForIndex(structure, idx);
-            if (pos === undefined) return undefined;
-            Vec3.add(sum, sum, pos);
-            count++;
-        }
-        if (count === 0) return undefined;
-        return Vec3.scale(sum, sum, 1 / count);
+        return measurementCentroid(structure, atomIndices);
     }
 
     private normalizeEndpointPolicy(endpointPolicy?: string): MeasurementEndpointPolicy {

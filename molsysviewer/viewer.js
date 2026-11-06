@@ -20385,7 +20385,7 @@ function Axes3D() {
   }
   Axes3D2.normalize = normalize2;
   const tmpTransformMat3 = Mat3();
-  function transform2(out, a8, m) {
+  function transform3(out, a8, m) {
     Vec3.transformMat4(out.origin, a8.origin, m);
     const n = Mat3.directionTransform(tmpTransformMat3, m);
     Vec3.transformMat3(out.dirA, a8.dirA, n);
@@ -20393,7 +20393,7 @@ function Axes3D() {
     Vec3.transformMat3(out.dirC, a8.dirC, n);
     return out;
   }
-  Axes3D2.transform = transform2;
+  Axes3D2.transform = transform3;
   function scale(out, a8, scale2) {
     Vec3.scale(out.dirA, a8.dirA, scale2);
     Vec3.scale(out.dirB, a8.dirB, scale2);
@@ -20955,7 +20955,7 @@ function Sphere3D() {
     return { center: Vec3.create(cx, cy, cz), radius: Math.sqrt(radiusSq) };
   }
   Sphere3D2.computeBounding = computeBounding;
-  function transform2(out, sphere, m) {
+  function transform3(out, sphere, m) {
     Vec3.transformMat4(out.center, sphere.center, m);
     out.radius = sphere.radius * Mat4.getMaxScaleOnAxis(m);
     if (hasExtrema(sphere)) {
@@ -20963,7 +20963,7 @@ function Sphere3D() {
     }
     return out;
   }
-  Sphere3D2.transform = transform2;
+  Sphere3D2.transform = transform3;
   function translate(out, sphere, v4) {
     Vec3.add(out.center, sphere.center, v4);
     if (hasExtrema(sphere)) {
@@ -21022,24 +21022,24 @@ function Sphere3D() {
   }
   Sphere3D2.fromAxes3D = fromAxes3D;
   const tmpCenter = Vec3();
-  function fromDimensionsAndTransform(out, dimensions, transform3) {
+  function fromDimensionsAndTransform(out, dimensions, transform4) {
     const [x, y, z] = dimensions;
     const cpA = Vec3.create(0, 0, 0);
-    Vec3.transformMat4(cpA, cpA, transform3);
+    Vec3.transformMat4(cpA, cpA, transform4);
     const cpB = Vec3.create(x, y, z);
-    Vec3.transformMat4(cpB, cpB, transform3);
+    Vec3.transformMat4(cpB, cpB, transform4);
     const cpC = Vec3.create(x, 0, 0);
-    Vec3.transformMat4(cpC, cpC, transform3);
+    Vec3.transformMat4(cpC, cpC, transform4);
     const cpD = Vec3.create(0, y, z);
-    Vec3.transformMat4(cpD, cpD, transform3);
+    Vec3.transformMat4(cpD, cpD, transform4);
     const cpE = Vec3.create(0, 0, z);
-    Vec3.transformMat4(cpE, cpE, transform3);
+    Vec3.transformMat4(cpE, cpE, transform4);
     const cpF = Vec3.create(x, 0, z);
-    Vec3.transformMat4(cpF, cpF, transform3);
+    Vec3.transformMat4(cpF, cpF, transform4);
     const cpG = Vec3.create(x, y, 0);
-    Vec3.transformMat4(cpG, cpG, transform3);
+    Vec3.transformMat4(cpG, cpG, transform4);
     const cpH = Vec3.create(0, y, 0);
-    Vec3.transformMat4(cpH, cpH, transform3);
+    Vec3.transformMat4(cpH, cpH, transform4);
     Vec3.add(tmpCenter, cpA, cpB);
     Vec3.scale(tmpCenter, tmpCenter, 0.5);
     const d5 = Math.max(Vec3.distance(cpA, cpB), Vec3.distance(cpC, cpD));
@@ -21277,7 +21277,7 @@ function Box3D() {
   }
   Box3D2.scale = scale;
   const tmpTransformV = Vec3();
-  function transform2(out, box5, m) {
+  function transform3(out, box5, m) {
     const [minX, minY, minZ] = box5.min;
     const [maxX, maxY, maxZ] = box5.max;
     setEmpty(out);
@@ -21291,7 +21291,7 @@ function Box3D() {
     add(out, Vec3.transformMat4(tmpTransformV, Vec3.set(tmpTransformV, maxX, maxY, maxZ), m));
     return out;
   }
-  Box3D2.transform = transform2;
+  Box3D2.transform = transform3;
   function containsVec3(box5, v4) {
     return !(v4[0] < box5.min[0] || v4[0] > box5.max[0] || v4[1] < box5.min[1] || v4[1] > box5.max[1] || v4[2] < box5.min[2] || v4[2] > box5.max[2]);
   }
@@ -23717,12 +23717,12 @@ function Ray3D() {
     return out;
   }
   Ray3D2.targetTo = targetTo;
-  function transform2(out, ray, m) {
+  function transform3(out, ray, m) {
     Vec3.transformMat4(out.origin, ray.origin, m);
     Vec3.transformDirection(out.direction, ray.direction, m);
     return out;
   }
-  Ray3D2.transform = transform2;
+  Ray3D2.transform = transform3;
   const tmpIR = Vec3();
   function _intersectSphere3D(ray, sphere) {
     const { center: center2, radius } = sphere;
@@ -46177,10 +46177,10 @@ var Bond;
     return locA.aStructure.label === locB.aStructure.label && locA.bStructure.label === locB.bStructure.label && locA.aIndex === locB.aIndex && locA.bIndex === locB.bIndex && locA.aUnit.id === locB.aUnit.id && locA.bUnit.id === locB.bUnit.id;
   }
   Bond2.areLocationsEqual = areLocationsEqual;
-  function Loci3(structure, bonds) {
+  function Loci4(structure, bonds) {
     return { kind: "bond-loci", structure, bonds };
   }
-  Bond2.Loci = Loci3;
+  Bond2.Loci = Loci4;
   function isLoci(x) {
     return !!x && x.kind === "bond-loci";
   }
@@ -46222,7 +46222,7 @@ var Bond;
         return;
       bonds.push(Location2(loci.structure, unitA, indexA, loci.structure, unitB, indexB));
     });
-    return Loci3(structure, bonds);
+    return Loci4(structure, bonds);
   }
   Bond2.remapLoci = remapLoci;
   function toStructureElementLoci(loci) {
@@ -53735,12 +53735,12 @@ function getAtomicResidueCount(structure) {
   }
   return atomicResidueCount;
 }
-(function(Structure5) {
-  Structure5.Empty = create3([]);
-  function Loci3(structure) {
+(function(Structure6) {
+  Structure6.Empty = create3([]);
+  function Loci4(structure) {
     return { kind: "structure-loci", structure };
   }
-  Structure5.Loci = Loci3;
+  Structure6.Loci = Loci4;
   function toStructureElementLoci(structure) {
     const elements = [];
     for (const unit2 of structure.units) {
@@ -53748,29 +53748,29 @@ function getAtomicResidueCount(structure) {
     }
     return element_exports.Loci(structure, elements);
   }
-  Structure5.toStructureElementLoci = toStructureElementLoci;
+  Structure6.toStructureElementLoci = toStructureElementLoci;
   function toSubStructureElementLoci(parent, structure) {
     return StructureSelection.toLociWithSourceUnits(StructureSelection.Singletons(parent, structure));
   }
-  Structure5.toSubStructureElementLoci = toSubStructureElementLoci;
+  Structure6.toSubStructureElementLoci = toSubStructureElementLoci;
   function isLoci(x) {
     return !!x && x.kind === "structure-loci";
   }
-  Structure5.isLoci = isLoci;
+  Structure6.isLoci = isLoci;
   function areLociEqual(a8, b8) {
     return a8.structure === b8.structure;
   }
-  Structure5.areLociEqual = areLociEqual;
+  Structure6.areLociEqual = areLociEqual;
   function isLociEmpty(loci) {
     return loci.structure.isEmpty;
   }
-  Structure5.isLociEmpty = isLociEmpty;
+  Structure6.isLociEmpty = isLociEmpty;
   function remapLoci(loci, structure) {
     if (structure === loci.structure)
       return loci;
-    return Loci3(structure);
+    return Loci4(structure);
   }
-  Structure5.remapLoci = remapLoci;
+  Structure6.remapLoci = remapLoci;
   function create3(units, props = {}) {
     const unitMap = IntMap.Mutable();
     const unitIndexMap = IntMap.Mutable();
@@ -53836,12 +53836,12 @@ function getAtomicResidueCount(structure) {
       state.representativeModel = props.representativeModel;
     else if (props.parent)
       state.representativeModel = props.parent.representativeModel;
-    return new Structure5(units, unitMap, unitIndexMap, state);
+    return new Structure6(units, unitMap, unitIndexMap, state);
   }
-  Structure5.create = create3;
+  Structure6.create = create3;
   async function ofTrajectory(trajectory, ctx) {
     if (trajectory.frameCount === 0)
-      return Structure5.Empty;
+      return Structure6.Empty;
     const units = [];
     let first4 = void 0;
     let count3 = 0;
@@ -53861,7 +53861,7 @@ function getAtomicResidueCount(structure) {
     }
     return create3(units, { representativeModel: first4, label: first4.label });
   }
-  Structure5.ofTrajectory = ofTrajectory;
+  Structure6.ofTrajectory = ofTrajectory;
   function ofModel(model, props = {}) {
     const chains2 = model.atomicHierarchy.chainAtomSegments;
     const { index } = model.atomicHierarchy;
@@ -53922,7 +53922,7 @@ function getAtomicResidueCount(structure) {
     }
     return builder.getStructure();
   }
-  Structure5.ofModel = ofModel;
+  Structure6.ofModel = ofModel;
   function isWaterChain(model, chainIndex2) {
     const e = model.atomicHierarchy.index.getEntityFromChain(chainIndex2);
     return model.entities.data.type.value(e) === "water";
@@ -53934,22 +53934,22 @@ function getAtomicResidueCount(structure) {
       builder.addUnit(kind, model, SymmetryOperator.Default, elements2, Unit.Trait.None);
     }
   }
-  function transform2(s, transform3) {
-    if (Mat4.isIdentity(transform3))
+  function transform3(s, transform4) {
+    if (Mat4.isIdentity(transform4))
       return s;
-    if (!Mat4.isRotationAndTranslation(transform3, SymmetryOperator.RotationTranslationEpsilon))
+    if (!Mat4.isRotationAndTranslation(transform4, SymmetryOperator.RotationTranslationEpsilon))
       throw new Error("Only rotation/translation combination can be applied.");
     const units = [];
     for (const u2 of s.units) {
       const old = u2.conformation.operator;
-      const op4 = SymmetryOperator.create(old.name, transform3, old);
+      const op4 = SymmetryOperator.create(old.name, transform4, old);
       units.push(u2.applyOperator(u2.id, op4));
     }
     const cs = s.coordinateSystem;
-    const newCS = SymmetryOperator.compose(SymmetryOperator.create(cs.name, transform3, cs), cs);
+    const newCS = SymmetryOperator.compose(SymmetryOperator.create(cs.name, transform4, cs), cs);
     return create3(units, { parent: s, coordinateSystem: newCS });
   }
-  Structure5.transform = transform2;
+  Structure6.transform = transform3;
   function instances(s, transforms) {
     for (const t5 of transforms) {
       if (!Mat4.isRotationAndTranslation(t5, SymmetryOperator.RotationTranslationEpsilon)) {
@@ -53960,18 +53960,18 @@ function getAtomicResidueCount(structure) {
     let id = 0;
     for (const u2 of s.units) {
       const old = u2.conformation.operator;
-      for (const transform3 of transforms) {
-        if (Mat4.isIdentity(transform3)) {
+      for (const transform4 of transforms) {
+        if (Mat4.isIdentity(transform4)) {
           units.push(u2);
           continue;
         }
-        const op4 = SymmetryOperator.create(old.name, transform3, old);
+        const op4 = SymmetryOperator.create(old.name, transform4, old);
         units.push(u2.applyOperator(id++, op4));
       }
     }
     return create3(units, { parent: s });
   }
-  Structure5.instances = instances;
+  Structure6.instances = instances;
   class StructureBuilder2 {
     beginChainGroup() {
       this.chainGroupId++;
@@ -54027,19 +54027,19 @@ function getAtomicResidueCount(structure) {
       this.singleElementUnits = /* @__PURE__ */ new Map();
     }
   }
-  Structure5.StructureBuilder = StructureBuilder2;
+  Structure6.StructureBuilder = StructureBuilder2;
   function Builder(props = {}) {
     return new StructureBuilder2(props);
   }
-  Structure5.Builder = Builder;
+  Structure6.Builder = Builder;
   function hashCode6(s) {
     return s.hashCode;
   }
-  Structure5.hashCode = hashCode6;
+  Structure6.hashCode = hashCode6;
   function conformationHash(s) {
     return hashString2(s.units.map((u2) => Unit.conformationId(u2)).join("|"));
   }
-  Structure5.conformationHash = conformationHash;
+  Structure6.conformationHash = conformationHash;
   function areUnitIdsEqual(a8, b8) {
     if (a8 === b8)
       return true;
@@ -54054,7 +54054,7 @@ function getAtomicResidueCount(structure) {
     }
     return true;
   }
-  Structure5.areUnitIdsEqual = areUnitIdsEqual;
+  Structure6.areUnitIdsEqual = areUnitIdsEqual;
   function areUnitIdsAndIndicesEqual(a8, b8) {
     if (a8 === b8)
       return true;
@@ -54066,7 +54066,7 @@ function getAtomicResidueCount(structure) {
     }
     return true;
   }
-  Structure5.areUnitIdsAndIndicesEqual = areUnitIdsAndIndicesEqual;
+  Structure6.areUnitIdsAndIndicesEqual = areUnitIdsAndIndicesEqual;
   function areHierarchiesEqual(a8, b8) {
     if (a8.hashCode !== b8.hashCode)
       return false;
@@ -54079,19 +54079,19 @@ function getAtomicResidueCount(structure) {
     }
     return true;
   }
-  Structure5.areHierarchiesEqual = areHierarchiesEqual;
+  Structure6.areHierarchiesEqual = areHierarchiesEqual;
   function areEquivalent(a8, b8) {
     return a8 === b8 || a8.hashCode === b8.hashCode && StructureSymmetry.areTransformGroupsEquivalent(a8.unitSymmetryGroups, b8.unitSymmetryGroups);
   }
-  Structure5.areEquivalent = areEquivalent;
+  Structure6.areEquivalent = areEquivalent;
   function areRootsEquivalent(a8, b8) {
     return areEquivalent(a8.root, b8.root);
   }
-  Structure5.areRootsEquivalent = areRootsEquivalent;
+  Structure6.areRootsEquivalent = areRootsEquivalent;
   function areRootsEqual(a8, b8) {
     return a8.root === b8.root;
   }
-  Structure5.areRootsEqual = areRootsEqual;
+  Structure6.areRootsEqual = areRootsEqual;
   class ElementLocationIterator {
     move() {
       this.advance();
@@ -54132,7 +54132,7 @@ function getAtomicResidueCount(structure) {
       }
     }
   }
-  Structure5.ElementLocationIterator = ElementLocationIterator;
+  Structure6.ElementLocationIterator = ElementLocationIterator;
   const distVec = Vec3();
   function unitElementMinDistance(unit2, p6, eRadius) {
     const { elements, conformation: c8 } = unit2, dV = distVec;
@@ -54156,7 +54156,7 @@ function getAtomicResidueCount(structure) {
     }
     return minD;
   }
-  Structure5.minDistanceToPoint = minDistanceToPoint;
+  Structure6.minDistanceToPoint = minDistanceToPoint;
   const distPivot = Vec3();
   function distance2(a8, b8) {
     if (a8.elementCount === 0 || b8.elementCount === 0)
@@ -54175,15 +54175,15 @@ function getAtomicResidueCount(structure) {
     }
     return minD;
   }
-  Structure5.distance = distance2;
+  Structure6.distance = distance2;
   function elementDescription(s) {
     return s.elementCount === 1 ? "1 element" : `${s.elementCount} elements`;
   }
-  Structure5.elementDescription = elementDescription;
+  Structure6.elementDescription = elementDescription;
   function validUnitPair(s, a8, b8) {
     return s.masterModel ? a8.model === b8.model || a8.model === s.masterModel || b8.model === s.masterModel : a8.model === b8.model;
   }
-  Structure5.validUnitPair = validUnitPair;
+  Structure6.validUnitPair = validUnitPair;
   function eachUnitPair(structure, callback, props) {
     const { maxRadius, validUnit, validUnitPair: validUnitPair2 } = props;
     if (!structure.units.some((u2) => validUnit(u2)))
@@ -54209,7 +54209,7 @@ function getAtomicResidueCount(structure) {
       }
     }
   }
-  Structure5.eachUnitPair = eachUnitPair;
+  Structure6.eachUnitPair = eachUnitPair;
   ;
   function eachAtomicHierarchyElement(structure, { chain: chain2, residue: residue2, atom: atom2 }) {
     const l = element_exports.Location.create(structure);
@@ -54245,8 +54245,8 @@ function getAtomicResidueCount(structure) {
       }
     }
   }
-  Structure5.eachAtomicHierarchyElement = eachAtomicHierarchyElement;
-  Structure5.DefaultSizeThresholds = {
+  Structure6.eachAtomicHierarchyElement = eachAtomicHierarchyElement;
+  Structure6.DefaultSizeThresholds = {
     /** Must be lower to be small */
     smallResidueCount: 10,
     /** Must be lower to be medium */
@@ -54279,9 +54279,9 @@ function getAtomicResidueCount(structure) {
     Size2[Size2["Large"] = 2] = "Large";
     Size2[Size2["Huge"] = 3] = "Huge";
     Size2[Size2["Gigantic"] = 4] = "Gigantic";
-  })(Size = Structure5.Size || (Structure5.Size = {}));
+  })(Size = Structure6.Size || (Structure6.Size = {}));
   function getSize(structure, thresholds = {}, residueCountFactor = 1) {
-    const t5 = { ...Structure5.DefaultSizeThresholds, ...thresholds };
+    const t5 = { ...Structure6.DefaultSizeThresholds, ...thresholds };
     if (structure.polymerResidueCount >= t5.largeResidueCount * residueCountFactor) {
       if (hasHighSymmetry(structure, t5)) {
         return Size.Huge;
@@ -54298,18 +54298,18 @@ function getAtomicResidueCount(structure) {
       return Size.Large;
     }
   }
-  Structure5.getSize = getSize;
-  Structure5.Index = CustomStructureProperty.createSimple("index", "root");
-  Structure5.MaxIndex = CustomStructureProperty.createSimple("max_index", "root");
+  Structure6.getSize = getSize;
+  Structure6.Index = CustomStructureProperty.createSimple("index", "root");
+  Structure6.MaxIndex = CustomStructureProperty.createSimple("max_index", "root");
   const PrincipalAxesProp = "__PrincipalAxes__";
   function getPrincipalAxes2(structure) {
     if (structure.currentPropertyData[PrincipalAxesProp])
       return structure.currentPropertyData[PrincipalAxesProp];
-    const principalAxes = element_exports.Loci.getPrincipalAxes(Structure5.toStructureElementLoci(structure));
+    const principalAxes = element_exports.Loci.getPrincipalAxes(Structure6.toStructureElementLoci(structure));
     structure.currentPropertyData[PrincipalAxesProp] = principalAxes;
     return principalAxes;
   }
-  Structure5.getPrincipalAxes = getPrincipalAxes2;
+  Structure6.getPrincipalAxes = getPrincipalAxes2;
 })(Structure || (Structure = {}));
 
 // node_modules/molstar/lib/mol-script/runtime/query/base.js
@@ -54472,11 +54472,11 @@ var itDiff = IntTuple.diff;
 function Loci(structure, elements) {
   return { kind: "element-loci", structure, elements };
 }
-(function(Loci3) {
+(function(Loci4) {
   function is4(x) {
     return !!x && x.kind === "element-loci";
   }
-  Loci3.is = is4;
+  Loci4.is = is4;
   function areEqual4(a8, b8) {
     if (a8.structure !== b8.structure)
       return false;
@@ -54492,7 +54492,7 @@ function Loci(structure, elements) {
     }
     return true;
   }
-  Loci3.areEqual = areEqual4;
+  Loci4.areEqual = areEqual4;
   function isEmpty3(loci) {
     for (const u2 of loci.elements) {
       if (OrderedSet2.size(u2.indices) > 0)
@@ -54500,11 +54500,11 @@ function Loci(structure, elements) {
     }
     return true;
   }
-  Loci3.isEmpty = isEmpty3;
+  Loci4.isEmpty = isEmpty3;
   function isWholeStructure(loci) {
     return size4(loci) === loci.structure.elementCount;
   }
-  Loci3.isWholeStructure = isWholeStructure;
+  Loci4.isWholeStructure = isWholeStructure;
   function size4(loci) {
     let s = 0;
     for (const { indices: indices3 } of loci.elements) {
@@ -54516,18 +54516,18 @@ function Loci(structure, elements) {
     }
     return s;
   }
-  Loci3.size = size4;
+  Loci4.size = size4;
   function all3(structure) {
-    return Loci3(structure, structure.units.map((unit2) => ({
+    return Loci4(structure, structure.units.map((unit2) => ({
       unit: unit2,
       indices: OrderedSet2.ofBounds(0, unit2.elements.length)
     })));
   }
-  Loci3.all = all3;
+  Loci4.all = all3;
   function none2(structure) {
-    return Loci3(structure, []);
+    return Loci4(structure, []);
   }
-  Loci3.none = none2;
+  Loci4.none = none2;
   function fromExpression(structure, expression, queryContext) {
     let expr;
     if (typeof expression === "function") {
@@ -54538,16 +54538,16 @@ function Loci(structure, elements) {
     const selection = compile(expr)(queryContext !== null && queryContext !== void 0 ? queryContext : new QueryContext(structure));
     return StructureSelection.toLociWithSourceUnits(selection);
   }
-  Loci3.fromExpression = fromExpression;
+  Loci4.fromExpression = fromExpression;
   function fromQuery(structure, query2, queryContext) {
     const selection = query2(queryContext !== null && queryContext !== void 0 ? queryContext : new QueryContext(structure));
     return StructureSelection.toLociWithSourceUnits(selection);
   }
-  Loci3.fromQuery = fromQuery;
+  Loci4.fromQuery = fromQuery;
   function fromSchema(structure, schema, queryContext) {
     return Schema2.toLoci(structure, schema, queryContext);
   }
-  Loci3.fromSchema = fromSchema;
+  Loci4.fromSchema = fromSchema;
   function getFirstLocation(loci, e) {
     if (isEmpty3(loci))
       return void 0;
@@ -54561,28 +54561,28 @@ function Loci(structure, elements) {
     }
     return Location.create(loci.structure, unit2, element);
   }
-  Loci3.getFirstLocation = getFirstLocation;
+  Loci4.getFirstLocation = getFirstLocation;
   function firstElement(loci) {
     if (isEmpty3(loci))
       return loci;
-    return Loci3(loci.structure, [{
+    return Loci4(loci.structure, [{
       unit: loci.elements[0].unit,
       indices: OrderedSet2.ofSingleton(OrderedSet2.start(loci.elements[0].indices))
     }]);
   }
-  Loci3.firstElement = firstElement;
+  Loci4.firstElement = firstElement;
   function firstResidue(loci) {
     if (isEmpty3(loci))
       return loci;
     return extendToWholeResidues(firstElement(loci));
   }
-  Loci3.firstResidue = firstResidue;
+  Loci4.firstResidue = firstResidue;
   function firstChain(loci) {
     if (isEmpty3(loci))
       return loci;
     return extendToWholeChains(firstElement(loci));
   }
-  Loci3.firstChain = firstChain;
+  Loci4.firstChain = firstChain;
   function toStructure(loci) {
     const units = [];
     for (const e of loci.elements) {
@@ -54593,9 +54593,9 @@ function Loci(structure, elements) {
     }
     return Structure.create(units, { parent: loci.structure.parent });
   }
-  Loci3.toStructure = toStructure;
+  Loci4.toStructure = toStructure;
   function forEachLocation(loci, f, location2) {
-    if (Loci3.isEmpty(loci))
+    if (Loci4.isEmpty(loci))
       return;
     const loc = location2 ? location2 : Location.create(loci.structure);
     loc.structure = loci.structure;
@@ -54609,7 +54609,7 @@ function Loci(structure, elements) {
       }
     }
   }
-  Loci3.forEachLocation = forEachLocation;
+  Loci4.forEachLocation = forEachLocation;
   function remap(loci, structure) {
     if (structure === loci.structure)
       return loci;
@@ -54622,13 +54622,13 @@ function Loci(structure, elements) {
       if (OrderedSet2.size(indices3) > 0)
         elements.push({ unit: unit2, indices: indices3 });
     });
-    return Loci3(structure, elements);
+    return Loci4(structure, elements);
   }
-  Loci3.remap = remap;
+  Loci4.remap = remap;
   function union4(xs, ys) {
     if (xs.elements.length > ys.elements.length)
       return union4(ys, xs);
-    if (Loci3.isEmpty(xs))
+    if (Loci4.isEmpty(xs))
       return ys;
     const map4 = /* @__PURE__ */ new Map();
     for (const e of xs.elements)
@@ -54645,9 +54645,9 @@ function Loci(structure, elements) {
     map4.forEach((indices3, id) => {
       elements[elements.length] = { unit: xs.structure.unitMap.get(id), indices: indices3 };
     });
-    return Loci3(xs.structure, elements);
+    return Loci4(xs.structure, elements);
   }
-  Loci3.union = union4;
+  Loci4.union = union4;
   function subtract3(xs, ys) {
     const map4 = /* @__PURE__ */ new Map();
     for (const e of ys.elements)
@@ -54663,9 +54663,9 @@ function Loci(structure, elements) {
         elements[elements.length] = e;
       }
     }
-    return Loci3(xs.structure, elements);
+    return Loci4(xs.structure, elements);
   }
-  Loci3.subtract = subtract3;
+  Loci4.subtract = subtract3;
   function intersect5(xs, ys) {
     const map4 = /* @__PURE__ */ new Map();
     for (const e of xs.elements)
@@ -54679,14 +54679,14 @@ function Loci(structure, elements) {
         continue;
       elements[elements.length] = { unit: e.unit, indices: indices3 };
     }
-    return Loci3(xs.structure, elements);
+    return Loci4(xs.structure, elements);
   }
-  Loci3.intersect = intersect5;
+  Loci4.intersect = intersect5;
   function areIntersecting4(xs, ys) {
     if (xs.elements.length > ys.elements.length)
       return areIntersecting4(ys, xs);
-    if (Loci3.isEmpty(xs))
-      return Loci3.isEmpty(ys);
+    if (Loci4.isEmpty(xs))
+      return Loci4.isEmpty(ys);
     const map4 = /* @__PURE__ */ new Map();
     for (const e of xs.elements)
       map4.set(e.unit.id, e.indices);
@@ -54698,10 +54698,10 @@ function Loci(structure, elements) {
     }
     return false;
   }
-  Loci3.areIntersecting = areIntersecting4;
+  Loci4.areIntersecting = areIntersecting4;
   function isSubset4(xs, ys) {
-    if (Loci3.isEmpty(xs))
-      return Loci3.isEmpty(ys);
+    if (Loci4.isEmpty(xs))
+      return Loci4.isEmpty(ys);
     const map4 = /* @__PURE__ */ new Map();
     for (const e of xs.elements)
       map4.set(e.unit.id, e.indices);
@@ -54716,7 +54716,7 @@ function Loci(structure, elements) {
     }
     return isSubset5;
   }
-  Loci3.isSubset = isSubset4;
+  Loci4.isSubset = isSubset4;
   function makeIndexSet(newIndices) {
     if (newIndices.length > 3 && SortedArray.isRange(newIndices)) {
       return Interval.ofRange(newIndices[0], newIndices[newIndices.length - 1]);
@@ -54769,9 +54769,9 @@ function Loci(structure, elements) {
         elements[elements.length] = lociElement;
       }
     }
-    return Loci3(loci.structure, elements);
+    return Loci4(loci.structure, elements);
   }
-  Loci3.extendToWholeResidues = extendToWholeResidues;
+  Loci4.extendToWholeResidues = extendToWholeResidues;
   function getChainSegments(unit2) {
     switch (unit2.kind) {
       case Unit.Kind.Atomic:
@@ -54857,9 +54857,9 @@ function Loci(structure, elements) {
         }
       }
     }
-    return Loci3(loci.structure, elements);
+    return Loci4(loci.structure, elements);
   }
-  Loci3.extendToWholeChains = extendToWholeChains;
+  Loci4.extendToWholeChains = extendToWholeChains;
   function entityModelKey(location2) {
     return `${location2.unit.model.id}|${StructureProperties.entity.id(location2)}`;
   }
@@ -54883,9 +54883,9 @@ function Loci(structure, elements) {
         elements[elements.length] = { unit: unit2, indices: indices3 };
       }
     }
-    return Loci3(loci.structure, elements);
+    return Loci4(loci.structure, elements);
   }
-  Loci3.extendToWholeEntities = extendToWholeEntities;
+  Loci4.extendToWholeEntities = extendToWholeEntities;
   function extendToWholeModels(loci) {
     const elements = [];
     const models = /* @__PURE__ */ new Set();
@@ -54901,9 +54901,9 @@ function Loci(structure, elements) {
         elements[elements.length] = { unit: unit2, indices: indices3 };
       }
     }
-    return Loci3(loci.structure, elements);
+    return Loci4(loci.structure, elements);
   }
-  Loci3.extendToWholeModels = extendToWholeModels;
+  Loci4.extendToWholeModels = extendToWholeModels;
   function getElementIndices(elements, indices3) {
     const elementIndices = [];
     for (let i = 0, il = OrderedSet2.size(indices3); i < il; ++i) {
@@ -54940,9 +54940,9 @@ function Loci(structure, elements) {
         elements[elements.length] = { unit: unit2, indices: indices3 };
       }
     }
-    return Loci3(loci.structure, elements);
+    return Loci4(loci.structure, elements);
   }
-  Loci3.extendToAllInstances = extendToAllInstances;
+  Loci4.extendToAllInstances = extendToAllInstances;
   function extendToWholeOperators(loci) {
     const elements = [];
     const operators4 = /* @__PURE__ */ new Set();
@@ -54958,12 +54958,12 @@ function Loci(structure, elements) {
         elements[elements.length] = { unit: unit2, indices: indices3 };
       }
     }
-    return Loci3(loci.structure, elements);
+    return Loci4(loci.structure, elements);
   }
-  Loci3.extendToWholeOperators = extendToWholeOperators;
+  Loci4.extendToWholeOperators = extendToWholeOperators;
   const boundaryHelper5 = new BoundaryHelper("98");
   const tempPosBoundary = Vec3();
-  function getBoundary2(loci, transform2, result2) {
+  function getBoundary2(loci, transform3, result2) {
     boundaryHelper5.reset();
     for (const e of loci.elements) {
       const { indices: indices3 } = e;
@@ -54971,8 +54971,8 @@ function Loci(structure, elements) {
       for (let i = 0, _i = OrderedSet2.size(indices3); i < _i; i++) {
         const eI = elements[OrderedSet2.getAt(indices3, i)];
         conformation.position(eI, tempPosBoundary);
-        if (transform2)
-          Vec3.transformMat4(tempPosBoundary, tempPosBoundary, transform2);
+        if (transform3)
+          Vec3.transformMat4(tempPosBoundary, tempPosBoundary, transform3);
         boundaryHelper5.includePositionRadius(tempPosBoundary, conformation.r(eI));
       }
     }
@@ -54983,8 +54983,8 @@ function Loci(structure, elements) {
       for (let i = 0, _i = OrderedSet2.size(indices3); i < _i; i++) {
         const eI = elements[OrderedSet2.getAt(indices3, i)];
         conformation.position(eI, tempPosBoundary);
-        if (transform2)
-          Vec3.transformMat4(tempPosBoundary, tempPosBoundary, transform2);
+        if (transform3)
+          Vec3.transformMat4(tempPosBoundary, tempPosBoundary, transform3);
         boundaryHelper5.radiusPositionRadius(tempPosBoundary, conformation.r(eI));
       }
     }
@@ -54997,7 +54997,7 @@ function Loci(structure, elements) {
     }
     return { box: boundaryHelper5.getBox(), sphere: boundaryHelper5.getSphere() };
   }
-  Loci3.getBoundary = getBoundary2;
+  Loci4.getBoundary = getBoundary2;
   const tempPos2 = Vec3();
   function toPositionsArray2(loci, positions, offset4 = 0) {
     let m = offset4;
@@ -55014,13 +55014,13 @@ function Loci(structure, elements) {
     }
     return positions;
   }
-  Loci3.toPositionsArray = toPositionsArray2;
+  Loci4.toPositionsArray = toPositionsArray2;
   function getPrincipalAxes2(loci) {
     const elementCount = size4(loci);
     const positions = toPositionsArray2(loci, new Float32Array(3 * elementCount));
     return PrincipalAxes.ofPositions(positions);
   }
-  Loci3.getPrincipalAxes = getPrincipalAxes2;
+  Loci4.getPrincipalAxes = getPrincipalAxes2;
   function getPrincipalAxesMany(locis) {
     let elementCount = 0;
     locis.forEach((l) => {
@@ -55034,12 +55034,12 @@ function Loci(structure, elements) {
     });
     return PrincipalAxes.ofPositions(positions);
   }
-  Loci3.getPrincipalAxesMany = getPrincipalAxesMany;
+  Loci4.getPrincipalAxesMany = getPrincipalAxesMany;
   function sourceIndex(unit2, element) {
     return Unit.isAtomic(unit2) ? unit2.model.atomicHierarchy.atomSourceIndex.value(element) : element;
   }
   function toExpression2(loci) {
-    if (Loci3.isEmpty(loci))
+    if (Loci4.isEmpty(loci))
       return MolScriptBuilder.struct.generator.empty();
     const models = loci.structure.models;
     const sourceIndexMap = /* @__PURE__ */ new Map();
@@ -55113,7 +55113,7 @@ function Loci(structure, elements) {
       opQueries.length === 1 ? opQueries[0] : MolScriptBuilder.struct.combinator.merge(opQueries.map((q) => MolScriptBuilder.struct.modifier.union([q])))
     ]);
   }
-  Loci3.toExpression = toExpression2;
+  Loci4.toExpression = toExpression2;
   function getOpData(opName, xs, multimodel, modelLabel, modelIndex) {
     sortArray(xs);
     const ranges = [];
@@ -63710,9 +63710,9 @@ function calculateInvariantBoundingSphere(position, positionCount, stepFactor) {
   return sphere;
 }
 var _mat4 = Mat4();
-function calculateTransformBoundingSphere(invariantBoundingSphere, transform2, transformCount, transformOffset) {
+function calculateTransformBoundingSphere(invariantBoundingSphere, transform3, transformCount, transformOffset) {
   if (transformCount === 1) {
-    Mat4.fromArray(_mat4, transform2, transformOffset);
+    Mat4.fromArray(_mat4, transform3, transformOffset);
     const s = Sphere3D.clone(invariantBoundingSphere);
     return Mat4.isIdentity(_mat4) ? s : Sphere3D.transform(s, s, _mat4);
   }
@@ -63722,25 +63722,25 @@ function calculateTransformBoundingSphere(invariantBoundingSphere, transform2, t
   if (extrema && transformCount <= 14) {
     for (let i = 0, _i = transformCount; i < _i; ++i) {
       for (const e of extrema) {
-        v3transformMat4Offset(v, e, transform2, 0, 0, i * 16 + transformOffset);
+        v3transformMat4Offset(v, e, transform3, 0, 0, i * 16 + transformOffset);
         boundaryHelper5.includePosition(v);
       }
     }
     boundaryHelper5.finishedIncludeStep();
     for (let i = 0, _i = transformCount; i < _i; ++i) {
       for (const e of extrema) {
-        v3transformMat4Offset(v, e, transform2, 0, 0, i * 16 + transformOffset);
+        v3transformMat4Offset(v, e, transform3, 0, 0, i * 16 + transformOffset);
         boundaryHelper5.radiusPosition(v);
       }
     }
   } else {
     for (let i = 0, _i = transformCount; i < _i; ++i) {
-      v3transformMat4Offset(v, center2, transform2, 0, 0, i * 16 + transformOffset);
+      v3transformMat4Offset(v, center2, transform3, 0, 0, i * 16 + transformOffset);
       boundaryHelper5.includePositionRadius(v, radius);
     }
     boundaryHelper5.finishedIncludeStep();
     for (let i = 0, _i = transformCount; i < _i; ++i) {
-      v3transformMat4Offset(v, center2, transform2, 0, 0, i * 16 + transformOffset);
+      v3transformMat4Offset(v, center2, transform3, 0, 0, i * 16 + transformOffset);
       boundaryHelper5.radiusPositionRadius(v, radius);
     }
   }
@@ -64117,14 +64117,14 @@ function createVertexInstanceColor(locationIt, color, colorData) {
   return createTextureColor(colors, "vertexInstance", colorData);
 }
 function createGridColor(grid, type3, colorData) {
-  const { colors, dimension, transform: transform2 } = grid;
+  const { colors, dimension, transform: transform3 } = grid;
   const width = colors.getWidth();
   const height = colors.getHeight();
   if (colorData) {
     ValueCell.update(colorData.tColorGrid, colors);
     ValueCell.update(colorData.uColorTexDim, Vec2.create(width, height));
     ValueCell.update(colorData.uColorGridDim, Vec3.clone(dimension));
-    ValueCell.update(colorData.uColorGridTransform, Vec4.clone(transform2));
+    ValueCell.update(colorData.uColorGridTransform, Vec4.clone(transform3));
     ValueCell.updateIfChanged(colorData.dColorType, type3);
     return colorData;
   } else {
@@ -64137,7 +64137,7 @@ function createGridColor(grid, type3, colorData) {
       tPalette: ValueCell.create({ array: new Uint8Array(3), width: 1, height: 1 }),
       uColorTexDim: ValueCell.create(Vec2.create(width, height)),
       uColorGridDim: ValueCell.create(Vec3.clone(dimension)),
-      uColorGridTransform: ValueCell.create(Vec4.clone(transform2)),
+      uColorGridTransform: ValueCell.create(Vec4.clone(transform3)),
       dColorType: ValueCell.create(type3),
       dUsePalette: ValueCell.create(false)
     };
@@ -64225,7 +64225,7 @@ function calcInstanceGrid(instanceData, cellSize, batchSize) {
   return instanceGrid;
 }
 function calcBottomGrid(instanceData, cellSize) {
-  const { instanceCount, instance, transform: transform2, invariantBoundingSphere } = instanceData;
+  const { instanceCount, instance, transform: transform3, invariantBoundingSphere } = instanceData;
   const x = new Float32Array(instanceCount);
   const y = new Float32Array(instanceCount);
   const z = new Float32Array(instanceCount);
@@ -64235,7 +64235,7 @@ function calcBottomGrid(instanceData, cellSize) {
   const rv = Vec3.create(radius, radius, radius);
   const v4 = Vec3();
   for (let i = 0; i < instanceCount; ++i) {
-    v3transformMat4Offset2(v4, center2, transform2, 0, 0, i * 16);
+    v3transformMat4Offset2(v4, center2, transform3, 0, 0, i * 16);
     x[i] = v4[0];
     y[i] = v4[1];
     z[i] = v4[2];
@@ -64263,7 +64263,7 @@ function calcBottomGrid(instanceData, cellSize) {
       const idx = array2[j];
       cellInstance[k] = instance[idx];
       for (let l = 0; l < 16; ++l) {
-        cellTransform[k * 16 + l] = transform2[idx * 16 + l];
+        cellTransform[k * 16 + l] = transform3[idx * 16 + l];
       }
       k += 1;
     }
@@ -64379,9 +64379,9 @@ function createTransform(transformArray, instanceCount, invariantBoundingSphere,
   const hasReflection = checkReflection(transformArray, instanceCount);
   if (transformData) {
     ValueCell.update(transformData.matrix, transformData.matrix.ref.value);
-    const transform2 = transformData.transform.ref.value.length >= instanceCount * 16 ? transformData.transform.ref.value : new Float32Array(instanceCount * 16);
-    transform2.set(transformArray);
-    ValueCell.update(transformData.transform, transform2);
+    const transform3 = transformData.transform.ref.value.length >= instanceCount * 16 ? transformData.transform.ref.value : new Float32Array(instanceCount * 16);
+    transform3.set(transformArray);
+    ValueCell.update(transformData.transform, transform3);
     ValueCell.updateIfChanged(transformData.uInstanceCount, instanceCount);
     ValueCell.updateIfChanged(transformData.instanceCount, instanceCount);
     const aTransform = transformData.aTransform.ref.value.length >= instanceCount * 16 ? transformData.aTransform.ref.value : new Float32Array(instanceCount * 16);
@@ -64412,22 +64412,22 @@ Mat4.toArray(Mat4.identity(), identityTransform, 0);
 function createIdentityTransform(transformData) {
   return createTransform(new Float32Array(identityTransform), 1, void 0, 0, 0, transformData);
 }
-function fillIdentityTransform(transform2, count3) {
+function fillIdentityTransform(transform3, count3) {
   for (let i = 0; i < count3; i++) {
-    transform2.set(identityTransform, i * 16);
+    transform3.set(identityTransform, i * 16);
   }
-  return transform2;
+  return transform3;
 }
 function updateTransformData(transformData, invariantBoundingSphere, cellSize, batchSize) {
   const aTransform = transformData.aTransform.ref.value;
   const aInstance = transformData.aInstance.ref.value;
   const instanceCount = transformData.instanceCount.ref.value;
   const matrix = transformData.matrix.ref.value;
-  const transform2 = transformData.transform.ref.value;
+  const transform3 = transformData.transform.ref.value;
   const extraTransform = transformData.extraTransform.ref.value;
   for (let i = 0; i < instanceCount; i++) {
     const i16 = i * 16;
-    Mat4.mulOffset(aTransform, extraTransform, transform2, i16, i16, i16);
+    Mat4.mulOffset(aTransform, extraTransform, transform3, i16, i16, i16);
     Mat4.mulOffset(aTransform, matrix, aTransform, i16, 0, i16);
     aInstance[i] = i;
   }
@@ -64556,7 +64556,7 @@ function Clip() {
   const mB = Mat4();
   function getClip(props, clip) {
     const count3 = props.objects.length;
-    const { type: type3, invert, position, rotation, scale, transform: transform2 } = (clip === null || clip === void 0 ? void 0 : clip.objects) || createClipObjects(count3);
+    const { type: type3, invert, position, rotation, scale, transform: transform3 } = (clip === null || clip === void 0 ? void 0 : clip.objects) || createClipObjects(count3);
     for (let i = 0; i < count3; ++i) {
       const p6 = props.objects[i];
       type3[i] = Clip2.Type[p6.type];
@@ -64564,11 +64564,11 @@ function Clip() {
       Vec3.toArray(p6.position, position, i * 3);
       Quat.toArray(Quat.setAxisAngle(qA, p6.rotation.axis, degToRad(p6.rotation.angle)), rotation, i * 4);
       Vec3.toArray(p6.scale, scale, i * 3);
-      Mat4.toArray(p6.transform, transform2, i * 16);
+      Mat4.toArray(p6.transform, transform3, i * 16);
     }
     return {
       variant: props.variant,
-      objects: { count: count3, type: type3, invert, position, rotation, scale, transform: transform2 }
+      objects: { count: count3, type: type3, invert, position, rotation, scale, transform: transform3 }
     };
   }
   Clip2.getClip = getClip;
@@ -64669,15 +64669,15 @@ var BaseGeometry;
     cellSize: ParamDefinition.Numeric(200, { min: 0, max: 5e3, step: 100 }, { ...BaseGeometry2.CullingLodCategory, description: "Instance grid cell size." }),
     batchSize: ParamDefinition.Numeric(2e3, { min: 0, max: 5e4, step: 500 }, { ...BaseGeometry2.CullingLodCategory, description: "Instance grid batch size." })
   };
-  function createSimple(colorValue = ColorNames.grey, sizeValue = 1, transform2) {
-    if (!transform2)
-      transform2 = createIdentityTransform();
-    const locationIterator = LocationIterator(1, transform2.instanceCount.ref.value, 1, () => NullLocation, false, () => false);
+  function createSimple(colorValue = ColorNames.grey, sizeValue = 1, transform3) {
+    if (!transform3)
+      transform3 = createIdentityTransform();
+    const locationIterator = LocationIterator(1, transform3.instanceCount.ref.value, 1, () => NullLocation, false, () => false);
     const theme = {
       color: UniformColorTheme({}, { value: colorValue, lightness: 0, saturation: 0 }),
       size: UniformSizeTheme({}, { value: sizeValue })
     };
-    return { transform: transform2, locationIterator, theme };
+    return { transform: transform3, locationIterator, theme };
   }
   BaseGeometry2.createSimple = createSimple;
   function createValues(props, counts) {
@@ -65138,7 +65138,7 @@ var Mesh;
   }
   Mesh2.checkForDuplicateVertices = checkForDuplicateVertices;
   const tmpMat33 = Mat3();
-  function transform2(mesh, t5) {
+  function transform3(mesh, t5) {
     const v4 = mesh.vertexBuffer.ref.value;
     transformPositionArray(t5, v4, 0, mesh.vertexCount);
     if (!Mat4.isTranslationAndUniformScaling(t5)) {
@@ -65147,7 +65147,7 @@ var Mesh;
     }
     ValueCell.update(mesh.vertexBuffer, v4);
   }
-  Mesh2.transform = transform2;
+  Mesh2.transform = transform3;
   function getOriginalData(x) {
     const { originalData } = "kind" in x ? x.meta : x.meta.ref.value;
     return originalData;
@@ -65551,15 +65551,15 @@ var Mesh;
     updateRenderableState,
     createPositionIterator
   };
-  function createPositionIterator(mesh, transform3) {
+  function createPositionIterator(mesh, transform4) {
     const groupCount = mesh.vertexCount;
-    const instanceCount = transform3.instanceCount.ref.value;
+    const instanceCount = transform4.instanceCount.ref.value;
     const location2 = PositionLocation();
     const p6 = location2.position;
     const n = location2.normal;
     const vs = mesh.vertexBuffer.ref.value;
     const ns = mesh.normalBuffer.ref.value;
-    const m = transform3.aTransform.ref.value;
+    const m = transform4.aTransform.ref.value;
     const getLocation = (groupIndex, instanceIndex) => {
       if (instanceIndex < 0) {
         Vec3.fromArray(p6, vs, groupIndex * 3);
@@ -65572,9 +65572,9 @@ var Mesh;
     };
     return LocationIterator(groupCount, instanceCount, 1, getLocation);
   }
-  function createValues(mesh, transform3, locationIt, theme, props) {
+  function createValues(mesh, transform4, locationIt, theme, props) {
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = createPositionIterator(mesh, transform3);
+    const positionIt = createPositionIterator(mesh, transform4);
     const color = createColors(locationIt, positionIt, theme.color);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
     const overpaint = createEmptyOverpaint();
@@ -65584,7 +65584,7 @@ var Mesh;
     const clipping = createEmptyClipping();
     const counts = { drawCount: mesh.triangleCount * 3, vertexCount: mesh.vertexCount, groupCount, instanceCount };
     const invariantBoundingSphere = Sphere3D.clone(mesh.boundingSphere);
-    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform3.aTransform.ref.value, instanceCount, 0);
+    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform4.aTransform.ref.value, instanceCount, 0);
     return {
       dGeometryType: ValueCell.create("mesh"),
       aPosition: mesh.vertexBuffer,
@@ -65602,7 +65602,7 @@ var Mesh;
       ...emissive,
       ...material,
       ...clipping,
-      ...transform3,
+      ...transform4,
       ...BaseGeometry.createValues(props, counts),
       uDoubleSided: ValueCell.create(props.doubleSided),
       dFlatShaded: ValueCell.create(props.flatShaded),
@@ -65616,8 +65616,8 @@ var Mesh;
       meta: ValueCell.create(mesh.meta)
     };
   }
-  function createValuesSimple(mesh, props, colorValue, sizeValue, transform3) {
-    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform3);
+  function createValuesSimple(mesh, props, colorValue, sizeValue, transform4) {
+    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform4);
     const p6 = { ...ParamDefinition.getDefaultValues(Mesh2.Params), ...props };
     return createValues(mesh, s.transform, s.locationIterator, s.theme, p6);
   }
@@ -65851,12 +65851,12 @@ var Points;
     ValueCell.update(points3.groupBuffer, groups);
     return points3;
   }
-  function transform2(points3, t5) {
+  function transform3(points3, t5) {
     const c8 = points3.centerBuffer.ref.value;
     transformPositionArray(t5, c8, 0, points3.pointCount);
     ValueCell.update(points3.centerBuffer, c8);
   }
-  Points2.transform = transform2;
+  Points2.transform = transform3;
   Points2.StyleTypes = {
     "square": "Square",
     "circle": "Circle",
@@ -65880,13 +65880,13 @@ var Points;
     updateRenderableState,
     createPositionIterator
   };
-  function createPositionIterator(points3, transform3) {
+  function createPositionIterator(points3, transform4) {
     const groupCount = points3.pointCount;
-    const instanceCount = transform3.instanceCount.ref.value;
+    const instanceCount = transform4.instanceCount.ref.value;
     const location2 = PositionLocation();
     const p6 = location2.position;
     const v4 = points3.centerBuffer.ref.value;
-    const m = transform3.aTransform.ref.value;
+    const m = transform4.aTransform.ref.value;
     const getLocation = (groupIndex, instanceIndex) => {
       if (instanceIndex < 0) {
         Vec3.fromArray(p6, v4, groupIndex * 3);
@@ -65897,9 +65897,9 @@ var Points;
     };
     return LocationIterator(groupCount, instanceCount, 1, getLocation);
   }
-  function createValues(points3, transform3, locationIt, theme, props) {
+  function createValues(points3, transform4, locationIt, theme, props) {
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = createPositionIterator(points3, transform3);
+    const positionIt = createPositionIterator(points3, transform4);
     const color = createColors(locationIt, positionIt, theme.color);
     const size4 = createSizes(locationIt, theme.size);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
@@ -65910,7 +65910,7 @@ var Points;
     const clipping = createEmptyClipping();
     const counts = { drawCount: points3.pointCount, vertexCount: points3.pointCount, groupCount, instanceCount };
     const invariantBoundingSphere = Sphere3D.clone(points3.boundingSphere);
-    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform3.aTransform.ref.value, instanceCount, 0);
+    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform4.aTransform.ref.value, instanceCount, 0);
     return {
       dGeometryType: ValueCell.create("points"),
       aPosition: points3.centerBuffer,
@@ -65926,15 +65926,15 @@ var Points;
       ...emissive,
       ...material,
       ...clipping,
-      ...transform3,
+      ...transform4,
       ...BaseGeometry.createValues(props, counts),
       uSizeFactor: ValueCell.create(props.sizeFactor),
       dPointSizeAttenuation: ValueCell.create(props.pointSizeAttenuation),
       dPointStyle: ValueCell.create(props.pointStyle)
     };
   }
-  function createValuesSimple(points3, props, colorValue, sizeValue, transform3) {
-    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform3);
+  function createValuesSimple(points3, props, colorValue, sizeValue, transform4) {
+    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform4);
     const p6 = { ...ParamDefinition.getDefaultValues(Points2.Params), ...props };
     return createValues(points3, s.transform, s.locationIterator, s.theme, p6);
   }
@@ -66247,13 +66247,13 @@ var Text;
     updateRenderableState,
     createPositionIterator
   };
-  function createPositionIterator(text, transform2) {
+  function createPositionIterator(text, transform3) {
     const groupCount = text.charCount * 4;
-    const instanceCount = transform2.instanceCount.ref.value;
+    const instanceCount = transform3.instanceCount.ref.value;
     const location2 = PositionLocation();
     const p6 = location2.position;
     const v4 = text.centerBuffer.ref.value;
-    const m = transform2.aTransform.ref.value;
+    const m = transform3.aTransform.ref.value;
     const getLocation = (groupIndex, instanceIndex) => {
       if (instanceIndex < 0) {
         Vec3.fromArray(p6, v4, groupIndex * 3);
@@ -66264,9 +66264,9 @@ var Text;
     };
     return LocationIterator(groupCount, instanceCount, 4, getLocation);
   }
-  function createValues(text, transform2, locationIt, theme, props) {
+  function createValues(text, transform3, locationIt, theme, props) {
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = createPositionIterator(text, transform2);
+    const positionIt = createPositionIterator(text, transform3);
     const color = createColors(locationIt, positionIt, theme.color);
     const size4 = createSizes(locationIt, theme.size);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
@@ -66279,7 +66279,7 @@ var Text;
     const scale = getMaxSize(size4) * props.sizeFactor;
     const padding2 = getPadding(text.mappingBuffer.ref.value, text.depthBuffer.ref.value, text.charCount, scale);
     const invariantBoundingSphere = Sphere3D.expand(Sphere3D(), text.boundingSphere, padding2);
-    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform2.aTransform.ref.value, instanceCount, 0);
+    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform3.aTransform.ref.value, instanceCount, 0);
     return {
       dGeometryType: ValueCell.create("text"),
       aPosition: text.centerBuffer,
@@ -66298,7 +66298,7 @@ var Text;
       ...emissive,
       ...substance,
       ...clipping,
-      ...transform2,
+      ...transform3,
       aTexCoord: text.tcoordBuffer,
       tFont: text.fontTexture,
       padding: ValueCell.create(padding2),
@@ -66313,8 +66313,8 @@ var Text;
       uBackgroundOpacity: ValueCell.create(props.backgroundOpacity)
     };
   }
-  function createValuesSimple(text, props, colorValue, sizeValue, transform2) {
-    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform2);
+  function createValuesSimple(text, props, colorValue, sizeValue, transform3) {
+    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform3);
     const p6 = { ...ParamDefinition.getDefaultValues(Text2.Params), ...props };
     return createValues(text, s.transform, s.locationIterator, s.theme, p6);
   }
@@ -66571,7 +66571,7 @@ var Lines;
     ValueCell.update(lines.endBuffer, ends);
     return lines;
   }
-  function transform2(lines, t5) {
+  function transform3(lines, t5) {
     const start4 = lines.startBuffer.ref.value;
     transformPositionArray(t5, start4, 0, lines.lineCount * 4);
     ValueCell.update(lines.startBuffer, start4);
@@ -66579,7 +66579,7 @@ var Lines;
     transformPositionArray(t5, end4, 0, lines.lineCount * 4);
     ValueCell.update(lines.endBuffer, end4);
   }
-  Lines2.transform = transform2;
+  Lines2.transform = transform3;
   Lines2.Params = {
     ...BaseGeometry.Params,
     sizeFactor: ParamDefinition.Numeric(2, { min: 0, max: 10, step: 0.1 }),
@@ -66596,14 +66596,14 @@ var Lines;
     updateRenderableState: BaseGeometry.updateRenderableState,
     createPositionIterator
   };
-  function createPositionIterator(lines, transform3) {
+  function createPositionIterator(lines, transform4) {
     const groupCount = lines.lineCount * 4;
-    const instanceCount = transform3.instanceCount.ref.value;
+    const instanceCount = transform4.instanceCount.ref.value;
     const location2 = PositionLocation();
     const p6 = location2.position;
     const s = lines.startBuffer.ref.value;
     const e = lines.endBuffer.ref.value;
-    const m = transform3.aTransform.ref.value;
+    const m = transform4.aTransform.ref.value;
     const getLocation = (groupIndex, instanceIndex) => {
       const v4 = groupIndex % 4 === 0 ? s : e;
       if (instanceIndex < 0) {
@@ -66615,9 +66615,9 @@ var Lines;
     };
     return LocationIterator(groupCount, instanceCount, 2, getLocation);
   }
-  function createValues(lines, transform3, locationIt, theme, props) {
+  function createValues(lines, transform4, locationIt, theme, props) {
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = createPositionIterator(lines, transform3);
+    const positionIt = createPositionIterator(lines, transform4);
     const color = createColors(locationIt, positionIt, theme.color);
     const size4 = createSizes(locationIt, theme.size);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
@@ -66628,7 +66628,7 @@ var Lines;
     const clipping = createEmptyClipping();
     const counts = { drawCount: lines.lineCount * 2 * 3, vertexCount: lines.lineCount * 4, groupCount, instanceCount };
     const invariantBoundingSphere = Sphere3D.clone(lines.boundingSphere);
-    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform3.aTransform.ref.value, instanceCount, 0);
+    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform4.aTransform.ref.value, instanceCount, 0);
     return {
       dGeometryType: ValueCell.create("lines"),
       aMapping: lines.mappingBuffer,
@@ -66647,7 +66647,7 @@ var Lines;
       ...emissive,
       ...material,
       ...clipping,
-      ...transform3,
+      ...transform4,
       ...BaseGeometry.createValues(props, counts),
       uSizeFactor: ValueCell.create(props.sizeFactor),
       dLineSizeAttenuation: ValueCell.create(props.lineSizeAttenuation),
@@ -66655,8 +66655,8 @@ var Lines;
       dFlipSided: ValueCell.create(false)
     };
   }
-  function createValuesSimple(lines, props, colorValue, sizeValue, transform3) {
-    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform3);
+  function createValuesSimple(lines, props, colorValue, sizeValue, transform4) {
+    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform4);
     const p6 = { ...ParamDefinition.getDefaultValues(Lines2.Params), ...props };
     return createValues(lines, s.transform, s.locationIterator, s.theme, p6);
   }
@@ -67002,8 +67002,8 @@ var Grid;
     if (!boundingSphere)
       boundingSphere = Sphere3D();
     const dimensions = grid.cells.space.dimensions;
-    const transform2 = Grid2.getGridToCartesianTransform(grid);
-    return Sphere3D.fromDimensionsAndTransform(boundingSphere, dimensions, transform2);
+    const transform3 = Grid2.getGridToCartesianTransform(grid);
+    return Sphere3D.fromDimensionsAndTransform(boundingSphere, dimensions, transform3);
   }
   Grid2.getBoundingSphere = getBoundingSphere3;
   function getHistogram(grid, binCount) {
@@ -67017,7 +67017,7 @@ var Grid;
     return histograms[binCount];
   }
   Grid2.getHistogram = getHistogram;
-  function makeGetTrilinearlyInterpolated(grid, transform2) {
+  function makeGetTrilinearlyInterpolated(grid, transform3) {
     const cartnToGrid = Grid2.getGridToCartesianTransform(grid);
     Mat4.invert(cartnToGrid, cartnToGrid);
     const gridCoords = Vec3();
@@ -67051,7 +67051,7 @@ var Grid;
       d5 = get11(data, ii, jj, kk);
       const y = lerp(lerp(a8, b8, u2), lerp(c8, d5, u2), v4);
       const value = lerp(x, y, w);
-      if (transform2 === "relative") {
+      if (transform3 === "relative") {
         return (value - stats.mean) / stats.sigma;
       } else {
         return value;
@@ -67280,10 +67280,10 @@ var Volume;
     return volume.sourceData.data.header.orbitals;
   }
   Volume2.isOrbitals = isOrbitals;
-  function Loci3(volume, instances) {
+  function Loci4(volume, instances) {
     return { kind: "volume-loci", volume, instances };
   }
-  Volume2.Loci = Loci3;
+  Volume2.Loci = Loci4;
   function isLoci(x) {
     return !!x && x.kind === "volume-loci";
   }
@@ -67302,10 +67302,10 @@ var Volume;
   Volume2.getBoundingSphere = getBoundingSphere3;
   let Isosurface;
   (function(Isosurface2) {
-    function Loci4(volume, isoValue, instances) {
+    function Loci5(volume, isoValue, instances) {
       return { kind: "isosurface-loci", volume, isoValue, instances };
     }
-    Isosurface2.Loci = Loci4;
+    Isosurface2.Loci = Loci5;
     function isLoci2(x) {
       return !!x && x.kind === "isosurface-loci";
     }
@@ -67347,18 +67347,18 @@ var Volume;
       }
       Vec3.set(bbox.min, minx - 1, miny - 1, minz - 1);
       Vec3.set(bbox.max, maxx + 1, maxy + 1, maxz + 1);
-      const transform2 = Grid.getGridToCartesianTransform(volume.grid);
-      Box3D.transform(bbox, bbox, transform2);
+      const transform3 = Grid.getGridToCartesianTransform(volume.grid);
+      Box3D.transform(bbox, bbox, transform3);
       return Sphere3D.fromBox3D(boundingSphere || Sphere3D(), bbox);
     }
     Isosurface2.getBoundingSphere = getBoundingSphere4;
   })(Isosurface = Volume2.Isosurface || (Volume2.Isosurface = {}));
   let Cell2;
   (function(Cell3) {
-    function Loci4(volume, elements) {
+    function Loci5(volume, elements) {
       return { kind: "cell-loci", volume, elements };
     }
-    Cell3.Loci = Loci4;
+    Cell3.Loci = Loci5;
     function isLoci2(x) {
       return !!x && x.kind === "cell-loci";
     }
@@ -67409,13 +67409,13 @@ var Volume;
     const tmpBoundaryPos2 = Vec3();
     function getBoundingSphere4(volume, elements, boundingSphere) {
       boundaryHelper5.reset();
-      const transform2 = Grid.getGridToCartesianTransform(volume.grid);
+      const transform3 = Grid.getGridToCartesianTransform(volume.grid);
       const { getCoords } = volume.grid.cells.space;
       for (const { indices: indices3, instances } of elements) {
         for (let i = 0, _i = OrderedSet2.size(indices3); i < _i; i++) {
           const o = OrderedSet2.getAt(indices3, i);
           getCoords(o, tmpBoundaryPos);
-          Vec3.transformMat4(tmpBoundaryPos, tmpBoundaryPos, transform2);
+          Vec3.transformMat4(tmpBoundaryPos, tmpBoundaryPos, transform3);
           for (let j = 0, _j = OrderedSet2.size(instances); j < _j; j++) {
             const instance = volume.instances[OrderedSet2.getAt(instances, j)];
             Vec3.transformMat4(tmpBoundaryPos2, tmpBoundaryPos, instance.transform);
@@ -67428,7 +67428,7 @@ var Volume;
         for (let i = 0, _i = OrderedSet2.size(indices3); i < _i; i++) {
           const o = OrderedSet2.getAt(indices3, i);
           getCoords(o, tmpBoundaryPos);
-          Vec3.transformMat4(tmpBoundaryPos, tmpBoundaryPos, transform2);
+          Vec3.transformMat4(tmpBoundaryPos, tmpBoundaryPos, transform3);
           for (let j = 0, _j = OrderedSet2.size(instances); j < _j; j++) {
             const instance = volume.instances[OrderedSet2.getAt(instances, j)];
             Vec3.transformMat4(tmpBoundaryPos2, tmpBoundaryPos, instance.transform);
@@ -67437,16 +67437,16 @@ var Volume;
         }
       }
       const bs = boundaryHelper5.getSphere(boundingSphere);
-      return Sphere3D.expand(bs, bs, Mat4.getMaxScaleOnAxis(transform2) * 10);
+      return Sphere3D.expand(bs, bs, Mat4.getMaxScaleOnAxis(transform3) * 10);
     }
     Cell3.getBoundingSphere = getBoundingSphere4;
   })(Cell2 = Volume2.Cell || (Volume2.Cell = {}));
   let Segment;
   (function(Segment2) {
-    function Loci4(volume, elements) {
+    function Loci5(volume, elements) {
       return { kind: "segment-loci", volume, elements };
     }
-    Segment2.Loci = Loci4;
+    Segment2.Loci = Loci5;
     function isLoci2(x) {
       return !!x && x.kind === "segment-loci";
     }
@@ -67486,7 +67486,7 @@ var Volume;
       const segmentation = Volume2.Segmentation.get(volume);
       if (segmentation) {
         Box3D.setEmpty(bbox);
-        const transform2 = Grid.getGridToCartesianTransform(volume.grid);
+        const transform3 = Grid.getGridToCartesianTransform(volume.grid);
         for (const { segments: segments2, instances } of elements) {
           Box3D.setEmpty(bbox2);
           for (let i = 0, _i = OrderedSet2.size(segments2); i < _i; i++) {
@@ -67495,7 +67495,7 @@ var Volume;
             Box3D.add(bbox2, b8.min);
             Box3D.add(bbox2, b8.max);
           }
-          Box3D.transform(bbox2, bbox2, transform2);
+          Box3D.transform(bbox2, bbox2, transform3);
           for (let j = 0, _j = OrderedSet2.size(instances); j < _j; j++) {
             const instance = volume.instances[OrderedSet2.getAt(instances, j)];
             Box3D.transform(bbox3, bbox2, instance.transform);
@@ -67545,8 +67545,8 @@ var Volume;
 var VolumeBox = Box();
 var DirectVolume;
 (function(DirectVolume2) {
-  function create3(bbox, gridDimension, transform2, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType, directVolume) {
-    return directVolume ? update10(bbox, gridDimension, transform2, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType, directVolume) : fromData(bbox, gridDimension, transform2, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType);
+  function create3(bbox, gridDimension, transform3, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType, directVolume) {
+    return directVolume ? update10(bbox, gridDimension, transform3, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType, directVolume) : fromData(bbox, gridDimension, transform3, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType);
   }
   DirectVolume2.create = create3;
   function hashCode6(directVolume) {
@@ -67558,7 +67558,7 @@ var DirectVolume;
       directVolume.gridStats.ref.version
     ]);
   }
-  function fromData(bbox, gridDimension, transform2, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType) {
+  function fromData(bbox, gridDimension, transform3, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType) {
     const boundingSphere = Sphere3D();
     let currentHash = -1;
     const width = texture.getWidth();
@@ -67573,7 +67573,7 @@ var DirectVolume;
       bboxMin: ValueCell.create(bbox.min),
       bboxMax: ValueCell.create(bbox.max),
       bboxSize: ValueCell.create(Vec3.sub(Vec3(), bbox.max, bbox.min)),
-      transform: ValueCell.create(transform2),
+      transform: ValueCell.create(transform3),
       cellDim: ValueCell.create(cellDim),
       unitToCartn: ValueCell.create(unitToCartn),
       cartnToUnit: ValueCell.create(Mat4.invert(Mat4(), unitToCartn)),
@@ -67597,7 +67597,7 @@ var DirectVolume;
     };
     return directVolume;
   }
-  function update10(bbox, gridDimension, transform2, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType, directVolume) {
+  function update10(bbox, gridDimension, transform3, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType, directVolume) {
     const width = texture.getWidth();
     const height = texture.getHeight();
     const depth = texture.getDepth();
@@ -67608,7 +67608,7 @@ var DirectVolume;
     ValueCell.update(directVolume.bboxMin, bbox.min);
     ValueCell.update(directVolume.bboxMax, bbox.max);
     ValueCell.update(directVolume.bboxSize, Vec3.sub(directVolume.bboxSize.ref.value, bbox.max, bbox.min));
-    ValueCell.update(directVolume.transform, transform2);
+    ValueCell.update(directVolume.transform, transform3);
     ValueCell.update(directVolume.cellDim, cellDim);
     ValueCell.update(directVolume.unitToCartn, unitToCartn);
     ValueCell.update(directVolume.cartnToUnit, Mat4.invert(Mat4(), unitToCartn));
@@ -67620,7 +67620,7 @@ var DirectVolume;
   function createEmpty(directVolume) {
     const bbox = Box3D();
     const gridDimension = Vec3();
-    const transform2 = Mat4.identity();
+    const transform3 = Mat4.identity();
     const unitToCartn = Mat4.identity();
     const cellDim = Vec3();
     const texture = createNullTexture();
@@ -67628,7 +67628,7 @@ var DirectVolume;
     const packedGroup = false;
     const axisOrder = Vec3.create(0, 1, 2);
     const dataType = "byte";
-    return create3(bbox, gridDimension, transform2, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType, directVolume);
+    return create3(bbox, gridDimension, transform3, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType, directVolume);
   }
   DirectVolume2.createEmpty = createEmpty;
   DirectVolume2.Params = {
@@ -67660,14 +67660,14 @@ var DirectVolume;
     updateRenderableState,
     createPositionIterator
   };
-  function createPositionIterator(directVolume, transform2) {
+  function createPositionIterator(directVolume, transform3) {
     const t5 = directVolume.transform.ref.value;
     const [x, y, z] = directVolume.gridDimension.ref.value;
     const groupCount = x * y * z;
-    const instanceCount = transform2.instanceCount.ref.value;
+    const instanceCount = transform3.instanceCount.ref.value;
     const location2 = PositionLocation();
     const p6 = location2.position;
-    const m = transform2.aTransform.ref.value;
+    const m = transform3.aTransform.ref.value;
     const getLocation = (groupIndex, instanceIndex) => {
       const k = Math.floor(groupIndex / z);
       p6[0] = Math.floor(k / y);
@@ -67690,11 +67690,11 @@ var DirectVolume;
   function getTransferScale(stepsPerCell) {
     return 1 / stepsPerCell;
   }
-  function createValues(directVolume, transform2, locationIt, theme, props) {
+  function createValues(directVolume, transform3, locationIt, theme, props) {
     const { gridTexture, gridTextureDim, gridStats } = directVolume;
     const { bboxSize, bboxMin, bboxMax, gridDimension, transform: gridTransform } = directVolume;
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = createPositionIterator(directVolume, transform2);
+    const positionIt = createPositionIterator(directVolume, transform3);
     const color = createColors(locationIt, positionIt, theme.color);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
     const overpaint = createEmptyOverpaint();
@@ -67705,7 +67705,7 @@ var DirectVolume;
     const [x, y, z] = gridDimension.ref.value;
     const counts = { drawCount: VolumeBox.indices.length, vertexCount: x * y * z, groupCount, instanceCount };
     const invariantBoundingSphere = Sphere3D.clone(directVolume.boundingSphere);
-    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform2.aTransform.ref.value, instanceCount, 0);
+    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform3.aTransform.ref.value, instanceCount, 0);
     const controlPoints = getControlPointsFromVec2Array(props.controlPoints);
     const transferTex = createTransferFunctionTexture(controlPoints);
     return {
@@ -67717,7 +67717,7 @@ var DirectVolume;
       ...emissive,
       ...material,
       ...clipping,
-      ...transform2,
+      ...transform3,
       ...BaseGeometry.createValues(props, counts),
       aPosition: ValueCell.create(VolumeBox.vertices),
       elements: ValueCell.create(VolumeBox.indices),
@@ -67749,8 +67749,8 @@ var DirectVolume;
       meta: ValueCell.create(directVolume.meta)
     };
   }
-  function createValuesSimple(directVolume, props, colorValue, sizeValue, transform2) {
-    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform2);
+  function createValuesSimple(directVolume, props, colorValue, sizeValue, transform3) {
+    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform3);
     const p6 = { ...ParamDefinition.getDefaultValues(DirectVolume2.Params), ...props };
     return createValues(directVolume, s.transform, s.locationIterator, s.theme, p6);
   }
@@ -67994,13 +67994,13 @@ var Spheres;
     updateRenderableState,
     createPositionIterator
   };
-  function createPositionIterator(spheres2, transform2) {
+  function createPositionIterator(spheres2, transform3) {
     const groupCount = spheres2.sphereCount;
-    const instanceCount = transform2.instanceCount.ref.value;
+    const instanceCount = transform3.instanceCount.ref.value;
     const location2 = PositionLocation();
     const p6 = location2.position;
     const v4 = spheres2.centerBuffer.ref.value;
-    const m = transform2.aTransform.ref.value;
+    const m = transform3.aTransform.ref.value;
     const getLocation = (groupIndex, instanceIndex) => {
       if (instanceIndex < 0) {
         Vec3.fromArray(p6, v4, groupIndex * 3);
@@ -68011,9 +68011,9 @@ var Spheres;
     };
     return LocationIterator(groupCount, instanceCount, 1, getLocation);
   }
-  function createValues(spheres2, transform2, locationIt, theme, props) {
+  function createValues(spheres2, transform3, locationIt, theme, props) {
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = createPositionIterator(spheres2, transform2);
+    const positionIt = createPositionIterator(spheres2, transform3);
     const color = createColors(locationIt, positionIt, theme.color);
     const size4 = createSizes(locationIt, theme.size);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
@@ -68025,7 +68025,7 @@ var Spheres;
     const counts = { drawCount: spheres2.sphereCount * 2 * 3, vertexCount: spheres2.sphereCount * 6, groupCount, instanceCount };
     const padding2 = spheres2.boundingSphere.radius ? getMaxSize(size4) * props.sizeFactor : 0;
     const invariantBoundingSphere = Sphere3D.expand(Sphere3D(), spheres2.boundingSphere, padding2);
-    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform2.aTransform.ref.value, instanceCount, 0);
+    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform3.aTransform.ref.value, instanceCount, 0);
     spheres2.shaderData.update({ lodLevels: props.lodLevels, sizeFactor: props.sizeFactor });
     return {
       dGeometryType: ValueCell.create("spheres"),
@@ -68042,7 +68042,7 @@ var Spheres;
       ...emissive,
       ...material,
       ...clipping,
-      ...transform2,
+      ...transform3,
       padding: ValueCell.create(padding2),
       ...BaseGeometry.createValues(props, counts),
       uSizeFactor: spheres2.shaderData.sizeFactor,
@@ -68062,8 +68062,8 @@ var Spheres;
       groupBuffer: spheres2.groupBuffer
     };
   }
-  function createValuesSimple(spheres2, props, colorValue, sizeValue, transform2) {
-    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform2);
+  function createValuesSimple(spheres2, props, colorValue, sizeValue, transform3) {
+    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform3);
     const p6 = { ...ParamDefinition.getDefaultValues(Spheres2.Params), ...props };
     return createValues(spheres2, s.transform, s.locationIterator, s.theme, p6);
   }
@@ -68206,7 +68206,7 @@ var TextureMesh;
     createPositionIterator
   };
   const TextureMeshName = "texture-mesh";
-  function createPositionIterator(textureMesh, transform2) {
+  function createPositionIterator(textureMesh, transform3) {
     const webgl = textureMesh.meta.webgl;
     if (!webgl)
       return LocationIterator(1, 1, 1, () => NullLocation);
@@ -68231,11 +68231,11 @@ var TextureMesh;
       return data;
     };
     const groupCount = textureMesh.vertexCount;
-    const instanceCount = transform2.instanceCount.ref.value;
+    const instanceCount = transform3.instanceCount.ref.value;
     const location2 = PositionLocation();
     const p6 = location2.position;
     const n = location2.normal;
-    const m = transform2.aTransform.ref.value;
+    const m = transform3.aTransform.ref.value;
     const getLocation = (groupIndex, instanceIndex) => {
       const { vertices: vertices2, normals } = getData2();
       if (instanceIndex < 0) {
@@ -68249,9 +68249,9 @@ var TextureMesh;
     };
     return LocationIterator(groupCount, instanceCount, 1, getLocation);
   }
-  function createValues(textureMesh, transform2, locationIt, theme, props) {
+  function createValues(textureMesh, transform3, locationIt, theme, props) {
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = TextureMesh2.Utils.createPositionIterator(textureMesh, transform2);
+    const positionIt = TextureMesh2.Utils.createPositionIterator(textureMesh, transform3);
     const color = createColors(locationIt, positionIt, theme.color);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
     const overpaint = createEmptyOverpaint();
@@ -68261,7 +68261,7 @@ var TextureMesh;
     const clipping = createEmptyClipping();
     const counts = { drawCount: textureMesh.vertexCount, vertexCount: textureMesh.vertexCount, groupCount, instanceCount };
     const invariantBoundingSphere = Sphere3D.clone(textureMesh.boundingSphere);
-    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform2.aTransform.ref.value, instanceCount, 0);
+    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform3.aTransform.ref.value, instanceCount, 0);
     return {
       dGeometryType: ValueCell.create("textureMesh"),
       uGeoTexDim: textureMesh.geoTextureDim,
@@ -68279,7 +68279,7 @@ var TextureMesh;
       ...emissive,
       ...substance,
       ...clipping,
-      ...transform2,
+      ...transform3,
       ...BaseGeometry.createValues(props, counts),
       uDoubleSided: ValueCell.create(props.doubleSided),
       dFlatShaded: ValueCell.create(props.flatShaded),
@@ -68293,8 +68293,8 @@ var TextureMesh;
       meta: ValueCell.create(textureMesh.meta)
     };
   }
-  function createValuesSimple(textureMesh, props, colorValue, sizeValue, transform2) {
-    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform2);
+  function createValuesSimple(textureMesh, props, colorValue, sizeValue, transform3) {
+    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform3);
     const p6 = { ...ParamDefinition.getDefaultValues(TextureMesh2.Params), ...props };
     return createValues(textureMesh, s.transform, s.locationIterator, s.theme, p6);
   }
@@ -69464,9 +69464,9 @@ var Image2;
   function createPositionIterator(_image, _transform) {
     return LocationIterator(1, 1, 1, () => NullLocation);
   }
-  function createValues(image, transform2, locationIt, theme, props) {
+  function createValues(image, transform3, locationIt, theme, props) {
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = createPositionIterator(image, transform2);
+    const positionIt = createPositionIterator(image, transform3);
     const color = createColors(locationIt, positionIt, theme.color);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
     const overpaint = createEmptyOverpaint();
@@ -69476,7 +69476,7 @@ var Image2;
     const clipping = createEmptyClipping();
     const counts = { drawCount: QuadIndices.length, vertexCount: QuadPositions.length / 3, groupCount, instanceCount };
     const invariantBoundingSphere = Sphere3D.clone(image.boundingSphere);
-    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform2.aTransform.ref.value, instanceCount, 0);
+    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform3.aTransform.ref.value, instanceCount, 0);
     return {
       dGeometryType: ValueCell.create("image"),
       ...color,
@@ -69486,7 +69486,7 @@ var Image2;
       ...emissive,
       ...material,
       ...clipping,
-      ...transform2,
+      ...transform3,
       ...BaseGeometry.createValues(props, counts),
       aPosition: image.cornerBuffer,
       aUv: ValueCell.create(QuadUvs),
@@ -69509,8 +69509,8 @@ var Image2;
       uIsoLevel: image.isoLevel
     };
   }
-  function createValuesSimple(image, props, colorValue, sizeValue, transform2) {
-    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform2);
+  function createValuesSimple(image, props, colorValue, sizeValue, transform3) {
+    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform3);
     const p6 = { ...ParamDefinition.getDefaultValues(Image3.Params), ...props };
     return createValues(image, s.transform, s.locationIterator, s.theme, p6);
   }
@@ -69645,7 +69645,7 @@ var Cylinders;
     ValueCell.update(cylinders.colorModeBuffer, colorModes);
     return cylinders;
   }
-  function transform2(cylinders, t5) {
+  function transform3(cylinders, t5) {
     const start4 = cylinders.startBuffer.ref.value;
     transformPositionArray(t5, start4, 0, cylinders.cylinderCount * 6);
     ValueCell.update(cylinders.startBuffer, start4);
@@ -69653,7 +69653,7 @@ var Cylinders;
     transformPositionArray(t5, end4, 0, cylinders.cylinderCount * 6);
     ValueCell.update(cylinders.endBuffer, end4);
   }
-  Cylinders2.transform = transform2;
+  Cylinders2.transform = transform3;
   Cylinders2.Params = {
     ...BaseGeometry.Params,
     sizeFactor: ParamDefinition.Numeric(1, { min: 0, max: 10, step: 0.1 }),
@@ -69679,14 +69679,14 @@ var Cylinders;
     updateRenderableState,
     createPositionIterator
   };
-  function createPositionIterator(cylinders, transform3) {
+  function createPositionIterator(cylinders, transform4) {
     const groupCount = cylinders.cylinderCount * 6;
-    const instanceCount = transform3.instanceCount.ref.value;
+    const instanceCount = transform4.instanceCount.ref.value;
     const location2 = PositionLocation();
     const p6 = location2.position;
     const s = cylinders.startBuffer.ref.value;
     const e = cylinders.endBuffer.ref.value;
-    const m = transform3.aTransform.ref.value;
+    const m = transform4.aTransform.ref.value;
     const getLocation = (groupIndex, instanceIndex) => {
       const v4 = groupIndex % 6 === 0 ? s : e;
       if (instanceIndex < 0) {
@@ -69698,9 +69698,9 @@ var Cylinders;
     };
     return LocationIterator(groupCount, instanceCount, 2, getLocation);
   }
-  function createValues(cylinders, transform3, locationIt, theme, props) {
+  function createValues(cylinders, transform4, locationIt, theme, props) {
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = createPositionIterator(cylinders, transform3);
+    const positionIt = createPositionIterator(cylinders, transform4);
     const color = createColors(locationIt, positionIt, theme.color);
     const size4 = createSizes(locationIt, theme.size);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
@@ -69712,7 +69712,7 @@ var Cylinders;
     const counts = { drawCount: cylinders.cylinderCount * 4 * 3, vertexCount: cylinders.cylinderCount * 6, groupCount, instanceCount };
     const padding2 = getMaxSize(size4) * props.sizeFactor;
     const invariantBoundingSphere = Sphere3D.clone(cylinders.boundingSphere);
-    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform3.aTransform.ref.value, instanceCount, 0);
+    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform4.aTransform.ref.value, instanceCount, 0);
     return {
       dGeometryType: ValueCell.create("cylinders"),
       aMapping: cylinders.mappingBuffer,
@@ -69734,7 +69734,7 @@ var Cylinders;
       ...emissive,
       ...material,
       ...clipping,
-      ...transform3,
+      ...transform4,
       padding: ValueCell.create(padding2),
       ...BaseGeometry.createValues(props, counts),
       uSizeFactor: ValueCell.create(props.sizeFactor * props.sizeAspectRatio),
@@ -69749,8 +69749,8 @@ var Cylinders;
       dDualColor: ValueCell.create(props.colorMode === "interpolate")
     };
   }
-  function createValuesSimple(cylinders, props, colorValue, sizeValue, transform3) {
-    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform3);
+  function createValuesSimple(cylinders, props, colorValue, sizeValue, transform4) {
+    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform4);
     const p6 = { ...ParamDefinition.getDefaultValues(Cylinders2.Params), ...props };
     return createValues(cylinders, s.transform, s.locationIterator, s.theme, p6);
   }
@@ -70293,16 +70293,16 @@ var Shape;
     const utils = Geometry.getUtils(shape.geometry);
     const materialId = getNextMaterialId();
     const locationIt = groupIterator(shape);
-    const transform2 = createTransform2(shape.transforms, shape.geometry.boundingSphere, props.cellSize, props.batchSize);
-    const values2 = utils.createValues(shape.geometry, transform2, locationIt, theme, props);
+    const transform3 = createTransform2(shape.transforms, shape.geometry.boundingSphere, props.cellSize, props.batchSize);
+    const values2 = utils.createValues(shape.geometry, transform3, locationIt, theme, props);
     const state = utils.createRenderableState(props);
     return createRenderObject(shape.geometry.kind, values2, state, materialId);
   }
   Shape2.createRenderObject = createRenderObject2;
-  function Loci3(shape) {
+  function Loci4(shape) {
     return { kind: "shape-loci", shape };
   }
-  Shape2.Loci = Loci3;
+  Shape2.Loci = Loci4;
   function isLoci(x) {
     return !!x && x.kind === "shape-loci";
   }
@@ -70326,10 +70326,10 @@ var ShapeGroup;
     return !!x && x.kind === "group-location";
   }
   ShapeGroup2.isLocation = isLocation;
-  function Loci3(shape, groups) {
+  function Loci4(shape, groups) {
     return { kind: "group-loci", shape, groups };
   }
-  ShapeGroup2.Loci = Loci3;
+  ShapeGroup2.Loci = Loci4;
   function isLoci(x) {
     return !!x && x.kind === "group-loci";
   }
@@ -71826,30 +71826,30 @@ var TransientTree = class {
     this.changeNodes();
     this.transforms.set(ref, Transform.withParent(old, newParent));
   }
-  add(transform2) {
-    const ref = transform2.ref;
-    if (this.transforms.has(transform2.ref)) {
-      const node = this.transforms.get(transform2.ref);
-      if (node.parent !== transform2.parent)
-        alreadyPresent(transform2.ref);
+  add(transform3) {
+    const ref = transform3.ref;
+    if (this.transforms.has(transform3.ref)) {
+      const node = this.transforms.get(transform3.ref);
+      if (node.parent !== transform3.parent)
+        alreadyPresent(transform3.ref);
     }
-    const children = this.children.get(transform2.parent);
+    const children = this.children.get(transform3.parent);
     if (!children)
-      parentNotPresent(transform2.parent);
-    if (!children.has(transform2.ref)) {
-      this.addChild(transform2.parent, transform2.ref);
+      parentNotPresent(transform3.parent);
+    if (!children.has(transform3.ref)) {
+      this.addChild(transform3.parent, transform3.ref);
     }
-    if (!this.children.has(transform2.ref)) {
+    if (!this.children.has(transform3.ref)) {
       if (!this.changedChildren) {
         this.changedChildren = true;
         this.children = this.children.asMutable();
       }
-      this.children.set(transform2.ref, OrderedSet());
+      this.children.set(transform3.ref, OrderedSet());
     }
     this.changeNodes();
-    this.transforms.set(ref, transform2);
-    if (transform2.dependsOn) {
-      for (const d5 of transform2.dependsOn) {
+    this.transforms.set(ref, transform3);
+    if (transform3.dependsOn) {
+      for (const d5 of transform3.dependsOn) {
         this.mutateDependency(d5, ref, "add");
       }
     }
@@ -71858,44 +71858,44 @@ var TransientTree = class {
   /** Calls Transform.definition.params.areEqual if available, otherwise uses shallowEqual to check if the params changed */
   setParams(ref, params) {
     ensurePresent(this.transforms, ref);
-    const transform2 = this.transforms.get(ref);
-    if (shallowEqual2(transform2.params, params)) {
+    const transform3 = this.transforms.get(ref);
+    if (shallowEqual2(transform3.params, params)) {
       return false;
     }
     if (!this.changedNodes) {
       this.changedNodes = true;
       this.transforms = this.transforms.asMutable();
     }
-    this.transforms.set(transform2.ref, Transform.withParams(transform2, params));
+    this.transforms.set(transform3.ref, Transform.withParams(transform3, params));
     return true;
   }
   /** Calls Transform.definition.params.areEqual if available, otherwise uses shallowEqual to check if the params changed */
   setTags(ref, tags) {
     ensurePresent(this.transforms, ref);
-    const transform2 = this.transforms.get(ref);
-    const withTags = Transform.withTags(transform2, tags);
-    if (arrayEqual2(transform2.tags, withTags.tags)) {
+    const transform3 = this.transforms.get(ref);
+    const withTags = Transform.withTags(transform3, tags);
+    if (arrayEqual2(transform3.tags, withTags.tags)) {
       return false;
     }
     if (!this.changedNodes) {
       this.changedNodes = true;
       this.transforms = this.transforms.asMutable();
     }
-    this.transforms.set(transform2.ref, withTags);
+    this.transforms.set(transform3.ref, withTags);
     return true;
   }
   setDependsOn(ref, dependsOn) {
     ensurePresent(this.transforms, ref);
-    const transform2 = this.transforms.get(ref);
-    const withDependsOn = Transform.withDependsOn(transform2, dependsOn);
-    if (arrayEqual2(transform2.dependsOn, withDependsOn.dependsOn)) {
+    const transform3 = this.transforms.get(ref);
+    const withDependsOn = Transform.withDependsOn(transform3, dependsOn);
+    if (arrayEqual2(transform3.dependsOn, withDependsOn.dependsOn)) {
       return false;
     }
     if (!this.changedNodes) {
       this.changedNodes = true;
       this.transforms = this.transforms.asMutable();
     }
-    this.transforms.set(transform2.ref, withDependsOn);
+    this.transforms.set(transform3.ref, withDependsOn);
     return true;
   }
   assignState(ref, state) {
@@ -72087,13 +72087,13 @@ var StateTree;
     const children = Map2().asMutable();
     const dependencies = Map2().asMutable();
     for (const t5 of data.transforms) {
-      const transform2 = Transform.fromJSON(t5);
-      nodes.set(transform2.ref, transform2);
-      if (!children.has(transform2.ref)) {
-        children.set(transform2.ref, OrderedSet().asMutable());
+      const transform3 = Transform.fromJSON(t5);
+      nodes.set(transform3.ref, transform3);
+      if (!children.has(transform3.ref)) {
+        children.set(transform3.ref, OrderedSet().asMutable());
       }
-      if (transform2.ref !== transform2.parent)
-        children.get(transform2.parent).add(transform2.ref);
+      if (transform3.ref !== transform3.parent)
+        children.get(transform3.parent).add(transform3.ref);
     }
     const dependent = /* @__PURE__ */ new Set();
     for (const t5 of data.transforms) {
@@ -72155,9 +72155,9 @@ var StateTree;
   StateTree2.getDecoratorRoot = getDecoratorRoot;
   function setParamHashVersion(tree, refs) {
     for (const ref of refs) {
-      const transform2 = tree.transforms.get(ref);
-      if (transform2) {
-        Transform.setParamsHashVersion(transform2);
+      const transform3 = tree.transforms.get(ref);
+      if (transform3) {
+        Transform.setParamsHashVersion(transform3);
       }
     }
   }
@@ -72937,29 +72937,29 @@ var StateBuilder;
       return this.root;
     }
     updateState(state) {
-      const transform2 = this.state.tree.transforms.get(this.ref);
-      if (Transform.isStateChange(transform2.state, state)) {
+      const transform3 = this.state.tree.transforms.get(this.ref);
+      if (Transform.isStateChange(transform3.state, state)) {
         this.state.tree.assignState(this.ref, state);
         this.editInfo.count++;
         this.editInfo.lastUpdate = this.ref;
         if (!this.state.actions.find((a8) => a8.kind === "update" && a8.ref === this.ref)) {
-          this.state.actions.push({ kind: "update", ref: this.ref, params: transform2.params });
+          this.state.actions.push({ kind: "update", ref: this.ref, params: transform3.params });
         }
       }
     }
     /** Add tags to the current node */
     tag(tags) {
-      const transform2 = this.state.tree.transforms.get(this.ref);
-      this.updateTagged(transform2.params, stringArrayUnion(transform2.tags, tags));
+      const transform3 = this.state.tree.transforms.get(this.ref);
+      this.updateTagged(transform3.params, stringArrayUnion(transform3.tags, tags));
       return this;
     }
     /** Add dependsOn to the current node */
     dependsOn(dependsOn) {
-      const transform2 = this.state.tree.transforms.get(this.ref);
-      if (this.state.tree.setDependsOn(this.ref, stringArrayUnion(transform2.dependsOn, dependsOn))) {
+      const transform3 = this.state.tree.transforms.get(this.ref);
+      if (this.state.tree.setDependsOn(this.ref, stringArrayUnion(transform3.dependsOn, dependsOn))) {
         this.editInfo.count++;
         this.editInfo.lastUpdate = this.ref;
-        this.state.actions.push({ kind: "update", ref: this.ref, params: transform2.params });
+        this.state.actions.push({ kind: "update", ref: this.ref, params: transform3.params });
       }
     }
     to(ref) {
@@ -73645,8 +73645,8 @@ async function update8(ctx) {
     if (update10.action === "created") {
       ctx.parent.events.object.created.next({ state: ctx.parent, ref: update10.ref, obj: update10.obj });
       if (!ctx.newCurrent) {
-        const transform2 = ctx.tree.transforms.get(update10.ref);
-        if (!transform2.state.isGhost && update10.obj !== StateObject.Null)
+        const transform3 = ctx.tree.transforms.get(update10.ref);
+        if (!transform3.state.isGhost && update10.obj !== StateObject.Null)
           newCurrent = update10.ref;
       }
     } else if (update10.action === "updated") {
@@ -73725,23 +73725,23 @@ function unlinkCell(cell) {
     arraySetRemove(other.dependencies.dependentBy, cell);
   }
 }
-function addCellsVisitor(transform2, _, { ctx, added, visited }) {
-  visited.add(transform2.ref);
-  if (ctx.cells.has(transform2.ref)) {
+function addCellsVisitor(transform3, _, { ctx, added, visited }) {
+  visited.add(transform3.ref);
+  if (ctx.cells.has(transform3.ref)) {
     return;
   }
   const cell = {
     parent: ctx.parent,
-    transform: transform2,
+    transform: transform3,
     sourceRef: void 0,
     status: "pending",
-    state: { ...transform2.state },
+    state: { ...transform3.state },
     errorText: void 0,
     params: void 0,
     dependencies: { dependentBy: [], dependsOn: [] },
     cache: void 0
   };
-  ctx.cells.set(transform2.ref, cell);
+  ctx.cells.set(transform3.ref, cell);
   added.push(cell);
 }
 function linkCells(target, ctx) {
@@ -73888,24 +73888,24 @@ async function updateSubtree(ctx, root) {
       await updateSubtree(ctx, next.value);
   }
 }
-function resolveParams(ctx, transform2, src, cell) {
-  const prms = transform2.transformer.definition.params;
+function resolveParams(ctx, transform3, src, cell) {
+  const prms = transform3.transformer.definition.params;
   const definition = prms ? prms(src, ctx.parent.globalContext) : {};
-  if (transform2.version !== transform2._normalized_param_version) {
-    transform2.params = ParamDefinition.normalizeParams(definition, transform2.params, "all");
-    transform2._normalized_param_version = transform2.version;
+  if (transform3.version !== transform3._normalized_param_version) {
+    transform3.params = ParamDefinition.normalizeParams(definition, transform3.params, "all");
+    transform3._normalized_param_version = transform3.version;
   } else {
     const defaultValues = ParamDefinition.getDefaultValues(definition);
-    transform2.params = transform2.params ? assignIfUndefined(transform2.params, defaultValues) : defaultValues;
+    transform3.params = transform3.params ? assignIfUndefined(transform3.params, defaultValues) : defaultValues;
   }
-  ParamDefinition.resolveRefs(definition, transform2.params, ctx.getCellData);
-  return { definition, values: transform2.params };
+  ParamDefinition.resolveRefs(definition, transform3.params, ctx.getCellData);
+  return { definition, values: transform3.params };
 }
 async function updateNode2(ctx, currentRef) {
   var _a;
   const { oldTree, tree } = ctx;
   const current2 = ctx.cells.get(currentRef);
-  const transform2 = current2.transform;
+  const transform3 = current2.transform;
   if (current2.transform.ref === Transform.RootRef) {
     return { action: "none" };
   }
@@ -73916,7 +73916,7 @@ async function updateNode2(ctx, currentRef) {
     if (oldTree.transforms.has(currentRef) && current2.params) {
       const oldParams = current2.params.values;
       const oldCache = current2.cache;
-      dispose(transform2, current2.obj, oldParams, oldCache, ctx.parent.globalContext);
+      dispose(transform3, current2.obj, oldParams, oldCache, ctx.parent.globalContext);
       current2.params = void 0;
       current2.obj = StateObject.Null;
       return { ref: currentRef, action: "updated", obj: current2.obj };
@@ -73925,18 +73925,18 @@ async function updateNode2(ctx, currentRef) {
       return { ref: currentRef, action: "created", obj: StateObject.Null };
     }
   }
-  const parentCell = transform2.transformer.definition.from.length === 0 ? treeParent : StateSelection.findAncestorOfType(tree, ctx.cells, currentRef, transform2.transformer.definition.from);
+  const parentCell = transform3.transformer.definition.from.length === 0 ? treeParent : StateSelection.findAncestorOfType(tree, ctx.cells, currentRef, transform3.transformer.definition.from);
   if (!parentCell) {
     throw new Error(`No suitable parent found for '${currentRef}'`);
   }
   ctx.spine.current = current2;
   const parent = parentCell.obj;
   current2.sourceRef = parentCell.transform.ref;
-  const params = resolveParams(ctx, transform2, parent, current2);
+  const params = resolveParams(ctx, transform3, parent, current2);
   if (!oldTree.transforms.has(currentRef) || !current2.params) {
     current2.params = params;
-    const obj = await createObject(ctx, current2, transform2.transformer, parent, params.values);
-    updateTag(obj, transform2);
+    const obj = await createObject(ctx, current2, transform3.transformer, parent, params.values);
+    updateTag(obj, transform3);
     current2.obj = obj;
     return { ref: currentRef, action: "created", obj };
   } else {
@@ -73945,21 +73945,21 @@ async function updateNode2(ctx, currentRef) {
     const oldData = (_a = current2.obj) === null || _a === void 0 ? void 0 : _a.data;
     const newParams = params.values;
     current2.params = params;
-    const updateKind = !!current2.obj && current2.obj !== StateObject.Null ? await updateObject(ctx, current2, transform2.transformer, parent, current2.obj, oldParams, newParams) : Transformer.UpdateResult.Recreate;
+    const updateKind = !!current2.obj && current2.obj !== StateObject.Null ? await updateObject(ctx, current2, transform3.transformer, parent, current2.obj, oldParams, newParams) : Transformer.UpdateResult.Recreate;
     switch (updateKind) {
       case Transformer.UpdateResult.Recreate: {
         const oldObj = current2.obj;
-        dispose(transform2, oldObj, oldParams, oldCache, ctx.parent.globalContext);
-        const newObj = await createObject(ctx, current2, transform2.transformer, parent, newParams);
-        updateTag(newObj, transform2);
+        dispose(transform3, oldObj, oldParams, oldCache, ctx.parent.globalContext);
+        const newObj = await createObject(ctx, current2, transform3.transformer, parent, newParams);
+        updateTag(newObj, transform3);
         current2.obj = newObj;
         return { ref: currentRef, action: "replaced", oldObj, obj: newObj };
       }
       case Transformer.UpdateResult.Updated:
-        updateTag(current2.obj, transform2);
+        updateTag(current2.obj, transform3);
         return { ref: currentRef, action: "updated", oldData, obj: current2.obj };
       case Transformer.UpdateResult.Null: {
-        dispose(transform2, current2.obj, oldParams, oldCache, ctx.parent.globalContext);
+        dispose(transform3, current2.obj, oldParams, oldCache, ctx.parent.globalContext);
         current2.obj = StateObject.Null;
         return { ref: currentRef, action: "updated", obj: current2.obj };
       }
@@ -73968,18 +73968,18 @@ async function updateNode2(ctx, currentRef) {
     }
   }
 }
-function dispose(transform2, b8, params, cache, globalContext) {
+function dispose(transform3, b8, params, cache, globalContext) {
   var _a, _b;
-  (_b = (_a = transform2.transformer.definition).dispose) === null || _b === void 0 ? void 0 : _b.call(_a, {
+  (_b = (_a = transform3.transformer.definition).dispose) === null || _b === void 0 ? void 0 : _b.call(_a, {
     b: b8 !== StateObject.Null ? b8 : void 0,
     params,
     cache
   }, globalContext);
 }
-function updateTag(obj, transform2) {
+function updateTag(obj, transform3) {
   if (!obj || obj === StateObject.Null)
     return;
-  obj.tags = transform2.tags;
+  obj.tags = transform3.tags;
 }
 function runTask(t5, ctx) {
   if (typeof t5.runInContext === "function")
@@ -74100,20 +74100,20 @@ var PluginStateObject;
     class Trajectory extends PluginStateObject2.Create({ name: "Trajectory", typeClass: "Object" }) {
     }
     Molecule2.Trajectory = Trajectory;
-    class Structure5 extends PluginStateObject2.Create({ name: "Structure", typeClass: "Object" }) {
+    class Structure6 extends PluginStateObject2.Create({ name: "Structure", typeClass: "Object" }) {
     }
-    Molecule2.Structure = Structure5;
-    (function(Structure6) {
+    Molecule2.Structure = Structure6;
+    (function(Structure7) {
       class Representation3D extends CreateRepresentation3D({ name: "Structure 3D" }) {
       }
-      Structure6.Representation3D = Representation3D;
+      Structure7.Representation3D = Representation3D;
       class Representation3DState extends PluginStateObject2.Create({ name: "Structure 3D State", typeClass: "Object" }) {
       }
-      Structure6.Representation3DState = Representation3DState;
+      Structure7.Representation3DState = Representation3DState;
       class Selections extends PluginStateObject2.Create({ name: "Selections", typeClass: "Object" }) {
       }
-      Structure6.Selections = Selections;
-    })(Structure5 = Molecule2.Structure || (Molecule2.Structure = {}));
+      Structure7.Selections = Selections;
+    })(Structure6 = Molecule2.Structure || (Molecule2.Structure = {}));
   })(Molecule = PluginStateObject2.Molecule || (PluginStateObject2.Molecule = {}));
   let Volume2;
   (function(Volume3) {
@@ -88015,11 +88015,11 @@ function transformParamsNeedCentroid(src) {
 function getTransformFromParams(src, centroid2) {
   var _a, _b;
   if (src.name === "matrix") {
-    const transform2 = Mat4();
-    Mat4.copy(transform2, src.params.data);
+    const transform3 = Mat4();
+    Mat4.copy(transform3, src.params.data);
     if (src.params.transpose)
-      Mat4.transpose(transform2, transform2);
-    return transform2;
+      Mat4.transpose(transform3, transform3);
+    return transform3;
   } else {
     if (((_a = src.params.rotationCenter) === null || _a === void 0 ? void 0 : _a.name) === "centroid") {
       Vec3.copy(GetTransformState.center, centroid2);
@@ -88031,10 +88031,10 @@ function getTransformFromParams(src, centroid2) {
     Mat4.fromTranslation(GetTransformState.translationToCenter, GetTransformState.center);
     Mat4.fromRotation(GetTransformState.rotation, src.params.angle * Math.PI / 180, src.params.axis);
     Mat4.fromTranslation(GetTransformState.translationFromCenter, Vec3.negate(GetTransformState.center, GetTransformState.center));
-    const transform2 = Mat4.mul3(Mat4(), GetTransformState.translationToCenter, GetTransformState.rotation, GetTransformState.translationFromCenter);
+    const transform3 = Mat4.mul3(Mat4(), GetTransformState.translationToCenter, GetTransformState.rotation, GetTransformState.translationFromCenter);
     Mat4.fromTranslation(GetTransformState.translation, src.params.translation);
-    Mat4.mul(transform2, GetTransformState.translation, transform2);
-    return transform2;
+    Mat4.mul(transform3, GetTransformState.translation, transform3);
+    return transform3;
   }
 }
 var TransformParam = ParamDefinition.MappedStatic("matrix", {
@@ -88584,8 +88584,8 @@ var TransformStructureConformation = PluginStateTransform.BuiltIn({
   },
   apply({ a: a8, params }) {
     const center2 = transformParamsNeedCentroid(params.transform) ? a8.data.boundary.sphere.center : Vec3.unit;
-    const transform2 = getTransformFromParams(params.transform, center2);
-    const s = Structure.transform(a8.data, transform2);
+    const transform3 = getTransformFromParams(params.transform, center2);
+    const s = Structure.transform(a8.data, transform3);
     return new PluginStateObject.Molecule.Structure(s, { label: a8.label, description: `${a8.description} [Transformed]` });
   },
   dispose({ b: b8 }) {
@@ -89713,10 +89713,10 @@ var VolumeTransform = PluginStateTransform.BuiltIn({
   },
   apply({ a: a8, params }) {
     const center2 = transformParamsNeedCentroid(params.transform) ? Grid.getBoundingSphere(a8.data.grid).center : Vec3.unit;
-    const transform2 = getTransformFromParams(params.transform, center2);
+    const transform3 = getTransformFromParams(params.transform, center2);
     const gridTransform = {
       kind: "matrix",
-      matrix: Mat4.mul(Mat4(), transform2, Grid.getGridToCartesianTransform(a8.data.grid))
+      matrix: Mat4.mul(Mat4(), transform3, Grid.getGridToCartesianTransform(a8.data.grid))
     };
     return new PluginStateObject.Volume.Data({
       ...a8.data,
@@ -90228,7 +90228,7 @@ function DataLoci(tag, data, elements, getBoundingSphere3, getLabel) {
   return { kind: "data-loci", tag, data, elements, getBoundingSphere: getBoundingSphere3, getLabel };
 }
 var Loci2;
-(function(Loci3) {
+(function(Loci4) {
   const boundaryHelper5 = new BoundaryHelper("98");
   function getBundleBoundingSphere(bundle) {
     const spheres2 = bundle.loci.map((l) => getBoundingSphere3(l)).filter((s) => !!s);
@@ -90240,7 +90240,7 @@ var Loci2;
       boundaryHelper5.radiusPositionRadius(s.center, s.radius);
     return boundaryHelper5.getSphere();
   }
-  Loci3.getBundleBoundingSphere = getBundleBoundingSphere;
+  Loci4.getBundleBoundingSphere = getBundleBoundingSphere;
   function areEqual4(lociA, lociB) {
     if (isEveryLoci(lociA) && isEveryLoci(lociB))
       return true;
@@ -90278,11 +90278,11 @@ var Loci2;
     }
     return false;
   }
-  Loci3.areEqual = areEqual4;
+  Loci4.areEqual = areEqual4;
   function isEvery(loci) {
     return !!loci && loci.kind === "every-loci";
   }
-  Loci3.isEvery = isEvery;
+  Loci4.isEvery = isEvery;
   function isEmpty3(loci) {
     if (isEveryLoci(loci))
       return false;
@@ -90310,7 +90310,7 @@ var Loci2;
       return Volume.Segment.isLociEmpty(loci);
     return false;
   }
-  Loci3.isEmpty = isEmpty3;
+  Loci4.isEmpty = isEmpty3;
   function remap(loci, data) {
     if (data instanceof Structure) {
       if (element_exports.Loci.is(loci)) {
@@ -90323,7 +90323,7 @@ var Loci2;
     }
     return loci;
   }
-  Loci3.remap = remap;
+  Loci4.remap = remap;
   function getBoundingSphere3(loci, boundingSphere) {
     var _a;
     if (loci.kind === "every-loci" || loci.kind === "empty-loci")
@@ -90352,13 +90352,13 @@ var Loci2;
       return Volume.Segment.getBoundingSphere(loci.volume, loci.elements, boundingSphere);
     }
   }
-  Loci3.getBoundingSphere = getBoundingSphere3;
+  Loci4.getBoundingSphere = getBoundingSphere3;
   const tmpSphere3D = Sphere3D.zero();
   function getCenter(loci, center2) {
     const boundingSphere = getBoundingSphere3(loci, tmpSphere3D);
     return boundingSphere ? Vec3.copy(center2 || Vec3(), boundingSphere.center) : void 0;
   }
-  Loci3.getCenter = getCenter;
+  Loci4.getCenter = getCenter;
   function getPrincipalAxes2(loci) {
     if (loci.kind === "every-loci" || loci.kind === "empty-loci")
       return void 0;
@@ -90384,7 +90384,7 @@ var Loci2;
       return void 0;
     }
   }
-  Loci3.getPrincipalAxes = getPrincipalAxes2;
+  Loci4.getPrincipalAxes = getPrincipalAxes2;
   const Granularity = {
     "element": (loci) => loci,
     "residue": (loci) => {
@@ -90415,7 +90415,7 @@ var Loci2;
       return element_exports.Loci.is(loci) ? element_exports.Loci.extendToAllInstances(element_exports.Loci.extendToWholeChains(loci)) : loci;
     }
   };
-  Loci3.GranularityOptions = ParamDefinition.objectToOptions(Granularity, (k) => {
+  Loci4.GranularityOptions = ParamDefinition.objectToOptions(Granularity, (k) => {
     switch (k) {
       case "element":
         return "Atom/Coarse Element";
@@ -90430,11 +90430,11 @@ var Loci2;
   function simpleGranularity(granularity) {
     return granularity.replace("Instances", "");
   }
-  Loci3.simpleGranularity = simpleGranularity;
+  Loci4.simpleGranularity = simpleGranularity;
   function applyGranularity(loci, granularity) {
     return Granularity[granularity](loci);
   }
-  Loci3.applyGranularity = applyGranularity;
+  Loci4.applyGranularity = applyGranularity;
   function normalize2(loci, granularity, alwaysConvertBonds = false) {
     if ((granularity !== "element" || alwaysConvertBonds) && Bond.isLoci(loci)) {
       loci = Bond.toStructureElementLoci(loci);
@@ -90450,7 +90450,7 @@ var Loci2;
     }
     return loci;
   }
-  Loci3.normalize = normalize2;
+  Loci4.normalize = normalize2;
 })(Loci2 || (Loci2 = {}));
 
 // node_modules/molstar/lib/mol-geo/geometry/picking.js
@@ -92022,12 +92022,12 @@ var Visual;
     }
   }
   Visual2.setThemeStrength = setThemeStrength;
-  function setTransform(renderObject, transform2, instanceTransforms) {
-    if (!renderObject || !transform2 && !instanceTransforms)
+  function setTransform(renderObject, transform3, instanceTransforms) {
+    if (!renderObject || !transform3 && !instanceTransforms)
       return;
     const { values: values2 } = renderObject;
-    if (transform2) {
-      Mat4.copy(values2.matrix.ref.value, transform2);
+    if (transform3) {
+      Mat4.copy(values2.matrix.ref.value, transform3);
       ValueCell.update(values2.matrix, values2.matrix.ref.value);
     }
     if (instanceTransforms) {
@@ -92103,8 +92103,8 @@ function ShapeRepresentation(getShape, geometryUtils, builder = {}) {
       if (updateState.createNew) {
         renderObjects.length = 0;
         locationIt = Shape.groupIterator(_shape);
-        const transform2 = Shape.createTransform(_shape.transforms, _shape.geometry.boundingSphere, newProps.cellSize, newProps.batchSize);
-        const values2 = geometryUtils.createValues(_shape.geometry, transform2, locationIt, _theme, newProps);
+        const transform3 = Shape.createTransform(_shape.transforms, _shape.geometry.boundingSphere, newProps.cellSize, newProps.batchSize);
+        const values2 = geometryUtils.createValues(_shape.geometry, transform3, locationIt, _theme, newProps);
         const state = geometryUtils.createRenderableState(newProps);
         if (builder.modifyState)
           Object.assign(state, builder.modifyState(state));
@@ -94366,10 +94366,10 @@ function getBoxMesh(box5, radius, oldMesh) {
   const translateUnit = Mat4.fromTranslation(Mat4(), Vec3.create(0.5, 0.5, 0.5));
   const scale = Mat4.fromScaling(Mat4(), diag);
   const translate = Mat4.fromTranslation(Mat4(), box5.min);
-  const transform2 = Mat4.mul3(Mat4(), translate, scale, translateUnit);
+  const transform3 = Mat4.mul3(Mat4(), translate, scale, translateUnit);
   const state = MeshBuilder.createState(256, 128, oldMesh);
   state.currentGroup = 1;
-  MeshBuilder.addCage(state, transform2, BoxCage(), radius, 2, 20);
+  MeshBuilder.addCage(state, transform3, BoxCage(), radius, 2, 20);
   const mesh = MeshBuilder.getMesh(state);
   const center2 = Vec3.scaleAndAdd(Vec3(), box5.min, diag, 0.5);
   const sphereRadius = Vec3.distance(box5.min, center2);
@@ -97140,18 +97140,18 @@ var RepresentationRegistry = class {
 };
 var Representation;
 (function(Representation2) {
-  let Loci3;
-  (function(Loci4) {
+  let Loci4;
+  (function(Loci5) {
     function areEqual4(a8, b8) {
       return a8.repr === b8.repr && Loci2.areEqual(a8.loci, b8.loci);
     }
-    Loci4.areEqual = areEqual4;
+    Loci5.areEqual = areEqual4;
     function isEmpty3(a8) {
       return Loci2.isEmpty(a8.loci);
     }
-    Loci4.isEmpty = isEmpty3;
-    Loci4.Empty = { loci: EmptyLoci };
-  })(Loci3 = Representation2.Loci || (Representation2.Loci = {}));
+    Loci5.isEmpty = isEmpty3;
+    Loci5.Empty = { loci: EmptyLoci };
+  })(Loci4 = Representation2.Loci || (Representation2.Loci = {}));
   function createState2() {
     return {
       visible: true,
@@ -98455,10 +98455,10 @@ var BoundingSphereHelper = class {
       this.update();
   }
 };
-function updateBoundingSphereData(scene, boundingSphere, data, color, materialId, transform2) {
+function updateBoundingSphereData(scene, boundingSphere, data, color, materialId, transform3) {
   if (!data || !Sphere3D.equals(data.boundingSphere, boundingSphere)) {
     const mesh = createBoundingSphereMesh(boundingSphere, data && data.mesh);
-    const renderObject = data ? data.renderObject : createBoundingSphereRenderObject(mesh, color, materialId, transform2);
+    const renderObject = data ? data.renderObject : createBoundingSphereRenderObject(mesh, color, materialId, transform3);
     if (data) {
       ValueCell.updateIfChanged(renderObject.values.drawCount, Geometry.getDrawCount(mesh));
     } else {
@@ -98484,8 +98484,8 @@ var sceneMaterialId = getNextMaterialId();
 var visibleSceneMaterialId = getNextMaterialId();
 var objectMaterialId = getNextMaterialId();
 var instanceMaterialId = getNextMaterialId();
-function createBoundingSphereRenderObject(mesh, color, materialId, transform2) {
-  const values2 = Mesh.Utils.createValuesSimple(mesh, { alpha: 0.1, doubleSided: false, cellSize: 0, batchSize: 0 }, color, 1, transform2);
+function createBoundingSphereRenderObject(mesh, color, materialId, transform3) {
+  const values2 = Mesh.Utils.createValuesSimple(mesh, { alpha: 0.1, doubleSided: false, cellSize: 0, batchSize: 0 }, color, 1, transform3);
   return createRenderObject("mesh", values2, { disposed: false, visible: true, alphaFactor: 1, pickable: false, colorOnly: false, opaque: false, writeDepth: false }, materialId);
 }
 
@@ -110577,8 +110577,8 @@ var StructureImageParams = { ...Image2.Params };
 // node_modules/molstar/lib/mol-repr/structure/complex-visual.js
 function createComplexRenderObject(structure, geometry, locationIt, theme, props, materialId) {
   const { createValues, createRenderableState } = Geometry.getUtils(geometry);
-  const transform2 = createIdentityTransform();
-  const values2 = createValues(geometry, transform2, locationIt, theme, props);
+  const transform3 = createIdentityTransform();
+  const values2 = createValues(geometry, transform3, locationIt, theme, props);
   const state = createRenderableState(props);
   return createRenderObject(geometry.kind, values2, state, materialId);
 }
@@ -111141,7 +111141,7 @@ function UnitsRepresentation(label2, ctx, getParams, visualCtor) {
     return changed;
   }
   function setVisualState(visual, group, state) {
-    const { visible, alphaFactor, pickable, overpaint, transparency, emissive, substance, clipping, themeStrength, transform: transform2, unitTransforms } = state;
+    const { visible, alphaFactor, pickable, overpaint, transparency, emissive, substance, clipping, themeStrength, transform: transform3, unitTransforms } = state;
     if (visible !== void 0)
       visual.setVisibility(visible);
     if (alphaFactor !== void 0)
@@ -111160,9 +111160,9 @@ function UnitsRepresentation(label2, ctx, getParams, visualCtor) {
       visual.setClipping(clipping);
     if (themeStrength !== void 0)
       visual.setThemeStrength(themeStrength);
-    if (transform2 !== void 0) {
-      if (transform2 !== _state.transform || !Mat4.areEqual(transform2, _state.transform, EPSILON)) {
-        visual.setTransform(transform2);
+    if (transform3 !== void 0) {
+      if (transform3 !== _state.transform || !Mat4.areEqual(transform3, _state.transform, EPSILON)) {
+        visual.setTransform(transform3);
       }
     }
     if (unitTransforms !== void 0) {
@@ -111174,7 +111174,7 @@ function UnitsRepresentation(label2, ctx, getParams, visualCtor) {
     }
   }
   function setState(state) {
-    const { visible, alphaFactor, pickable, overpaint, transparency, emissive, substance, clipping, themeStrength, transform: transform2, unitTransforms, syncManually, markerActions } = state;
+    const { visible, alphaFactor, pickable, overpaint, transparency, emissive, substance, clipping, themeStrength, transform: transform3, unitTransforms, syncManually, markerActions } = state;
     const newState = {};
     if (visible !== void 0)
       newState.visible = visible;
@@ -111199,8 +111199,8 @@ function UnitsRepresentation(label2, ctx, getParams, visualCtor) {
     }
     if (themeStrength !== void 0)
       newState.themeStrength = themeStrength;
-    if (transform2 !== void 0 && !Mat4.areEqual(transform2, _state.transform, EPSILON)) {
-      newState.transform = transform2;
+    if (transform3 !== void 0 && !Mat4.areEqual(transform3, _state.transform, EPSILON)) {
+      newState.transform = transform3;
     }
     if (unitTransforms !== _state.unitTransforms || (unitTransforms === null || unitTransforms === void 0 ? void 0 : unitTransforms.version) !== _state.unitTransformsVersion) {
       newState.unitTransforms = unitTransforms;
@@ -111261,8 +111261,8 @@ function UnitsRepresentation(label2, ctx, getParams, visualCtor) {
 // node_modules/molstar/lib/mol-repr/structure/units-visual.js
 function createUnitsRenderObject(structureGroup, geometry, locationIt, theme, props, materialId) {
   const { createValues, createRenderableState } = Geometry.getUtils(geometry);
-  const transform2 = createUnitsTransform(structureGroup, props.includeParent, geometry.boundingSphere, props.cellSize, props.batchSize);
-  const values2 = createValues(geometry, transform2, locationIt, theme, props);
+  const transform3 = createUnitsTransform(structureGroup, props.includeParent, geometry.boundingSphere, props.cellSize, props.batchSize);
+  const values2 = createValues(geometry, transform3, locationIt, theme, props);
   const state = createRenderableState(props);
   return createRenderObject(geometry.kind, values2, state, materialId);
 }
@@ -113717,10 +113717,10 @@ var Interactions;
     return _label(location2.data.interactions, location2.element);
   }
   Interactions3.locationLabel = locationLabel;
-  function Loci3(structure, interactions, elements) {
+  function Loci4(structure, interactions, elements) {
     return DataLoci("interactions", { structure, interactions }, elements, (boundingSphere) => getBoundingSphere3(interactions, elements, boundingSphere), () => getLabel(structure, interactions, elements));
   }
-  Interactions3.Loci = Loci3;
+  Interactions3.Loci = Loci4;
   function isLoci(x) {
     return !!x && x.kind === "data-loci" && x.tag === "interactions";
   }
@@ -117380,13 +117380,13 @@ var StructureInfo = PluginBehavior.create({
     }
     handle(ref, obj, oldObj) {
       if (PluginStateObject.Molecule.Structure.is(obj)) {
-        const transform2 = this.ctx.state.data.tree.transforms.get(ref);
-        if (!transform2.transformer.definition.isDecorator && obj.data.parent === void 0) {
+        const transform3 = this.ctx.state.data.tree.transforms.get(ref);
+        if (!transform3.transformer.definition.isDecorator && obj.data.parent === void 0) {
           this.handleStructure(obj.data, oldObj === null || oldObj === void 0 ? void 0 : oldObj.data);
         }
       } else if (PluginStateObject.Molecule.Model.is(obj)) {
-        const transform2 = this.ctx.state.data.tree.transforms.get(ref);
-        if (!transform2.transformer.definition.isDecorator) {
+        const transform3 = this.ctx.state.data.tree.transforms.get(ref);
+        if (!transform3.transformer.definition.isDecorator) {
           this.handleModel(obj.data, oldObj === null || oldObj === void 0 ? void 0 : oldObj.data);
         }
       }
@@ -118468,10 +118468,10 @@ var CrossLinkRestraint;
     return _label(location2.data.crossLinkRestraints, location2.element);
   }
   CrossLinkRestraint3.locationLabel = locationLabel;
-  function Loci3(structure, crossLinkRestraints, elements) {
+  function Loci4(structure, crossLinkRestraints, elements) {
     return DataLoci("cross-link-restraints", { structure, crossLinkRestraints }, elements, (boundingSphere) => getBoundingSphere3(crossLinkRestraints, elements, boundingSphere), () => getLabel(structure, crossLinkRestraints, elements));
   }
-  CrossLinkRestraint3.Loci = Loci3;
+  CrossLinkRestraint3.Loci = Loci4;
   function isLoci(x) {
     return !!x && x.kind === "data-loci" && x.tag === "interactions";
   }
@@ -123313,11 +123313,11 @@ var VolumeStreaming = class extends PluginStateObject.CreateBehavior({ name: "Vo
       const root = this.getStructureRoot();
       if (!root || ((_a = root.obj) === null || _a === void 0 ? void 0 : _a.data) !== ((_b = parent.obj) === null || _b === void 0 ? void 0 : _b.data))
         return Box3D();
-      const transform2 = GlobalModelTransformInfo.get((_c = root.obj) === null || _c === void 0 ? void 0 : _c.data.models[0]);
-      if (transform2)
-        Mat4.invert(this._invTransform, transform2);
+      const transform3 = GlobalModelTransformInfo.get((_c = root.obj) === null || _c === void 0 ? void 0 : _c.data.models[0]);
+      if (transform3)
+        Mat4.invert(this._invTransform, transform3);
       const extendedLoci = element_exports.Loci.extendToWholeResidues(loci);
-      const box5 = element_exports.Loci.getBoundary(extendedLoci, transform2 && !Number.isNaN(this._invTransform[0]) ? this._invTransform : void 0).box;
+      const box5 = element_exports.Loci.getBoundary(extendedLoci, transform3 && !Number.isNaN(this._invTransform[0]) ? this._invTransform : void 0).box;
       if (element_exports.Loci.size(extendedLoci) === 1) {
         Box3D.expand(box5, box5, Vec3.create(1, 1, 1));
       }
@@ -130634,10 +130634,10 @@ function finalizeGaussianDensityTexture({ texture, scale, bbox, gridDim, gridTex
   return { transform: getTransform(scale, bbox), texture, bbox, gridDim, gridTexDim, gridDataDim, gridTexScale, radiusFactor, resolution, maxRadius };
 }
 function getTransform(scale, bbox) {
-  const transform2 = Mat4.identity();
-  Mat4.fromScaling(transform2, scale);
-  Mat4.setTranslation(transform2, bbox.min);
-  return transform2;
+  const transform3 = Mat4.identity();
+  Mat4.fromScaling(transform3, scale);
+  Mat4.setTranslation(transform3, bbox.min);
+  return transform3;
 }
 function calcGaussianDensityTexture2d(webgl, position, box5, radius, powerOfTwo, props, texture) {
   const { gl, resources, state, extensions: { colorBufferFloat, textureFloat, colorBufferHalfFloat, textureHalfFloat, blendMinMax } } = webgl;
@@ -130963,10 +130963,10 @@ async function GaussianDensityCPU(ctx, position, box5, radius, props) {
     }
   }
   await accumulate();
-  const transform2 = Mat4.identity();
-  Mat4.fromScaling(transform2, Vec3.create(resolution, resolution, resolution));
-  Mat4.setTranslation(transform2, expandedBox.min);
-  return { field: field2, idField, transform: transform2, radiusFactor: 1, resolution, maxRadius };
+  const transform3 = Mat4.identity();
+  Mat4.fromScaling(transform3, Vec3.create(resolution, resolution, resolution));
+  Mat4.setTranslation(transform3, expandedBox.min);
+  return { field: field2, idField, transform: transform3, radiusFactor: 1, resolution, maxRadius };
 }
 
 // node_modules/molstar/lib/mol-repr/structure/visual/util/gaussian.js
@@ -132744,7 +132744,7 @@ var IsosurfaceName = "isosurface";
 function valueChannel2(ctx, volumeData) {
   return isWebGL2(ctx.gl) && volumeData.format === ctx.gl.RED ? "red" : "alpha";
 }
-function getIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform2, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup) {
+function getIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform3, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup) {
   if (ctx.namedComputeRenderables[IsosurfaceName]) {
     const v4 = ctx.namedComputeRenderables[IsosurfaceName].values;
     ValueCell.update(v4.tActiveVoxelsPyramid, activeVoxelsPyramid);
@@ -132759,19 +132759,19 @@ function getIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, vol
     ValueCell.update(v4.uGridDim, gridDim);
     ValueCell.update(v4.uGridTexDim, gridTexDim);
     ValueCell.update(v4.uGridDataDim, gridDataDim);
-    ValueCell.update(v4.uGridTransform, transform2);
-    ValueCell.update(v4.uGridTransformAdjoint, Mat3.adjointFromMat4(Mat3(), transform2));
+    ValueCell.update(v4.uGridTransform, transform3);
+    ValueCell.update(v4.uGridTransformAdjoint, Mat3.adjointFromMat4(Mat3(), transform3));
     ValueCell.update(v4.uScale, scale);
     ValueCell.updateIfChanged(v4.dPackedGroup, packedGroup);
     ValueCell.updateIfChanged(v4.dAxisOrder, axisOrder.join(""));
     ValueCell.updateIfChanged(v4.dConstantGroup, constantGroup);
     ctx.namedComputeRenderables[IsosurfaceName].update();
   } else {
-    ctx.namedComputeRenderables[IsosurfaceName] = createIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform2, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup);
+    ctx.namedComputeRenderables[IsosurfaceName] = createIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform3, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup);
   }
   return ctx.namedComputeRenderables[IsosurfaceName];
 }
-function createIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform2, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup) {
+function createIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform3, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup) {
   const values2 = {
     ...QuadValues,
     tTriIndices: ValueCell.create(getTriIndices()),
@@ -132787,8 +132787,8 @@ function createIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, 
     uGridDim: ValueCell.create(gridDim),
     uGridTexDim: ValueCell.create(gridTexDim),
     uGridDataDim: ValueCell.create(gridDataDim),
-    uGridTransform: ValueCell.create(transform2),
-    uGridTransformAdjoint: ValueCell.create(Mat3.adjointFromMat4(Mat3(), transform2)),
+    uGridTransform: ValueCell.create(transform3),
+    uGridTransformAdjoint: ValueCell.create(Mat3.adjointFromMat4(Mat3(), transform3)),
     uScale: ValueCell.create(scale),
     dPackedGroup: ValueCell.create(packedGroup),
     dAxisOrder: ValueCell.create(axisOrder.join("")),
@@ -132809,7 +132809,7 @@ function setRenderingDefaults5(ctx) {
   state.colorMask(true, true, true, true);
   state.clearColor(0, 0, 0, 0);
 }
-function createIsosurfaceBuffers(ctx, activeVoxelsBase, volumeData, histogramPyramid, gridDim, gridTexDim, gridDataDim, transform2, isoValue, invert, packedGroup, axisOrder, constantGroup, vertexTexture, groupTexture, normalTexture) {
+function createIsosurfaceBuffers(ctx, activeVoxelsBase, volumeData, histogramPyramid, gridDim, gridTexDim, gridDataDim, transform3, isoValue, invert, packedGroup, axisOrder, constantGroup, vertexTexture, groupTexture, normalTexture) {
   const { drawBuffers } = ctx.extensions;
   if (!drawBuffers)
     throw new Error("need WebGL draw buffers");
@@ -132849,7 +132849,7 @@ function createIsosurfaceBuffers(ctx, activeVoxelsBase, volumeData, histogramPyr
   vertexTexture.attachFramebuffer(framebuffer, 0);
   groupTexture.attachFramebuffer(framebuffer, 1);
   normalTexture.attachFramebuffer(framebuffer, 2);
-  const renderable = getIsosurfaceRenderable(ctx, pyramidTex, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform2, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup);
+  const renderable = getIsosurfaceRenderable(ctx, pyramidTex, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform3, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup);
   ctx.state.currentRenderItemId = -1;
   framebuffer.bind();
   drawBuffers.drawBuffers([
@@ -132866,12 +132866,12 @@ function createIsosurfaceBuffers(ctx, activeVoxelsBase, volumeData, histogramPyr
     ctx.timer.markEnd("createIsosurfaceBuffers");
   return { vertexTexture, groupTexture, normalTexture, vertexCount: count3 };
 }
-function extractIsosurface(ctx, volumeData, gridDim, gridTexDim, gridDataDim, gridTexScale, transform2, isoValue, invert, packedGroup, axisOrder, constantGroup, vertexTexture, groupTexture, normalTexture) {
+function extractIsosurface(ctx, volumeData, gridDim, gridTexDim, gridDataDim, gridTexScale, transform3, isoValue, invert, packedGroup, axisOrder, constantGroup, vertexTexture, groupTexture, normalTexture) {
   if (isTimingMode)
     ctx.timer.mark("extractIsosurface");
   const activeVoxelsTex = calcActiveVoxels(ctx, volumeData, gridDim, gridTexDim, isoValue, gridTexScale);
   const compacted = createHistogramPyramid(ctx, activeVoxelsTex, gridTexScale, gridTexDim);
-  const gv = createIsosurfaceBuffers(ctx, activeVoxelsTex, volumeData, compacted, gridDim, gridTexDim, gridDataDim, transform2, isoValue, invert, packedGroup, axisOrder, constantGroup, vertexTexture, groupTexture, normalTexture);
+  const gv = createIsosurfaceBuffers(ctx, activeVoxelsTex, volumeData, compacted, gridDim, gridTexDim, gridDataDim, transform3, isoValue, invert, packedGroup, axisOrder, constantGroup, vertexTexture, groupTexture, normalTexture);
   if (isTimingMode)
     ctx.timer.markEnd("extractIsosurface");
   return gv;
@@ -132920,7 +132920,7 @@ function StructureGaussianSurfaceVisual(materialId, structure, props, webgl) {
 }
 async function createGaussianSurfaceMesh(ctx, unit2, structure, theme, props, mesh) {
   const { smoothness } = props;
-  const { transform: transform2, field: field2, idField, radiusFactor, resolution, maxRadius } = await computeUnitGaussianDensity(structure, unit2, theme.size, props).runInContext(ctx.runtime);
+  const { transform: transform3, field: field2, idField, radiusFactor, resolution, maxRadius } = await computeUnitGaussianDensity(structure, unit2, theme.size, props).runInContext(ctx.runtime);
   const params = {
     isoLevel: Math.exp(-smoothness) / radiusFactor,
     scalarField: field2,
@@ -132928,7 +132928,7 @@ async function createGaussianSurfaceMesh(ctx, unit2, structure, theme, props, me
   };
   const surface = await computeMarchingCubesMesh(params, mesh).runAsChild(ctx.runtime);
   surface.meta.resolution = resolution;
-  Mesh.transform(surface, transform2);
+  Mesh.transform(surface, transform3);
   if (ctx.webgl && !ctx.webgl.isWebGL2) {
     Mesh.uniformTriangleGroup(surface);
     ValueCell.updateIfChanged(surface.varyingGroup, false);
@@ -132989,7 +132989,7 @@ function GaussianSurfaceMeshVisual(materialId) {
 }
 async function createStructureGaussianSurfaceMesh(ctx, structure, theme, props, mesh) {
   const { smoothness } = props;
-  const { transform: transform2, field: field2, idField, radiusFactor, resolution, maxRadius } = await computeStructureGaussianDensity(structure, theme.size, props).runInContext(ctx.runtime);
+  const { transform: transform3, field: field2, idField, radiusFactor, resolution, maxRadius } = await computeStructureGaussianDensity(structure, theme.size, props).runInContext(ctx.runtime);
   const params = {
     isoLevel: Math.exp(-smoothness) / radiusFactor,
     scalarField: field2,
@@ -132997,7 +132997,7 @@ async function createStructureGaussianSurfaceMesh(ctx, structure, theme, props, 
   };
   const surface = await computeMarchingCubesMesh(params, mesh).runAsChild(ctx.runtime);
   surface.meta.resolution = resolution;
-  Mesh.transform(surface, transform2);
+  Mesh.transform(surface, transform3);
   if (ctx.webgl && !ctx.webgl.isWebGL2) {
     Mesh.uniformTriangleGroup(surface);
     ValueCell.updateIfChanged(surface.varyingGroup, false);
@@ -133225,14 +133225,14 @@ function StructureGaussianSurfaceTextureMeshVisual(materialId) {
 // node_modules/molstar/lib/mol-repr/structure/visual/gaussian-surface-wireframe.js
 async function createGaussianWireframe(ctx, unit2, structure, theme, props, lines) {
   const { smoothness } = props;
-  const { transform: transform2, field: field2, idField, maxRadius } = await computeUnitGaussianDensity(structure, unit2, theme.size, props).runInContext(ctx.runtime);
+  const { transform: transform3, field: field2, idField, maxRadius } = await computeUnitGaussianDensity(structure, unit2, theme.size, props).runInContext(ctx.runtime);
   const params = {
     isoLevel: Math.exp(-smoothness),
     scalarField: field2,
     idField
   };
   const wireframe = await computeMarchingCubesLines(params, lines).runAsChild(ctx.runtime);
-  Lines.transform(wireframe, transform2);
+  Lines.transform(wireframe, transform3);
   const sphere = Sphere3D.expand(Sphere3D(), unit2.boundary.sphere, maxRadius);
   wireframe.setBoundingSphere(sphere);
   return wireframe;
@@ -133698,10 +133698,10 @@ async function calcMolecularSurface(ctx, position, boundary, maxRadius, box5, pr
   await projectTorii();
   const field2 = Tensor.create(space, data);
   const idField = Tensor.create(space, idData);
-  const transform2 = Mat4.identity();
-  Mat4.fromScaling(transform2, Vec3.create(resolution, resolution, resolution));
-  Mat4.setTranslation(transform2, expandedBox.min);
-  return { field: field2, idField, transform: transform2, resolution, maxRadius };
+  const transform3 = Mat4.identity();
+  Mat4.fromScaling(transform3, Vec3.create(resolution, resolution, resolution));
+  Mat4.setTranslation(transform3, expandedBox.min);
+  return { field: field2, idField, transform: transform3, resolution, maxRadius };
 }
 
 // node_modules/molstar/lib/mol-repr/structure/visual/util/molecular-surface.js
@@ -133763,7 +133763,7 @@ var MolecularSurfaceMeshParams = {
   ...ColorSmoothingParams
 };
 async function createMolecularSurfaceMesh(ctx, unit2, structure, theme, props, mesh) {
-  const { transform: transform2, field: field2, idField, resolution, maxRadius } = await computeUnitMolecularSurface(structure, unit2, theme.size, props).runInContext(ctx.runtime);
+  const { transform: transform3, field: field2, idField, resolution, maxRadius } = await computeUnitMolecularSurface(structure, unit2, theme.size, props).runInContext(ctx.runtime);
   const params = {
     isoLevel: props.probeRadius,
     scalarField: field2,
@@ -133774,7 +133774,7 @@ async function createMolecularSurfaceMesh(ctx, unit2, structure, theme, props, m
     const iterations = Math.ceil(2 / props.resolution);
     Mesh.smoothEdges(surface, { iterations, maxNewEdgeLength: Math.sqrt(2) });
   }
-  Mesh.transform(surface, transform2);
+  Mesh.transform(surface, transform3);
   if (ctx.webgl && !ctx.webgl.isWebGL2) {
     Mesh.uniformTriangleGroup(surface);
     ValueCell.updateIfChanged(surface.varyingGroup, false);
@@ -133832,7 +133832,7 @@ function MolecularSurfaceMeshVisual(materialId) {
   }, materialId);
 }
 async function createStructureMolecularSurfaceMesh(ctx, structure, theme, props, mesh) {
-  const { transform: transform2, field: field2, idField, resolution, maxRadius } = await computeStructureMolecularSurface(structure, theme.size, props).runInContext(ctx.runtime);
+  const { transform: transform3, field: field2, idField, resolution, maxRadius } = await computeStructureMolecularSurface(structure, theme.size, props).runInContext(ctx.runtime);
   const params = {
     isoLevel: props.probeRadius,
     scalarField: field2,
@@ -133843,7 +133843,7 @@ async function createStructureMolecularSurfaceMesh(ctx, structure, theme, props,
     const iterations = Math.ceil(2 / props.resolution);
     Mesh.smoothEdges(surface, { iterations, maxNewEdgeLength: Math.sqrt(2) });
   }
-  Mesh.transform(surface, transform2);
+  Mesh.transform(surface, transform3);
   if (ctx.webgl && !ctx.webgl.isWebGL2) {
     Mesh.uniformTriangleGroup(surface);
     ValueCell.updateIfChanged(surface.varyingGroup, false);
@@ -133909,14 +133909,14 @@ var MolecularSurfaceWireframeParams = {
   sizeFactor: ParamDefinition.Numeric(1.5, { min: 0, max: 10, step: 0.1 })
 };
 async function createMolecularSurfaceWireframe(ctx, unit2, structure, theme, props, lines) {
-  const { transform: transform2, field: field2, idField, maxRadius } = await computeUnitMolecularSurface(structure, unit2, theme.size, props).runInContext(ctx.runtime);
+  const { transform: transform3, field: field2, idField, maxRadius } = await computeUnitMolecularSurface(structure, unit2, theme.size, props).runInContext(ctx.runtime);
   const params = {
     isoLevel: props.probeRadius,
     scalarField: field2,
     idField
   };
   const wireframe = await computeMarchingCubesLines(params, lines).runAsChild(ctx.runtime);
-  Lines.transform(wireframe, transform2);
+  Lines.transform(wireframe, transform3);
   const sphere = Sphere3D.expand(Sphere3D(), unit2.boundary.sphere, maxRadius);
   wireframe.setBoundingSphere(sphere);
   return wireframe;
@@ -135024,10 +135024,10 @@ function createGaussianDensityVolume(ctx, structure, theme, props, directVolume)
   const create3 = (directVolume2) => {
     const oldTexture = directVolume2 ? directVolume2.gridTexture.ref.value : void 0;
     const densityTextureData = computeStructureGaussianDensityTexture(structure, theme.size, props, webgl, oldTexture);
-    const { transform: transform2, texture, bbox, gridDim } = densityTextureData;
-    const unitToCartn = Mat4.mul(Mat4(), transform2, Mat4.fromScaling(Mat4(), gridDim));
-    const cellDim = Mat4.getScaling(Vec3(), transform2);
-    const vol2 = DirectVolume.create(bbox, gridDim, transform2, unitToCartn, cellDim, texture, stats, true, axisOrder, "byte", directVolume2);
+    const { transform: transform3, texture, bbox, gridDim } = densityTextureData;
+    const unitToCartn = Mat4.mul(Mat4(), transform3, Mat4.fromScaling(Mat4(), gridDim));
+    const cellDim = Mat4.getScaling(Vec3(), transform3);
+    const vol2 = DirectVolume.create(bbox, gridDim, transform3, unitToCartn, cellDim, texture, stats, true, axisOrder, "byte", directVolume2);
     const sphere = Sphere3D.expand(Sphere3D(), structure.boundary.sphere, densityTextureData.maxRadius);
     vol2.setBoundingSphere(sphere);
     return vol2;
@@ -135083,10 +135083,10 @@ function createUnitsGaussianDensityVolume(ctx, unit2, structure, theme, props, d
   const create3 = (directVolume2) => {
     const oldTexture = directVolume2 ? directVolume2.gridTexture.ref.value : void 0;
     const densityTextureData = computeUnitGaussianDensityTexture(structure, unit2, theme.size, props, webgl, oldTexture);
-    const { transform: transform2, texture, bbox, gridDim } = densityTextureData;
-    const unitToCartn = Mat4.mul(Mat4(), transform2, Mat4.fromScaling(Mat4(), gridDim));
-    const cellDim = Mat4.getScaling(Vec3(), transform2);
-    const vol2 = DirectVolume.create(bbox, gridDim, transform2, unitToCartn, cellDim, texture, stats, true, axisOrder, "byte", directVolume2);
+    const { transform: transform3, texture, bbox, gridDim } = densityTextureData;
+    const unitToCartn = Mat4.mul(Mat4(), transform3, Mat4.fromScaling(Mat4(), gridDim));
+    const cellDim = Mat4.getScaling(Vec3(), transform3);
+    const vol2 = DirectVolume.create(bbox, gridDim, transform3, unitToCartn, cellDim, texture, stats, true, axisOrder, "byte", directVolume2);
     const sphere = Sphere3D.expand(Sphere3D(), unit2.boundary.sphere, densityTextureData.maxRadius);
     vol2.setBoundingSphere(sphere);
     return vol2;
@@ -135753,8 +135753,8 @@ function createVolumeInstancesTransform(volume, invariantBoundingSphere, cellSiz
 }
 function createVolumeRenderObject(volume, geometry, locationIt, theme, props, materialId) {
   const { createValues, createRenderableState } = Geometry.getUtils(geometry);
-  const transform2 = createVolumeInstancesTransform(volume, geometry.boundingSphere, props.cellSize, props.batchSize);
-  const values2 = createValues(geometry, transform2, locationIt, theme, props);
+  const transform3 = createVolumeInstancesTransform(volume, geometry.boundingSphere, props.cellSize, props.batchSize);
+  const values2 = createValues(geometry, transform3, locationIt, theme, props);
   const state = createRenderableState(props);
   return createRenderObject(geometry.kind, values2, state, materialId);
 }
@@ -136117,7 +136117,7 @@ function VolumeRepresentation(label2, ctx, getParams, visualCtor, getLoci6, getK
       visual2.setThemeStrength(state.themeStrength);
   }
   function setState(state) {
-    const { visible, alphaFactor, pickable, overpaint, transparency, emissive, substance, clipping, transform: transform2, themeStrength, syncManually, markerActions } = state;
+    const { visible, alphaFactor, pickable, overpaint, transparency, emissive, substance, clipping, transform: transform3, themeStrength, syncManually, markerActions } = state;
     const newState = {};
     if (visible !== void 0)
       newState.visible = visible;
@@ -136137,8 +136137,8 @@ function VolumeRepresentation(label2, ctx, getParams, visualCtor, getLoci6, getK
       newState.clipping = clipping;
     if (themeStrength !== void 0)
       newState.themeStrength = themeStrength;
-    if (transform2 !== void 0 && !Mat4.areEqual(transform2, _state.transform, EPSILON)) {
-      newState.transform = transform2;
+    if (transform3 !== void 0 && !Mat4.areEqual(transform3, _state.transform, EPSILON)) {
+      newState.transform = transform3;
     }
     if (syncManually !== void 0)
       newState.syncManually = syncManually;
@@ -136275,8 +136275,8 @@ async function createVolumeIsosurfaceMesh(ctx, volume, key2, theme, props, mesh)
     scalarField: cells,
     idField: Tensor.create(cells.space, Tensor.Data1(ids))
   }, mesh).runAsChild(ctx.runtime);
-  const transform2 = Grid.getGridToCartesianTransform(volume.grid);
-  Mesh.transform(surface, transform2);
+  const transform3 = Grid.getGridToCartesianTransform(volume.grid);
+  Mesh.transform(surface, transform3);
   if (ctx.webgl && !ctx.webgl.isWebGL2) {
     Mesh.uniformTriangleGroup(surface, false);
     ValueCell.updateIfChanged(surface.varyingGroup, false);
@@ -136321,7 +136321,7 @@ var VolumeIsosurfaceTexture;
     var _a, _b;
     const { gpuDataType } = props;
     const wrap = shouldWrap(volume, props.wrap);
-    const transform2 = Grid.getGridToCartesianTransform(volume.grid);
+    const transform3 = Grid.getGridToCartesianTransform(volume.grid);
     const gridDimension = Vec3.clone(volume.grid.cells.space.dimensions);
     const { width, height, powerOfTwoSize: texDim } = getVolumeTexture2dLayout(gridDimension, Padding);
     const gridTexDim = Vec3.create(width, height, 0);
@@ -136343,7 +136343,7 @@ var VolumeIsosurfaceTexture;
     gridDimension[1] += Padding;
     return {
       texture: volume._propertyData[name].texture,
-      transform: transform2,
+      transform: transform3,
       gridDimension,
       gridTexDim,
       gridDataDim,
@@ -136370,9 +136370,9 @@ function createVolumeIsosurfaceTextureMesh(ctx, volume, key2, theme, props, text
   const groupCount = volume.grid.cells.data.length;
   const boundingSphere = Volume.getBoundingSphere(volume);
   const create3 = (textureMesh2) => {
-    const { texture, gridDimension, gridTexDim, gridDataDim, gridTexScale, transform: transform2 } = VolumeIsosurfaceTexture.get(volume, webgl, props);
+    const { texture, gridDimension, gridTexDim, gridDataDim, gridTexScale, transform: transform3 } = VolumeIsosurfaceTexture.get(volume, webgl, props);
     const buffer = textureMesh2 === null || textureMesh2 === void 0 ? void 0 : textureMesh2.doubleBuffer.get();
-    const gv = extractIsosurface(webgl, texture, gridDimension, gridTexDim, gridDataDim, gridTexScale, transform2, isoLevel, value < 0, false, axisOrder, true, buffer === null || buffer === void 0 ? void 0 : buffer.vertex, buffer === null || buffer === void 0 ? void 0 : buffer.group, buffer === null || buffer === void 0 ? void 0 : buffer.normal);
+    const gv = extractIsosurface(webgl, texture, gridDimension, gridTexDim, gridDataDim, gridTexScale, transform3, isoLevel, value < 0, false, axisOrder, true, buffer === null || buffer === void 0 ? void 0 : buffer.vertex, buffer === null || buffer === void 0 ? void 0 : buffer.group, buffer === null || buffer === void 0 ? void 0 : buffer.normal);
     return TextureMesh.create(gv.vertexCount, groupCount, gv.vertexTexture, gv.groupTexture, gv.normalTexture, boundingSphere, textureMesh2);
   };
   const surface = create3(textureMesh);
@@ -136417,8 +136417,8 @@ async function createVolumeIsosurfaceWireframe(ctx, volume, key2, theme, props, 
     scalarField: cells,
     idField: Tensor.create(cells.space, Tensor.Data1(ids))
   }, lines).runAsChild(ctx.runtime);
-  const transform2 = Grid.getGridToCartesianTransform(volume.grid);
-  Lines.transform(wireframe, transform2);
+  const transform3 = Grid.getGridToCartesianTransform(volume.grid);
+  Lines.transform(wireframe, transform3);
   wireframe.setBoundingSphere(Volume.Isosurface.getBoundingSphere(volume, props.isoValue));
   return wireframe;
 }
@@ -136735,8 +136735,8 @@ async function createGridImage(ctx, volume, key2, theme, props, image) {
   const imageTexture = { width, height, array: imageArray, flipY: true };
   const groupTexture = { width, height, array: groupArray, flipY: true };
   const valueTexture = { width, height, array: valueArray, flipY: true };
-  const transform2 = Grid.getGridToCartesianTransform(volume.grid);
-  transformPositionArray(transform2, corners, 0, 4);
+  const transform3 = Grid.getGridToCartesianTransform(volume.grid);
+  transformPositionArray(transform3, corners, 0, 4);
   const trim2 = Image2.createEmptyTrim();
   const isoLevel = clamp(normalize(Volume.IsoValue.toAbsolute(isoValue, stats).absoluteValue, min5, max5), 0, 1);
   const im = Image2.create(imageTexture, corners, groupTexture, valueTexture, trim2, isoLevel, image);
@@ -136890,10 +136890,10 @@ var SliceRepresentationProvider = VolumeRepresentationProvider({
 });
 
 // node_modules/molstar/lib/mol-repr/volume/direct-volume.js
-function getBoundingBox(gridDimension, transform2) {
+function getBoundingBox(gridDimension, transform3) {
   const bbox = Box3D();
   Box3D.add(bbox, gridDimension);
-  Box3D.transform(bbox, bbox, transform2);
+  Box3D.transform(bbox, bbox, transform3);
   return bbox;
 }
 function createDirectVolume2d(ctx, webgl, volume, props, directVolume) {
@@ -136904,8 +136904,8 @@ function createDirectVolume2d(ctx, webgl, volume, props, directVolume) {
   }
   const dataType = props.dataType === "halfFloat" && !webgl.extensions.textureHalfFloat ? "float" : props.dataType;
   const textureImage = createVolumeTexture2d(volume, "normals", 0, dataType);
-  const transform2 = Grid.getGridToCartesianTransform(volume.grid);
-  const bbox = getBoundingBox(gridDimension, transform2);
+  const transform3 = Grid.getGridToCartesianTransform(volume.grid);
+  const bbox = getBoundingBox(gridDimension, transform3);
   let texture;
   if (directVolume && directVolume.dataType.ref.value === dataType) {
     texture = directVolume.gridTexture.ref.value;
@@ -136915,7 +136915,7 @@ function createDirectVolume2d(ctx, webgl, volume, props, directVolume) {
   texture.load(textureImage);
   const { unitToCartn, cellDim } = getUnitToCartn(volume.grid);
   const axisOrder = volume.grid.cells.space.axisOrderSlowToFast;
-  return DirectVolume.create(bbox, gridDimension, transform2, unitToCartn, cellDim, texture, volume.grid.stats, false, axisOrder, dataType, directVolume);
+  return DirectVolume.create(bbox, gridDimension, transform3, unitToCartn, cellDim, texture, volume.grid.stats, false, axisOrder, dataType, directVolume);
 }
 function getUnitToCartn(grid) {
   if (grid.transform.kind === "matrix") {
@@ -136938,8 +136938,8 @@ function createDirectVolume3d(ctx, webgl, volume, props, directVolume) {
   }
   const dataType = props.dataType === "halfFloat" && !webgl.extensions.textureHalfFloat ? "float" : props.dataType;
   const textureVolume = createVolumeTexture3d(volume, dataType);
-  const transform2 = Grid.getGridToCartesianTransform(volume.grid);
-  const bbox = getBoundingBox(gridDimension, transform2);
+  const transform3 = Grid.getGridToCartesianTransform(volume.grid);
+  const bbox = getBoundingBox(gridDimension, transform3);
   let texture;
   if (directVolume && directVolume.dataType.ref.value === dataType) {
     texture = directVolume.gridTexture.ref.value;
@@ -136949,7 +136949,7 @@ function createDirectVolume3d(ctx, webgl, volume, props, directVolume) {
   texture.load(textureVolume);
   const { unitToCartn, cellDim } = getUnitToCartn(volume.grid);
   const axisOrder = volume.grid.cells.space.axisOrderSlowToFast;
-  return DirectVolume.create(bbox, gridDimension, transform2, unitToCartn, cellDim, texture, volume.grid.stats, false, axisOrder, dataType, directVolume);
+  return DirectVolume.create(bbox, gridDimension, transform3, unitToCartn, cellDim, texture, volume.grid.stats, false, axisOrder, dataType, directVolume);
 }
 async function createDirectVolume(ctx, volume, key2, theme, props, directVolume) {
   const { runtime, webgl } = ctx;
@@ -137034,9 +137034,9 @@ function suitableForGpu3(volume, webgl) {
 }
 var _translate = Mat4();
 function getSegmentTransform(grid, segmentBox) {
-  const transform2 = Grid.getGridToCartesianTransform(grid);
+  const transform3 = Grid.getGridToCartesianTransform(grid);
   const translate = Mat4.fromTranslation(_translate, segmentBox.min);
-  return Mat4.mul(Mat4(), transform2, translate);
+  return Mat4.mul(Mat4(), transform3, translate);
 }
 function SegmentVisual(materialId, volume, key2, props, webgl) {
   if (props.tryUseGpu && webgl && gpuSupport3(webgl) && suitableForGpu3(volume, webgl)) {
@@ -137116,8 +137116,8 @@ async function createVolumeSegmentMesh(ctx, volume, key2, theme, props, mesh) {
     scalarField: cells,
     idField: Tensor.create(cells.space, Tensor.Data1(ids))
   }, mesh).runAsChild(ctx.runtime);
-  const transform2 = getSegmentTransform(volume.grid, bbox);
-  Mesh.transform(surface, transform2);
+  const transform3 = getSegmentTransform(volume.grid, bbox);
+  Mesh.transform(surface, transform3);
   if (ctx.webgl && !ctx.webgl.isWebGL2) {
     Mesh.uniformTriangleGroup(surface, false);
     ValueCell.updateIfChanged(surface.varyingGroup, false);
@@ -137162,7 +137162,7 @@ function getSegmentTexture(volume, segment, webgl) {
   const { resources } = webgl;
   const bbox = Box3D.clone(segmentation.bounds[segment]);
   Box3D.expand(bbox, bbox, Vec3.create(2, 2, 2));
-  const transform2 = getSegmentTransform(volume.grid, bbox);
+  const transform3 = getSegmentTransform(volume.grid, bbox);
   const gridDimension = Box3D.size(Vec3(), bbox);
   const { width, height, powerOfTwoSize: texDim } = getVolumeTexture2dLayout(gridDimension, Padding2);
   const gridTexDim = Vec3.create(width, height, 0);
@@ -137182,7 +137182,7 @@ function getSegmentTexture(volume, segment, webgl) {
   gridDimension[1] += Padding2;
   return {
     texture,
-    transform: transform2,
+    transform: transform3,
     gridDimension,
     gridTexDim,
     gridDataDim,
@@ -137195,10 +137195,10 @@ async function createVolumeSegmentTextureMesh(ctx, volume, segment, theme, props
   if (volume.grid.cells.data.length <= 1) {
     return TextureMesh.createEmpty(textureMesh);
   }
-  const { texture, gridDimension, gridTexDim, gridDataDim, gridTexScale, transform: transform2 } = getSegmentTexture(volume, segment, ctx.webgl);
+  const { texture, gridDimension, gridTexDim, gridDataDim, gridTexScale, transform: transform3 } = getSegmentTexture(volume, segment, ctx.webgl);
   const axisOrder = volume.grid.cells.space.axisOrderSlowToFast;
   const buffer = textureMesh === null || textureMesh === void 0 ? void 0 : textureMesh.doubleBuffer.get();
-  const gv = extractIsosurface(ctx.webgl, texture, gridDimension, gridTexDim, gridDataDim, gridTexScale, transform2, 0.5, false, false, axisOrder, true, buffer === null || buffer === void 0 ? void 0 : buffer.vertex, buffer === null || buffer === void 0 ? void 0 : buffer.group, buffer === null || buffer === void 0 ? void 0 : buffer.normal);
+  const gv = extractIsosurface(ctx.webgl, texture, gridDimension, gridTexDim, gridDataDim, gridTexScale, transform3, 0.5, false, false, axisOrder, true, buffer === null || buffer === void 0 ? void 0 : buffer.vertex, buffer === null || buffer === void 0 ? void 0 : buffer.group, buffer === null || buffer === void 0 ? void 0 : buffer.normal);
   const groupCount = volume.grid.cells.data.length;
   const instances = Interval.ofLength(volume.instances.length);
   const segments2 = OrderedSet2.ofSingleton(segment);
@@ -139951,10 +139951,10 @@ var VolumeStreamingVisual = PluginStateTransform.BuiltIn({
     const repr = provider.factory({ webgl: (_a = plugin.canvas3d) === null || _a === void 0 ? void 0 : _a.webgl, ...plugin.representation.volume.themes }, provider.getParams);
     repr.setTheme(Theme.create(plugin.representation.volume.themes, { volume: channel.data }, params));
     const structure = (_b = spine.getAncestorOfType(PluginStateObject.Molecule.Structure)) === null || _b === void 0 ? void 0 : _b.data;
-    const transform2 = (structure === null || structure === void 0 ? void 0 : structure.models.length) === 0 ? void 0 : GlobalModelTransformInfo.get(structure === null || structure === void 0 ? void 0 : structure.models[0]);
+    const transform3 = (structure === null || structure === void 0 ? void 0 : structure.models.length) === 0 ? void 0 : GlobalModelTransformInfo.get(structure === null || structure === void 0 ? void 0 : structure.models[0]);
     await repr.createOrUpdate(props, channel.data).runInContext(ctx);
-    if (transform2)
-      repr.setState({ transform: transform2 });
+    if (transform3)
+      repr.setState({ transform: transform3 });
     return new PluginStateObject.Volume.Representation3D({ repr, sourceData: channel.data }, { label: `${Math.round(channel.isoValue.relativeValue * 100) / 100} \u03C3 [${srcParams.channel}]` });
   }),
   update: ({ a: a8, b: b8, newParams, spine }, plugin) => Task.create("Volume Representation", async (ctx) => {
@@ -142699,6 +142699,95 @@ var AnnotationHandlers = class {
   }
 };
 
+// src/shapes/measurement-centroids.ts
+function measurementCentroid(structure, indices3) {
+  if (!structure || indices3.length === 0) return void 0;
+  const sum = Vec3.zero(), position = Vec3.zero();
+  for (const index of indices3) {
+    const unit2 = structure.units.find((unit3) => Unit.isAtomic(unit3) && OrderedSet2.has(unit3.elements, index));
+    if (!unit2) return void 0;
+    unit2.conformation.position(index, position);
+    Vec3.add(sum, sum, position);
+  }
+  return Vec3.scale(sum, sum, 1 / indices3.length);
+}
+function endpointLoci(structure, indices3, tag) {
+  const center2 = measurementCentroid(structure, indices3);
+  if (!center2) throw new Error("Measurement endpoint atoms are absent from the structure.");
+  return DataLoci(
+    "molsysviewer:measurement-centroid",
+    { tag, atom_indices: indices3, center: center2 },
+    [0],
+    (sphere) => {
+      Vec3.copy(sphere.center, center2);
+      sphere.radius = 0;
+      return sphere;
+    },
+    () => indices3.length === 1 ? `Atom ${indices3[0]}` : `Geometric centroid (${indices3.length} atom occurrences)`
+  );
+}
+function measurementData(structure, spec) {
+  const loci = spec.endpoints.map((indices3) => endpointLoci(structure, indices3, spec.tag));
+  if (spec.kind === "distance") return { pairs: [{ loci }] };
+  if (spec.kind === "angle") return { triples: [{ loci }] };
+  return { quads: [{ loci }] };
+}
+function createRepresentation2(plugin, kind) {
+  const context2 = { webgl: plugin.canvas3d?.webgl, ...plugin.representation.structure.themes };
+  let repr;
+  let params;
+  if (kind === "distance") {
+    params = DistanceParams;
+    repr = DistanceRepresentation(context2, () => DistanceParams);
+  } else if (kind === "angle") {
+    params = AngleParams;
+    repr = AngleRepresentation(context2, () => AngleParams);
+  } else {
+    params = DihedralParams;
+    repr = DihedralRepresentation(context2, () => DihedralParams);
+  }
+  return { repr, params };
+}
+var transform2 = Transformer.builderFactory("molsysviewer")({
+  name: "structure-centroid-measurement-3d",
+  display: { name: "Centroid measurement" },
+  from: PluginStateObject.Molecule.Structure,
+  to: PluginStateObject.Shape.Representation3D,
+  params: { measurement: ParamDefinition.Value(void 0) }
+})({
+  canAutoUpdate: () => true,
+  apply({ a: a8, params }, plugin) {
+    return Task.create("Centroid measurement", async (ctx) => {
+      const spec = params.measurement;
+      const { repr, params: visualParams } = createRepresentation2(plugin, spec.kind);
+      const data = measurementData(a8.data, spec);
+      await repr.createOrUpdate({ ...ParamDefinition.getDefaultValues(visualParams), ...spec.visualParams }, data).runInContext(ctx);
+      return new PluginStateObject.Shape.Representation3D({ repr, sourceData: data }, { label: spec.tag });
+    });
+  },
+  update({ a: a8, b: b8, oldParams, newParams }) {
+    if (oldParams.measurement.kind !== newParams.measurement.kind) return Transformer.UpdateResult.Recreate;
+    return Task.create("Centroid measurement", async (ctx) => {
+      const data = measurementData(a8.data, newParams.measurement);
+      await b8.data.repr.createOrUpdate(newParams.measurement.visualParams, data).runInContext(ctx);
+      b8.data.sourceData = data;
+      b8.label = newParams.measurement.tag;
+      return Transformer.UpdateResult.Updated;
+    });
+  },
+  dispose({ b: b8 }) {
+    b8?.data.repr.destroy();
+  }
+});
+async function renderCentroidMeasurement(plugin, structure, measurement) {
+  const parent = plugin.helpers.substructureParent.get(structure);
+  if (!parent) return void 0;
+  const tree = plugin.state.data.build();
+  const ref = tree.to(parent.transform.ref).apply(transform2, { measurement }, { tags: [measurement.tag] }).ref;
+  await PluginCommands.State.Update(plugin, { state: plugin.state.data, tree, options: { doNotLogTiming: true } });
+  return ref;
+}
+
 // src/managers/handlers/measurement-handlers.ts
 function styleToVisualParams2(style) {
   if (!style) return void 0;
@@ -142746,6 +142835,7 @@ var MeasurementHandlers = class {
     if (this.measurementRefs.size === 0) return;
     const refs = Array.from(this.measurementRefs);
     this.measurementRefs.clear();
+    for (const [tag, registered] of this.refsByTag) for (const ref of registered) this.callbacks.unregisterRef?.(ref, tag);
     this.refsByTag.clear();
     await Promise.all(
       refs.map((ref) => PluginCommands.State.RemoveObject(this.plugin, {
@@ -142761,6 +142851,7 @@ var MeasurementHandlers = class {
     this.refsByTag.delete(tag);
     for (const ref of refs) {
       this.measurementRefs.delete(ref);
+      this.callbacks.unregisterRef?.(ref, tag);
     }
     await Promise.all(
       refs.map((ref) => PluginCommands.State.RemoveObject(this.plugin, {
@@ -142795,7 +142886,11 @@ var MeasurementHandlers = class {
     const spec = this.specsByTag.get(tag);
     if (!spec) return void 0;
     const kind = spec.op === "add_distance_measurement" ? "distance" : spec.op === "add_angle_measurement" ? "angle" : "dihedral";
-    const atomIndices = (spec.options?.endpoint_atom_indices ?? []).flat();
+    const picks = spec.options?.picks_atom_indices ?? [];
+    const atomIndices = picks.flatMap((pick2, index) => {
+      const resolved = spec.options?.endpoint_atom_indices?.[index];
+      return resolved?.length ? resolved : pick2;
+    });
     return { kind, atom_indices: atomIndices };
   }
   hasTag(tag) {
@@ -142827,6 +142922,7 @@ var MeasurementHandlers = class {
     this.specsByTag.delete(tag);
     for (const ref of refs) {
       this.measurementRefs.delete(ref);
+      this.callbacks.unregisterRef?.(ref, tag);
     }
   }
   setSettings(options) {
@@ -142905,11 +143001,26 @@ var MeasurementHandlers = class {
       if (Array.isArray(item2) && item2.length > 0) return item2;
       return picks[index] ?? [];
     });
-    const locis = actualAtomIndices.map((pick2) => this.buildLociFromAtomIndices(structure, pick2)).filter(Boolean);
-    const expected = kind === "distance" ? 2 : kind === "angle" ? 3 : 4;
-    if (locis.length !== expected) return;
     const styleParams = styleToVisualParams2(style) ?? {};
     const visualParams = { ...styleParams, tooltip: tag };
+    const expected = kind === "distance" ? 2 : kind === "angle" ? 3 : 4;
+    if (actualAtomIndices.length !== expected) return;
+    if (measurementOptions.endpoint_kinds.includes("centroid")) {
+      const ref = await renderCentroidMeasurement(this.plugin, structure, {
+        kind,
+        tag,
+        endpoints: actualAtomIndices.map((indices3) => [...indices3]),
+        visualParams
+      });
+      if (ref) {
+        this.measurementRefs.add(ref);
+        this.refsByTag.set(tag, /* @__PURE__ */ new Set([ref]));
+        this.callbacks.registerRef(ref, tag);
+      }
+      return;
+    }
+    const locis = actualAtomIndices.map((pick2) => this.buildLociFromAtomIndices(structure, pick2)).filter(Boolean);
+    if (locis.length !== expected) return;
     const measurement = this.plugin.managers.structure.measurement;
     let added;
     if (kind === "distance") {
@@ -142953,29 +143064,8 @@ var MeasurementHandlers = class {
       this.callbacks.registerRef(added.representation.ref, tag);
     }
   }
-  atomPositionForIndex(structure, atomIndex) {
-    if (!structure) return void 0;
-    for (const unit2 of structure.units) {
-      if (!Unit.isAtomic(unit2)) continue;
-      const elements = unit2.elements;
-      if (OrderedSet2.indexOf(elements, atomIndex) < 0) continue;
-      const conformation = unit2.model.atomicConformation;
-      return Vec3.create(conformation.x[atomIndex], conformation.y[atomIndex], conformation.z[atomIndex]);
-    }
-    return void 0;
-  }
   centroidPosition(structure, atomIndices) {
-    if (!atomIndices || atomIndices.length === 0) return void 0;
-    const sum = Vec3.zero();
-    let count3 = 0;
-    for (const idx of atomIndices) {
-      const pos = this.atomPositionForIndex(structure, idx);
-      if (pos === void 0) return void 0;
-      Vec3.add(sum, sum, pos);
-      count3++;
-    }
-    if (count3 === 0) return void 0;
-    return Vec3.scale(sum, sum, 1 / count3);
+    return measurementCentroid(structure, atomIndices);
   }
   normalizeEndpointPolicy(endpointPolicy) {
     if (endpointPolicy === "atom" || endpointPolicy === "centroid" || endpointPolicy === "representative_atom") {
@@ -143474,9 +143564,9 @@ function preparePocketBlobData(options) {
     };
     const visual = options.wireframe ? "wireframe" : "mesh";
     const geometryTask = options.wireframe ? computeMarchingCubesLines(marchingCubesParams) : computeMarchingCubesMesh(marchingCubesParams);
-    const transform2 = Mat4.identity();
-    Mat4.fromScaling(transform2, Vec3.create(field2.resolution, field2.resolution, field2.resolution));
-    Mat4.setTranslation(transform2, Vec3.create(field2.origin[0], field2.origin[1], field2.origin[2]));
+    const transform3 = Mat4.identity();
+    Mat4.fromScaling(transform3, Vec3.create(field2.resolution, field2.resolution, field2.resolution));
+    Mat4.setTranslation(transform3, Vec3.create(field2.origin[0], field2.origin[1], field2.origin[2]));
     results.push({
       geometryTask,
       visual,
@@ -143484,7 +143574,7 @@ function preparePocketBlobData(options) {
       alpha: isoAlphas[idx],
       name: `${options.name ?? "Pocket Blob"} (iso=${level})`,
       wireframeSize: Math.max(0.1, options.wireframe_size ?? 1),
-      transform: transform2
+      transform: transform3
     });
   });
   return results;
@@ -145910,7 +146000,7 @@ function centroid(structure) {
 function createGaussianSurfaceMeshes(structure, props, isoLevels, webgl) {
   return Task.create("Pocket Surface Meshes", async (ctx) => {
     const sizeTheme = PhysicalSizeTheme({ structure }, { scale: 1 });
-    const { transform: transform2, field: field2, idField, radiusFactor, resolution, maxRadius } = await computeStructureGaussianDensity(structure, sizeTheme, props).runInContext(ctx);
+    const { transform: transform3, field: field2, idField, radiusFactor, resolution, maxRadius } = await computeStructureGaussianDensity(structure, sizeTheme, props).runInContext(ctx);
     const baseIso = Math.exp(-props.smoothness) / radiusFactor;
     const levels = isoLevels && isoLevels.length > 0 ? isoLevels : [baseIso];
     const surfaces2 = [];
@@ -145921,7 +146011,7 @@ function createGaussianSurfaceMeshes(structure, props, isoLevels, webgl) {
         idField
       };
       const surface = await computeMarchingCubesMesh(params).runAsChild(ctx);
-      Mesh.transform(surface, transform2);
+      Mesh.transform(surface, transform3);
       if (webgl && !webgl.isWebGL2) {
         Mesh.uniformTriangleGroup(surface);
         ValueCell.updateIfChanged(surface.varyingGroup, false);
@@ -167529,7 +167619,8 @@ var MolSysViewerController = class _MolSysViewerController {
     });
     this.measurements = new MeasurementHandlers(plugin, {
       getStructure: () => this.getStructureData(),
-      registerRef: (ref, tag) => this.state.registerTaggedRef(ref, tag, "measurement")
+      registerRef: (ref, tag) => this.state.registerTaggedRef(ref, tag, "measurement"),
+      unregisterRef: (ref, tag) => this.state.unregisterTaggedRef(ref, tag, "measurement")
     });
     this.scene = new SceneHandlers(plugin, host, {
       clearShapes: () => this.state.clearShapesByTag(),

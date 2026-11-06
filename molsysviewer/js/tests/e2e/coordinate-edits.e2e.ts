@@ -4,6 +4,7 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "./e2e-browser";
 import { checkManagedSystemEdits } from "./managed-system-edits-scenarios";
+import { checkCentroidMeasurements } from "./centroid-measurements-scenarios";
 
 const dir = dirname(fileURLToPath(import.meta.url));
 async function run() {
@@ -76,6 +77,7 @@ async function run() {
             }
         }
         await checkManagedSystemEdits(page.context());
+        await checkCentroidMeasurements(page.context(), dir);
         console.log("[E2E coordinate-edits] passed, including managed scientific edits");
     } finally { await browser.close(); }
 }

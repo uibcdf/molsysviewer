@@ -460,3 +460,9 @@ Completed work, kept for the reasoning:
 - [Managed edit selection confirmation](managed_edit_selection_confirmation.md) — #302 permits host selection revalidation only during synchronized edit preparation, preserving mutation/pending guards.
 - [Addon workspace entry and order](addon_workspace_entry_and_order.md) — #303 honors provider navigation order and initial panel while retaining user choices.
 - [Numeric region selection recovery](numeric_region_selection_recovery.md) — #307 retains numeric selectors and repeated state/session exports without changing membership or transferred recipes.
+- [Centroid measurement rendering](centroid_measurement_rendering.md) — #308 uses true geometric means in actual Mol* distance/angle/dihedral shapes and their trajectory dependencies.
+- [Signed dihedral measurements](signed_dihedral_measurements.md) — #309 aligns Python torsion signs with independent coordinates, MolSysMT and the canvas, including legacy recovery.
+- [Measurement coordinate cache](measurement_coordinate_cache.md) — #310 repairs affected live values after accepted coordinate edits without retaining stale numbers.
+- [Measurement effective positions](measurement_effective_positions.md) — #311 returns one effective position per endpoint and focuses every population in the visible structure.
+- [Player measurement summaries](player_measurement_summaries.md) — #312 projects current numerical measures on accepted navigation, including detached Studio.
+- [Measurement reference lifecycle](measurement_reference_lifecycle.md) — #313 unregisters deleted renderer refs and keeps picking bound to live geometry through visibility and rename.

@@ -1716,6 +1716,7 @@ export class MolSysViewerController {
         this.measurements = new MeasurementHandlers(plugin, {
             getStructure: () => this.getStructureData(),
             registerRef: (ref, tag) => this.state.registerTaggedRef(ref, tag, "measurement"),
+            unregisterRef: (ref, tag) => this.state.unregisterTaggedRef(ref, tag, "measurement"),
         });
 
         this.scene = new SceneHandlers(plugin, host, {

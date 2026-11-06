@@ -905,6 +905,15 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Measurement integrity — 2026-11-06:** #308–#313 correct actual centroid
+rendering, signed torsions, coordinate-value caches, effective endpoint positions
+and current-frame Studio summaries, including renderer-reference cleanup. The
+[receiving receipt](measurement_geometry_receiving_20261106.json) separates 160
+affected Python passes, complete scoped Mol*/widget/both-popup receiving and
+the final core/hosted gates. This is the prerequisite for trustworthy Analysis
+row adoption; those new scene actions and all remaining task families still need
+implementation. Human receiving and both 1.0 publications remain postponed.
+
 **Current handoff — 2026-11-06:** [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543)
 publishes `7c7b92a7c396612671bbebec6b8db3afe97d241c`, with Analysis runtime
 `8f8c442e0` over native `ed09f6453` and controlled Viewer `737f9bc3`. Its four task panels provide
@@ -2575,6 +2584,11 @@ documents carry it.
 Resume toward **1.0** in this order:
 
 **Current order — 2026-11-06:**
+
+Finish the measurement-integrity core/hosted receiving recorded above, then
+connect retained Analysis rows to explicit selection, focus and qualified live
+measures without treating a historical/PBC/mass-weighted result as the current
+nonperiodic geometric measure.
 
 1. Complete and inspect the applicable exact-head Viewer CI and owner PR #543
    receiving. Keep the old hosted #301 failures and local environment recovery
