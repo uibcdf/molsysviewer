@@ -914,10 +914,39 @@ macOS/source-pair remainder is pending, not full CI or artifact qualification. T
 [receiving receipt](measurement_geometry_receiving_20261106.json) separates 160
 affected Python passes, complete scoped Mol*/widget/both-popup receiving and
 the final core/hosted gates. This is the prerequisite for trustworthy Analysis
-row adoption; those new scene actions and all remaining task families still need
-implementation. Human receiving and both 1.0 publications remain postponed.
+row adoption, now implemented and received below. All remaining approved task
+families stay required. Human receiving and both 1.0 publications remain postponed.
 
-**Current handoff — 2026-11-06:** [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543)
+**Current handoff — Analysis scene adoption, 2026-11-06:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) publishes
+`2bb52b77c52edbca98a11c621cee499437a80832`, reconciling owner main `882b65b9c`
+without changing its scientific algorithms. Analysis rows now explicitly select
+participants, focus the visible structure and create qualified geometric core
+Measures. Live Measures follow the current structure, preserve repeated
+participants and retain their own lifetime after the result is cleared.
+Periodic or mass-weighted observations explain why live conversion is unavailable.
+
+Frozen contribution `fa119ac12` passes the complete addon collection: 4,821
+passes without failures/skips, with all 4,957 selected inputs and both source
+heads unchanged. Its scientific basis remains `ed09f6453`; it does not certify
+the newer owner Python source. That combined source separately passes 121
+Analysis/preflight cases and 12 actual TcTIM/three-structure Jupyter steps,
+including mirrored popup geometry. Shared Geometry receiving passes seven
+steps. Retained Jupyter debugger errors match the plain-notebook control; no
+zero-page-error claim is made. The
+[consumer receipt](molsysmt_analysis_scene_receiving_20261106.json) binds the
+exact sources, numerical/geometry checks and separate acceptance scopes.
+
+Source exposure is 242/248 paths. Native forces, protonation assessment,
+atom-name correspondence and chemical-reference templates now exist on the
+owner basis but require their own bound-consumer admission. The two remaining
+MD entries are native stubs. Owner review, complete integrated/hosted gates,
+installed qualification, all remaining approved GUI families and postponed
+human Jupyter/visible Qt acceptance remain pending. Existing shared-environment
+dependency findings remain visible under uibcdf/molsyssuite#82; no clean
+solver-installed claim or package-floor update follows. Publications remain paused.
+
+**Previous handoff — 2026-11-06:** [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543)
 publishes `7c7b92a7c396612671bbebec6b8db3afe97d241c`, with Analysis runtime
 `8f8c442e0` over native `ed09f6453` and controlled Viewer `737f9bc3`. Its four task panels provide
 System removal/extraction/copy, Geometry translation/centering/same-system
@@ -2588,24 +2617,26 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-06:**
 
-Finish the measurement-integrity core/hosted receiving recorded above, then
-connect retained Analysis rows to explicit selection, focus and qualified live
-measures without treating a historical/PBC/mass-weighted result as the current
-nonperiodic geometric measure.
+Measurement integrity and explicit Analysis row adoption are implemented and
+locally received as recorded above. Finish their owner/integrated/hosted
+acceptance while preserving historical/PBC/mass-weighted results as distinct
+from current nonperiodic geometric Measures.
 
 1. Complete and inspect the applicable exact-head Viewer CI and owner PR #543
    receiving. Keep the old hosted #301 failures and local environment recovery
    distinct from the new head; queued jobs are not passing evidence.
 2. Receive exact-head CI for Analysis and session receiving, keeping the clean
-   4,775-case 8f8c442e result separate from later inputs and unsuccessful native
-   matrices. MolSysMT #594–#598/#612 and #613–#616 retain their own follow-ups.
+   4,821-case fa119ac12 result separate from the newly integrated owner source.
+   Native #594–#598 are resolved by the owner; #612 and #613–#616 retain
+   their distinct scopes and unsuccessful matrices remain historical.
    Continue required Geometry cell/reference/sequence/orientation, Chemistry
    assignments/construction/refinement and remaining Analysis families. Rotate
    awaits uibcdf/molsysmt#602; no task family is removed from the full objective.
 3. Keep the explicitly postponed human System/results/Geometry Jupyter/visible
    Qt review pending. Automated browser transport is received, not a substitute
-   for that acceptance. Owner #583/#584 repairs are received; #582/#572/#576 and
-   proposed addon/tool corrections retain their own review/integration scope.
+   for that acceptance. Owner #583/#584 repairs are received. Native #572/#576
+   and new correspondence/template routes need their own bound-consumer
+   admission; #582 and proposed addon/tool corrections retain their scopes.
 4. Reconcile remaining owner/public-artifact receiving, including #294, without
    duplicate dispatches or downstream scientific substitutes.
 5. Consolidate documentation after the agreed functionality, then freeze and

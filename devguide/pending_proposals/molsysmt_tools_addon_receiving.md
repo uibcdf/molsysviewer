@@ -16,13 +16,27 @@ supersedes: []
 
 ## Analysis and scientific-session receiving — 2026-11-06
 
-Viewer #308–#313 repair measurement boundaries needed by upcoming Analysis
-row actions. Published `239c8dd7` passes complete local Python and all 44 core
+Published contribution `2bb52b77c` reconciles owner main `882b65b9c` and
+retains explicit Analysis row selection/focus/live core Measures. Its frozen
+pre-merge contribution `fa119ac12` passes 4,821 complete addon cases without
+failures/skips and with 4,957 unchanged selected inputs. The newer merged
+owner source separately passes 121 Analysis/preflight cases and 12 actual
+TcTIM/three-structure Jupyter steps through both popups. Its integrated full
+and hosted gates remain pending; these counts are not combined. The
+[row-adoption receipt](../molsysmt_analysis_scene_receiving_20261106.json)
+keeps independent numerical/actual geometry checks, plain-Jupyter diagnostic
+controls and all qualification limits. Source exposure is 242/248; four new
+native capabilities need bound receiving and two MD entries remain stubs.
+
+
+Viewer #308–#313 repair measurement boundaries needed by Analysis row
+actions. Published `239c8dd7` passes complete local Python and all 44 core
 browser suites, plus hosted E2E and all four Linux Python cells. MacOS and the
 remaining source-pair/owner/installed gates are separate pending work.
 [Independent and actual-browser receiving](../measurement_geometry_receiving_20261106.json)
 keeps that source correction distinct from the existing addon/hosted pins;
-Analysis scene adoption is still pending and no approved task family is removed.
+Analysis scene adoption is now implemented and source-received above; no approved
+task family is removed.
 
 Complete implemented-task actual-Jupyter receiving on clean b18d5d823 / Viewer
 737f9bc3 now passes 11 scenarios and 76 steps in 671.62 s, with all selected
