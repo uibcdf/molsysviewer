@@ -66,10 +66,11 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
-**Next action:** scope and register A1–A4, retaining private handling where
-appropriate, then repair and qualify those integrity/lifecycle boundaries.
-Continue B1's existing #314 diagnosis without treating its broad failure as
-passing. No product correction in this ledger is declared done by this document.
+**Next actions:** activate E0's evidence-custody handoff and scope A1–A4,
+retaining private handling where appropriate. Safe source investigation and B1's
+existing #314 diagnosis can proceed in parallel. E0 prevents premature cleanup
+or disclosure; it does not require all unrelated development to stop. No product
+correction in this ledger is declared done by this document.
 
 | Block | Current status | Owner and tracking | Exit evidence |
 | --- | --- | --- | --- |
@@ -80,6 +81,47 @@ passing. No product correction in this ledger is declared done by this document.
 | E — integrated use, scale and human acceptance | Partial headless/Jupyter receiving; complete workflow and prolonged-use checks pending; human review postponed | Viewer/addon; maintainer owns human observations | TcTIM/ensemble save–recover–continue, independent lifetimes and representative measured limits |
 | F — public contract and documentation | Digestion/meta checks pass; compatibility snapshot and documentation reconciliation pending | Viewer; #315 | Named stable/experimental contracts, verified references and one usable current handoff |
 | G — covering artifact and installed qualification | Pending; candidate/publication actions paused | Viewer #294; coordinated provider/downstream receiving | Authorized exact producer/files, clean installed checks and required distribution evidence |
+
+### Activation card and priorities
+
+The block dashboard is a summary, not a second issue tracker. When an ID or
+child ID is activated, keep one short card in its owning report containing:
+
+| Field | Required content |
+| --- | --- |
+| Identity and scope | Stable ID, parent, finding class and applicable milestone: covering artifact/#294, accepted 1.0 work, investigation, design decision or non-gating polish |
+| Ownership | Repository owning implementation and person/team accountable for closure; use a full `uibcdf/<repo>#<number>` reference for provider issues |
+| Priority and state | P1 integrity/reliability first; P2 planned accepted work; a decision-dependent recommendation retains that classification. Keep implementation state separate from executed validation |
+| Dependency | The condition required, such as an adopted contract, received owner fix plus consumer guard, a reviewed source pair or authorization; an issue number or its closure alone is insufficient |
+| Next gate and evidence | One observable next outcome, its applicable guard/receiving, exact source/provider identity and the owning evidence reference; do not duplicate detailed results here |
+| Disposition | Open, active, derived, verified resolution or approved disposition, with decision-maker/date and remaining scope; derivation is not resolution |
+
+An assigned repository is not an accepted personal assignment. Record the
+responsible developer or owner-team handoff when activating a card. New child
+IDs inherit their parent's scope until their own acceptance is recorded; the
+parent cannot close while a required child remains unresolved.
+The card's operational milestones do not add new allowed front-matter status
+values to the reporting protocol.
+
+### Executable queue at the recording checkpoint
+
+| ID | Priority / milestone | Closure owner and record | Dependency and next observable gate |
+| --- | --- | --- | --- |
+| E0 | P1 evidence handling; before cleanup/disclosure | Principal maintainer's custody decision; Viewer team verifies the transfer; #315 | Approve/reuse a private retention destination, identify custodian, verify content and restore; current temporary custody is not durable acceptance |
+| A1–A3 | P1 integrity; affected covering artifact and 1.0 | Viewer; scoped reports to be registered under #315 | Sanitized/private triage as appropriate, then real rejection/literal-text guards on the failing paths |
+| A4 | P2 lifecycle; affected covering artifact and 1.0 | Viewer; scoped report to be registered under #315 | Own-versus-caller View distinction, original error retained and resources released after repeated failures |
+| A5–A6 | P2 investigation; gate depends on established effect | Viewer; scoped record when activated | Reproduce or record a bounded, evidenced disposition; do not delay unrelated fixes waiting for a hypothetical defect |
+| B1–B2 | P1 scientific reading/navigation; affected covering artifact and 1.0 | Viewer; #314 and a scoped precision report | Correlated Python/render acceptance and numerical-label truth; retain original failed runs |
+| B3.1–B3.5 | P2 robustness; applicable candidate/1.0 scope | Viewer; split by mechanism under #315 | Reproduce each inspected path, then receive its window/title/layout/keyboard/cleanup outcome |
+| B3.6, B4, E3, F1 | Scope/design decision; not an automatic release gate | Principal maintainer decides scope; relevant owner implements | Record accept/reject/defer and contract before implementation; accepted work gains its explicit milestone and guard |
+| C1–C3, C5 | P1 integration of selected source pair | Viewer host and MolSysMT owner; #264 and uibcdf/molsysmt#421 / PR #543 | B1 for the new host pin; publish reviewed sources, receive relevant full/hosted results and owner acceptance |
+| C4 | P1 qualification disposition | Viewer; #305 | Explain the original failure or a bounded evidenced disposition; a later isolated pass is not closure |
+| D1–D5 | P1 for claimed scientific modes; owner handoffs now | MolSysMT owns fixes/definitions; Viewer receives them through uibcdf/molsysmt#421 | Supported owner correction/contract followed by exact consumer evidence; unavailable modes remain explicitly unqualified |
+| D6.1–D6.10 | P2 previously accepted 1.0 families | Owning addon through uibcdf/molsysmt#421; Viewer #264 | Applicable native prerequisites and operation/effect matrix below; source exposure alone is insufficient |
+| E1–E2 | P2 integrated/scale qualification | Viewer/addon receiving; #315 | Required operations ready, agreed test protocol and comparable identified sources |
+| E4 | Human acceptance postponed | Principal maintainer chooses resumption | Relevant automated preparation plus actual human observation when resumed; postponement is not a pass |
+| F2–F3 | P2 documentation and current handoff | Viewer; #315 | Selected functionality settled; verified references and one current ledger |
+| G1–G2 | Covering artifact and final release have separate gates | Viewer #294 and coordinated provider/downstream owners | Candidate-specific source/docs/installed evidence and separate authorization; full D6 is not automatically a dependency of a scoped core artifact |
 
 ## Frozen audit baseline and evidence boundaries
 
@@ -159,6 +201,18 @@ Clear, unmount, save/load and the defined copy/extract cases; test source edits
 and stale applicability. This does not establish a universal scientific result
 store or authenticate source identity from labels.
 
+B3 is split so that an inspected cleanup path cannot inherit the status of a
+reproduced title defect. A3 remains the owner of literal-text safety.
+
+| Child / current class | Required outcome and next guard |
+| --- | --- |
+| **B3.1 — inspected** | Blocked/failed window creation has an observable error and qualified retry/close behavior, preserving the source View; reproduce the distinct blocked and bootstrap-failure paths |
+| **B3.2 — inspected** | Updating a plot's title preserves the current literal title in its card, popup and restoration; qualify rename-before-popout and reuse |
+| **B3.3 — inspected** | Cards remain reachable and usable at small host sizes and after resize/fullscreen; define host bounds and receive actual layouts |
+| **B3.4 — inspected** | Values and sample navigation have keyboard/accessible equivalents with correct labels; qualify focus, selection and actual current-sample reading |
+| **B3.5 — inspected** | Disposing during drag/resize detaches active global listeners and owned windows/observers; qualify repeated gestures/disposal without claiming a universal leak from inspection |
+| **B3.6 — optional recommendation, decision pending** | Evaluate visual consistency with the accepted workbench design. Studio's opacity decision alone creates no DataCard styling requirement |
+
 ## C — deliver and receive the actual integration
 
 **C1 — partial:** deliver the reconciled addon through uibcdf/molsysmt PR #543;
@@ -190,12 +244,15 @@ Capture the hit target, layout, pointer routing and menu state if it recurs;
 preserve assertions and the original failed run. See
 [the report](../pending_bugs/hosted_popup_context_menu_receiving.md).
 
-**C5 — reconciliation pending:** uibcdf/molsysmt#587, #590/#591, #603,
-#609/#611/#614 retain their board/history/tool/GUI/CI receiving scopes. Several
+**C5 — reconciliation pending:** uibcdf/molsysmt#587, uibcdf/molsysmt#590,
+uibcdf/molsysmt#591, uibcdf/molsysmt#603, uibcdf/molsysmt#609,
+uibcdf/molsysmt#611 and uibcdf/molsysmt#614 retain their
+board/history/tool/GUI/CI receiving scopes. Several
 corrections are already in the contribution; an open owner issue is not proof
 that its source implementation is missing. Record the contributed guard and
 remaining acceptance, and let the owning team review, integrate and close it.
-Owner stabilization/policy/benchmark records #334/#524/#567 retain their own
+Owner stabilization/policy/benchmark records uibcdf/molsysmt#334,
+uibcdf/molsysmt#524 and uibcdf/molsysmt#567 retain their own
 contracts; they do not add unreviewed Viewer scientific features.
 
 ## D — scientific prerequisites and the complete approved task ledger
@@ -209,10 +266,10 @@ signatures to the fields needed by one form.
 | ID / current disposition | Scientific owner requirement and consumer acceptance |
 | --- | --- |
 | **D1 — waiting on owner** | uibcdf/molsysmt#602: public axis/angle construction for Rotate. Receive handedness, units, degeneracies and selection/structure effects against independent geometry and actual rendered coordinates. Do not copy a private rotation formula into the addon. |
-| **D2 — partial periodic family** | uibcdf/molsysmt#605–#608: invalid cells, changing-cell unwrap, oriented wrapping and unit-dependent origins. Retain the declared temporary admission profile and its review/removal condition. Receive independent lattice truth and in-place atomicity before declaring general periodic/cell tasks complete. |
+| **D2 — partial periodic family** | uibcdf/molsysmt#605, uibcdf/molsysmt#606, uibcdf/molsysmt#607 and uibcdf/molsysmt#608 cover invalid cells, changing-cell unwrap, oriented wrapping and unit-dependent origins. Retain the declared temporary admission profile and its review/removal condition. Receive independent lattice truth and in-place atomicity before declaring general periodic/cell tasks complete. |
 | **D3 — waiting on owner** | uibcdf/molsysmt#613: overlapping global configuration contexts can leak/restore the wrong execution policy. Per-View locks do not isolate separate Views. Receive simultaneous/nested/exception cases through the supported native solution; this is not proof of wrong GPU numerics. |
 | **D4 — waiting on owner** | uibcdf/molsysmt#616: compatible structure append fails after canonical H5MSM string restoration. Receive save/recover/continue with preserved scientific alignment. Do not rewrite chemistry tables or weaken identity checks downstream. |
-| **D5 — dispositions still required** | Keep uibcdf/molsysmt#549, #582, #612 and #615 distinct: legacy naming, effective mechanics recipes, alternate-location/stable-ID admission, and unexplained initial-canvas timeout. uibcdf/molsysmt#473 covers provisional ISA units/normalization; #475 covers ECI dimensional/charge and aggregation semantics. Preserve the native limitations or receive the owning definition before presenting those properties as verified physical areas/charges; these are not demonstrated numerical errors. Test/CI/tool follow-ups retain their own issues. |
+| **D5 — dispositions still required** | Keep D5.1–D5.6 separate, with the qualified provider references below. Preserve scientific limitations or receive the owning definition before presenting provisional properties as verified physical areas/charges; interpretation questions are not demonstrated numerical errors. Test/CI/tool follow-ups retain their own issues. |
 
 **D6 — partial, all previously approved families remain required:** use the
 owner GUI task-family ledger under uibcdf/molsysmt#421 as the detailed scientific
@@ -223,20 +280,110 @@ coordinate refinement; Analysis further geometric observables, angles/torsions,
 PCA, properties, sequence/connectivity, interactions and mechanical quantities.
 Adopt compatible results through core scene/plot/color owners explicitly.
 
+The scope baseline is the
+[accepted 2026-11-06 product milestone](../molsysmt_tools_addon_plan.md#accepted-product-milestone--2026-11-06)
+as recorded at Viewer `628664dc68c2f625c2beb622b80df45988b03d0d`, together with
+the owner task-family ledger received under uibcdf/molsysmt#421 at contribution
+`e119953435a25c72e9a65b7428f74b1c2430b4f1`. Incoming native exports do not
+automatically expand that GUI milestone. Record explicit later scope decisions;
+do not silently omit an existing accepted family.
+
+| D5 child / owner record | Current class and next receiving condition |
+| --- | --- |
+| **D5.1 — uibcdf/molsysmt#549** | Native naming disposition; receive supported label semantics and consumer consequences |
+| **D5.2 — uibcdf/molsysmt#582** | Native effective-mechanics contract; receive declared recipes/unsupported controls without inventing parameterization |
+| **D5.3 — uibcdf/molsysmt#612** | Alternate-location/stable-ID admission; distinguish intentional whole-request rejection from a data-fidelity defect |
+| **D5.4 — uibcdf/molsysmt#615** | Unexplained initialization observation; receive a causal diagnosis or bounded evidenced disposition, retaining the original timeout |
+| **D5.5 — uibcdf/molsysmt#473** | Provisional ISA units/normalization; receive the owner's scientific definition or preserve its explicit limitation |
+| **D5.6 — uibcdf/molsysmt#475** | ECI dimensional/charge/aggregation interpretation; receive the owner's scientific definition or preserve its explicit limitation |
+
+| D6 child / accepted family | Current scope and next receiving condition |
+| --- | --- |
+| **D6.1 — rotation** | Pending graphical rotation; D1's supported constructor plus selection/reference/structure effect and rendered-coordinate guards |
+| **D6.2 — orientation and references** | Pending principal-axis orientation and remaining sequence/reference correspondence workflows; native matching/degeneracy semantics and explicit correspondence |
+| **D6.3 — periodic coordinates and cells** | Bounded tools exist; D2's received science and the qualified edit/cell effect are needed for general-family acceptance |
+| **D6.4 — chemical repair and assignments** | Inspection and heavy/H preparation have source receiving; remaining supported repairs, typing and charge assignments need explicit methods/states, maps or independent ownership |
+| **D6.5 — construction and solvent** | Pending accepted construction/assembly, solvent and ion tasks; explicit native inputs/model/seed/charge/cell requirements and result adoption |
+| **D6.6 — coordinate refinement** | Pending graphical refinement over the received native minimization; explicit model/engine, supported structure scope and current/independent effect |
+| **D6.7 — structural observables** | Distances/neighborhoods and local conformation slices exist; remaining angles/torsions/PCA and accepted structural result modes need numerical/axis/ownership receiving |
+| **D6.8 — properties and molecular reports** | Pending accepted property, sequence and connectivity tasks; source maps, scientific definitions, evaluated scope and D5's relevant dispositions |
+| **D6.9 — interactions and mechanics** | Expert routes exist; complete the accepted additional task/result integration with native prerequisites, units and separate scientific/visual ownership |
+| **D6.10 — qualified visual adoption** | Current Measures/plots are slices; complete compatible accepted scene/color/plot mappings. New renderer or metadata contracts, including B4, require their recorded decisions first |
+
+Implementation and evidence are tracked independently per child in its owning
+record. A received native function does not establish GUI availability, and a
+missing approved GUI cannot be marked not applicable. Each child retains the
+activation-card ownership, dependency, next-gate and evidence fields.
+
 Existing System, transforms/fitting, bounded periodic tasks, Chemistry inspection
 and heavy/H preparation, distance/neighborhood analysis and local conformation
 tables are receiving slices. They do not complete D6. Do not register placeholder
 buttons, silently prepare chemistry, invent correspondences or promote native
 experimental science to unconditional stability. This plan adds no detector.
 
+### Operation and effect receiving matrix
+
+For each activated family, identify the public method, actual native/expert/GUI
+inputs and supported effect. Reuse its owning tests and acceptance specification;
+do not invent a Cartesian product of every argument and platform. The same
+resolved inputs and physical quantities must be comparable across surfaces.
+
+| Dimension | Representative acceptance to record |
+| --- | --- |
+| Effect | Independent result, immediate managed edit, deferred projection, sync failure with synchronization-only retry, rejection and genuine no-op where supported |
+| Source axes | Whole/subset populations, local/source maps, ordered/nonconsecutive/repeated atoms and structures, empty or invalid requests according to the native contract |
+| Science | Explicit reference/state/engine/weights, nondefault physical units, admitted PBC and cell/coverage effects, finite and degenerate inputs; independent oracle/reference where a numerical claim is made |
+| Ownership | Original versus returned data, unselected data, source/result close and replacement, stale reports, identity/history and resource retirement |
+| Surfaces | Headless expert route and applicable GUI/Jupyter/popups; actual rendered geometry/values for visual claims; Qt/installed/human observations separately classified |
+| Persistence | Supported scientific data and scene round-trip, explicit invalidation/applicability and continued work after recovery |
+
+Each cell is **verified**, **failed**, **pending** or **not applicable with a
+contractual reason**. Keep the evidence source and the condition that would make
+an N/A cell applicable. Examples: read-only queries have no in-place projection;
+an unadopted independent result has no sync retry; categorical results have no
+physical-unit conversion; a method without PBC does not gain a PBC mode; an
+explicit scene-reset replacement does not infer an atom map. Those exclusions
+still require source/result independence and the applicable rejection guards.
+Unsupported arguments are tested as rejection, not hidden under N/A. A visual
+action on a retained result checks its bindings without rerunning the detector.
+Scene Undo must not be mistaken for molecular Undo.
+
 ## E — full-session, scale and human acceptance
+
+**E0 — durable evidence handoff pending:** principal-maintainer custody and
+destination approval must be recorded, or an existing approved private retention
+route reused. The Viewer team prepares and verifies the handoff; the actual
+custodian or approved delegate acknowledges it. At this checkpoint the audit
+receipts identify temporary artifacts only. No durable copy has been certified.
+
+| E0 stage | Evidence required before marking the stage complete |
+| --- | --- |
+| Locate and protect temporary custody | Timestamped inventory of originals, scripts/commands, benign fixtures or deterministic fixture generators, full outcomes, source/provider identities and environment manifests; compare recorded hashes and prohibit premature cleanup |
+| Record approved custody | Named custodian/delegate, approved private destination and access/retention rules; public ledger uses an opaque recoverable reference, while paths/access details remain private |
+| Transfer and verify | Copy the required evidence, compare hashes against the originals and perform a read/restore check through the private reference; reconstructed evidence must be labelled reconstructed |
+| Accept retention | Custodian acknowledgement, verification date and manifest digest; only then review temporary cleanup under the resource-ownership policy |
+
+E0 blocks destructive cleanup, uncontrolled disclosure and evidentiary closure
+of the affected findings. It does not block safe non-sensitive triage or
+unrelated source work while the temporary originals remain protected. Hashes
+alone do not preserve content. Keep its private access information out of the
+public issue and document.
 
 **E1 — partial:** receive one continuous molecular working session through the
 expert API and the implemented GUI, rather than assembling completion from
 unrelated successful examples:
 
-1. Load TcTIM/1TCD, recording source, inventory and initial scene. Test PDB-ID
-   acquisition separately from deterministic bundled input where networking applies.
+1. Load TcTIM/1TCD and compose several sources in one View, both in a batch and
+   progressively. Distinguish independent systems from complementary
+   topology/coordinate/trajectory input; receive supported Add/Replace/Append
+   and explicit structure pairing. Record source occurrences, maps, regions,
+   inventory and the first/destination box/time policy, including absence.
+   Preserve these bindings through the round-trip. Test PDB-ID acquisition
+   separately from deterministic bundled input where networking applies. Reuse
+   the [existing Load contract](../studio_interaction_contract.md#card-and-navigation)
+   and composition guards; this adds no new loading mode. Preserve the declared
+   rejection of unsupported incoming-analysis composition rather than inferring
+   an analysis-embedding policy.
 2. Inspect/select categories and arbitrary atoms; review removal, extract an
    ordered subset and create an independent copy. Verify exact maps and ownership.
 3. Inspect readiness, choose a qualified explicit preparation/state/method,
@@ -247,20 +394,94 @@ unrelated successful examples:
 5. Calculate representative geometry, properties and interactions; preserve
    method/units/evidence/coverage. Add compatible visual content explicitly,
    distinguishing zero, evaluated-empty, unevaluated and missing prerequisites.
+   For domains with separate scientific analyses and visual references, notably
+   named Interactions, hide/show/delete the representation while proving the
+   analysis is retained and not recalculated. Receive edit-driven coverage
+   invalidation through its scientific owner, separate explicit scientific
+   deletion, and declared index correspondence for an independently imported
+   analysis. Measures, Shapes and mounted reports retain their own lifecycle
+   contracts; this check creates no additional scientific store for them.
 6. Save supported molecular data/analyses through the native format owner
    (H5MSM recommended) and scene through Viewer. Close, recover and continue;
-   compare inventory, coordinates, structures, scientific parameters and objects.
+   compare inventory, coordinates, structures, scientific parameters, coverage
+   and separate analysis/representation bindings. B4's proposed additional
+   figure provenance remains conditional on its scope decision.
 7. Exercise error/retry, source/result lifetime and relevant operations through
    Jupyter, canvas popup and detached Studio. Keep independent native Qt evidence
    and installed results in their own scopes.
 
-**E2 — pending:** measure prolonged sessions, repeated load/close/failure,
-several Views and both popup types. Vary atom and structure counts independently:
-a small system with many structures and a larger one with fewer structures.
-Include combined coordinates/interactions/scene residency, first/revisited
-navigation, startup, save/recovery, Python/browser memory and cleanup. Existing
-benchmarks are dated evidence, not a current hardware-GPU or universal-RAM claim.
-Do not introduce lazy residency or prewarming without its separate evidence.
+**E2 — protocol proposed; execution and acceptance decisions pending:** measure
+the following bounded workloads with existing entrypoints. CLI definitions have
+been inspected; this document does not assert that a new campaign has run or
+that an old script is compatible with an unreceived future source.
+
+| Measurement | Defined starting workload and existing entrypoint |
+| --- | --- |
+| Atom/structure axes | `devtools/benchmarks/representative_scale_gate.py --case small --structures 100 --repeats 3 --table-row`, plus small/medium/large with one structure: 2,882 / 26,214 / 104,856 atoms |
+| Actual browser rendering | From `molsysviewer/js`, use `MOLSYSVIEWER_SCALE_MATRIX=small:1,small:10,small:100,medium:1,large:1` with `npm run bench:representative-scale` and the explicit qualified `PYTHON`; retain first draw, first/revisited navigation, representation and memory samples |
+| Combined coordinates/interactions | `devtools/benchmarks/interactions_residency.py --case medium --pattern churn --layout rings --repeats 3`; receive `reuse` and `churn` on the selected small/medium anchors before extending the matrix |
+| Actual detector control | `devtools/benchmarks/interactions_detector.py --family hbond`: 62 atoms and 5,000 real structures, with the tool's twenty queries; this family does not take a `--structures` option |
+| Scene history ownership | `devtools/benchmarks/scene_history_memory.py --case ordinary --case literal-overlay --repeats 3`, retaining its twenty-five checkpoints per case |
+
+Invoke Python entrypoints with the selected `molsyssuite@uibcdf_3.14`
+interpreter, recording its exact path privately and its version/provider
+identities in the receipt. Reuse the
+[representative baseline](../performance/representative_scale_gate_2026_08.md)
+and [Interactions measurements](../interactions_performance.md); qualify the
+fixture/entrypoint on the selected source before comparing measurements.
+
+Representative-scale coordinates are constructed molecular supercells and
+rigid-drift structures, not an observed MD trajectory. Interactions-residency
+cases are 62×5,000, 10,044×1,000 and 100,006×100 with synthetic nonperiodic
+occurrences; selected input hashes and generation recipes must identify that
+scope. Detector receiving supplies the distinct real-structure control.
+Query repetitions within a process are not fresh-process repetitions.
+
+Record three fresh-process samples per selected anchor, with the tool's actual
+repetition semantics. `representative_scale_gate` and `scene_history_memory`
+already create three workers with `--repeats 3`; do not wrap that in three more
+executions unintentionally. `interactions_residency --repeats 3` repeats queries,
+so three separate invocations are needed for three process samples. For browser
+cold-per-anchor comparison, run one matrix item per CLI invocation three times.
+Alternatively repeat the whole matrix three times and label the shared-browser
+sequence and warm/cold observations precisely; that is not a fresh Chrome per
+item. Fresh processes do not imply cold filesystem or compilation caches.
+
+Report median, median absolute deviation and range, preserving raw samples.
+Record input hashes, sources/providers, policies, cold/warm state, OS,
+architecture, kernel/page size, Python, Node/Chrome, CPU, renderer/GPU/driver,
+RAM and storage. Compare equivalent conditions and separate fixture preparation,
+scientific calculation, transport and drawing. The initial RSS/retirement
+profile is Linux with a verified 4 KiB page size: several tools rely on `/proc`
+and browser RSS currently assumes 4 KiB pages. Verify that profile before the
+campaign. Unsupported/unavailable memory metrics are N/A with their reason and
+reactivation condition, never zero or portable qualification. Non-Linux peak
+fallback observations remain diagnostic unless separately qualified.
+SwiftShader RSS is not hardware VRAM; an incomparable baseline cannot establish
+a regression or a pass.
+
+**E2 prolonged-use subcase — instrumentation proposal, not yet executed:** use
+one kernel/process for three blocks of ten load/edit/query/window/save/recover/
+close cycles, targeting a 20–30 minute observation window. Each block records
+actual elapsed time and cycle counts. Keep an independent witness View, exercise
+both popup types, close only owned resources and sample live resources/memory/
+latencies after each block and at completion. Reuse/instrument the existing
+actual-Jupyter receiver; it currently has no `--cycles`/`--duration` contract.
+Restarting its kernel for every repetition does not test cumulative retention.
+Agree the workload/runtime envelope when E2 is activated before executing it;
+it is a measurement design, not a promised product response time.
+If the completed active cycles do not cover the agreed observation window,
+report that actual scope and the remaining long-session check; agree any
+extension instead of counting idle waits or restarted kernels as prolonged use.
+
+E2 closes only with exact scientific/ownership invariants, rejection without
+lost work, a complete comparable dataset and explained resource retirement.
+Peak RSS is monotonic and allocator retention alone does not prove a leak.
+Latency/memory regressions outside observed variability require explanation and
+triage against the agreed baseline. Any admission thresholds or tolerances
+without an agreed basis remain explicit decisions, not invented universal
+RAM/FPS limits. Document admitted limits; do not introduce lazy residency or
+prewarming under this measurement task.
 
 **E3 — new recommendation; scope/design decision pending:** evaluate useful
 preflight size/cost information before disproportionate scientific jobs. Review
@@ -339,28 +560,74 @@ use its actual owning acceptance and evidence.
 
 ## Execution order and completion audit
 
-The proposed order is **A → B → C → D → E → F → G**, allowing independent owner
-handoffs and received source checks in parallel. A5/A6 are investigations; their
-result may be a correction or a documented, tested disposition. F1 can be
-prepared during implementation, while broad public documentation remains after
-the agreed functionality. Start each fix with its affected failing case, then
-broaden when the changed boundary warrants it. Retain still-applicable results.
+### Parallel lanes and dependency conditions
 
-Before closing #315, inspect each stable ID against its actual current source,
-owning report, executed guard and acceptance. Required unfinished task families,
-unexplained product/qualification failures, missing installed evidence and
-postponed required human acceptance must remain explicit. Deferred items need
-their existing decision, not an invented passing result. Close the coordination
-issue only after its required work has an evidenced disposition; publishing 1.0
-still requires its separate decision and complete release gates.
+The block letters group work; they are not a mandatory serial schedule.
+
+| Lane | Can advance now | Condition for the next receiving milestone |
+| --- | --- | --- |
+| Evidence and integrity | Protect E0 originals; scope A1–A4 and prepare their targeted cases | Approved private handling where needed, relevant fixes and actual invariants on rejected/failed operations; E0 acceptance before cleanup/disclosure/evidentiary closure |
+| Plot correctness | B1 diagnosis and B2/B3 reproductions can proceed beside A | Correlated authority and observed rendering; receive every applicable safety/contract correction in the selected Viewer source |
+| Provider work | D1–D5 handoffs, contract decisions and native review do not wait for all Viewer/UI work | Supported owner revision/contract plus the relevant consumer guard; a provider issue closing is not consumer acceptance |
+| Integration and accepted tasks | Review current contributed slices, prepare C1/C5 and unblocked D6 children | C2's new host pin follows B1; each task receives only its actual prerequisites and operation/effect cells |
+| Sessions and evidence | Prepare E1 inputs/matrix and E2 protocol; receive implemented slices without declaring the entire session complete | Required operations, scientific prerequisites and identified combined sources for the claimed workflow |
+| Decisions and documentation | Resolve B3.6/B4/E3/F1 scope and prepare F1 when adopted; maintain scoped API/help with every change | Broad final documentation follows the agreed functionality; relevant minimal artifact documentation is required before its publication |
+
+A5/A6 can close through reproduction and correction or a documented, tested
+disposition. Unconfirmed investigations must not indefinitely serialize unrelated
+work. Keep their conclusions distinct from the confirmed defects. Freeze inputs
+during a gate, using isolated worktrees for independent work rather than silently
+qualifying a moving source. Start with affected cases and broaden when the changed
+boundary warrants it; retain still-applicable results.
+
+### Two distinct delivery milestones
+
+| Milestone | Required scope and evidence | What does not follow from it |
+| --- | --- | --- |
+| **M0 — covering pre-1.0 artifact, #294** | Reviewed selected core source with applicable integrity/navigation/figure defects resolved or validly disposed; capability/compatibility and scoped documentation received; exact candidate/files, provider counterpart and required installed/downstream checks under G | Completion of every D6 GUI task is not automatically a prerequisite for a scoped core artifact. Excluded/unshipped addon capabilities must remain explicit; this milestone neither waives accepted 1.0 work nor authorizes release/tag/package actions |
+| **M1 — complete accepted 1.0 scope** | M0-style evidence for the exact intended release candidate plus all adopted D6 families, E1's complete session, applicable E2/E4 acceptance, accepted design decisions and F's final contract/documentation; strict release gates and separate authorization | Historical M0/source/installed passes do not qualify different bytes, versions or later inputs. Qt remains experimental and postponed human acceptance is not a passing observation |
+
+The planned pre-1.0 Viewer version remains 0.25.0, unfrozen. M0 can be planned
+without completing all addon growth first; its actual selected scope and provider
+capabilities need the maintainer's decision. Both milestones retain the existing
+publication pause. Additional artifact work must not produce duplicate workflow
+dispatches, rebuild already qualified bytes or move published tags.
+
+### What counts as closing an ID or #315
+
+| Tracking outcome | Meaning for completion |
+| --- | --- |
+| Audit recorded | Finding, provenance and intended acceptance preserved; implementation is still pending |
+| Derived to an owning issue | Scope/ownership established; the parent ID remains open until its acceptance is received |
+| Implemented or locally verified | Only the named effect and source are received; required integration/hosted/installed/human checks remain separate |
+| Verified resolution | Owning change and relevant executed guard satisfy the ID's applicable acceptance; source and evidence are addressable |
+| Scope accepted | Maintainer approves a proposal's scope/contract; only the decision is complete. Its implementation and receiving stay open, with an explicit milestone and owning tasks |
+| Approved disposition | Maintainer records rejection/deferral of a new recommendation or an evidenced bounded non-defect/limitation, with date, rationale, scope and review condition where applicable. This does not certify an unimplemented accepted proposal |
+
+B3.6, B4, E3 and F1 first need their explicit scope decisions. A rejected or
+deferred new recommendation can receive that recorded disposition without
+becoming a new publication gate. Previously accepted families cannot be dropped
+through a progress update: any proposed change needs an explicit maintained
+scope decision. No disposition silently overrides a normative guarantee or
+unmet mandatory release evidence.
+
+Before closing #315, inspect every stable ID and required child against current
+source, its owning report, applicable guard and accepted disposition. Derivation
+alone is insufficient. Required unresolved families, unexplained failures and
+missing evidence remain visible; human postponement does not satisfy acceptance.
+Record the appropriate final guard/normative reference, synchronize owning
+closures and archive/index the ledger under the reporting protocol. Completion
+of this coordination issue and authorization to publish 1.0 are separate facts.
 
 ## Evidence retention
 
 The sanitized audit receipt is `msv-repository-audit-20261106.json` in the
 maintainer's private temporary evidence collection. It records source states,
-complete board acquisition, test selections and artifact digests. Preserve the
-evidence in an approved durable location before temporary cleanup; the following
-digests identify private records, not publicly downloadable test artifacts.
+complete board acquisition, test selections and artifact digests. **E0 owns
+durable preservation; accepted custody/destination/reference and verification
+are still pending.** Preserve the scripts/fixtures, environment and outcomes,
+not only this digest table. The following identify private records, not publicly
+downloadable artifacts or proof that a durable copy already exists.
 
 | Evidence | SHA-256 / identity |
 | --- | --- |
