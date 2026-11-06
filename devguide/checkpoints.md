@@ -908,8 +908,9 @@ previous qualification records retain their original candidate and environment.
 **Current handoff — 2026-11-06:** the owner contribution to
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) now implements
 System / Remove atoms, Extract subset and Copy system, plus Geometry / Translate
-and Center, at `55cb9f58f5fe84e1bfd506871f5bbc8ed8fa85c7`.
-The [Center source receiving record](molsysmt_center_receiving_20261106.json) separates
+and Center, plus Superpose structures, at
+`de8cc8605bc23a0f86c5f7e3a02294142ef944be`.
+The [superposition receiving record](molsysmt_fit_receiving_20261106.json) separates
 native numerical checks, host tests, actual Jupyter/Mol*/popup receiving and
 remaining hosted/installed/human gates. Expert paths/defaults and native
 scientific algorithms are unchanged. Host #302 permits atomic selection
@@ -925,8 +926,16 @@ Center passes geometric/mass-weighted analytical checks, nondefault units and
 actual rendered-coordinate receiving. Shared native rejection diagnostics (#603)
 survive automatic refresh and expire with new input/context. The five actual
 Jupyter scenarios pass; 114 panel and 172 native/route checks retain separate,
-overlapping scopes. The full addon collection is running, not yet qualified.
-Continue exact-head CI/owner review and Geometry alignment/periodic/cell tasks.
+overlapping scopes. The clean Center source 55cb9f58f completed all 4,568 addon
+cases without skips (1040.89 s). The newer superposition source separately passes
+315 native/panel cases, 63 route controls and six real Jupyter scenarios, plus
+final caption/multiple-View checks. Its eight-step fitting flow checks native
+trajectory arrays and actual Mol* positions against an independent SVD oracle.
+The GUI distinguishes moving atoms from fitting atoms and declares its
+same-system initial reference and positional correspondence. The expert API
+retains external references. The prior complete gate does not certify a full
+run on the newer slice. Continue exact-head CI/owner review and Geometry
+periodic/cell, sequence/reference and orientation tasks.
 Rotate awaits the public conversion contract in uibcdf/molsysmt#602; required
 Chemistry and Analysis families remain active work. Installed qualification,
 broad documentation and a future candidate remain separate. 0.25.0 is unfrozen and both 1.0 publications
@@ -2533,10 +2542,11 @@ Resume toward **1.0** in this order:
 1. Complete and inspect the applicable exact-head Viewer CI and owner PR #543
    receiving. Keep the old hosted #301 failures and local environment recovery
    distinct from the new head; queued jobs are not passing evidence.
-2. Receive the full addon collection and exact-head CI for Center/#603, then
-   continue Geometry alignment and periodic/cell task families. Rotate awaits
-   uibcdf/molsysmt#602's public axis/angle constructor. Translate and Center are
-   implemented; Chemistry, Analysis and remaining tasks still need qualification.
+2. Receive exact-head CI for the superposition slice, retaining the prior
+   4,568-case complete Center gate separately. Continue Geometry periodic/cell,
+   sequence/reference and principal-axis tasks. Rotate awaits uibcdf/molsysmt#602.
+   Translate, Center and same-system rigid fitting are implemented; Chemistry,
+   Analysis and remaining task families still need qualification.
 3. Keep the explicitly postponed human System/results/Geometry Jupyter/visible
    Qt review pending. Automated browser transport is received, not a substitute
    for that acceptance. Owner #583/#584 repairs are received; #582/#572/#576 and

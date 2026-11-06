@@ -364,11 +364,19 @@
   "contribution_source": "55cb9f58f5fe84e1bfd506871f5bbc8ed8fa85c7",
   "contribution_delivery": "Published to the existing owner PR #543; not merged into MolSysMT main.",
   "full_addon_collection": {
-    "state": "running",
+    "state": "passed",
     "log": "/tmp/msv-center-full-addon-20261106.log",
     "command": "python -m pytest --receptor=llm tests/molsysviewer_molsysmt",
     "source": "55cb9f58f5fe84e1bfd506871f5bbc8ed8fa85c7",
-    "qualifies_whole_collection": false
+    "qualifies_whole_collection": true,
+    "initial_state": "running at ce0ecd84",
+    "passed": 4568,
+    "skipped": 0,
+    "exit": 0,
+    "duration_seconds": 1040.89,
+    "warnings": 2643,
+    "warning_groups": 10,
+    "boundary": "Exact published Center source 55cb9f58f only; completed before applying the later superposition slice."
   },
   "next_alignment_probe": {
     "state": "passed",

@@ -130,3 +130,15 @@ commit 55cb9f58f, host runtime 49dba88a and the original startup/rejection failu
 The host browser CI 42176308960 passes; core CI 42176308961 has four completed
 successes and four queued test cells at this checkpoint. Queued work, owner
 integration, postponed human acceptance and installed qualification remain open.
+
+## Rigid fitting and multiple-View receiving — 2026-11-06
+
+The [superposition receipt](../molsysmt_fit_receiving_20261106.json) adds a native
+rigid-fit consumer without a host runtime change. Six Jupyter scenarios pass;
+final affected System/fitting checks and the eight-step fitting scenario retain
+actual Mol* coordinates, destination reuse, both popup types and native array
+oracles. The additional saved-choice check confirms separate DOM list ownership
+and separate source/result selection choices in one notebook. Existing IDs
+already provide isolation; no speculative correction is made. Owner integration,
+new-head hosted CI, installed qualification and postponed human acceptance remain
+separate from these source results.

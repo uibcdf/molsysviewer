@@ -1,11 +1,13 @@
 # MolSysMT tools add-on — implementation plan
 
 **Current source scope — 2026-11-06:** System / Remove atoms, Extract subset and
-Copy system, plus Geometry / Translate and Center, share selection and independent-result
+Copy system, plus Geometry / Translate, Center and Superpose structures, share selection and independent-result
 controls in the owner PR #543. Native science and expert defaults are unchanged.
-See [Center receiving](molsysmt_center_receiving_20261106.json) and the
-[current work order](checkpoints.md#what-is-next). Center is qualified in source;
-continue alignment and periodic/cell tasks while Rotate receives the native
+See [superposition receiving](molsysmt_fit_receiving_20261106.json) and the
+[current work order](checkpoints.md#what-is-next). The clean prior Center source
+passes the complete 4,568-case addon gate; the newer rigid-fit slice has its own
+315-case affected and real-browser receiving. Continue periodic/cell and further
+reference/orientation tasks while Rotate receives the native
 constructor requested in uibcdf/molsysmt#602. Shared diagnostic retention is
 proposed and tested under uibcdf/molsysmt#603. Human
 Jupyter/visible Qt review remains postponed and no release is authorized.
@@ -530,7 +532,7 @@ current System/Geometry slice; it does not declare the addon or 1.0 complete.
 | Required capability | Owning surface and proof | Current disposition |
 | --- | --- | --- |
 | Inspect/select inventory; remove, extract and copy molecular data | Core System/selections plus owner System tasks; exact atom/structure maps, independent results and stale-confirmation guards | Implemented in contribution source; owner/hosted/installed and postponed human acceptance remain separate. |
-| Transform/align coordinates, choose structures and work with periodic cells | Owner Geometry over received native tools; analytical geometry, units, explicit references/structures, fixed-box effects and recovery guards | Translate and Center implemented and numerically/browser checked in contribution source; alignment and periodic/cell task families remain required work. Axis/angle conversion for Rotate is requested in uibcdf/molsysmt#602. |
+| Transform/align coordinates, choose structures and work with periodic cells | Owner Geometry over received native tools; analytical geometry, units, explicit references/structures, fixed-box effects and recovery guards | Translate, Center and same-system rigid fitting implemented and numerically/browser checked in contribution source; sequence/external-reference/orientation and periodic/cell task families remain required work. Axis/angle conversion for Rotate is requested in uibcdf/molsysmt#602. |
 | Inspect chemistry and explicitly prepare/build systems | Owner Chemistry over qualified native reports and preparation/build functions; explicit method/state/model, before/after scientific checks, native maps or independent ownership | Expert routes are received by family; graphical tasks remain required work. Missing native effects stay owned and visible. |
 | Calculate and inspect scientific results | Owner Analysis; explicit units, method/engine, evaluated scope and bounded results; link core visual owners for representation | Expert routes are received by family; graphical tasks remain required work. |
 | Preserve and recover the result | Core load/export/session services and actual native format support; read back molecular data, supported named analyses and scene through their respective owners | Existing services are reused; the complete new task workflow still needs end-to-end receiving. No universal H5MSM result store is promised. |

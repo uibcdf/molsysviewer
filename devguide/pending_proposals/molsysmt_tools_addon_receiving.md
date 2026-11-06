@@ -14,6 +14,19 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Superposition receiving — 2026-11-06
+
+PR #543 publishes `de8cc8605bc23a0f86c5f7e3a02294142ef944be`, adding reviewed
+native unweighted Kabsch fitting with explicit moving/fitting populations,
+same-system reference structure and declared positional correspondence. The
+[receipt](../molsysmt_fit_receiving_20261106.json) records 315 native/panel and
+63 route controls; six actual Jupyter scenarios plus final caption/independent
+saved-choice checks pass. Mol* positions and native trajectories match an
+independent SVD oracle. The prior clean Center source completed all 4,568 cases;
+its result is not a full gate on the new slice. Sequence/reference/orientation,
+periodic/cell, Chemistry/Analysis and whole-session persistence remain work.
+Owner integration, exact-head CI, postponed human and installed gates stay open.
+
 ## Whole-session milestone and Center receiving — 2026-11-06
 
 The accepted objective covers System, Geometry, Chemistry, Analysis and a real
