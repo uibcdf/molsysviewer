@@ -1,5 +1,22 @@
 # MolSysMT tools add-on — implementation plan
 
+**Actual Jupyter and mechanics repair receiving — 2026-11-05:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) is reconciled at
+`1c88e785b` with native `e614ba367` and received Viewer `36ab93b7`.
+Viewer #300 is closed in source; MolSysMT #590/#591 corrections and their guards
+remain in the owner PR. Real Jupyter/anywidget comms, Mol* and both popup
+lifecycles pass. Human Jupyter/visible Qt review is explicitly postponed.
+
+The [current receipt](molsysmt_jupyter_final_receiving_20261105.json) keeps the
+complete 4,485-case run on its earlier native basis. The newer basis separately
+passes 85 native controls, 118 bound mechanics/System cases, 79 nonbonded/
+minimization cases and the actual-Jupyter pytest guard. Mixed axes retain their
+native shapes and independent CPU/Reference pair-energy checks. No native
+algorithm is authored here; all 157 incoming owner course notebooks retain
+executable content. Only System / Remove atoms is graphical. Exact-head CI,
+owner integration, remaining tasks and installed qualification stay pending;
+both 1.0 publications remain paused. Earlier checkpoints retain their inputs.
+
 **Molecular tools and execution platforms received — 2026-11-05:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `e3d5d21a5`,
 receives native `50854766d` with document conflicts resolved. Expert exposure

@@ -14,6 +14,17 @@ supersedes: []
 
 # Receiving the redesigned MolSysMT tools addon
 
+## Actual Jupyter and native repair receiving — 2026-11-05
+
+PR #543 `1c88e785b` receives native `e614ba367` with Viewer `36ab93b7`.
+The [receipt](../molsysmt_jupyter_final_receiving_20261105.json) distinguishes
+4,485 earlier complete addon passes from the new native/consumer scopes and
+actual-Jupyter guard. Viewer #300 is closed; owner #590/#591 fixes remain
+proposed for integration. The generated-index conflict is resolved; no native
+algorithm or incoming course executable content is changed by the contribution.
+Human Jupyter/visible Qt review is explicitly postponed, with exact-head CI,
+owner acceptance, remaining graphical tasks and installed qualification pending.
+
 ## Execution-platform receiving and shared warning — 2026-11-05
 
 PR #543 e3d5d21a5 receives native 50854766d (#559). The

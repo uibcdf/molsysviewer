@@ -1,5 +1,22 @@
 # Development checkpoint
 
+**Actual Jupyter and mechanics repair receiving — 2026-11-05:**
+[MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) is reconciled at
+`1c88e785b` with native `e614ba367` and received Viewer `36ab93b7`.
+Viewer #300 is closed in source; MolSysMT #590/#591 corrections and their guards
+remain in the owner PR. Real Jupyter/anywidget comms, Mol* and both popup
+lifecycles pass. Human Jupyter/visible Qt review is explicitly postponed.
+
+The [current receipt](molsysmt_jupyter_final_receiving_20261105.json) keeps the
+complete 4,485-case run on its earlier native basis. The newer basis separately
+passes 85 native controls, 118 bound mechanics/System cases, 79 nonbonded/
+minimization cases and the actual-Jupyter pytest guard. Mixed axes retain their
+native shapes and independent CPU/Reference pair-energy checks. No native
+algorithm is authored here; all 157 incoming owner course notebooks retain
+executable content. Only System / Remove atoms is graphical. Exact-head CI,
+owner integration, remaining tasks and installed qualification stay pending;
+both 1.0 publications remain paused. Earlier checkpoints retain their inputs.
+
 **Molecular tools and execution platforms received — 2026-11-05:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543), `e3d5d21a5`,
 receives native `50854766d` with document conflicts resolved. Expert exposure
@@ -2506,17 +2523,19 @@ Resume toward **1.0** in this order:
 
 **Current order — 2026-11-05:**
 
-1. Receive exact-head CI and owner review of PR #543 e3d5d21a5, native
-   50854766d and controlled Viewer runtime ecf4635e. Conflicts are resolved;
-   the complete local addon gate passes 4,512 cases. Retain source identity
-   and known native #583/#584 warnings/errors; queued CI is not green.
-2. Perform live Jupyter, visible Qt and real-popup review with the updated
-   System notebook. Then implement remaining System/Geometry/Chemistry/Analysis
-   tasks. Independent new-View presentation needs a qualified shared host path.
-3. Receive scientific-owner #583/#584 repairs and retain #582 effective recipe,
-   #572 force-reader and #576 correspondence ownership. #587's paginated board
-   fix is proposed in the PR; three unrelated label discrepancies remain. Shared
-   awareness/adoption is tracked by MolSysSuite#171 and MolI#85.
+1. Receive exact-head CI and owner review of PR #543 `1c88e785b`, native
+   `e614ba367` and received Viewer `36ab93b7`. The contribution is mergeable;
+   its current native/consumer/GUI scopes pass. Retain the complete 4,485-case
+   gate at its older basis and native #583/#584 limits; queued CI is not green.
+2. Human Jupyter/visible Qt/popup review is explicitly postponed. The actual-
+   Jupyter automated guard is received and does not replace that acceptance.
+   Continue independent remaining System/Geometry/Chemistry/Analysis tasks;
+   independent new-View presentation needs a qualified shared host path.
+3. Receive scientific-owner #583/#584 repairs; retain #582 effective recipes,
+   #572 force reading, #576 correspondence and #589 engine-state copy ownership.
+   Native #561/#588 repairs are received. Addon #590/#591 and #587's tool fix
+   remain in the owner PR. Shared inventory-awareness/adoption is tracked by
+   MolSysSuite#171 and MolI#85; three earlier label discrepancies remain separate.
 4. Receive applicable hosted artifacts, retaining the prior macOS and
    #295 public-provider/pandas evidence. Triage #294's import-order observation
    with controlled inputs; do not duplicate dispatches to bypass queues.
