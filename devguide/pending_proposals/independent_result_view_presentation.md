@@ -83,7 +83,17 @@ source to the resolved module's own source; a stale tab cache is not silently
 reused for a new presentation entrypoint. Final targeted receiving follows
 these refinements rather than inheriting an earlier runtime's verdict.
 
-Final input receiving, exact-head CI and owner integration remain in progress;
+Final receiving on code commit `42234de8` passes the seven-step result browser
+guard and nine presentation/native-window ownership cases. The
+[receiving record](../independent_view_presentation_receiving_20261105.json)
+retains exact source hashes, earlier scopes, the repaired test-harness failures,
+the plain Jupyter control diagnostic and the native ed09f6453 receiving basis.
+The CI receptor reports run 42168035122 pending with eight queued test jobs;
+there is no hosted passing claim. The owner contribution now pins this exact
+Viewer code, with scientific returns unchanged. Owner #583/#584 repairs are
+received and the duplicate consumer reports archived rather than left open.
+
+Hosted exact-head CI and owner integration remain in progress;
 visible human Jupyter/Qt review is still explicitly postponed. Native offscreen
 window ownership does not certify rendered Qt/GPU behavior.
 Unrelated human scratch files and all sibling worktrees are preserved. The suite
