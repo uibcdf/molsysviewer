@@ -15,6 +15,26 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
+## Current hosted follow-up — 2026-11-07
+
+Checkpoint `9a569c55` is not accepted: the completed general Linux and
+three-platform Python 3.14 source-pair cells fail four pre-existing
+camera-envelope assertions which omit the newly required revision field.
+Their corrections retain exact dictionaries: independent HTML exports use
+revision zero and an authority reset uses revision one. The affected
+six-module selection passes 66 cases locally.
+
+Core E2E `42348064230` additionally kills the expanded Studio entry at its
+old 180-second outer budget. The previously completed local entry takes
+198.541 seconds. A 360-second bound is now specific to that integrated entry;
+individual operation deadlines, other suite defaults, caller overrides
+and all assertions are preserved. Receiving through the canonical shared
+browser runner passes in 193.057 seconds, with 4,478 fixed inputs and all
+18 owned processes closed. No deadline override or skip was used. The separately executed actual Jupyter guard
+passes in 101.551 seconds with 19 owned processes and zero cleanup survivors
+or errors; it does not qualify the failed core run. Original outcomes remain
+in the [hosted checkpoint](../robustness_hosted_checkpoint_20261107.json).
+
 **A5 — partial; the bounded camera/control correction is delivered in
 `ebe3d46b`; playback, hidden endpoints and consolidated acceptance
 remain pending; P2.** The Viewer maintainer

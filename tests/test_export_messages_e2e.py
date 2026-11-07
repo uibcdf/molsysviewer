@@ -119,6 +119,7 @@ def test_build_export_messages_captures_reproducible_workbench_state_end_to_end(
             "up": [0.0, 1.0, 0.0],
         },
         "duration_ms": 0,
+        "camera_revision": 0,
     }
 
 

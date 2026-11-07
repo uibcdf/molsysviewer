@@ -67,6 +67,19 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
+**Immediate correction, 2026-11-07:** the consolidated hosted checkpoint is
+not green. Completed Linux/source-pair cells expose four older camera-envelope
+assertions; Windows adds five native-error portability assertions. Core E2E
+hits Studio's obsolete 180-second outer budget, while its separate actual
+Jupyter guard passes. Four general macOS cells remain queued in the recorded
+observation. Scoped corrections pass 66 Python cases and 378 documentation/protocol
+cases. Canonical shared-browser Studio passes in 193.057 seconds with 4,478
+fixed inputs and 18 owned processes closed; consolidated qualification remains due. Preserve the
+original runs, do not count this as acceptance, and finish this bounded
+correction before publishing the isolated PR #543 reconciliation. Details and
+native outcomes: [hosted checkpoint](../robustness_hosted_checkpoint_20261107.json).
+The delivered counter remains **8/46 (17.4%)**; final acceptance remains **1/46**.
+
 **Next actions:** complete A5's approved coherent live capture/save integration, then B2's numeric labels
 and the remaining DataCard lifecycle work. A1/A3 source and guards are delivered
 in `38eb8785`, following explicit maintainer disclosure review; advisory drafts

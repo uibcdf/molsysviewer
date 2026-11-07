@@ -2,6 +2,7 @@
 
 import gc
 import html
+from errno import ENOENT
 from pathlib import Path
 
 import comm
@@ -85,8 +86,9 @@ def test_build_releases_owned_views_without_replacing_the_writer_error(source, t
     marker.write_bytes(b"caller-owned data")
     with msv.new_view(source) as caller:
         # A borrowed real writer gives the original native filesystem error.
-        with pytest.raises(IsADirectoryError) as control:
+        with pytest.raises(OSError) as control:
             build(caller, output)
+        assert Path(control.value.filename) == output
         baseline, existing = resources(), view_ids()
         original, state = coordinates(source), caller.export_state()
         for _ in range(2):
@@ -115,8 +117,13 @@ def test_borrowed_view_keeps_exact_data_state_callbacks_and_comms(source, tmp_pa
             output.mkdir()
             marker = output / "keep.txt"
             marker.write_bytes(b"preserve")
-            with pytest.raises(IsADirectoryError):
+            with pytest.raises(OSError) as control:
+                output.write_text("content", encoding="utf-8")
+            with pytest.raises(type(control.value)) as failure:
                 build(caller, output)
+            assert failure.value.errno == control.value.errno
+            assert failure.value.filename == control.value.filename
+            assert failure.value.args == control.value.args
             assert marker.read_bytes() == b"preserve"
         else:
             assert build(caller, output, title="Borrowed export") == str(output)
@@ -189,7 +196,9 @@ def test_gallery_writer_failure_releases_both_shell_and_fresh_demo_owner(tmp_pat
     marker = blocked / "keep.txt"
     marker.write_bytes(b"unrelated caller data")
     baseline, existing = resources(), view_ids()
-    with pytest.raises(IsADirectoryError) as failure:
+    with pytest.raises(OSError) as control:
+        blocked.write_text("content", encoding="utf-8")
+    with pytest.raises(type(control.value)) as failure:
         standalone.build_standalone0_html(
             None,
             str(output),
@@ -197,7 +206,9 @@ def test_gallery_writer_failure_releases_both_shell_and_fresh_demo_owner(tmp_pat
             apply_project_config=False,
             runtime_urls=[(Path(msv.__file__).parent / "viewer.js").resolve().as_uri()],
         )
-    assert str(blocked) in str(failure.value)
+    assert failure.value.errno == control.value.errno
+    assert failure.value.args == control.value.args
+    assert Path(failure.value.filename) == blocked
     assert marker.read_bytes() == b"unrelated caller data"
     assert output.is_file(), "the already-written shell remains caller-owned after gallery failure"
     assert_owned_resources_released(baseline, existing)
@@ -231,7 +242,8 @@ def test_real_owner_close_failure_preserves_the_original_writer_error(source, tm
                 if writer_fails:
                     (tmp_path / "missing" / "output.html").write_text("content", encoding="utf-8")
         if writer_fails:
-            assert str(tmp_path / "missing" / "output.html") in str(failure.value)
+            assert failure.value.errno == ENOENT
+            assert Path(failure.value.filename) == tmp_path / "missing" / "output.html"
             assert any("owned resource close failed" in note for note in failure.value.__notes__)
         else:
             assert str(failure.value) == "owned resource close failed"

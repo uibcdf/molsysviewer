@@ -83,6 +83,7 @@ def test_build_html_includes_camera_snapshot(monkeypatch):
         "op": "set_camera_snapshot",
         "snapshot": {"target": [0, 0, 0]},
         "duration_ms": 0,
+        "camera_revision": 0,
     }
 
 
@@ -116,6 +117,7 @@ def test_build_export_messages_project_current_scene_and_append_camera_snapshot(
         "op": "set_camera_snapshot",
         "snapshot": {"target": [1, 2, 3]},
         "duration_ms": 0,
+        "camera_revision": 0,
     }
 
 

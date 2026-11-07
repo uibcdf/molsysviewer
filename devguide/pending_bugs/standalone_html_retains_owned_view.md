@@ -48,6 +48,18 @@ preserves the source/guard hashes, causal results and scope limits. This is
 Python ownership evidence, not browser, visible Qt,
 installed-package or final candidate qualification.
 
+## Hosted portability follow-up — 2026-11-07
+
+The exact-source Python 3.14 campaign `42348065524` retains its native failure.
+Windows exposes five test portability errors: four directory writes raise
+`PermissionError` rather than Unix's `IsADirectoryError`, and one assertion
+compares an unescaped path with the exception's repr-formatted message.
+The ownership mechanism is unchanged. The corrected guards compare native
+control exception types, error codes, arguments and filenames, retaining
+the original writer error and every resource/data-preservation assertion.
+The affected six-module selection passes 66 cases locally; actual Windows
+receiving remains pending. See the [hosted checkpoint](../robustness_hosted_checkpoint_20261107.json).
+
 Related #316 concerns initialization failure in `new_view`; #318 concerns a
 failed close blocking other cleanup. Neither alone covers this writer's
 successful-return lifetime. This follow-up belongs to the A4/A6 boundary of

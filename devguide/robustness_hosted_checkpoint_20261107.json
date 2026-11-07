@@ -1,6 +1,6 @@
 {
   "schema": "molsysviewer.robustness_hosted_checkpoint@1",
-  "observed_at": "2026-11-07T06:43:31.897888+00:00",
+  "observed_at": "2026-11-07T15:34:01.191056+00:00",
   "plan": "uibcdf/molsysviewer#315",
   "source_commit": "ebe3d46be7422fe402151fc6ecf7bd1215c3d30d",
   "ci_head": "9a569c55c02f114908aba24dc5422790c7eccacf",
@@ -20,7 +20,7 @@
     "ordinary_host_network_read_passed": true
   },
   "publication": "paused; no tags, releases, packages or promotions",
-  "status": "in progress; no terminal acceptance yet",
+  "status": "Failed completed cells require correction/receiving; general CI still queued for four macOS cells.",
   "source_trees": {
     "molsysviewer": "d54de5f690356c0ecbc5ae9a08fdfacbc69e4fa5",
     "tests": "adfdbaf8a7e93fa1d5d6345067f5a0d4b879014c"
@@ -38,96 +38,319 @@
         {
           "name": "Test on macos-15, Python 3.13",
           "status": "queued",
-          "conclusion": ""
+          "conclusion": "",
+          "failed_steps": []
         },
         {
           "name": "Test on macos-15, Python 3.12",
           "status": "queued",
-          "conclusion": ""
+          "conclusion": "",
+          "failed_steps": []
         },
         {
           "name": "Test on ubuntu-latest, Python 3.14",
-          "status": "in_progress",
-          "conclusion": ""
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            "Run tests"
+          ]
         },
         {
           "name": "Test on ubuntu-latest, Python 3.12",
-          "status": "in_progress",
-          "conclusion": ""
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            "Run tests"
+          ]
         },
         {
           "name": "Test on ubuntu-latest, Python 3.11",
-          "status": "in_progress",
-          "conclusion": ""
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            "Run tests"
+          ]
         },
         {
           "name": "Test on macos-15, Python 3.11",
           "status": "queued",
-          "conclusion": ""
+          "conclusion": "",
+          "failed_steps": []
         },
         {
           "name": "Test on ubuntu-latest, Python 3.13",
-          "status": "in_progress",
-          "conclusion": ""
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            "Run tests"
+          ]
         },
         {
           "name": "Test on macos-15, Python 3.14",
           "status": "queued",
-          "conclusion": ""
+          "conclusion": "",
+          "failed_steps": []
         },
         {
           "name": "Check skipped-commit backlog",
           "status": "completed",
-          "conclusion": "skipped"
+          "conclusion": "skipped",
+          "failed_steps": []
         }
       ]
     },
     {
       "databaseId": 42348064230,
       "name": "CI_e2e",
-      "status": "in_progress",
-      "conclusion": "",
+      "status": "completed",
+      "conclusion": "failure",
       "event": "workflow_dispatch",
       "headSha": "9a569c55c02f114908aba24dc5422790c7eccacf",
       "url": "https://github.com/uibcdf/molsysviewer/actions/runs/42348064230",
       "jobs": [
         {
           "name": "Core E2E",
-          "status": "in_progress",
-          "conclusion": ""
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            "Run core E2E tests"
+          ]
         },
         {
           "name": "Check skipped-commit backlog",
           "status": "completed",
-          "conclusion": "skipped"
+          "conclusion": "skipped",
+          "failed_steps": []
         }
       ]
     },
     {
       "databaseId": 42348065524,
       "name": "Python 3.14 source pair",
-      "status": "queued",
-      "conclusion": "",
+      "status": "completed",
+      "conclusion": "failure",
       "event": "workflow_dispatch",
       "headSha": "9a569c55c02f114908aba24dc5422790c7eccacf",
       "url": "https://github.com/uibcdf/molsysviewer/actions/runs/42348065524",
       "jobs": [
         {
           "name": "Source pair on macos-15, Python 3.14",
-          "status": "queued",
-          "conclusion": ""
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            "Run MolSysViewer Python tests"
+          ]
         },
         {
           "name": "Source pair on windows-2025, Python 3.14",
-          "status": "in_progress",
-          "conclusion": ""
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            "Run MolSysViewer Python tests"
+          ]
         },
         {
           "name": "Source pair on ubuntu-latest, Python 3.14",
-          "status": "in_progress",
-          "conclusion": ""
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            "Run MolSysViewer Python tests"
+          ]
         }
       ]
     }
-  ]
+  ],
+  "historical_observations": [
+    {
+      "observed_at": "2026-11-07T06:43:31.897888+00:00",
+      "status": "in progress; no terminal acceptance yet",
+      "runs": [
+        {
+          "databaseId": 42348051898,
+          "name": "CI",
+          "status": "queued",
+          "conclusion": "",
+          "event": "workflow_dispatch",
+          "headSha": "9a569c55c02f114908aba24dc5422790c7eccacf",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/42348051898",
+          "jobs": [
+            {
+              "name": "Test on macos-15, Python 3.13",
+              "status": "queued",
+              "conclusion": "",
+              "failed_steps": []
+            },
+            {
+              "name": "Test on macos-15, Python 3.12",
+              "status": "queued",
+              "conclusion": "",
+              "failed_steps": []
+            },
+            {
+              "name": "Test on ubuntu-latest, Python 3.14",
+              "status": "completed",
+              "conclusion": "failure",
+              "failed_steps": [
+                "Run tests"
+              ]
+            },
+            {
+              "name": "Test on ubuntu-latest, Python 3.12",
+              "status": "completed",
+              "conclusion": "failure",
+              "failed_steps": [
+                "Run tests"
+              ]
+            },
+            {
+              "name": "Test on ubuntu-latest, Python 3.11",
+              "status": "completed",
+              "conclusion": "failure",
+              "failed_steps": [
+                "Run tests"
+              ]
+            },
+            {
+              "name": "Test on macos-15, Python 3.11",
+              "status": "queued",
+              "conclusion": "",
+              "failed_steps": []
+            },
+            {
+              "name": "Test on ubuntu-latest, Python 3.13",
+              "status": "completed",
+              "conclusion": "failure",
+              "failed_steps": [
+                "Run tests"
+              ]
+            },
+            {
+              "name": "Test on macos-15, Python 3.14",
+              "status": "queued",
+              "conclusion": "",
+              "failed_steps": []
+            },
+            {
+              "name": "Check skipped-commit backlog",
+              "status": "completed",
+              "conclusion": "skipped",
+              "failed_steps": []
+            }
+          ]
+        },
+        {
+          "databaseId": 42348064230,
+          "name": "CI_e2e",
+          "status": "completed",
+          "conclusion": "failure",
+          "event": "workflow_dispatch",
+          "headSha": "9a569c55c02f114908aba24dc5422790c7eccacf",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/42348064230",
+          "jobs": [
+            {
+              "name": "Core E2E",
+              "status": "completed",
+              "conclusion": "failure",
+              "failed_steps": [
+                "Run core E2E tests"
+              ]
+            },
+            {
+              "name": "Check skipped-commit backlog",
+              "status": "completed",
+              "conclusion": "skipped",
+              "failed_steps": []
+            }
+          ]
+        },
+        {
+          "databaseId": 42348065524,
+          "name": "Python 3.14 source pair",
+          "status": "completed",
+          "conclusion": "failure",
+          "event": "workflow_dispatch",
+          "headSha": "9a569c55c02f114908aba24dc5422790c7eccacf",
+          "url": "https://github.com/uibcdf/molsysviewer/actions/runs/42348065524",
+          "jobs": [
+            {
+              "name": "Source pair on macos-15, Python 3.14",
+              "status": "completed",
+              "conclusion": "failure",
+              "failed_steps": [
+                "Run MolSysViewer Python tests"
+              ]
+            },
+            {
+              "name": "Source pair on windows-2025, Python 3.14",
+              "status": "completed",
+              "conclusion": "failure",
+              "failed_steps": [
+                "Run MolSysViewer Python tests"
+              ]
+            },
+            {
+              "name": "Source pair on ubuntu-latest, Python 3.14",
+              "status": "completed",
+              "conclusion": "failure",
+              "failed_steps": [
+                "Run MolSysViewer Python tests"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "follow_up": {
+    "owner_issues": [
+      "uibcdf/molsysviewer#315",
+      "uibcdf/molsysviewer#319",
+      "uibcdf/molsysviewer#324"
+    ],
+    "camera_envelope": "Four existing assertions omitted newly required revision fields; preserve exact dictionary comparisons with static revision 0 and authority reset revision 1.",
+    "windows_error_guards": "Four directory-write cases assumed IsADirectoryError instead of Windows PermissionError; one compared an unescaped path against repr-formatted OSError text. Compare native control exception type/errno/args/filename and original error ownership.",
+    "studio_outer_budget": "Core runner killed the expanded Studio entry at 180s, after actual primary/popup checks. Earlier complete local receiving took 198.541s. Bound this entry at 360s; leave operation deadlines, other suite defaults and explicit caller overrides unchanged.",
+    "hosted_live_jupyter": "Actual Jupyter work-file guard separately completed native 0 in 101.551s, 19 owned processes, zero cleanup survivors/errors. This does not turn the failed core run into a pass.",
+    "local_followup": "66 affected Python cases pass (32.11s); 378 documentation/protocol cases pass (3.28s); standalone TypeScript and E2E build native0. Canonical shared-browser Studio native0 in193.057s,4478fixed selected inputs,18owned processes closed, no timeout/skip/deadline override. Windows receiving and complete hosted acceptance remain pending.",
+    "reruns_dispatched": false,
+    "raw_failed_logs": "Preserved privately; no original run or failure replaced.",
+    "local_receiving": {
+      "focused_python": {
+        "tests": 66,
+        "native_exit": 0,
+        "pytest_seconds": 32.11,
+        "selected_inputs_unchanged": true
+      },
+      "documentation_protocol": {
+        "tests": 378,
+        "native_exit": 0,
+        "pytest_seconds": 3.28
+      },
+      "canonical_studio": {
+        "native_exit": 0,
+        "outer_timeout": false,
+        "seconds": 193.05664821201935,
+        "input_count": 4478,
+        "changed_inputs": [],
+        "errors": [],
+        "cleanup": {
+          "tracked": 18,
+          "survivors": [],
+          "errors": []
+        }
+      },
+      "artifact_sha256": {
+        "focused.json": "c1f136d3a26804dcb62940f89e14b30835f91af5aac0c532f77cc3cf9ad1f995",
+        "focused.xml": "c0ae7623692e3ae64530dc0f180fa5106fb520164d2e57d93b25d0cbe59cfa6f",
+        "focused.log": "1f52299b79978746eb79285c8e671a363134bd1117e9b5375dbed5c28cf8b63d",
+        "studio.json": "f7ebd5d7bc52f1100f07426d110f8f924379a5d16bb4f1dddccdaa210a24b26f",
+        "studio.log": "c165ae4d199da4435646e66e4092df84e18c99f7f1b41bc3b802f0b8173bcb4e",
+        "studio-inputs-before.json": "75937b4eced252cbc3976af8baac7977dd990ef0ac1046bb1594aad6e6d08fd8",
+        "studio-inputs-after.json": "75937b4eced252cbc3976af8baac7977dd990ef0ac1046bb1594aad6e6d08fd8",
+        "docs.json": "43c19ce944ffc1cf5d5926bfeaeb09eeccf7b1c708927f4decd1382c2236f2ed",
+        "docs.xml": "3118740acf355ba53e4a3bb3d443e2758cbed776b83a9e178bc0d0632d6c7d0e",
+        "docs.log": "7ab47de2da21a378ceb132d0531df26358b30c5e01bce6314faccb78c0587881"
+      }
+    }
+  }
 }

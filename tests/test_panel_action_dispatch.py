@@ -43,7 +43,7 @@ def test_remote_reset_view_routes_through_the_python_authority():
 
     dispatch_panel_action(view, {"action": "reset_view"})
 
-    assert sent[-1] == {"op": "reset_view", "options": {}}
+    assert sent[-1] == {"op": "reset_view", "options": {}, "camera_revision": 1}
 
 
 def test_remote_context_focus_and_clear_use_authoritative_selection_state():

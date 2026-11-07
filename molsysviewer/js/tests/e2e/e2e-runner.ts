@@ -73,11 +73,16 @@ function suitesForLane(argument: string | undefined): readonly string[] {
 
 function runSuite(name: string, endpoint: string, workspace: string): Promise<void> {
     const defaultTimeoutMs = Number(process.env.E2E_SUITE_TIMEOUT_MS ?? 180_000);
-    // Controls now receives export, notebook and scientific mirror scenarios,
-    // each with its own real Python authority/bootstrap. Keep other suites and
-    // an explicit caller override on their existing budget.
-    const timeoutMs = process.env.E2E_SUITE_TIMEOUT_MS === undefined && name === "controls-visibility"
-        ? 300_000 : defaultTimeoutMs;
+    // These integrated entries receive several independent real Python/Mol*
+    // workflows. Studio's complete local receiving takes 198.54s, beyond the
+    // former 180s outer budget. Keep each operation's own deadlines, all other
+    // suite budgets and any explicit caller override unchanged.
+    const integratedBudgets: Readonly<Record<string, number>> = {
+        "controls-visibility": 300_000,
+        "studio-usability": 360_000,
+    };
+    const timeoutMs = process.env.E2E_SUITE_TIMEOUT_MS === undefined
+        ? integratedBudgets[name] ?? defaultTimeoutMs : defaultTimeoutMs;
     return new Promise((resolveSuite, rejectSuite) => {
         const child = spawn(process.execPath, [resolve(__dirname, `${name}.e2e.js`)], {
             env: { ...fixtureEnvironment(workspace), E2E_WS_ENDPOINT: endpoint },
