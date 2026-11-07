@@ -61,10 +61,9 @@
     "Initial new parser authoring assumption rejected valid deeply nested JSON; corrected to unambiguously malformed evidence and kept original failure.",
     "Initial workflow expectation required always-only full JUnit; corrected to preserve it only in full profile, with distinct diagnostic receipts."
   ],
-  "remote_dispatch_performed": false,
+  "remote_dispatch_performed": true,
   "remaining": [
-    "Review/publish diagnostics batch with skip-ci.",
-    "One bounded source-only diagnostic execution with source46ef28eb/pandas2.3.3; inspect native facts and safe evidence.",
+    "Inspect the single hosted diagnostic, native GPU observations and safe Jupyter phase.",
     "Diagnose actual causes or obtain explicit disposition, preserve failures; complete required full acceptance separately."
   ],
   "private_receipt_sha256": {
@@ -108,5 +107,31 @@
       "macOS": "success",
       "Linux": "failure; final updated annotation GPU pick"
     }
+  },
+  "remote_diagnostic": {
+    "run_id": 42395570310,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/42395570310",
+    "exact_source": "b980adb589dd70df524b720d814227503d78139d",
+    "molsysmt_source": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+    "pandas": "2.3.3",
+    "scope": "One Linux diagnostic; source_receiving=true, receiving_scope=diagnostics. No candidate tags or package production.",
+    "observed_status": "in_progress",
+    "conclusion": null,
+    "submitted_once": true
+  },
+  "selected_private_evidence_custody": {
+    "custody_set": "hosted-diagnostics-20261107-1",
+    "files": 41,
+    "bytes": 254646,
+    "manifest_sha256": "184cf02a611a6f279f4c1ed306ccf98760309d78e0ac413170b30251d111565b",
+    "permissions": "Directories 0700; files 0600; copied hashes verified.",
+    "originals_retained": true,
+    "off_host_backup_claimed": false,
+    "initial_permission_audit": "Rejected intermediate directory modes; corrected within the newly owned set and reverified. Root remained 0700."
+  },
+  "documentation_checks": {
+    "passed": 382,
+    "native_exit": 0,
+    "seconds": 2.16
   }
 }

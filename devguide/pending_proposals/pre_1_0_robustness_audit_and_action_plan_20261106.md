@@ -88,8 +88,9 @@ unresolved. A source-only Linux diagnostic profile preserves the full workflow
 default and rejects candidate/non-Linux requests; its actual Bash/profile
 checks pass 51 cases. The combined workflow/backlog/parser selection passes
 122 cases, with one explicitly unselected live profile; the separately executed
-live profile above supplies its own evidence. One bounded hosted observation follows reviewed delivery,
-without repeating the unrelated full matrix or claiming release acceptance.
+live profile above supplies its own evidence. The single Linux diagnostic run
+`42395570310` receives source `b980adb5`; its observed state is in progress,
+without a result yet. It does not repeat the full matrix or establish release acceptance.
 See the [diagnostic receipt](../hosted_receiving_diagnostics_20261107.json).
 
 The reviewed correction is published as `e4dd58cf`, with `[skip ci]`. Its one
