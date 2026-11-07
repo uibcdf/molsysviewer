@@ -103,6 +103,17 @@ nor the local controls pass closes the older hosted observations. The
 [box/framing receipt](../box_display_receiving_20261107.json) retains both
 outcomes and their exact source/diagnostic scopes.
 
+The subsequent completed-draw correction has a genuine failing-before camera/
+frame ordering guard, nine passing directed cases and 371 canonical JavaScript
+passes. Full Studio and the shared export/Movie entries separately receive the
+same runtime; 127 Python boundary cases pass. The [sampling receipt](../completed_draw_capture_receiving_20261107.json)
+retains their inputs and the sandbox's file-level reporting limitation. This
+does not explain the earlier Jupyter failure or enable moving captures: the
+current version-1 protocol still rejects a changed frame/recipe. The next
+implementation must retain the sampled frame's complete dependent context,
+without pausing/navigating the live View or copying its trajectory. A5 and the
+progress counters remain unchanged.
+
 **Hosted scope remains separate.** General run `42387339383` passes its four
 Linux cells; four macOS cells remained queued at the last inspection. Source
 pair `42387355324` passes Windows/macOS but fails Linux's updated-annotation
@@ -196,16 +207,13 @@ unexplained. No candidate/tag/package/publication action follows from this
 source checkpoint. After delivering this batch, continue the original plan and
 Movie; A5 still needs continuous-playback/hidden-endpoint and broader acceptance.
 
-The [consolidated hosted checkpoint](../robustness_hosted_checkpoint_20261107.json)
-is now active on `9a569c55c02f114908aba24dc5422790c7eccacf`, whose code/test trees
-are identical to the delivered source commit: [CI 42348051898](https://github.com/uibcdf/molsysviewer/actions/runs/42348051898),
-[core E2E 42348064230](https://github.com/uibcdf/molsysviewer/actions/runs/42348064230)
-and [Python 3.14 source pair 42348065524](https://github.com/uibcdf/molsysviewer/actions/runs/42348065524).
-Each was dispatched once. The pair checks the exact public minimum-provider
-source `46ef28eb`, not the still-undelivered e119 addon contribution. All
-results are pending; this is source compatibility receiving, not candidate,
-installed-artifact or publication qualification. Subsequent ledger-only commits
-retain this exact CI head and need their scoped documentation checks.
+The earlier consolidated checkpoint used `9a569c55` and the public minimum
+provider source `46ef28eb`. Its native failures and replacement runs remain in
+the [hosted receipt](../robustness_hosted_checkpoint_20261107.json); the current
+dashboard above owns today's outcome and source identities. These campaigns
+are source compatibility receiving, not installed-artifact or publication
+qualification. Do not describe the original runs as still uninspected or
+apply their result to later changed runtime bytes.
 
 The maintainer correctly identified that reporting final acceptance alone hides
 delivered work and does not help steer daily execution. It also exposed slow

@@ -8,6 +8,7 @@ import { checkStudioCancelBeforeDraw } from "./studio-before-draw-scenarios";
 import { checkStudioCameraIntent } from "./studio-camera-intent-scenarios";
 import { installCameraPacketHold } from "./camera-packet-hold";
 import { observeBoxDraws, boxDrawMark, expectBoxDraw, disposeBoxDraws } from "./studio-box-display-scenarios";
+import { checkStudioCaptureInDraw } from "./studio-capture-draw-scenario";
 
 /** Actual widget/authority receiving, including correlated canvas and file bytes. */
 export async function checkStudioLiveCapture(page: Page, dir: string, workspace: string) {
@@ -303,6 +304,8 @@ export async function checkStudioLiveCapture(page: Page, dir: string, workspace:
         const primarySession = await saveAndInspect(page, page, resolve(workspace, "primary-review.msv"), "session");
         await restoreAndCompare(page, page, primarySession);
         progress("primary state/session roundtrips and file controls passed");
+        await checkStudioCaptureInDraw({ page, path: resolve(workspace, "completed-draw-review.json"), openWork, awaitResult });
+        progress("saved camera/frame belongs to the completed draw before a later native camera change");
 
         // Cancel a pending capture, then deliver its real late reply. No writer
         // may be entered after the authoritative cancellation acknowledgment.

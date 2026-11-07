@@ -15,6 +15,38 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
+## Current completed-draw sampling correction — 2026-11-07
+
+The moving-timeline review reproduces another ordering defect: the capture
+waits for `didDraw`, then reads camera/frame in a Promise continuation. A
+later synchronous draw subscriber can advance the real camera and frame
+before that continuation. The reply then describes state after the completed
+draw. The new real-Mol* Camera/Rx guard fails against the original code.
+
+The correction introduces one owned synchronous draw reader and keeps
+the ordinary draw-wait API as its compatibility wrapper. Visual capture reads
+its camera/frame inside that callback. Replay exclusion, bounded waits,
+cancellation, original thrown values and subscription cleanup remain intact.
+All nine directed cases and the 371-case canonical JavaScript entry pass.
+The current sandbox reports even a two-case native control as one file;
+normal approved execution outside it reports both cases and all 371 canonical
+cases. Keep the original file-level result; this environmental distinction
+does not establish a Node or hosted-CI bug. The local JS instructions now
+prevent substituting file counts for test-case counts.
+
+The complete actual Studio entry passes in 201.81 seconds, with 4,300 fixed
+inputs and eighteen owned processes closed. Its new real-draw case moves the
+native camera in a later subscriber and requires the file to retain the
+completed draw's camera/frame and visible native box mesh. Existing primary,
+popup, detached Studio, restored geometry, stale-message, navigation and
+before-draw cancellation checks also pass. The overlapping five-module Python
+boundary passes 127 cases with 4,072 fixed inputs. The actual export/replay
+and Movie playback entries also pass, with 4,300 fixed inputs and all seventeen
+owned processes closed. See the [completed-draw receipt](../completed_draw_capture_receiving_20261107.json).
+No new capture protocol is advertised: version 1 still
+refuses a changed frame/recipe. Continuous playback, hidden endpoints and the
+unexplained earlier Jupyter restoration failure remain required A5 work.
+
 ## Current box/framing correction — 2026-11-07
 
 **Delivered bounded correction: `42656765`.** #326/#327 are closed with their

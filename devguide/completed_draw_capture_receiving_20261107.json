@@ -1,0 +1,170 @@
+{
+  "schema": "molsysviewer.completed_draw_capture_receiving@1",
+  "observed_at": "2026-11-07T20:00:04.581288+00:00",
+  "plan": "uibcdf/molsysviewer#315 / A5",
+  "issue": "uibcdf/molsysviewer#319",
+  "status": "Completed-draw sampling correction received locally; A5 remains partial.",
+  "source": {
+    "base": "4b5c205d9aab7735d94d6137da751b771ede6cfb",
+    "files_sha256": {
+      "molsysviewer/js/src/managers/canvas-draw.ts": "168f1ccf34b2d5dd254d530bf57ed45ceaa09e4557f2c2ba0f366a53b09ec5d9",
+      "molsysviewer/js/src/messages/frontend-requests.ts": "c6c36fbbe3e013a672d7caa7a9c2c76cc1c272c9450c1be01d7959cd9a5b40d6",
+      "molsysviewer/js/tests/unit/frontend-requests.test.ts": "5054bf03ab2f2391b87635b1efdb2092531d1a1402897b89d56791c779af98b6",
+      "molsysviewer/js/tests/e2e/studio-capture-draw-scenario.ts": "0159190dcca7737e5f7cb1143e28e74095b1ce102f5a638ae0d1cd60163ff119",
+      "molsysviewer/js/tests/e2e/studio-live-capture-scenarios.ts": "23053e971766ef6f88f3f63adf0c433eeaf4c19943a0b3c73df9481b9690d25d",
+      "molsysviewer/js/AGENTS.md": "f5f4707a7e90bfd2205bd415194c9e37a2c89fc2f57af37e0033d7c34b4251b5"
+    },
+    "runtime_sha256": "be763346311c5a9e78d8519b1c479a7c2c4edaf9f6e62f180934b6b869191e0e",
+    "python": "3.14.7",
+    "node": "24.21.0",
+    "molstar": "5.4.1",
+    "scientific_provider": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+    "rust_sha256": "2f1f69f6e0539bd31ee419ec3b7a4deaab20f09045ce3e6504369c9130438525",
+    "route": "Explicit development interpreter, reviewed contribution source and cached public support providers; no new solver-installed artifact qualification."
+  },
+  "mechanism": {
+    "before": "Await a fresh draw, then sample camera/frame in a Promise continuation; later synchronous draw subscribers can advance state first.",
+    "after": "Read detached camera/frame synchronously inside the completed-draw callback, preserving ordinary draw waits, cancellation, expiry and cleanup.",
+    "native_source_inspected": [
+      "molstar v5.4.1 src/mol-canvas3d/camera.ts getSnapshot copies native state",
+      "molstar v5.4.1 src/mol-canvas3d/canvas3d.ts emits didDraw after render"
+    ],
+    "capture_protocol": 1,
+    "continuous_playback_supported": false,
+    "public_python_api_changed": false
+  },
+  "negative_control": {
+    "native_exit": 1,
+    "passed": 5,
+    "failed": 1,
+    "skipped": 0,
+    "scope": "Real Mol* Camera and Rx subject; a later subscriber advances camera/frame before the Promise continuation. Original code replies with the later frame.",
+    "log_sha256": "98d4bf155a90e022f8f9ac80ad2410fe03f5578f21dda1210972890ee9545f0d"
+  },
+  "receiving": {
+    "directed": {
+      "native_exit": 0,
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Completed draw/correlated data, replay exclusion, original errors including undefined, abort before/after draw, sibling isolation, bounded bookkeeping and subscription cleanup.",
+      "log_sha256": "c73facc59ae36349538ad8354632175d71baab44bfacc65607ec63498cab70dd"
+    },
+    "canonical_javascript": {
+      "native_exit": 0,
+      "passed": 371,
+      "failed": 0,
+      "skipped": 0,
+      "command": [
+        "node",
+        "--test",
+        "tests/unit/dist-index.js"
+      ],
+      "environment": "Normal approved execution outside the local agent sandbox; exact same built canonical entry and test selection.",
+      "log_sha256": "701d98aaa554e70bfaf9256749859bbcccef5ed129452a1bee5cf10455aa6ccb",
+      "includes_directed_cases": 9
+    },
+    "sandbox_reporting_control": {
+      "canonical_native_exit": 0,
+      "canonical_reported_tests": 1,
+      "canonical_scope": "File-level result only; not evidence for a per-case count.",
+      "minimal_control_cases": 2,
+      "minimal_sandbox_reported_tests": 1,
+      "minimal_unconfined_reported_tests": 2,
+      "direct_canonical_execution_passed": 371,
+      "scope": "Observed environment/reporting difference only; no Node/CI product defect inferred. Original outcomes retained; conditional local JS instructions added."
+    },
+    "python": {
+      "native_exit": 0,
+      "passed": 127,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 22.190822683041915,
+      "warnings": 58,
+      "selected_inputs": 4072,
+      "inputs_unchanged": true,
+      "junit_sha256": "0f17d2a1f2113fae1c3323e4190f4a661195814df4d400aa16fb9fab43f8cc81"
+    },
+    "builds": {
+      "typescript": {
+        "native_exit": 0,
+        "seconds": 7.210810584947467
+      },
+      "runtime": {
+        "native_exit": 0,
+        "seconds": 4.32065292308107
+      },
+      "harness": {
+        "native_exit": 0,
+        "seconds": 1.2283378529828042
+      },
+      "e2e-entries": {
+        "native_exit": 0,
+        "seconds": 0.9788282350637019
+      }
+    },
+    "studio": {
+      "native_exit": 0,
+      "seconds": 201.80687604099512,
+      "selected_inputs": 4300,
+      "inputs_unchanged": true,
+      "outer_timeout": false,
+      "owned_processes": 18,
+      "survivors": 0,
+      "cleanup_errors": 0,
+      "log_sha256": "aa96a8d2d47224711d46ee055f44d09f7784bab01ff843fa4345389164d605cc",
+      "scope": "Full canonical Studio entry; actual file preserves completed-draw camera/frame while a later subscriber moves the real camera; native visible twelve-edge mesh, primary/popup/detached restores, cancellation and navigation retained."
+    },
+    "shared_draw_consumers": {
+      "native_exit": 0,
+      "seconds": 16.85168269998394,
+      "selected_inputs": 4300,
+      "inputs_unchanged": true,
+      "outer_timeout": false,
+      "owned_processes": 17,
+      "survivors": 0,
+      "cleanup_errors": 0,
+      "log_sha256": "dd481b9ce024b98cd6cfc807d7b1ffa150031eef870bc8e097c58a227f52cbf6",
+      "entries": [
+        "export-replay",
+        "movie-playback"
+      ],
+      "scope": "Both actual canonical entries pass; this does not complete the broader Movie #320 requirement."
+    },
+    "documentation": {
+      "native_exit": 0,
+      "passed": 384,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Reporting protocol, tracked links and architecture-state guards.",
+      "junit_sha256": "7c37f086cd980e7fef3040167d2d54b93cfba0078a7f43d90875e996d5e3ec1d"
+    }
+  },
+  "remaining": [
+    "Detach and reproject the captured scene for the sampled moving frame without navigating/pausing the live View or copying the trajectory.",
+    "Qualify all frame-dependent projections, including NPT box and dynamic regions.",
+    "Receive hidden/background endpoints through their actual owner without silently switching canvases or adding a second clock.",
+    "Resolve the earlier actual-Jupyter session-camera uncertainty; this timing correction does not establish its cause.",
+    "Consolidated exact-source hosted/installed and applicable native Qt/human acceptance; remaining original 46 leaves and mandatory Movie #320 scope."
+  ],
+  "progress": {
+    "delivered_leaves": 8,
+    "original_leaves": 46,
+    "final_accepted_leaves": 1,
+    "A5_not_counted_complete": true
+  },
+  "publication": "Candidates, tags, packages, promotions and both 1.0 publications remain paused.",
+  "private_custody": {
+    "bundle": "draw-sampling-20261107-1",
+    "files": 44,
+    "bytes": 4784788,
+    "manifest_sha256": "0aac73eeb343bb376723e374d825436886b1a70e54d7d46740407da657546037",
+    "hashes_verified": true,
+    "directory_mode": "0700",
+    "file_mode": "0600",
+    "originals_retained": true,
+    "custodian": "Diego Prada Gracia",
+    "off_host_backup": false
+  },
+  "evidence_scope": "The declared test scopes overlap; do not sum them. This is source receiving on one local host, not a new full core matrix, actual Jupyter or native Qt campaign, installed artifact or release qualification."
+}

@@ -149681,31 +149681,36 @@ var MovieHandlers = class {
 };
 
 // src/managers/canvas-draw.ts
-async function waitForCanvasDraw(canvas, timeoutMs = 3e4, signal) {
-  await new Promise((resolve, reject) => {
+async function readCanvasDraw(canvas, read, timeoutMs = 3e4, signal) {
+  return new Promise((resolve, reject) => {
     let requested = false;
     let settled = false;
     let subscription;
     let timer2;
-    const finish = (error2) => {
+    const finish = (outcome) => {
       if (settled) return;
       settled = true;
       if (timer2 !== void 0) clearTimeout(timer2);
       subscription?.unsubscribe();
       signal?.removeEventListener("abort", abort2);
-      if (error2 !== void 0) reject(error2);
-      else resolve();
+      if ("error" in outcome) reject(outcome.error);
+      else resolve(outcome.value);
     };
-    const abort2 = () => finish(new DOMException("Canvas draw wait cancelled.", "AbortError"));
+    const abort2 = () => finish({ error: new DOMException("Canvas draw wait cancelled.", "AbortError") });
     if (signal?.aborted) {
       abort2();
       return;
     }
     signal?.addEventListener("abort", abort2, { once: true });
-    timer2 = setTimeout(() => finish(new Error("Canvas did not finish drawing.")), timeoutMs);
+    timer2 = setTimeout(() => finish({ error: new Error("Canvas did not finish drawing.") }), timeoutMs);
     try {
       subscription = canvas.didDraw.subscribe(() => {
-        if (requested) finish();
+        if (!requested || settled) return;
+        try {
+          finish({ value: read() });
+        } catch (error2) {
+          finish({ error: error2 });
+        }
       });
       if (settled) {
         subscription.unsubscribe();
@@ -149714,9 +149719,12 @@ async function waitForCanvasDraw(canvas, timeoutMs = 3e4, signal) {
       requested = true;
       canvas.requestDraw();
     } catch (error2) {
-      finish(error2);
+      finish({ error: error2 });
     }
   });
+}
+async function waitForCanvasDraw(canvas, timeoutMs = 3e4, signal) {
+  await readCanvasDraw(canvas, () => void 0, timeoutMs, signal);
 }
 
 // src/ui/menu-navigation.ts
@@ -171065,14 +171073,14 @@ async function handleFrontendRequest(controller, message, send, capture) {
       const canvas = controller.plugin.canvas3d;
       if (!canvas) throw new Error("No live canvas is available for capture.");
       const timeout = Number(message.capture_timeout_ms);
-      await waitForCanvasDraw(canvas, Number.isFinite(timeout) && timeout > 0 ? Math.min(timeout, 3e4) : 5e3, capture?.signal);
-      if (capture?.signal.aborted) return;
-      let structure_index;
-      const release = controller.onTrajectoryState((state) => {
-        structure_index = state.currentFrame;
-      }, { immediate: true });
-      release();
-      const snapshot = controller.getCameraSnapshot();
+      const { snapshot, structure_index } = await readCanvasDraw(canvas, () => {
+        let structure_index2;
+        const release = controller.onTrajectoryState((state) => {
+          structure_index2 = state.currentFrame;
+        }, { immediate: true });
+        release();
+        return { snapshot: controller.getCameraSnapshot(), structure_index: structure_index2 };
+      }, Number.isFinite(timeout) && timeout > 0 ? Math.min(timeout, 3e4) : 5e3, capture?.signal);
       if (!capture?.signal.aborted) send({ ...correlation, ok: !!snapshot, snapshot, structure_index });
     } catch (error2) {
       if (!capture?.signal.aborted) send({ ...correlation, ok: false, error_type: error2 instanceof Error ? error2.name : "Error" });

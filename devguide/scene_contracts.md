@@ -2074,6 +2074,16 @@ static HTML export is the deliberate exception: Python requests and captures the
 current camera while the host still exists, then embeds it after the canonical
 scene projection because the exported artifact has no host to query later.
 
+An acknowledged live capture reads its camera and applied frame synchronously
+inside the completed-draw notification. A Promise continuation after that
+notification can observe later state and is not the same boundary. Return
+detached sampled data; preserve cancellation/deadlines and retire owned draw
+subscriptions on every terminal path. A draw reader does not pause playback or
+change the scene. The native Studio guard also changes the real camera in a
+later draw subscriber and requires the saved file to retain the completed
+draw's camera/frame. Frame-dependent projections and moving-timeline acceptance
+remain additional obligations; this sampling rule does not replace them.
+
 **Shape-only framing — 2026-10-21 (#257).** Camera authority also makes the host
 responsible for initial absolute geometry without a molecular system. New
 geometry is framed while no deliberate viewpoint exists; a user-adjusted or

@@ -1,5 +1,5 @@
 import type { MolSysViewerController } from "../managers/viewer-controller";
-import { waitForCanvasDraw } from "../managers/canvas-draw";
+import { readCanvasDraw } from "../managers/canvas-draw";
 
 type RequestController = Pick<MolSysViewerController, "getCameraSnapshot" | "getImageDataUri" | "onTrajectoryState" | "plugin">;
 
@@ -85,14 +85,14 @@ export async function handleFrontendRequest(controller: RequestController, messa
             const canvas = controller.plugin.canvas3d;
             if (!canvas) throw new Error("No live canvas is available for capture.");
             const timeout = Number(message.capture_timeout_ms);
-            await waitForCanvasDraw(canvas, Number.isFinite(timeout) && timeout > 0 ? Math.min(timeout, 30000) : 5000, capture?.signal);
-            if (capture?.signal.aborted) return;
-            // Called behind the scene queue. Sample camera/frame in one JS
-            // turn after a completed draw, not a replayed camera notification.
-            let structure_index: number | undefined;
-            const release = controller.onTrajectoryState(state => { structure_index = state.currentFrame; }, { immediate: true });
-            release();
-            const snapshot = controller.getCameraSnapshot();
+            // Read inside the didDraw callback. A Promise continuation can run
+            // after another subscriber has advanced the model or camera.
+            const { snapshot, structure_index } = await readCanvasDraw(canvas, () => {
+                let structure_index: number | undefined;
+                const release = controller.onTrajectoryState(state => { structure_index = state.currentFrame; }, { immediate: true });
+                release();
+                return { snapshot: controller.getCameraSnapshot(), structure_index };
+            }, Number.isFinite(timeout) && timeout > 0 ? Math.min(timeout, 30000) : 5000, capture?.signal);
             if (!capture?.signal.aborted) send({ ...correlation, ok: !!snapshot, snapshot, structure_index });
         } catch (error) {
             if (!capture?.signal.aborted) send({ ...correlation, ok: false, error_type: error instanceof Error ? error.name : "Error" });

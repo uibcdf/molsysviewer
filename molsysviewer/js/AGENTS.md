@@ -112,6 +112,15 @@ churn should not be committed as part of ordinary development work.
 - Only `package.json` (and optionally `package-lock.json`) define dependencies.
 - Do not propose to commit `node_modules/`.
 
+Inspect native test-case counts, not only a passing bundled file. The local
+Linux agent sandbox with Node 24.21.0 can report a two-case `node --test` control
+as one passing file; the same control outside the sandbox reports both cases.
+If this occurs, preserve the original result and qualify the unchanged
+canonical entry through the normal approved unconfined lane. Do not infer a
+case count from a file-level verdict, change the test selection, or attribute
+this observed environment difference to a Node or hosted-CI defect without
+further evidence.
+
 ---
 
 ## 5. Coordination with the Python side
