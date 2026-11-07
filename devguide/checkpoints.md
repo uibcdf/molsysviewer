@@ -913,7 +913,13 @@ Movie #320 remains an additional mandatory stream. E0, A1–A4/A6 and B1/B2 have
 their recorded delivered results; consolidated acceptance remains separate.
 
 A5/#319 is the active slice. The camera/box corrections and #328's latest-frame
-shape convergence are delivered; the latter is `2bb82bbd`. The
+shape convergence are delivered; the latter is `2bb82bbd`. Native cell
+convergence #329 now receives raw rotated/triclinic cells without Python,
+explicit cell overrides and actual widget/popup replacement/hide/clear.
+Its [receipt](trajectory_box_receiving_20261107.json) records 390 final Node
+passes, 236 Python passes and final native box receiving, separating the
+preceding complete Studio/controls run from the last compatibility correction.
+The
 [backend preparation receipt](moving_capture_backend_preparation_20261107.json)
 records negotiated protocol 2, 395 broader Python passes, the overlapping final
 64-case moving module and full current-browser Studio receiving in 206.24

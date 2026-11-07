@@ -72647,7 +72647,7 @@ var StateObjectSelector = class {
   }
 };
 var StateObjectRef;
-(function(StateObjectRef4) {
+(function(StateObjectRef3) {
   function resolveRef(ref) {
     var _a;
     if (!ref)
@@ -72658,7 +72658,7 @@ var StateObjectRef;
       return ref.transform.ref;
     return (_a = ref.cell) === null || _a === void 0 ? void 0 : _a.transform.ref;
   }
-  StateObjectRef4.resolveRef = resolveRef;
+  StateObjectRef3.resolveRef = resolveRef;
   function resolve(state, ref) {
     if (!ref)
       return;
@@ -72668,14 +72668,14 @@ var StateObjectRef;
       return state.cells.get(ref);
     return ref.cell;
   }
-  StateObjectRef4.resolve = resolve;
+  StateObjectRef3.resolve = resolve;
   function resolveAndCheck(state, ref) {
     const cell = resolve(state, ref);
     if (!cell || !cell.obj || cell.status !== "ok")
       return;
     return cell;
   }
-  StateObjectRef4.resolveAndCheck = resolveAndCheck;
+  StateObjectRef3.resolveAndCheck = resolveAndCheck;
 })(StateObjectRef || (StateObjectRef = {}));
 
 // node_modules/molstar/lib/mol-util/rx-event-helper.js
@@ -141592,6 +141592,24 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
   return overlay;
 };
 
+// src/plugin/box-vectors.ts
+function copyJsonBoxVectors(structures) {
+  if (!structures.some((frame) => frame.box !== void 0)) return void 0;
+  const values2 = new Float64Array(structures.length * 9).fill(NaN);
+  structures.forEach((frame, index) => {
+    const rows = frame.box;
+    if (!Array.isArray(rows) || rows.length !== 3 || rows.some((row3) => !Array.isArray(row3) || row3.length !== 3 || row3.some((value) => typeof value !== "number" || !Number.isFinite(value)))) return;
+    rows.forEach((row3, axis) => values2.set(row3, index * 9 + axis * 3));
+  });
+  return values2;
+}
+function readBoxVectors(table, frame) {
+  if (!table || !Number.isSafeInteger(frame) || frame < 0 || (frame + 1) * 9 > table.length) return void 0;
+  const values2 = table.subarray(frame * 9, frame * 9 + 9);
+  if (!values2.every(Number.isFinite)) return void 0;
+  return [Array.from(values2.subarray(0, 3)), Array.from(values2.subarray(3, 6)), Array.from(values2.subarray(6, 9))];
+}
+
 // src/plugin/structure.ts
 async function recyclePreviousNode(plugin, previous) {
   if (!previous) return;
@@ -141714,6 +141732,7 @@ async function loadStructureFromMolSysPayload(plugin, payload, label2, options) 
   });
   const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectoryNode.ref, "default");
   return {
+    boxVectors: copyJsonBoxVectors(payload.structures),
     trajectory: trajectoryNode.ref,
     structure: preset?.structure?.ref
   };
@@ -141785,6 +141804,8 @@ async function loadStructureFromArrayNativeMolSys(plugin, payload, label2, optio
   });
   const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectoryNode.ref, "default");
   return {
+    // The incoming view can share a much larger coordinate transport blob.
+    boxVectors: payload.box?.slice(),
     trajectory: trajectoryNode.ref,
     structure: preset?.structure?.ref
   };
@@ -144663,7 +144684,7 @@ function computeCentroidFromAtoms(structure, atomIndices) {
   if (count3 === 0) return { ok: false, reason: "invalid-indices", requested, used: 0 };
   return { ok: true, center: [sumX / count3, sumY / count3, sumZ / count3], requested, used: count3 };
 }
-async function addNetworkLinksFromPython(plugin, options) {
+async function addNetworkLinksFromPython(plugin, options, previous) {
   const mode = options.mode ?? (options.atom_pairs ? "atom-indices" : "coordinates");
   const radialSegments = Math.max(3, Math.floor(options.radial_segments ?? 16));
   const alpha = options.alpha ?? 1;
@@ -144700,6 +144721,12 @@ async function addNetworkLinksFromPython(plugin, options) {
     ...ParamDefinition.getDefaultValues(NetworkLinksParams)
   };
   const builder = plugin.state.data.build();
+  const previousRef = previous ? StateObjectRef.resolveRef(previous) : void 0;
+  if (previousRef && plugin.state.data.cells.get(previousRef)?.transform.transformer === NetworkLinks3D) {
+    builder.to(previousRef).update(NetworkLinks3D, () => ({ data, props }));
+    await PluginCommands.State.Update(plugin, { state: plugin.state.data, tree: builder, options: { doNotLogTiming: true } });
+    return previousRef;
+  }
   const node = builder.toRoot().apply(
     NetworkLinks3D,
     {
@@ -146656,6 +146683,165 @@ var ShapeHandlers = class {
       this.registerRef(ref, options.tag);
     } catch (err) {
       console.error("[MolSysViewer] Error creando triangle faces", err);
+    }
+  }
+};
+
+// src/messages/box-display.ts
+var BOX_TAG = "__msv_box";
+function isBoxDisplayProjection(value) {
+  return !!value && Number.isSafeInteger(value.definition_revision) && value.definition_revision >= 0 && Number.isSafeInteger(value.structure_index) && value.structure_index >= 0;
+}
+function isAutomaticBoxClear(message) {
+  return message?.op === "clear_shapes_by_tag" && message.tag === BOX_TAG && Number.isSafeInteger(message.box_frame_update) && message.box_frame_update >= 0;
+}
+
+// src/managers/handlers/box-display.ts
+var BoxDisplayHandler = class {
+  constructor(context2) {
+    this.context = context2;
+    this.desiredFrame = 0;
+    this.observedFrame = 0;
+    this.revision = 0;
+    this.appliedRevision = -1;
+    this.failed = false;
+    this.disposed = false;
+  }
+  async define(options, metadata) {
+    if (this.disposed) return;
+    if (!Number.isSafeInteger(metadata.definition_revision) || metadata.definition_revision < 0 || !Number.isSafeInteger(metadata.structure_index) || metadata.structure_index < 0 || typeof metadata.frame_update !== "boolean") throw new Error("Invalid box-display metadata");
+    const previous = this.definition;
+    if (previous && metadata.definition_revision < previous.metadata.definition_revision) return;
+    if (previous && metadata.frame_update && metadata.definition_revision === previous.metadata.definition_revision) {
+      this.onFrame(this.context.getFrame());
+      await this.whenSettled();
+      return;
+    }
+    this.observedFrame = this.context.getFrame();
+    this.observedLoaded = this.context.getLoaded();
+    this.desiredFrame = metadata.frame_update ? this.observedFrame : metadata.structure_index;
+    this.definition = { options: { ...options }, metadata: { ...metadata } };
+    this.revision++;
+    await this.queue();
+  }
+  onFrame(frame, force = false) {
+    const loaded = this.context.getLoaded();
+    const replaced = loaded !== this.observedLoaded;
+    if (!force && frame === this.observedFrame && loaded === this.observedLoaded) return;
+    this.observedFrame = frame;
+    this.observedLoaded = loaded;
+    if (!this.definition || this.disposed) return;
+    if (this.context.isFollower?.() && !force) {
+      if (replaced) {
+        this.revision++;
+        void this.queue();
+      }
+      return;
+    }
+    this.desiredFrame = frame;
+    this.revision++;
+    void this.queue();
+  }
+  get projection() {
+    return this.definition ? {
+      definition_revision: this.definition.metadata.definition_revision,
+      structure_index: this.desiredFrame
+    } : void 0;
+  }
+  async applyProjection(value) {
+    if (!isBoxDisplayProjection(value) || this.disposed || !this.definition || value.definition_revision !== this.definition.metadata.definition_revision) return;
+    if (this.desiredFrame !== value.structure_index) {
+      this.desiredFrame = value.structure_index;
+      this.revision++;
+    }
+    await this.queue();
+  }
+  forget() {
+    this.definition = void 0;
+    this.ref = void 0;
+    this.renderedFrame = void 0;
+    this.failed = false;
+    this.revision++;
+  }
+  dispose() {
+    this.disposed = true;
+    this.forget();
+  }
+  whenSettled() {
+    return this.refresh ?? Promise.resolve();
+  }
+  get structureIndex() {
+    return this.renderedFrame;
+  }
+  isFrameReady(frame) {
+    if (this.disposed) return false;
+    if (this.refresh) return false;
+    if (!this.definition) return !this.failed;
+    return !this.failed && this.appliedRevision === this.revision && this.renderedFrame === this.desiredFrame && this.observedFrame === frame && this.observedLoaded === this.context.getLoaded();
+  }
+  queue() {
+    if (this.refresh) return this.refresh;
+    let complete;
+    this.refresh = new Promise((resolve) => {
+      complete = resolve;
+    });
+    const pending = this.refresh;
+    void this.applyLatest().then(complete, (error2) => {
+      this.failed = true;
+      try {
+        this.context.failure(error2);
+      } catch {
+      }
+      complete();
+    });
+    return pending;
+  }
+  async applyLatest() {
+    try {
+      while (this.definition && !this.disposed && this.appliedRevision !== this.revision) {
+        const definition = this.definition, revision2 = this.revision, frame = this.desiredFrame;
+        const rows = readBoxVectors(this.context.getLoaded()?.boxVectors, frame);
+        let removingObsolete = false;
+        try {
+          const pairs = [];
+          if (rows) for (let axis = 0; axis < 3; axis++) {
+            const other = [0, 1, 2].filter((index) => index !== axis);
+            for (let bits = 0; bits < 4; bits++) {
+              const start4 = [0, 1, 2].map((dimension) => other.reduce((sum, index, bit) => sum + (bits >> bit & 1) * rows[index][dimension], 0));
+              pairs.push([start4, start4.map((value, dimension) => value + rows[axis][dimension])]);
+            }
+          }
+          if (!rows) throw new Error("No raw box basis is available for the requested structure");
+          const ref = await this.context.render({ ...definition.options, mode: "coordinates", coordinate_pairs: pairs }, this.ref);
+          if (!ref) throw new Error("Box geometry did not produce a representation");
+          if (this.disposed || this.definition !== definition) {
+            removingObsolete = true;
+            this.ref = ref;
+            await this.context.remove(ref);
+            if (this.ref === ref) this.ref = void 0;
+            continue;
+          }
+          this.ref = ref;
+          this.context.register(ref);
+          this.renderedFrame = frame;
+          this.appliedRevision = revision2;
+          this.failed = false;
+        } catch (error2) {
+          if (removingObsolete) {
+            if (this.ref) this.context.register(this.ref);
+            throw error2;
+          }
+          if (this.definition !== definition || this.disposed) continue;
+          if (this.ref) await this.context.remove(this.ref);
+          this.ref = void 0;
+          this.renderedFrame = void 0;
+          this.appliedRevision = revision2;
+          this.failed = true;
+          this.context.failure(error2);
+        }
+      }
+    } finally {
+      this.refresh = void 0;
     }
   }
 };
@@ -149269,6 +149455,9 @@ var TrajectoryHandlers = class {
   setFollower(enabled) {
     this.follower = enabled;
   }
+  get isFollower() {
+    return this.follower;
+  }
   applySummary(message) {
     if (Number.isSafeInteger(message.fps) && message.fps > 0) this.playbackOptions.fps = message.fps;
     if (Number.isSafeInteger(message.step) && message.step > 0) this.playbackOptions.step = message.step;
@@ -149460,10 +149649,12 @@ var TrajectoryHandlers = class {
     for (const cb2 of this.trajectoryListeners) cb2(state);
   }
   notifyPlaybackFrameChanged(isPlaying) {
+    const box5 = this.context.getBoxProjection?.();
     this.context.notify?.({
       event: "trajectory_frame_changed",
       frame: this.getCurrentFrameIndex(),
-      is_playing: isPlaying
+      is_playing: isPlaying,
+      ...box5 ? { box_display: box5 } : {}
     });
   }
   updateTrajectoryState() {
@@ -167838,8 +168029,28 @@ var MolSysViewerController = class _MolSysViewerController {
       afterFrameApplied: () => this.annotations.refresh(),
       getLoadedStructure: () => this.loadedStructure,
       notifyTrajectoryState: () => this.notifyTrajectoryState(),
-      onPlaybackStopped: (frame) => this.notify?.({ event: "trajectory_frame_changed", frame }),
-      notify: (msg) => this.notify?.(msg)
+      onPlaybackStopped: (frame) => {
+        const box5 = this.boxDisplay.projection;
+        this.notify?.({ event: "trajectory_frame_changed", frame, ...box5 ? { box_display: box5 } : {} });
+      },
+      notify: (msg) => this.notify?.(msg),
+      getBoxProjection: () => this.boxDisplay?.projection
+    });
+    this.boxDisplay = new BoxDisplayHandler({
+      getLoaded: () => this.loadedStructure,
+      getFrame: () => this.trajectory.getTrajectoryState().currentFrame,
+      isFollower: () => this.trajectory.isFollower,
+      render: (options, previous) => addNetworkLinksFromPython(plugin, options, previous),
+      register: (ref) => this.state.registerShapeRef(ref, BOX_TAG),
+      remove: async (ref) => {
+        if (plugin.state.data.cells.has(ref)) {
+          const update10 = plugin.state.data.build();
+          update10.delete(ref);
+          await plugin.runTask(plugin.state.data.updateTree(update10));
+        }
+        this.state.unregisterTaggedRef(ref, BOX_TAG, "shape");
+      },
+      failure: (error2) => console.warn("[MolSysViewer] Box display refresh failed", error2)
     });
     this.interactions = new InteractionHandlers(plugin, {
       register: (ref, tag) => this.state.registerTaggedRef(ref, tag, "interaction"),
@@ -167871,6 +168082,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.trajectory.onTrajectoryState(
       (state) => {
         this.contextMenu.close();
+        this.boxDisplay.onFrame(state.currentFrame);
         this.groupPanel.clearContextInspection();
         this.triggerLocalAddonEvent("frame-changed", state.currentFrame);
         this.trajectoryPlotOverlay.setFrame(state.currentFrame);
@@ -168269,6 +168481,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.notify?.({ event: "webgl_context_restored" });
   }
   dispose() {
+    this.boxDisplay?.dispose();
     this.cancelInitialFraming();
     this.pendingCameraIntent?.release();
     this.pendingHtmlDownload = null;
@@ -168959,7 +169172,10 @@ var MolSysViewerController = class _MolSysViewerController {
           this.groupPanel.updateInteractionInspection(msg.request_id, msg.result);
           break;
         case "add_network_links":
-          await this.shapes.addNetworkLinks(msg);
+          if (msg.options?.tag === BOX_TAG && msg.options.box_display) {
+            await this.boxDisplay.define(msg.options, msg.options.box_display);
+            this.trajectory.notifyListeners();
+          } else await this.shapes.addNetworkLinks(msg);
           break;
         case "add_hbonds":
           await this.shapes.addHbonds(msg);
@@ -169075,16 +169291,20 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         }
         case "clear_scene":
+          if (msg.options?.shapes ?? true) this.boxDisplay.forget();
           if (msg.options?.shapes ?? true) this.interactions.clear();
           await this.scene.clearScene(msg);
           this.checkCameraAfterSceneMutation("clear_scene");
           break;
         case "clear_all":
+          this.boxDisplay.forget();
           this.setStructureLoadPending(msg.awaiting_structure === true);
           this.interactions.clear();
           await this.scene.clearAll();
           break;
         case "clear_shapes_by_tag":
+          if (isAutomaticBoxClear(msg)) break;
+          if (!msg.tag || msg.tag === BOX_TAG) this.boxDisplay.forget();
           await this.scene.clearShapesByTag(msg);
           break;
         // State/Region Ops
@@ -169418,6 +169638,12 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "set_trajectory_frame":
           await this.trajectory.setTrajectoryFrame(msg);
+          if (msg.box_follow === true) {
+            this.boxDisplay.onFrame(this.trajectory.getTrajectoryState().currentFrame, true);
+            await this.boxDisplay.whenSettled();
+            this.trajectory.notifyListeners();
+          }
+          await this.boxDisplay.applyProjection(msg.box_display);
           break;
         case "set_trajectory_playback":
           await this.trajectory.setTrajectoryPlayback(msg);
@@ -172456,7 +172682,11 @@ var bootPopup = async (loadedModule) => {
             }
           }
           if (Number.isInteger(data.trajectoryFrame) && data.trajectoryFrame >= 0) {
-            await ctrl3.setTrajectoryFrame(data.trajectoryFrame);
+            await ctrl3.handleMessage({
+              op: "set_trajectory_frame",
+              index: data.trajectoryFrame,
+              box_display: data.boxDisplay
+            });
           }
           if (data.cameraSnapshot) {
             await cameraSync?.applyBootstrap(data);
@@ -173171,9 +173401,15 @@ var presentationSurface = {
 function syncTrajectoryFrames(controller, enabled, send) {
   let previous;
   return controller.onTrajectoryState((state) => {
-    const changed = previous !== state.currentFrame;
-    previous = state.currentFrame;
-    if (changed && enabled()) send({ op: "set_trajectory_frame", index: state.currentFrame });
+    const box5 = controller.boxDisplay?.projection;
+    const key2 = JSON.stringify([state.currentFrame, box5]);
+    const changed = previous !== key2;
+    previous = key2;
+    if (changed && enabled()) send({
+      op: "set_trajectory_frame",
+      index: state.currentFrame,
+      ...box5 ? { box_display: box5 } : {}
+    });
   });
 }
 
@@ -173285,6 +173521,17 @@ var PopupReplayLog = class {
     if (!op4) return;
     if (op4 === "html_export_ready" || op4 === "studio_action_result" || op4 === "system_file_browse_result" || op4 === "system_load_result") return;
     if (op4 === "mount_addon_panel" || op4 === "addon_panel_message") return;
+    if (isAutomaticBoxClear(message)) return;
+    const boxAdd = (value) => value?.op === "add_network_links" && value.options?.tag === BOX_TAG;
+    const boxClear = (value) => value?.op === "clear_shapes_by_tag" && value.tag === BOX_TAG;
+    if (boxAdd(message) || boxClear(message)) {
+      const previous = this.entries.find(boxAdd);
+      const revision2 = message.options?.box_display?.definition_revision;
+      if (boxAdd(message) && previous?.options?.box_display?.definition_revision > revision2) return;
+      this.entries = this.entries.filter((entry) => !boxAdd(entry) && !boxClear(entry));
+      this.entries.push(message);
+      return;
+    }
     if (op4 === "clear_all") {
       this.entries = [];
       return;
@@ -176134,6 +176381,7 @@ async function bootDocsView(opts) {
           popupMgr.send("molsysviewer-initial-sync", {
             messages: popupReplay.snapshot("canvas"),
             trajectoryFrame: controller.trajectory.getTrajectoryState().currentFrame,
+            boxDisplay: controller.boxDisplay.projection,
             cameraSnapshot: controller.getCameraSnapshot(),
             cameraSnapshotRevision: cameraSync?.completedRevision,
             isSpinActive: controller.isSpinActive,
@@ -176736,6 +176984,8 @@ function render({ model, el, runtimeSource }) {
           try {
             popupMgr.sendTo("canvas", "molsysviewer-initial-sync", {
               messages: canvasSnapshot ?? [],
+              trajectoryFrame: controller.trajectory.getTrajectoryState().currentFrame,
+              boxDisplay: controller.boxDisplay.projection,
               cameraSnapshot: controller.getCameraSnapshot(),
               cameraSnapshotRevision: cameraSync?.completedRevision,
               isSpinActive: controller.isSpinActive,

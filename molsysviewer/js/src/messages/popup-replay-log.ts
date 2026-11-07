@@ -1,4 +1,5 @@
 import type { ViewerMessage } from "./viewer-messages";
+import { BOX_TAG, isAutomaticBoxClear } from "./box-display";
 
 const STRUCTURE_LOAD_OPS = new Set([
     "load_molsys_payload",
@@ -78,6 +79,18 @@ export class PopupReplayLog {
         // Addon widget instances belong to one window; navigation mounts its
         // own instance. Replaying another window's ESM/state violates ownership.
         if (op === "mount_addon_panel" || op === "addon_panel_message") return;
+
+        if (isAutomaticBoxClear(message)) return;
+        const boxAdd = (value: any) => value?.op === "add_network_links" && value.options?.tag === BOX_TAG;
+        const boxClear = (value: any) => value?.op === "clear_shapes_by_tag" && value.tag === BOX_TAG;
+        if (boxAdd(message) || boxClear(message)) {
+            const previous: any = this.entries.find(boxAdd);
+            const revision = (message as any).options?.box_display?.definition_revision;
+            if (boxAdd(message) && previous?.options?.box_display?.definition_revision > revision) return;
+            this.entries = this.entries.filter(entry => !boxAdd(entry) && !boxClear(entry));
+            this.entries.push(message);
+            return;
+        }
 
         if (op === "clear_all") {
             this.entries = [];

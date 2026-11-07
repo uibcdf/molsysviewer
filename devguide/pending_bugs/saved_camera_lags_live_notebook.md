@@ -15,6 +15,19 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
+## Native cell projection prerequisite — 2026-11-07
+
+Child [#329](../archive/box_display_lags_native_trajectory.md) corrects a stale native
+cell in a public HTML export after its Python View closes. Its prototype now
+passes completed-draw orthogonal/rotated/triclinic mesh checks and real
+widget/popup navigation, cell override, rebootstrap, scientific cell editing,
+hide and clear. Final exact callback compatibility and same-frame follower-table
+guards pass in the canonical 390-case Node selection. The final native box
+guard passes with 4,310 unchanged inputs; complete Studio/controls receiving
+passes on its immediately preceding source. The [receipt](../trajectory_box_receiving_20261107.json)
+keeps these scopes separate from completed moving capture. The frontend still
+advertises only protocol 1; A5 and the 8/46 delivered count remain unchanged.
+
 ## Moving-protocol backend preparation — 2026-11-07
 
 **Backend preparation received locally; native moving capture remains disabled.**

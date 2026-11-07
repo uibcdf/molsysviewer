@@ -163,7 +163,7 @@ class PlayerManager:
         if isinstance(index, bool) or not isinstance(index, Integral) or not 0 <= index < count:
             raise ArgumentError("index", value=index)
         previous = (self.index, self.is_playing)
-        self._view._send({"op": "set_trajectory_frame", "index": int(index)})  # noqa: SLF001
+        self._view._send({"op": "set_trajectory_frame", "index": int(index), "box_follow": True})  # noqa: SLF001
         self._view._current_structure_index = int(index)  # noqa: SLF001
         self._sync_summary()
         self._view._sync_measurement_summaries_runtime()  # noqa: SLF001

@@ -507,6 +507,7 @@ export async function bootDocsView(opts: {
                     popupMgr.send("molsysviewer-initial-sync", {
                         messages: popupReplay.snapshot("canvas"),
                         trajectoryFrame: controller.trajectory.getTrajectoryState().currentFrame,
+                        boxDisplay: controller.boxDisplay.projection,
                         cameraSnapshot: controller.getCameraSnapshot(),
                         cameraSnapshotRevision: cameraSync?.completedRevision,
                         isSpinActive: controller.isSpinActive,
@@ -1329,6 +1330,8 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                         try {
                             popupMgr.sendTo("canvas", "molsysviewer-initial-sync", {
                                 messages: canvasSnapshot ?? [],
+                                trajectoryFrame: controller.trajectory.getTrajectoryState().currentFrame,
+                                boxDisplay: controller.boxDisplay.projection,
                                 cameraSnapshot: controller.getCameraSnapshot(),
                                 cameraSnapshotRevision: cameraSync?.completedRevision,
                                 isSpinActive: controller.isSpinActive,

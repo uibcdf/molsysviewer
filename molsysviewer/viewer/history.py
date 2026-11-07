@@ -127,7 +127,8 @@ class HistoryMixin:
 
         if op == "clear_shapes_by_tag":
             cleared_tag = msg.get("tag")
-            if cleared_tag is None or cleared_tag == self._BOX_TAG:
+            frame_update = cleared_tag == self._BOX_TAG and type(msg.get("box_frame_update")) is int
+            if not frame_update and (cleared_tag is None or cleared_tag == self._BOX_TAG):
                 self._box_visible = False
                 self._box_record = None
             if cleared_tag is None:

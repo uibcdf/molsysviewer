@@ -268,6 +268,15 @@ support and upstream issue closure do not by themselves complete a consumer
 result. D2/D3/D4 have new owner fixes awaiting consumer receiving, as recorded
 below; do not describe them as waiting for an unimplemented owner fix.
 
+A5's bounded child [#329](../archive/box_display_lags_native_trajectory.md)
+corrects native cell lag without a kernel. Its
+actual widget/popup receiving covers explicit cells, rebootstrap, replacement,
+hide and clear; final canonical Node receiving passes 390 cases and final
+native box receiving passes with 4,310 fixed inputs. The [receipt](../trajectory_box_receiving_20261107.json)
+distinguishes complete Studio/controls receiving on the immediately preceding
+source from final changed-boundary checks. This prerequisite does not add another audit denominator item or
+complete continuous-playback capture. The mandatory Movie #320 stream remains.
+
 **Next execution checkpoint:** receive the delivered bounded batch through the
 applicable consolidated hosted checks at one substantive checkpoint, following
 the maintainer's `[skip ci]` and batched-CI instruction. Its reviewed integration

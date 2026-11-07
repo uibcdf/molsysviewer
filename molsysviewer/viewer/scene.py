@@ -269,7 +269,10 @@ class SceneMixin:
         if definition_change:
             self._box_definition_revision += 1
         if self._box_visible:
-            self._send({"op": "clear_shapes_by_tag", "tag": self._BOX_TAG})
+            clear = {"op": "clear_shapes_by_tag", "tag": self._BOX_TAG}
+            if not definition_change:
+                clear["box_frame_update"] = self._box_definition_revision
+            self._send(clear)
 
         msg = {
             "op": "add_network_links",
@@ -280,6 +283,11 @@ class SceneMixin:
                 "colors": color_int,
                 "alpha": float(alpha),
                 "tag": self._BOX_TAG,
+                "box_display": {
+                    "definition_revision": self._box_definition_revision,
+                    "structure_index": sidx,
+                    "frame_update": not definition_change,
+                },
             },
         }
         self._send(msg)

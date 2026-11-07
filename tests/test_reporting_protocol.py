@@ -164,6 +164,8 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             "await checkStudioLiveCapture(livePage, dir, downloadDir);" in entry,
             'import { checkTrajectoryShapeRefresh } from "./trajectory-shape-refresh-scenarios";' in entry,
             "await checkTrajectoryShapeRefresh(page, dir);" in entry,
+            'import { checkBoxTrajectory } from "./box-trajectory-scenarios";' in entry,
+            "await checkBoxTrajectory(page, dir);" in entry,
             'import { PythonFixtureBridge } from "./python-fixture-bridge";' in entry,
             "await page.waitForEvent" in entry or 'page.waitForEvent("download")' in entry,
             "bytes.readUInt32BE(16)" in entry,
@@ -174,6 +176,8 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             (js_root / "tests/e2e/studio-live-capture-bridge.py").is_file(),
             (js_root / "tests/e2e/canvas-popup-bridge.py").is_file(),
             (js_root / "tests/e2e/trajectory-shape-refresh-scenarios.ts").is_file(),
+            (js_root / "tests/e2e/box-trajectory-scenarios.ts").is_file(),
+            (js_root / "tests/e2e/box-trajectory-bridge.py").is_file(),
         )
     elif selector == WORKSPACE_BROWSER_GUARD:
         requirements += (

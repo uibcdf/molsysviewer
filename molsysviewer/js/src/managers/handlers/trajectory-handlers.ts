@@ -14,6 +14,7 @@ import { ArrayTrajectory, Model } from "molstar/lib/mol-model/structure";
 import { Task } from "molstar/lib/mol-task";
 import { UUID } from "molstar/lib/mol-util/uuid";
 import { CustomProperties } from "molstar/lib/mol-model/custom-property";
+import type { BoxDisplayProjection } from "../../messages/box-display";
 
 export interface TrajectoryContext {
     getLoadedStructure: () => LoadedStructure | undefined;
@@ -22,6 +23,7 @@ export interface TrajectoryContext {
     /** Called when playback stops; receives the final frame index. */
     onPlaybackStopped?: (frame: number) => void;
     notify?: (msg: any) => void;
+    getBoxProjection?: () => BoxDisplayProjection | undefined;
 }
 
 export interface TrajectoryState {
@@ -82,6 +84,7 @@ export class TrajectoryHandlers {
     };
 
     setFollower(enabled: boolean) { this.follower = enabled; }
+    get isFollower(): boolean { return this.follower; }
 
     applySummary(message: any) {
         if (Number.isSafeInteger(message.fps) && message.fps > 0) this.playbackOptions.fps = message.fps;
@@ -293,10 +296,12 @@ export class TrajectoryHandlers {
     }
 
     private notifyPlaybackFrameChanged(isPlaying: boolean) {
+        const box = this.context.getBoxProjection?.();
         this.context.notify?.({
             event: "trajectory_frame_changed",
             frame: this.getCurrentFrameIndex(),
             is_playing: isPlaying,
+            ...(box ? { box_display: box } : {}),
         });
     }
 

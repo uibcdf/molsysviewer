@@ -14,6 +14,7 @@ import { Model } from "molstar/lib/mol-model/structure/model";
 import { Trajectory } from "molstar/lib/mol-model/structure/trajectory";
 import { Cell } from "molstar/lib/mol-math/geometry/spacegroup/cell";
 import { Vec3 } from "molstar/lib/mol-math/linear-algebra";
+import { copyJsonBoxVectors, type BoxVectorTable } from "./box-vectors";
 
 export interface LoadStructureOptions {
     /** Reference to the previous node that must be removed before loading. */
@@ -21,6 +22,8 @@ export interface LoadStructureOptions {
 }
 
 export interface LoadedStructure {
+    /** Detached raw row-vector cells; Cell stores only lengths and angles. */
+    boxVectors?: BoxVectorTable;
     /** Reference to the raw-data root node (may not exist in native loads). */
     data?: StateObjectRef;
     /** Reference to the (parsed) trajectory node. */
@@ -256,6 +259,7 @@ export async function loadStructureFromMolSysPayload(
     const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectoryNode.ref, "default");
 
     return {
+        boxVectors: copyJsonBoxVectors(payload.structures),
         trajectory: trajectoryNode.ref,
         structure: preset?.structure?.ref,
     };
@@ -344,6 +348,8 @@ export async function loadStructureFromArrayNativeMolSys(
     });
     const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectoryNode.ref, "default");
     return {
+        // The incoming view can share a much larger coordinate transport blob.
+        boxVectors: payload.box?.slice(),
         trajectory: trajectoryNode.ref,
         structure: preset?.structure?.ref,
     };

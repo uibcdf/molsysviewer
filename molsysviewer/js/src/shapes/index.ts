@@ -1957,6 +1957,7 @@ export const NetworkLinks3D = MSVTransform({
 type CoordinatePair = [number, number, number, number, number, number] | [[number, number, number], [number, number, number]];
 
 export interface NetworkLinkOptions {
+    box_display?: import("../messages/box-display").BoxDisplayMetadata;
     dashed?: boolean;
     labels?: string[];
     interaction?: { analysis_name: string; analysis_revision: string; query_revision?: string; frame: number; observations: unknown[] };
@@ -2171,7 +2172,7 @@ export function computeCentroidFromAtoms(structure: Structure, atomIndices: numb
     return { ok: true, center: [sumX / count, sumY / count, sumZ / count], requested, used: count };
 }
 
-export async function addNetworkLinksFromPython(plugin: PluginContext, options: NetworkLinkOptions) {
+export async function addNetworkLinksFromPython(plugin: PluginContext, options: NetworkLinkOptions, previous?: StateObjectRef) {
     const mode: NetworkLinkMode = options.mode ?? (options.atom_pairs ? "atom-indices" : "coordinates");
     const radialSegments = Math.max(3, Math.floor(options.radial_segments ?? 16));
     const alpha = options.alpha ?? 1.0;
@@ -2214,6 +2215,12 @@ export async function addNetworkLinksFromPython(plugin: PluginContext, options: 
     };
 
     const builder = plugin.state.data.build();
+    const previousRef = previous ? StateObjectRef.resolveRef(previous) : undefined;
+    if (previousRef && plugin.state.data.cells.get(previousRef)?.transform.transformer === NetworkLinks3D) {
+        builder.to(previousRef).update(NetworkLinks3D, () => ({ data, props }));
+        await PluginCommands.State.Update(plugin, { state: plugin.state.data, tree: builder, options: { doNotLogTiming: true } });
+        return previousRef;
+    }
     const node = builder.toRoot().apply(
         NetworkLinks3D,
         {

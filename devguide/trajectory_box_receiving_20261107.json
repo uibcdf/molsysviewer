@@ -1,0 +1,455 @@
+{
+  "schema": "molsysviewer.trajectory_box_receiving@1",
+  "observed_at": "2026-11-07T22:44:17.180982+00:00",
+  "issue": "uibcdf/molsysviewer#329",
+  "parent": "uibcdf/molsysviewer#315 / A5 and #319",
+  "status": "Native cell projection corrected and locally received; moving capture and consolidated acceptance remain separate.",
+  "source": {
+    "base": "b53d05840a52d0bbb1731c0b51b0aeabaa327876",
+    "files_sha256": {
+      "molsysviewer/js/src/index.ts": "b5e71cb9b70221c9b094188daa216b3c8bcc68091c2b37816da79a8df89a8d76",
+      "molsysviewer/js/src/managers/handlers/box-display.ts": "4387ddc9c1bb927253a3c5bb74743af35a066dcfaad39c1960ab0bf7e1facb1d",
+      "molsysviewer/js/src/managers/handlers/trajectory-handlers.ts": "faa937fe47345d2440ebdeba56edf96087c7960c668ddbae54427b4d6ffcfc64",
+      "molsysviewer/js/src/managers/trajectory-sync.ts": "0b8652d10218b4945217fe94e4ef4e5d23f9170548a262b6f3787e6c82386f60",
+      "molsysviewer/js/src/managers/viewer-controller.ts": "7a965e6487464a5a2c9d8ace4c98de17ad261a88d566afda2b485302f2888d69",
+      "molsysviewer/js/src/messages/box-display.ts": "29addb5efafcb23cd3fb17dea9c997ef5a083ab7e8b1ad384e2f8d6da1d0762f",
+      "molsysviewer/js/src/messages/popup-replay-log.ts": "fc493eaed6ea3fce318a6d2929fb2f60020404029329bffccb9836b2c0ef0299",
+      "molsysviewer/js/src/plugin/box-vectors.ts": "5068db5ef19b4042bd9e83df0500f79273966e0f5cf9c184b8ee18ececd40d2f",
+      "molsysviewer/js/src/plugin/structure.ts": "fd40b8a1563e67cb4d43d5cb87853f4c40dac8b2fa7bd50c8640b72c545c29c4",
+      "molsysviewer/js/src/popup/popup-logic.ts": "40d4188f608b81998d8e4f9a9348dfbff771fc3e051ea0d91a8606650ba1a016",
+      "molsysviewer/js/src/shapes/index.ts": "b0c308908099ca50163cc40f4e373cb850c9842bc37c36a5bab18578f7051854",
+      "molsysviewer/js/tests/e2e/box-trajectory-bridge.py": "7b1f6b6ab6feb854bbfcf6ae6a3463039b2c75a92db18e68c68dbe006119a2a5",
+      "molsysviewer/js/tests/e2e/box-trajectory-scenarios.ts": "d1a413b0dacd8621cea87a1ad66e99a1be1629cbdeeb42c041809d9030f70276",
+      "molsysviewer/js/tests/e2e/studio-usability.e2e.ts": "9485ebd995f52c3ee4619e8a74cb25b9cd540f60bef00fc0021b5e68a2fea5aa",
+      "molsysviewer/js/tests/unit/box-display.test.ts": "facc61aa0b71c950f7b48e0f0af73761159196256f881bf870013e1b725cab93",
+      "molsysviewer/js/tests/unit/index.test.ts": "707e458971c792fb0c361482981fe7e6d067514ca0911080898f2ea1ade0064f",
+      "molsysviewer/js/tests/unit/popup-replay-log.test.ts": "7a74828a4801dd547fba697e6de09e9ffc8f8537789bce7be72b1f5e4820c49a",
+      "molsysviewer/player.py": "94eb8b3c7f04a8da93a55b3eb287f2d59036bc3bd9d7544bf67038251609d300",
+      "molsysviewer/viewer.js": "e0876739c66d1af22362cc61d6ca8fea8473c6cce2ecf02bccf8046987e39dc0",
+      "molsysviewer/viewer/core.py": "1fca9622168fb50cbcb88224b4d3624e212f49c561f4dfc8bd9a276b5be85b08",
+      "molsysviewer/viewer/history.py": "432dc861470665fea54d51698ba0fd9b85cd4bd8499beb6cd375bff2be0e0071",
+      "molsysviewer/viewer/scene.py": "787167730e151cca4f479117e81bb042ca372f938fd0d5e7f4597cf44fbaf766",
+      "tests/test_box_state_persistence.py": "e1b5761674e35ab354132cd701e0fe352b156a44c61f89dba7d205b111a96483",
+      "tests/test_reporting_protocol.py": "1f8dd7839015d2131f80b31ec3fbf8b4c41a18f6b6e32d6cfcff9e3f6f8ed334"
+    },
+    "python": "3.14.7",
+    "node": "24.21.0",
+    "molstar": "5.4.1",
+    "scientific_provider": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+    "route": "Explicit Python 3.14 development interpreter, isolated reviewed contribution and cached support providers; no environment install or installed-artifact qualification.",
+    "frontend_advertised_versions": [
+      1
+    ]
+  },
+  "contract": {
+    "cells": "Detached raw row vectors in angstroms, nine values per structure; no view retaining an entire coordinate buffer.",
+    "refresh": "One latest-target worker and one current cell representation. Explicit cell selection survives duplicate frame feedback; explicit same-frame Python navigation resumes following.",
+    "popup": "Owner-resolved frame and selected-cell projection; newer definition revisions reject older feedback. Same-frame loaded-table replacement rebuilds a follower cell.",
+    "cleanup": "Hide/clear/disposal retire late writes; a cleanup failure retains ownership and capture remains unready.",
+    "history": "Automatic frame clear/add is coalesced; Python keeps one recipe and popup replay keeps one current box record.",
+    "public_python_signatures_changed": false,
+    "state_session_schema_changed": false,
+    "native_moving_capture_qualified": false
+  },
+  "receiving": {
+    "original_native_failure": {
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/box-trajectory.probe.js"
+      ],
+      "state": "completed",
+      "scope": "Actual exported HTML with real pentalanine and row-vector cells; no Python authority after export. Test source endpoints and actual cylinder meshes at completed draws. Before uses the unchanged b53d0584 runtime; native moving capture remains separate.",
+      "owner_pid": 2191082,
+      "native_exit": 1,
+      "seconds": 12.579641612013802,
+      "outer_timeout": false,
+      "selected_inputs": 4305,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "tracking_errors": [],
+      "provider_source": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+      "receipt_sha256": "de616a1e51a42ff5b614c7d85cc845aa5167bcdf2170021aae465f2513f5bb55"
+    },
+    "first_native_success": {
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/box-trajectory.probe.js"
+      ],
+      "state": "completed",
+      "scope": "Actual exported HTML with real pentalanine and row-vector cells; no Python authority after export. Test source endpoints and actual cylinder meshes at completed draws. Before uses the unchanged b53d0584 runtime; native moving capture remains separate.",
+      "owner_pid": 2200971,
+      "native_exit": 0,
+      "seconds": 15.634578376077116,
+      "outer_timeout": false,
+      "selected_inputs": 4305,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "tracking_errors": [],
+      "provider_source": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+      "receipt_sha256": "de3d14541cab37fc8c554eeddc5148ad3c9d4b1b4d125dee9ec00d74b165006a"
+    },
+    "expanded_native_success": {
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/box-trajectory.probe.js"
+      ],
+      "state": "completed",
+      "scope": "Actual pentalanine HTML export without Python, then a real native-buffer widget authority and actual popup. The original before run is b53d0584/export-only. Moving capture is separate.",
+      "owner_pid": 2209262,
+      "native_exit": 0,
+      "seconds": 56.61231161886826,
+      "outer_timeout": false,
+      "selected_inputs": 4310,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 14,
+        "survivors": [],
+        "errors": []
+      },
+      "tracking_errors": [],
+      "provider_source": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+      "receipt_sha256": "0685ff6a63560e42fd6d21ec6c9e1c832ca622fbab3532a6033cceff1166d8d4"
+    },
+    "final_native": {
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/box-trajectory.probe.js"
+      ],
+      "state": "completed",
+      "scope": "Actual pentalanine HTML export without Python, then a real native-buffer widget authority and actual popup. The original before run is b53d0584/export-only. Moving capture is separate.",
+      "owner_pid": 2218242,
+      "native_exit": 0,
+      "seconds": 45.17012266488746,
+      "outer_timeout": false,
+      "selected_inputs": 4310,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 14,
+        "survivors": [],
+        "errors": []
+      },
+      "tracking_errors": [],
+      "provider_source": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+      "receipt_sha256": "f20d917dc0bcef736c47011821647c755d486f4973be8f5f22a032e055e8697d"
+    },
+    "broader_browser_pre_final": {
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/e2e-runner.js",
+        "--lane=core",
+        "--suites=studio-usability,controls-visibility"
+      ],
+      "state": "completed",
+      "scope": "This complete two-suite run precedes the final absent-field omission, same-frame follower-table correction and extra style assertion. Final changed boundaries are received by the canonical Node gate and final native box scenario; do not call this an exact final-runtime full run.",
+      "owner_pid": 2211515,
+      "native_exit": 0,
+      "seconds": 413.10658438294195,
+      "outer_timeout": false,
+      "selected_inputs": 4310,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 28,
+        "survivors": [],
+        "errors": []
+      },
+      "tracking_errors": [],
+      "provider_source": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+      "receipt_sha256": "38ff98b619eff64ab0088882a9e8200b96906e7be2660168f02fe184c82c1fc7",
+      "suites_passed": 2,
+      "suites_selected": [
+        "controls-visibility",
+        "studio-usability"
+      ],
+      "changed_inputs_before_final": [
+        "molsysviewer/js/src/managers/handlers/box-display.ts",
+        "molsysviewer/js/src/managers/handlers/trajectory-handlers.ts",
+        "molsysviewer/js/src/managers/viewer-controller.ts",
+        "molsysviewer/js/tests/e2e/box-trajectory-bridge.py",
+        "molsysviewer/js/tests/e2e/box-trajectory-scenarios.ts",
+        "molsysviewer/js/tests/e2e/box-trajectory.probe.js",
+        "molsysviewer/js/tests/e2e/harness.bundle.js",
+        "molsysviewer/js/tests/e2e/studio-usability.e2e.js",
+        "molsysviewer/js/tests/unit/box-display.test.ts",
+        "molsysviewer/viewer.js"
+      ]
+    },
+    "final_canonical_js": {
+      "command": [
+        "npm",
+        "run",
+        "test:js"
+      ],
+      "native_exit": 0,
+      "seconds": 10.25177914602682,
+      "receipt_sha256": "af201a7afeb3f49d0bdbdbab4179a9e88b963cf9db2babd8e431f86e0c587a92",
+      "tests": 390,
+      "passed": 390,
+      "failed": 0,
+      "skipped": 0,
+      "log_sha256": "6192e6e7d746f3dc05458560f94a8c8cf5eddc1ad4f75e78bb6d0ee54a30a289",
+      "scope": "Unchanged canonical npm run test:js outside the sandbox, preserving native case counts; includes fifteen box and six replay cases."
+    },
+    "python": {
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "-m",
+        "pytest",
+        "--receptor=llm",
+        "tests/test_box_state_persistence.py",
+        "tests/test_box_assignment.py",
+        "tests/test_player_frame_notifications.py",
+        "tests/test_moving_state_capture.py",
+        "tests/test_popup_snapshot.py",
+        "tests/test_popup_snapshot_fidelity.py",
+        "tests/test_popup_snapshot_completeness.py",
+        "-o",
+        "cache_dir=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/A5-native-box-20261107/python-02-cache",
+        "--junitxml=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/A5-native-box-20261107/python-02.xml"
+      ],
+      "native_exit": 0,
+      "seconds": 127.02398977195844,
+      "receipt_sha256": "47aa56ec3276e9c6c6932bcf574a4746d9811d701f74d0815db79704959c1765",
+      "junit": {
+        "tests": 236,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "warnings": 235,
+      "junit_sha256": "cf8f2cace80b58178bc8ea94ff408f5a323aca406d11be95cad31ee4553677f2",
+      "log_sha256": "6832dc861343c5fa8dba7541a991b112e378838b2a1d77c97355e69e3b0eb966",
+      "scope": "Seven real-system modules for box, player, capture and popup snapshots. Production Python and these tests remain unchanged after this run; the later Python fixture style branch is received by final native execution."
+    },
+    "follower_before": {
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/A5-native-box-20261107/unit/box-display-before-replacement.js"
+      ],
+      "native_exit": 1,
+      "receipt_sha256": "5bf24498eb5951199567f76df4cc1adf01c3bfd4a33fe21d004689aadb347031"
+    },
+    "initial_canonical_js": {
+      "command": [
+        "npm",
+        "run",
+        "test:js"
+      ],
+      "native_exit": 1,
+      "seconds": 10.527342031011358,
+      "receipt_sha256": "4c37802259d925cbb732411814236024c885b0f993e5d2d9b9a43ee336fc4666",
+      "passed": 388,
+      "failed": 1,
+      "reason": "Absent optional box field must be omitted to retain exact callback shape; original assertions unchanged."
+    },
+    "excluded_attempts": [
+      {
+        "receipt": {
+          "command": [
+            "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+            "-m",
+            "pytest",
+            "--receptor=llm",
+            "tests/test_box_state_persistence.py",
+            "tests/test_box_assignment.py",
+            "tests/test_player_frame_notifications.py",
+            "tests/test_moving_state_capture.py",
+            "tests/test_popup_snapshot_contract.py",
+            "-o",
+            "cache_dir=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/A5-native-box-20261107/python-01-cache",
+            "--junitxml=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/A5-native-box-20261107/python-01.xml"
+          ],
+          "native_exit": 4,
+          "seconds": 1.4292881649453193,
+          "receipt_sha256": "9624fe30f9655d7c67a7194730e21863a87665004709063fd804d3aa4d9a246b"
+        },
+        "reason": "Nonexistent test selector; exit 4, no scientific result."
+      },
+      {
+        "receipt": {
+          "command": [
+            "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+            "tests/e2e/box-trajectory.probe.js"
+          ],
+          "state": "completed",
+          "scope": "Actual exported HTML with real pentalanine and row-vector cells; no Python authority after export. Test source endpoints and actual cylinder meshes at completed draws. Before uses the unchanged b53d0584 runtime; native moving capture remains separate.",
+          "owner_pid": 2206756,
+          "native_exit": 1,
+          "seconds": 60.08997662109323,
+          "outer_timeout": false,
+          "selected_inputs": 4305,
+          "inputs_unchanged": false,
+          "cleanup": {
+            "tracked": 14,
+            "survivors": [],
+            "errors": []
+          },
+          "tracking_errors": [],
+          "provider_source": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+          "receipt_sha256": "a888921b402eff05e21b34d25788743bf1899d479d71081085cbd5bc7dcf7d7f"
+        },
+        "reason": "Wrong UI selector and changed selected inputs; not qualifying evidence."
+      }
+    ],
+    "typescript": {
+      "command": [
+        "node_modules/.bin/tsc",
+        "--noEmit"
+      ],
+      "native_exit": 0,
+      "seconds": 7.467650890117511,
+      "receipt_sha256": "d873bbf0633ab10c4f2915e2f696c557fdd86dbc430a72a78939ce71538fddf3"
+    },
+    "builds": [
+      {
+        "command": [
+          "npm",
+          "run",
+          "build:runtime"
+        ],
+        "native_exit": 0,
+        "seconds": 0.8576652221381664,
+        "receipt_sha256": "e9f8d6b562e2f140e832d5dfc31f7c2fd3cb3030027ad9353f4a211e0570508d"
+      },
+      {
+        "command": [
+          "npm",
+          "run",
+          "build:harness"
+        ],
+        "native_exit": 0,
+        "seconds": 1.202562359860167,
+        "receipt_sha256": "a75ba742dd8822dbe15d2d9fc83b22c46968aea2c101bd3e8208388e7cef2370"
+      },
+      {
+        "command": [
+          "npm",
+          "run",
+          "build:e2e:all"
+        ],
+        "native_exit": 0,
+        "seconds": 0.9681092060636729,
+        "receipt_sha256": "1be64f997c38dd17d2f8839f1765b6aca81921cb25cd8d0febcb8b7d0762e956"
+      },
+      {
+        "command": [
+          "node_modules/.bin/esbuild",
+          "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/A5-native-box-20261107/native-box-entry.ts",
+          "--bundle",
+          "--platform=node",
+          "--format=esm",
+          "--outfile=tests/e2e/box-trajectory.probe.js",
+          "--external:playwright",
+          "--external:chromium-bidi/*"
+        ],
+        "native_exit": 0,
+        "seconds": 0.14431151910685003,
+        "receipt_sha256": "d7ba61fd103b965f9ec35b654fc70fe80a920e1e19ccaec6f83c11834749a83b"
+      }
+    ],
+    "ruff": [
+      {
+        "command": [
+          "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+          "-m",
+          "ruff",
+          "check",
+          "."
+        ],
+        "native_exit": 0,
+        "receipt_sha256": "594d15a094c747ee80feb7ae0ffcc5178b9ae44188dbebd3057013ed010327e9"
+      },
+      {
+        "command": [
+          "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+          "-m",
+          "ruff",
+          "format",
+          "--check",
+          "."
+        ],
+        "native_exit": 0,
+        "receipt_sha256": "fff8be7afe92cc86ccad36de449c24ece60483da3902c9a7830c1277ba15029d"
+      }
+    ],
+    "governance_initial": {
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "-m",
+        "pytest",
+        "--receptor=llm",
+        "tests/test_reporting_protocol.py",
+        "tests/test_devguide_links.py",
+        "tests/test_devguide_architecture_status.py",
+        "-o",
+        "cache_dir=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/A5-native-box-20261107/governance-cache",
+        "--junitxml=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/A5-native-box-20261107/governance.xml"
+      ],
+      "native_exit": 1,
+      "seconds": 3.7098866829182953,
+      "junit": {
+        "tests": 386,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "log_sha256": "5282717b86309b40d21cc7b29db038fe046c3673246be8b41393e86c872f1ffe",
+      "junit_sha256": "34bdfb1a7f8e59a425481b928b76dc9c0ee2b37396a8ddc8ec100468e92a7db9",
+      "scope": "Untracked new documents were unavailable to the clean-checkout guard; staged the maintained paths without changing assertions."
+    },
+    "governance": {
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "-m",
+        "pytest",
+        "--receptor=llm",
+        "tests/test_reporting_protocol.py",
+        "tests/test_devguide_links.py",
+        "tests/test_devguide_architecture_status.py",
+        "-o",
+        "cache_dir=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/A5-native-box-20261107/governance-final-cache",
+        "--junitxml=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/A5-native-box-20261107/governance-final.xml"
+      ],
+      "native_exit": 0,
+      "seconds": 3.666560836136341,
+      "junit": {
+        "tests": 386,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "log_sha256": "801ae021ce8fae2c10b8927ee33a5a5bd543afff7ce31871fb53ef7321a43ce1",
+      "junit_sha256": "adfabeab98f95418926e1b37ef87b603c0d9ab9041cb9fd482732e733fc33afb"
+    }
+  },
+  "guard": "molsysviewer/js/tests/e2e/studio-usability.e2e.ts",
+  "private_custody": {
+    "bundle": "native-box-20261107-1",
+    "files": 130,
+    "bytes": 17642641,
+    "manifest_sha256": "412bda13836a2242a902ddf0534556912cb1886bb6a0989b3296d2b81a1bbff3",
+    "hashes_verified": true,
+    "directory_mode": "0700",
+    "file_mode": "0600",
+    "originals_retained": true,
+    "custodian": "Diego Prada Gracia",
+    "off_host_backup": false
+  },
+  "remaining": [
+    "A5 actual moving/hidden renderer receiving, earlier actual-Jupyter restoration uncertainty and applicable consolidated/native/installed/human acceptance.",
+    "The entire original 46-leaf plan, C1 owner-PR reconciliation, all approved addon/task families and mandatory Movie #320."
+  ],
+  "progress": {
+    "delivered": "8/46 (17.4%)",
+    "final_acceptance": "1/46 (2.2%)",
+    "child_does_not_add_a_denominator_item": true
+  },
+  "publication": "Candidates, tags, packages, promotions and both 1.0 publications remain paused."
+}

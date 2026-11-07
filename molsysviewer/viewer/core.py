@@ -2092,7 +2092,22 @@ class MolSysView(
                 self._send_runtime_only({"op": "set_trajectory_frame", "index": frame})
             self._sync_trajectory_summary_runtime()
             self._sync_measurement_summaries_runtime()
-            self._follow_box_frame(frame)
+            box_display = content.get("box_display")
+            if isinstance(box_display, dict):
+                box_revision = box_display.get("definition_revision")
+                box_index = box_display.get("structure_index")
+                if (
+                    type(box_revision) is int
+                    and box_revision == self._box_definition_revision
+                    and type(box_index) is int
+                    and self.molsys is not None
+                    and 0 <= box_index < int(msm.get(self.molsys, element="system", n_structures=True))
+                ):
+                    self._follow_box_frame(box_index)
+            elif previous[0] != frame:
+                # Legacy endpoints have no resolved cell. Duplicate frame
+                # feedback must not undo an explicitly selected other cell.
+                self._follow_box_frame(frame)
             self.player._notify_frame_change(previous)  # noqa: SLF001
         elif event == "request_dynamic_region_evaluation":
             self._handle_dynamic_region_evaluation_request(content)

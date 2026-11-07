@@ -33,6 +33,63 @@ def recipe(frame):
     return {"color": 0xFF0000, "width_angstrom": 0.2, "alpha": 0.7, "structure_index": frame}
 
 
+def test_duplicate_frame_feedback_preserves_an_explicit_other_cell(view):
+    view.show_box(color="red", width=0.2, alpha=0.7, structure_indices=2)
+    view._handle_frontend_event({"event": "trajectory_frame_changed", "frame": 0})
+    assert view.export_state()["box_display"] == recipe(2)
+    view.player.go_to_structure(0)
+    assert view.export_state()["box_display"] == recipe(0)
+
+
+def test_native_resolved_cell_feedback_preserves_its_actual_cell_and_style(view):
+    view.show_box(color="red", width=0.2, alpha=0.7, structure_indices=2)
+    revision = view._box_definition_revision
+    view._handle_frontend_event(
+        {
+            "event": "trajectory_frame_changed",
+            "frame": 1,
+            "box_display": {"definition_revision": revision, "structure_index": 2},
+        }
+    )
+    assert view.player.index == 1
+    assert view.export_state()["box_display"] == recipe(2)
+    np.testing.assert_array_equal(box_edges(view)[0], [[0, 0, 0], [50, 0, 0]])
+
+
+@pytest.mark.parametrize("change", ["older_revision", "invalid_index", "boolean_index", "boolean_revision"])
+def test_late_or_invalid_box_feedback_does_not_undo_a_newer_definition(view, change):
+    view.show_box(color="red", width=0.2, alpha=0.7, structure_indices=2)
+    projection = {"definition_revision": view._box_definition_revision, "structure_index": 0}
+    if change == "older_revision":
+        projection["definition_revision"] -= 1
+    elif change == "invalid_index":
+        projection["structure_index"] = 3
+    elif change == "boolean_index":
+        projection["structure_index"] = True
+    else:
+        projection["definition_revision"] = True
+    view._handle_frontend_event({"event": "trajectory_frame_changed", "frame": 1, "box_display": projection})
+    assert view.player.index == 1
+    assert view.export_state()["box_display"] == recipe(2)
+
+
+def test_repeated_box_frame_projection_keeps_one_recipe_and_a_single_definition(view):
+    view.show_box(color="red", width=0.2, alpha=0.7)
+    revision = view._box_definition_revision
+    for index in range(30):
+        view._handle_frontend_event(
+            {
+                "event": "trajectory_frame_changed",
+                "frame": index % 3,
+                "is_playing": True,
+                "box_display": {"definition_revision": revision, "structure_index": index % 3},
+            }
+        )
+    assert view._box_definition_revision == revision
+    assert view.export_state()["box_display"] == recipe(2)
+    assert len([m for m in view._shape_history if view._tag_from_message(m) == view._BOX_TAG]) == 1
+
+
 @pytest.mark.parametrize("ready", [False, True])
 @pytest.mark.parametrize("kind", ["state", "session"])
 def test_saved_box_keeps_style_cell_and_frame_following(view, tmp_path, ready, kind):

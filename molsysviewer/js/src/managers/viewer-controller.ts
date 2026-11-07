@@ -26,6 +26,9 @@ import { AnnotationHandlers } from "./handlers/annotation-handlers";
 import { MeasurementHandlers } from "./handlers/measurement-handlers";
 import { InteractionHandlers, type InteractionSummary } from "./handlers/interaction-handlers";
 import { ShapeHandlers, type TrajectoryShapeRenderStatus } from "./handlers/shape-handlers";
+import { BoxDisplayHandler } from "./handlers/box-display";
+import { BOX_TAG, isAutomaticBoxClear } from "../messages/box-display";
+import { addNetworkLinksFromPython } from "../shapes";
 import { SceneHandlers } from "./handlers/scene-handlers";
 import { StateHandlers } from "./handlers/state-handlers";
 import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handlers";
@@ -866,6 +869,7 @@ export class MolSysViewerController {
     public readonly interactions: InteractionHandlers;
     private interactionSummaries: InteractionSummary[] = [];
     public readonly shapes: ShapeHandlers;
+    public readonly boxDisplay: BoxDisplayHandler;
     public readonly scene: SceneHandlers;
     public readonly state: StateHandlers;
     public readonly trajectory: TrajectoryHandlers;
@@ -1760,8 +1764,28 @@ export class MolSysViewerController {
             afterFrameApplied: () => this.annotations.refresh(),
             getLoadedStructure: () => this.loadedStructure,
             notifyTrajectoryState: () => this.notifyTrajectoryState(),
-            onPlaybackStopped: (frame) => this.notify?.({ event: "trajectory_frame_changed", frame }),
+            onPlaybackStopped: frame => {
+                const box = this.boxDisplay.projection;
+                this.notify?.({ event: "trajectory_frame_changed", frame, ...(box ? { box_display: box } : {}) });
+            },
             notify: (msg) => this.notify?.(msg),
+            getBoxProjection: () => this.boxDisplay?.projection,
+        });
+        this.boxDisplay = new BoxDisplayHandler({
+            getLoaded: () => this.loadedStructure,
+            getFrame: () => this.trajectory.getTrajectoryState().currentFrame,
+            isFollower: () => this.trajectory.isFollower,
+            render: (options, previous) => addNetworkLinksFromPython(plugin, options, previous),
+            register: ref => this.state.registerShapeRef(ref, BOX_TAG),
+            remove: async ref => {
+                if (plugin.state.data.cells.has(ref)) {
+                    const update = plugin.state.data.build();
+                    update.delete(ref);
+                    await plugin.runTask(plugin.state.data.updateTree(update));
+                }
+                this.state.unregisterTaggedRef(ref, BOX_TAG, "shape");
+            },
+            failure: error => console.warn("[MolSysViewer] Box display refresh failed", error),
         });
         this.interactions = new InteractionHandlers(plugin, {
             register: (ref, tag) => this.state.registerTaggedRef(ref, tag, "interaction"),
@@ -1791,6 +1815,7 @@ export class MolSysViewerController {
         this.trajectory.onTrajectoryState(
             (state) => {
                 this.contextMenu.close();
+                this.boxDisplay.onFrame(state.currentFrame);
                 this.groupPanel.clearContextInspection();
                 this.triggerLocalAddonEvent("frame-changed", state.currentFrame);
                 this.trajectoryPlotOverlay.setFrame(state.currentFrame);
@@ -1858,6 +1883,7 @@ export class MolSysViewerController {
     }
 
     dispose(): void {
+        this.boxDisplay?.dispose();
         this.cancelInitialFraming();
         this.pendingCameraIntent?.release();
         this.pendingHtmlDownload = null;
@@ -2585,7 +2611,12 @@ export class MolSysViewerController {
                 case "system_file_browse_result": this.groupPanel.updateSystemFiles(msg); break;
                 case "studio_action_result": this.groupPanel.updateStudioAction(msg); this.addonsPanel.updateStudioAction(msg); break;
                 case "interaction_inspection": this.groupPanel.updateInteractionInspection(msg.request_id, msg.result); break;
-                case "add_network_links": await this.shapes.addNetworkLinks(msg); break;
+                case "add_network_links":
+                    if (msg.options?.tag === BOX_TAG && msg.options.box_display) {
+                        await this.boxDisplay.define(msg.options, msg.options.box_display);
+                        this.trajectory.notifyListeners();
+                    } else await this.shapes.addNetworkLinks(msg);
+                    break;
                 case "add_hbonds": await this.shapes.addHbonds(msg); break;
                 case "add_displacement_vectors": await this.shapes.addDisplacementVectors(msg); break;
                 case "add_tetrahedra": await this.shapes.addTetrahedra(msg); break;
@@ -2657,16 +2688,22 @@ export class MolSysViewerController {
                     break;
                 }
                 case "clear_scene":
+                        if ((msg.options?.shapes ?? true)) this.boxDisplay.forget();
                         if ((msg.options?.shapes ?? true)) this.interactions.clear();
                         await this.scene.clearScene(msg);
                         this.checkCameraAfterSceneMutation("clear_scene");
                     break;
                 case "clear_all":
+                    this.boxDisplay.forget();
                     this.setStructureLoadPending(msg.awaiting_structure === true);
                     this.interactions.clear();
                     await this.scene.clearAll();
                     break;
-                case "clear_shapes_by_tag": await this.scene.clearShapesByTag(msg); break;
+                case "clear_shapes_by_tag":
+                    if (isAutomaticBoxClear(msg)) break;
+                    if (!(msg as any).tag || (msg as any).tag === BOX_TAG) this.boxDisplay.forget();
+                    await this.scene.clearShapesByTag(msg);
+                    break;
 
                 // State/Region Ops
                 case "set_focus_fade": await this.state.setFocusFade(msg); break;
@@ -2988,6 +3025,12 @@ export class MolSysViewerController {
                 case "step_trajectory": await this.trajectory.stepTrajectory(msg); break;
                 case "set_trajectory_frame":
                     await this.trajectory.setTrajectoryFrame(msg);
+                    if ((msg as any).box_follow === true) {
+                        this.boxDisplay.onFrame(this.trajectory.getTrajectoryState().currentFrame, true);
+                        await this.boxDisplay.whenSettled();
+                        this.trajectory.notifyListeners();
+                    }
+                    await this.boxDisplay.applyProjection((msg as any).box_display);
                     break;
                 case "set_trajectory_playback": await this.trajectory.setTrajectoryPlayback(msg); break;
                 case "partial_coordinates_update": await this.trajectory.partialCoordinatesUpdate(msg as any); break;

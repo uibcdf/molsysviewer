@@ -366,7 +366,8 @@ export const bootPopup = async (loadedModule?: any) => {
                         }
                     }
                     if (Number.isInteger(data.trajectoryFrame) && data.trajectoryFrame >= 0) {
-                        await ctrl.setTrajectoryFrame(data.trajectoryFrame);
+                        await ctrl.handleMessage({ op: "set_trajectory_frame", index: data.trajectoryFrame,
+                            box_display: data.boxDisplay });
                     }
                     if (data.cameraSnapshot) {
                         await cameraSync?.applyBootstrap(data);

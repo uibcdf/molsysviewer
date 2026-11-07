@@ -434,6 +434,13 @@ checks the first trajectory shape created after navigating an otherwise
 shape-free controller. The timing gate replaces no geometry or reply. These
 assertions, rather than a desired-frame field alone, guard refresh convergence;
 the same fixed Studio selector retains the build/core and fixture registration.
+Its `box-trajectory-scenarios.ts` owner receives a public pentalanine HTML
+export after its Python View closes, checking the twelve native edge meshes
+against independent orthogonal, rotated and triclinic row-vector controls.
+The same owner uses the persistent `box-trajectory-bridge.py` and actual
+widget/canvas popup to check frame following, explicit other-frame cells,
+rebootstrap, same-frame navigation, cell replacement, hide and clear on fresh
+completed draws. A numeric target index alone is not geometry evidence.
 The complementary `tests/test_jupyter_live_capture.py` profile uses an actual
 JupyterLab/kernel and fresh draw observations. Select
 `MOLSYSVIEWER_JUPYTER_TEST=1` to run it locally with JupyterLab, ipykernel,

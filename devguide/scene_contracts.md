@@ -1864,6 +1864,19 @@ The real-system state/session, rejection, history and unit guards live in
 `tests/test_box_state_persistence.py`; the registered Studio browser entry also
 receives the restored native mesh, style, camera and frame on completed draws.
 
+Native trajectory navigation follows the actual applied frame without requiring
+Python feedback, including exported HTML. Retain raw row-vector cells: the
+Mol* Cell length/angle representation alone cannot retain their orientation.
+The frontend owns a detached nine-values-per-structure table and one current
+cell representation, with latest-target refresh and explicit pending/applied
+readiness. A cell selected by `show_box(structure_indices=...)` survives duplicate
+frame notifications until navigation; explicit same-frame Python navigation
+resumes following. Canvas popups receive the owner's resolved cell alongside
+the applied frame and never infer a competing cell from older frame feedback.
+Python feedback carries the definition revision and actual selected cell, so
+it cannot overwrite a later style/cell definition. Hide, clear and disposal
+retire outstanding writes; they must not resurrect cell geometry.
+
 `session_reproducibility.md` §"The rule for every future change" applies in
 full: a round-trip test that asserts the **content** (the hidden flag survived,
 the shape came back with its colour and radius), verified by mutation — not a

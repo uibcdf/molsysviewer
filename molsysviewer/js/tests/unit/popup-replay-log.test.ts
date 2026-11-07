@@ -73,3 +73,24 @@ test("popup replay never transfers another window's addon widget or state", () =
         assert.deepEqual(log.snapshot(mode), [message("set_addon_runtime_summary", { addons: ["review"] })]);
     }
 });
+
+test("box frame refreshes keep one current replay record without clear/add flicker", () => {
+    const log = new PopupReplayLog();
+    const box = (frame: number, revision = 1) => message("add_network_links", { options: {
+        tag: "__msv_box", box_display: { definition_revision: revision, structure_index: frame, frame_update: true },
+    } });
+    for (let frame = 0; frame < 1000; frame++) {
+        log.record(message("clear_shapes_by_tag", { tag: "__msv_box", box_frame_update: 1 }));
+        log.record(box(frame));
+    }
+    assert.equal(log.size, 1);
+    assert.deepEqual(log.snapshot("canvas"), [box(999)]);
+    log.record(box(0, 2));
+    log.record(box(1, 1));
+    assert.deepEqual(log.snapshot("canvas"), [box(0, 2)], "older definitions cannot replace newer style/cell data");
+    log.record(message("clear_shapes_by_tag", { tag: "__msv_box" }));
+    assert.deepEqual(log.snapshot("canvas"), [message("clear_shapes_by_tag", { tag: "__msv_box" })]);
+    log.record(box(2, 3));
+    assert.deepEqual(log.snapshot("canvas"), [box(2, 3)]);
+    assert.deepEqual(log.snapshot("panel"), []);
+});
