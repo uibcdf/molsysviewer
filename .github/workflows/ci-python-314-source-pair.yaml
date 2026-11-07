@@ -22,6 +22,12 @@ on:
         required: true
         default: false
         type: boolean
+      receiving_scope:
+        description: Full source gate or bounded non-qualifying Linux browser diagnostics
+        required: false
+        default: full
+        type: choice
+        options: [full, diagnostics]
       platform:
         description: All platforms for qualification; one platform only for scoped source recovery
         required: true
@@ -68,7 +74,7 @@ permissions:
 
 jobs:
   source-pair:
-    name: Source pair on ${{ matrix.cfg.os }}, Python ${{ matrix.cfg.python-version }}
+    name: ${{ inputs.receiving_scope == 'diagnostics' && 'Source diagnostics' || 'Source pair' }} on ${{ matrix.cfg.os }}, Python ${{ matrix.cfg.python-version }}
     runs-on: ${{ matrix.cfg.os }}
     timeout-minutes: 120
     strategy:
@@ -89,8 +95,18 @@ jobs:
           SELECTED_PLATFORM: ${{ inputs.platform || 'all' }}
           SOURCE_RECEIVING: ${{ inputs.source_receiving || false }}
           PANDAS_VERSION: ${{ inputs.pandas_version || '2.3.3' }}
+          RECEIVING_SCOPE: ${{ inputs.receiving_scope || 'full' }}
         run: |
           set -euo pipefail
+          RECEIVING_SCOPE="${RECEIVING_SCOPE:-full}"
+          case "$RECEIVING_SCOPE" in
+            full|diagnostics) ;;
+            *) echo "::error::Unknown receiving scope"; exit 1 ;;
+          esac
+          if [[ "$RECEIVING_SCOPE" == diagnostics && ( "$SOURCE_RECEIVING" != true || "$SELECTED_PLATFORM" != ubuntu-latest ) ]]; then
+            echo "::error::Diagnostics require source_receiving=true and platform=ubuntu-latest; they do not qualify a candidate"
+            exit 1
+          fi
           if [[ ! "$PANDAS_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "::error::pandas_version must be an exact numeric X.Y.Z version"
             exit 1
@@ -266,12 +282,13 @@ jobs:
         run: python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci --import-mode=importlib molsysviewer-source/tests/integration/test_molsysmt_integration.py
 
       - name: Run MolSysViewer Python tests
+        if: inputs.receiving_scope != 'diagnostics'
         shell: bash -l {0}
         working-directory: molsysviewer-source
         run: python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci -m "not qt_runtime" tests/ --junitxml=source-receiving.xml
 
       - name: Preserve the original source-receiving JUnit
-        if: always()
+        if: always() && inputs.receiving_scope != 'diagnostics'
         uses: actions/upload-artifact@v4
         with:
           name: source-receiving-${{ runner.os }}-py${{ matrix.cfg.python-version }}
@@ -283,7 +300,7 @@ jobs:
       # it cannot satisfy an installed-artifact or public release gate (#170).
       - name: Register the exact source-pair notebook kernel
         id: notebook-kernel
-        if: runner.os == 'Linux'
+        if: runner.os == 'Linux' && inputs.receiving_scope != 'diagnostics'
         shell: bash -l {0}
         run: python -m ipykernel install --sys-prefix --name python3 --display-name "Python source pair 3.14"
 
@@ -308,21 +325,46 @@ jobs:
           /usr/bin/google-chrome --version
 
       - name: Run all core browser suites against the exact source pair
-        if: runner.os == 'Linux'
+        if: runner.os == 'Linux' && inputs.receiving_scope != 'diagnostics'
         shell: bash -l {0}
         working-directory: molsysviewer-source/molsysviewer/js
         env:
           PW_CHROMIUM_BIN: /usr/bin/google-chrome
         run: npm run test:e2e:core
 
+      - name: Run focused mirror receiving diagnostics
+        if: runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics'
+        shell: bash -l {0}
+        working-directory: molsysviewer-source/molsysviewer/js
+        env:
+          PW_CHROMIUM_BIN: /usr/bin/google-chrome
+        run: node tests/e2e/e2e-runner.js --lane=core --suites=controls-visibility
+
+      - name: Receive live Jupyter diagnostics
+        if: ${{ !cancelled() && runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics' }}
+        shell: bash -l {0}
+        working-directory: molsysviewer-source
+        env:
+          PW_CHROMIUM_BIN: /usr/bin/google-chrome
+        run: python tests/_jupyter_live_capture.py
+
+      - name: Preserve safe source-pair receiving diagnostic receipts
+        if: always() && inputs.receiving_scope == 'diagnostics'
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-pair-receiving-diagnostics-${{ runner.os }}
+          path: molsysviewer-source/.pytest_cache/live-jupyter/**/command-result.json
+          include-hidden-files: true
+          if-no-files-found: warn
+
       - name: Execute every documented notebook against the exact source pair
-        if: always() && runner.os == 'Linux' && steps.notebook-kernel.outcome == 'success'
+        if: always() && runner.os == 'Linux' && steps.notebook-kernel.outcome == 'success' && inputs.receiving_scope != 'diagnostics'
         shell: bash -l {0}
         working-directory: molsysviewer-source
         run: python docs/execute_notebooks.py -q -n 4 -r -f docs/content
 
       - name: Preserve source-pair notebook failure logs
-        if: failure() && runner.os == 'Linux'
+        if: failure() && runner.os == 'Linux' && inputs.receiving_scope != 'diagnostics'
         uses: actions/upload-artifact@v4
         with:
           name: source-pair-notebook-failure-logs

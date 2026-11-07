@@ -21,6 +21,8 @@ def test_source_recovery_matrix_keeps_complete_default_and_whitelisted_subsets()
     )
     option = workflow["on"]["workflow_dispatch"]["inputs"]["platform"]
     assert option["default"] == "all" and option["type"] == "choice"
+    scope = workflow["on"]["workflow_dispatch"]["inputs"]["receiving_scope"]
+    assert scope["default"] == "full" and scope["options"] == ["full", "diagnostics"]
     expression = workflow["jobs"]["source-pair"]["strategy"]["matrix"]["cfg"]
     prefix, suffix = "${{ fromJSON('", "')[inputs.platform || 'all'] }}"
     assert expression.startswith(prefix) and expression.endswith(suffix)
@@ -36,12 +38,14 @@ def test_source_recovery_matrix_keeps_complete_default_and_whitelisted_subsets()
         "SELECTED_PLATFORM": "${{ inputs.platform || 'all' }}",
         "SOURCE_RECEIVING": "${{ inputs.source_receiving || false }}",
         "PANDAS_VERSION": "${{ inputs.pandas_version || '2.3.3' }}",
+        "RECEIVING_SCOPE": "${{ inputs.receiving_scope || 'full' }}",
     }
 
 
 @pytest.mark.parametrize("platform", ["all", "ubuntu-latest", "macos-15", "windows-2025", "unknown"])
 @pytest.mark.parametrize("receiving", [False, True])
-def test_source_recovery_guard_executes_without_waiving_candidate_platforms(platform, receiving):
+@pytest.mark.parametrize("receiving_scope", ["full", "diagnostics", "unknown"])
+def test_source_recovery_guard_executes_without_waiving_candidate_platforms(platform, receiving, receiving_scope):
     workflow = yaml.load(
         (ROOT / ".github/workflows/ci-python-314-source-pair.yaml").read_text(encoding="utf-8"),
         Loader=yaml.BaseLoader,
@@ -56,10 +60,16 @@ def test_source_recovery_guard_executes_without_waiving_candidate_platforms(plat
         text=True,
         capture_output=True,
         env=dict(
-            os.environ, SELECTED_PLATFORM=platform, SOURCE_RECEIVING=str(receiving).lower(), PANDAS_VERSION="2.3.3"
+            os.environ,
+            SELECTED_PLATFORM=platform,
+            SOURCE_RECEIVING=str(receiving).lower(),
+            PANDAS_VERSION="2.3.3",
+            RECEIVING_SCOPE=receiving_scope,
         ),
     )
     accepted = platform != "unknown" and (platform == "all" or receiving)
+    if receiving_scope != "full":
+        accepted = receiving_scope == "diagnostics" and receiving and platform == "ubuntu-latest"
     assert result.returncode == (0 if accepted else 1), result.stdout + result.stderr
 
 
@@ -117,7 +127,7 @@ def test_exact_source_pair_executes_all_notebooks_and_core_browser_suites():
     notebooks = next(step for step in steps if "python docs/execute_notebooks.py" in step.get("run", ""))
     assert steps.index(audit) < steps.index(kernel) < steps.index(browser) < steps.index(notebooks)
     assert kernel["run"].startswith("python -m ipykernel install --sys-prefix --name python3 ")
-    assert browser["if"] == "runner.os == 'Linux'"
+    assert browser["if"] == "runner.os == 'Linux' && inputs.receiving_scope != 'diagnostics'"
     assert browser["env"]["PW_CHROMIUM_BIN"] == "/usr/bin/google-chrome"
     assert browser["working-directory"] == "molsysviewer-source/molsysviewer/js"
     assert notebooks["working-directory"] == "molsysviewer-source"
@@ -251,9 +261,16 @@ def test_development_receiving_preserves_source_identity_and_original_test_resul
     provider = next(step for step in steps if step.get("id") == "provider-candidate-tag")
     assert provider["if"] == "inputs.source_receiving != true"
     native_tests = next(step for step in steps if step.get("name") == "Run MolSysViewer Python tests")
+    assert native_tests["if"] == "inputs.receiving_scope != 'diagnostics'"
     assert '--receptor=ci -m "not qt_runtime" tests/' in native_tests["run"]
     assert "--junitxml=source-receiving.xml" in native_tests["run"]
     receipt = next(step for step in steps if step.get("name") == "Preserve the original source-receiving JUnit")
-    assert receipt["if"] == "always()"
+    assert receipt["if"] == "always() && inputs.receiving_scope != 'diagnostics'"
     assert receipt["with"]["path"] == "molsysviewer-source/source-receiving.xml"
     assert "runner.os" in receipt["with"]["name"]
+    diagnostic = next(
+        step for step in steps if step.get("name") == "Preserve safe source-pair receiving diagnostic receipts"
+    )
+    assert diagnostic["if"] == "always() && inputs.receiving_scope == 'diagnostics'"
+    assert diagnostic["with"]["path"].endswith("/**/command-result.json")
+    assert "source-receiving.xml" not in diagnostic["with"]["path"]

@@ -1,0 +1,112 @@
+{
+  "schema": "molsysviewer.hosted_receiving_diagnostics@1",
+  "date": "2026-11-07",
+  "issues": [
+    "uibcdf/molsysviewer#319",
+    "uibcdf/molsysviewer#325"
+  ],
+  "source_baseline": "92066a19ec8cab1ea92f5e5cc680cf1480861de7",
+  "purpose": "Acquire missing cause evidence; no product fix or closure claimed from local non-reproduction.",
+  "safe_jupyter_summary": {
+    "native_exit_unchanged": true,
+    "exports": "Closed phase/error vocabulary and bounded integer counters only; no raw error/stack/URL/records/page-error fields.",
+    "max_observation_bytes": 1048576,
+    "unit_cases": 13,
+    "unselected_graphical_skip_not_qualification": true,
+    "allowlist_bypass_mutation_expected_exit": 1,
+    "actual_local": {
+      "native_exit": 0,
+      "seconds": 70.93595267902128,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 14,
+        "survivors": [],
+        "errors": []
+      }
+    },
+    "provider_scope": "Actual Jupyter work files with typed safe browser summary wired into command receipt; previously qualified e119/PUW02d source route, not exact hosted minimum-provider reproduction."
+  },
+  "native_picking": {
+    "implementation": "Read-only bounded observations on timeout; original pick/search/markers/deadlines preserved. Mol* 5.4.1 inspected at exact upstream tag, not current 6.0-development source.",
+    "actual_local": {
+      "native_exit": 0,
+      "seconds": 198.94473332213238,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      }
+    },
+    "provider_scope": "Actual controls/mirror suite with bounded on-timeout native GPU observations; no changed pick predicate, generated loci or deadlines, not an exact hosted minimum-provider reproduction.",
+    "post_local_receiving_refinement": "After the recorded controls pass, added read-only pixel ratio, viewport and bounded hit IDs, and generalized failure wording. That earlier input digest is retained; it does not qualify the later driver bytes.",
+    "current_driver_sha256": "62c3262dd44de00d696d84492c03c778ac7ac7117e20c17c71d00df78a448007"
+  },
+  "workflow": {
+    "path": ".github/workflows/ci-python-314-source-pair.yaml",
+    "full_default_unchanged": true,
+    "diagnostics_require": {
+      "source_receiving": true,
+      "receiving_scope": "diagnostics",
+      "platform": "ubuntu-latest"
+    },
+    "scope": "Exact native/provider setup and preflights, controls-visibility and actual Jupyter only; no full Python/notebook/core matrix, candidate or installed qualification.",
+    "job_name": "Source diagnostics on ubuntu-latest, Python 3.14",
+    "safe_artifact": "source-pair-receiving-diagnostics-Linux",
+    "actual_shell_guard_matrix_and_route_checks_passed": 51
+  },
+  "original_failures_retained": [
+    "Viewer e4 hosted actual-Jupyter exit1; public receipt lacks failure phase so cause unknown.",
+    "Viewer e4 source-pair Linux revised-label GPU pick timeout; no causal repair from later pass.",
+    "Initial new parser authoring assumption rejected valid deeply nested JSON; corrected to unambiguously malformed evidence and kept original failure.",
+    "Initial workflow expectation required always-only full JUnit; corrected to preserve it only in full profile, with distinct diagnostic receipts."
+  ],
+  "remote_dispatch_performed": false,
+  "remaining": [
+    "Review/publish diagnostics batch with skip-ci.",
+    "One bounded source-only diagnostic execution with source46ef28eb/pandas2.3.3; inspect native facts and safe evidence.",
+    "Diagnose actual causes or obtain explicit disposition, preserve failures; complete required full acceptance separately."
+  ],
+  "private_receipt_sha256": {
+    "diagnostic-red.json": "a0b6865c454603d4aeaf5726cfd3fb3f731b6402828572dca51fd7902c9d3092",
+    "diagnostic-mutation.json": "1b26e916c9f927e6e899a45f16ec92390b23c4ded8b84318a621ce78dde5c4dd",
+    "diagnostic-final-02.json": "5662c72469a3980cdd370b105c8a275f8b90bca605d0c879cfb0608d01415c7a",
+    "workflow-diag-01.json": "bd9a590a8989d5f9f62406baf992740bb90a61f5316ea88fa68dadf4f7e567c5",
+    "workflow-diag-02.json": "6f5dd3bdf09a3cb930803b762ee5e043ad0c0b5620f0b99c598965b6b90072d7",
+    "live-diagnostic-local-01/invocation.json": "cbff05bd1ab3d9dd681780773831d951f2b6a3c75a2fea1b65da5ff6c044ed1e",
+    "mirror-diagnostic-local-01/invocation.json": "0f838136617a88dc1b18eb3ea23d3dcd0653687991526380686578e6fcf41044",
+    "workflow-diag-final.json": "82282db2664877dd9712ace700dcae182aade8658b27b07c0f0f8b6ba36ff50b",
+    "diagnostic-typecheck-final.json": "24788dbc02b5f9cbf095037a16f2194cdf03b8369cfc07dc61b32c9a86cad895"
+  },
+  "local_combined_checks": {
+    "native_exit": 0,
+    "passed": 122,
+    "skipped": 1,
+    "seconds": 3.33,
+    "skip": "Live profile unselected here; separate actual Jupyter execution recorded above."
+  },
+  "static_checks": {
+    "ruff_check_exit": 0,
+    "ruff_format_exit": 0,
+    "e2e_build_exit": 0,
+    "typescript_exit": 0
+  },
+  "hosted_checkpoint_observed": {
+    "general_CI": {
+      "run": 42387339383,
+      "Linux_success": 4,
+      "macOS_queued": 4
+    },
+    "core_browser": {
+      "run": 42387347683,
+      "core_entries_passed": 44,
+      "actual_Jupyter": "failure; phase unavailable in original receipt"
+    },
+    "source_pair": {
+      "run": 42387355324,
+      "Windows": "success",
+      "macOS": "success",
+      "Linux": "failure; final updated annotation GPU pick"
+    }
+  }
+}

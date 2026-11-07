@@ -18,6 +18,57 @@ from urllib.error import URLError
 from urllib.request import Request, urlopen
 
 
+def _safe_browser_summary(path: Path) -> dict:
+    """Publish only closed diagnostic vocabulary and bounded integer counts."""
+    limit = 1024 * 1024
+    try:
+        with path.open("rb") as stream:
+            raw = stream.read(limit + 1)
+    except FileNotFoundError:
+        return {"status": "unavailable", "reason": "missing"}
+    except OSError:
+        return {"status": "unavailable", "reason": "io_error"}
+    if len(raw) > limit:
+        return {"status": "unavailable", "reason": "oversized"}
+    try:
+        report = json.loads(raw)
+    except (ValueError, UnicodeError, RecursionError):
+        return {"status": "unavailable", "reason": "invalid"}
+    if not isinstance(report, dict) or report.get("outcome") not in ("passed", "failed"):
+        return {"status": "unavailable", "reason": "invalid"}
+    summary = {"status": "available", "outcome": report["outcome"]}
+    if report["outcome"] == "failed":
+        phases = {
+            "bootstrap",
+            "plain-kernel baseline",
+            "canvas popup",
+            "cancel late reply",
+            "autonomous capture deadline",
+        } | {
+            f"{api} {origin} {kind}"
+            for api in ("Python", "Studio")
+            for origin in ("notebook", "popup")
+            for kind in ("state", "session")
+        }
+        error_types = {
+            "Error",
+            "AssertionError",
+            "TimeoutError",
+            "TypeError",
+            "RangeError",
+            "ReferenceError",
+            "SyntaxError",
+        }
+        for source, target, allowed in (("stage", "phase", phases), ("error_type", "error_type", error_types)):
+            value = report.get(source)
+            summary[target] = value if isinstance(value, str) and value in allowed else "unclassified"
+    for key in ("capture_restore_cases", "strong_restore_cases", "studio_cases"):
+        value = report.get(key)
+        if type(value) is int and 0 <= value <= 100:
+            summary[key] = value
+    return summary
+
+
 def _track_owned_processes(owned):
     """Retain descendants while their known parents still own them."""
     import psutil
@@ -314,6 +365,7 @@ def run(output: Path) -> int:
             cleanup_errors.append(f"scratch_cleanup:{type(error).__name__}")
         if cleanup_errors:
             result.update(state="failed", exit_code=1, cleanup_errors=cleanup_errors)
+        result["browser_summary"] = _safe_browser_summary(output / "observations.json")
         result["seconds"] = time.monotonic() - started
         (output / "command-result.json").write_text(json.dumps(result, indent=2) + "\n")
     if interrupted is not None:

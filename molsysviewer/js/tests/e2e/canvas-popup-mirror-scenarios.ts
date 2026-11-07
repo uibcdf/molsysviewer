@@ -136,28 +136,60 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
                 const center = (window as any).Harness.projectScenePosition(c, position);
                 const rect = c.plugin.canvas3dContext.canvas.getBoundingClientRect();
                 const gpu = c.plugin.canvas3d;
+                const observation = {
+                    kind, tag, position, center,
+                    rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+                    draws: gpu.didDraw.value,
+                    pixelRatio: c.plugin.canvas3dContext.webgl.pixelRatio,
+                    devicePixelRatio: window.devicePixelRatio,
+                    viewport: { ...gpu.camera.viewport },
+                    contextLost: c.plugin.canvas3dContext.webgl.isContextLost,
+                    hitCount: 0,
+                    owners: [] as Array<{ kind?: string; tag?: string }>,
+                    hits: [] as Array<{ objectId: number; instanceId: number; groupId: number; lociKind?: string }>,
+                };
+                (window as any).__nativePickObservation = observation;
                 for (const dx of [0, 4, 8, 12, 20, 30, -4, -8]) for (const dy of [0, 3, -3, 6, -6]) {
                     const x = center.x + dx, y = center.y + dy;
                     const hit = gpu.identify([x - rect.left, y - rect.top]);
                     if (!hit) continue;
                     const loci = gpu.getLoci(hit.id).loci;
                     const owner = loci?.shape ? c.state.findShapeOwner(loci.shape.sourceData) : null;
+                    observation.hitCount++;
+                    if (observation.hits.length < 8) observation.hits.push({
+                        objectId: hit.id.objectId, instanceId: hit.id.instanceId,
+                        groupId: hit.id.groupId, lociKind: loci?.kind,
+                    });
+                    if (owner && observation.owners.length < 8) observation.owners.push({ kind: owner.kind, tag: owner.tag });
                     if (owner?.kind === kind && owner?.tag === tag) return { x, y };
                 }
                 return false;
-            }, { kind, tag, position });
+            }, { kind, tag, position }).catch(async error => {
+                const diagnostic = await canvas.evaluate(({ kind, tag }) => {
+                    const c = (window as any).__mirrorController;
+                    return {
+                        lastProbe: (window as any).__nativePickObservation,
+                        camera: c.getCameraSnapshot(),
+                        refs: (window as any).Harness.inspectTaggedRefs(c, kind, tag).slice(0, 8).map((entry: any) => {
+                            const data = c.plugin.state.data.cells.get(entry.ref)?.obj?.data;
+                            return {
+                                ref: entry.ref,
+                                loci: (data?.repr?.getAllLoci?.() ?? []).slice(0, 8).map((l: any) => ({
+                                    kind: l.kind, shapeId: l.shape?.id, groupCount: l.shape?.groupCount,
+                                    owner: l.shape ? c.state.findShapeOwner(l.shape.sourceData) : undefined,
+                                })),
+                                objects: (data?.repr?.renderObjects ?? []).slice(0, 8).map((ro: any) => ({
+                                    id: ro.id, type: ro.type, visible: ro.state.visible, pickable: ro.state.pickable,
+                                    drawCount: ro.values.drawCount?.ref.value,
+                                })),
+                            };
+                        }),
+                    };
+                }, { kind, tag }).catch(diagnosticError => ({ unavailable: true, errorType: diagnosticError?.name ?? "Error" }));
+                throw new Error(`Native GPU pick ${kind}:${tag} failed: ${JSON.stringify(diagnostic)}`, { cause: error });
+            });
             const point = await picked.jsonValue() as { x: number; y: number };
-            const diagnostic = point ? null : await canvas.evaluate(({ kind, tag }) => {
-                const c = (window as any).__mirrorController;
-                return (window as any).Harness.inspectTaggedRefs(c, kind, tag).map((entry: any) => {
-                    const data = c.plugin.state.data.cells.get(entry.ref)?.obj?.data;
-                    return { source: data?.sourceData, loci: data?.repr?.getAllLoci?.().map((l: any) => ({
-                        kind: l.kind, name: l.shape?.name, groupCount: l.shape?.groupCount,
-                        owner: c.state.findShapeOwner(l.shape?.sourceData),
-                    })), objects: data?.repr?.renderObjects.map((ro: any) => ({ type: ro.type, state: ro.state })) };
-                });
-            }, { kind, tag });
-            assert.ok(point, `native GPU pick must find ${kind}:${tag}; ${JSON.stringify(diagnostic)}`);
+            assert.ok(point, `native GPU pick must find ${kind}:${tag}`);
             await canvas.mouse.click(point.x, point.y);
             for (const endpoint of [page, peer]) await endpoint.waitForFunction(({ kind, tag }) => {
                 const c = (window as any).__mirrorController;

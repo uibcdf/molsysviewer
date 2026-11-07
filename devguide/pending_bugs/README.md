@@ -19,6 +19,10 @@ list.
 
 <!-- generated: devguide_index -->
 
+### Being worked on (1)
+
+- [`updated_annotation_pick_receiving_timeout.md`](updated_annotation_pick_receiving_timeout.md) — [#325](https://github.com/uibcdf/molsysviewer/issues/325) — Updated annotation GPU pick times out in hosted canvas-popup receiving. *(medium, measured)*
+
 ### Partially done (9)
 
 - [`direct_state_rejection_erases_scene.md`](direct_state_rejection_erases_scene.md) — [#317](https://github.com/uibcdf/molsysviewer/issues/317) — Rejected direct state imports erase existing scene objects before validation finishes. *(high, reproduced)*

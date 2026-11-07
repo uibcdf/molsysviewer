@@ -11,6 +11,106 @@ from pathlib import Path
 import pytest
 
 
+def test_safe_browser_summary_retains_phase_and_counts_without_raw_diagnostics(tmp_path):
+    owner = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))
+    report = tmp_path / "observations.json"
+    private = "private-sentinel-do-not-publish"
+    report.write_text(
+        json.dumps(
+            {
+                "outcome": "failed",
+                "stage": "Studio popup session",
+                "error_type": "TimeoutError",
+                "capture_restore_cases": 4,
+                "strong_restore_cases": 3,
+                "studio_cases": 2,
+                "error": f"http://127.0.0.1/lab?token={private}",
+                "stack": private,
+                "records": [{"private": private}],
+                "page_errors": [private],
+            }
+        )
+    )
+    original = report.read_bytes()
+    summary = owner["_safe_browser_summary"](report)
+    assert summary == {
+        "status": "available",
+        "outcome": "failed",
+        "phase": "Studio popup session",
+        "error_type": "TimeoutError",
+        "capture_restore_cases": 4,
+        "strong_restore_cases": 3,
+        "studio_cases": 2,
+    }
+    assert private not in json.dumps(summary)
+    assert report.read_bytes() == original
+
+
+@pytest.mark.parametrize("untrusted", ["private-sentinel-do-not-publish", [], {}, None])
+def test_safe_browser_summary_rejects_untrusted_names_and_noninteger_counts(tmp_path, untrusted):
+    owner = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))
+    report = tmp_path / "observations.json"
+    private = "private-sentinel-do-not-publish"
+    report.write_text(
+        json.dumps(
+            {
+                "outcome": "failed",
+                "stage": untrusted,
+                "error_type": untrusted,
+                "capture_restore_cases": True,
+                "strong_restore_cases": -1,
+                "studio_cases": 1_000_000,
+            }
+        )
+    )
+    summary = owner["_safe_browser_summary"](report)
+    assert summary == {
+        "status": "available",
+        "outcome": "failed",
+        "phase": "unclassified",
+        "error_type": "unclassified",
+    }
+    assert private not in json.dumps(summary)
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        b"{",
+        b"[]",
+        b'{"outcome":"in_progress"}',
+        b"\xff",
+        b'{"outcome":"failed","nested":' + b"[" * 2000 + b"0}",
+    ],
+    ids=["malformed", "non-object", "nonterminal", "invalid-utf8", "deep-malformed"],
+)
+def test_safe_browser_summary_reports_invalid_evidence_without_echoing_it(tmp_path, raw):
+    owner = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))
+    report = tmp_path / "observations.json"
+    report.write_bytes(raw)
+    assert owner["_safe_browser_summary"](report) == {"status": "unavailable", "reason": "invalid"}
+
+
+def test_safe_browser_summary_bounds_input_and_distinguishes_missing_evidence(tmp_path):
+    owner = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))
+    report = tmp_path / "observations.json"
+    assert owner["_safe_browser_summary"](report) == {"status": "unavailable", "reason": "missing"}
+    report.write_bytes(b'{"outcome":"passed"}' + b" " * (1024 * 1024))
+    assert owner["_safe_browser_summary"](report) == {"status": "unavailable", "reason": "oversized"}
+
+
+def test_safe_browser_summary_accepts_completed_receiving_without_a_failure_phase(tmp_path):
+    owner = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))
+    report = tmp_path / "observations.json"
+    report.write_text(json.dumps({"outcome": "passed", "capture_restore_cases": 4, "studio_cases": 3}))
+    assert owner["_safe_browser_summary"](report) == {
+        "status": "available",
+        "outcome": "passed",
+        "capture_restore_cases": 4,
+        "studio_cases": 3,
+    }
+
+
 def test_guard_process_cleanup_retains_reparented_children_and_preserves_unrelated_process(tmp_path):
     """Real child processes only; no Jupyter server or browser is launched."""
     psutil = pytest.importorskip("psutil")
@@ -66,6 +166,8 @@ def test_live_jupyter_work_files(tmp_path):
     exit_code = runpy.run_path(str(script))["run"](output)
     receipt = json.loads((output / "command-result.json").read_text())
     assert exit_code == 0, f"Jupyter receiving failed ({receipt}); private diagnostics: {output}"
+    assert receipt["browser_summary"]["status"] == "available"
+    assert receipt["browser_summary"]["outcome"] == "passed"
     observed = json.loads((output / "observations.json").read_text())
     assert observed["outcome"] == "passed"
     assert observed["capture_restore_cases"] >= 4

@@ -17,6 +17,23 @@ supersedes: []
 
 ## Current hosted follow-up — 2026-11-07
 
+**Current diagnostics:** the corrected source `e4dd58cf` receives all 44 core
+browser entries, then its independent hosted Jupyter step fails without a
+preserved browser phase. Source-pair Linux separately fails an updated-label
+native pick, now tracked by #325; its macOS/Windows cells pass. A bounded
+allow-listed summary now preserves phase/error type and counters in the safe
+Jupyter command receipt without exposing raw logs. Thirteen focused cases and
+the actual local Jupyter profile pass; the allow-list bypass mutation fails.
+Local passing evidence does not resolve the original hosted uncertainty.
+
+The source workflow retains its complete default. Its explicit
+`receiving_scope=diagnostics` requires `source_receiving=true` and
+`platform=ubuntu-latest` before acquisition or tagging. The diagnostic job has
+its own name/artifact and runs only the two affected browser boundaries, with
+the actual native/provider setup. It cannot qualify a candidate or complete
+the Python/notebook/core matrix. The actual Bash guard matrix and workflow
+checks pass 51 cases. See the [diagnostic receipt](../hosted_receiving_diagnostics_20261107.json).
+
 Checkpoint `9a569c55` is not accepted: the completed general Linux and
 three-platform Python 3.14 source-pair cells fail four pre-existing
 camera-envelope assertions which omit the newly required revision field.

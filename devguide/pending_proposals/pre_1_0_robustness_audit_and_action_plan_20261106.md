@@ -67,18 +67,30 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
-**Immediate correction, 2026-11-07:** the consolidated hosted checkpoint is
-not green. Completed Linux/source-pair cells expose four older camera-envelope
-assertions; Windows adds five native-error portability assertions. Core E2E
-hits Studio's obsolete 180-second outer budget, while its separate actual
-Jupyter guard passes. Four general macOS cells remain queued in the recorded
-observation. Scoped corrections pass 66 Python cases and 378 documentation/protocol
-cases. Canonical shared-browser Studio passes in 193.057 seconds with 4,478
-fixed inputs and 18 owned processes closed; consolidated qualification remains due. Preserve the
-original runs, do not count this as acceptance, and finish this bounded
-correction before publishing the isolated PR #543 reconciliation. Details and
-native outcomes: [hosted checkpoint](../robustness_hosted_checkpoint_20261107.json).
+**Current checkpoint, 2026-11-07:** the applicable hosted gates are not all
+green. General CI passes all four Linux cells; four macOS cells remain queued.
+The minimum-provider source pair passes Windows and macOS, while Linux fails
+the updated-annotation GPU pick in the canvas popup. The separate browser lane
+passes all 44 core entries, then fails its actual-Jupyter receiving step.
+Its original command receipt does not establish the browser failure phase.
+Both failures remain open; later local passes do not establish their causes.
+The earlier message-envelope, native-error portability and Studio-budget
+corrections are delivered in `e4dd58cf`; their original failing runs remain
+preserved in the [hosted checkpoint](../robustness_hosted_checkpoint_20261107.json).
 The delivered counter remains **8/46 (17.4%)**; final acceptance remains **1/46**.
+
+Current source diagnostics add a closed-vocabulary Jupyter phase/error summary
+and bounded actual GPU observations for #325's updated annotation pick. The
+parser and real process cleanup pass 13 cases; actual Jupyter receiving passes
+in 70.94 seconds and the complete controls entry in 198.94 seconds on the
+separately qualified local provider route. Original hosted causes remain
+unresolved. A source-only Linux diagnostic profile preserves the full workflow
+default and rejects candidate/non-Linux requests; its actual Bash/profile
+checks pass 51 cases. The combined workflow/backlog/parser selection passes
+122 cases, with one explicitly unselected live profile; the separately executed
+live profile above supplies its own evidence. One bounded hosted observation follows reviewed delivery,
+without repeating the unrelated full matrix or claiming release acceptance.
+See the [diagnostic receipt](../hosted_receiving_diagnostics_20261107.json).
 
 The reviewed correction is published as `e4dd58cf`, with `[skip ci]`. Its one
 replacement checkpoint uses general CI `42387339383`, core browser
