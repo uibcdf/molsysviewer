@@ -910,19 +910,25 @@ previous qualification records retain their original candidate and environment.
 owns the work order and stable IDs. Start with its reproduced file/state
 integrity and lifecycle findings, then plot authority and scientific figures.
 It separates new design recommendations from the already approved complete
-addon/task-session scope. E0 custody is received (progress 1/46, 2.2%); A2/A4
-are delivered and await hosted Python receiving. A1/A3 private source checks
-pass and their source/guard integration is explicitly authorized; advisories
-and unrestricted evidence stay private. See the active ledger and
-[preparation receipt](robustness_integrity_preparation_receiving_20261106.json).
-A6 is reproduced under [#318](pending_bugs/view_close_failure_blocks_cleanup.md).
+addon/task-session scope. E0 custody is received (progress 1/46, 2.2%). A1–A4,
+A6 and B1 have reviewed source corrections; consolidated hosted acceptance and
+closeout remain pending. B1 is `25061d9e`, A1/A3 `38eb8785`, A6 `1ea6b26e`.
+The final combined source passes 469 Python cases with one explicit legacy
+skip, its affected real-browser entry and canonical JS unit entry; see the
+[combined receipt](robustness_combined_source_receiving_20261106.json).
+Advisory drafts and unrestricted evidence stay private. Incremental commits
+carry the principal maintainer's explicit `[skip ci]`; batch pushes do not
+dispatch CI for each change. Next: A5 camera capture, B2 precision and remaining
+DataCard receiving; keep the agreed substantive hosted checkpoint pending.
 
 [Viewer #314](pending_bugs/trajectory_plot_seek_skips_python_authority.md) has a
-local causal correction and isolated/actual-Jupyter passes, but its complete
-earlier core-browser attempt fails at 43/44 on popup-to-Python navigation. The
-directed guard now passes after waiting for actual host receipt of the popup
-intent before draining its transport queue. A new fixed-input core run remains
-in progress; neither isolated passes nor the guard race erase the old failure. The addon
+delivered causal correction and isolated/actual-Jupyter passes. Its original
+core attempt failed at 43/44; the guard now waits for actual host receipt of
+the popup intent before draining the queued Python responses. One new complete
+core run passes 44/44 with 4,305 unchanged selected inputs. It predates A1/A3/A6;
+the final combined source separately passes its affected browser guard. Original
+failures and exact scopes remain in the
+[B1 receipt](trajectory_plot_authority_receiving_20261106.json). The addon
 conformation work is locally committed at e11995343, including owner
 reconciliation, and has 245 directed passes plus 17 real Jupyter steps; remote
 PR #543 remains at 8ab2f5474. These are not a complete green new-source gate or

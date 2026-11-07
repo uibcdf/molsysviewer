@@ -67,25 +67,30 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
-**Next actions:** integrate the reviewed A1/A3 corrections and finish
-[A2 / #317](../pending_bugs/direct_state_rejection_erases_scene.md), now passing
-its final 180-case source selection and awaiting hosted receiving.
-A4 is delivered in `611c1574` under [#316](../pending_bugs/failed_factory_retains_owned_view.md),
-with 73 related factory/lifecycle/session/API checks passing; applicable hosted
-receiving remains pending. A2 is delivered in `ef7b1348`. A1/A3 have private
-advisory drafts and source receiving; the principal maintainer explicitly
-authorized integrating their reviewed patches and regressions on 2026-11-06,
-while keeping advisory drafts and unrestricted evidence private. The
-[preparation receipt](../robustness_integrity_preparation_receiving_20261106.json)
-retains the exact scope. B1's acknowledged directed guard passes; one fixed-input
-core run is in progress, excluding A1/A3. A6 is reproduced under
-[#318](../pending_bugs/view_close_failure_blocks_cleanup.md). E0 prevents premature cleanup
-or disclosure; it does not require all unrelated development to stop.
+**Next actions:** investigate A5's save-camera policy, then B2's numeric labels
+and the remaining DataCard lifecycle work. A1/A3 source and guards are delivered
+in `38eb8785`, following explicit maintainer disclosure review; advisory drafts
+and unrestricted evidence stay private. A6/#318 is delivered in `1ea6b26e`;
+B1/#314 in `25061d9e`. A2/#317 (`ef7b1348`) and A4/#316 (`611c1574`) retain their
+earlier receiving. Six corrections are implemented/source-verified; their
+applicable consolidated hosted checkpoint and closure remain pending.
+
+The B1-specific complete core run passes **44/44** with 4,305 fixed selected
+inputs, before A1/A3/A6 integration. The final combined source separately passes
+**469 Python cases, one explicit legacy skip**, its affected actual-browser
+entry and canonical JS unit entry. See the
+[combined receipt](../robustness_combined_source_receiving_20261106.json),
+[B1 receipt](../trajectory_plot_authority_receiving_20261106.json) and
+[private preparation scope](../robustness_integrity_preparation_receiving_20261106.json).
+Incremental commits carry `[skip ci]` at the principal maintainer's explicit
+request; batch pushes and one agreed substantive remote checkpoint replace
+per-change dispatches. No new remote run has been dispatched for this block.
+E0 custody and the publication/human-review pauses retain their separate scope.
 
 | Block | Current status | Owner and tracking | Exit evidence |
 | --- | --- | --- | --- |
-| A — integrity, restoration and cleanup | A4/#316 and A2/#317 delivered, hosted Python receiving pending; A1/A3 privately source-verified, integration authorized; A6 reproduced/#318; A5 remains investigation | Viewer; coordination #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
-| B — plots and DataCards | #314 correction/regression local; broad core failed; precision, provenance and card follow-up pending | Viewer and scientific producer; #314, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
+| A — integrity, restoration and cleanup | A1–A4/A6 source-delivered and verified; consolidated hosted acceptance pending; A5 remains investigation | Viewer; #316/#317/#318 and private handling under #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
+| B — plots and DataCards | #314 delivered; complete B1 core 44/44 and combined affected guard pass; original broad failure retained; precision, provenance and card follow-up pending | Viewer and scientific producer; #314, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
 | C — contribution and host integration | Reconciled addon committed locally; remote PR older and reported conflicting; source gates incomplete | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421 and PR #543 | Reviewed delivery, current controlled pair, relevant full/hosted outcomes and explained failures |
 | D — scientific prerequisites and approved GUI families | Partial implementation; provider corrections and several task families remain | MolSysMT owns science; addon owns tasks; #264/#315 and uibcdf/molsysmt#421 | Received native fixes plus every required family/effect, without hidden preparation or copied algorithms |
 | E — integrated use, scale and human acceptance | E0 custody received; partial headless/Jupyter receiving; complete workflow/prolonged use pending; human review postponed | Viewer/addon; maintainer owns human observations | TcTIM/ensemble save–recover–continue, independent lifetimes and representative measured limits |
@@ -101,7 +106,8 @@ estimate of time remaining. Each accepted leaf item has one vote; a difficult
 scientific family and a small defect have different effort despite equal weight.
 Update the numerator only after the applicable acceptance and closeout below.
 An implementation, report, local partial pass or provider issue closure alone
-does not count as a received item.
+does not count as a received item. A1–A4, A6 and B1 now have source corrections;
+the required consolidated hosted acceptance/closeout remains visible below.
 
 | Block | Fixed leaf IDs | Received / total |
 | --- | --- | --- |
@@ -118,13 +124,15 @@ checks (overlapping scopes). It remains outside the completed numerator until
 its recorded delivery/closure conditions are satisfied; see the
 [receiving receipt](../factory_lifecycle_receiving_20261106.json).
 
-Current receiving checkpoint, observed 2026-11-06 UTC; inspect linked runs for
+Current receiving checkpoint, observed 2026-11-07 UTC; inspect linked runs for
 subsequent transitions rather than reading this dated observation as live CI:
 
 | Work item / delivered source | Local receiving | Hosted receiving still required |
 | --- | --- | --- |
-| A4 / `611c1574aa82538d79e15b93667497fc1f27b9ce` | 73 related cases; causal failure retained | [General CI](https://github.com/uibcdf/molsysviewer/actions/runs/42307829448) and [source pair](https://github.com/uibcdf/molsysviewer/actions/runs/42307829326) queued; [core browser](https://github.com/uibcdf/molsysviewer/actions/runs/42307829340) success |
-| A2 / `ef7b134835a539bcd2cf36536aeec131d468aa7c` | 180 combined cases plus 351 documentation/protocol cases; scopes separate | [General CI](https://github.com/uibcdf/molsysviewer/actions/runs/42310818888) and [source pair](https://github.com/uibcdf/molsysviewer/actions/runs/42310818936) queued; [core browser](https://github.com/uibcdf/molsysviewer/actions/runs/42310818882) success |
+| A4 / `611c1574aa82538d79e15b93667497fc1f27b9ce` | 73 related cases; causal failure retained | [General CI](https://github.com/uibcdf/molsysviewer/actions/runs/42307829448): four Linux cells success/four macOS queued; [source pair](https://github.com/uibcdf/molsysviewer/actions/runs/42307829326): Linux/Windows success/macOS queued; [core browser](https://github.com/uibcdf/molsysviewer/actions/runs/42307829340) success |
+| A2 / `ef7b134835a539bcd2cf36536aeec131d468aa7c` | 180 combined cases plus 351 documentation/protocol cases; scopes separate | [General CI](https://github.com/uibcdf/molsysviewer/actions/runs/42310818888): four Linux cells success/four macOS queued; [source pair](https://github.com/uibcdf/molsysviewer/actions/runs/42310818936): Linux/Windows success/macOS queued; [core browser](https://github.com/uibcdf/molsysviewer/actions/runs/42310818882) success |
+| B1 / `25061d9e` | Full core 44/44; final integrated affected browser guard also passes | Consolidated hosted checkpoint pending; `[skip ci]` source delivery |
+| A1/A3 / `38eb8785`, A6 / `1ea6b26e` | Final combined 469 Python passes/one legacy skip; affected browser and JS unit entries pass; scopes overlap | Consolidated hosted checkpoint pending; private advisories remain drafts; no installed/publication qualification |
 
 B3.6, B4, E3 and F1 remain separately tracked design decisions, outside this
 denominator until explicitly accepted. Any scope change records its date,
@@ -161,10 +169,10 @@ values to the reporting protocol.
 | ID | Priority / milestone | Closure owner and record | Dependency and next observable gate |
 | --- | --- | --- | --- |
 | E0 | Received, 2026-11-06 | Principal maintainer accepted custody/destination; Viewer verified transfer; #315 | [Private inventory, hashes and actual restore received](../robustness_evidence_custody_20261106.json); disclosure and cleanup retain separate controls |
-| A1/A3 | P1 integrity; affected covering artifact and 1.0 | Viewer; private advisory drafts registered under #315 | Private source receiving passed; maintainer authorized source/guard integration; deliver after the fixed-input B1 run, then receive applicable combined-source gates |
+| A1/A3 | P1 integrity; affected covering artifact and 1.0 | Viewer; private advisory drafts registered under #315 | Delivered in `38eb8785`; combined source receiving passes; consolidated hosted checkpoint pending |
 | A2 | P1 scene rejection; affected covering artifact and 1.0 | Viewer; #317, implemented/source-verified | Final 180-case source selection includes direct/file rejection, real target conflicts and diagnostics; applicable hosted receiving remains |
 | A4 | P2 lifecycle; affected covering artifact and 1.0 | Viewer; #316, delivered/source-verified | Six real failure cases first reproduced the leak; 19 factory and 73 related checks pass. Applicable hosted receiving remains |
-| A5–A6 | P2; A5 investigation, A6 reproduced | Viewer; A6/#318 | A6 needs independent cleanup after actual provider close failure and retry; A5 still needs actual camera evidence or an evidenced disposition |
+| A5–A6 | P2; A5 investigation, A6 source-verified | Viewer; A6/#318 | A6 delivered in `1ea6b26e`, combined receiving passes; A5 needs actual camera evidence or an evidenced disposition; consolidated hosted acceptance remains |
 | B1–B2 | P1 scientific reading/navigation; affected covering artifact and 1.0 | Viewer; #314 and a scoped precision report | Correlated Python/render acceptance and numerical-label truth; retain original failed runs |
 | B3.1–B3.5 | P2 robustness; applicable candidate/1.0 scope | Viewer; split by mechanism under #315 | Reproduce each inspected path, then receive its window/title/layout/keyboard/cleanup outcome |
 | B3.6, B4, E3, F1 | Scope/design decision; not an automatic release gate | Principal maintainer decides scope; relevant owner implements | Record accept/reject/defer and contract before implementation; accepted work gains its explicit milestone and guard |
@@ -228,12 +236,12 @@ original producers and scopes.
 
 | ID / status | What was observed and why it matters | Required correction and acceptance |
 | --- | --- | --- |
-| **A1 — reproduced, open** | Session loading can consume a benign external H5MSM instead of the legitimate embedded bytes. The extraction and subsequent reader do not use the same normalized member path. This violates isolation, integrity and portability. Source: [session loader](../../molsysviewer/session.py), `load_session`. | Review privately, validate member containment and read only the intended extracted file. Test malformed names and platform path conventions, embedded-byte identity, normal sessions, named analyses and unchanged destination/resources on rejection. Exact crafted inputs remain private. |
-| **A2 — reproduced, open** | A rejected `import_state` clears an existing region before discovering an invalid section normal; molecular coordinates remain intact, but the scene changes after failure. Source: [state owner](../../molsysviewer/viewer/state.py), `import_state` / `_restore_sections`. | Complete validation before publishing, or provide a qualified restoration transaction. Test direct import and `load_state`, clear/merge/conflict modes, invalid later objects, history and handle validity. Preserve the semantic scene and relevant resources while retaining monotonic UID/tag/order high-water marks; rejection must not make identities reusable. Closed #127 protects `load_session`'s candidate route, not this direct-state path. |
-| **A3 — reproduced, open** | A real DataCard popup parses an inert title marker as markup, while the original card shows literal text. Source: [DataCard](../../molsysviewer/js/src/ui/floating-data-card.ts), `openPopoutWindow`. Executable injection scope was not tested. | Use literal title/header handling consistently; review disclosure privately. Guard initial/restored/updated titles, special characters, ordinary popup input and original/popup parity without executable test payloads. |
-| **A4 — reproduced, open** | `new_view` with a failing selection leaves one unreturned open View and two registered widgets. Source: [factory](../../molsysviewer/new_view.py). Repeated ordinary errors can retain resources. | Close the factory-owned View on initialization failure, preserving the original error. Never close a caller-supplied View. Guard invalid selection, conversion/load rejection, repeated failures and restored widget/resource ownership with real demos. |
+| **A1 — corrected in `38eb8785`, hosted checkpoint pending** | Session loading can consume a benign external H5MSM instead of the legitimate embedded bytes. The extraction and subsequent reader do not use the same normalized member path. This violates isolation, integrity and portability. Source: [session loader](../../molsysviewer/session.py), `load_session`. | Review privately, validate member containment and read only the intended extracted file. Test malformed names and platform path conventions, embedded-byte identity, normal sessions, named analyses and unchanged destination/resources on rejection. Exact crafted inputs remain private. |
+| **A2 — corrected in `ef7b1348`, hosted checkpoint pending** | A rejected `import_state` clears an existing region before discovering an invalid section normal; molecular coordinates remain intact, but the scene changes after failure. Source: [state owner](../../molsysviewer/viewer/state.py), `import_state` / `_restore_sections`. | Complete validation before publishing, or provide a qualified restoration transaction. Test direct import and `load_state`, clear/merge/conflict modes, invalid later objects, history and handle validity. Preserve the semantic scene and relevant resources while retaining monotonic UID/tag/order high-water marks; rejection must not make identities reusable. Closed #127 protects `load_session`'s candidate route, not this direct-state path. |
+| **A3 — corrected in `38eb8785`, hosted checkpoint pending** | A real DataCard popup parses an inert title marker as markup, while the original card shows literal text. Source: [DataCard](../../molsysviewer/js/src/ui/floating-data-card.ts), `openPopoutWindow`. Executable injection scope was not tested. | Use literal title/header handling consistently; review disclosure privately. Guard initial/restored/updated titles, special characters, ordinary popup input and original/popup parity without executable test payloads. |
+| **A4 — corrected in `611c1574`, hosted checkpoint pending** | `new_view` with a failing selection leaves one unreturned open View and two registered widgets. Source: [factory](../../molsysviewer/new_view.py). Repeated ordinary errors can retain resources. | Close the factory-owned View on initialization failure, preserving the original error. Never close a caller-supplied View. Guard invalid selection, conversion/load rejection, repeated failures and restored widget/resource ownership with real demos. |
 | **A5 — inspected, investigate** | `save_state` asks for a fresh camera; `save_session` delegates to cached state. Immediate save after camera movement may differ within the debounce interval. This is an inspected asymmetry, not a reproduced camera-loss finding. | Reproduce from notebook and popup with actual camera movement and saved/recovered vantage points. Agree one capture policy and preserve the appropriate headless behavior. Share the qualified mechanism where applicable. |
-| **A6 — reproduced, #318** | An actual provider panel close error leaves six owned widgets/layouts registered, another panel mounted and both View links retained; retry returns early. Ordinary successful closes are not claimed to fail. | [Independent cleanup and retry receiving](../pending_bugs/view_close_failure_blocks_cleanup.md), including actual provider/transport failures, unrelated View preservation and observable diagnostics. |
+| **A6 — corrected in `1ea6b26e`, #318** | An actual provider panel close error leaves six owned widgets/layouts registered, another panel mounted and both View links retained; retry returns early. Ordinary successful closes are not claimed to fail. | [Independent cleanup and retry receiving](../pending_bugs/view_close_failure_blocks_cleanup.md), including actual provider/transport failures, unrelated View preservation and observable diagnostics. |
 
 Register scoped reports after duplicate review, including related closed #127
 and #210 where useful. The private receipts support A1–A4; the coordination
@@ -243,7 +251,7 @@ issue is not a declaration that any of them is fixed.
 
 | ID / status | Required work and rationale | Acceptance |
 | --- | --- | --- |
-| **B1 — active, #314** | Finish plot-origin navigation through the existing authority route. The broad guard calls a queue drain before a popup's asynchronous `postMessage` is necessarily received; this is a plausible guard race, not a proven exclusive explanation of the failure. | One actual click must have correlated Python acceptance, one appropriate public callback and correct coordinates in both renderers. Exercise repeated selection, reverse Python navigation, retained plots, independent exported HTML and a single playback clock. Preserve the original causal red and broad failure; diagnose before rerunning. |
+| **B1 — source-verified, #314** | Finish plot-origin navigation through the existing authority route. The broad guard calls a queue drain before a popup's asynchronous `postMessage` is necessarily received; this is a plausible guard race, not a proven exclusive explanation of the failure. | One actual click must have correlated Python acceptance, one appropriate public callback and correct coordinates in both renderers. Exercise repeated selection, reverse Python navigation, retained plots, independent exported HTML and a single playback clock. Preserve the original causal red and broad failure; diagnose before rerunning. |
 | **B2 — inspected, open** | [Plot formatting](../../molsysviewer/js/src/ui/trajectory-plot-overlay.ts) uses two fixed decimals; a small nonzero observation can read as zero and distinct axis limits can look equal. | Use suitable significant digits/scientific notation with units. Test tiny/large/signed values, narrow spans and cross-unit equivalents in actual labels. Preserve full stored values and numerical axis geometry. |
 | **B3 — mixed inspection/reproduction, open** | Complete the DataCard lifecycle around A3: visible errors/retry for blocked or failed windows, current titles after update, usable bounds on small/resized hosts, keyboard/value access, and disposal during drag/resize. Global listener cleanup is incomplete in source; a universal retained-memory leak has not been measured. | Exercise ordinary popup gestures, failure acknowledgement, resize/fullscreen, rename/restore, active-gesture disposal and source independence. Apply the same semantics across hosts. Evaluate blur/opacity consistency as polish, not as a violation of Studio's specific accepted settings. |
 | **B4 — inspected, new recommendation; scope/design decision pending** | Retained conformational plots store values/title/axes but not the exact calculation recipe from the private mounted report. After Clear, different references/populations can become indistinguishable. | Proposed direction: producer-supplied, versioned observation metadata that core preserves without interpreting science. If adopted, persist method/software, parameters, exact ordered populations/reference, weights and mass source, native/display units, structure coverage and source/revision linkage. Keep historical observations distinct from current applicability and never recalculate implicitly. |
@@ -261,7 +269,7 @@ reproduced title defect. A3 remains the owner of literal-text safety.
 | Child / current class | Required outcome and next guard |
 | --- | --- |
 | **B3.1 — inspected** | Blocked/failed window creation has an observable error and qualified retry/close behavior, preserving the source View; reproduce the distinct blocked and bootstrap-failure paths |
-| **B3.2 — inspected** | Updating a plot's title preserves the current literal title in its card, popup and restoration; qualify rename-before-popout and reuse |
+| **B3.2 — partly source-received with A3** | Current-title updates, reopened popups and Python-restored literal titles pass in `38eb8785`; retain the broader DataCard campaign, including an explicit rename before the first popout and consolidated hosted acceptance |
 | **B3.3 — inspected** | Cards remain reachable and usable at small host sizes and after resize/fullscreen; define host bounds and receive actual layouts |
 | **B3.4 — inspected** | Values and sample navigation have keyboard/accessible equivalents with correct labels; qualify focus, selection and actual current-sample reading |
 | **B3.5 — inspected** | Disposing during drag/resize detaches active global listeners and owned windows/observers; qualify repeated gestures/disposal without claiming a universal leak from inspection |
@@ -546,7 +554,11 @@ claims after the functionality is settled. A concrete residue is the abbreviated
 `convert(...)` entry in the [public API reference](../../docs/content/developer/public_api.md)
 despite removal of `view.convert`; use verifiable qualified names. Check canonical
 control modes, source-versus-published addon availability, experimental limits
-and provider documentation links. Viewer owns addon management/creation/catalogue;
+and provider documentation links. The
+[addon development cookbook](../../docs/content/user/cookbook/addon_development.md)
+still describes discovery as a maintained list of known module names; reconcile
+that statement with current entry-point discovery during this documentation
+pass. Viewer owns addon management/creation/catalogue;
 each component owns its addon use and scientific documentation.
 
 **F3 — initial audit recorded; reconciliation pending:** keep this dashboard as the current
@@ -667,6 +679,12 @@ Scripts/fixtures, environment and outcomes are retained alongside the originals;
 reconstructed command receiving remains explicitly labelled. The following
 identify private records, not publicly downloadable attachments or an off-host
 backup claim.
+
+The [additive execution custody receipt](../robustness_execution_custody_20261106.json)
+receives 23 further original scripts/logs/receipts and source-patch snapshots
+for B1, A6 and the combined source. All copied hashes match; original custody
+manifests and files remain untouched. This transfer does not repeat passed
+tests or add another received leaf to the fixed progress denominator.
 
 | Evidence | SHA-256 / identity |
 | --- | --- |

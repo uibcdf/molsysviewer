@@ -2,7 +2,7 @@
   "schema": "molsysviewer.trajectory_plot_authority_receiving@1",
   "plan": "uibcdf/molsysviewer#315 / B1",
   "issue": "uibcdf/molsysviewer#314",
-  "status": "source verified, delivery and applicable consolidated hosted receiving pending",
+  "status": "reviewed source and regression delivered; consolidated hosted receiving/closure pending",
   "source": {
     "viewer_base": "e3cf77e0f95c2d1c927df118d0596bb5679ecd8d",
     "selected_sources_sha256": {
@@ -56,5 +56,10 @@
     "Controlled source receiving, not installed-package or postponed human/visible-Qt qualification.",
     "Consolidated remote checkpoint remains pending; commits use the principal maintainer-authorized [skip ci] route.",
     "The original broad failure and driver history remain retained, not relabelled as passes."
-  ]
+  ],
+  "delivery": {
+    "commit": "25061d9e99baf07fa0dcb4021897958a226f0152",
+    "route": "principal-maintainer-authorized direct main commit/push; [skip ci]",
+    "hosted_checkpoint": "pending; no new dispatch"
+  }
 }

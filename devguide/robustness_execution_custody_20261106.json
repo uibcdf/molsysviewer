@@ -1,0 +1,18 @@
+{
+  "schema": "molsysviewer.robustness_execution_custody@1",
+  "date": "2026-11-06",
+  "plan": "uibcdf/molsysviewer#315 / E0 continuation",
+  "opaque_reference": "msv-robustness-audit-20261106/execution-1ea6b26e",
+  "custodian": "Diego Prada Gracia",
+  "files_verified": 23,
+  "bytes": 3413938,
+  "manifest_sha256": "e82207d1766ba0dbd8abe635e1f1440579049d2aefece596d8ead14ebeb202e8",
+  "originals_retained": true,
+  "private_access": "Directories 0700 and files 0600; approved user-only local custody.",
+  "scope": "Actual original command scripts/receipts/logs for B1, A6 and combined source; source-only A6 patch and public receipt snapshots.",
+  "limits": [
+    "Local custody is not a verified off-host backup.",
+    "The earlier E0 restore remains the actual restore proof; this additive transfer verifies bytes and permissions without rerunning passed gates.",
+    "The private advisory drafts and original malformed-input evidence retain their separate custody; no advisory publication or original cleanup is authorized."
+  ]
+}

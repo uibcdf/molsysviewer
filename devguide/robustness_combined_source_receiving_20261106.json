@@ -2,7 +2,7 @@
   "schema": "molsysviewer.robustness_combined_source_receiving@1",
   "date": "2026-11-06",
   "plan": "uibcdf/molsysviewer#315",
-  "status": "combined source passes; A6 source commit and consolidated hosted checkpoint pending",
+  "status": "combined source verified and delivered in 1ea6b26e; consolidated hosted receiving pending",
   "source": {
     "working_base": "25061d9e99baf07fa0dcb4021897958a226f0152",
     "delivered_B1": "25061d9e99baf07fa0dcb4021897958a226f0152",
@@ -19,7 +19,8 @@
       "tests/test_session_member_integrity.py": "68b7ab8a09053e44f90e02fd356a987e7ea311896cdb6f96465a2cdd69d782e6",
       "tests/test_view_close_failure.py": "e12394230943064dea6c85d3b6bb86799e2afbab7b84895411835a34f7442c6c",
       "molsysviewer/viewer.js": "d40f970d3e3221914174bd190f5daf816863b2daad944c84a5a41de2ef3c03b3"
-    }
+    },
+    "delivered_integrated_head": "1ea6b26e30e11cc6090ac7c3b5f11006c94cade9"
   },
   "python": {
     "command": "python -m pytest --receptor=llm -o 'receptor_rerun_command=python -m pytest' tests/test_view_close_failure.py tests/test_view_lifecycle.py tests/test_view_presentations.py tests/test_new_view.py tests/test_addons.py tests/test_addon_panel_endpoints.py tests/test_addon_factory_failures.py tests/test_structure_transfer.py tests/test_trajectory_plot_lifecycle.py tests/test_qt_transport_contract.py tests/test_popup_snapshot_fidelity.py tests/test_runtime_router.py tests/test_popup_snapshot.py tests/test_popup_snapshot_completeness.py tests/test_runtime_seam_integration.py tests/test_session_member_integrity.py tests/test_session_bundle.py tests/test_session_rejection.py tests/test_state_rejection.py tests/test_state_v2.py tests/test_interactions_api.py tests/test_interactions_scene.py tests/test_source_records.py tests/test_public_api_hardening.py tests/test_public_api_inventory.py tests/test_argdigest_public_api.py",

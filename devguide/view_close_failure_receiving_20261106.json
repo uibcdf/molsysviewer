@@ -3,7 +3,7 @@
   "date": "2026-11-06",
   "plan": "uibcdf/molsysviewer#315 / A6",
   "issue": "uibcdf/molsysviewer#318",
-  "status": "final combined source verified; A6 source commit and consolidated hosted receiving pending",
+  "status": "reviewed source and regression delivered; consolidated hosted receiving/closure pending",
   "source": {
     "viewer_base": "25061d9e99baf07fa0dcb4021897958a226f0152",
     "changed_sources_sha256": {
@@ -55,5 +55,10 @@
     "molsysmt": "e119953435a25c72e9a65b7428f74b1c2430b4f1",
     "pyunitwizard": "02d0015fa7d3149d92c0e632b8e584f6a47c37dc"
   },
-  "combined_receiving": "devguide/robustness_combined_source_receiving_20261106.json"
+  "combined_receiving": "devguide/robustness_combined_source_receiving_20261106.json",
+  "delivery": {
+    "commit": "1ea6b26e30e11cc6090ac7c3b5f11006c94cade9",
+    "route": "principal-maintainer-authorized direct main commit/push; [skip ci]",
+    "hosted_checkpoint": "pending; no new dispatch"
+  }
 }

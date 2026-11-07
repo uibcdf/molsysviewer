@@ -2,7 +2,7 @@
   "schema": "molsysviewer.robustness_integrity_preparation@1",
   "date": "2026-11-06",
   "plan": "uibcdf/molsysviewer#315",
-  "status": "reviewed A1/A3 patches and guards integrated; source commit/consolidated hosted receiving pending",
+  "status": "reviewed source and regression delivered; consolidated hosted receiving/closure pending",
   "private_source_base": "e3cf77e0f95c2d1c927df118d0596bb5679ecd8d",
   "A1": {
     "directed": {
@@ -58,5 +58,10 @@
     "inputs_unchanged": true,
     "log_sha256": "d172eb07eb52614362af9ea7124434d6143be9a0876b343e09cf33660336ecdd",
     "scope": "Integrated B1 navigation plus initial/updated/reopened/Python-restored literal titles and ordinary plot input; includes prepared A6 Python source. Not the earlier 44-suite core run."
+  },
+  "delivery": {
+    "commit": "38eb8785a44a51d37291220a9db3a83b74374b95",
+    "route": "principal-maintainer-authorized direct main commit/push; [skip ci]",
+    "hosted_checkpoint": "pending; no new dispatch"
   }
 }

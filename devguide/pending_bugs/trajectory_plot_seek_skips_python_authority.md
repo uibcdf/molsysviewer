@@ -134,7 +134,8 @@ separately prepared A1/A3 and A6 patches. See the
 [receiving receipt](../trajectory_plot_authority_receiving_20261106.json).
 The original failing attempt remains evidence of the earlier test/run outcome.
 
-Reviewed delivery and the applicable consolidated hosted checkpoint remain
-pending; this record is partial. Commits use the maintainer-authorized
+Reviewed source is delivered in `25061d9e99baf07fa0dcb4021897958a226f0152`;
+the applicable consolidated hosted checkpoint remains pending and this record
+is partial. Commits use the maintainer-authorized
 `[skip ci]` route. These are controlled source checks, not installed-package
 qualification or postponed human Jupyter/visible-Qt acceptance.

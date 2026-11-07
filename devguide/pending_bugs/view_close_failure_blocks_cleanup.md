@@ -15,9 +15,9 @@ supersedes: []
 
 # Failed close and independent resource cleanup
 
-**A6 — corrected and source-verified; delivery/hosted checkpoint pending; P2.** Viewer owns #318 under #315 for
-the covering artifact and accepted 1.0 scope. The next gate is reviewed source
-delivery and the applicable consolidated hosted checkpoint. Provider panels,
+**A6 — delivered in `1ea6b26e`; hosted checkpoint pending; P2.** Viewer owns
+#318 under #315 for the covering artifact and accepted 1.0 scope. The next gate
+is the applicable consolidated hosted checkpoint. Provider panels,
 transports and registry ownership have directed source receiving below.
 No scientific provider modification is required.
 
