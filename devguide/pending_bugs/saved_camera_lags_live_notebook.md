@@ -17,6 +17,9 @@ supersedes: []
 
 ## Current box/framing correction — 2026-11-07
 
+**Delivered bounded correction: `42656765`.** #326/#327 are closed with their
+guards and archived records. This does not close #319 or parent A5.
+
 The NPT-style receiving fixture now has three non-consecutive molecular
 structures, distinct known cells and an explicitly unit-bearing box stroke.
 Its full Studio run receives primary and canvas-popup state/session restores

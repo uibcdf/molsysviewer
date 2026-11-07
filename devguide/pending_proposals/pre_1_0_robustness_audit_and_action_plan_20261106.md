@@ -73,7 +73,9 @@ not increase the denominator or complete their parent. Movie #320 remains
 mandatory pre-1.0 work in addition to these original 46 leaves.
 
 **A5 is the active implementation slice.** Its camera/control foundation is
-delivered in `ebe3d46b`. Current prerequisite work fixes lost simulation-box
+delivered in `ebe3d46b`; the bounded box/framing correction is published in
+`42656765`, with #326/#327 closed and indexed in the archive. It fixes lost
+simulation-box
 state/session display (#326), physical stroke units and invalid widths (#327),
 and a newly reproduced initial-fit/camera-restore ordering defect under #319.
 The relevant Python selection passes 551 cases. The current runtime builds and
@@ -133,9 +135,8 @@ work and receive the changed boundary before updating that PR. Never integrate
 into MolSysMT main from this session. C2/owner and hosted acceptance remain
 pending; full details and scientific provider identity are in C1 below.
 
-**Next actions:** publish the reviewed bounded box/framing correction, then
-resolve the remaining Jupyter uncertainty and complete A5's continuous-playback
-and hidden-endpoint cases. Continue B3's
+**Next actions:** resolve the remaining Jupyter uncertainty and complete A5's
+continuous-playback and hidden-endpoint cases. Continue B3's
 DataCard lifecycle and the isolated owner-PR reconciliation. The remaining
 approved addon families and Movie #320 remain in scope. Incremental commits
 use `[skip ci]` at the principal maintainer's explicit instruction; no remote
@@ -144,7 +145,7 @@ packages, promotions and both 1.0 publications remain paused.
 
 | Block | Current status | Owner and tracking | Exit evidence |
 | --- | --- | --- | --- |
-| A — integrity, restoration and cleanup | A1–A4/A6 source-delivered and verified; A5/#319 current full Studio and native camera/control receiving passes and is delivered in `ebe3d46b`; playback, hidden-endpoint and consolidated acceptance remain partial | Viewer; #316/#317/#318/#319 and private handling under #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
+| A — integrity, restoration and cleanup | A1–A4/A6 source-delivered; bounded A5 camera/box corrections delivered in `ebe3d46b` and `42656765`; Jupyter uncertainty, continuous playback, hidden endpoints and consolidated acceptance remain partial | Viewer; #316/#317/#318/#319 and private handling under #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
 | B — plots and DataCards | B1/#314 and B2/#321 with #322 are delivered; current numerical/state/popup receiving passes. Retain the unexplained earlier zero-reference-bounds guard failure; provenance/card and consolidated follow-up remain | Viewer and scientific producer; #314, #321, #322, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
 | C — contribution and host integration | PR #543 updated to `42f5ed3bc`; complete local addon and seventeen-step Jupyter receiving pass; owner integration and covering hosted exits remain pending | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421/#635 and PR #543 | Reviewed delivery, current controlled pair, relevant full/hosted outcomes and explained failures |
 | D — scientific prerequisites and approved GUI families | Partial implementation; provider corrections and several task families remain | MolSysMT owns science; addon owns tasks; #264/#315 and uibcdf/molsysmt#421 | Received native fixes plus every required family/effect, without hidden preparation or copied algorithms |
@@ -377,7 +378,7 @@ original producers and scopes.
 | **A2 — corrected in `ef7b1348`, hosted checkpoint pending** | A rejected `import_state` clears an existing region before discovering an invalid section normal; molecular coordinates remain intact, but the scene changes after failure. Source: [state owner](../../molsysviewer/viewer/state.py), `import_state` / `_restore_sections`. | Complete validation before publishing, or provide a qualified restoration transaction. Test direct import and `load_state`, clear/merge/conflict modes, invalid later objects, history and handle validity. Preserve the semantic scene and relevant resources while retaining monotonic UID/tag/order high-water marks; rejection must not make identities reusable. Closed #127 protects `load_session`'s candidate route, not this direct-state path. |
 | **A3 — corrected in `38eb8785`, hosted checkpoint pending** | A real DataCard popup parses an inert title marker as markup, while the original card shows literal text. Source: [DataCard](../../molsysviewer/js/src/ui/floating-data-card.ts), `openPopoutWindow`. Executable injection scope was not tested. | Use literal title/header handling consistently; review disclosure privately. Guard initial/restored/updated titles, special characters, ordinary popup input and original/popup parity without executable test payloads. |
 | **A4 — corrected in `611c1574`, hosted checkpoint pending** | `new_view` with a failing selection leaves one unreturned open View and two registered widgets. Source: [factory](../../molsysviewer/new_view.py). Repeated ordinary errors can retain resources. | Close the factory-owned View on initialization failure, preserving the original error. Never close a caller-supplied View. Guard invalid selection, conversion/load rejection, repeated failures and restored widget/resource ownership with real demos. |
-| **A5 — reproduced, partial, #319** | Actual notebook/popup rotation reproduces four stale synchronous saves. The maintainer approved coherent awaitable capture/save plus automatic Studio capture. Earlier Jupyter cases prove exact captured bytes and restore invocation/convergence; review finds they did not perturb the camera before restore, so they do not prove recovery from another vantage. Working Studio source and stronger durable guards are under receiving. | [Capture contract and remaining work](../pending_bugs/saved_camera_lags_live_notebook.md): complete Studio/addressed popup/native/cancellation/playback receiving and actual perturbed-camera restoration; retain synchronous/headless saving. A5 is not closed or counted received. |
+| **A5 — reproduced, partial, #319** | Coherent awaitable saves and automatic Studio capture are implemented. Current complete Studio/controls entries receive perturbed-camera restoration and native geometry; box/width children are closed. Actual Jupyter retains a session-camera failure followed by a diagnostic non-reproduction. | [Capture contract and remaining work](../pending_bugs/saved_camera_lags_live_notebook.md): resolve that uncertainty, continuous playback, hidden endpoints and consolidated/native acceptance; retain synchronous/headless saving. A5 is not closed or counted received. |
 | **A6 — corrected in `1ea6b26e`, #318** | An actual provider panel close error leaves six owned widgets/layouts registered, another panel mounted and both View links retained; retry returns early. Ordinary successful closes are not claimed to fail. | [Independent cleanup and retry receiving](../pending_bugs/view_close_failure_blocks_cleanup.md), including actual provider/transport failures, unrelated View preservation and observable diagnostics. |
 
 Register scoped reports after duplicate review, including related closed #127

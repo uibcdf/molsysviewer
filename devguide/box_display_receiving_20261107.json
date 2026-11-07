@@ -234,5 +234,16 @@
     "originals_retained": true,
     "custodian": "Diego Prada Gracia",
     "off_host_backup": false
+  },
+  "delivery": {
+    "commit": "42656765779be796b492fc7e2e869d01558b77c2",
+    "branch": "main",
+    "push_exit": 0,
+    "incremental_ci": "[skip ci]; no new hosted campaign dispatched",
+    "issues_closed": {
+      "326": "https://github.com/uibcdf/molsysviewer/issues/326#issuecomment-6712022525",
+      "327": "https://github.com/uibcdf/molsysviewer/issues/327#issuecomment-6712026077"
+    },
+    "parent_319": "remains open/partial"
   }
 }
