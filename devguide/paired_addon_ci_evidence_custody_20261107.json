@@ -1,0 +1,16 @@
+{
+  "schema": "molsysviewer.paired_addon_ci_evidence_custody@1",
+  "date": "2026-11-07",
+  "plan": "uibcdf/molsysviewer#315",
+  "custodian": "Diego Prada Gracia",
+  "approved_private_subdirectory": "paired-addon-and-ci-20261107-1",
+  "manifest_sha256": "af4c5fc46c6940c411001ac00dd73d47942361a22b557f90da02d98c448c93a6",
+  "files": 126,
+  "bytes": 14795416,
+  "all_copied_hashes_verified": true,
+  "directory_permissions": "0700",
+  "file_permissions": "0600",
+  "originals_retained": true,
+  "offhost_copy_claim": false,
+  "scope": "Current paired addon Python/Jupyter receiving, original failures, source delta and hosted-CI diagnoses. No publication qualification or deletion."
+}

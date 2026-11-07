@@ -80,8 +80,20 @@ correction before publishing the isolated PR #543 reconciliation. Details and
 native outcomes: [hosted checkpoint](../robustness_hosted_checkpoint_20261107.json).
 The delivered counter remains **8/46 (17.4%)**; final acceptance remains **1/46**.
 
-**Next actions:** complete A5's approved coherent live capture/save integration, then B2's numeric labels
-and the remaining DataCard lifecycle work. A1/A3 source and guards are delivered
+The reviewed correction is published as `e4dd58cf`, with `[skip ci]`. Its one
+replacement checkpoint uses general CI `42387339383`, core browser
+`42387347683` and minimum-provider source pair `42387355324`. The old runs and
+their native failures remain preserved; an attempted old-run cancellation was
+rejected by automatic review and was not performed. The original macOS result
+is not inferred from the replacement. C1 now delivers the reconciled contribution through PR #543 at `42f5ed3bc`,
+with 5,059 Python passes and all seventeen Jupyter steps received. Owner review
+and integration remain pending; MolSysMT main and unrelated human work are
+untouched. Exact source scopes and remaining C2 exits are recorded below.
+
+**Next actions:** finish A5's remaining capture acceptance, starting with the
+current hosted live-Jupyter and native-pick failures. B2's numerical correction
+is delivered; remaining DataCard lifecycle work follows the recorded B3 scope.
+C1 is delivered through the owner's PR; review/integration remain separate. A1/A3 source and guards are delivered
 in `38eb8785`, following explicit maintainer disclosure review; advisory drafts
 and unrestricted evidence stay private. A6/#318 is delivered in `1ea6b26e`;
 B1/#314 in `25061d9e`. A2/#317 (`ef7b1348`) and A4/#316 (`611c1574`) retain their
@@ -138,7 +150,7 @@ any inference that an earlier complete pass qualifies the current working tree.
 | --- | --- | --- | --- |
 | A — integrity, restoration and cleanup | A1–A4/A6 source-delivered and verified; A5/#319 current full Studio and native camera/control receiving passes and is delivered in `ebe3d46b`; playback, hidden-endpoint and consolidated acceptance remain partial | Viewer; #316/#317/#318/#319 and private handling under #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
 | B — plots and DataCards | B1/#314 and B2/#321 with #322 are delivered; current numerical/state/popup receiving passes. Retain the unexplained earlier zero-reference-bounds guard failure; provenance/card and consolidated follow-up remain | Viewer and scientific producer; #314, #321, #322, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
-| C — contribution and host integration | Reconciled addon committed locally; remote PR older and reported conflicting; source gates incomplete | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421 and PR #543 | Reviewed delivery, current controlled pair, relevant full/hosted outcomes and explained failures |
+| C — contribution and host integration | PR #543 updated to `42f5ed3bc`; complete local addon and seventeen-step Jupyter receiving pass; owner integration and covering hosted exits remain pending | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421/#635 and PR #543 | Reviewed delivery, current controlled pair, relevant full/hosted outcomes and explained failures |
 | D — scientific prerequisites and approved GUI families | Partial implementation; provider corrections and several task families remain | MolSysMT owns science; addon owns tasks; #264/#315 and uibcdf/molsysmt#421 | Received native fixes plus every required family/effect, without hidden preparation or copied algorithms |
 | E — integrated use, scale and human acceptance | E0 custody received; partial headless/Jupyter receiving; complete workflow/prolonged use pending; human review postponed | Viewer/addon; maintainer owns human observations | TcTIM/ensemble save–recover–continue, independent lifetimes and representative measured limits |
 | F — public contract and documentation | Digestion/meta checks pass; compatibility snapshot and documentation reconciliation pending | Viewer; #315 | Named stable/experimental contracts, verified references and one usable current handoff |
@@ -406,32 +418,29 @@ reproduced title defect. A3 remains the owner of literal-text safety.
 
 ## C — deliver and receive the actual integration
 
-**C1 — partial:** deliver the reconciled addon through uibcdf/molsysmt PR #543;
-the owning team reviews/integrates it. Local e11995343 includes the owner's
-adapter diagnostics and deposited-model-label corrections, resolving the index
-conflict through the official generator. Remote 8ab2f5474 does not contain those
-local commits or the conformational GUI. Never push or merge MolSysMT main from
-this Viewer session.
+**C1 — partial; contribution delivered:** uibcdf/molsysmt PR #543 now points
+to `42f5ed3bc`, a normal fast-forward update preserving its old head, qualified
+`e1199534` contribution and owner review `3f66f593` over published owner
+`030c201a`. Both histories, native source and unrelated human work are preserved;
+the queue index is generated. The owning team still reviews/integrates it.
+Never push or merge MolSysMT main from this Viewer session. The
+[receiving record](../molsysmt_pr543_reconciliation_receiving_20261107.json)
+keeps exact producers, source scopes and remaining exits; the earlier
+read-only/conflicting snapshot is historical evidence, not current delivery.
 
-Read-only reconciliation on 2026-11-07 confirms PR #543 remains open and
-conflicting, with published head `8ab2f5474`. The qualified clean `e1199534`
-contribution descends from that head and preserves the later owner merge, so
-use a new worktree and a fixed published owner base; retain all unrelated owner
-work and never rewrite the frozen provider. Cached owner development changes
-the Rust MIC/PBC tree, invalidating automatic reuse of the old qualified native
-binary. All five host routes and the inventory still need one reviewed pushed
-Viewer SHA. Also reconcile the explicit Jupyter guard's seven Analysis checks
-with its actual seventeen-step driver before using that guard as C2 evidence.
-The read-only plan runs no tests and qualifies neither moving owner main nor a
-new binary/provider closure.
-
-**C2 — partial:** after B1's corrected Viewer source is reviewed and pushed, update
-all five controlled owner routes and the dependency inventory to that exact
-host. Run the complete new-addon collection and applicable hosted/source-pair
-checks on the combined input. Keep native binary/tree, imported providers,
-source hashes, original failures, skips and platform identity. Review incoming
-owner changes at meaningful checkpoints; scoped passes do not qualify a later
-native basis automatically.
+**C2 — partial; current local pair received:** all five controlled owner routes
+and the inventory select Viewer `e4dd58cf`. The current verified owner native
+backend is reused only after proving unchanged scientific/Rust source; the old
+frozen provider/binary is untouched. Complete addon/preflight receiving passes
+5,059 cases without omissions. The exact seventeen-step Jupyter guard then
+passes with native conformation/plots and both popup types, after correcting
+the addressed primary-route oracle under uibcdf/molsysmt#635 and uncovering the
+popup plot through its ordinary Studio control. Inputs remain fixed in both
+runs. Five tested support archives independently match public registry hashes.
+This measured cached-artifact route is distinct from a separately rebuilt
+controlled-support-source campaign or clean installed qualification. Updated-head
+hosted outcomes, owner acceptance and covering Viewer CI remain due; keep
+original failures, source/provider/binary hashes and platform scopes explicit.
 
 **C3 — partial:** finish the remaining acceptance for #264 and the implemented
 host services #301, #304 and #306. Preserve independent-result presentation,

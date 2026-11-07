@@ -1,0 +1,51 @@
+{
+  "schema": "molsysviewer.owner_addon_reconciliation_receiving@1",
+  "date": "2026-11-07",
+  "plan": "uibcdf/molsysviewer#315",
+  "owner_contribution": "uibcdf/molsysmt#543",
+  "published_head": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+  "owner_main_modified": false,
+  "owner_merge_performed": false,
+  "push_route": "Normal fast-forward update of the existing PR branch; no force push.",
+  "source_receiving": {
+    "python_producer": "11796a8a203ddd4f4f9d58bdc9ad3c20eb4d83f2",
+    "graphical_producer": "878dc405f7bbca195f633a8b6f4fa1803f9dfe8d",
+    "published_head_code_tests_unchanged_from_graphical_producer": true,
+    "viewer": "e4dd58cf0edcb2c3afb2c982ccd50d3899d504ab",
+    "full_python": {
+      "passed": 5059,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "seconds": 235.6,
+      "unchanged_inputs": 4747,
+      "owned_processes": 36,
+      "survivors": 0
+    },
+    "actual_jupyter": {
+      "ordered_steps": 17,
+      "native_exit": 0,
+      "seconds": 99.67237176303752,
+      "unchanged_inputs": 5050,
+      "owned_processes": 24,
+      "survivors": 0
+    },
+    "support_public_registry_hashes_verified": 5,
+    "solver_installed_claim": false,
+    "scope": "Actual current local source receiving; hosted/owner acceptance and required wider task/session/human exits remain separate."
+  },
+  "owner_receipt": "https://github.com/uibcdf/molsysmt/blob/42f5ed3bc8f02c979b3351212554e588243de0a5/devtools/data/molsysviewer_tools_reconciliation_receiving_20261107.json",
+  "new_feedback": [
+    "uibcdf/molsysmt#635",
+    "uibcdf/molsysmt#637"
+  ],
+  "raw_evidence": "Approved private custody; originals retained.",
+  "publication": "Candidate/tag/package/release and both 1.0 publications paused.",
+  "remaining": [
+    "Owner review/integration and exact updated-head hosted outcomes.",
+    "Complete controlled-support-source/installed campaign remains distinct from the tested cached public support payload route.",
+    "Viewer current hosted Jupyter and native-pick failures plus general macOS queued cells remain open. Source-pair macOS and Windows complete successfully; Linux fails its native-pick browser guard.",
+    "Full original audit and mandatory Movie stream remain required."
+  ],
+  "progress": "8/46 delivered,1/46 final acceptance; C1 still requires owner review/integration."
+}

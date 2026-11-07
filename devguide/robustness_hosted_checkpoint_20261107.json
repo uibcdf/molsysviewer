@@ -352,5 +352,141 @@
         "docs.log": "7ab47de2da21a378ceb132d0531df26358b30c5e01bce6314faccb78c0587881"
       }
     }
+  },
+  "correction_checkpoint": {
+    "head": "e4dd58cf0edcb2c3afb2c982ccd50d3899d504ab",
+    "source_delivery": "Reviewed main commit with [skip ci], remote verified before dispatch. Runtime sources unchanged; affected guards and canonical E2E runner updated.",
+    "observed_at": "2026-11-07T16:29:35.372237+00:00",
+    "dispatches_once_each": true,
+    "runs": [
+      {
+        "databaseId": 42387339383,
+        "headSha": "e4dd58cf0edcb2c3afb2c982ccd50d3899d504ab",
+        "status": "queued",
+        "conclusion": "",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/42387339383",
+        "jobs": [
+          {
+            "name": "Test on ubuntu-latest, Python 3.11",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "name": "Test on macos-15, Python 3.14",
+            "status": "queued",
+            "conclusion": "",
+            "failed_steps": []
+          },
+          {
+            "name": "Test on ubuntu-latest, Python 3.14",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "name": "Test on ubuntu-latest, Python 3.13",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "name": "Test on ubuntu-latest, Python 3.12",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "name": "Test on macos-15, Python 3.11",
+            "status": "queued",
+            "conclusion": "",
+            "failed_steps": []
+          },
+          {
+            "name": "Test on macos-15, Python 3.12",
+            "status": "queued",
+            "conclusion": "",
+            "failed_steps": []
+          },
+          {
+            "name": "Test on macos-15, Python 3.13",
+            "status": "queued",
+            "conclusion": "",
+            "failed_steps": []
+          },
+          {
+            "name": "Check skipped-commit backlog",
+            "status": "completed",
+            "conclusion": "skipped",
+            "failed_steps": []
+          }
+        ]
+      },
+      {
+        "databaseId": 42387347683,
+        "headSha": "e4dd58cf0edcb2c3afb2c982ccd50d3899d504ab",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/42387347683",
+        "jobs": [
+          {
+            "name": "Core E2E",
+            "status": "completed",
+            "conclusion": "failure",
+            "failed_steps": [
+              "Receive work files in an actual Jupyter kernel and browser"
+            ]
+          },
+          {
+            "name": "Check skipped-commit backlog",
+            "status": "completed",
+            "conclusion": "skipped",
+            "failed_steps": []
+          }
+        ]
+      },
+      {
+        "databaseId": 42387355324,
+        "headSha": "e4dd58cf0edcb2c3afb2c982ccd50d3899d504ab",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/42387355324",
+        "jobs": [
+          {
+            "name": "Source pair on ubuntu-latest, Python 3.14",
+            "status": "completed",
+            "conclusion": "failure",
+            "failed_steps": [
+              "Run all core browser suites against the exact source pair"
+            ]
+          },
+          {
+            "name": "Source pair on macos-15, Python 3.14",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "name": "Source pair on windows-2025, Python 3.14",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          }
+        ]
+      }
+    ],
+    "acceptance": "Pending; no terminal success inferred.",
+    "old_general_cancellation": {
+      "performed": false,
+      "automatic_review_rejected": true,
+      "reason": "Prior instruction to retain launched executions; no alternate cancellation attempted."
+    },
+    "phase_findings": {
+      "general_ci": "Four Linux cells success; four macOS cells queued in the current observation.",
+      "source_pair": "Windows and macOS success; Linux Python passes, then native GPU object-pick guard times out in controls-visibility. Native-pick cause remains unknown.",
+      "core_e2e": "44/44 core suites pass; subsequent actual Jupyter guard returns exit1 in49.006s.17owned processes close without errors/survivors.",
+      "jupyter_diagnostic_limit": "Published command receipt preserves outcome/cleanup but not the failed browser phase or raw failure. Root cause is not established; safe phase/error evidence needs improvement before a repeated hosted claim.",
+      "rerun_policy": "No automatic retries or replacement of failed evidence. No runs cancelled."
+    }
   }
 }
