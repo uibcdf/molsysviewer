@@ -170810,9 +170810,32 @@ var MolSysViewerController = class _MolSysViewerController {
 
 // src/messages/frontend-requests.ts
 function isFrontendRequest(message) {
-  return message?.op === "request_camera_snapshot" || message?.op === "request_image_export";
+  return message?.op === "request_camera_snapshot" || message?.op === "request_image_export" || message?.op === "request_visual_state";
 }
 async function handleFrontendRequest(controller, message, send) {
+  if (message.op === "request_visual_state") {
+    const correlation = {
+      event: "visual_state_snapshot",
+      request_id: message.request_id,
+      capture_revision: message.capture_revision
+    };
+    try {
+      const canvas = controller.plugin.canvas3d;
+      if (!canvas) throw new Error("No live canvas is available for capture.");
+      const timeout = Number(message.capture_timeout_ms);
+      await waitForCanvasDraw(canvas, Number.isFinite(timeout) && timeout > 0 ? Math.min(timeout, 3e4) : 5e3);
+      let structure_index;
+      const release = controller.onTrajectoryState((state) => {
+        structure_index = state.currentFrame;
+      }, { immediate: true });
+      release();
+      const snapshot = controller.getCameraSnapshot();
+      send({ ...correlation, ok: !!snapshot, snapshot, structure_index });
+    } catch (error2) {
+      send({ ...correlation, ok: false, error_type: error2 instanceof Error ? error2.name : "Error" });
+    }
+    return;
+  }
   if (message.op === "request_camera_snapshot") {
     const snapshot = controller.getCameraSnapshot();
     if (snapshot) send({ event: "camera_snapshot", snapshot });
@@ -170954,6 +170977,7 @@ var runtime_actions_default = {
     interaction_context_menu: "event",
     interaction_tool_state: "event",
     camera_snapshot: "event",
+    visual_state_snapshot: "event",
     widget_resize: "event",
     trajectory_frame_changed: "event",
     trajectory_plot_hidden: "event",
@@ -170987,6 +171011,7 @@ var runtime_actions_default = {
     request_interaction_frame: "request"
   },
   outbound_requests: [
+    "request_visual_state",
     "request_camera_snapshot",
     "request_image_export"
   ],
@@ -175566,7 +175591,7 @@ async function bootDocsView(opts) {
     const canvas = controller.plugin.canvas3d;
     if (!canvas) throw new Error("Exported scene has no WebGL canvas.");
     await waitForCanvasDraw(canvas);
-    notifyHost({ event: "ready", capabilities: { array_native_molsys_ref: [1] } });
+    notifyHost({ event: "ready", capabilities: { array_native_molsys_ref: [1], visual_state_capture: [1] } });
   } catch (err) {
     console.error("[MolSysViewer docs] Init error:", err);
     const message = err instanceof Error ? err.message : String(err);
@@ -176172,7 +176197,7 @@ function render({ model, el, runtimeSource }) {
         case "molsysviewer-popup-interaction":
           if (data) {
             const panelEvent = ["panel_navigate", "panel_unmount", "addon_panel_action"].includes(data.event);
-            sendToPython(panelEvent ? { ...data, _panel_endpoint_id: popupMessage.channel.popupEndpointId } : data);
+            sendToPython(panelEvent ? { ...data, _panel_endpoint_id: popupMessage.channel.popupEndpointId } : data.event === "visual_state_snapshot" ? { ...data, _capture_endpoint_id: popupMessage.channel.popupEndpointId } : data);
           }
           if (data) {
             const op4 = buildMeasurementOpFromInteractionEvent(data);
@@ -176237,7 +176262,8 @@ function render({ model, el, runtimeSource }) {
         capabilities: {
           binary_structure_data: binaryStructureData,
           max_buffer_bytes: 16 * 1024 * 1024,
-          transferable_array_buffer: false
+          transferable_array_buffer: false,
+          visual_state_capture: [1]
         }
       });
     } catch (err) {
@@ -176319,7 +176345,14 @@ function render({ model, el, runtimeSource }) {
       return;
     }
     if (isFrontendRequest(msg)) {
-      controllerPromise.then((c8) => handleFrontendRequest(c8, msg, sendToPython));
+      if (msg.op === "request_visual_state") {
+        messageQueue = messageQueue.then(async () => {
+          const c8 = await controllerPromise;
+          await handleFrontendRequest(c8, msg, sendToPython);
+        });
+      } else {
+        controllerPromise.then((c8) => handleFrontendRequest(c8, msg, sendToPython));
+      }
       return;
     }
     const panelLocal = msg.op === "mount_addon_panel" || msg.op === "addon_panel_message";

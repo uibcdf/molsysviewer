@@ -68,6 +68,7 @@ from ..whole import Whole
 from ..widget import MolSysViewerWidget
 from .camera import CameraManager
 from .export import ExportMixin
+from .frontend_requests import FrontendRequests
 from .history import HistoryMixin
 from .interaction import InteractionMixin
 from .load import LoadMixin
@@ -164,7 +165,7 @@ class MolSysView(
 
     def _prepare_close_actions(self):
         """Detach ownership and retain independently retryable cleanup actions."""
-        actions = []
+        actions = [("pending frontend requests", self._frontend_requests.close)]
         presentations = getattr(self, "_presentations", None)
         if presentations is not None:
             # Capture child owners before a close callback can remove records.
@@ -330,6 +331,7 @@ class MolSysView(
         self._current_molecular_projection: dict | None = None
         self._molecular_projection_revision = 0
         self._last_camera_snapshot: dict | None = None
+        self._frontend_requests = FrontendRequests()
         self._current_figure_spec: dict | None = None
         self._last_image_export_event: dict | None = None
         self._pending_remote_image_downloads: dict[str, str] = {}
@@ -1547,6 +1549,14 @@ class MolSysView(
         )
 
     def _handle_frontend_event(self, content: Mapping[str, Any]) -> None:
+        if content.get("event") == "visual_state_snapshot":
+            # Publish outside the molecular lock: ipykernel can resume the
+            # awaiting task before this connector callback returns.
+            if not self.closed:
+                self._frontend_requests.receive(
+                    dict(content), endpoint_id=content.get("_capture_endpoint_id", "primary")
+                )
+            return
         with self._system_edits._locked():
             self._handle_frontend_event_guarded(content)
 
@@ -1624,6 +1634,7 @@ class MolSysView(
                 notify_receiver=False,
             )
             self._unmount_addon_panel(endpoint_id=endpoint_id)
+            self._frontend_requests.cancel_endpoint(endpoint_id)
             self._endpoint_transfers.close(endpoint_id)
         elif event == "request_widget_runtime_source":
             # This is the lazy-load bootstrap handshake: the frontend requests the

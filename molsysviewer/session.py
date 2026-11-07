@@ -131,6 +131,11 @@ def save_session(view: Any, path: str | os.PathLike[str]) -> None:
     and `save_state` already writes those. Saying so is better than writing a file that
     calls itself a session and cannot reopen as one.
     """
+    _write_session(view, path, state=view.export_state())
+
+
+def _write_session(view: Any, path: str | os.PathLike[str], *, state: dict) -> None:
+    """Write exactly the supplied scene using the established atomic writer."""
     import molsysmt as msm
 
     from ._version import __version__
@@ -142,7 +147,6 @@ def save_session(view: Any, path: str | os.PathLike[str]) -> None:
             "save_state(path) to write the scene on its own."
         )
 
-    state = view.export_state()
     destination = Path(path)
     temporary_path: Path | None = None
     with tempfile.TemporaryDirectory() as workspace:

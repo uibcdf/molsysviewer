@@ -13,6 +13,12 @@ META = {
 }
 
 CATALOG = {
+    "frontend_request_failed": {
+        "code": "MOLSYSVIEWER-FRONTEND-REQUEST-FAILED",
+        "source": "molsysviewer.viewer.capture",
+        "category": "frontend",
+        "level": "ERROR",
+    },
     "argument_error": {
         "code": "MOLSYSVIEWER-ARGUMENT-ERROR",
         "source": "molsysviewer.argument",
@@ -275,6 +281,10 @@ CATALOG = {
 #: `devguide/smonitor.md` rule 1 ("zero string hardcoding") was satisfied on paper and
 #: defeated in practice.
 MESSAGES = {
+    "frontend_request_failed": (
+        "The live renderer request could not complete ({reason}). "
+        "Check that the view is open and connected, then retry."
+    ),
     "interaction_backend_required": (
         "This interaction workflow requires the experimental public MolSysMT "
         "Interactions API and H5MSM 0.5 support. Install a compatible MolSysMT revision."

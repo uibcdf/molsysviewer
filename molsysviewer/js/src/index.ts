@@ -544,7 +544,7 @@ export async function bootDocsView(opts: {
         const canvas = controller.plugin.canvas3d;
         if (!canvas) throw new Error("Exported scene has no WebGL canvas.");
         await waitForCanvasDraw(canvas);
-        notifyHost({ event: "ready", capabilities: { array_native_molsys_ref: [1] } });
+        notifyHost({ event: "ready", capabilities: { array_native_molsys_ref: [1], visual_state_capture: [1] } });
     } catch (err) {
         console.error("[MolSysViewer docs] Init error:", err);
         const message = err instanceof Error ? err.message : String(err);
@@ -1379,7 +1379,9 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                             const panelEvent = ["panel_navigate", "panel_unmount", "addon_panel_action"].includes(data.event);
                             sendToPython(panelEvent
                                 ? { ...data, _panel_endpoint_id: popupMessage.channel.popupEndpointId }
-                                : data);
+                                : data.event === "visual_state_snapshot"
+                                    ? { ...data, _capture_endpoint_id: popupMessage.channel.popupEndpointId }
+                                    : data);
                         }
                         // 2. Apply to the host canvas (popup already has it, so do NOT re-sync to popup).
                         if (data) {
@@ -1461,6 +1463,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                         binary_structure_data: binaryStructureData,
                         max_buffer_bytes: 16 * 1024 * 1024,
                         transferable_array_buffer: false,
+                        visual_state_capture: [1],
                     },
                 });
             } catch (err) {
@@ -1571,7 +1574,16 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                 return;
             }
             if (isFrontendRequest(msg)) {
-                controllerPromise.then(c => handleFrontendRequest(c, msg, sendToPython));
+                if ((msg as any).op === "request_visual_state") {
+                    // A capture is a barrier, not a shortcut around pending
+                    // scene/frame work. Keep legacy best-effort requests apart.
+                    messageQueue = messageQueue.then(async () => {
+                        const c = await controllerPromise;
+                        await handleFrontendRequest(c, msg, sendToPython);
+                    });
+                } else {
+                    controllerPromise.then(c => handleFrontendRequest(c, msg, sendToPython));
+                }
                 return;
             }
             const panelLocal = msg.op === "mount_addon_panel" || msg.op === "addon_panel_message";

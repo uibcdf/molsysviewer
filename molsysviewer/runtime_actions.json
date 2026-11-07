@@ -82,6 +82,7 @@
     "interaction_context_menu": "event",
     "interaction_tool_state": "event",
     "camera_snapshot": "event",
+    "visual_state_snapshot": "event",
     "widget_resize": "event",
     "trajectory_frame_changed": "event",
     "trajectory_plot_hidden": "event",
@@ -115,6 +116,7 @@
     "request_interaction_frame": "request"
   },
   "outbound_requests": [
+    "request_visual_state",
     "request_camera_snapshot",
     "request_image_export"
   ],

@@ -443,8 +443,9 @@ the same tag; APIs resolve identity as `(domain, tag)`.
 - `view.save_state(path)` / `view.load_state(path, *, clear_first=True, on_conflict="raise")`
   - atomic UTF-8 JSON file convenience around `export_state()` / `import_state()`
   - stores the scene **and the vantage point**: camera, current structure index and
-    playback settings travel under a `view` key. `save_state` requests a fresh camera from
-    the frontend before writing; `export_state` records the last one pushed
+    playback settings travel under a `view` key. Synchronous `save_state` requests a
+    best-effort camera refresh; a busy notebook may retain its cached snapshot.
+    `export_state` always records the last snapshot received
   - the molecular system, undo history and global visual settings are not bundled
   - load the same or a compatible structure before calling `load_state()`; onto a
     different structure, region recipes are re-resolved and everything else is matched by
@@ -455,7 +456,17 @@ the same tag; APIs resolve identity as `(domain, tag)`.
     already showing the system and the scene
   - no size budget — a session is as large as its trajectory
   - format `version: 1`, declared **experimental**
-- `view.get_camera_snapshot(*, pretty=False)` / `view.set_camera_snapshot(snapshot, *, duration_ms=0)`
+- `await view.save_state_async(path, *, timeout=5.0)` /
+  `await view.save_session_async(path, *, timeout=5.0)`
+  - explicit live capture from the primary canvas, followed by the same atomic writers
+  - camera and frame are acknowledged after preceding scene work and a completed draw;
+    another camera push cannot replace the captured payload
+  - a changed scene/frame, missing renderer, capture timeout or cancellation before
+    writing preserves the destination; there is no silent cached-camera fallback
+  - timeout is in seconds for capture only; serialization then runs on the owning thread
+  - these source APIs are not evidence of installed-package or native Qt qualification;
+    Studio's automatic and addressed-popup integration remains tracked in #319
+- `view.camera.get_snapshot(*, pretty=False)` / `view.camera.set_snapshot(snapshot, *, duration="0 ms")`
   - the camera as a plain dict, mirrored back from the frontend; `None` on a viewer that
     has never rendered. `pretty=True` returns it as formatted JSON
 - `view.zoom(selection="all", ..., *, duration="250 ms", extra_radius="4.0 angstroms", min_radius="1.0 angstroms")`

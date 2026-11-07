@@ -25,6 +25,31 @@ from ..shapes._registry import register_shape_layer
 STATE_VERSION = 2
 
 
+def _write_state_file(path, state: dict) -> None:
+    """Commit exactly one detached scene document to its destination."""
+    destination = Path(path)
+    temporary_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=destination.parent,
+            prefix=f".{destination.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as temporary:
+            temporary_path = Path(temporary.name)
+            json.dump(state, temporary, indent=2, sort_keys=True, allow_nan=False)
+            temporary.write("\n")
+            temporary.flush()
+            os.fsync(temporary.fileno())
+        os.replace(temporary_path, destination)
+    except BaseException:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
+        raise
+
+
 def _read_atom_identities(molsys, *, fingerprint=False):
     """Read available public metadata without inventing a hierarchy for small molecules."""
     import molsysmt as msm
@@ -308,14 +333,15 @@ class StateMixin:
         This is the file counterpart of :meth:`export_state`. It does not include
         the molecular system or the undo history. It does include the camera, the
         structure index and the playback settings, and unlike :meth:`export_state`
-        it asks the frontend for a fresh camera first, so the file records the view
-        as it was when the save was asked for. Load the same (or a compatible)
+        it asks the frontend for a fresh camera on a best-effort basis. A busy
+        notebook can only supply its cached camera to this synchronous call;
+        use :meth:`save_state_async` for acknowledged live capture.
+        Load the same (or a compatible)
         structure before passing the file to :meth:`load_state`.
         """
-        # A save is a deliberate act, not a checkpoint, so it can afford the round trip
-        # that `export_state` cannot: the camera written here is the one on screen at the
-        # moment of saving, not the one the frontend last happened to push. Best-effort --
-        # a viewer with no live frontend simply keeps the camera it already knew.
+        # Preserve the synchronous/headless contract. A native GUI may service
+        # this best-effort request, but a busy notebook cannot guarantee a fresh
+        # reply without yielding; the explicit async methods own that guarantee.
         request = getattr(self, "_request_camera_snapshot", None)
         if callable(request):
             try:
@@ -323,27 +349,49 @@ class StateMixin:
             except Exception:
                 pass
 
-        destination = Path(path)
-        temporary_path: Path | None = None
-        try:
-            with tempfile.NamedTemporaryFile(
-                mode="w",
-                encoding="utf-8",
-                dir=destination.parent,
-                prefix=f".{destination.name}.",
-                suffix=".tmp",
-                delete=False,
-            ) as temporary:
-                temporary_path = Path(temporary.name)
-                json.dump(self.export_state(), temporary, indent=2, sort_keys=True)
-                temporary.write("\n")
-                temporary.flush()
-                os.fsync(temporary.fileno())
-            os.replace(temporary_path, destination)
-        except Exception:
-            if temporary_path is not None:
-                temporary_path.unlink(missing_ok=True)
-            raise
+        _write_state_file(path, self.export_state())
+
+    @signal(tags=["state", "capture"])
+    @digest()
+    async def save_state_async(
+        self, path: str | os.PathLike[str], *, timeout: float = 5.0, skip_digestion: bool = False
+    ) -> None:
+        """Capture the live primary canvas, then atomically write its scene.
+
+        Await this method in Jupyter. ``timeout`` bounds renderer capture in
+        seconds, not filesystem I/O. A missing/refusing renderer, changed scene
+        or cancellation before writing preserves the destination. File writing
+        runs synchronously after capture on the owning thread; no background
+        write can continue after a capture timeout/cancellation is reported.
+        """
+        from .visual_capture import capture_live_state
+
+        captured = await capture_live_state(self, timeout=timeout)
+        with self._system_edits._locked():
+            captured.validate(self)
+            _write_state_file(path, captured.state)
+
+    @signal(tags=["state", "capture"])
+    @digest()
+    async def save_session_async(
+        self, path: str | os.PathLike[str], *, timeout: float = 5.0, skip_digestion: bool = False
+    ) -> None:
+        """Capture the live primary canvas and write its system and scene.
+
+        Requires a loaded system and a connected capture-capable renderer.
+        The timeout and write/cancellation semantics match save_state_async.
+        Molecular data are serialized through the same H5MSM/session writer as
+        save_session; this method never copies the trajectory to wait for a GUI.
+        """
+        from ..session import _write_session
+        from .visual_capture import capture_live_state
+
+        if self.molsys is None:
+            raise ValueError("Load a molecular system before saving a live session.")
+        captured = await capture_live_state(self, timeout=timeout)
+        with self._system_edits._locked():
+            captured.validate(self)
+            _write_session(self, path, state=captured.state)
 
     @signal(tags=["state"])
     @digest()
@@ -844,8 +892,9 @@ class StateMixin:
         The camera is read from what the frontend last pushed -- it debounces camera
         changes to Python every 300 ms -- and never requested here, because
         `export_state` runs on every undoable operation and a blocking round trip per
-        checkpoint would be unaffordable. :meth:`save_state`, which is a deliberate act
-        by a user rather than a checkpoint, refreshes it first.
+        checkpoint would be unaffordable. Synchronous save_state requests a
+        best-effort refresh; save_state_async/save_session_async capture an
+        acknowledged scene and pass it directly to the writers.
 
         The key is absent when there is nothing to record: no frontend has ever been
         ready (a viewer never displayed, a headless run) and no system is loaded.

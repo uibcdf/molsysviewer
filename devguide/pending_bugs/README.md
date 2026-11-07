@@ -19,10 +19,11 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Partially done (4)
+### Partially done (5)
 
 - [`direct_state_rejection_erases_scene.md`](direct_state_rejection_erases_scene.md) — [#317](https://github.com/uibcdf/molsysviewer/issues/317) — Rejected direct state imports erase existing scene objects before validation finishes. *(high, reproduced)*
 - [`failed_factory_retains_owned_view.md`](failed_factory_retains_owned_view.md) — [#316](https://github.com/uibcdf/molsysviewer/issues/316) — Failed new_view initialization retains its unreturned View and widgets. *(medium, reproduced)*
+- [`saved_camera_lags_live_notebook.md`](saved_camera_lags_live_notebook.md) — [#319](https://github.com/uibcdf/molsysviewer/issues/319) — Immediate notebook and popup saves can preserve an older cached camera. *(medium, reproduced)*
 - [`trajectory_plot_seek_skips_python_authority.md`](trajectory_plot_seek_skips_python_authority.md) — [#314](https://github.com/uibcdf/molsysviewer/issues/314) — Trajectory plot navigation changes the canvas without updating Python structure state. *(high, reproduced)*
 - [`view_close_failure_blocks_cleanup.md`](view_close_failure_blocks_cleanup.md) — [#318](https://github.com/uibcdf/molsysviewer/issues/318) — A provider panel close error prevents remaining View resources from closing. *(medium, reproduced)*
 

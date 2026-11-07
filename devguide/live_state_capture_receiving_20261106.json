@@ -1,0 +1,220 @@
+{
+  "schema": "molsysviewer.live_state_capture_receiving@1",
+  "date": "2026-11-06",
+  "observed_at": "2026-11-07T01:43:20.489085+00:00",
+  "plan": "uibcdf/molsysviewer#315 / A5",
+  "issue": "uibcdf/molsysviewer#319",
+  "status": "partial source implementation; primary-renderer async capture received; Studio/addressed popup/native/playback/durable real-renderer qualification and closure pending",
+  "decision": {
+    "authority": "Principal maintainer explicitly selected the ambitious/user-useful coherent capture-and-save alternative in the 2026-11-06 session.",
+    "public_source_api": [
+      "await view.save_state_async(path, *, timeout=5.0, skip_digestion=False)",
+      "await view.save_session_async(path, *, timeout=5.0, skip_digestion=False)"
+    ],
+    "sync_contract_preserved": true,
+    "capture_snapshot_public_method_added": false,
+    "writes": "Same atomic format writers; synchronous serialization after the awaited capture on the owning thread; no hidden background write."
+  },
+  "source": {
+    "viewer_base": "a7f1c1c73e1b35e734160a994c059032e1658d8d",
+    "changed_sources_sha256": {
+      "molsysviewer/viewer/frontend_requests.py": "1cded86a39f2e27e8c75321538c73fb276e9d807ff022b8423e1e28092eab5ae",
+      "molsysviewer/viewer/visual_capture.py": "93e765378faa243e3386b5e9cb602e018f119298894d1bb57ee06fa41c0eb914",
+      "molsysviewer/viewer/state.py": "7433702ff6b3a89ea33ae88d4aab7e70672cfdfd5545b68dd1f4809c054c42d1",
+      "molsysviewer/viewer/core.py": "a01520c8b5227d3f4bdc9c7af3fd406f2e46e4907cb06f8c15d663a13617de5d",
+      "molsysviewer/session.py": "9ae244ae4af14035a411ba2079e58cb47ebfd2d6915dab3a37523b72a4fd4fe9",
+      "molsysviewer/_private/argdigest/digest.py": "d44d5b6b6bfcc3c85e6ed780f5119a7617b9aeb06c01f389d4844292257f0683",
+      "molsysviewer/_private/smonitor/catalog.py": "92c453b5c2a1b48952f8cb361df74ee9deca852922d3c360ce0a64b1fd44f411",
+      "molsysviewer/js/src/index.ts": "0e766668f24bf7760cf0130cbfd97875aebe2c3acd4f773f5eebcae8d5145a43",
+      "molsysviewer/js/src/messages/frontend-requests.ts": "d93e49c8797aaeb6a0b133e1f7cc41ce4015a72e62e2500f81e9d028d42e6029",
+      "molsysviewer/runtime_actions.json": "c130ee6f2faf6fcb270cb194f3f685a69c5edb83ac4333ea951c7fd8bf663881",
+      "tests/test_live_state_capture.py": "e145dd89d2ea9f272f358da2eebfd93c379e37753b81125d9e3f5f8d030179b6",
+      "devtools/public_api_inventory_baseline.json": "5fd1c7613f46312a1c5bca87740fdc6ef7d6b2c3464ab951038f9a01f2dac893",
+      "molsysviewer/viewer.js": "e3aa03b7e8e4a8ad75e3f231265f628eadf460f3297b9946d800cb7737398799"
+    },
+    "python": "3.14.7",
+    "molsysmt": "e119953435a25c72e9a65b7428f74b1c2430b4f1",
+    "pyunitwizard": "02d0015fa7d3149d92c0e632b8e584f6a47c37dc"
+  },
+  "initial_observation": {
+    "state": "actual stale-camera reproduction, not fixed-code qualification",
+    "native_exit": 0,
+    "cases": 4,
+    "settled_control_camera_delta": 0,
+    "selected_inputs_unchanged": 4312,
+    "scope": "Synchronous state/session saves after notebook/popup rotation retain the older Python cache; molecular coordinates unchanged."
+  },
+  "receiving": {
+    "python": {
+      "command": [
+        "-m",
+        "pytest",
+        "--receptor=llm",
+        "-o",
+        "receptor_rerun_command=python -m pytest",
+        "--junitxml=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/A5-python-final-2.xml",
+        "tests/test_live_state_capture.py",
+        "tests/test_state_view_state.py",
+        "tests/test_session_bundle.py",
+        "tests/test_session_rejection.py",
+        "tests/test_session_member_integrity.py",
+        "tests/test_camera_snapshot_request.py",
+        "tests/test_studio_work_persistence.py",
+        "tests/test_public_api_inventory.py",
+        "tests/test_view_close_failure.py",
+        "tests/test_runtime_router.py"
+      ],
+      "native_exit": 0,
+      "tests": 172,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "pytest_seconds": 34.42,
+      "warnings": {
+        "LegacyH5MSMWarning": 106
+      },
+      "log_sha256": "7bc798b6dea8ba0923a14de13c3cd17adc3700763397888d7f1bae7d7d242981",
+      "junit_sha256": "3b12e8bff7bdd2cf4c8e174f847b92942332510283e08a3ced8bcaaedbbbb964"
+    },
+    "directed": {
+      "tests": 23,
+      "native_exit": 0,
+      "included_in_broader_python_scope": true,
+      "scope": "Reply ownership, exact detached payload, wrong frame, changed scene, timeout/cancellation, closure, headless legacy saving, ArgDigest, and callback publication outside the molecular lock."
+    },
+    "actual_jupyter": {
+      "native_exit": 0,
+      "seconds": 39.70946931000799,
+      "save_restore_cases": [
+        {
+          "origin": "notebook",
+          "format": "state",
+          "exact_correlated_camera": true,
+          "actual_restored_vantage": true
+        },
+        {
+          "origin": "notebook",
+          "format": "session",
+          "exact_correlated_camera": true,
+          "actual_restored_vantage": true
+        },
+        {
+          "origin": "popup",
+          "format": "state",
+          "exact_correlated_camera": true,
+          "actual_restored_vantage": true
+        },
+        {
+          "origin": "popup",
+          "format": "session",
+          "exact_correlated_camera": true,
+          "actual_restored_vantage": true
+        }
+      ],
+      "additional_settled_save_delta": 0,
+      "selected_inputs_unchanged": 4319,
+      "primary_visible_and_focused": true,
+      "active_structure_transfer_before_final_control": false,
+      "scope": "Actual isolated JupyterLab/ipykernel/anywidget and Mol*/Chromium. Popup rotation is mirrored to primary; addressed Studio popup capture is not received.",
+      "page_errors_retained_separately": [
+        "Error: No active debugger session"
+      ],
+      "verification_sha256": "446f42cc37715e34781e0e953a5088527b953ffce5ef2a84dbdf25e064d4b0c3"
+    },
+    "javascript_unit": {
+      "native_exit": 0,
+      "runner_entries": 1,
+      "scope": "Canonical bundled Node unit entry; not one scientific test and not a complete browser core gate."
+    },
+    "runtime_build": {
+      "command": "npm run build:runtime",
+      "native_exit": 0
+    },
+    "documentation": {
+      "tests": 364,
+      "native_exit": 0,
+      "scope": "Reporting, clean-checkout links, architecture status and board-tool guards after receipt and Movie record are staged. Earlier 361-case scope overlaps.",
+      "earlier_native_passes": 361,
+      "retained_intermediate_failure": {
+        "native_exit": 1,
+        "passed": 363,
+        "failed": 1,
+        "cause": "New Movie target existed in the worktree but was not yet in the Git index; clean-checkout link guard correctly rejected four references. Staging the actual target fixes delivery, not link expectations."
+      }
+    },
+    "board": {
+      "documents": 42,
+      "derived_state_labels_agree": true,
+      "prose_updates": "Issue opening only; no progress comments."
+    }
+  },
+  "retained_attempts": [
+    {
+      "state": "pre-page Chrome socket-path driver failure",
+      "native_exit": 1,
+      "disposition": "Managed short TMPDIR; originals retained."
+    },
+    {
+      "state": "first source actual Jupyter four-case receiving",
+      "native_exit": 0,
+      "scope": "Predates final endpoint/lock refinements."
+    },
+    {
+      "state": "later four correct restorations followed by settled-control capture timeout",
+      "native_exit": 1,
+      "scope": "Not a passing final run."
+    },
+    {
+      "state": "passive diagnostic exposes molecular-lock publication race; its status probe also lacks an argument",
+      "native_exit": 1,
+      "disposition": "Product race and driver-only error kept separate."
+    },
+    {
+      "state": "causal lock-notification regression before correction",
+      "native_exit": 1,
+      "effect": "Expected acquired; observed still_locked."
+    },
+    {
+      "state": "first broader command names nonexistent tests/test_session.py",
+      "native_exit": 4,
+      "executed": 0
+    },
+    {
+      "state": "initial inventory receiving before intentional baseline regeneration",
+      "native_exit": 1,
+      "passed": 97,
+      "failed": 1,
+      "disposition": "Two additive methods appear through four reachable paths; totals intentionally move 736 to 740, all digested and no exemption added."
+    }
+  ],
+  "remaining": [
+    "Automatic Studio capture with truthful completion/error and cancellation.",
+    "Authenticated addressed canvas-popup capture and panel-only canvas association.",
+    "Hidden/background canvas and repeated restore/capture diagnostics; one later pass is not proof that the earlier timeout had only one cause.",
+    "Continuous playback without mixed frame/camera state or a second clock.",
+    "Native Qt and durable registered real-renderer/Jupyter guards.",
+    "Consolidated hosted and later exact-installed acceptance."
+  ],
+  "limits": [
+    "This does not adopt the wider F1 public immutable-scene proposal.",
+    "No arbitrary MolSys raw-array mutation observation is introduced.",
+    "The request registry is bounded; no universal scene/trajectory RAM or full asynchronous-I/O guarantee is claimed.",
+    "Receiving scopes overlap and must not be summed.",
+    "No tags, package builds, promotions, 1.0 publication or new hosted CI dispatch.",
+    "A5 remains partial; formal progress remains 1/46 (2.2%)."
+  ],
+  "delivery": {
+    "route": "Principal-maintainer-authorized direct main commit/push with [skip ci]; no owner repository changes.",
+    "state": "Prepared for reviewed source checkpoint; containing Git commit identifies delivery."
+  },
+  "custody": {
+    "schema": "molsysviewer.private_capture_custody_receipt@1",
+    "custodian": "Diego Prada Gracia",
+    "opaque_reference": "robustness-20261106/capture-source-20261107-1",
+    "files_verified": 68,
+    "total_bytes": 5923065,
+    "manifest_sha256": "9ba85372f634bc95a0bc294be19d41f722e78629dfcd2e9a76ce984a0a24f479",
+    "originals_retained": true,
+    "off_host_backup_claimed": false
+  }
+}
