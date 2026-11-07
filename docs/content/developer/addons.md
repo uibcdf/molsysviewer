@@ -428,6 +428,15 @@ export function render({ model, el }) {
 ### 2. Frontend Cleanup (Critical)
 Always return a cleanup function from `render` if you register window event listeners, intervals, secondary canvas contexts, or subscriptions. MolSysViewer executes this callback before removing the panel element from the DOM.
 
+Python cleanup hooks and widget `close()` should tolerate already released
+resources. When the owning View closes, the host retires it immediately and
+attempts independent cleanup even if a hook or transport raises. It surfaces
+the error, and another `view.close()` retries failed actions without repeating
+successful actions. A panel is no longer mounted between attempts; its retired
+View context is available while that panel's cleanup executes. Cleanup must not
+start new scientific or scene operations. A persistent provider failure remains
+pending rather than being bypassed or silently declared successful.
+
 ### 3. Panel State Isolation
 Use `model.get()`, `model.set()`, and `model.send()` to sync state. State properties are isolated and namespace-bound to the active add-on.
 

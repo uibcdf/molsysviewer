@@ -1,0 +1,59 @@
+{
+  "schema": "molsysviewer.view_close_failure_receiving@1",
+  "date": "2026-11-06",
+  "plan": "uibcdf/molsysviewer#315 / A6",
+  "issue": "uibcdf/molsysviewer#318",
+  "status": "final combined source verified; A6 source commit and consolidated hosted receiving pending",
+  "source": {
+    "viewer_base": "25061d9e99baf07fa0dcb4021897958a226f0152",
+    "changed_sources_sha256": {
+      "molsysviewer/viewer/core.py": "47d06ae5547ab110f0df5a6d2f7bca8baf59dfda4a61365cb38ea15d5abfd529",
+      "tests/test_view_close_failure.py": "e12394230943064dea6c85d3b6bb86799e2afbab7b84895411835a34f7442c6c"
+    },
+    "python": "3.14.7",
+    "molsysmt": "e119953435a25c72e9a65b7428f74b1c2430b4f1",
+    "pyunitwizard": "02d0015fa7d3149d92c0e632b8e584f6a47c37dc"
+  },
+  "causal_red": {
+    "exit_code": 1,
+    "effect": "A controlled provider close error leaves six widgets/layouts, one other mounted panel and two View links; retry returns early. The directed pytest guard also fails before repair."
+  },
+  "receiving": {
+    "command": "python -m pytest --receptor=llm -o 'receptor_rerun_command=python -m pytest' tests/test_view_close_failure.py tests/test_view_lifecycle.py tests/test_view_presentations.py tests/test_new_view.py tests/test_addons.py tests/test_addon_panel_endpoints.py tests/test_addon_factory_failures.py tests/test_structure_transfer.py tests/test_trajectory_plot_lifecycle.py tests/test_qt_transport_contract.py tests/test_popup_snapshot_fidelity.py tests/test_runtime_router.py tests/test_popup_snapshot.py tests/test_popup_snapshot_completeness.py tests/test_runtime_seam_integration.py",
+    "exit_code": 0,
+    "passed": 225,
+    "skipped": 1,
+    "skip_reason": "Legacy MolSysMT entry point is not installed",
+    "warnings": {
+      "LegacyH5MSMWarning": 81
+    },
+    "pytest_seconds": 87.48,
+    "inputs_unchanged": true,
+    "log_sha256": "50532b01511d9c0c3d545427ce931969f0fb3e2962ae358dbe537f5a1d4325d9"
+  },
+  "directed": {
+    "passed": 7,
+    "exit_code": 0,
+    "scope": "Actual provider/transport failures, failed-action retry, grouped errors, interruption, reentrancy, late messages and independent unpresented children; included in broader receiving."
+  },
+  "limits": [
+    "A View is retired immediately; if an external cleanup action keeps failing, that resource remains pending and close() raises. Retry requires retaining the View and correcting the provider/transport cause.",
+    "The source correction does not force-close or bypass a failing external provider resource.",
+    "No universal rollback, memory bound or visible Qt/installed qualification is claimed.",
+    "The earlier 117-case boundary passed with one legacy skip before late-inbound guards; scopes overlap and are not summed.",
+    "A driver-only intermediate failure accessed model_id after Widget.close(); use comm is None. Its teardown cascade is not a second product defect.",
+    "Applicable combined-source/hosted acceptance remains pending; A6 is not a completed progress item.",
+    "The 225-case isolated receipt predates the final provider-retry context refinement; the 469-case combined selection receives that final source."
+  ],
+  "earlier_isolated_source": {
+    "viewer_base": "e3cf77e0f95c2d1c927df118d0596bb5679ecd8d",
+    "changed_sources_sha256": {
+      "molsysviewer/viewer/core.py": "332a8d16deec81d3b5948dc3be4e32c391b83ace932c2b8c9651c4e9ef2171f3",
+      "tests/test_view_close_failure.py": "ca0aa9fab0dc78ee8a5673dd71c59e1c2e2adbc4116e60607a7a4afd2ec8bbb9"
+    },
+    "python": "3.14.7",
+    "molsysmt": "e119953435a25c72e9a65b7428f74b1c2430b4f1",
+    "pyunitwizard": "02d0015fa7d3149d92c0e632b8e584f6a47c37dc"
+  },
+  "combined_receiving": "devguide/robustness_combined_source_receiving_20261106.json"
+}

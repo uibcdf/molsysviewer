@@ -123,7 +123,7 @@ class MolSysView(
 
     @property
     def closed(self) -> bool:
-        """Whether this view has explicitly released its transport and widgets."""
+        """Whether this view is retired and no longer accepts new work."""
         return self._closed
 
     @signal(tags=["viewer"])
@@ -131,27 +131,111 @@ class MolSysView(
     def close(self, *, skip_digestion: bool = False) -> None:
         """Release the frontend transport and widgets owned by this view.
 
-        Closing is explicit because widget registries retain open views even
-        after user code drops its last reference. The operation is idempotent.
+        Closing retires the view before cleanup. Independent resources are
+        attempted even when a provider or transport fails. Failures are raised;
+        another close retries only failed actions. Successful cleanup is not
+        repeated, including when a close callback calls close recursively.
         """
-        if self._closed:
+        if self._close_in_progress:
             return
-        self._closed = True
+        if not self._closed:
+            self._closed = True
+            self._ready = False
+            self._close_actions = self._prepare_close_actions()
+        if not self._close_actions:
+            return
+        actions, self._close_actions = self._close_actions, []
+        errors = []
+        self._close_in_progress = True
+        try:
+            for name, operation in actions:
+                try:
+                    operation()
+                except BaseException as error:
+                    error.add_note(f"MolSysViewer cleanup failed: {name}; close() can retry this action.")
+                    errors.append(error)
+                    self._close_actions.append((name, operation))
+        finally:
+            self._close_in_progress = False
+        if len(errors) == 1:
+            raise errors[0]
+        if errors:
+            raise BaseExceptionGroup("MolSysViewer could not release every owned resource", errors)
+
+    def _prepare_close_actions(self):
+        """Detach ownership and retain independently retryable cleanup actions."""
+        actions = []
         presentations = getattr(self, "_presentations", None)
         if presentations is not None:
-            presentations._source_closed()
+            # Capture child owners before a close callback can remove records.
+            for record in list(presentations._records.values()):
+                if record["destination"] is None:
+                    actions.append(("unpresented result", record["view"].close))
+            actions.append(("presentation source", presentations._source_closed))
         callbacks, self._close_callbacks = self._close_callbacks, []
-        for callback in callbacks:
-            callback()
-        self._frame_change_callbacks.clear()
-        self.player._frame_events.clear()  # noqa: SLF001
-        self._unmount_all_addon_panels()
-        self.addons._close_runtime()  # noqa: SLF001
-        self._cancel_binary_structure_stream("view closed")
-        self._endpoint_transfers.clear()
+        actions.extend(("close callback", callback) for callback in callbacks)
+        actions.append(("frame callbacks", self._frame_change_callbacks.clear))
+        actions.append(("frame events", self.player._frame_events.clear))
+        for name in ("_hover_callbacks", "_click_callbacks", "_context_callbacks"):
+            actions.append((name, getattr(self, name).clear))
+
+        panels = [entry[2] for entry in self._active_panel_widgets.values()]
+        if self._active_panel_widget is not None and self._active_panel_widget[2] not in panels:
+            panels.append(self._active_panel_widget[2])
+        self._active_panel_widgets.clear()
+        self._active_panel_widget = None
+        for panel in panels:
+            actions.append(("addon panel unmount", lambda panel=panel: self._close_panel_phase(panel, unmount=True)))
+            actions.append(("addon panel widget", lambda panel=panel: self._close_panel_phase(panel, unmount=False)))
+            layout = getattr(panel, "layout", None)
+            close_layout = getattr(layout, "close", None)
+            if layout is not panel and callable(close_layout):
+                actions.append(("addon panel layout", close_layout))
+            actions.append(("addon panel owner", lambda panel=panel: setattr(panel, "_view", None)))
+
+        self.addons._notify_view_runtime = False
+        for name in sorted(self.addons._active_runtime):
+            actions.append((f"addon {name}", lambda name=name: self.addons._deactivate_addon(name)))
+        for endpoint_id, _ in tuple(self._iter_structure_transfer_managers()):
+            actions.append(
+                (
+                    "structure stream",
+                    lambda endpoint_id=endpoint_id: self._cancel_binary_structure_stream(
+                        "view closed",
+                        target_endpoint_id=endpoint_id,
+                    ),
+                )
+            )
+        actions.append(("endpoint transfers", self._endpoint_transfers.clear))
 
         widget = self.widget
         layout = getattr(widget, "layout", None)
+        actions.append(("widget callback", self._detach_widget_message_callback))
+        if isinstance(widget, MolSysViewerWidget):
+            actions.append(("widget owner", lambda: setattr(widget, "_molsysviewer_view_ref", None)))
+        close_widget = getattr(widget, "close", None)
+        if callable(close_widget):
+            actions.append(("viewer widget", close_widget))
+        close_layout = getattr(layout, "close", None)
+        if layout is not widget and callable(close_layout):
+            actions.append(("viewer layout", close_layout))
+        return actions
+
+    def _close_panel_phase(self, panel, *, unmount):
+        # A retry may need the same provider context as its first attempt.
+        # The retired View is available only while cleanup executes; it does
+        # not remount the panel or admit any new frontend work.
+        panel._view = self
+        try:
+            if unmount:
+                panel.on_unmount(self)
+            else:
+                panel.close()
+        finally:
+            panel._view = None
+
+    def _detach_widget_message_callback(self):
+        widget = self.widget
         callback = getattr(self, "_widget_message_callback", None)
         on_msg = getattr(widget, "on_msg", None)
         if callback is not None and callable(on_msg):
@@ -161,18 +245,6 @@ class MolSysView(
                 # Non-Jupyter transports own their callback cleanup in close().
                 pass
         self._widget_message_callback = None
-        if isinstance(widget, MolSysViewerWidget):
-            widget._molsysviewer_view_ref = None
-
-        close_widget = getattr(widget, "close", None)
-        if callable(close_widget):
-            close_widget()
-
-        # ipywidgets registers Layout independently and Widget.close() does not
-        # close it. MolSysView owns its widget layout, so release it as well.
-        close_layout = getattr(layout, "close", None)
-        if layout is not widget and callable(close_layout):
-            close_layout()
 
     @signal(tags=["viewer", "init"])
     @dep_digest("anywidget")
@@ -188,6 +260,8 @@ class MolSysView(
         transport: Any = None,
     ) -> None:
         self._closed = False
+        self._close_in_progress = False
+        self._close_actions = []
         self._close_callbacks = []
         self._presentations = None
         self._system_edits = SystemEditsManager(self)
@@ -1332,6 +1406,8 @@ class MolSysView(
         deduplicated by the authority router: a duplicate command is acknowledged
         without re-applying it; a rejected envelope is diagnosed and dropped.
         """
+        if self.closed:
+            return
         # Main-thread entry point for anything the frontend sends: a stream whose
         # acknowledgement never arrived is released here even if the frontend has
         # moved on to unrelated traffic.
@@ -1361,6 +1437,8 @@ class MolSysView(
 
     def _handle_connector_runtime_request(self, request: Any) -> None:
         """Serve a request whose transport already validated its envelope."""
+        if self.closed:
+            return
         if getattr(request, "action", None) == "request_popup_scene_snapshot":
             self._answer_popup_scene_snapshot(request)
 
@@ -1473,6 +1551,8 @@ class MolSysView(
             self._handle_frontend_event_guarded(content)
 
     def _handle_frontend_event_guarded(self, content: Mapping[str, Any]) -> None:
+        if self.closed:
+            return
         event = content.get("event")
         if self._system_edits._blocked():
             if event == "interaction_context_action" and content.get("action") == "sync_system_edits":

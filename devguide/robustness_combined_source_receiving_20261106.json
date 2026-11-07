@@ -1,0 +1,70 @@
+{
+  "schema": "molsysviewer.robustness_combined_source_receiving@1",
+  "date": "2026-11-06",
+  "plan": "uibcdf/molsysviewer#315",
+  "status": "combined source passes; A6 source commit and consolidated hosted checkpoint pending",
+  "source": {
+    "working_base": "25061d9e99baf07fa0dcb4021897958a226f0152",
+    "delivered_B1": "25061d9e99baf07fa0dcb4021897958a226f0152",
+    "A1_A3_commit": "38eb8785a44a51d37291220a9db3a83b74374b95",
+    "molsysmt": "e119953435a25c72e9a65b7428f74b1c2430b4f1",
+    "pyunitwizard": "02d0015fa7d3149d92c0e632b8e584f6a47c37dc",
+    "selected_viewer_input_count": 1142,
+    "provider_inputs_verified_after_receiving": 3167,
+    "changed_sources_sha256": {
+      "molsysviewer/session.py": "5d218f88ea9d475412bd8fbc4aa585f31554f6bd648cc45efee529532ce2313e",
+      "molsysviewer/viewer/core.py": "47d06ae5547ab110f0df5a6d2f7bca8baf59dfda4a61365cb38ea15d5abfd529",
+      "molsysviewer/js/src/ui/floating-data-card.ts": "77e7ee49e4fde545e2625a8de782e1da7151a42f2b0d8e8faed702186f2cbf5e",
+      "molsysviewer/js/src/ui/trajectory-plot-overlay.ts": "900a8c2987d71741361b01d576de30a2016989a975599245a699c07b98ad02d3",
+      "tests/test_session_member_integrity.py": "68b7ab8a09053e44f90e02fd356a987e7ea311896cdb6f96465a2cdd69d782e6",
+      "tests/test_view_close_failure.py": "e12394230943064dea6c85d3b6bb86799e2afbab7b84895411835a34f7442c6c",
+      "molsysviewer/viewer.js": "d40f970d3e3221914174bd190f5daf816863b2daad944c84a5a41de2ef3c03b3"
+    }
+  },
+  "python": {
+    "command": "python -m pytest --receptor=llm -o 'receptor_rerun_command=python -m pytest' tests/test_view_close_failure.py tests/test_view_lifecycle.py tests/test_view_presentations.py tests/test_new_view.py tests/test_addons.py tests/test_addon_panel_endpoints.py tests/test_addon_factory_failures.py tests/test_structure_transfer.py tests/test_trajectory_plot_lifecycle.py tests/test_qt_transport_contract.py tests/test_popup_snapshot_fidelity.py tests/test_runtime_router.py tests/test_popup_snapshot.py tests/test_popup_snapshot_completeness.py tests/test_runtime_seam_integration.py tests/test_session_member_integrity.py tests/test_session_bundle.py tests/test_session_rejection.py tests/test_state_rejection.py tests/test_state_v2.py tests/test_interactions_api.py tests/test_interactions_scene.py tests/test_source_records.py tests/test_public_api_hardening.py tests/test_public_api_inventory.py tests/test_argdigest_public_api.py",
+    "exit_code": 0,
+    "passed": 469,
+    "skipped": 1,
+    "skip_reason": "Legacy MolSysMT entry point is not installed",
+    "pytest_seconds": 136.71,
+    "selected_inputs_unchanged": true,
+    "warnings": {
+      "LegacyH5MSMWarning": 345,
+      "RegionOverlapWarning": 22,
+      "StateStructureDiffersWarning": 1
+    },
+    "log_sha256": "a926dfeeae7b65821ac03b14fc2042743cb5782ed1b2df2e94ed81af657ad4f8"
+  },
+  "browser": {
+    "command": "npm run test:e2e:trajectory-plot",
+    "exit_code": 0,
+    "seconds": 45.455201423028484,
+    "selected_inputs_unchanged": true,
+    "log_sha256": "d172eb07eb52614362af9ea7124434d6143be9a0876b343e09cf33660336ecdd",
+    "scope": "Actual Python authority navigation/source-and-popup geometry and static HTML; literal initial/updated/reopened/restored titles and ordinary plot input."
+  },
+  "js_unit": {
+    "command": [
+      "npm",
+      "run",
+      "test:js"
+    ],
+    "exit_code": 0,
+    "seconds": 10.175663013011217,
+    "scope": "Canonical bundled JS unit entry on integrated source; not a count of scientific tests."
+  },
+  "preservation": {
+    "human_sandbox_inputs_verified": 7,
+    "original_audit_inputs_retained": "Original 15 inputs remain in the separately approved E0 custody; authorized B1/integrity source has advanced.",
+    "metadata": "JS package version metadata unchanged; runtime regenerated with build:runtime."
+  },
+  "limits": [
+    "Scopes overlap and are not summed.",
+    "The prior full 44/44 core pass excludes A1/A3/A6. This receiving is the affected combined-source selection, not a second complete core run.",
+    "No new hosted CI dispatch, installed artifact, tag, package or 1.0 publication.",
+    "The authorized incremental commits carry [skip ci]; consolidated hosted receiving remains pending.",
+    "Qt headless component checks do not replace postponed visible-host/human receiving.",
+    "Progress remains 1/46 received; source implementation is not closure."
+  ]
+}
