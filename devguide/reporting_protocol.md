@@ -106,6 +106,20 @@ and interruption; browser/WebGL errors fail. No node suffix, wildcard or
 unregistered browser target is accepted. `tests/test_reporting_protocol.py`
 verifies this exact build/runner registration.
 
+### Trajectory plot authority browser guard profile
+
+The bounded selector `molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts` is
+accepted without node suffixes, globs or commands. From `molsysviewer/js`, run
+`npm run test:e2e:trajectory-plot`; the same entry is built by `build:e2e:all`
+and executed in `test:e2e:core`. Browser/WebGL failure is an error and an
+explicit opt-out is not passing evidence. The guard retains numeric drawing,
+axis and card-lifecycle checks and invokes its real Python-authority scenario.
+That scenario clicks actual SVG points, checks Python index/public callbacks,
+distinct molecular conformations and actual canvas-popup feedback. A local
+playhead or a test-constructed Python event alone cannot protect this boundary.
+`tests/test_reporting_protocol.py` checks the fixed entry, receiving/fixture
+owners, build and core registration; those checks establish addressability.
+
 ### Empty and shape-only workspace browser guard profile
 
 The bounded selector `molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts`

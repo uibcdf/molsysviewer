@@ -3,6 +3,7 @@ import process from "node:process";
 import { chromium } from "./e2e-browser";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
+import { checkTrajectoryPlotAuthority } from "./trajectory-plot-authority-scenarios";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -136,7 +137,8 @@ async function run() {
     });
     await other.waitFor({ state: "detached" });
 
-    await browser.close();
+    try { await checkTrajectoryPlotAuthority(page.context(), __dirname); }
+    finally { await browser.close(); }
 
     assert.strictEqual(errors.length, 0, `Console errors detected: ${errors.join("; ")}`);
     console.log("[E2E] passed");

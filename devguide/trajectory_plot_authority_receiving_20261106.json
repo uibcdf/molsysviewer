@@ -1,0 +1,60 @@
+{
+  "schema": "molsysviewer.trajectory_plot_authority_receiving@1",
+  "plan": "uibcdf/molsysviewer#315 / B1",
+  "issue": "uibcdf/molsysviewer#314",
+  "status": "source verified, delivery and applicable consolidated hosted receiving pending",
+  "source": {
+    "viewer_base": "e3cf77e0f95c2d1c927df118d0596bb5679ecd8d",
+    "selected_sources_sha256": {
+      "molsysviewer/js/src/managers/viewer-controller.ts": "ed5be176abbe9b08918f947a385fe0a5072b114db68727123638b4e8df9d0aff",
+      "molsysviewer/js/tests/e2e/trajectory-plot-authority-scenarios.ts": "623f22dc09e7306396e2dc5663e0d467a3174a980be5d5494bd190006b8fa6a0",
+      "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts": "19a30c5074555f85859abf9eb682dee20b36e712eb09e27b81e3ab1b7f0a13bb",
+      "molsysviewer/js/tests/e2e/trajectory-plot-bridge.py": "690c16bcf888285c2c50c06721cf2c87d7df975ca2ef60e2a7e58b79674b380f",
+      "molsysviewer/viewer.js": "920a9996742c3a40e863cdf0497b347cfe470c37414d4e329d376432a033c406"
+    },
+    "molsysmt": "e119953435a25c72e9a65b7428f74b1c2430b4f1",
+    "pyunitwizard": "02d0015fa7d3149d92c0e632b8e584f6a47c37dc"
+  },
+  "causal_red": {
+    "expected_python_structure": 1,
+    "observed_python_structure": 2,
+    "outcome": "failed before the production authority correction; preserved privately"
+  },
+  "original_broad_failure": {
+    "exit_code": 1,
+    "seconds": 1334.985,
+    "failed_suite": "43/44 trajectory-plot",
+    "expected_python_structure": 2,
+    "observed_python_structure": 1,
+    "log_sha256": "66104081352bb1ae90055868446d19f3df0597a68b074889471130d0855aec54"
+  },
+  "guard_repair": "Observe the actual frame intent entering the host model transport after an ordinary SVG click, then drain its queued Python responses before inspecting Python. Keep Python/callback/coordinate assertions unchanged.",
+  "directed": {
+    "command": "npm run test:e2e:trajectory-plot",
+    "exit_code": 0,
+    "seconds": 30.75178702082485
+  },
+  "core": {
+    "command": "npm run test:e2e:core",
+    "exit_code": 0,
+    "suites_passed": 44,
+    "suites_total": 44,
+    "seconds": 1367.6639586621895,
+    "started": "2026-11-06T23:55:15.694683+00:00",
+    "finished": "2026-11-07T00:18:03.364791+00:00",
+    "selected_inputs": 4305,
+    "inputs_unchanged": true,
+    "log_sha256": "306c4d6d603b8cc88b81730eb2bdaaf304170755d043cd31661b218ed9893439"
+  },
+  "additional_scopes": {
+    "prior_actual_jupyter": "R4/R5 retain all 17 checks on their declared sources; do not sum with core suites.",
+    "documentation_protocol": "357 cases pass on the current scoped record/index/architecture selection; separate from browser evidence."
+  },
+  "limits": [
+    "The complete core inputs exclude prepared A1/A3 and A6 corrections; do not present this run as their combined-source qualification.",
+    "A documentation-only commit changed HEAD while the core ran; all 4305 selected executable/test/provider inputs remained fixed. No unchanged-HEAD claim is made.",
+    "Controlled source receiving, not installed-package or postponed human/visible-Qt qualification.",
+    "Consolidated remote checkpoint remains pending; commits use the principal maintainer-authorized [skip ci] route.",
+    "The original broad failure and driver history remain retained, not relabelled as passes."
+  ]
+}

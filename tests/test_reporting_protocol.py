@@ -43,6 +43,7 @@ INTERACTIONS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/interactions-calculation
 COMPOSITE_LOAD_BROWSER_GUARD = "molsysviewer/js/tests/e2e/composite-load.e2e.ts"
 INITIAL_WELCOME_BROWSER_GUARD = "molsysviewer/js/tests/e2e/initial-welcome.e2e.ts"
 MOVIE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/movie-playback.e2e.ts"
+TRAJECTORY_PLOT_BROWSER_GUARD = "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts"
 CONTEXT_MENU_BROWSER_GUARD = "molsysviewer/js/tests/e2e/context-menu.e2e.ts"
 CONTROLS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/controls-visibility.e2e.ts"
 MANAGED_EDITS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/coordinate-edits.e2e.ts"
@@ -89,6 +90,7 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         COMPOSITE_LOAD_BROWSER_GUARD,
         INITIAL_WELCOME_BROWSER_GUARD,
         MOVIE_BROWSER_GUARD,
+        TRAJECTORY_PLOT_BROWSER_GUARD,
         CONTEXT_MENU_BROWSER_GUARD,
         CONTROLS_BROWSER_GUARD,
         MANAGED_EDITS_BROWSER_GUARD,
@@ -207,6 +209,20 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             (js_root / "tests/e2e/canvas-popup-mirror-scenarios.ts").is_file(),
             (js_root / "tests/e2e/canvas-popup-fixture.ts").is_file(),
             (js_root / "tests/e2e/canvas-popup-bridge.py").is_file(),
+        )
+    elif selector == TRAJECTORY_PLOT_BROWSER_GUARD:
+        try:
+            receiving = (js_root / "tests/e2e/trajectory-plot-authority-scenarios.ts").read_text(encoding="utf-8")
+        except OSError as error:
+            return [f"guard {selector!r} has no plot-authority receiving owner: {error}"]
+        requirements += (
+            'import { checkTrajectoryPlotAuthority } from "./trajectory-plot-authority-scenarios";' in entry,
+            "await checkTrajectoryPlotAuthority(page.context(), __dirname);" in entry,
+            "export async function checkTrajectoryPlotAuthority(" in receiving,
+            "PythonFixtureBridge" in receiving,
+            "await svg.click({ position });" in receiving,
+            "await mountCanvasPopupFixture(" in receiving,
+            (js_root / "tests/e2e/trajectory-plot-bridge.py").is_file(),
         )
     else:
         requirements += (
@@ -539,6 +555,7 @@ def test_browser_guard_resolves_its_build_entrypoint_and_core_lane() -> None:
     assert validate_guard(ROOT, COMPOSITE_LOAD_BROWSER_GUARD) == []
     assert validate_guard(ROOT, INITIAL_WELCOME_BROWSER_GUARD) == []
     assert validate_guard(ROOT, MOVIE_BROWSER_GUARD) == []
+    assert validate_guard(ROOT, TRAJECTORY_PLOT_BROWSER_GUARD) == []
     assert validate_guard(ROOT, CONTEXT_MENU_BROWSER_GUARD) == []
     assert validate_guard(ROOT, CONTROLS_BROWSER_GUARD) == []
     assert validate_guard(ROOT, MANAGED_EDITS_BROWSER_GUARD) == []
@@ -565,6 +582,8 @@ def test_browser_guard_rejects_missing_or_unadopted_targets(tmp_path: Path) -> N
     assert validate_guard(tmp_path, INITIAL_WELCOME_BROWSER_GUARD)
     assert validate_guard(ROOT, INITIAL_WELCOME_BROWSER_GUARD + "::checkInitialView")
     assert validate_guard(tmp_path, MOVIE_BROWSER_GUARD)
+    assert validate_guard(tmp_path, TRAJECTORY_PLOT_BROWSER_GUARD)
+    assert validate_guard(ROOT, TRAJECTORY_PLOT_BROWSER_GUARD + "::run")
     assert validate_guard(tmp_path, CONTROLS_BROWSER_GUARD)
     assert validate_guard(tmp_path, MANAGED_EDITS_BROWSER_GUARD)
     assert validate_guard(ROOT, MANAGED_EDITS_BROWSER_GUARD + "::run")

@@ -138946,6 +138946,26 @@ function decodePopupEvent(event, expectedSource, expectedChannel, expectedEndpoi
   return message;
 }
 
+// src/messages/trajectory-intent.ts
+function trajectorySyncToAuthority(msg) {
+  if (msg.op === "set_trajectory_frame") {
+    return { event: "interaction_context_action", action: msg.op, index: msg.index };
+  }
+  if (msg.op === "step_trajectory") {
+    return { event: "interaction_context_action", action: msg.op, by: msg.by };
+  }
+  if (msg.op === "set_trajectory_playback") {
+    return {
+      event: "interaction_context_action",
+      action: msg.op,
+      playback_action: msg.action,
+      ...msg.fps === void 0 ? {} : { fps: msg.fps },
+      ...msg.step === void 0 ? {} : { step: msg.step }
+    };
+  }
+  return null;
+}
+
 // node_modules/molstar/lib/mol-plugin-state/animation/built-in/assembly-unwind.js
 var AnimateAssemblyUnwind = PluginStateAnimation.create({
   name: "built-in.animate-assembly-unwind",
@@ -167036,6 +167056,8 @@ var MolSysViewerController = class _MolSysViewerController {
     this.legendOverlay = new LegendOverlay(host);
     this.trajectoryPlotOverlay = new TrajectoryPlotOverlay(host, (frame) => {
       void this.trajectory.setTrajectoryFrame(frame);
+      const intent = trajectorySyncToAuthority({ op: "set_trajectory_frame", index: frame });
+      if (intent) this.notify?.(intent);
     }, void 0, (tag) => this.notify?.({ event: "trajectory_plot_hidden", tag }));
     this.webglStatusOverlay = new WebGLStatusOverlay(host);
     this.systemSyncOverlay = new SystemSyncOverlay(host, () => this.notify?.({
@@ -170805,26 +170827,6 @@ async function handleFrontendRequest(controller, message, send) {
   };
   if (typeof result2 === "string" && result2) send({ ...metadata, data_uri: result2 });
   else if (result2 && typeof result2 === "object" && result2.success === false) send({ ...result2, ...metadata });
-}
-
-// src/messages/trajectory-intent.ts
-function trajectorySyncToAuthority(msg) {
-  if (msg.op === "set_trajectory_frame") {
-    return { event: "interaction_context_action", action: msg.op, index: msg.index };
-  }
-  if (msg.op === "step_trajectory") {
-    return { event: "interaction_context_action", action: msg.op, by: msg.by };
-  }
-  if (msg.op === "set_trajectory_playback") {
-    return {
-      event: "interaction_context_action",
-      action: msg.op,
-      playback_action: msg.action,
-      ...msg.fps === void 0 ? {} : { fps: msg.fps },
-      ...msg.step === void 0 ? {} : { step: msg.step }
-    };
-  }
-  return null;
 }
 
 // src/messages/frontend-scene-projection.ts

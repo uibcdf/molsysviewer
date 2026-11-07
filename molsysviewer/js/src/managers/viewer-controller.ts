@@ -1,6 +1,7 @@
 import { getFloatingPanelSize } from "../ui/floating-panel-layout";
 import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { createSecureRuntimeId } from "../messages/popup-channel";
+import { trajectorySyncToAuthority } from "../messages/trajectory-intent";
 import { DefaultPluginSpec } from "molstar/lib/mol-plugin/spec";
 import { PluginBehaviors } from "molstar/lib/mol-plugin/behavior";
 import { StateObjectRef } from "molstar/lib/mol-state";
@@ -1103,6 +1104,10 @@ export class MolSysViewerController {
         this.legendOverlay = new LegendOverlay(host);
         this.trajectoryPlotOverlay = new TrajectoryPlotOverlay(host, (frame) => {
             void this.trajectory.setTrajectoryFrame(frame);
+            // A plot click is the same user navigation intent as the slider.
+            // Keep raw/render projections silent to avoid authority feedback.
+            const intent = trajectorySyncToAuthority({ op: "set_trajectory_frame", index: frame });
+            if (intent) this.notify?.(intent);
         }, undefined, tag => this.notify?.({ event: "trajectory_plot_hidden", tag }));
         this.webglStatusOverlay = new WebGLStatusOverlay(host);
         this.systemSyncOverlay = new SystemSyncOverlay(host, () => this.notify?.({
