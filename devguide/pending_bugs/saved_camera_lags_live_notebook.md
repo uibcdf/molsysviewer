@@ -22,8 +22,8 @@ pending. No scientific provider algorithm needs changing. The
 [source receiving receipt](../live_state_capture_receiving_20261106.json)
 separates historical and current Python selections, actual Jupyter/full Studio
 receiving and retained failures. `e9def4ad` is the earlier Python/primary-renderer
-checkpoint; the working source additionally receives Studio and addressed popup
-saves. The first complete core Python run ends with 3,750 passes, five failures
+checkpoint; `5148b6c5` delivers the additionally received Studio and
+addressed-popup foundation. The first complete core Python run ends with 3,750 passes, five failures
 and 22 skips. All five have passing scoped corrections; the complete source
 repeat passes with **3,760 passed, zero failures/errors, 22 skips and 16 explicit
 deselections**, in 748.66 s. All 5,401 selected files remain unchanged from the

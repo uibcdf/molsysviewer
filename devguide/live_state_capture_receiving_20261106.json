@@ -507,7 +507,7 @@
       "off_host_backup_claimed": false,
       "scope": "Terminal full core runs and retained failures, addon/fallback receiving, before-draw regression, private Qt/playback proposal and B2 observation/duplicate review."
     },
-    "delivery_state": "Reviewed foundation source ready for integration; native/playback/before-draw and consolidated acceptance remain open.",
+    "delivery_state": "Reviewed foundation committed on main with [skip ci]; A5 remains partial and hosted/installed acceptance pending.",
     "integration_documentation": {
       "native_exit": 0,
       "passed": 584,
@@ -526,6 +526,7 @@
         0
       ],
       "human_sandbox_files_unchanged": 7
-    }
+    },
+    "source_delivery_commit": "5148b6c5b105ba65695c07bde827a9de256348c6"
   }
 }
