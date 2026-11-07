@@ -94,8 +94,9 @@ passes, including revised-label GPU picks and markers. Its Jupyter step fails
 before launch because this source environment omitted JupyterLab; this is a
 new diagnostic acquisition omission, not the original browser cause. The
 correction declares JupyterLab/psutil, has a failing-before/passing-after
-regression and passes 89 workflow/dependency checks. A corrected diagnostic
-follows reviewed delivery; no full matrix or release acceptance is claimed.
+regression and passes 89 workflow/dependency checks. The corrected diagnostic
+`42396548782` receives source `aefbf992`; its observed state is in progress,
+without a result yet. No full matrix or release acceptance is claimed.
 See the [diagnostic receipt](../hosted_receiving_diagnostics_20261107.json).
 
 The reviewed correction is published as `e4dd58cf`, with `[skip ci]`. Its one

@@ -63,7 +63,7 @@
   ],
   "remote_dispatch_performed": true,
   "remaining": [
-    "Deliver the source diagnostic acquisition correction and inspect one corrected diagnostic, not a full matrix.",
+    "Inspect the single corrected-acquisition source diagnostic 42396548782; no automatic retries.",
     "Diagnose original hosted Jupyter cause and obtain an evidenced cause/disposition for the earlier pick failure; later passes alone do not close it.",
     "Complete remaining original full acceptance separately."
   ],
@@ -162,5 +162,13 @@
       "seconds": 12.7
     },
     "next": "Reviewed source delivery, then one diagnostic replacement with corrected acquisition; preserve previous run."
+  },
+  "corrected_acquisition_diagnostic": {
+    "run_id": 42396548782,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/42396548782",
+    "exact_source": "aefbf992058c589ce089ee992778469dc2d45f3d",
+    "observed_status": "in_progress",
+    "conclusion": null,
+    "scope": "One corrected-acquisition Linux diagnostic; first run preserved; no full matrix/candidate/publication."
   }
 }
