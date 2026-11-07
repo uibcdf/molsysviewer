@@ -1,0 +1,133 @@
+{
+  "schema": "molsysviewer.robustness_hosted_checkpoint@1",
+  "observed_at": "2026-11-07T06:43:31.897888+00:00",
+  "plan": "uibcdf/molsysviewer#315",
+  "source_commit": "ebe3d46be7422fe402151fc6ecf7bd1215c3d30d",
+  "ci_head": "9a569c55c02f114908aba24dc5422790c7eccacf",
+  "code_and_tests_unchanged_from_source_commit": true,
+  "dispatches_once_each": true,
+  "scope": "General CI8cells, core E2E, minimum-public-provider source pair3platforms/Python3.14; no staging/install16cell/candidate/release qualification.",
+  "source_pair": {
+    "source_receiving": true,
+    "molsysmt_sha": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+    "pandas": "2.3.3",
+    "local_e119_addon_pair_qualified": false
+  },
+  "reporter": {
+    "published_gh_extension": "1.1.1",
+    "development_python_module_used": false,
+    "initial_sandbox_acquisition_failed": true,
+    "ordinary_host_network_read_passed": true
+  },
+  "publication": "paused; no tags, releases, packages or promotions",
+  "status": "in progress; no terminal acceptance yet",
+  "source_trees": {
+    "molsysviewer": "d54de5f690356c0ecbc5ae9a08fdfacbc69e4fa5",
+    "tests": "adfdbaf8a7e93fa1d5d6345067f5a0d4b879014c"
+  },
+  "runs": [
+    {
+      "databaseId": 42348051898,
+      "name": "CI",
+      "status": "queued",
+      "conclusion": "",
+      "event": "workflow_dispatch",
+      "headSha": "9a569c55c02f114908aba24dc5422790c7eccacf",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/42348051898",
+      "jobs": [
+        {
+          "name": "Test on macos-15, Python 3.13",
+          "status": "queued",
+          "conclusion": ""
+        },
+        {
+          "name": "Test on macos-15, Python 3.12",
+          "status": "queued",
+          "conclusion": ""
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.14",
+          "status": "in_progress",
+          "conclusion": ""
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.12",
+          "status": "in_progress",
+          "conclusion": ""
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.11",
+          "status": "in_progress",
+          "conclusion": ""
+        },
+        {
+          "name": "Test on macos-15, Python 3.11",
+          "status": "queued",
+          "conclusion": ""
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.13",
+          "status": "in_progress",
+          "conclusion": ""
+        },
+        {
+          "name": "Test on macos-15, Python 3.14",
+          "status": "queued",
+          "conclusion": ""
+        },
+        {
+          "name": "Check skipped-commit backlog",
+          "status": "completed",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "databaseId": 42348064230,
+      "name": "CI_e2e",
+      "status": "in_progress",
+      "conclusion": "",
+      "event": "workflow_dispatch",
+      "headSha": "9a569c55c02f114908aba24dc5422790c7eccacf",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/42348064230",
+      "jobs": [
+        {
+          "name": "Core E2E",
+          "status": "in_progress",
+          "conclusion": ""
+        },
+        {
+          "name": "Check skipped-commit backlog",
+          "status": "completed",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "databaseId": 42348065524,
+      "name": "Python 3.14 source pair",
+      "status": "queued",
+      "conclusion": "",
+      "event": "workflow_dispatch",
+      "headSha": "9a569c55c02f114908aba24dc5422790c7eccacf",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/42348065524",
+      "jobs": [
+        {
+          "name": "Source pair on macos-15, Python 3.14",
+          "status": "queued",
+          "conclusion": ""
+        },
+        {
+          "name": "Source pair on windows-2025, Python 3.14",
+          "status": "in_progress",
+          "conclusion": ""
+        },
+        {
+          "name": "Source pair on ubuntu-latest, Python 3.14",
+          "status": "in_progress",
+          "conclusion": ""
+        }
+      ]
+    }
+  ]
+}

@@ -174,6 +174,17 @@ unexplained. No candidate/tag/package/publication action follows from this
 source checkpoint. After delivering this batch, continue the original plan and
 Movie; A5 still needs continuous-playback/hidden-endpoint and broader acceptance.
 
+The [consolidated hosted checkpoint](../robustness_hosted_checkpoint_20261107.json)
+is now active on `9a569c55c02f114908aba24dc5422790c7eccacf`, whose code/test trees
+are identical to the delivered source commit: [CI 42348051898](https://github.com/uibcdf/molsysviewer/actions/runs/42348051898),
+[core E2E 42348064230](https://github.com/uibcdf/molsysviewer/actions/runs/42348064230)
+and [Python 3.14 source pair 42348065524](https://github.com/uibcdf/molsysviewer/actions/runs/42348065524).
+Each was dispatched once. The pair checks the exact public minimum-provider
+source `46ef28eb`, not the still-undelivered e119 addon contribution. All
+results are pending; this is source compatibility receiving, not candidate,
+installed-artifact or publication qualification. Subsequent ledger-only commits
+retain this exact CI head and need their scoped documentation checks.
+
 The maintainer correctly identified that reporting final acceptance alone hides
 delivered work and does not help steer daily execution. It also exposed slow
 consolidation: completed corrections have accumulated while difficult camera
