@@ -67,7 +67,7 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
-**Next actions:** investigate A5's save-camera policy, then B2's numeric labels
+**Next actions:** complete A5's approved coherent live capture/save integration, then B2's numeric labels
 and the remaining DataCard lifecycle work. A1/A3 source and guards are delivered
 in `38eb8785`, following explicit maintainer disclosure review; advisory drafts
 and unrestricted evidence stay private. A6/#318 is delivered in `1ea6b26e`;
@@ -89,7 +89,7 @@ E0 custody and the publication/human-review pauses retain their separate scope.
 
 | Block | Current status | Owner and tracking | Exit evidence |
 | --- | --- | --- | --- |
-| A — integrity, restoration and cleanup | A1–A4/A6 source-delivered and verified; consolidated hosted acceptance pending; A5 remains investigation | Viewer; #316/#317/#318 and private handling under #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
+| A — integrity, restoration and cleanup | A1–A4/A6 source-delivered and verified; consolidated hosted acceptance pending; A5/#319 has approved capture/save direction and partial Python/Jupyter source receiving | Viewer; #316/#317/#318/#319 and private handling under #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
 | B — plots and DataCards | #314 delivered; complete B1 core 44/44 and combined affected guard pass; original broad failure retained; precision, provenance and card follow-up pending | Viewer and scientific producer; #314, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
 | C — contribution and host integration | Reconciled addon committed locally; remote PR older and reported conflicting; source gates incomplete | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421 and PR #543 | Reviewed delivery, current controlled pair, relevant full/hosted outcomes and explained failures |
 | D — scientific prerequisites and approved GUI families | Partial implementation; provider corrections and several task families remain | MolSysMT owns science; addon owns tasks; #264/#315 and uibcdf/molsysmt#421 | Received native fixes plus every required family/effect, without hidden preparation or copied algorithms |
@@ -98,6 +98,13 @@ E0 custody and the publication/human-review pauses retain their separate scope.
 | G — covering artifact and installed qualification | Pending; candidate/publication actions paused | Viewer #294; coordinated provider/downstream receiving | Authorized exact producer/files, clean installed checks and required distribution evidence |
 
 ### Execution progress
+
+**Additional maintainer requirement, 2026-11-06:** [#320's movie authoring,
+export and future-agent timeline](pre_1_0_movie_authoring_export_and_agent_timeline.md)
+is a separate explicitly requested pre-1.0 stream. The original audit denominator
+below is unchanged; it does not include this newly requested work or measure
+total 1.0 readiness. Reconcile the new inventory and deliverables before adopting
+a consolidated work breakdown; do not silently drop it or mark it complete.
 
 **Current: 1/46 received work items, 2.2%; baseline 0/46 on activation.** E0's
 approved private transfer and actual restore are received. This measures completion of the
@@ -172,7 +179,7 @@ values to the reporting protocol.
 | A1/A3 | P1 integrity; affected covering artifact and 1.0 | Viewer; private advisory drafts registered under #315 | Delivered in `38eb8785`; combined source receiving passes; consolidated hosted checkpoint pending |
 | A2 | P1 scene rejection; affected covering artifact and 1.0 | Viewer; #317, implemented/source-verified | Final 180-case source selection includes direct/file rejection, real target conflicts and diagnostics; applicable hosted receiving remains |
 | A4 | P2 lifecycle; affected covering artifact and 1.0 | Viewer; #316, delivered/source-verified | Six real failure cases first reproduced the leak; 19 factory and 73 related checks pass. Applicable hosted receiving remains |
-| A5–A6 | P2; A5 investigation, A6 source-verified | Viewer; A6/#318 | A6 delivered in `1ea6b26e`, combined receiving passes; A5 needs actual camera evidence or an evidenced disposition; consolidated hosted acceptance remains |
+| A5–A6 | P2; A5/#319 partial implementation, A6 source-verified | Viewer; #319/#318 | A5's coherent capture/save direction is approved and its first Python/Jupyter paths are exercised; retain later diagnostic failures and remaining GUI/native receiving. A6 is delivered in `1ea6b26e`; consolidated hosted acceptance remains |
 | B1–B2 | P1 scientific reading/navigation; affected covering artifact and 1.0 | Viewer; #314 and a scoped precision report | Correlated Python/render acceptance and numerical-label truth; retain original failed runs |
 | B3.1–B3.5 | P2 robustness; applicable candidate/1.0 scope | Viewer; split by mechanism under #315 | Reproduce each inspected path, then receive its window/title/layout/keyboard/cleanup outcome |
 | B3.6, B4, E3, F1 | Scope/design decision; not an automatic release gate | Principal maintainer decides scope; relevant owner implements | Record accept/reject/defer and contract before implementation; accepted work gains its explicit milestone and guard |
@@ -240,7 +247,7 @@ original producers and scopes.
 | **A2 — corrected in `ef7b1348`, hosted checkpoint pending** | A rejected `import_state` clears an existing region before discovering an invalid section normal; molecular coordinates remain intact, but the scene changes after failure. Source: [state owner](../../molsysviewer/viewer/state.py), `import_state` / `_restore_sections`. | Complete validation before publishing, or provide a qualified restoration transaction. Test direct import and `load_state`, clear/merge/conflict modes, invalid later objects, history and handle validity. Preserve the semantic scene and relevant resources while retaining monotonic UID/tag/order high-water marks; rejection must not make identities reusable. Closed #127 protects `load_session`'s candidate route, not this direct-state path. |
 | **A3 — corrected in `38eb8785`, hosted checkpoint pending** | A real DataCard popup parses an inert title marker as markup, while the original card shows literal text. Source: [DataCard](../../molsysviewer/js/src/ui/floating-data-card.ts), `openPopoutWindow`. Executable injection scope was not tested. | Use literal title/header handling consistently; review disclosure privately. Guard initial/restored/updated titles, special characters, ordinary popup input and original/popup parity without executable test payloads. |
 | **A4 — corrected in `611c1574`, hosted checkpoint pending** | `new_view` with a failing selection leaves one unreturned open View and two registered widgets. Source: [factory](../../molsysviewer/new_view.py). Repeated ordinary errors can retain resources. | Close the factory-owned View on initialization failure, preserving the original error. Never close a caller-supplied View. Guard invalid selection, conversion/load rejection, repeated failures and restored widget/resource ownership with real demos. |
-| **A5 — inspected, investigate** | `save_state` asks for a fresh camera; `save_session` delegates to cached state. Immediate save after camera movement may differ within the debounce interval. This is an inspected asymmetry, not a reproduced camera-loss finding. | Reproduce from notebook and popup with actual camera movement and saved/recovered vantage points. Agree one capture policy and preserve the appropriate headless behavior. Share the qualified mechanism where applicable. |
+| **A5 — reproduced, partial, #319** | Actual notebook/popup rotation reproduces four stale synchronous saves. The maintainer approved coherent awaitable capture/save plus automatic Studio capture; the first Python implementation passes four actual Jupyter save/restore cases with fixed inputs. | [Capture contract and remaining work](../pending_bugs/saved_camera_lags_live_notebook.md): complete Studio/addressed popup/native/cancellation/playback receiving and a durable real-renderer guard; retain synchronous/headless saving. A5 is not closed or counted received. |
 | **A6 — corrected in `1ea6b26e`, #318** | An actual provider panel close error leaves six owned widgets/layouts registered, another panel mounted and both View links retained; retry returns early. Ordinary successful closes are not claimed to fail. | [Independent cleanup and retry receiving](../pending_bugs/view_close_failure_blocks_cleanup.md), including actual provider/transport failures, unrelated View preservation and observable diagnostics. |
 
 Register scoped reports after duplicate review, including related closed #127

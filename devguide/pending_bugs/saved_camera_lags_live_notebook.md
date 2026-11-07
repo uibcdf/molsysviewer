@@ -21,6 +21,8 @@ accepted 1.0 scope. Core/Studio/native/hosted acceptance and closure remain
 pending. No scientific provider algorithm needs changing. The
 [source receiving receipt](../live_state_capture_receiving_20261106.json)
 separates the 172 Python passes, actual Jupyter receiving and retained failures.
+Reviewed Python/primary-renderer source is committed as `e9def4ad`; remaining
+graphical/native/combined acceptance is not implied by that checkpoint.
 
 ## Observation and duplicate review
 

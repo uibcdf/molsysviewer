@@ -205,7 +205,9 @@
   ],
   "delivery": {
     "route": "Principal-maintainer-authorized direct main commit/push with [skip ci]; no owner repository changes.",
-    "state": "Prepared for reviewed source checkpoint; containing Git commit identifies delivery."
+    "state": "Reviewed source committed; overall A5 acceptance remains partial.",
+    "commit": "e9def4adc61124dd1986326c70452768e72a757b",
+    "hosted_checkpoint": "Pending; no new dispatch, retry or cancellation."
   },
   "custody": {
     "schema": "molsysviewer.private_capture_custody_receipt@1",

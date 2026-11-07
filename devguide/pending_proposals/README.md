@@ -42,10 +42,11 @@ archived documents link there; its location does not reopen its release scope.
 
 - [`molsysmt_known_source_form_and_large_string_detection.md`](molsysmt_known_source_form_and_large_string_detection.md) — [#42](https://github.com/uibcdf/molsysviewer/issues/42) — Adopt a public source-form hint when MolSysMT provides it; historical extension detection is repaired. *(measured)* — waiting on uibcdf/molsysmt#151
 
-### Open (3)
+### Open (4)
 
 - [`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md) — [#39](https://github.com/uibcdf/molsysviewer/issues/39) — Build the runtime as a classic script so many shared views open from a disk with no server. *(measured)*
 - [`molsysmt_docs_pipeline_analysis.md`](molsysmt_docs_pipeline_analysis.md) — [#41](https://github.com/uibcdf/molsysviewer/issues/41) — MolSysMT's documentation pipeline read at the scale it is about to reach. *(measured)*
+- [`pre_1_0_movie_authoring_export_and_agent_timeline.md`](pre_1_0_movie_authoring_export_and_agent_timeline.md) — [#320](https://github.com/uibcdf/molsysviewer/issues/320) — Complete movie authoring and useful export before 1.0, with a timeline future agents can consume. *(inspected)*
 - [`pytest_xdist_receiver_thread_report.md`](pytest_xdist_receiver_thread_report.md) — [#80](https://github.com/uibcdf/molsysviewer/issues/80) — Decide whether to report pytest-xdist receiver-thread warning imports upstream *(inspected)*
 
 ### Deferred until after 1.0 (23)

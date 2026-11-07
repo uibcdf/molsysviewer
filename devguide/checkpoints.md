@@ -918,8 +918,25 @@ skip, its affected real-browser entry and canonical JS unit entry; see the
 [combined receipt](robustness_combined_source_receiving_20261106.json).
 Advisory drafts and unrestricted evidence stay private. Incremental commits
 carry the principal maintainer's explicit `[skip ci]`; batch pushes do not
-dispatch CI for each change. Next: A5 camera capture, B2 precision and remaining
+dispatch CI for each change. A5 is now reproduced under #319; the maintainer
+approved coherent awaitable capture/save and automatic Studio capture. The
+Python source checkpoint `e9def4ad` receives 172 directed Python cases, four real
+Jupyter save/restore cases and a subsequent settled save after popup closure;
+the lock-publication race has a causal regression. The
+[A5 receipt](live_state_capture_receiving_20261106.json) preserves the original
+failures and separate scopes. Studio/addressed popups/Qt/cancellation and
+durable real-renderer receiving remain open in the
+[A5 report](pending_bugs/saved_camera_lags_live_notebook.md).
+Next: complete A5, B2 precision and remaining
 DataCard receiving; keep the agreed substantive hosted checkpoint pending.
+
+**Additional pre-1.0 requirement — Movie, #320:** the maintainer now requires
+complete useful authoring/export and a timeline future agent components can
+consume. [The separate stream](pending_proposals/pre_1_0_movie_authoring_export_and_agent_timeline.md)
+tracks existing Movie source versus the new workflow. Natural-language planning
+is post-1.0; core Movie does not gain an LLM dependency. The original 46-item
+audit percentage is unchanged and is not total release readiness. No Movie
+production code changes or publication authorization accompany this issue.
 
 [Viewer #314](pending_bugs/trajectory_plot_seek_skips_python_authority.md) has a
 delivered causal correction and isolated/actual-Jupyter passes. Its original

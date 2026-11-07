@@ -1,9 +1,13 @@
 # VISION: `MolSysMovie` - Cinematic and VR Molecular Animation
 
-> **Roadmap Status:** The core implementation has been promoted to **Pre-1.0**.
-> See the archived [`molsysmovie_plan.md`](archive/molsysmovie_plan.md) for the concrete architecture
-> and phased plan. The VR/360° export direction (Phase 4 of the original vision)
-> remains Post-1.0.
+> **Roadmap status:** `view.movie` has an implemented core, but the complete
+> authoring/export workflow is now an explicit **pre-1.0** requirement under
+> [#320](https://github.com/uibcdf/molsysviewer/issues/320). Follow the
+> [current execution record](pending_proposals/pre_1_0_movie_authoring_export_and_agent_timeline.md).
+> The archived [`molsysmovie_plan.md`](archive/molsysmovie_plan.md) records the
+> earlier implementation; it does not certify the expanded workflow. Agent-based
+> natural-language planning and VR/360 remain post-1.0. The class names and rich
+> syntax below are vision examples, not the current public API.
 
 ## Problem Statement
 `MolSysView` is excellently designed for interactive exploration, structural analysis, and static scene composition. However, creating complex animations—such as panning the camera, fading regions in and out, dynamically changing lighting, or animating measurements over time—requires a fundamentally different mental model. Forcing a timeline and keyframe logic into the interactive `MolSysView` would bloat the API and confuse the user experience.
