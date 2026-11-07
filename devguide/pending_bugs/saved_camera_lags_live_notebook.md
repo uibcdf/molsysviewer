@@ -15,6 +15,19 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
+## Current trajectory-shape prerequisite — 2026-11-07
+
+Bounded child #328 now preserves the latest requested frame through overlapping
+shape refreshes and first shape creation after navigation. All 374 canonical
+Node cases pass; the completed-draw pentalanine guard fails against the previous
+runtime and passes with the correction. Full Studio receiving passes in 210.33
+seconds with 4,303 unchanged inputs and all nineteen owned processes closed.
+See the [archived resolution](../archive/trajectory_shape_refresh_loses_latest_frame.md)
+and [receiving record](../trajectory_shape_refresh_receiving_20261107.json).
+Its private applied-frame readiness is a prerequisite, not advertised moving
+capture support. A5 retains continuous-playback/hidden-endpoint work and the
+unexplained earlier actual-Jupyter restoration failure; progress stays 8/46.
+
 ## Current completed-draw sampling correction — 2026-11-07
 
 The moving-timeline review reproduces another ordering defect: the capture

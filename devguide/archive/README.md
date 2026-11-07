@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Trajectory-shape convergence](trajectory_shape_refresh_loses_latest_frame.md) — #328 coalesces overlapping updates to the latest frame and creates first shapes on the actual frame, guarded by real pentalanine meshes and completed draws.
+
 - [Simulation-box persistence](box_display_missing_from_saved_work.md) — #326 retains semantic cell display through state/session, extraction and history, with real completed-draw restoration.
 - [Simulation-box stroke units](box_display_width_units.md) — #327 converts explicit physical lengths, rejects invalid widths without scene changes and receives actual mesh widths.
 

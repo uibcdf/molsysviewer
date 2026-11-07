@@ -1,5 +1,6 @@
 import { checkStudioCardDefaults } from "./studio-card-scenarios";
 import { checkStudioLiveCapture } from "./studio-live-capture-scenarios";
+import { checkTrajectoryShapeRefresh } from "./trajectory-shape-refresh-scenarios";
 import assert from "node:assert/strict";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -313,6 +314,8 @@ async function run() {
         const livePage = await page.context().newPage();
         try { await checkStudioLiveCapture(livePage, dir, downloadDir); }
         finally { await livePage.close(); }
+        await checkTrajectoryShapeRefresh(page, dir);
+        assert.deepEqual(errors, []);
         console.log("[E2E Studio] real PNG/HTML downloads, transparency, native labels, compact navigation, floating bounds, disposal and discovered addon catalogue passed");
     } finally {
         try { await browser.close(); } finally {

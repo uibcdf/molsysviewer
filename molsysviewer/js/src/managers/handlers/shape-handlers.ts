@@ -48,6 +48,7 @@ type RegisterRefCallback = (ref: StateObjectRef | undefined, tag?: string) => vo
 export interface ShapeHandlersContext {
     clearByTag: (tag: string) => Promise<void>;
     subscribeToTrajectoryState?: (cb: (frame: number) => void) => () => void;
+    getCurrentFrame?: () => number;
     notifyShapeRenderStatus?: (status: TrajectoryShapeRenderStatus) => void;
 }
 
@@ -72,6 +73,9 @@ export class ShapeHandlers {
     private trajectoryUnsub?: () => void;
     private currentFrame = 0;
     private frameUpdateInProgress = false;
+    private frameRefresh?: Promise<void>;
+    private renderedFrame?: number;
+    private frameRefreshFailed = false;
     private readonly lastRenderStatus = new Map<string, TrajectoryShapeRenderStatus>();
 
     constructor(
@@ -91,6 +95,7 @@ export class ShapeHandlers {
     }
 
     private storeTrajectoryShape(tag: string, op: string, baseOptions: Record<string, any>, framesCoords: Array<any | null>) {
+        this.currentFrame = this.context?.getCurrentFrame?.() ?? this.currentFrame;
         this.trajectoryShapes.set(tag, { op, baseOptions, framesCoords });
         this.ensureTrajectorySubscription();
     }
@@ -107,6 +112,8 @@ export class ShapeHandlers {
 
     private emitRenderStatus(status: TrajectoryShapeRenderStatus) {
         const previous = this.lastRenderStatus.get(status.tag);
+        // Suppress duplicate notifications, not the latest applied-frame fact.
+        this.lastRenderStatus.set(status.tag, status);
         if (
             previous &&
             previous.status === status.status &&
@@ -116,31 +123,70 @@ export class ShapeHandlers {
         ) {
             return;
         }
-        this.lastRenderStatus.set(status.tag, status);
         this.context?.notifyShapeRenderStatus?.(status);
     }
 
-    private async applyFrame(frame: number) {
-        if (this.frameUpdateInProgress) return;
-        this.frameUpdateInProgress = true;
-        try {
-            for (const [tag, entry] of this.trajectoryShapes) {
-                const fc = entry.framesCoords[frame] ?? null;
-                await this.context!.clearByTag(tag);
-                if (fc === null) {
-                    this.emitRenderStatus(this.makeStatus(tag, entry.op, frame, "missing-frame-data"));
-                    continue;
-                }
-                try {
-                    const status = await this.renderTrajectoryFrame(tag, entry.op, entry.baseOptions, fc, frame);
-                    if (status) this.emitRenderStatus(status);
-                } catch (err) {
-                    const reason = err instanceof Error ? err.message : String(err);
-                    this.emitRenderStatus(this.makeStatus(tag, entry.op, frame, "render-error", { reason }));
-                }
+    isFrameReady(frame: number): boolean {
+        if (this.trajectoryShapes.size === 0) return true;
+        if (
+            this.frameUpdateInProgress || this.frameRefreshFailed || this.currentFrame !== frame
+            || (this.renderedFrame !== undefined && this.renderedFrame !== frame)
+        ) return false;
+        for (const tag of this.trajectoryShapes.keys()) {
+            const status = this.lastRenderStatus.get(tag)?.status;
+            if (status === "render-error" || status === "missing-structure" || status === "invalid-indices") {
+                return false;
             }
+        }
+        return true;
+    }
+
+    private applyFrame(frame: number): Promise<void> {
+        this.currentFrame = frame;
+        if (this.frameRefresh) return this.frameRefresh;
+        let resolve!: () => void, reject!: (error: unknown) => void;
+        const pending = new Promise<void>((accept, refuse) => { resolve = accept; reject = refuse; });
+        this.frameRefresh = pending;
+        this.frameUpdateInProgress = true;
+        void this.refreshLatestFrame().then(resolve, reject);
+        return pending;
+    }
+
+    private async refreshLatestFrame(): Promise<void> {
+        try {
+            let frame: number;
+            do {
+                frame = this.currentFrame;
+                await this.renderFrame(frame);
+                this.renderedFrame = frame;
+            } while (frame !== this.currentFrame);
+            this.frameRefreshFailed = false;
+        } catch (error) {
+            this.frameRefreshFailed = true;
+            throw error;
         } finally {
+            // No await between the final target check and retirement: a later
+            // request must start its own owner rather than join a finished one.
+            this.frameRefresh = undefined;
             this.frameUpdateInProgress = false;
+        }
+    }
+
+    private async renderFrame(frame: number): Promise<void> {
+        for (const [tag, entry] of this.trajectoryShapes) {
+            const fc = entry.framesCoords[frame] ?? null;
+            await this.context!.clearByTag(tag);
+            if (fc === null) {
+                this.emitRenderStatus(this.makeStatus(tag, entry.op, frame, "missing-frame-data"));
+                continue;
+            }
+            try {
+                const status = await this.renderTrajectoryFrame(tag, entry.op, entry.baseOptions, fc, frame);
+                if (status) this.emitRenderStatus(status);
+            } catch (err) {
+                const reason = err instanceof Error ? err.message : String(err);
+                this.emitRenderStatus(this.makeStatus(tag, entry.op, frame, "render-error", { reason }));
+            }
         }
     }
 

@@ -2084,6 +2084,18 @@ later draw subscriber and requires the saved file to retain the completed
 draw's camera/frame. Frame-dependent projections and moving-timeline acceptance
 remain additional obligations; this sampling rule does not replace them.
 
+**Trajectory-shape refresh ownership — 2026-11-07 (#328).** Overlapping
+updates share one bounded owner and retain the latest requested frame. After
+an older clear/render finishes, that owner catches up to the latest target;
+duplicate requests do not create a queue of obsolete ticks. The first shape
+reads the actual molecular frame. A requested index alone does not certify
+applied geometry: unfinished or failed refreshes remain not-ready, and a later
+frame can recover after owner retirement. Nullable frame data remains absent.
+Effective-status notifications retain their deduplication while private status
+tracks the latest applied frame. Directed scheduler tests and the Studio guard's
+real pentalanine mesh/draw assertions protect these invariants. This private
+readiness boundary does not by itself enable moving-capture protocol support.
+
 **Shape-only framing — 2026-10-21 (#257).** Camera authority also makes the host
 responsible for initial absolute geometry without a molecular system. New
 geometry is framed while no deliberate viewpoint exists; a user-adjusted or

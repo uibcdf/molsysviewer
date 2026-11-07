@@ -1709,6 +1709,7 @@ export class MolSysViewerController {
             (ref, tag) => this.state.registerShapeRef(ref, tag),
             {
                 clearByTag: (tag) => this.state.clearShapesByTag(tag),
+                getCurrentFrame: () => this.trajectory.getTrajectoryState().currentFrame,
                 subscribeToTrajectoryState: (cb) =>
                     this.trajectory.onTrajectoryState(
                         (state) => cb(state.currentFrame),

@@ -23,6 +23,31 @@ def replay(events, family=None):
     finally:
         source.close()
     try:
+        if family == "trajectory-shapes":
+            import numpy as np
+
+            coordinates = msv.pyunitwizard.get_value(view.get_coordinates(), to_unit="angstroms")
+            centers = coordinates[:, 0, :]
+            for tag in ["refresh-point", "refresh-late"]:
+                view.shapes.add_sphere(
+                    structure_centers=msv.pyunitwizard.quantity(centers, "angstroms"),
+                    radius="0.125 nm",
+                    color="blue",
+                    alpha=0.8,
+                    tag=tag,
+                )
+            view.shapes.add_sphere(
+                structures_atom_indices=[[0, 1]] * 3,
+                radius="0.05 nm",
+                color="red",
+                tag="refresh-atoms",
+            )
+            return _to_plain(
+                {
+                    "initial_messages": view._build_embedded_runtime_snapshot(),
+                    "oracle": {"point": centers, "atoms": np.mean(coordinates[:, :2, :], axis=1)},
+                }
+            )
         view.whole.set_representation("ball-and-stick")
         view.set_figure_spec(FigureSpec(scale=1.5, background="white"))
         view.interactions.hbonds.get_buch_hbonds(name="review", structure_indices="all", distance_threshold="0.4 nm")

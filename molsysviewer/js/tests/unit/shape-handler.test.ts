@@ -298,7 +298,7 @@ test("subscribeToTrajectoryState is called only once even when multiple trajecto
 // frameUpdateInProgress guard
 // ---------------------------------------------------------------------------
 
-test("applyFrame skips concurrent invocation via frameUpdateInProgress guard", async () => {
+test("same-frame trajectory requests share pending work without duplicate clears", async () => {
     const plugin: any = {};
     const cleared: string[] = [];
     let resolveFirst: (() => void) | null = null;
@@ -326,7 +326,61 @@ test("applyFrame skips concurrent invocation via frameUpdateInProgress guard", a
     await first;
     await second;
 
-    assert.strictEqual(cleared.length, 1, "second applyFrame should be skipped while first is in progress");
+    assert.strictEqual(cleared.length, 1, "duplicate requests must not clear the same pending frame twice");
+});
+
+test("trajectory shapes catch up to a newer frame requested during an older refresh", async () => {
+    let release: (() => void) | undefined;
+    const rendered: number[] = [];
+    const handler: any = new ShapeHandlers({} as any, () => {}, {
+        clearByTag: async () => {
+            if (!release) await new Promise<void>(resolve => { release = resolve; });
+        },
+    });
+    handler.trajectoryShapes.set("moving", { op: "add_sphere", baseOptions: {},
+        framesCoords: [[0, 0, 0], [1, 0, 0], [2, 0, 0]] });
+    handler.renderTrajectoryFrame = async (_tag: string, _op: string, _base: any, _coords: any, frame: number) => {
+        rendered.push(frame);
+    };
+    // Only the protocol scheduler is isolated here. Actual native geometry is
+    // received separately through the real molecular Studio fixture.
+    handler.currentFrame = 1;
+    const first = handler.applyFrame(1);
+    assert.equal(handler.isFrameReady(1), false);
+    handler.currentFrame = 2;
+    const second = handler.applyFrame(2);
+    assert.equal(first, second, "overlapping requests share one bounded refresh owner");
+    for (let index = 0; index < 100; index++) assert.equal(handler.applyFrame(2), first);
+    release!();
+    await Promise.all([first, second]);
+    assert.equal(rendered.at(-1), 2, "the final shape must follow the latest requested structure");
+    assert.equal(handler.isFrameReady(2), true);
+    assert.equal(handler.isFrameReady(1), false);
+});
+
+test("a failed trajectory refresh rejects its owner and allows a later frame to recover", async () => {
+    const original = new Error("clear failed");
+    let clears = 0;
+    const handler: any = new ShapeHandlers({} as any, () => {}, {
+        clearByTag: async () => { if (++clears === 1) throw original; },
+    });
+    handler.trajectoryShapes.set("empty", { op: "add_sphere", baseOptions: {}, framesCoords: [null, null, null] });
+    await assert.rejects(handler.applyFrame(1), error => error === original);
+    assert.equal(handler.frameUpdateInProgress, false);
+    assert.equal(handler.frameRefresh, undefined);
+    assert.equal(handler.isFrameReady(1), false, "a failed clear cannot certify the requested frame");
+    assert.equal(handler.isFrameReady(2), false);
+    await handler.applyFrame(2);
+    assert.equal(handler.isFrameReady(2), true);
+    assert.equal(handler.lastRenderStatus.get("empty").frame, 2);
+});
+
+test("a first trajectory shape uses the actual current molecular frame", async () => {
+    const handler: any = new ShapeHandlers({} as any, () => {}, { clearByTag: async () => {}, getCurrentFrame: () => 1 });
+    await handler.addSphere({ op: "add_sphere", options: { tag: "late", structures_coords: [[1, 2, 3], null] } as any });
+    assert.equal(handler.currentFrame, 1);
+    assert.equal(handler.isFrameReady(1), true);
+    assert.equal(handler.isFrameReady(0), false);
 });
 
 test("shape handler rejects inconsistent alpha sphere arrays without registering refs", async () => {

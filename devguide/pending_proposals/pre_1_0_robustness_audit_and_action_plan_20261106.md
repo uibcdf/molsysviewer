@@ -114,6 +114,24 @@ implementation must retain the sampled frame's complete dependent context,
 without pausing/navigating the live View or copying its trajectory. A5 and the
 progress counters remain unchanged.
 
+The moving-capture work separately resolves dropped trajectory-shape refreshes
+in [#328](../archive/trajectory_shape_refresh_loses_latest_frame.md). Its bounded
+latest-target scheduler passes seventeen directed cases, contained in the 374
+canonical Node passes. Real pentalanine mesh/draw receiving fails against the
+previous runtime and passes with the correction. The complete Studio entry
+passes in 210.33 seconds, with 4,303 fixed inputs and nineteen owned processes
+closed. The [receiving record](../trajectory_shape_refresh_receiving_20261107.json)
+retains its scope. This prerequisite does not complete A5 or change the progress
+denominator. The new Python moving-save
+fixture also remains under development; its first run stopped at an omitted
+dynamic-region request in the fixture, before exercising the capture contract.
+That outcome is retained and is not evidence of a new product defect.
+After the fixture sends both ordinary frame feedback and the separate dynamic
+region request used by the real runtime, both state/session cases reach the
+existing version-1 `scene_changed` rejection. This is the expected baseline for
+the already accepted moving-capture extension, not a completed implementation
+or a new failure of the strict version-1 contract.
+
 **Hosted scope remains separate.** General run `42387339383` passes its four
 Linux cells; four macOS cells remained queued at the last inspection. Source
 pair `42387355324` passes Windows/macOS but fails Linux's updated-annotation

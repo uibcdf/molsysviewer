@@ -1,0 +1,176 @@
+{
+  "schema": "molsysviewer.trajectory_shape_refresh_receiving@1",
+  "observed_at": "2026-11-07T21:06:12.387080+00:00",
+  "issue": "uibcdf/molsysviewer#328",
+  "parent": "uibcdf/molsysviewer#315 / A5 / #319",
+  "status": "Bounded refresh correction received locally; A5 remains partial.",
+  "source": {
+    "base": "afa891f46f7e449ddaa5c606e1a60e60f8ac4fbc",
+    "files_sha256": {
+      "molsysviewer/js/src/managers/handlers/shape-handlers.ts": "10656b52464f4d232f21203b228a29b2e51f67879b76921b200bdd33d72b360f",
+      "molsysviewer/js/src/managers/viewer-controller.ts": "cde756530cce6eaf9de2eda20b67c6f7e08966b1fa2e379fcff1913db910f028",
+      "molsysviewer/js/tests/unit/shape-handler.test.ts": "d50fbe2d922cf101b1165de0525e8c5183edb592e4d23d7d5419e05f266d91ed",
+      "molsysviewer/js/tests/e2e/studio-usability-bridge.py": "f3ac7f5a16204a08633b3ed63e1b605c20e830df28311acba460b32f2f2c75b9",
+      "molsysviewer/js/tests/e2e/studio-usability.e2e.ts": "cc69655d5dbc566f3983a6165369354a105b1205f6c011b2bc517654a0be635e",
+      "molsysviewer/js/tests/e2e/trajectory-shape-refresh-scenarios.ts": "fa88750cf4dcd0bd68e50975b1f3b3e44c3cac39b7e07318c2b1d278ebc8db55",
+      "tests/test_reporting_protocol.py": "363ff208134552ae96432ef9155b8d1e8660f2fb3ee91cf07df5b3dec385ef1a"
+    },
+    "runtime_sha256": "d3b3d074e24a250ad3042ce4448b6eb36c949d5190b50f393d6ca3407aabda7c",
+    "previous_runtime_sha256": "be763346311c5a9e78d8519b1c479a7c2c4edaf9f6e62f180934b6b869191e0e",
+    "python": "3.14.7",
+    "node": "24.21.0",
+    "molstar": "5.4.1",
+    "scientific_provider": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+    "route": "Explicit Python 3.14 development interpreter, reviewed contribution source and cached public support providers; no solver-installed artifact qualification."
+  },
+  "mechanism": {
+    "before": "A concurrent refresh is discarded after updating the desired-frame field; the final molecular model and trajectory shape can disagree.",
+    "after": "One refresh owner retains the latest target and catches up before retirement; actual-frame lookup initializes the first shape and private readiness rejects unfinished/failed work.",
+    "bounded_bookkeeping": "One owner promise and target, not a queue of obsolete ticks; per-shape status remains bounded by the shape collection.",
+    "nullable_frames_preserved": true,
+    "effective_status_notifications_preserved": true,
+    "capture_protocol": 1,
+    "continuous_playback_capture_enabled": false,
+    "public_python_api_changed": false
+  },
+  "negative_controls": {
+    "scheduler": {
+      "native_exit": 1,
+      "passed": 14,
+      "failed": 1,
+      "scope": "Isolated clear/renderer scheduling; not scientific geometry.",
+      "log_sha256": "451467ebef888364139991b7378c29ec70de1378f413e703030fd937d0f6013b"
+    },
+    "native": {
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/trajectory-shape-refresh.probe.js"
+      ],
+      "native_exit": 1,
+      "seconds": 12.586238107876852,
+      "selected_inputs": 4303,
+      "inputs_unchanged": true,
+      "outer_timeout": false,
+      "owned_processes": 13,
+      "survivors": 0,
+      "cleanup_errors": [],
+      "tracking_errors": [],
+      "log_sha256": "fe45fcfa57664d574bfcf364d30c1cc1782f821832a600acc254fe30aeac01dd",
+      "scope": "Unchanged previous runtime/harness: actual pentalanine model reaches frame 2 while the sphere mesh retains the older center.",
+      "probe_note": "Assertions and timing gate are unchanged; two unused diagnostic assignments were removed before corrected receiving."
+    }
+  },
+  "receiving": {
+    "canonical_node": {
+      "command": [
+        "npm",
+        "run",
+        "test:js"
+      ],
+      "native_exit": 0,
+      "seconds": 10.464927403954789,
+      "scope": "Complete canonical Node entry in the approved normal execution lane; preserve per-case native counts.",
+      "passed": 374,
+      "failed": 0,
+      "skipped": 0,
+      "includes_directed_shape_cases": 17,
+      "log_sha256": "546701a17f7a45665f1f506bc7d08f900d5a4a05be7a618c834f73f04ae13481"
+    },
+    "native_directed": {
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/trajectory-shape-refresh.probe.js"
+      ],
+      "native_exit": 0,
+      "seconds": 15.22674089600332,
+      "selected_inputs": 4303,
+      "inputs_unchanged": true,
+      "outer_timeout": false,
+      "owned_processes": 13,
+      "survivors": 0,
+      "cleanup_errors": [],
+      "tracking_errors": [],
+      "log_sha256": "c0f3cd78ba4780ae78316de549666a1ed029b5bd212e3a6a2316e28e2c3bb1bf",
+      "scope": "Actual completed draws, independent pentalanine coordinates, absolute and atom-bound sphere meshes after overlap; first creation at frame 2 on a shape-free controller."
+    },
+    "studio": {
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/e2e-runner.js",
+        "--lane=core",
+        "--suites=studio-usability"
+      ],
+      "native_exit": 0,
+      "seconds": 210.33220295398496,
+      "selected_inputs": 4303,
+      "inputs_unchanged": true,
+      "outer_timeout": false,
+      "owned_processes": 19,
+      "survivors": 0,
+      "cleanup_errors": [],
+      "tracking_errors": [],
+      "log_sha256": "966f6b507f6c4858f7910238d04062daca47dc532e32ba643dc176e3697f7a67",
+      "scope": "Full canonical Studio entry, retaining actual primary/popup/detached saves/restores, cancellation/late replies, camera authority, PNG/HTML, native labels and lifecycle."
+    },
+    "builds": {
+      "typescript": 0,
+      "runtime": 0,
+      "harness": 0,
+      "e2e_entries": 0,
+      "directed_probe": 0
+    },
+    "ruff": {
+      "check_native_exit": 0,
+      "format_native_exit": 0,
+      "formatted_files_checked": 982
+    },
+    "governance": {
+      "status": "Complete scoped verification passes after archive/index staging.",
+      "retained_first_attempt": {
+        "native_exit": 1,
+        "passed": 387,
+        "failed": 1,
+        "cause": "New report not yet included in the Git index; clean-checkout link guard rejected it.",
+        "log_sha256": "1ecff738819d4409a67b1df6eb490ad3173061ee2ffd2f7765f681afe2472cb4"
+      },
+      "affected_guard_after_staging": {
+        "native_exit": 0,
+        "passed": 1,
+        "log_sha256": "bfce5ed1110fdabb535c5fc6d17997cb02a98567aab7831479397031a95cd6d6"
+      },
+      "native_exit": 0,
+      "passed": 385,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 3.6739659551531076,
+      "junit_sha256": "45181113a6c5f0fa229f9925077b0f5a0bd85479be811eb446669646db6ba090",
+      "index_check_native_exit": 0
+    }
+  },
+  "remaining": [
+    "Complete moving capture with all frame-dependent projections, without pausing/navigating or cloning the live trajectory.",
+    "Receive hidden/background endpoints through their originating owner.",
+    "Resolve the earlier actual-Jupyter session-camera uncertainty; this correction does not establish its cause.",
+    "Consolidated hosted/installed and applicable human/native Qt acceptance; remaining original leaves and mandatory Movie #320 work."
+  ],
+  "progress": {
+    "delivered_leaves": 8,
+    "original_leaves": 46,
+    "final_accepted_leaves": 1,
+    "A5_not_counted_complete": true
+  },
+  "publication": "Candidates, tags, packages, promotions and both 1.0 publications remain paused.",
+  "evidence_scope": "The declared scopes overlap; do not sum them. Native receiving is one local Chromium/Mol* host, not fresh Jupyter/native Qt/hosted/installed evidence.",
+  "private_custody": {
+    "bundle": "trajectory-shape-refresh-20261107-1",
+    "files": 63,
+    "bytes": 16858210,
+    "manifest_sha256": "7244225b07d1852d023e0936778fbd83a95cc3851c36e1c0b9cedca1d4598996",
+    "hashes_verified": true,
+    "directory_mode": "0700",
+    "file_mode": "0600",
+    "originals_retained": true,
+    "custodian": "Diego Prada Gracia",
+    "off_host_backup": false
+  }
+}

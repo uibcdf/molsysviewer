@@ -426,6 +426,14 @@ It receives state/session Save and restore after camera perturbation from
 primary, canvas popup and detached Studio, plus cancellation/late replies and
 same-ID owner isolation. The async fixture keeps its host loop alive between
 requests; a new independent View replay per request cannot receive this boundary.
+Its `trajectory-shape-refresh-scenarios.ts` owner separately receives real
+pentalanine shapes created by the public Python API. A held asynchronous clear
+forces overlapping frame requests; actual mesh centres and molecular coordinates
+on a subsequent native draw must match the latest requested frame. It also
+checks the first trajectory shape created after navigating an otherwise
+shape-free controller. The timing gate replaces no geometry or reply. These
+assertions, rather than a desired-frame field alone, guard refresh convergence;
+the same fixed Studio selector retains the build/core and fixture registration.
 The complementary `tests/test_jupyter_live_capture.py` profile uses an actual
 JupyterLab/kernel and fresh draw observations. Select
 `MOLSYSVIEWER_JUPYTER_TEST=1` to run it locally with JupyterLab, ipykernel,

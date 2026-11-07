@@ -146178,6 +146178,7 @@ var ShapeHandlers = class {
     this.trajectoryShapes = /* @__PURE__ */ new Map();
     this.currentFrame = 0;
     this.frameUpdateInProgress = false;
+    this.frameRefreshFailed = false;
     this.lastRenderStatus = /* @__PURE__ */ new Map();
   }
   ensureTrajectorySubscription() {
@@ -146190,6 +146191,7 @@ var ShapeHandlers = class {
     });
   }
   storeTrajectoryShape(tag, op4, baseOptions, framesCoords) {
+    this.currentFrame = this.context?.getCurrentFrame?.() ?? this.currentFrame;
     this.trajectoryShapes.set(tag, { op: op4, baseOptions, framesCoords });
     this.ensureTrajectorySubscription();
   }
@@ -146198,33 +146200,68 @@ var ShapeHandlers = class {
   }
   emitRenderStatus(status) {
     const previous = this.lastRenderStatus.get(status.tag);
+    this.lastRenderStatus.set(status.tag, status);
     if (previous && previous.status === status.status && previous.requested_atoms === status.requested_atoms && previous.used_atoms === status.used_atoms && previous.reason === status.reason) {
       return;
     }
-    this.lastRenderStatus.set(status.tag, status);
     this.context?.notifyShapeRenderStatus?.(status);
   }
-  async applyFrame(frame) {
-    if (this.frameUpdateInProgress) return;
-    this.frameUpdateInProgress = true;
-    try {
-      for (const [tag, entry] of this.trajectoryShapes) {
-        const fc = entry.framesCoords[frame] ?? null;
-        await this.context.clearByTag(tag);
-        if (fc === null) {
-          this.emitRenderStatus(this.makeStatus(tag, entry.op, frame, "missing-frame-data"));
-          continue;
-        }
-        try {
-          const status = await this.renderTrajectoryFrame(tag, entry.op, entry.baseOptions, fc, frame);
-          if (status) this.emitRenderStatus(status);
-        } catch (err) {
-          const reason = err instanceof Error ? err.message : String(err);
-          this.emitRenderStatus(this.makeStatus(tag, entry.op, frame, "render-error", { reason }));
-        }
+  isFrameReady(frame) {
+    if (this.trajectoryShapes.size === 0) return true;
+    if (this.frameUpdateInProgress || this.frameRefreshFailed || this.currentFrame !== frame || this.renderedFrame !== void 0 && this.renderedFrame !== frame) return false;
+    for (const tag of this.trajectoryShapes.keys()) {
+      const status = this.lastRenderStatus.get(tag)?.status;
+      if (status === "render-error" || status === "missing-structure" || status === "invalid-indices") {
+        return false;
       }
+    }
+    return true;
+  }
+  applyFrame(frame) {
+    this.currentFrame = frame;
+    if (this.frameRefresh) return this.frameRefresh;
+    let resolve, reject;
+    const pending = new Promise((accept, refuse) => {
+      resolve = accept;
+      reject = refuse;
+    });
+    this.frameRefresh = pending;
+    this.frameUpdateInProgress = true;
+    void this.refreshLatestFrame().then(resolve, reject);
+    return pending;
+  }
+  async refreshLatestFrame() {
+    try {
+      let frame;
+      do {
+        frame = this.currentFrame;
+        await this.renderFrame(frame);
+        this.renderedFrame = frame;
+      } while (frame !== this.currentFrame);
+      this.frameRefreshFailed = false;
+    } catch (error2) {
+      this.frameRefreshFailed = true;
+      throw error2;
     } finally {
+      this.frameRefresh = void 0;
       this.frameUpdateInProgress = false;
+    }
+  }
+  async renderFrame(frame) {
+    for (const [tag, entry] of this.trajectoryShapes) {
+      const fc = entry.framesCoords[frame] ?? null;
+      await this.context.clearByTag(tag);
+      if (fc === null) {
+        this.emitRenderStatus(this.makeStatus(tag, entry.op, frame, "missing-frame-data"));
+        continue;
+      }
+      try {
+        const status = await this.renderTrajectoryFrame(tag, entry.op, entry.baseOptions, fc, frame);
+        if (status) this.emitRenderStatus(status);
+      } catch (err) {
+        const reason = err instanceof Error ? err.message : String(err);
+        this.emitRenderStatus(this.makeStatus(tag, entry.op, frame, "render-error", { reason }));
+      }
     }
   }
   async renderTrajectoryFrame(tag, op4, baseOptions, frameCoords, frame = this.currentFrame) {
@@ -167751,6 +167788,7 @@ var MolSysViewerController = class _MolSysViewerController {
       (ref, tag) => this.state.registerShapeRef(ref, tag),
       {
         clearByTag: (tag) => this.state.clearShapesByTag(tag),
+        getCurrentFrame: () => this.trajectory.getTrajectoryState().currentFrame,
         subscribeToTrajectoryState: (cb2) => this.trajectory.onTrajectoryState(
           (state) => cb2(state.currentFrame),
           { immediate: false }
