@@ -415,6 +415,20 @@ accepted. The validator checks the build/core registration, real Python bridge,
 download assertions and failing entrypoint. The suite renders real pentalanine
 and checks PNG dimensions/alpha, requester-only HTML delivery, native labels,
 compact navigation, floating bounds, observer/drag disposal and the discovered addon catalogue.
+Its `studio-live-capture-scenarios.ts` owner uses a persistent real Python
+authority, actual rendered replies and the production widget/popup transport.
+It receives state/session Save and restore after camera perturbation from
+primary, canvas popup and detached Studio, plus cancellation/late replies and
+same-ID owner isolation. The async fixture keeps its host loop alive between
+requests; a new independent View replay per request cannot receive this boundary.
+The complementary `tests/test_jupyter_live_capture.py` profile uses an actual
+JupyterLab/kernel and fresh draw observations. Select
+`MOLSYSVIEWER_JUPYTER_TEST=1` to run it locally with JupyterLab, ipykernel,
+psutil, the built runtime and Playwright available. An unselected/skipped test
+is not live-notebook qualification; its explicit CLI receiving route is
+`python tests/_jupyter_live_capture.py` (optional `--output` must be a new path).
+This profile retains private raw logs, cleans its own processes/credentials and
+checks autonomous timeout as well as cancellation without late writes.
 Keyboard Settings and shared control fade assertions additionally belong to the
 existing `controls-visibility.e2e.ts` profile.
 

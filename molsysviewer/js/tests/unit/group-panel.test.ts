@@ -2371,3 +2371,55 @@ test("Studio work-file drafts survive projections and only matching replies end 
         assert.equal(path.value, "review.json");
     } finally { restore(); }
 });
+
+test("Studio save cancellation waits for Python and preserves the terminal save verdict", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any, actions: any[] = [];
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {},
+            () => {}, (action, details) => actions.push({ action, details }));
+        panel.setAnnotations([], { systemLoaded: true, activeSelectionCount: 0 });
+        (panel as any).switchTab("export");
+        const root = host.children[0];
+        const path = findFirstByAttribute(root, "data-molsysviewer-work-file-path")!;
+        const save = findFirstByAttribute(root, "data-molsysviewer-work-file-save")!;
+        const cancel = findFirstByAttribute(root, "data-molsysviewer-work-file-cancel")!;
+        const status = findFirstByAttribute(root, "data-molsysviewer-work-file-status")!;
+        const click = (button: FakeElement) => button.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        path.value = "review.json"; path.dispatch("input");
+        click(save);
+        const first = actions.at(-1).details.request_id;
+        click(cancel);
+        assert.deepEqual(actions.at(-1), { action: "cancel_work_file", details: { request_id: first } });
+        assert.equal(path.disabled, true);
+        assert.equal(cancel.disabled, true);
+        assert.match(status.textContent, /Waiting for Python/);
+        panel.updateStudioAction({ action: "cancel_work_file", request_id: first, domain: "export", ok: false, error_message: "Already writing." });
+        assert.equal(path.disabled, true, "refused cancellation cannot claim that the file was not written");
+        panel.updateStudioAction({ action: "save_work_file", request_id: first, domain: "export", ok: true });
+        const saved = status.textContent;
+        assert.match(saved, /Saved scene state/);
+        assert.equal(path.disabled, false);
+        panel.updateStudioAction({ action: "cancel_work_file", request_id: first, domain: "export", ok: true });
+        assert.equal(status.textContent, saved, "a late cancel result must not replace committed success");
+
+        click(save);
+        const second = actions.at(-1).details.request_id;
+        click(cancel);
+        panel.updateStudioAction({ action: "cancel_work_file", request_id: second, domain: "export", ok: true });
+        assert.match(status.textContent, /Save cancelled.*No file was written/);
+        assert.equal(path.disabled, false);
+        panel.updateStudioAction({ action: "save_work_file", request_id: second, domain: "export", ok: false, error_message: "Late cancellation." });
+        assert.match(status.textContent, /Save cancelled.*No file was written/);
+
+        click(save);
+        const third = actions.at(-1).details.request_id;
+        click(cancel);
+        panel.updateStudioAction({ action: "save_work_file", request_id: third, domain: "export", ok: false,
+            error_message: "Save cancelled. No file was written.", cancelled: true } as any);
+        assert.equal(status.getAttribute("role"), "status");
+        panel.updateStudioAction({ action: "cancel_work_file", request_id: third, domain: "export", ok: true });
+        assert.equal(path.disabled, false);
+        assert.equal(path.value, "review.json");
+    } finally { restore(); }
+});

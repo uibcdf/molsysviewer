@@ -17,17 +17,30 @@ def _file_request(content: Mapping[str, Any]) -> tuple[str, Path]:
     return kind, Path(path.strip()).expanduser()
 
 
-def save_work_file(view: Any, content: Mapping[str, Any]) -> None:
+def save_work_file(view: Any, content: Mapping[str, Any]):
     kind, path = _file_request(content)
     overwrite = content.get("overwrite", False)
     if not isinstance(overwrite, bool):
         raise ValueError("Overwrite must be an explicit boolean.")
     if path.exists() and not overwrite:
         raise ValueError("This file already exists. Allow overwrite or choose another path.")
-    if kind == "state":
-        view.save_state(path)
-    else:
-        view.save_session(path)
+    if kind == "session" and view.molsys is None:
+        raise ValueError("Load a molecular system before saving a session.")
+    return view._work_file_saves.start(content, kind=kind, path=path, overwrite=overwrite)
+
+
+def cancel_work_file(view: Any, content: Mapping[str, Any]):
+    from concurrent.futures import Future
+
+    from ..frontend_requests import FrontendRequestError
+
+    if not isinstance(content.get("request_id"), str) or not content["request_id"].strip():
+        raise ValueError("File operations require a request identifier.")
+    if view._work_file_saves.cancel(content):
+        return None
+    refusal = Future()
+    refusal.set_exception(FrontendRequestError(reason="cancellation_too_late"))
+    return refusal
 
 
 def restore_work_file(view: Any, content: Mapping[str, Any]) -> None:
@@ -44,4 +57,8 @@ def restore_work_file(view: Any, content: Mapping[str, Any]) -> None:
         load_session(path, view=view)
 
 
-HANDLERS = {"save_work_file": save_work_file, "restore_work_file": restore_work_file}
+HANDLERS = {
+    "save_work_file": save_work_file,
+    "cancel_work_file": cancel_work_file,
+    "restore_work_file": restore_work_file,
+}

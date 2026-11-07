@@ -364,12 +364,10 @@ class StateMixin:
         runs synchronously after capture on the owning thread; no background
         write can continue after a capture timeout/cancellation is reported.
         """
-        from .visual_capture import capture_live_state
+        from .visual_capture import capture_live_state, write_captured_state
 
         captured = await capture_live_state(self, timeout=timeout)
-        with self._system_edits._locked():
-            captured.validate(self)
-            _write_state_file(path, captured.state)
+        write_captured_state(self, captured, path, kind="state")
 
     @signal(tags=["state", "capture"])
     @digest()
@@ -383,15 +381,12 @@ class StateMixin:
         Molecular data are serialized through the same H5MSM/session writer as
         save_session; this method never copies the trajectory to wait for a GUI.
         """
-        from ..session import _write_session
-        from .visual_capture import capture_live_state
+        from .visual_capture import capture_live_state, write_captured_state
 
         if self.molsys is None:
             raise ValueError("Load a molecular system before saving a live session.")
         captured = await capture_live_state(self, timeout=timeout)
-        with self._system_edits._locked():
-            captured.validate(self)
-            _write_session(self, path, state=captured.state)
+        write_captured_state(self, captured, path, kind="session")
 
     @signal(tags=["state"])
     @digest()

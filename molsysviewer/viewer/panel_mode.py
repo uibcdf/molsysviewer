@@ -417,7 +417,13 @@ class PanelModeMixin:
         if widget is None:
             return
 
-        destination = {"target_endpoint_id": endpoint_id} if endpoint_id is not None else {}
+        destination = {}
+        if endpoint_id is not None:
+            destination["target_endpoint_id"] = endpoint_id
+        elif self._runtime_router is not None:
+            # The AnyWidget seam has one canonical host. Other connectors own
+            # their primary/default route and may serve several real endpoints.
+            destination["target_endpoint_id"] = f"widget-host:{self._binary_session_id}"
 
         def _routed_send(msg: dict, buffers: Any = None) -> None:
             active = self._active_panel_widgets.get(endpoint_id)

@@ -626,3 +626,59 @@ test("bootPopup molsysviewer-sync-autohide updates shared controls policy", asyn
         (globalThis as any).clearTimeout = previousClearTimeout;
     }
 });
+
+test("bootPopup captures its own canvas after queued scene work and a fresh draw", async () => {
+    const previousWindow = (globalThis as any).window;
+    const previousDocument = (globalThis as any).document;
+    const env = makePopupTestEnv();
+    const subscribers = new Set<() => void>();
+    let completeScene!: () => void;
+    const sceneBarrier = new Promise<void>(resolve => { completeScene = resolve; });
+    let camera = { position: [1, 2, 3], target: [0, 0, 0], up: [0, 1, 0] };
+    const appliedCamera = { position: [8, 5, 2], target: [1, 1, 1], up: [0, 1, 0] };
+    let drawCount = 0;
+    const handled: any[] = [];
+    const ctrl: any = {
+        plugin: { canvas3d: {
+            didDraw: { subscribe(fn: () => void) { subscribers.add(fn); return { unsubscribe() { subscribers.delete(fn); } }; } },
+            requestDraw() { drawCount++; setImmediate(() => { for (const fn of [...subscribers]) fn(); }); },
+        } },
+        async handleMessage(message: any) {
+            handled.push(message);
+            await sceneBarrier;
+            camera = appliedCamera;
+        },
+        getCameraSnapshot() { return camera; },
+        onTrajectoryState(callback: any, options: any) {
+            if (options?.immediate) callback({ currentFrame: 2 });
+            return () => {};
+        },
+    };
+    (globalThis as any).window = env.windowObj;
+    (globalThis as any).document = env.document;
+    try {
+        await bootPopup(popupModule(ctrl));
+        const dispatch = (payload: any) => env.windowObj.dispatch("message", {
+            source: env.windowObj.opener, data: hostWire("molsysviewer-sync-op", payload),
+        });
+        dispatch({ op: "set_camera_snapshot", snapshot: appliedCamera });
+        dispatch({ op: "request_visual_state", request_id: "capture-popup", capture_revision: "revision-a", capture_timeout_ms: 500 });
+        await flushAsync();
+        assert.equal(drawCount, 0, "capture must wait for earlier scene work");
+        assert.equal(env.postedToHost.some(message => message.envelope.payload?.event === "visual_state_snapshot"), false);
+        completeScene();
+        for (let i = 0; i < 5; i++) await flushAsync();
+        const reply = env.postedToHost.find(message => message.envelope.payload?.event === "visual_state_snapshot");
+        assert.ok(reply);
+        assert.equal(drawCount, 1);
+        assert.equal(handled.length, 1, "frontend requests belong to the request handler, not the scene dispatcher");
+        assert.equal(reply.envelope.endpointId, TEST_CHANNEL.popupEndpointId);
+        assert.deepEqual(reply.envelope.payload, {
+            event: "visual_state_snapshot", request_id: "capture-popup", capture_revision: "revision-a",
+            ok: true, snapshot: appliedCamera, structure_index: 2,
+        });
+    } finally {
+        (globalThis as any).window = previousWindow;
+        (globalThis as any).document = previousDocument;
+    }
+});

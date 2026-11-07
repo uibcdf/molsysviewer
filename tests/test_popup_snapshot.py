@@ -161,6 +161,30 @@ def test_embedded_runtime_combines_canvas_and_panel_without_duplicate_state_ops(
     assert ops.count("set_measurement_settings") == 1
 
 
+@pytest.mark.parametrize("loaded", [False, True])
+@pytest.mark.parametrize("include_molecular", [False, True])
+def test_canvas_popup_has_same_authoritative_studio_state_as_embedded_host(loaded, include_molecular):
+    """A mirror must offer the same work-file actions, even with binary data."""
+    view = _view_with_scene() if loaded else MolSysView()
+    try:
+        embedded = view._build_embedded_runtime_snapshot(include_molecular=include_molecular)
+        popup = view.build_popup_scene_snapshot("canvas", include_molecular=include_molecular)
+
+        assert popup == embedded
+        summaries = [message for message in popup if message["op"] == "set_annotation_summaries"]
+        assert len(summaries) == 1
+        assert summaries[0]["system_loaded"] is loaded
+        for op in ("set_region_summaries", "set_trajectory_summary", "set_addon_runtime_summary"):
+            assert sum(message["op"] == op for message in popup) == 1
+        assert sum(message["op"] == "set_active_selection" for message in popup) == 1
+        assert sum(message["op"] == "set_measurement_settings" for message in popup) == 1
+        assert {"mount_addon_panel", "addon_panel_message", "set_camera_snapshot"}.isdisjoint(
+            message["op"] for message in popup
+        )
+    finally:
+        view.close()
+
+
 # -- defensive copies (mutation: return internal references) -----------------
 
 

@@ -634,8 +634,11 @@ scope 1.0, and the last four describe work that begins after it.
    careful step after the first scene-style slice.
 5. [`style_battery_and_future_ideas.md`](style_battery_and_future_ideas.md) —
    which styles ship first, so style growth stays intentional.
-6. [`molsysmovie_vision.md`](molsysmovie_vision.md) — post-1.0: a separate
-   `MolSysMovie` surface for timelines and keyframes, kept out of the viewer.
+6. [`molsysmovie_vision.md`](molsysmovie_vision.md) — Movie authoring and useful
+   video/web export are required before 1.0 under
+   [#320's execution plan](pending_proposals/pre_1_0_movie_authoring_export_and_agent_timeline.md).
+   Natural-language agent planning and VR/360 remain later vision; class names
+   in that vision are examples awaiting API review.
 7. [`render_quality_vision.md`](render_quality_vision.md) — post-1.0: **the
    project does intend to compete with desktop-quality rendering**, by bridging
    to Blender rather than replacing Mol\*.

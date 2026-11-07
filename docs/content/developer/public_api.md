@@ -469,6 +469,8 @@ the same tag; APIs resolve identity as `(domain, tag)`.
 - `view.camera.get_snapshot(*, pretty=False)` / `view.camera.set_snapshot(snapshot, *, duration="0 ms")`
   - the camera as a plain dict, mirrored back from the frontend; `None` on a viewer that
     has never rendered. `pretty=True` returns it as formatted JSON
+  - `view.get_camera_snapshot()` and `view.set_camera_snapshot(...)` remain
+    compatibility wrappers over this manager; a snapshot read uses the cached camera
 - `view.zoom(selection="all", ..., *, duration="250 ms", extra_radius="4.0 angstroms", min_radius="1.0 angstroms")`
   - frames a selection. The three durations and radii are quantities, not bare numbers —
     `duration_ms` remains as a deprecated alias

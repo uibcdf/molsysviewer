@@ -4,7 +4,7 @@
   "observed_at": "2026-11-07T01:43:20.489085+00:00",
   "plan": "uibcdf/molsysviewer#315 / A5",
   "issue": "uibcdf/molsysviewer#319",
-  "status": "partial source implementation; primary-renderer async capture received; Studio/addressed popup/native/playback/durable real-renderer qualification and closure pending",
+  "status": "partial source implementation; Python/actual-Jupyter/full-Studio capture and restore receiving pass; continuous playback, hidden endpoints, native Qt and consolidated hosted/installed acceptance remain pending",
   "decision": {
     "authority": "Principal maintainer explicitly selected the ambitious/user-useful coherent capture-and-save alternative in the 2026-11-06 session.",
     "public_source_api": [
@@ -90,36 +90,50 @@
           "origin": "notebook",
           "format": "state",
           "exact_correlated_camera": true,
-          "actual_restored_vantage": true
+          "historical_claim_actual_restored_vantage": true,
+          "restoration_invoked": true,
+          "recovery_from_distinct_vantage_proven": false
         },
         {
           "origin": "notebook",
           "format": "session",
           "exact_correlated_camera": true,
-          "actual_restored_vantage": true
+          "historical_claim_actual_restored_vantage": true,
+          "restoration_invoked": true,
+          "recovery_from_distinct_vantage_proven": false
         },
         {
           "origin": "popup",
           "format": "state",
           "exact_correlated_camera": true,
-          "actual_restored_vantage": true
+          "historical_claim_actual_restored_vantage": true,
+          "restoration_invoked": true,
+          "recovery_from_distinct_vantage_proven": false
         },
         {
           "origin": "popup",
           "format": "session",
           "exact_correlated_camera": true,
-          "actual_restored_vantage": true
+          "historical_claim_actual_restored_vantage": true,
+          "restoration_invoked": true,
+          "recovery_from_distinct_vantage_proven": false
         }
       ],
       "additional_settled_save_delta": 0,
       "selected_inputs_unchanged": 4319,
       "primary_visible_and_focused": true,
       "active_structure_transfer_before_final_control": false,
-      "scope": "Actual isolated JupyterLab/ipykernel/anywidget and Mol*/Chromium. Popup rotation is mirrored to primary; addressed Studio popup capture is not received.",
+      "scope": "Actual isolated JupyterLab/ipykernel/anywidget and Mol*/Chromium. Popup rotation is mirrored to primary; addressed Studio popup capture is not received. Restore recovery from a distinct camera is not established by this earlier driver.",
       "page_errors_retained_separately": [
         "Error: No active debugger session"
       ],
-      "verification_sha256": "446f42cc37715e34781e0e953a5088527b953ffce5ef2a84dbdf25e064d4b0c3"
+      "verification_sha256": "446f42cc37715e34781e0e953a5088527b953ffce5ef2a84dbdf25e064d4b0c3",
+      "restore_evidence_qualification": {
+        "reviewed_at": "2026-11-07",
+        "finding": "The retained driver invoked restore while the camera already matched the saved vantage. Exact correlated saved bytes and restore invocation/convergence are proved; recovery from a distinct camera is unproven by these runs.",
+        "original_private_evidence_unchanged": true,
+        "replacement_acceptance": "Perturb camera before restore and observe recovery plus a fresh completed draw."
+      }
     },
     "javascript_unit": {
       "native_exit": 0,
@@ -188,12 +202,11 @@
     }
   ],
   "remaining": [
-    "Automatic Studio capture with truthful completion/error and cancellation.",
-    "Authenticated addressed canvas-popup capture and panel-only canvas association.",
-    "Hidden/background canvas and repeated restore/capture diagnostics; one later pass is not proof that the earlier timeout had only one cause.",
-    "Continuous playback without mixed frame/camera state or a second clock.",
-    "Native Qt and durable registered real-renderer/Jupyter guards.",
-    "Consolidated hosted and later exact-installed acceptance."
+    "Accepted cancellation before a completed draw: terminal control must bypass the scene queue and abort its owned draw wait.",
+    "Continuous playback and hidden/background capture without mixed camera/frame state or a second clock.",
+    "Native Qt async/Studio actual GUI-loop receiving; visible manual observation remains postponed.",
+    "Deliberately change the structure index before restore to strengthen the combined camera/frame boundary beyond current camera perturbations.",
+    "The full-source repeat passes; consolidated hosted and exact-installed acceptance and closeout remain pending."
   ],
   "limits": [
     "This does not adopt the wider F1 public immutable-scene proposal.",
@@ -218,5 +231,301 @@
     "manifest_sha256": "9ba85372f634bc95a0bc294be19d41f722e78629dfcd2e9a76ce984a0a24f479",
     "originals_retained": true,
     "off_host_backup_claimed": false
+  },
+  "studio_working_source_checkpoint": {
+    "date": "2026-11-07 UTC",
+    "state": "working source; not a frozen or installed candidate",
+    "viewer_base": "9a783d500a756210e70e11946552c4afbe5fe936",
+    "changes": [
+      "Shared deferred Studio capture/write owner with authenticated canvas and panel identity.",
+      "Host-loop deadline/cancellation, owner-scoped control verdicts and diagnostics independent of another structural stream.",
+      "Molecular ownership released before completion callbacks, including nested cancellation/close/expiration.",
+      "Canvas popup receives the same live Studio metadata as the embedded canvas.",
+      "Widget close retains digest/skip_digestion and a safe internal finalizer."
+    ],
+    "python_combined": {
+      "native_exit": 0,
+      "passed": 245,
+      "seconds": 57.23,
+      "failures": 0,
+      "skips": 0,
+      "log_sha256": "23de92b1f0c9ce955354694f38ff36131109337bd2d54dcd3fcf7e7274d0f634",
+      "junit_sha256": "78807be86f23468bc01cdd81286854b34501cb6d5b6f1d153e862a8a9dc1230d"
+    },
+    "integration_contracts": {
+      "native_exit": 0,
+      "passed": 428,
+      "seconds": 25.62,
+      "scope": "Reporting/guard registration, strict release step, distribution and source workflow/ecosystem contracts; distinct from scientific/browser receiving.",
+      "log_sha256": "25e0ff467a8b7d0463b64a3f5b3e35cd255e40e789d38fe5db0637196da200ff"
+    },
+    "popup_projection": {
+      "before_fix": {
+        "native_exit": 1,
+        "failed": 4
+      },
+      "after_fix": {
+        "native_exit": 0,
+        "passed": 30,
+        "seconds": 53.86
+      }
+    },
+    "javascript_unit": {
+      "native_exit": 0,
+      "bundled_runner_entries": 1,
+      "log_sha256": "af236bcf18004c1da04c7cca60b640fe43562925211d11dab5576490993fabd7"
+    },
+    "public_inventory": {
+      "callables": 741,
+      "undigested": 0,
+      "missing_skip_digestion": 0,
+      "exempt": 0,
+      "reason": "The newly owned override of the already reachable Widget.close exposes explicit skip_digestion; no scientific convenience API added."
+    },
+    "persistent_widget_browser": {
+      "command": "node tests/e2e/studio-usability.e2e.js",
+      "native_exit": 0,
+      "execution": "host",
+      "input_count": 4658,
+      "inputs_unchanged": true,
+      "changed_inputs": [],
+      "runner_entries": 1,
+      "scope": "Complete Studio entry including original PNG/HTML, UI/navigation/bounds/disposal assertions and six live primary/canvas-popup/detached Studio state/session save/perturb-camera/restore cases, same-ID isolation, batch ownership and cancel/late no-write. Camera position/target/up and structure index are compared; this is not a universal projection/codec/native-host qualification.",
+      "log_sha256": "e526b8618a982a30b2f8db3062f31e630949a8e30a1c3e4363bdb20dd007fc4c"
+    },
+    "durable_routes": {
+      "source": "tests/test_jupyter_live_capture.py and existing registered studio-usability browser entry",
+      "strict_release": "new explicit jupyter CLI step; missing prerequisites do not count as passing",
+      "hosted": "CI_e2e core invokes the CLI; test-only environment adds JupyterLab/ipykernel/psutil. Hosted execution remains pending; no manual dispatch."
+    },
+    "retained_attempts": [
+      "Wrong combined pytest filename: exit4, no executed tests.",
+      "Combined source gate: 223 passed, three inventory failures expose undigested Widget.close override; fixed with explicit digestion and intentional baseline update.",
+      "First durable Jupyter attempt: two strong Python restores pass; a later Studio restore rotation hits the open panel, then times out. Driver corrected to close panel and assert a real canvas hit.",
+      "First durable preflight manifest incorrectly parsed older prefixed path keys and covered only 1161 product/driver files; providers separately matched all 3167 original hashes during that attempt.",
+      "Browser provisioning failure before a page, a driver-context ownership error, missing canvas-popup panel metadata, and missing Restore owner remain separate retained attempts.",
+      "Persistent canvas-popup MSV restore diagnostic: array-load completed successfully, then a late clear_all removed the new structure. Scope was structural scene ordering, not only camera; per-endpoint ordering corrects it, and latest narrow/full Studio entries pass."
+    ],
+    "observed_at": "2026-11-07T03:10:35.026438+00:00",
+    "actual_jupyter_before_endpoint_order": {
+      "outcome": "passed",
+      "capture_restore_cases": 6,
+      "strong_restore_cases": 6,
+      "studio_cases": 4,
+      "no_late_write_after_cancel": true,
+      "no_late_write_after_timeout": true,
+      "known_host_diagnostics": 11,
+      "unexpected_page_errors": 0,
+      "native_exit": 0,
+      "seconds": 98.21888822386973,
+      "process_cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "selected_files": 4328,
+      "changed_selected_files": [
+        "tests/test_release_gate.py"
+      ],
+      "input_qualification": "The only selected-file difference is an unexecuted release-gate registration test edited during this run. Product/runtime, providers and actual receiving drivers remain unchanged. Do not claim all 4328 selected inputs were immutable.",
+      "observations_sha256": "0efe381c77f885aac3922fa818bfa00c0a7d4cf19f8402f4e6ebe29f10989822",
+      "ephemeral_credentials_removed": true,
+      "scope": "Actual JupyterLab/ipykernel/anywidget/Mol* with six camera-perturbation plus fresh-draw restores: two Python and four Studio primary/canvas-popup cases. No detached-Studio or visible Qt claim.",
+      "known_diagnostic_scope": "Eleven No active debugger session errors retained, also observed in the plain-kernel baseline; no globally error-free host claim."
+    },
+    "actual_jupyter": {
+      "outcome": "passed",
+      "capture_restore_cases": 6,
+      "strong_restore_cases": 6,
+      "studio_cases": 4,
+      "no_late_write_after_cancel": true,
+      "no_late_write_after_timeout": true,
+      "known_host_diagnostics": 11,
+      "unexpected_page_errors": 0,
+      "native_exit": 0,
+      "seconds": 96.64942542789504,
+      "process_cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "selected_inputs": 4328,
+      "changed_inputs": [],
+      "ephemeral_credentials_removed": true,
+      "observations_sha256": "7de0c020e35251c34167862a19c9895f3c8e8a295689902ba5da35292337d74c",
+      "scope": "Latest endpoint-order transport; six perturbed-camera/fresh-draw restores and exact saved/displayed frame agreement. The pre-restore frame itself is not changed in this Jupyter scenario. No detached-Studio or visible Qt claim.",
+      "known_diagnostic_scope": "Eleven No active debugger session errors retained, also observed in the plain-kernel baseline; not a globally error-free host claim."
+    },
+    "endpoint_order": {
+      "native_exit": 0,
+      "passed": 101,
+      "seconds": 23.15,
+      "scope": "Endpoint ownership, typed/JSON transport, addon endpoints, Qt connector contract, Studio captures and runtime routing. Includes clear-before-load and popup-first completion regression; overlaps prior combined Python counts.",
+      "log_sha256": "31c6e135224379a326216da1b6ff6bde0e8f4ac10f7d5d981adca02deb4febb2",
+      "mechanism": "Python addresses each scene projection to its own renderer queue; the widget relays it before primary application latency can reorder it. Primary JSON fallback is not broadcast into another canvas."
+    },
+    "typescript": {
+      "command": "npx --no-install tsc --noEmit",
+      "native_exit": 0,
+      "scope": "Final frontend endpoint routing source; no TypeScript errors."
+    },
+    "private_custody": {
+      "schema": "molsysviewer.private_capture_custody_receipt@1",
+      "custodian": "Diego Prada Gracia",
+      "opaque_reference": "robustness-20261106/capture-studio-20261107-1",
+      "files_verified": 189,
+      "total_bytes": 21050359,
+      "manifest_sha256": "938f37441d9b726ac2caca10c223d67eb22ef825f0550f171a4584ede6e5f691",
+      "originals_retained": true,
+      "off_host_backup_claimed": false,
+      "scope": "Retained completed A5/Studio/Jupyter and M0 Movie originals; running full-core pytest log/JUnit explicitly excluded until terminal."
+    },
+    "independent_review_followup": {
+      "verification": "reproduced and corrected in working source",
+      "finding": "Generic fanout included primary-local addon mount/state messages. The owning AnyWidget seam now explicitly targets the host; Qt/Remote preserve their connector-owned primary default.",
+      "causal_probe": {
+        "before": "native1, nine messages leak across three destinations",
+        "after": "native0, exactly three primary-host messages and one backend widget owner"
+      },
+      "regression_scope": {
+        "native_exit": 0,
+        "passed": 39,
+        "seconds": 7.44,
+        "inputs_unchanged": true,
+        "modules": [
+          "test_addon_panel_endpoints.py",
+          "test_addon_read_only_actions.py",
+          "test_remote_view_channel.py"
+        ]
+      },
+      "retained_test_preconditions": "The first remote test tried a second human client rejected by the real router. It now uses the supported one-client contract; the original failure remains retained."
+    },
+    "complete_python_initial": {
+      "native_exit": 1,
+      "passed": 3750,
+      "failed": 5,
+      "errors": 0,
+      "skipped": 22,
+      "deselected": 16,
+      "seconds": 836.17,
+      "selected_cases": 3777,
+      "log_sha256": "2e1259be89b2830572de2d07d83ce26deba9f12819e8531a7fe526e764abf697",
+      "junit_sha256": "cf0779d7fddb05ae8151ebf30b78bfb4cd3408b3fbf8e77be01a815350de9daa",
+      "receptor_report_preserved": true,
+      "diagnosis": [
+        "Primary endpoint is now explicitly host-addressed; one readonly-addon assertion still expects None.",
+        "Public API reference omits retained camera compatibility alias.",
+        "Generated capability counts need regeneration for async methods.",
+        "Static export test still expects canvas popup to omit authoritative panel metadata.",
+        "New raw-widget scheduler tests leave their 18 owned Layout objects registered; isolated teardown passes, ordered deadline-to-teardown reproduces."
+      ],
+      "scoped_corrections": {
+        "capability_and_static": {
+          "native_exit": 0,
+          "passed": 220,
+          "seconds": 16.97
+        },
+        "deadline_then_teardown": {
+          "native_exit": 0,
+          "passed": 22,
+          "seconds": 8.42,
+          "production_changed": false
+        },
+        "addon_endpoints": {
+          "native_exit": 0,
+          "passed": 39
+        },
+        "popup_json_fallback": {
+          "native_exit": 0,
+          "passed": 12
+        }
+      },
+      "followup": "All five causes have scoped corrections; complete_python_repeat passes 3760 cases with 22 documented skips. The original failed result remains retained."
+    },
+    "popup_json_fallback": {
+      "verification": "reproduced and corrected",
+      "preexisting_in_base": true,
+      "before_native_exit": 1,
+      "after_native_exit": 0,
+      "scoped_passes": 12,
+      "seconds": 4.58,
+      "mechanism": "A rejected popup begin used to queue its JSON fallback behind the still-active primary stream. It now uses the popup defer_for_endpoint, preserving JSON-before-scene order independently.",
+      "guard": "tests/test_array_native_transport.py::test_popup_json_fallback_precedes_its_scene_even_while_primary_stream_is_active",
+      "retained_driver_precondition": "Initial test imported the warning from a nonexistent public module; corrected before the causal red run."
+    },
+    "complete_python_repeat": {
+      "native_exit": 0,
+      "selected_inputs": 5401,
+      "changed_inputs": [],
+      "hash_window": "Selected tracked product/test/docs plus recorded provider files; runtime hash only. Snapshot taken during startup of fullcore2, not asserted as a pre-command digest. Public files remain frozen until terminal; temporary evidence is excluded.",
+      "suites": [
+        {
+          "tests": "3782",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "22",
+          "time": "748.594"
+        }
+      ],
+      "skip_reasons": {
+        "Legacy MolSysMT entry point is not installed": 1,
+        "template has no placeholders": 15,
+        "Requires installed scientific artifacts": 2,
+        "requires an explicitly selected real Chromium/GPU environment": 2,
+        "imageio is installed; cannot test ImportError path": 1,
+        "Windows process memory API": 1
+      },
+      "log_sha256": "41a189ed09a9c1e0c5e9e39a460eda4fa5c26256d9a189ce566c8745a9e53cd2",
+      "junit_sha256": "cda54188717a9cb9deffb1d52717e7761690cef2afec7d7ef6e9637a566661f2",
+      "state": "passed",
+      "passed": 3760,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 22,
+      "deselected": 16,
+      "seconds": 748.66,
+      "scope": "Complete core Python selection; experimental qt_runtime and separately received jupyter_runtime excluded by explicit markers. No failed tests removed. Hash window begins during startup, as declared by the retained manifest."
+    },
+    "before_draw_cancellation": {
+      "verification": "reproduced after the full-suite source freeze, without versioned source changes",
+      "native_exit": 1,
+      "outcome": "Intentional confirmed-product-regression verdict, not driver failure",
+      "selected_inputs": 4656,
+      "changed_inputs": [],
+      "page_errors": 0,
+      "scope": "Real MolStar animationLoop.stop({noDraw:true}) suspends drawing. Primary and popup receive accepted cancellation at transport but retain disabled Cancelling controls until rendering resumes. No renderer snapshot/draw exists before cancellation. Backend cancels and writes no file; late real reply also writes none. Natural ten-second timeout controls unlock correctly.",
+      "next": "Authenticated terminal controls outside the scene queue and correlated abortable draw waits; retain one existing render clock and backend deadline."
+    },
+    "terminal_receiving_custody": {
+      "schema": "molsysviewer.private_capture_custody_receipt@1",
+      "custodian": "Diego Prada Gracia",
+      "opaque_reference": "robustness-20261106/capture-core-20261107-1",
+      "files_verified": 71,
+      "total_bytes": 6868873,
+      "manifest_sha256": "3353fc358fb7223f1f1bef507009a9815a979f56fe9330a9782337f707a579fc",
+      "originals_retained": true,
+      "off_host_backup_claimed": false,
+      "scope": "Terminal full core runs and retained failures, addon/fallback receiving, before-draw regression, private Qt/playback proposal and B2 observation/duplicate review."
+    },
+    "delivery_state": "Reviewed foundation source ready for integration; native/playback/before-draw and consolidated acceptance remain open.",
+    "integration_documentation": {
+      "native_exit": 0,
+      "passed": 584,
+      "seconds": 12.92,
+      "scope": "Reporting/registered guards, clean-checkout links, architecture status, issue tools and generated capability audit; source scopes overlap full core.",
+      "log_sha256": "9c63a0d074f6c5e570ac6098e0eb12f3e53dac44e4a26510210652c746bf39b8",
+      "junit_sha256": "c92d84a4fee01fb816159b17299e243d21bd8d7aa23987c25c9a45c68a872dcd"
+    },
+    "final_checks": {
+      "devguide_index": "current",
+      "ruff_check": "31 Python paths pass",
+      "ruff_format": "31 Python paths unchanged",
+      "git_whitespace": "pass",
+      "origin_divergence_before_integration": [
+        0,
+        0
+      ],
+      "human_sandbox_files_unchanged": 7
+    }
   }
 }

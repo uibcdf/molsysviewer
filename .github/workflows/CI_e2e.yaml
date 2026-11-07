@@ -173,3 +173,19 @@ jobs:
         env:
           PW_CHROMIUM_BIN: /usr/bin/google-chrome
         run: npm run test:e2e:remote-portable
+
+      - name: Receive work files in an actual Jupyter kernel and browser
+        if: ${{ !cancelled() && (github.event_name != 'workflow_dispatch' || inputs.e2e_lane == 'core') }}
+        shell: bash -l {0}
+        env:
+          PW_CHROMIUM_BIN: /usr/bin/google-chrome
+        run: python tests/_jupyter_live_capture.py
+
+      - name: Preserve safe live-Jupyter command receipts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-jupyter-command-receipts
+          path: .pytest_cache/live-jupyter/**/command-result.json
+          if-no-files-found: ignore
+          include-hidden-files: true

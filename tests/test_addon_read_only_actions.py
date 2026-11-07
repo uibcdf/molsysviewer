@@ -151,7 +151,11 @@ def test_mount_delivers_server_owned_reader_declaration_to_its_exact_endpoint(ca
     case.widget.send = lambda message, buffers=None: sent.append(message)
     case._ready = True
     case._mount_addon_panel("readonly-receiving", "report", endpoint_id=endpoint)
-    mount = next(message for message in sent if message.get("op") == "mount_addon_panel")
+    messages = [message for message in sent if message.get("op") in {"mount_addon_panel", "addon_panel_message"}]
+    mounts = [message for message in messages if message["op"] == "mount_addon_panel"]
+    assert len(mounts) == 1
+    mount = mounts[0]
     assert mount["read_only_actions"] == ["inspect"]
-    assert mount.get("target_endpoint_id") == endpoint
+    owner = f"widget-host:{case._binary_session_id}" if endpoint is None else endpoint
+    assert all(message["target_endpoint_id"] == owner for message in messages)
     assert case._active_panel_widgets[endpoint][2].read_only_actions == ("inspect",)

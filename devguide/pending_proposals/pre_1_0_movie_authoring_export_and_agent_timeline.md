@@ -47,6 +47,142 @@ language interpretation and planning. Keep [the product boundary](../core_and_ad
 Python composability, explicit scientific parameters and the existing
 experimental interactions contract. No LLM dependency is required in core.
 
+## M0 receiving — 2026-11-07
+
+**M0 is partial.** The current inventory includes source inspection and actual
+Python model calls on a fresh bundled dialanine View. It does not qualify the
+expanded story, encoded video, portable Movie web playback, a new native host
+observation or an installed candidate. No Movie production file or media file
+was changed or written by this investigation, and no new failing regression is
+committed before the reviewed M1 contract.
+
+The two Movie implementation owners are unchanged against
+`9a783d500a756210e70e11946552c4afbe5fe936`: the scoped `git diff --exit-code`
+returns native exit 0. Other current working-tree files, including #319
+integration, are not covered by that no-difference claim.
+
+| Current source owner | SHA-256 |
+| --- | --- |
+| `molsysviewer/viewer/movie.py` | `6f3a1ac4cb127da3051347ed294cc096e04e01318fd2d51e9026f3ced242e7b2` |
+| `molsysviewer/js/src/managers/handlers/movie-handlers.ts` | `6badc91424a6be7401ea21ba217b6b17ed2c5f9018bde792dd6136ac29fe9e73` |
+
+### Implemented foundation and the requested story
+
+| Boundary | Current source support | Remaining mechanism for #320 |
+| --- | --- | --- |
+| Camera and structures | `MovieManager` constructs camera vectors, orbits, structure sweeps and visibility steps; TS previews with an animation-frame clock and four easing modes. | A complete baseline and independent channel evaluation must make mixed actions, reverse seek, repeated evaluation and simultaneous zoom/rotation deterministic. |
+| Pocket and loaded ligand | Existing region/layer APIs already define molecular subsets and explicit representations. | Movie visibility is an untyped tag map; `viewer-controller.ts` sends it with `kind: "shape"`. It cannot reliably address ordinary regions or other domains. Representation, colour and opacity have no timed Movie channel. |
+| Calculated interactions | Viewer already stores analyses separately from representations and projects frame-specific interaction content. | The timeline must reference the supplied visual/result owners and preserve evaluated, evaluated-empty and not-evaluated coverage. Playback must not calculate or prepare molecular data implicitly. |
+| Labels and overlays | Static annotations are real Mol* geometry and can appear in captured images. | No timed label text, anchor, visibility or overlay channel exists. Camera-follow label refresh is asynchronous; Movie does not await that geometry refresh. DOM legends/plots have no screenshot compositor. |
+| Timeline preservation | Version-1 recipe JSON can be saved and loaded separately. | `export_state()` has no Movie record; session writing inherits that omission. No baseline, target resolution/remapping or timeline restoration contract joins scene and recipe. |
+| Media | JS exports sequential PNG data URIs after applying camera/frame/visibility and awaiting a draw; Python decodes them and calls ImageIO. | Export needs correlated jobs, bounded storage, error/cancel/disconnect cleanup, atomic destinations, qualified encoders and explicit sampling/duration/final-frame rules. |
+| Authoring and web | Python construction/inspection and ordinary static HTML export are reusable foundations. | No Studio Movie authoring panel, arbitrary-time Movie seek API or portable Movie web presentation/player is implemented. A static scene or recipe JSON does not preserve a playable story. |
+
+The schema at `molsysviewer/js/src/messages/viewer-messages.ts` carries only `time_ms`,
+camera position/target/up, structure index, layer visibility and easing. The
+scene already distinguishes `(domain, tag)` identity; Movie must reuse that
+ownership rather than introduce a competing identity registry.
+
+### Reproduced model gaps
+
+The private receiving workspace is
+`.pytest_cache/robustness-20261106/M0-movie-inventory-k_z633ph`. It retains
+`probe.py`, `run.py`, the exact command, native output, source hashes and the
+empty owner diff. The explicit interpreter is
+`/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python`; the
+probe uses the controlled MolSysMT structural-series source and the recorded
+PyUnitWizard `02d0015` snapshot. Its native exit is **0**, in **4.88 seconds**:
+the exit means the following observations were confirmed, not that Movie
+qualification passed.
+
+- `keyframes` returns a new list with shared nested camera dictionaries.
+  Changing a returned camera changes the live timeline.
+- `to_dict()` and `from_dict()` also retain nested aliases. Editing an exported
+  recipe or the input mapping after import changes the live timeline.
+- `from_dict()` accepts a keyframe with time `-100 ms`, an unknown easing,
+  an invalid camera and structure index `999999`. Its current validation checks
+  version, timestamp presence and ordering, without validating the full record.
+- `export_state()` omits Movie even when a timeline exists. The probe verifies
+  that molecular coordinates remain exactly unchanged; it writes no state,
+  session, recipe or media output.
+
+These observations belong to #320. They are retained as a private probe until
+M1 defines the replacement/migration contract; they are not added as red
+production expectations that encode a design still awaiting review.
+
+### Inspected evaluation, export and availability gaps
+
+`movie-handlers.ts` selects adjacent whole keyframes rather than adjacent keys
+of each channel. Inserting a visibility-only keyframe between camera A and B
+can interrupt the camera segment and prevent the final camera from applying.
+Structure interpolation has the same adjacency premise. Visibility accumulates
+prior changes without reconstructing a complete baseline, so loop/reverse-time
+results can depend on playback history.
+
+Preview completion and Stop drain camera writes, while structure and visibility
+updates are submitted without awaiting their applied state. The trajectory
+player retains its own interval clock, and Movie does not arbitrate it or
+spin/rock. Export does await each sampled scene, but has no generation/request
+token or cancellation owner and does not stop competing playback. Python
+collects uncorrelated frames in one View-wide list and accepts an uncorrelated
+export-done event. A missing image can become an empty data URI followed by
+export-done; those conditions need explicit terminal failure.
+
+Python export retains every PNG/data URI and then every decoded array before
+encoding, so useful-size memory qualification is outstanding. `format=` is
+documented and digested but is not passed to the writer; codec selection is not
+explicit. The no-frontend `MSM_VIEWS_FROM_HTML_FILES=True` branch can return a
+10-by-10 black placeholder as successful output. That branch cannot qualify
+the accepted useful-video requirement. These findings are from inspection;
+this M0 run did not execute export or an encoder.
+
+The reviewed optional runtime floor remains `imageio>=2.16.0`; it does not
+establish a codec installation. This development interpreter has ImageIO
+2.37.4 and Pillow 12.3.0, but neither the `imageio_ffmpeg` module nor an
+`ffmpeg` executable. MP4/WebM availability was therefore not qualified here.
+Current public docs advertise H.264/VP9 and format override more strongly than
+the inspected implementation/evidence supports. The vision's class/syntax
+examples remain unimplemented design ideas; its status notice and
+`devguide/README.md` now point to this approved pre-1.0 requirement. Reconcile
+the public capability claims with received outputs during M6.
+
+### Existing guards and the first M1 review
+
+The existing registered browser selector is
+`molsysviewer/js/tests/e2e/movie-playback.e2e.ts`, built by `build:e2e:all` and
+run in `test:e2e:core`. It protects real Mol* camera interpolation, final-draw
+completion and interruption. `molsysviewer/js/tests/unit/movie-handler.test.ts` protects three
+camera lifecycle cases. `tests/test_movie.py` mostly uses a DummyView and
+synthetic PNGs. The separate Qt workbench guard receives three actual
+240-by-160 orbit frames, a readable GIF and a responsive Qt loop; the encoder
+may coalesce equal viewpoints. None of these
+guards receives the whole pocket/ligand/interactions/labels story, portable web,
+useful-size encoded video or the new authoring workflow. They were inspected,
+not rerun for this M0 inventory.
+
+Review M1 as one versioned, headless model/API contract before extending GUI or
+playback. The first slice should include:
+
+1. A detached scene baseline and explicit molecular/scene identity, reusing
+   existing state records and remapping tools. Missing, renamed, ambiguous or
+   incompatible targets must have a reviewed refusal/remapping rule.
+2. Independent channels for camera, structures, appearance, visibility,
+   overlays and required lighting, with domain/tag targets. Define sparse-key
+   hold/interpolation, simultaneous keys and same-channel conflicts explicitly.
+3. Explicit timebase, frame sampling and quantity contracts. Camera position
+   and target are lengths; camera up is dimensionless. Use the registered
+   PyUnitWizard boundary, with reviewed migration of the fixed-unit v1 format.
+4. Detached construction/inspection/editing/import, full validation and
+   transactional replacement. A rejected plan/import must preserve the prior
+   timeline and scene. Define v1 migration without guessing ambiguous tags.
+5. Save/reopen integration and acceptance fixtures that express the complete
+   approved story using supplied scientific data. Later preview, seek, video,
+   web and agent consumers must use this same model and one execution owner.
+
+Public names, exact signatures, graphical layout and channel representation
+remain to be agreed. M1 does not reduce the approved M2–M6 scope, introduce an
+LLM dependency, or promise runtime support for channels before receiving it.
+
 ## Execution route
 
 | Phase | Deliverable to review | Evidence before calling it complete |

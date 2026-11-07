@@ -16,6 +16,36 @@ def _capture_widget_send(view):
     return sent
 
 
+def test_popup_json_fallback_precedes_its_scene_even_while_primary_stream_is_active():
+    from molsysviewer._private.smonitor.warnings import StructureStreamFallbackWarning
+
+    with demo["dialanine"] as view:
+        view._ready = True
+        view._frontend_capabilities = {"binary_structure_data": [1], "max_buffer_bytes": 16 * 1024 * 1024}
+        view._endpoint_transfers.register("popup-review", "canvas")
+        sent = []
+
+        def send(message, buffers=None):
+            if message.get("op") == "structure_data_begin" and message.get("target_endpoint_id") == "popup-review":
+                raise RuntimeError("The popup connector rejected its begin packet.")
+            sent.append(dict(message))
+
+        view.widget.send = send
+        with pytest.warns(StructureStreamFallbackWarning):
+            view._deliver_transport_message(view._current_molecular_projection)
+        assert view._structure_transfer_manager(None).has_active
+        assert not view._structure_transfer_manager("popup-review").has_active
+        assert any(
+            message["op"] == "load_molsys_payload" and message.get("target_endpoint_id") == "popup-review"
+            for message in sent
+        )
+        view._send_runtime_only({"op": "set_trajectory_frame", "index": 0})
+        assert [message["op"] for message in sent if message.get("target_endpoint_id") == "popup-review"] == [
+            "load_molsys_payload",
+            "set_trajectory_frame",
+        ]
+
+
 def test_anywidget_binary_capability_never_builds_the_json_fallback(monkeypatch):
     view = demo["dialanine"]
     json_builds: list[int] = []

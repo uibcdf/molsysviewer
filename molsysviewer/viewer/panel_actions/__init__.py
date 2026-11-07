@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
+from concurrent.futures import Future
 from typing import Any
 
+from ..work_file_saves import WorkFileSaveCancelled
 from ._file_selection import HANDLERS as FILE_SELECTION_HANDLERS
 from .addons import HANDLERS as ADDON_HANDLERS
 from .batch import batch_scene_objects
@@ -16,7 +18,7 @@ from .trajectory import HANDLERS as TRAJECTORY_HANDLERS
 from .viewport import HANDLERS as VIEWPORT_HANDLERS
 from .whole import HANDLERS as WHOLE_HANDLERS
 
-PanelActionHandler = Callable[[Any, Mapping[str, Any]], None]
+PanelActionHandler = Callable[[Any, Mapping[str, Any]], Any]
 
 
 def _sync_system_edits(view, content):
@@ -25,6 +27,7 @@ def _sync_system_edits(view, content):
 
 STUDIO_RESULT_DOMAINS = {
     "save_work_file": "export",
+    "cancel_work_file": "export",
     "restore_work_file": "export",
     "create_region_from_selection": "regions",
     "create_region_from_saved_selection": "regions",
@@ -106,7 +109,28 @@ CONTEXT_ONLY_ACTIONS = frozenset(
 )
 
 
-def dispatch_panel_action(view: Any, content: Mapping[str, Any]) -> None:
+def _studio_result(view, content, domain, error=None):
+    message = {
+        "op": "studio_action_result",
+        "action": content["action"],
+        "request_id": content["request_id"],
+        "ok": error is None,
+        "domain": domain,
+    }
+    if error is not None:
+        message["error_message"] = str(error)
+        if isinstance(error, WorkFileSaveCancelled):
+            message["cancelled"] = True
+    owner = content.get("_studio_owner_endpoint_id", content.get("_work_file_owner_endpoint_id"))
+    if isinstance(owner, str) and owner:
+        message["target_endpoint_id"] = f"widget-host:{view._binary_session_id}" if owner == "primary" else owner
+    # A verdict releases requester controls; it must not wait for an unrelated
+    # structure stream (or for the stream whose failure caused this verdict).
+    if view._ready:
+        view._transmit_widget_message(message)
+
+
+def dispatch_panel_action(view: Any, content: Mapping[str, Any]):
     action = content.get("action")
     if not isinstance(action, str) or not action:
         raise ValueError("Panel action requires a non-empty action name.")
@@ -118,29 +142,31 @@ def dispatch_panel_action(view: Any, content: Mapping[str, Any]) -> None:
     ):
         domain = STUDIO_RESULT_DOMAINS.get(action, content.get("domain"))
         try:
-            handler(view, content)
+            pending = handler(view, content)
         except Exception as exc:
-            view._send_runtime_only(
-                {
-                    "op": "studio_action_result",
-                    "action": action,
-                    "request_id": content["request_id"],
-                    "ok": False,
-                    "domain": domain,
-                    "error_message": str(exc),
-                }
-            )
+            _studio_result(view, content, domain, exc)
             raise
         else:
-            view._send_runtime_only(
-                {
-                    "op": "studio_action_result",
-                    "action": action,
-                    "request_id": content["request_id"],
-                    "ok": True,
-                    "domain": domain,
-                }
-            )
+            if isinstance(pending, Future):
+                intent = dict(content)
+
+                def completed(future):
+                    try:
+                        future.result()
+                    except BaseException as error:
+                        _studio_result(view, intent, domain, error)
+                        if (
+                            isinstance(error, Exception)
+                            and action != "cancel_work_file"
+                            and not isinstance(error, WorkFileSaveCancelled)
+                        ):
+                            view._send_backend_error_ack(intent, error)
+                    else:
+                        _studio_result(view, intent, domain)
+
+                pending.add_done_callback(completed)
+                return pending
+            _studio_result(view, content, domain)
     else:
         handler(view, content)
 

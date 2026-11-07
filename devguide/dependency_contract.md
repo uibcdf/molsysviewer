@@ -78,6 +78,14 @@ it does not replace exact origin checks or behavioral qualification. Test
 fixture dependencies such as RDKit belong to the test/development environments,
 not to the mandatory Viewer runtime requirements (`uibcdf/molsysviewer#161`).
 
+The test environment also supplies JupyterLab, ipykernel and psutil for the
+actual live-kernel/browser work-file regression under #319. They remain
+test-only dependencies. Core browser CI invokes that guard explicitly, and the
+strict release gate has a separate `jupyter` step: the optional local pytest
+profile's skip cannot satisfy it. Only safe command receipts are uploaded;
+raw localhost-server/browser logs can contain ephemeral credentials and remain
+in the guarded receiving directory.
+
 ## JavaScript registry advisories
 
 After a clean `npm ci`, core browser CI and the local release gate require

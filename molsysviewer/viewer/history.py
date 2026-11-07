@@ -365,7 +365,7 @@ class HistoryMixin:
 
     def _send_runtime_only(self, msg: dict) -> None:
         if self._ready:
-            self._send_widget_message(msg)
+            self._deliver_transport_message(msg)
 
     def _send_replay(self, msg: dict) -> None:
         if msg.get("op") in self._MOLECULAR_LOAD_OPS:

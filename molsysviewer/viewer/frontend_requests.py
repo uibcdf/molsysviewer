@@ -50,7 +50,7 @@ class FrontendRequests:
     No lock or scientific-edit context is held across the asynchronous wait.
     """
 
-    def __init__(self, *, capacity: int = 32):
+    def __init__(self, *, capacity: int = 32, publish=None):
         if type(capacity) is not int or capacity < 1:
             raise ValueError("Frontend request capacity must be a positive integer.")
         self._capacity = capacity
@@ -58,6 +58,7 @@ class FrontendRequests:
         self._closed = False
         self._owner_id = uuid4().hex
         self._lock = RLock()
+        self._publish = publish if publish is not None else lambda callback: callback()
 
     def begin(self, *, endpoint_id: str, reply_event: str, revision: str, timeout: float) -> FrontendRequest:
         for value in (endpoint_id, reply_event, revision):
@@ -104,12 +105,13 @@ class FrontendRequests:
         if not request.future.set_running_or_notify_cancel():
             return False
         if request.deadline <= time.monotonic():
-            request.future.set_exception(FrontendRequestError(reason="request_timeout"))
+            self._publish(lambda: request.future.set_exception(FrontendRequestError(reason="request_timeout")))
             return False
         if content.get("ok") is not True:
-            request.future.set_exception(FrontendRequestError(reason="renderer_refused"))
+            self._publish(lambda: request.future.set_exception(FrontendRequestError(reason="renderer_refused")))
         else:
-            request.future.set_result(deepcopy(content))
+            payload = deepcopy(content)
+            self._publish(lambda: request.future.set_result(payload))
         return True
 
     async def wait(self, request: FrontendRequest) -> dict:
@@ -125,7 +127,11 @@ class FrontendRequests:
             raise FrontendRequestError(reason="request_timeout") from error
         finally:
             self._release(request)
-            request.future.cancel()
+            self.cancel(request)
+
+    def cancel(self, request: FrontendRequest) -> None:
+        self._release(request)
+        self._publish(request.future.cancel)
 
     def cancel_endpoint(self, endpoint_id: str) -> None:
         with self._lock:
@@ -160,4 +166,4 @@ class FrontendRequests:
     def _fail(self, request: FrontendRequest, reason: str) -> None:
         self._release(request)
         if request.future.set_running_or_notify_cancel():
-            request.future.set_exception(FrontendRequestError(reason=reason))
+            self._publish(lambda: request.future.set_exception(FrontendRequestError(reason=reason)))

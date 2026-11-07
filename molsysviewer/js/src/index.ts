@@ -879,6 +879,28 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
         };
         sendLog = createLogger(model, debug, sendToPython);
 
+        // The transport owns endpoint identity. Studio payloads cannot choose
+        // another canvas or another window as the owner of a pending save.
+        const pendingWorkFileSaves = new Map<string, { requestId: string; owner: string; canvas: string }>();
+        const workFileKey = (owner: string, requestId: string) => JSON.stringify([owner, requestId]);
+        const sendEndpointAction = (message: Record<string, unknown>, owner: string, canvas: string) => {
+            const correlated = message.event === "interaction_context_action"
+                && typeof message.request_id === "string" && message.request_id.trim() !== "";
+            const owned = correlated ? { ...message, _studio_owner_endpoint_id: owner } : message;
+            if (message.event !== "interaction_context_action"
+                || (message.action !== "save_work_file" && message.action !== "cancel_work_file")) {
+                return sendToPython(owned);
+            }
+            const stamped = { ...owned, _work_file_owner_endpoint_id: owner, _capture_endpoint_id: canvas };
+            if (message.action === "save_work_file" && typeof message.request_id === "string") {
+                pendingWorkFileSaves.set(workFileKey(owner, message.request_id), { requestId: message.request_id, owner, canvas });
+            }
+            return sendToPython(stamped);
+        };
+        // A panel endpoint retains the canvas it came from even if that canvas
+        // closes. A later save then refuses instead of sampling the notebook.
+        const panelCanvasEndpoints = new Map<string, string>();
+
         // R2: the canonical popup scene snapshot is built by Python from live
         // state. The host requests it on popup ready and resolves the pending
         // promise when the correlated projection arrives.
@@ -1032,6 +1054,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
             sessionId: model.get("runtime_session_id"),
             onEndpointClosed: (mode, endpointId) => {
                 cancelSceneSnapshotsFor(mode);
+                panelCanvasEndpoints.delete(endpointId);
                 if (mode === "canvas") (el as any).molsysviewerOnPopupClosed?.();
                 sendToPython({
                     event: "popup_endpoint_closed",
@@ -1062,7 +1085,8 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
             }
             return win;
         };
-        const openPanelPopup = (preopenedWindow?: Window | null, panel?: "navigate" | "addons") => {
+        const openPanelPopup = (preopenedWindow?: Window | null, panel?: "navigate" | "addons",
+            captureEndpointId = envelopeAdapter.widgetHostEndpoint) => {
             controllerPromise.then(async c => {
                 // A reserved window came from the external canvas, which owns
                 // its own shell handoff. Do not move the notebook's local UI.
@@ -1072,14 +1096,18 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                     if (c.canvasHost.style.display === "none") c.setCanvasVisibility(true);
                     c.sharedShell?.setVisible(false);
                 }
-                void popupMgr.open("panel", preopenedWindow, { panel, restoreHostPanel: !preopenedWindow });
+                const wasOpen = popupMgr.isPanelOpen;
+                const opening = popupMgr.open("panel", preopenedWindow, { panel, restoreHostPanel: !preopenedWindow });
+                const endpointId = popupMgr.popupEndpointId("panel");
+                if (!wasOpen && endpointId) panelCanvasEndpoints.set(endpointId, captureEndpointId);
+                void opening;
             });
         };
 
         // 3. Initialize Controller
         const panelModeStyle = (model.get("panel_mode_style") as string) || "drawer";
         const controllerPromise = MolSysViewerController.create(target, msg => {
-            sendToPython(msg);
+            sendEndpointAction(msg, envelopeAdapter.widgetHostEndpoint, envelopeAdapter.widgetHostEndpoint);
             // Sync interactive measurements to popup: the host already has them (created in-place),
             // so we retain the equivalent add_*_measurement op and forward it to any
             // open popup so it reflects the same measurement without going through Python round-trip.
@@ -1345,7 +1373,9 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                             const sourceWindow = ev.source as Window & { __molsysviewer_pending_panel_window?: Window | null };
                             const reserved = sourceWindow.__molsysviewer_pending_panel_window;
                             delete sourceWindow.__molsysviewer_pending_panel_window;
-                            if (reserved && !reserved.closed) openPanelPopup(reserved, data?.panel);
+                            if (reserved && !reserved.closed && popupMessage.channel.mode === "canvas") {
+                                openPanelPopup(reserved, data?.panel, popupMessage.channel.popupEndpointId);
+                            }
                         }
                         break;
 
@@ -1377,11 +1407,16 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                         // 1. Forward to Python so it is recorded.
                         if (data) {
                             const panelEvent = ["panel_navigate", "panel_unmount", "addon_panel_action"].includes(data.event);
-                            sendToPython(panelEvent
+                            const endpointId = popupMessage.channel.popupEndpointId;
+                            sendEndpointAction(panelEvent
                                 ? { ...data, _panel_endpoint_id: popupMessage.channel.popupEndpointId }
                                 : data.event === "visual_state_snapshot"
                                     ? { ...data, _capture_endpoint_id: popupMessage.channel.popupEndpointId }
-                                    : data);
+                                    : data,
+                                endpointId,
+                                popupMessage.channel.mode === "panel"
+                                    ? panelCanvasEndpoints.get(endpointId) ?? endpointId
+                                    : endpointId);
                         }
                         // 2. Apply to the host canvas (popup already has it, so do NOT re-sync to popup).
                         if (data) {
@@ -1506,23 +1541,35 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                 }
                 msg = inbound.message as typeof msg;
             }
-            // D4: a message addressed to a popup endpoint is relayed, never
-            // consumed. The host holds one chunk transiently while forwarding
-            // and keeps no copy of the generation.
+            if (msg.op === "studio_action_result") {
+                const result = msg as any;
+                if (result.action === "save_work_file" || (result.action === "cancel_work_file" && result.ok)) {
+                    const owner = typeof result.target_endpoint_id === "string" && result.target_endpoint_id
+                        ? result.target_endpoint_id : envelopeAdapter.widgetHostEndpoint;
+                    pendingWorkFileSaves.delete(workFileKey(owner, result.request_id));
+                }
+            }
+            // Endpoint-specific requests/projections are relayed, never sampled
+            // by the host. Structure chunks remain transient while forwarding.
             const relayTarget = (msg as any)?.target_endpoint_id;
-            if (typeof relayTarget === "string" && relayTarget) {
+            if (typeof relayTarget === "string" && relayTarget && relayTarget !== envelopeAdapter.widgetHostEndpoint) {
                 const mode = relayTarget === popupMgr.popupEndpointId("canvas") ? "canvas"
                     : relayTarget === popupMgr.popupEndpointId("panel") ? "panel"
                     : null;
                 if (!mode) {
+                    // A closed Studio has nobody left to consume its final
+                    // save/cancel verdict. Endpoint closure is expected here.
+                    if (msg.op === "studio_action_result" || msg.op === "backend_error_occurred") return;
                     sendLog("error", `[MolSysViewer] relay target is not an open endpoint: ${relayTarget}`);
                     return;
                 }
-                if (msg.op === "structure_data_begin") popupMgr.beginBootstrap(mode);
-                if (msg.op === "mount_addon_panel" || msg.op === "addon_panel_message") {
+                const structural = msg.op === "structure_data_begin" || msg.op === "structure_data_chunk"
+                    || msg.op === "structure_data_cancel" || msg.op === "load_molsys_payload";
+                if (!structural) {
                     popupMgr.sendTo(mode, "molsysviewer-sync-op", msg);
                     return;
                 }
+                if (msg.op === "structure_data_begin") popupMgr.beginBootstrap(mode);
                 popupMgr.sendTo(mode, "molsysviewer-structure-data", {
                     message: msg,
                     buffers: buffers ?? [],
@@ -1586,7 +1633,9 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                 }
                 return;
             }
-            const panelLocal = msg.op === "mount_addon_panel" || msg.op === "addon_panel_message";
+            const panelLocal = msg.op === "mount_addon_panel" || msg.op === "addon_panel_message"
+                || msg.op === "studio_action_result"
+                || relayTarget === envelopeAdapter.widgetHostEndpoint;
             enqueueMessage(msg, { syncToPopup: !panelLocal });
         };
 
@@ -1606,6 +1655,11 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
             if (disposed) return;
             console.log("[MolSysViewer] Disposing widget...");
             // Endpoint/stream cancellations still leave before the wire closes.
+            for (const endpoint of pendingWorkFileSaves.values()) {
+                sendEndpointAction({ event: "interaction_context_action", action: "cancel_work_file", request_id: endpoint.requestId },
+                    endpoint.owner, endpoint.canvas);
+            }
+            pendingWorkFileSaves.clear();
             popupMgr.dispose();
             arrayNativeStream.dispose();
             disposed = true;

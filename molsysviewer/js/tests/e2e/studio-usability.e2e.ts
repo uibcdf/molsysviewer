@@ -1,4 +1,5 @@
 import { checkStudioCardDefaults } from "./studio-card-scenarios";
+import { checkStudioLiveCapture } from "./studio-live-capture-scenarios";
 import assert from "node:assert/strict";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -90,56 +91,7 @@ async function run() {
         });
 
         await open("export");
-        const work = page.locator('[data-molsysviewer-work-files]');
-        const filePath = work.getByLabel("Path in Python session", { exact: true });
-        const fileKind = work.getByLabel("Work file format", { exact: true });
-        const fileStatus = work.locator('[data-molsysviewer-work-file-status]');
-        const fileEvents: any[] = [];
-        const fileReply = async (action: string) => {
-            const event = await page.evaluate(action => [...(window as any).__messages].reverse().find((msg: any) => msg.action === action), action);
-            fileEvents.push(event);
-            assert.ok(await filePath.isDisabled());
-            // A reply for another request must not unlock these controls.
-            await apply([{ op: "studio_action_result", action, request_id: "unrelated", domain: "export", ok: true }]);
-            assert.ok(await filePath.isDisabled());
-            const response = await bridge.request(fileEvents, "workfiles");
-            await apply(response.message_batches.at(-1));
-            assert.ok(await filePath.isEnabled());
-            assert.ok(await work.isVisible(), "Restoration must return to the requesting file controls, not leave them hidden by System loading");
-        };
-        await filePath.fill(resolve(downloadDir, "missing-directory", "review.json"));
-        await work.getByRole("button", { name: "Save file", exact: true }).click();
-        await fileReply("save_work_file");
-        assert.equal(await fileStatus.getAttribute("role"), "alert");
-        assert.ok((await filePath.inputValue()).includes("missing-directory"));
-        fileEvents.length = 0;
-        const statePath = resolve(downloadDir, "review.json");
-        await filePath.fill(statePath);
-        await work.getByLabel("Allow overwriting an existing file", { exact: true }).check();
-        await work.getByRole("button", { name: "Save file", exact: true }).click();
-        await fileReply("save_work_file");
-        assert.match(await fileStatus.innerText(), /Saved scene state/);
-        assert.ok(JSON.parse(await readFile(statePath, "utf8")).annotations.length > 0);
-        await open("viewport"); await open("export");
-        assert.equal(await filePath.inputValue(), statePath);
-        await work.getByRole("button", { name: "Restore file…", exact: true }).click();
-        await work.getByRole("button", { name: "Cancel", exact: true }).click();
-        assert.equal(await work.getByRole("button", { name: "Confirm restore", exact: true }).count(), 0);
-        await work.getByRole("button", { name: "Restore file…", exact: true }).click();
-        await work.getByRole("button", { name: "Confirm restore", exact: true }).click();
-        await fileReply("restore_work_file");
-        assert.match(await fileStatus.innerText(), /Restored scene state/);
-        const sessionPath = resolve(downloadDir, "review.msv");
-        await fileKind.selectOption("session"); await filePath.fill(sessionPath);
-        await work.getByRole("button", { name: "Save file", exact: true }).click();
-        await fileReply("save_work_file");
-        assert.match(await fileStatus.innerText(), /Saved experimental session/);
-        assert.equal((await readFile(sessionPath)).subarray(0, 2).toString(), "PK");
-        await work.getByRole("button", { name: "Restore file…", exact: true }).click();
-        await work.getByRole("button", { name: "Confirm restore", exact: true }).click();
-        await fileReply("restore_work_file");
-        assert.match(await fileStatus.innerText(), /Restored experimental session/);
-        assert.equal(await filePath.inputValue(), sessionPath);
+        // Deferred file saves are covered below through a persistent widget authority.
         assert.equal(await page.getByLabel("Resolution Scale", { exact: true }).inputValue(), "1.5");
         assert.equal(await page.getByLabel("Transparent Background", { exact: true }).isChecked(), false);
         const dimensions = await page.evaluate(() => {
@@ -358,6 +310,9 @@ async function run() {
         }));
         assert.equal(await page.evaluate(() => (window as any).__disposedPanel.getAttribute("style")), disposed);
         assert.deepEqual(errors, []);
+        const livePage = await page.context().newPage();
+        try { await checkStudioLiveCapture(livePage, dir, downloadDir); }
+        finally { await livePage.close(); }
         console.log("[E2E Studio] real PNG/HTML downloads, transparency, native labels, compact navigation, floating bounds, disposal and discovered addon catalogue passed");
     } finally {
         try { await browser.close(); } finally {

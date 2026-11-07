@@ -200,6 +200,9 @@ class SystemEditsManager:
     def __init__(self, view):
         self._view_ref = ref(view)
         self._lock = RLock()
+        self._notification_lock = RLock()
+        self._lock_depth = 0
+        self._unlock_callbacks = []
         self._state = "synchronized"
         self._operation_id = None
         self._revision = 0
@@ -216,10 +219,37 @@ class SystemEditsManager:
     def _locked(self):
         if not self._lock.acquire(blocking=False):
             raise SystemEditPendingError("Another operation is updating this view; retry after it completes.")
+        with self._notification_lock:
+            self._lock_depth += 1
         try:
             yield
         finally:
-            self._lock.release()
+            with self._notification_lock:
+                self._lock_depth -= 1
+                callbacks = self._unlock_callbacks if self._lock_depth == 0 else []
+                if callbacks:
+                    self._unlock_callbacks = []
+                self._lock.release()
+            # A connector callback or public close may hold several nested
+            # scene guards. Resume kernel consumers only after the outer one
+            # has released ownership, including cancellation and expiration.
+            errors = []
+            for callback in callbacks:
+                try:
+                    callback()
+                except BaseException as error:
+                    errors.append(error)
+            if len(errors) == 1:
+                raise errors[0]
+            if errors:
+                raise BaseExceptionGroup("View completion notifications failed", errors)
+
+    def _after_unlock(self, callback):
+        with self._notification_lock:
+            if self._lock_depth:
+                self._unlock_callbacks.append(callback)
+                return
+        callback()
 
     @contextmanager
     def _internal(self):

@@ -81,6 +81,7 @@ def test_static_export_preserves_complete_panel_summaries_without_duplicate_scen
         for expected in summaries:
             matching = [message for message in static if message["op"] == expected["op"]]
             assert matching == [expected]
+            assert [message for message in canvas if message["op"] == expected["op"]] == [expected]
         region = next(message for message in static if message["op"] == "set_region_summaries")["regions"][0]
         assert region["tag"] == "saved-region" and region["hidden"] is True
         assert region["representation"] == "spacefill"
@@ -88,5 +89,5 @@ def test_static_export_preserves_complete_panel_summaries_without_duplicate_scen
             assert [msg for msg in static if msg["op"] == operation] == [
                 msg for msg in canvas if msg["op"] == operation
             ]
-        assert "set_region_summaries" not in [message["op"] for message in canvas]
+        assert "set_camera_snapshot" not in [message["op"] for message in canvas]
         assert view.export_state() == state

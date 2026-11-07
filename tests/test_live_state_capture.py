@@ -3,6 +3,7 @@
 import asyncio
 import inspect
 import json
+import time
 import zipfile
 from copy import deepcopy
 from threading import Thread
@@ -72,6 +73,97 @@ def test_reply_notification_does_not_retain_the_molecular_lock(view):
     request.future.add_done_callback(completed)
     view._handle_frontend_event(response(request))
     assert observed == ["acquired"]
+
+
+@pytest.mark.parametrize("termination", ["endpoint", "close", "expiration"])
+def test_capture_failure_notifications_wait_for_the_outer_molecular_guard(view, termination):
+    observed = []
+    view._endpoint_transfers.register("popup-review", "canvas")
+    request = view._frontend_requests.begin(
+        endpoint_id="popup-review",
+        reply_event="visual_state_snapshot",
+        revision="v1",
+        timeout=0.001 if termination == "expiration" else 5,
+    )
+
+    def completed(_):
+        def acquire():
+            try:
+                with view._system_edits._locked():
+                    observed.append("acquired")
+            except SystemEditPendingError:
+                observed.append("still_locked")
+
+        worker = Thread(target=acquire)
+        worker.start()
+        worker.join(timeout=1)
+        assert not worker.is_alive()
+
+    request.future.add_done_callback(completed)
+    with view._system_edits._locked():
+        if termination == "close":
+            view.close()
+        elif termination == "endpoint":
+            view._handle_frontend_event({"event": "popup_endpoint_closed", "popup_endpoint_id": "popup-review"})
+        else:
+            time.sleep(max(0, request.deadline - time.monotonic()) + 0.001)
+            # A new reservation expires old requests while preparing a scene.
+            with view._system_edits._locked():
+                next_request = view._frontend_requests.begin(
+                    endpoint_id="primary", reply_event="visual_state_snapshot", revision="v2", timeout=5
+                )
+                view._frontend_requests.cancel(next_request)
+        assert observed == []
+    assert observed == ["acquired"]
+    assert not view._frontend_requests._pending
+
+
+def test_studio_cancel_future_resumes_after_the_connector_releases_scene_ownership(view, tmp_path):
+    from molsysviewer.viewer.panel_actions import dispatch_panel_action
+
+    observed = []
+
+    async def receive():
+        future = dispatch_panel_action(
+            view,
+            {
+                "action": "save_work_file",
+                "request_id": "cancel-review",
+                "file_kind": "state",
+                "path": str(tmp_path / "cancelled.json"),
+                "_work_file_owner_endpoint_id": "primary",
+            },
+        )
+
+        def completed(_):
+            def acquire():
+                try:
+                    with view._system_edits._locked():
+                        observed.append("acquired")
+                except SystemEditPendingError:
+                    observed.append("still_locked")
+
+            worker = Thread(target=acquire)
+            worker.start()
+            worker.join(timeout=1)
+            assert not worker.is_alive()
+
+        future.add_done_callback(completed)
+        view._handle_frontend_event(
+            {
+                "event": "interaction_context_action",
+                "action": "cancel_work_file",
+                "request_id": "cancel-review",
+                "_work_file_owner_endpoint_id": "primary",
+            }
+        )
+        with pytest.raises(FrontendRequestError):
+            await asyncio.wrap_future(future)
+        assert observed == ["acquired"]
+        assert not (tmp_path / "cancelled.json").exists()
+        assert not view._frontend_requests._pending and not view._work_file_saves._pending
+
+    asyncio.run(receive())
 
 
 @pytest.mark.parametrize(

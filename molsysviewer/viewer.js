@@ -153813,6 +153813,8 @@ var WorkFileControls = class {
     this.overwrite.setAttribute("aria-label", "Allow overwriting an existing file");
     this.save = makeButton2("Save file", () => this.submit("save_work_file"));
     this.save.setAttribute("data-molsysviewer-work-file-save", "true");
+    this.cancelSave = makeButton2("Cancel save", () => this.cancelPendingSave());
+    this.cancelSave.setAttribute("data-molsysviewer-work-file-cancel", "true");
     this.restore = makeButton2("Restore file\u2026", () => this.askRestore());
     this.restore.setAttribute("data-molsysviewer-work-file-restore", "true");
     this.status.setAttribute("data-molsysviewer-work-file-status", "true");
@@ -153825,6 +153827,7 @@ var WorkFileControls = class {
       location2,
       overwriteRow,
       this.save,
+      this.cancelSave,
       this.restore,
       this.confirmation,
       this.status,
@@ -153842,15 +153845,43 @@ var WorkFileControls = class {
   }
   updateResult(result2) {
     const request = this.pending;
-    if (!request || result2.request_id !== request.id || result2.action !== request.action || result2.domain !== "export") return false;
+    if (!request || result2.request_id !== request.id || result2.domain !== "export") return false;
+    if (result2.action === "cancel_work_file" && request.action === "save_work_file") {
+      if (result2.ok) {
+        this.pending = null;
+        this.status.setAttribute("role", "status");
+        this.status.textContent = "Save cancelled. No file was written.";
+      } else {
+        this.status.textContent = `${result2.error_message || "Cancellation was not accepted."} Waiting for the save result\u2026`;
+      }
+      this.update();
+      return false;
+    }
+    if (result2.action !== request.action) return false;
     this.pending = null;
-    this.status.setAttribute("role", result2.ok ? "status" : "alert");
-    this.status.textContent = result2.ok ? `${request.action === "save_work_file" ? "Saved" : "Restored"} ${request.kind === "state" ? "scene state" : "experimental session"}: ${request.path}` : result2.error_message || "File operation failed. Your path is kept.";
+    this.status.setAttribute("role", result2.ok || result2.cancelled ? "status" : "alert");
+    this.status.textContent = result2.ok ? `${request.action === "save_work_file" ? "Saved" : "Restored"} ${request.kind === "state" ? "scene state" : "experimental session"}: ${request.path}` : result2.error_message || (result2.cancelled ? "Save cancelled. No file was written." : "File operation failed. Your path is kept.");
     this.update();
     return request.action === "restore_work_file";
   }
   cancelConfirmation() {
     this.confirmation.replaceChildren();
+  }
+  cancelPendingSave() {
+    const request = this.pending;
+    if (!request || request.action !== "save_work_file" || request.cancelRequested) return;
+    request.cancelRequested = true;
+    this.status.setAttribute("role", "status");
+    this.status.textContent = "Cancelling save\u2026 Waiting for Python to confirm whether a file was written.";
+    this.update();
+    try {
+      this.ctx.onAction("cancel_work_file", { request_id: request.id });
+    } catch (error2) {
+      request.cancelRequested = false;
+      this.status.setAttribute("role", "alert");
+      this.status.textContent = `${String(error2)} Waiting for the save result\u2026`;
+      this.update();
+    }
   }
   askRestore() {
     if (this.restore.disabled) return;
@@ -153868,7 +153899,7 @@ var WorkFileControls = class {
     this.pending = { id: studioRequestId(action), action, path, kind };
     this.cancelConfirmation();
     this.status.setAttribute("role", "status");
-    this.status.textContent = action === "save_work_file" ? "Saving\u2026" : "Restoring\u2026";
+    this.status.textContent = action === "save_work_file" ? "Capturing the current view and saving\u2026" : "Restoring\u2026";
     this.update();
     try {
       this.ctx.onAction(action, {
@@ -153891,6 +153922,8 @@ var WorkFileControls = class {
     for (const control of [this.kind, this.path, this.overwrite]) control.disabled = busy || !this.hasAuthority;
     const missingPath = !this.path.value.trim();
     this.save.disabled = busy || !this.hasAuthority || missingPath || session && !this.systemLoaded;
+    this.cancelSave.hidden = this.pending?.action !== "save_work_file";
+    this.cancelSave.disabled = this.pending?.action !== "save_work_file" || !!this.pending?.cancelRequested;
     this.restore.disabled = busy || !this.hasAuthority || missingPath || !session && !this.systemLoaded;
     this.save.title = !this.hasAuthority ? "Requires a live Python session." : session && !this.systemLoaded ? "Load a molecular system before saving a session." : "Save to the Python filesystem.";
     this.restore.title = !this.hasAuthority ? "Requires a live Python session." : !session && !this.systemLoaded ? "Load the matching molecular system first." : "Review confirmation before replacing current work.";
@@ -171962,7 +171995,25 @@ var bootPopup = async (loadedModule) => {
           updateControlsUi({ autohide: !!data.enabled, autohideScope: data.scope });
           break;
         case "molsysviewer-sync-op":
-          await ctrl3.handleMessage(data);
+          if (isFrontendRequest(data)) {
+            if (initOptions.isPanelOnly && data.op === "request_visual_state") {
+              sendToHost("molsysviewer-popup-interaction", {
+                event: "visual_state_snapshot",
+                request_id: data.request_id,
+                capture_revision: data.capture_revision,
+                ok: false,
+                error_type: "NoLiveCanvas"
+              });
+            } else {
+              await handleFrontendRequest(
+                ctrl3,
+                data,
+                (event) => sendToHost("molsysviewer-popup-interaction", event)
+              );
+            }
+          } else {
+            await ctrl3.handleMessage(data);
+          }
           break;
         case "molsysviewer-sync-hierarchy":
           if (Array.isArray(data?.items)) ctrl3.setHierarchyItems(data.items);
@@ -175793,6 +175844,21 @@ function render({ model, el, runtimeSource }) {
     return null;
   };
   sendLog = createLogger(model, debug, sendToPython);
+  const pendingWorkFileSaves = /* @__PURE__ */ new Map();
+  const workFileKey = (owner, requestId) => JSON.stringify([owner, requestId]);
+  const sendEndpointAction = (message, owner, canvas) => {
+    const correlated = message.event === "interaction_context_action" && typeof message.request_id === "string" && message.request_id.trim() !== "";
+    const owned = correlated ? { ...message, _studio_owner_endpoint_id: owner } : message;
+    if (message.event !== "interaction_context_action" || message.action !== "save_work_file" && message.action !== "cancel_work_file") {
+      return sendToPython(owned);
+    }
+    const stamped = { ...owned, _work_file_owner_endpoint_id: owner, _capture_endpoint_id: canvas };
+    if (message.action === "save_work_file" && typeof message.request_id === "string") {
+      pendingWorkFileSaves.set(workFileKey(owner, message.request_id), { requestId: message.request_id, owner, canvas });
+    }
+    return sendToPython(stamped);
+  };
+  const panelCanvasEndpoints = /* @__PURE__ */ new Map();
   const pendingSceneSnapshots = /* @__PURE__ */ new Map();
   const cancelSceneSnapshotsFor = (mode) => {
     for (const [messageId, entry] of [...pendingSceneSnapshots]) {
@@ -175902,6 +175968,7 @@ function render({ model, el, runtimeSource }) {
     sessionId: model.get("runtime_session_id"),
     onEndpointClosed: (mode, endpointId) => {
       cancelSceneSnapshotsFor(mode);
+      panelCanvasEndpoints.delete(endpointId);
       if (mode === "canvas") el.molsysviewerOnPopupClosed?.();
       sendToPython({
         event: "popup_endpoint_closed",
@@ -175932,7 +175999,7 @@ function render({ model, el, runtimeSource }) {
     }
     return win;
   };
-  const openPanelPopup = (preopenedWindow, panel) => {
+  const openPanelPopup = (preopenedWindow, panel, captureEndpointId = envelopeAdapter.widgetHostEndpoint) => {
     controllerPromise.then(async (c8) => {
       if (!preopenedWindow) {
         c8.saveHostPanelState();
@@ -175940,12 +176007,16 @@ function render({ model, el, runtimeSource }) {
         if (c8.canvasHost.style.display === "none") c8.setCanvasVisibility(true);
         c8.sharedShell?.setVisible(false);
       }
-      void popupMgr.open("panel", preopenedWindow, { panel, restoreHostPanel: !preopenedWindow });
+      const wasOpen = popupMgr.isPanelOpen;
+      const opening = popupMgr.open("panel", preopenedWindow, { panel, restoreHostPanel: !preopenedWindow });
+      const endpointId = popupMgr.popupEndpointId("panel");
+      if (!wasOpen && endpointId) panelCanvasEndpoints.set(endpointId, captureEndpointId);
+      void opening;
     });
   };
   const panelModeStyle = model.get("panel_mode_style") || "drawer";
   const controllerPromise = MolSysViewerController.create(target, (msg) => {
-    sendToPython(msg);
+    sendEndpointAction(msg, envelopeAdapter.widgetHostEndpoint, envelopeAdapter.widgetHostEndpoint);
     if (msg?.event === "interaction_measurement_created") {
       const op4 = buildMeasurementOpFromInteractionEvent(msg);
       if (op4) {
@@ -176172,7 +176243,9 @@ function render({ model, el, runtimeSource }) {
             const sourceWindow = ev.source;
             const reserved = sourceWindow.__molsysviewer_pending_panel_window;
             delete sourceWindow.__molsysviewer_pending_panel_window;
-            if (reserved && !reserved.closed) openPanelPopup(reserved, data?.panel);
+            if (reserved && !reserved.closed && popupMessage.channel.mode === "canvas") {
+              openPanelPopup(reserved, data?.panel, popupMessage.channel.popupEndpointId);
+            }
           }
           break;
         case "molsysviewer-structure-data-ack":
@@ -176197,7 +176270,12 @@ function render({ model, el, runtimeSource }) {
         case "molsysviewer-popup-interaction":
           if (data) {
             const panelEvent = ["panel_navigate", "panel_unmount", "addon_panel_action"].includes(data.event);
-            sendToPython(panelEvent ? { ...data, _panel_endpoint_id: popupMessage.channel.popupEndpointId } : data.event === "visual_state_snapshot" ? { ...data, _capture_endpoint_id: popupMessage.channel.popupEndpointId } : data);
+            const endpointId = popupMessage.channel.popupEndpointId;
+            sendEndpointAction(
+              panelEvent ? { ...data, _panel_endpoint_id: popupMessage.channel.popupEndpointId } : data.event === "visual_state_snapshot" ? { ...data, _capture_endpoint_id: popupMessage.channel.popupEndpointId } : data,
+              endpointId,
+              popupMessage.channel.mode === "panel" ? panelCanvasEndpoints.get(endpointId) ?? endpointId : endpointId
+            );
           }
           if (data) {
             const op4 = buildMeasurementOpFromInteractionEvent(data);
@@ -176292,18 +176370,27 @@ function render({ model, el, runtimeSource }) {
       }
       msg = inbound.message;
     }
+    if (msg.op === "studio_action_result") {
+      const result2 = msg;
+      if (result2.action === "save_work_file" || result2.action === "cancel_work_file" && result2.ok) {
+        const owner = typeof result2.target_endpoint_id === "string" && result2.target_endpoint_id ? result2.target_endpoint_id : envelopeAdapter.widgetHostEndpoint;
+        pendingWorkFileSaves.delete(workFileKey(owner, result2.request_id));
+      }
+    }
     const relayTarget = msg?.target_endpoint_id;
-    if (typeof relayTarget === "string" && relayTarget) {
+    if (typeof relayTarget === "string" && relayTarget && relayTarget !== envelopeAdapter.widgetHostEndpoint) {
       const mode = relayTarget === popupMgr.popupEndpointId("canvas") ? "canvas" : relayTarget === popupMgr.popupEndpointId("panel") ? "panel" : null;
       if (!mode) {
+        if (msg.op === "studio_action_result" || msg.op === "backend_error_occurred") return;
         sendLog("error", `[MolSysViewer] relay target is not an open endpoint: ${relayTarget}`);
         return;
       }
-      if (msg.op === "structure_data_begin") popupMgr.beginBootstrap(mode);
-      if (msg.op === "mount_addon_panel" || msg.op === "addon_panel_message") {
+      const structural = msg.op === "structure_data_begin" || msg.op === "structure_data_chunk" || msg.op === "structure_data_cancel" || msg.op === "load_molsys_payload";
+      if (!structural) {
         popupMgr.sendTo(mode, "molsysviewer-sync-op", msg);
         return;
       }
+      if (msg.op === "structure_data_begin") popupMgr.beginBootstrap(mode);
       popupMgr.sendTo(mode, "molsysviewer-structure-data", {
         message: msg,
         buffers: buffers ?? []
@@ -176355,7 +176442,7 @@ function render({ model, el, runtimeSource }) {
       }
       return;
     }
-    const panelLocal = msg.op === "mount_addon_panel" || msg.op === "addon_panel_message";
+    const panelLocal = msg.op === "mount_addon_panel" || msg.op === "addon_panel_message" || msg.op === "studio_action_result" || relayTarget === envelopeAdapter.widgetHostEndpoint;
     enqueueMessage(msg, { syncToPopup: !panelLocal });
   };
   model.on("msg:custom", onCustomMsg);
@@ -176371,6 +176458,14 @@ function render({ model, el, runtimeSource }) {
   return () => {
     if (disposed) return;
     console.log("[MolSysViewer] Disposing widget...");
+    for (const endpoint of pendingWorkFileSaves.values()) {
+      sendEndpointAction(
+        { event: "interaction_context_action", action: "cancel_work_file", request_id: endpoint.requestId },
+        endpoint.owner,
+        endpoint.canvas
+      );
+    }
+    pendingWorkFileSaves.clear();
     popupMgr.dispose();
     arrayNativeStream.dispose();
     disposed = true;

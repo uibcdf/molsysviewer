@@ -13,6 +13,12 @@ META = {
 }
 
 CATALOG = {
+    "work_file_save_cancelled": {
+        "code": "MOLSYSVIEWER-WORK-FILE-SAVE-CANCELLED",
+        "source": "molsysviewer.viewer.persistence",
+        "category": "operation",
+        "level": "INFO",
+    },
     "frontend_request_failed": {
         "code": "MOLSYSVIEWER-FRONTEND-REQUEST-FAILED",
         "source": "molsysviewer.viewer.capture",
@@ -281,6 +287,7 @@ CATALOG = {
 #: `devguide/smonitor.md` rule 1 ("zero string hardcoding") was satisfied on paper and
 #: defeated in practice.
 MESSAGES = {
+    "work_file_save_cancelled": "Save cancelled. The destination has not been changed.",
     "frontend_request_failed": (
         "The live renderer request could not complete ({reason}). "
         "Check that the view is open and connected, then retry."

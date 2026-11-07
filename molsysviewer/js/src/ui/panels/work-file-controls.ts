@@ -11,10 +11,11 @@ export class WorkFileControls {
     private status = document.createElement("div");
     private confirmation = document.createElement("div");
     private save: HTMLButtonElement;
+    private cancelSave: HTMLButtonElement;
     private restore: HTMLButtonElement;
     private overwrite: HTMLInputElement;
     private systemLoaded = false;
-    private pending: { id: string; action: PanelAction; path: string; kind: string } | null = null;
+    private pending: { id: string; action: PanelAction; path: string; kind: string; cancelRequested?: boolean } | null = null;
 
     constructor(private ctx: PanelContext, private hasAuthority: boolean) {
         this.root.setAttribute("data-molsysviewer-work-files", "true");
@@ -41,12 +42,14 @@ export class WorkFileControls {
         this.overwrite.setAttribute("aria-label", "Allow overwriting an existing file");
         this.save = makeButton("Save file", () => this.submit("save_work_file"));
         this.save.setAttribute("data-molsysviewer-work-file-save", "true");
+        this.cancelSave = makeButton("Cancel save", () => this.cancelPendingSave());
+        this.cancelSave.setAttribute("data-molsysviewer-work-file-cancel", "true");
         this.restore = makeButton("Restore file…", () => this.askRestore());
         this.restore.setAttribute("data-molsysviewer-work-file-restore", "true");
         this.status.setAttribute("data-molsysviewer-work-file-status", "true");
         this.status.setAttribute("role", "status");
         this.status.style.overflowWrap = "anywhere";
-        this.root.append(this.kind, this.description, pathLabel, location, overwriteRow, this.save, this.restore,
+        this.root.append(this.kind, this.description, pathLabel, location, overwriteRow, this.save, this.cancelSave, this.restore,
             this.confirmation, this.status, workflowHelp("work-files", [
                 "State example: review.json saves scene settings and objects. Restore it after loading the matching molecular system; it contains no coordinates or calculated analyses.",
                 "Session example: review.msv saves the molecular system, all loaded structures, named interaction analyses and scene. MSV is experimental, may be large, and is not an archival format.",
@@ -57,19 +60,50 @@ export class WorkFileControls {
 
     setSystemLoaded(loaded: boolean): void { this.systemLoaded = loaded; this.update(); }
 
-    updateResult(result: StudioActionResult): boolean {
+    updateResult(result: StudioActionResult & { cancelled?: boolean }): boolean {
         const request = this.pending;
-        if (!request || result.request_id !== request.id || result.action !== request.action || result.domain !== "export") return false;
+        if (!request || result.request_id !== request.id || result.domain !== "export") return false;
+        if (result.action === "cancel_work_file" && request.action === "save_work_file") {
+            if (result.ok) {
+                this.pending = null;
+                this.status.setAttribute("role", "status");
+                this.status.textContent = "Save cancelled. No file was written.";
+            } else {
+                // Only Python can determine whether the write already committed.
+                // A refused cancellation leaves the original save authoritative.
+                this.status.textContent = `${result.error_message || "Cancellation was not accepted."} Waiting for the save result…`;
+            }
+            this.update();
+            return false;
+        }
+        if (result.action !== request.action) return false;
         this.pending = null;
-        this.status.setAttribute("role", result.ok ? "status" : "alert");
+        this.status.setAttribute("role", result.ok || result.cancelled ? "status" : "alert");
         this.status.textContent = result.ok
             ? `${request.action === "save_work_file" ? "Saved" : "Restored"} ${request.kind === "state" ? "scene state" : "experimental session"}: ${request.path}`
-            : result.error_message || "File operation failed. Your path is kept.";
+            : result.error_message || (result.cancelled ? "Save cancelled. No file was written." : "File operation failed. Your path is kept.");
         this.update();
         return request.action === "restore_work_file";
     }
 
     private cancelConfirmation(): void { this.confirmation.replaceChildren(); }
+
+    private cancelPendingSave(): void {
+        const request = this.pending;
+        if (!request || request.action !== "save_work_file" || request.cancelRequested) return;
+        request.cancelRequested = true;
+        this.status.setAttribute("role", "status");
+        this.status.textContent = "Cancelling save… Waiting for Python to confirm whether a file was written.";
+        this.update();
+        try {
+            this.ctx.onAction("cancel_work_file", { request_id: request.id });
+        } catch (error) {
+            request.cancelRequested = false;
+            this.status.setAttribute("role", "alert");
+            this.status.textContent = `${String(error)} Waiting for the save result…`;
+            this.update();
+        }
+    }
 
     private askRestore(): void {
         if (this.restore.disabled) return;
@@ -88,7 +122,7 @@ export class WorkFileControls {
         this.pending = { id: studioRequestId(action), action, path, kind };
         this.cancelConfirmation();
         this.status.setAttribute("role", "status");
-        this.status.textContent = action === "save_work_file" ? "Saving…" : "Restoring…";
+        this.status.textContent = action === "save_work_file" ? "Capturing the current view and saving…" : "Restoring…";
         this.update();
         try {
             this.ctx.onAction(action, { request_id: this.pending.id, file_kind: kind, path,
@@ -107,6 +141,8 @@ export class WorkFileControls {
         for (const control of [this.kind, this.path, this.overwrite]) control.disabled = busy || !this.hasAuthority;
         const missingPath = !this.path.value.trim();
         this.save.disabled = busy || !this.hasAuthority || missingPath || (session && !this.systemLoaded);
+        this.cancelSave.hidden = this.pending?.action !== "save_work_file";
+        this.cancelSave.disabled = this.pending?.action !== "save_work_file" || !!this.pending?.cancelRequested;
         this.restore.disabled = busy || !this.hasAuthority || missingPath || (!session && !this.systemLoaded);
         this.save.title = !this.hasAuthority ? "Requires a live Python session." : session && !this.systemLoaded ? "Load a molecular system before saving a session." : "Save to the Python filesystem.";
         this.restore.title = !this.hasAuthority ? "Requires a live Python session." : !session && !this.systemLoaded ? "Load the matching molecular system first." : "Review confirmation before replacing current work.";

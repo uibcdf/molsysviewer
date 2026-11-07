@@ -21,6 +21,7 @@ never become passing checks or strict 1.0 clearance (issue #103).
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import shutil
 import subprocess
@@ -52,6 +53,15 @@ def _node_available() -> str | None:
     if not (JS_ROOT / "node_modules").is_dir():
         return "molsysviewer/js/node_modules is missing; run `npm ci` in molsysviewer/js"
     return None
+
+
+def _jupyter_available() -> str | None:
+    missing = [
+        name for name in ("jupyterlab", "ipykernel", "anywidget", "psutil") if importlib.util.find_spec(name) is None
+    ]
+    if missing:
+        return f"live Jupyter receiving requires {', '.join(missing)}; use the test environment"
+    return _node_available()
 
 
 STEPS = (
@@ -91,6 +101,12 @@ STEPS = (
         ["npm", "run", "test:e2e:core"],
         blocked_by=_node_available,
         cwd=JS_ROOT,
+    ),
+    Step(
+        "jupyter",
+        "actual kernel/widget capture, perturbed-camera restoration, cancellation and timeout",
+        [sys.executable, "tests/_jupyter_live_capture.py"],
+        blocked_by=_jupyter_available,
     ),
     Step("conda", "the exact installed Conda pair from staging", None, evidence=True),
     Step("public_conda", "the exact installed pair and solver-visible public files", None, evidence=True),

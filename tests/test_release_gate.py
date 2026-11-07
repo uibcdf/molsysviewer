@@ -45,6 +45,14 @@ def test_release_gate_requires_core_e2e_without_experimental_hosts():
     assert "remote" not in {step.name for step in STEPS}
 
 
+def test_release_gate_requires_live_jupyter_instead_of_an_unselected_pytest_profile():
+    step = next(step for step in STEPS if step.name == "jupyter")
+    assert step.command == [sys.executable, "tests/_jupyter_live_capture.py"]
+    assert callable(step.blocked_by)
+    assert step.cwd == ROOT
+    assert "restoration" in step.what
+
+
 def test_the_gate_lists_its_steps_without_running_them():
     completed = subprocess.run(
         [sys.executable, str(ROOT / "devtools" / "release_gate.py"), "--list"],

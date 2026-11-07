@@ -66,7 +66,10 @@ class PopupSnapshotMixin:
         (D4), so the same scene is not also carried as JSON.
         """
         if mode == "canvas":
-            return [*self._build_canvas_snapshot(include_molecular=include_molecular), self._system_edits._message()]
+            # A canvas mirror hosts the same Studio as the embedded renderer.
+            # Its work-file controls and other panels need authoritative
+            # summaries as well as geometry, including with binary delivery.
+            return self._build_embedded_runtime_snapshot(include_molecular=include_molecular)
         if mode == "panel":
             return [*self._build_panel_snapshot(), self._system_edits._message()]
         raise ValueError(f"popup snapshot mode must be 'canvas' or 'panel', got {mode!r}")
@@ -329,9 +332,9 @@ class PopupSnapshotMixin:
         *,
         include_molecular: bool = True,
     ) -> list[dict]:
-        """Build current state for a live widget attaching or reconnecting.
+        """Build current state for a live canvas attaching or reconnecting.
 
-        The embedded host needs both the renderable canvas scene and Python's
+        Every canvas host needs both the renderable canvas scene and Python's
         authoritative panel projections. Camera stays endpoint-local. Panel
         messages already represented by the canvas profile are filtered by op
         so one ready event applies each current-state projection once.

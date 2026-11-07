@@ -1,5 +1,6 @@
 """Studio persists real molecular work through the public owners (#223–#225)."""
 
+import asyncio
 import json
 from copy import deepcopy
 
@@ -12,6 +13,8 @@ from molsysviewer.viewer.panel_actions import dispatch_panel_action
 import molsysviewer as msv
 from molsysviewer import pyunitwizard as puw
 
+CAMERA = {"position": [10.0, 20.0, 30.0], "target": [1.0, 2.0, 3.0], "up": [0.0, 1.0, 0.0], "mode": "perspective"}
+
 
 @pytest.fixture
 def view():
@@ -21,9 +24,29 @@ def view():
 
 
 def request(view, action, path, *, kind="state", **details):
-    dispatch_panel_action(
-        view, {"action": action, "path": str(path), "file_kind": kind, "request_id": "file-review", **details}
-    )
+    content = {"action": action, "path": str(path), "file_kind": kind, "request_id": "file-review", **details}
+    if action != "save_work_file":
+        return dispatch_panel_action(view, content)
+
+    async def receive():
+        # This drives the real capture protocol, without claiming a renderer.
+        view._ready = True
+        view._frontend_capabilities = {"visual_state_capture": [1]}
+        result = dispatch_panel_action(view, content)
+        ticket = next(iter(view._frontend_requests._pending.values()))
+        view._handle_frontend_event(
+            {
+                "event": "visual_state_snapshot",
+                "request_id": ticket.request_id,
+                "capture_revision": ticket.revision,
+                "ok": True,
+                "snapshot": deepcopy(view.camera.get_snapshot() or CAMERA),
+                "structure_index": view.player.index,
+            }
+        )
+        await asyncio.wrap_future(result)
+
+    return asyncio.run(receive())
 
 
 def test_coordinate_annotation_focus_uses_live_owner_and_rejects_missing_tag(view):
@@ -44,7 +67,7 @@ def test_state_file_roundtrip_restores_scene_frame_and_camera_on_same_system(vie
     view.annotations.add("absolute", position="[1, 2, 3] nm", tag="site")
     view.regions.add(atom_indices=[0, 1], tag="region")
     view.player.go_to_structure(2)
-    view.camera.set_snapshot({"position": [10.0, 20.0, 30.0]})
+    view.camera.set_snapshot(CAMERA)
     molsys = view.molsys
     path = tmp_path / "review.json"
     request(view, "save_work_file", path)
@@ -56,7 +79,7 @@ def test_state_file_roundtrip_restores_scene_frame_and_camera_on_same_system(vie
     assert view.annotations.tags() == ["site"]
     assert view.regions.tags() == ["region"]
     assert view.player.index == 2
-    assert view.camera.get_snapshot() == {"position": [10.0, 20.0, 30.0]}
+    assert view.camera.get_snapshot() == CAMERA
     assert not view.history.can_undo() and not view.history.can_redo()
 
 

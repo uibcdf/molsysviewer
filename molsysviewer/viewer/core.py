@@ -85,6 +85,7 @@ from .scene import SceneMixin
 from .scene_registry import SceneRegistryMixin
 from .state import StateMixin
 from .visibility import VisibilityMixin
+from .work_file_saves import WorkFileSaves
 
 
 class MolSysView(
@@ -165,7 +166,10 @@ class MolSysView(
 
     def _prepare_close_actions(self):
         """Detach ownership and retain independently retryable cleanup actions."""
-        actions = [("pending frontend requests", self._frontend_requests.close)]
+        actions = [
+            ("pending work-file saves", self._work_file_saves.close),
+            ("pending frontend requests", self._frontend_requests.close),
+        ]
         presentations = getattr(self, "_presentations", None)
         if presentations is not None:
             # Capture child owners before a close callback can remove records.
@@ -331,7 +335,8 @@ class MolSysView(
         self._current_molecular_projection: dict | None = None
         self._molecular_projection_revision = 0
         self._last_camera_snapshot: dict | None = None
-        self._frontend_requests = FrontendRequests()
+        self._frontend_requests = FrontendRequests(publish=self._system_edits._after_unlock)
+        self._work_file_saves = WorkFileSaves(self)
         self._current_figure_spec: dict | None = None
         self._last_image_export_event: dict | None = None
         self._pending_remote_image_downloads: dict[str, str] = {}
@@ -617,6 +622,16 @@ class MolSysView(
             "error_type": type(exc).__name__,
             "error_message": str(exc),
         }
+        owner = content.get("_studio_owner_endpoint_id", content.get("_work_file_owner_endpoint_id"))
+        scoped_studio = action in {"save_work_file", "cancel_work_file"} or (
+            isinstance(owner, str) and isinstance(content.get("request_id"), str)
+        )
+        if scoped_studio:
+            host = f"widget-host:{self._binary_session_id}"
+            error_payload["target_endpoint_id"] = owner if isinstance(owner, str) and owner != "primary" else host
+            request_id = content.get("request_id")
+            if isinstance(request_id, str):
+                error_payload["request_id"] = request_id
         try:
             emit_from_catalog(
                 CATALOG["frontend_action_failed"],
@@ -658,7 +673,13 @@ class MolSysView(
                 RuntimeWarning,
                 stacklevel=2,
             )
-        self._send_runtime_only(error_payload)
+        if scoped_studio:
+            # This accompanies an owner-correlated verdict and must reach that
+            # same owner even while another endpoint's structure is streaming.
+            if self._ready:
+                self._transmit_widget_message(error_payload)
+        else:
+            self._send_runtime_only(error_payload)
 
     def _parse_selection_query_indices(self, expression: Any, syntax: str) -> list[int]:
         if self._molsys is None:
@@ -1273,6 +1294,8 @@ class MolSysView(
             # already holds this structure; the JSON load carries the target so
             # the host relays it to the popup that was waiting for it.
             fallback = {**fallback, "target_endpoint_id": target_endpoint_id}
+        elif self._endpoint_transfers.popup_count:
+            fallback = {**fallback, "target_endpoint_id": f"widget-host:{self._binary_session_id}"}
         # `_send_widget_message`, so the JSON load goes out first and its
         # post-transmit flush releases the scene behind it — the same ordering
         # the binary path gets from `structure_data_complete`.
@@ -1512,10 +1535,32 @@ class MolSysView(
 
     def _deliver_transport_message(self, message: dict[str, Any]) -> None:
         is_molecular = message.get("op") in self._MOLECULAR_LOAD_OPS
-        if not self._try_send_array_native_molsys(message):
-            self._send_widget_message(self._materialize_molecular_projection(message))
         if not is_molecular:
+            target = message.get("target_endpoint_id")
+            if isinstance(target, str) and target:
+                endpoint = None if target == f"widget-host:{self._binary_session_id}" else target
+                self._send_widget_message(message, defer_for_endpoint=endpoint)
+                return
+            endpoints = tuple(self._endpoint_transfers.mode_items())
+            # Each renderer must receive its clear/scene operations on the same
+            # ordered path as its own structure. Relaying after the primary
+            # applies a command can let a faster popup load first, then clear
+            # the new generation. Explicit destinations also prevent fanout of
+            # the primary copy a second time in the widget host.
+            primary = (
+                {**message, "target_endpoint_id": f"widget-host:{self._binary_session_id}"} if endpoints else message
+            )
+            self._send_widget_message(primary)
+            for endpoint_id, _mode in endpoints:
+                self._send_widget_message(
+                    {**message, "target_endpoint_id": endpoint_id}, defer_for_endpoint=endpoint_id
+                )
             return
+        if not self._try_send_array_native_molsys(message):
+            primary = self._materialize_molecular_projection(message)
+            if self._endpoint_transfers.popup_count:
+                primary = {**primary, "target_endpoint_id": f"widget-host:{self._binary_session_id}"}
+            self._send_widget_message(primary)
         for endpoint_id, mode in tuple(self._endpoint_transfers.mode_items()):
             if mode != "canvas":
                 continue
@@ -1528,7 +1573,8 @@ class MolSysView(
                     {
                         **fallback,
                         "target_endpoint_id": endpoint_id,
-                    }
+                    },
+                    defer_for_endpoint=endpoint_id,
                 )
 
     def _is_read_only_addon_request(self, content: Mapping[str, Any]) -> bool:
@@ -1553,9 +1599,10 @@ class MolSysView(
             # Publish outside the molecular lock: ipykernel can resume the
             # awaiting task before this connector callback returns.
             if not self.closed:
-                self._frontend_requests.receive(
-                    dict(content), endpoint_id=content.get("_capture_endpoint_id", "primary")
-                )
+                endpoint = content.get("_capture_endpoint_id", "primary")
+                if endpoint == f"widget-host:{self._binary_session_id}":
+                    endpoint = "primary"
+                self._frontend_requests.receive(dict(content), endpoint_id=endpoint)
             return
         with self._system_edits._locked():
             self._handle_frontend_event_guarded(content)
@@ -1577,19 +1624,24 @@ class MolSysView(
                 self._ready = True
                 self._system_edits._notify(self)
                 return
-            if event not in {
-                "widget_resize",
-                "popup_endpoint_closed",
-                "request_widget_runtime_source",
-                "request_popup_source",
-                "structure_data_begin_ack",
-                "structure_data_chunk_ack",
-                "structure_data_complete",
-                "structure_data_error",
-                "camera_snapshot",
-                "panel_unmount",
-                "js_log",
-            } and not self._is_read_only_addon_request(content):
+            if (
+                event
+                not in {
+                    "widget_resize",
+                    "popup_endpoint_closed",
+                    "request_widget_runtime_source",
+                    "request_popup_source",
+                    "structure_data_begin_ack",
+                    "structure_data_chunk_ack",
+                    "structure_data_complete",
+                    "structure_data_error",
+                    "camera_snapshot",
+                    "panel_unmount",
+                    "js_log",
+                }
+                and not self._is_read_only_addon_request(content)
+                and not (event == "interaction_context_action" and content.get("action") == "cancel_work_file")
+            ):
                 self._system_edits._notify(self)
                 return
         if event == "widget_resize":
@@ -1628,6 +1680,7 @@ class MolSysView(
                     stacklevel=2,
                 )
                 return
+            self._work_file_saves.cancel_endpoint(endpoint_id)
             self._cancel_binary_structure_stream(
                 "popup endpoint closed",
                 target_endpoint_id=endpoint_id,

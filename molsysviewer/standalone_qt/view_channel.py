@@ -15,14 +15,16 @@ so loads, rebuilds, interactions and movie export all work like in Jupyter.
 from __future__ import annotations
 
 import logging
+import math
 from copy import deepcopy
+from threading import RLock, get_ident
 from typing import Any, Callable
 
 from smonitor.integrations import context_extra, emit_from_catalog
 from traitlets import HasTraits
 
 from .._private.smonitor import CATALOG, META, PACKAGE_ROOT
-from ..widget import MolSysViewerWidget
+from ..widget import MolSysViewerWidget, _callback_delay, _ScheduledCallback
 from .status import _HOST_SHORTCUTS
 from .utils import _frontend_event_validation_error
 
@@ -67,6 +69,11 @@ class QtViewChannel(HasTraits):
         traits = MolSysViewerWidget.class_traits()
         self.add_traits(**{name: deepcopy(traits[name]) for name in self._SYNC_TRAITS})
         self._bridge = bridge
+        self._callbacks_lock = RLock()
+        self._scheduled_callbacks = set()
+        self._callbacks_closed = False
+        self._channel_closed = False
+        self._callback_thread_ident = get_ident()
         self._receiving_ui = False
         self._msg_callbacks: list[Callable[..., Any]] = []
         self._forwarded_initial: list[dict] = []
@@ -150,12 +157,51 @@ class QtViewChannel(HasTraits):
     def on_msg(self, callback: Callable[..., Any]) -> None:
         self._msg_callbacks.append(callback)
 
+    def _schedule_callback(self, delay_seconds, callback):
+        """Own one Qt GUI-thread deadline without importing another Qt binding."""
+        delay = _callback_delay(delay_seconds, callback)
+        if self._callbacks_closed or getattr(self._bridge, "_closed", False):
+            raise RuntimeError("The Qt view channel is closed.")
+        parent = self._bridge.webview
+        if parent is None or not callable(self._bridge.QTimer):
+            raise RuntimeError("The Qt view channel has no GUI timer owner.")
+        thread = parent.thread()
+        is_current = getattr(thread, "isCurrentThread", None)
+        if get_ident() != self._callback_thread_ident or (callable(is_current) and not is_current()):
+            raise RuntimeError("Qt callbacks must be scheduled on their owning GUI thread.")
+        timer = self._bridge.QTimer(parent)
+        timer.setSingleShot(True)
+        handle = _ScheduledCallback(self._scheduled_callbacks, callback, self._callbacks_lock)
+
+        def cancel_timer():
+            timer.stop()
+            timer.timeout.disconnect(handle)
+            timer.deleteLater()
+
+        try:
+            timer.timeout.connect(handle)
+            timer.destroyed.connect(handle._timer_closed)
+            handle._set_cancel(cancel_timer)
+            # Never round a positive deadline down to an earlier Qt tick.
+            timer.start(math.ceil(delay * 1000))
+        except BaseException:
+            handle.cancel()
+            raise
+        return handle
+
     def close(self) -> None:
         """Detach callbacks and the bridge event sink owned by this channel."""
+        if self._channel_closed:
+            return
+        with self._callbacks_lock:
+            self._callbacks_closed = True
+            for handle in tuple(self._scheduled_callbacks):
+                handle.cancel()
         self._msg_callbacks.clear()
         self.unobserve(self._send_ui_state, names=list(self._SYNC_TRAITS))
         if getattr(self._bridge, "event_sink", None) is self._event_sink:
             self._bridge.event_sink = None
+        self._channel_closed = True
 
     def _dispatch_event(self, event: Any) -> bool:
         validation_error = _frontend_event_validation_error(event)

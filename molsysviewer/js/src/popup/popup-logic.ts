@@ -18,6 +18,7 @@ import { mountControls } from "../ui/controls";
 import { createLocalUiModel } from "../ui/local-ui-model";
 import { CameraSync } from "../managers/camera-sync";
 import { trajectorySyncToAuthority } from "../messages/trajectory-intent";
+import { handleFrontendRequest, isFrontendRequest } from "../messages/frontend-requests";
 
 /** Boot the popup through the same imported runtime module as its host. */
 export const bootPopup = async (loadedModule?: any) => {
@@ -394,7 +395,22 @@ export const bootPopup = async (loadedModule?: any) => {
                     break;
 
                 case "molsysviewer-sync-op":
-                    await ctrl.handleMessage(data);
+                    if (isFrontendRequest(data)) {
+                        // The inbound queue is the canvas barrier. A detached
+                        // Studio has no visible canvas and must never sample its
+                        // hidden controller in place of its originating viewer.
+                        if (initOptions.isPanelOnly && data.op === "request_visual_state") {
+                            sendToHost("molsysviewer-popup-interaction", {
+                                event: "visual_state_snapshot", request_id: data.request_id,
+                                capture_revision: data.capture_revision, ok: false, error_type: "NoLiveCanvas",
+                            });
+                        } else {
+                            await handleFrontendRequest(ctrl, data,
+                                event => sendToHost("molsysviewer-popup-interaction", event));
+                        }
+                    } else {
+                        await ctrl.handleMessage(data);
+                    }
                     break;
 
                 case "molsysviewer-sync-hierarchy":

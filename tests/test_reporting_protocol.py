@@ -160,12 +160,17 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         )
     elif selector == STUDIO_BROWSER_GUARD:
         requirements += (
+            'import { checkStudioLiveCapture } from "./studio-live-capture-scenarios";' in entry,
+            "await checkStudioLiveCapture(livePage, dir, downloadDir);" in entry,
             'import { PythonFixtureBridge } from "./python-fixture-bridge";' in entry,
             "await page.waitForEvent" in entry or 'page.waitForEvent("download")' in entry,
             "bytes.readUInt32BE(16)" in entry,
             "assert.equal(downloads, 1)" in entry,
             "run().catch(" in entry,
             (js_root / "tests/e2e/studio-usability-bridge.py").is_file(),
+            (js_root / "tests/e2e/studio-live-capture-scenarios.ts").is_file(),
+            (js_root / "tests/e2e/studio-live-capture-bridge.py").is_file(),
+            (js_root / "tests/e2e/canvas-popup-bridge.py").is_file(),
         )
     elif selector == WORKSPACE_BROWSER_GUARD:
         requirements += (

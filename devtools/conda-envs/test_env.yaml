@@ -13,6 +13,10 @@ dependencies:
   - pytest
   - pytest-receptor ==1.2.0
   - pytest-cov
+  # Actual widget/kernel/browser receiving for live work-file capture (#319).
+  - jupyterlab
+  - ipykernel
+  - psutil
   # The distribution-contract tests parse the Conda YAML recipe during collection.
   - pyyaml>=6.0
   # Runtime dependencies, with the floors pyproject.toml declares. The package is
