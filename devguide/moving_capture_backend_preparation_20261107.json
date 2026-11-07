@@ -1,0 +1,198 @@
+{
+  "schema": "molsysviewer.moving_capture_backend_preparation@1",
+  "observed_at": "2026-11-07T21:42:31.248073+00:00",
+  "issue": "uibcdf/molsysviewer#319",
+  "plan": "uibcdf/molsysviewer#315 / A5",
+  "status": "Negotiated backend protocol 2 prepared and tested; current frontend still advertises only protocol 1. Moving-renderer acceptance remains incomplete.",
+  "source": {
+    "base": "2bb82bbd446b7858f6feb9c8255108e5621b814c",
+    "files_sha256": {
+      "molsysviewer/player.py": "a8aa36010f3511d20dda1e5e4c042ade2703fbd9b4279d303beec35953c8e621",
+      "molsysviewer/scene_history.py": "a8d57501f30d4b486e725c81c5aca4aaa5c835513af67deb5b79720ed5e94535",
+      "molsysviewer/viewer/core.py": "50abce2b183cb5fe5efd4ab373ee8f6602805ed3e1751379a26a3aaa8e1730c5",
+      "molsysviewer/viewer/scene.py": "843ae44397009f98bbc1e6f4a4704f343a3e7f65c5c5f8321d19be14c9e7db20",
+      "molsysviewer/viewer/visual_capture.py": "2a2b0ebf4490636476647b36535373d885349a19e7a2b21a3b58ca58de508408",
+      "molsysviewer/viewer/work_file_saves.py": "29c553b86e3222821fb57ff0749f99b2f9b6c7a8d93d77e250240d424aafa4aa",
+      "tests/test_moving_state_capture.py": "668b994243d341356ecd301d54d5e92e466058e4cd4cd8a80029d71214a841fb"
+    },
+    "unchanged_runtime_sha256": "d3b3d074e24a250ad3042ce4448b6eb36c949d5190b50f393d6ca3407aabda7c",
+    "frontend_capability_owner_sha256": "a6a7e9933923c76d82c8f6036baa642887cc9fa2aa562ca5e6cef7c623d4cff8",
+    "widget_and_qt_advertised_versions": [
+      1
+    ],
+    "python": "3.14.7",
+    "node": "24.21.0",
+    "molstar": "5.4.1",
+    "scientific_provider": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+    "route": "Explicit development Python 3.14, reviewed contribution source and cached public support providers; no new solver/installed-artifact qualification."
+  },
+  "contract": {
+    "version_1": "Unchanged legacy wire shape and strict camera/frame/recipe behavior.",
+    "version_2": "Opt-in full temporal reply, validated atomically into a detached recipe while the source may advance.",
+    "temporal_fields": [
+      "view.camera",
+      "view.structure_index",
+      "view.playback",
+      "box_display.structure_index"
+    ],
+    "stable_guards": [
+      "Molecular-system identity and managed projection revision",
+      "Canonical non-temporal recipe hash",
+      "Owned scene-edit intent revision, independent of history storage/coalescing/suspension",
+      "Box-definition revision, preserved by automatic frame following",
+      "All named-analysis fingerprints via the existing bounded numeric saved-data signature"
+    ],
+    "copies_and_work": "No molecular-trajectory clone or capture-driven seek/pause. Recipe copies remain; hashing scales with named-analysis data and is not constant-time or a universal RAM guarantee. Arbitrary raw MolSys edits still require explicit synchronization.",
+    "public_python_signatures_changed": false,
+    "state_or_session_schema_changed": false,
+    "native_moving_capture_qualified": false
+  },
+  "receiving": {
+    "baseline": {
+      "native_exit": 1,
+      "failed": 2,
+      "reason": "scene_changed",
+      "scope": "Retained original version-1 moving-save baseline in A5-moving-recipe-20261107; not a new defect of strict version 1.",
+      "log_sha256": "fd98820cb38ec614fcc9ee2eee037ce3e9f4ab99a502182f5c8992c1672c1f5e"
+    },
+    "broader_python": {
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "-m",
+        "pytest",
+        "--receptor=llm",
+        "tests/test_moving_state_capture.py",
+        "tests/test_live_state_capture.py",
+        "tests/test_studio_live_capture.py",
+        "tests/test_box_state_persistence.py",
+        "tests/test_player_frame_notifications.py",
+        "tests/test_scene_history.py",
+        "tests/test_units_under_a_user_policy.py",
+        "tests/test_box_assignment.py",
+        "tests/test_load_history_boundary.py",
+        "tests/test_dynamic_regions.py",
+        "tests/test_managed_system_edits.py",
+        "tests/test_session_bundle.py",
+        "tests/test_state_serialization.py",
+        "tests/test_state_v2.py",
+        "tests/test_state_view_state.py",
+        "tests/test_state_rejection.py",
+        "-o",
+        "cache_dir=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/A5-moving-protocol-20261107/python-broad-cache",
+        "--junitxml=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/A5-moving-protocol-20261107/python-broad.xml"
+      ],
+      "native_exit": 0,
+      "seconds": 119.08694677613676,
+      "selected_inputs": 4303,
+      "inputs_unchanged": true,
+      "passed": 395,
+      "failed": 0,
+      "skipped": 0,
+      "warnings": 431,
+      "junit_sha256": "7f31c23523fcc4ad80f3a58e3c6d4d1aa847e165a2c411f5ab92d19d622a6e32",
+      "scope": "Sixteen capture/Studio/box/player/history/units/dynamic-region/edit/session/state modules. Includes 62 earlier moving cases."
+    },
+    "final_moving_module": {
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "-m",
+        "pytest",
+        "--receptor=llm",
+        "tests/test_moving_state_capture.py",
+        "-o",
+        "cache_dir=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/A5-moving-protocol-20261107/moving-final-cache",
+        "--junitxml=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/A5-moving-protocol-20261107/moving-final.xml"
+      ],
+      "native_exit": 0,
+      "seconds": 41.10316176409833,
+      "selected_inputs": 4303,
+      "inputs_unchanged": true,
+      "passed": 64,
+      "failed": 0,
+      "skipped": 0,
+      "warnings": 63,
+      "junit_sha256": "b640ea0d36c092ebdca978773ecd6300fe7daceedfea8579087fa5876104a1d1",
+      "scope": "Real pentalanine protocol/file receiving via API and Studio/target-popup dispatch; all required replies are constructed protocol inputs, not native renderer qualification. Strengthened ABA equality and two extra box cases follow the broader run; production inputs are identical.",
+      "changed_input_since_broader_selection": [
+        "tests/test_moving_state_capture.py"
+      ]
+    },
+    "studio_protocol": {
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "-m",
+        "pytest",
+        "--receptor=llm",
+        "tests/test_moving_state_capture.py::test_save_retains_sampled_frame_context_while_the_live_view_advances",
+        "-o",
+        "cache_dir=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/A5-moving-protocol-20261107/studio-protocol-cache",
+        "--junitxml=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/A5-moving-protocol-20261107/studio-protocol.xml"
+      ],
+      "native_exit": 0,
+      "seconds": 9.985257260967046,
+      "selected_inputs": 4303,
+      "inputs_unchanged": true,
+      "passed": 6,
+      "scope": "Python and Studio/target-popup request paths for both file formats; overlapping cases, not browser observations."
+    },
+    "legacy_browser_compatibility": {
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/e2e-runner.js",
+        "--lane=core",
+        "--suites=studio-usability"
+      ],
+      "native_exit": 0,
+      "seconds": 206.23794558504596,
+      "selected_inputs": 4303,
+      "inputs_unchanged": true,
+      "outer_timeout": false,
+      "owned_processes": 19,
+      "survivors": 0,
+      "cleanup_errors": [],
+      "log_sha256": "966f6b507f6c4858f7910238d04062daca47dc532e32ba643dc176e3697f7a67",
+      "scope": "Full canonical Studio entry with actual primary/popup/detached camera/frame/box restores, cancellation, authority, downloads and shape convergence. The renderer uses protocol 1; this does not qualify native version 2."
+    },
+    "ruff": {
+      "check_native_exit": 0,
+      "format_native_exit": 0,
+      "scope": "Whole repository; generated/vendored exclusions unchanged."
+    },
+    "governance": {
+      "native_exit": 0,
+      "passed": 385,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 3.587975165108219,
+      "junit_sha256": "dc4c0dee0b399d5dc7fb50e025385b6305b35d8060b7c1597213b4db582f944d",
+      "index_check_native_exit": 0
+    }
+  },
+  "remaining": [
+    "Implement native frame-affine projections, including raw row-vector box basis and all asynchronous shape/interaction/annotation/dynamic-region dependencies.",
+    "Receive real completed moving-draw replies through primary, popup and detached Studio before advertising protocol 2.",
+    "Qualify hidden/background endpoints through their actual owner without pausing, navigating or switching the source.",
+    "Resolve the earlier actual-Jupyter uncertainty and complete consolidated hosted/installed/human/native Qt scope.",
+    "Retain the complete original 46 leaves, owner-PR work, approved addon families and mandatory Movie #320."
+  ],
+  "progress": {
+    "delivered_leaves": 8,
+    "original_leaves": 46,
+    "final_accepted_leaves": 1,
+    "A5_not_counted_complete": true
+  },
+  "publication": "Candidates, tags, packages, promotions and both 1.0 publications remain paused.",
+  "evidence_scope": "The recorded test scopes overlap and must not be summed. No browser version-2, fresh actual-Jupyter, native Qt, hosted-matrix or installed-artifact qualification is claimed.",
+  "private_custody": {
+    "bundle": "moving-capture-backend-20261107-1",
+    "files": 39,
+    "bytes": 4803294,
+    "manifest_sha256": "97402eb7ab1a2fc0838371c6b2b28aed7bc1a5248237f5257674e1644b3ec4fd",
+    "hashes_verified": true,
+    "directory_mode": "0700",
+    "file_mode": "0600",
+    "originals_retained": true,
+    "custodian": "Diego Prada Gracia",
+    "off_host_backup": false
+  }
+}

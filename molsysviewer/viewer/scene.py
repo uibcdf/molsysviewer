@@ -173,14 +173,13 @@ class SceneMixin:
         if self._molsys.structures.box is None:
             self.hide_box(skip_digestion=True)
             return
-        style = self._box_record
-        self.show_box(
-            color=style["color"],
-            width=style["width"],
-            alpha=style["alpha"],
-            structure_indices=self.player.index,
-            skip_digestion=True,
-        )
+        self._follow_box_frame(self.player.index)
+
+    def _follow_box_frame(self, index: int) -> None:
+        """Project a frame change without declaring a new box-display definition."""
+        if self._box_record is not None:
+            style = self._box_record
+            self._draw_box(style["color"], style["width"], style["alpha"], index, definition_change=False)
 
     @signal(tags=["scene", "box"])
     @digest()
@@ -218,7 +217,10 @@ class SceneMixin:
         else:
             sidx = int(np.asarray(structure_indices).reshape(-1)[0])
 
-        box_q = msm.get(self._molsys, element="system", box=True, skip_digestion=True)
+        self._draw_box(color, width, alpha, sidx, definition_change=True)
+
+    def _draw_box(self, color, width: float, alpha: float, sidx: int, *, definition_change: bool) -> None:
+        box_q = msm.get(self._molsys, element="system", box=True, structure_indices=[sidx], skip_digestion=True)
         if box_q is None:
             raise ValueError("The loaded system does not have box information.")
 
@@ -227,7 +229,7 @@ class SceneMixin:
         # (uibcdf/molsysviewer#96).
         box_a = np.asarray(puw.get_value(box_q, to_unit="angstrom"))  # (n_structures, 3, 3)
         if box_a.ndim == 3:
-            box_a = box_a[sidx]  # shape (3, 3)
+            box_a = box_a[0]  # the single selected structure, shape (3, 3)
         a, b, c = box_a[0], box_a[1], box_a[2]
 
         # Build 8 vertices
@@ -264,6 +266,8 @@ class SceneMixin:
 
         color_int = _nc(color)
 
+        if definition_change:
+            self._box_definition_revision += 1
         if self._box_visible:
             self._send({"op": "clear_shapes_by_tag", "tag": self._BOX_TAG})
 
@@ -293,6 +297,7 @@ class SceneMixin:
         """Remove the box edge display from the canvas."""
         if not self._box_visible:
             return
+        self._box_definition_revision += 1
         self._send({"op": "clear_shapes_by_tag", "tag": self._BOX_TAG})
         self._box_visible = False
         self._box_record = None

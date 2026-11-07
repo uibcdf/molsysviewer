@@ -132,6 +132,20 @@ existing version-1 `scene_changed` rejection. This is the expected baseline for
 the already accepted moving-capture extension, not a completed implementation
 or a new failure of the strict version-1 contract.
 
+The subsequent backend preparation implements opt-in capture protocol 2:
+temporal context is detached from the live View, while owned edit/box revisions
+and saved-analysis fingerprints reject concurrent semantic changes. Automatic
+box following keeps its definition revision and reads one selected cell.
+The current widget and Qt runtime still advertise only protocol 1. Real-system
+protocol/file tests are separate from actual moving-renderer acceptance; this
+preparation does not enable the user feature or complete A5. Follow the
+[active capture report](../pending_bugs/saved_camera_lags_live_notebook.md).
+Its [receiving record](../moving_capture_backend_preparation_20261107.json)
+retains 395 broader Python passes, the overlapping final 64-case module and
+the full 206.24-second Studio compatibility run with protocol 1. Production
+inputs remain fixed, all nineteen native processes close and progress stays
+8/46. Native moving/hidden projection and the Jupyter uncertainty remain next.
+
 **Hosted scope remains separate.** General run `42387339383` passes its four
 Linux cells; four macOS cells remained queued at the last inspection. Source
 pair `42387355324` passes Windows/macOS but fails Linux's updated-annotation

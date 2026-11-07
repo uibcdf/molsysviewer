@@ -2096,6 +2096,23 @@ tracks the latest applied frame. Directed scheduler tests and the Studio guard's
 real pentalanine mesh/draw assertions protect these invariants. This private
 readiness boundary does not by itself enable moving-capture protocol support.
 
+**Negotiated moving-capture preparation — 2026-11-07 (#319).** A version-2
+reply may supply the sampled temporal context while canonical scene recipes
+remain stable. Validate the version, frame universe, camera, full playback
+settings and optional displayed-cell index before changing the detached recipe.
+An explicit box may intentionally display a cell from another structure;
+retain its actual sampled index. A renderer cannot invent a box display absent
+from the canonical recipe. Owned scene-edit intent and box-definition epochs
+must survive coalescing/history suspension and reject an A -> B -> A race.
+Automatic frame following changes neither definition. Fingerprint all saved
+named analyses with bounded numeric buffers; that work still scales with the
+analysis and does not imply selective disk queries or constant-time work.
+Revalidate before the atomic writer, without navigating, pausing or cloning
+the live trajectory. The current frontend advertises version 1 only: protocol
+tests of this backend preparation do not qualify frame-affine rendering or
+authorize advertising version 2. Existing explicit synchronization of raw
+MolSys edits remains required.
+
 **Shape-only framing — 2026-10-21 (#257).** Camera authority also makes the host
 responsible for initial absolute geometry without a molecular system. New
 geometry is framed while no deliberate viewpoint exists; a user-adjusted or

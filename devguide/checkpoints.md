@@ -905,30 +905,33 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**Current priority — robustness audit and action ledger, 2026-11-06:**
+**Current priority — robustness audit and action ledger, 2026-11-07:**
 [The active #315 plan](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md)
-owns the work order and stable IDs. Start with its reproduced file/state
-integrity and lifecycle findings, then plot authority and scientific figures.
-It separates new design recommendations from the already approved complete
-addon/task-session scope. E0 custody is received (progress 1/46, 2.2%). A1–A4,
-A6 and B1 have reviewed source corrections; consolidated hosted acceptance and
-closeout remain pending. B1 is `25061d9e`, A1/A3 `38eb8785`, A6 `1ea6b26e`.
-The final combined source passes 469 Python cases with one explicit legacy
-skip, its affected real-browser entry and canonical JS unit entry; see the
-[combined receipt](robustness_combined_source_receiving_20261106.json).
-Advisory drafts and unrestricted evidence stay private. Incremental commits
-carry the principal maintainer's explicit `[skip ci]`; batch pushes do not
-dispatch CI for each change. A5 is now reproduced under #319; the maintainer
-approved coherent awaitable capture/save and automatic Studio capture. The
-Python source checkpoint `e9def4ad` receives 172 directed Python cases, four real
-Jupyter save/restore cases and a subsequent settled save after popup closure;
-the lock-publication race has a causal regression. The
-[A5 receipt](live_state_capture_receiving_20261106.json) preserves the original
-failures and separate scopes. Studio/addressed popups/Qt/cancellation and
-durable real-renderer receiving remain open in the
-[A5 report](pending_bugs/saved_camera_lags_live_notebook.md).
-Next: complete A5, B2 precision and remaining
-DataCard receiving; keep the agreed substantive hosted checkpoint pending.
+owns the full work order and stable IDs. Delivered progress is **8/46 (17.4%)**;
+final acceptance is **1/46 (2.2%)**. Neither is total release readiness, and
+Movie #320 remains an additional mandatory stream. E0, A1–A4/A6 and B1/B2 have
+their recorded delivered results; consolidated acceptance remains separate.
+
+A5/#319 is the active slice. The camera/box corrections and #328's latest-frame
+shape convergence are delivered; the latter is `2bb82bbd`. The
+[backend preparation receipt](moving_capture_backend_preparation_20261107.json)
+records negotiated protocol 2, 395 broader Python passes, the overlapping final
+64-case moving module and full current-browser Studio receiving in 206.24
+seconds. **The frontend still advertises protocol 1 only.** Native moving and
+hidden-endpoint receiving, the earlier unexplained actual-Jupyter restoration
+failure and consolidated acceptance remain required in the
+[A5 report](pending_bugs/saved_camera_lags_live_notebook.md). Follow the ledger
+for current owner-PR/C1 inputs; dated receipts below retain their original
+scope rather than superseding this handoff.
+
+Next: complete A5's actual frame-dependent projections and moving/hidden
+receiving, then B3 DataCard lifecycle and isolated MolSysMT owner-PR
+reconciliation. All approved addon/task families remain in scope. Advisory
+drafts and original unrestricted evidence stay private under approved custody;
+no off-host backup is claimed. Incremental commits use the maintainer's
+explicit `[skip ci]`; no remote run is dispatched for each small change.
+Human receiving, candidates, tags, packages, promotions and both 1.0
+publications remain paused.
 
 **Additional pre-1.0 requirement — Movie, #320:** the maintainer now requires
 complete useful authoring/export and a timeline future agent components can
@@ -2718,12 +2721,13 @@ Resume toward **1.0** through the
 Its dashboard owns progress; use its stable IDs rather than adding another
 chronological status narrative here.
 
-**Current order — 2026-11-06:**
+**Current order — 2026-11-07:**
 
-1. **A:** scope the new integrity/restoration/resource reports and qualify the
-   relevant rejection and cleanup boundaries.
-2. **B:** finish #314 and review DataCard text, precision, provenance, lifecycle
-   and accessible popup/result handling.
+1. **A:** complete A5's moving/hidden capture and resolve the actual-Jupyter
+   uncertainty; preserve the other delivered rejection/cleanup corrections
+   before consolidated acceptance.
+2. **B:** retain delivered B1/B2 authority/precision corrections and finish
+   DataCard provenance, lifecycle and accessible popup/result receiving.
 3. **C:** deliver and receive the reconciled owner PR #543 and current host,
    completing #264/#301/#304/#306 while retaining #305's unexplained failure.
 4. **D:** receive owner scientific corrections and every previously approved

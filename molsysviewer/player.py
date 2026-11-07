@@ -168,15 +168,7 @@ class PlayerManager:
         self._sync_summary()
         self._view._sync_measurement_summaries_runtime()  # noqa: SLF001
         # NPT: auto-update box when box is visible
-        box_record = getattr(self._view, "_box_record", None)  # noqa: SLF001
-        if box_record is not None:
-            self._view.show_box(  # noqa: SLF001
-                color=box_record["color"],
-                width=box_record["width"],
-                alpha=box_record["alpha"],
-                structure_indices=int(index),
-                skip_digestion=True,
-            )
+        self._view._follow_box_frame(int(index))  # noqa: SLF001
         self._notify_frame_change(previous)
 
     @signal(tags=["structures"])

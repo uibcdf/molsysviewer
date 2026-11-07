@@ -21,12 +21,53 @@ def capture_endpoint(view, endpoint_id=None) -> str:
     return endpoint_id
 
 
-def _scene_key(state: dict) -> str:
+def _scene_key(state: dict, *, version: int = 1) -> str:
     comparable = deepcopy(state)
     # Passive camera telemetry may arrive while awaiting the explicit reply.
     # It must neither invalidate nor replace the requested camera.
     comparable.get("view", {}).pop("camera", None)
+    if version == 2:
+        temporal = comparable.get("view", {})
+        temporal.pop("structure_index", None)
+        temporal.pop("playback", None)
+        if not temporal:
+            comparable.pop("view", None)
+        comparable.get("box_display", {}).pop("structure_index", None)
     return hashlib.sha256(json.dumps(comparable, sort_keys=True, allow_nan=False).encode()).hexdigest()
+
+
+def _analysis_keys(view) -> tuple:
+    """Reuse the bounded saved-data fingerprint, without copying observations."""
+    from ..interactions import _analysis_signature
+
+    collection = getattr(view.molsys, "interactions", {})
+    return tuple(sorted((name, _analysis_signature(result)) for name, result in collection.items()))
+
+
+def _frame(view, value) -> int:
+    import molsysmt as msm
+
+    # An empty, shape-only canvas has the conventional frame zero.
+    count = 0 if view.molsys is None else int(msm.get(view.molsys, n_structures=True, skip_digestion=True))
+    if type(value) is not int or not 0 <= value < max(1, count):
+        raise FrontendRequestError(reason="invalid_frame")
+    return value
+
+
+def _playback(record) -> dict:
+    if not isinstance(record, dict):
+        raise FrontendRequestError(reason="invalid_playback")
+    if any(type(record.get(key)) is not int or not 0 < record[key] <= 2**53 - 1 for key in ("fps", "step_size")):
+        raise FrontendRequestError(reason="invalid_playback")
+    if (
+        not isinstance(record.get("mode"), str)
+        or record["mode"] not in {"loop", "once", "ping-pong"}
+        or not isinstance(record.get("direction"), str)
+        or record["direction"] not in {"forward", "backward"}
+        or type(record.get("playing")) is not bool
+    ):
+        raise FrontendRequestError(reason="invalid_playback")
+    return {key: record[key] for key in ("fps", "step_size", "mode", "direction", "playing")}
 
 
 def _camera(snapshot) -> dict:
@@ -56,6 +97,10 @@ class CapturedState:
     molecular_system: object
     molecular_revision: int
     scene_key: str
+    protocol_version: int = 1
+    box_definition_revision: int = 0
+    scene_edit_revision: int = 0
+    analysis_keys: tuple = ()
 
     def validate(self, view) -> None:
         if view.closed:
@@ -65,7 +110,15 @@ class CapturedState:
         if (
             view.molsys is not self.molecular_system
             or view._molecular_projection_revision != self.molecular_revision
-            or _scene_key(view.export_state()) != self.scene_key
+            or (
+                self.protocol_version == 2
+                and (
+                    view._box_definition_revision != self.box_definition_revision
+                    or view.history._edit_revision != self.scene_edit_revision
+                )
+            )
+            or _scene_key(view.export_state(), version=self.protocol_version) != self.scene_key
+            or (self.protocol_version == 2 and _analysis_keys(view) != self.analysis_keys)
         ):
             raise FrontendRequestError(reason="scene_changed")
 
@@ -79,19 +132,30 @@ def prepare_live_capture(view, *, timeout: float, endpoint_id=None):
             raise FrontendRequestError(reason="system_edit_pending")
         if not view._ready:
             raise FrontendRequestError(reason="no_live_frontend")
-        if 1 not in view._frontend_capabilities.get("visual_state_capture", []):
+        versions = view._frontend_capabilities.get("visual_state_capture", [])
+        version = 2 if 2 in versions else 1
+        if version not in versions:
             raise FrontendRequestError(reason="capture_not_supported")
         endpoint = capture_endpoint(view, endpoint_id)
         state = deepcopy(view.export_state())
-        key = _scene_key(state)
-        captured = CapturedState(state, view.molsys, view._molecular_projection_revision, key)
+        key = _scene_key(state, version=version)
+        captured = CapturedState(
+            state,
+            view.molsys,
+            view._molecular_projection_revision,
+            key,
+            version,
+            view._box_definition_revision,
+            view.history._edit_revision,
+            _analysis_keys(view) if version == 2 else (),
+        )
         request = view._frontend_requests.begin(
             endpoint_id=endpoint, reply_event="visual_state_snapshot", revision=key, timeout=timeout
         )
     return captured, request
 
 
-def send_live_capture(view, request) -> None:
+def send_live_capture(view, request, *, protocol_version: int = 1) -> None:
     """Keep a capture behind its own canvas's structural-stream gate."""
     import time
 
@@ -102,6 +166,8 @@ def send_live_capture(view, request) -> None:
         "capture_revision": request.revision,
         "capture_timeout_ms": max(1.0, min(30.0, request.deadline - time.monotonic()) * 1000),
     }
+    if protocol_version == 2:
+        message["capture_version"] = 2
     if target is not None:
         message["target_endpoint_id"] = target
     try:
@@ -114,6 +180,22 @@ def send_live_capture(view, request) -> None:
 def finish_live_capture(view, captured: CapturedState, reply: dict) -> CapturedState:
     with view._system_edits._locked():
         captured.validate(view)
+        if captured.protocol_version == 2:
+            if type(reply.get("capture_version")) is not int or reply["capture_version"] != 2:
+                raise FrontendRequestError(reason="invalid_capture_version")
+            frame = _frame(view, reply.get("structure_index"))
+            camera = _camera(reply.get("snapshot"))
+            playback = _playback(reply.get("playback"))
+            box = captured.state.get("box_display")
+            if box is not None:
+                box_frame = _frame(view, reply.get("box_structure_index"))
+            elif reply.get("box_structure_index") is not None:
+                raise FrontendRequestError(reason="unexpected_box_display")
+            # Validate the whole reply before touching even the detached recipe.
+            captured.state.setdefault("view", {}).update(camera=camera, structure_index=frame, playback=playback)
+            if box is not None:
+                box["structure_index"] = box_frame
+            return captured
         expected = captured.state.get("view", {}).get("structure_index")
         if expected is not None and (
             type(reply.get("structure_index")) is not int or reply["structure_index"] != expected
@@ -145,6 +227,6 @@ async def capture_live_state(view, *, timeout: float) -> CapturedState:
     if callable(require_host):
         require_host()
     captured, request = prepare_live_capture(view, timeout=timeout)
-    send_live_capture(view, request)
+    send_live_capture(view, request, protocol_version=captured.protocol_version)
     reply = await view._frontend_requests.wait(request)
     return finish_live_capture(view, captured, reply)

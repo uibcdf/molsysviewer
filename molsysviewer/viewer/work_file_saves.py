@@ -88,7 +88,7 @@ class WorkFileSaves:
             raise FrontendRequestError(reason="scheduler_unavailable") from error
         ticket.future.add_done_callback(lambda future: self._captured(operation, future))
         try:
-            send_live_capture(view, ticket)
+            send_live_capture(view, ticket, protocol_version=captured.protocol_version)
         except BaseException as error:
             self._finish(operation, error)
             raise

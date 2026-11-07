@@ -426,6 +426,7 @@ class MolSysView(
         self._global_hidden = False
         self._box_visible = False
         self._box_record: dict | None = None  # params last passed to show_box
+        self._box_definition_revision = 0
         self._atom_color_layers: dict[str, dict[int, int]] = {"whole": {}}
         self._atom_color_map: dict[int, int] = {}  # resolved atomIndex → 0xRRGGBB
         self._region_order_counter: int = 0
@@ -2091,14 +2092,7 @@ class MolSysView(
                 self._send_runtime_only({"op": "set_trajectory_frame", "index": frame})
             self._sync_trajectory_summary_runtime()
             self._sync_measurement_summaries_runtime()
-            if self._box_record is not None:
-                self.show_box(
-                    color=self._box_record["color"],
-                    width=self._box_record["width"],
-                    alpha=self._box_record["alpha"],
-                    structure_indices=frame,
-                    skip_digestion=True,
-                )
+            self._follow_box_frame(frame)
             self.player._notify_frame_change(previous)  # noqa: SLF001
         elif event == "request_dynamic_region_evaluation":
             self._handle_dynamic_region_evaluation_request(content)

@@ -15,6 +15,46 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
+## Moving-protocol backend preparation — 2026-11-07
+
+**Backend preparation received locally; native moving capture remains disabled.**
+The backend adds negotiated protocol 2 without advertising it from the
+current widget or Qt runtime, which still declares only protocol 1. Protocol 1
+retains its strict frame/recipe checks and unchanged request shape. Protocol 2
+accepts the completed draw's detached frame, camera, complete playback settings
+and displayed-cell index, validating every field before changing the captured
+recipe. It never seeks, pauses or copies the live molecular trajectory.
+
+Only temporal recipe fields are excluded from protocol-2 scene comparison.
+Owned scene-edit and box-definition revisions reject intervening edits, even
+when coalescing or suspended history returns the final recipe to its original
+value. An attempted owned scene mutation can conservatively invalidate a
+pending capture even when no undo record is retained. Ordinary frame following
+does not increment these revisions. Public box width/cell/color validation
+precedes its definition change, and frame following reads one selected cell.
+All named scientific analyses, including unrepresented ones, use the existing
+bounded saved-data fingerprint. Hashing still scales with their stored data;
+this is not constant-time capture or a universal RAM guarantee. Arbitrary raw
+MolSys edits still require the established explicit synchronization contract.
+
+The real-system protocol tests retain state/session data, dynamic regions,
+measures and interaction references through Python and Studio/popup request
+paths. Those replies are constructed protocol input, not renderer evidence.
+Native frame-affine projection, actual moving replies and hidden endpoints
+remain required before advertising version 2 or closing A5. The earlier
+actual-Jupyter uncertainty remains unresolved. Progress stays 8/46.
+
+The broader sixteen-module Python selection passes 395 cases; the final moving
+module passes 64, including six API/Studio/target-popup file round trips,
+atomic invalid replies, unchanged source playback/coordinates, dynamic-region
+restoration, analysis edits and explicit ABA equality controls. The latter
+adds two box cases and strengthens assertions after the broader run;
+production inputs remain identical. These scopes overlap and are not summed.
+The complete current-browser Studio entry passes in 206.24 seconds with 4,303
+unchanged inputs and all nineteen owned processes closed. It still uses
+protocol 1. See the [preparation receipt](../moving_capture_backend_preparation_20261107.json)
+for exact hashes and the distinction from native version-2 acceptance.
+
 ## Current trajectory-shape prerequisite — 2026-11-07
 
 Bounded child #328 now preserves the latest requested frame through overlapping

@@ -114,11 +114,16 @@ class SceneHistory:
         self._suspended = False
         self._coalescing_depth = 0
         self._coalesced_keys: set[tuple[str, str, str]] = set()
+        self._edit_revision = 0
 
     # ── Auto-checkpoint hooks (used by the records-history decorator) ──────
 
     def _begin_operation(self, operation_key: tuple[str, str, str]) -> None:
         """Snapshot the pre-operation state, once, for the outermost mutating op."""
+        # Independent of undo storage/coalescing: A -> B -> A must not make an
+        # outstanding capture mistake an intervening edit for an unchanged scene.
+        if self._depth == 0:
+            self._edit_revision += 1
         if self._suspended:
             return
         if self._depth == 0:
