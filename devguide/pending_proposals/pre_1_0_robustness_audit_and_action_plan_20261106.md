@@ -89,8 +89,13 @@ default and rejects candidate/non-Linux requests; its actual Bash/profile
 checks pass 51 cases. The combined workflow/backlog/parser selection passes
 122 cases, with one explicitly unselected live profile; the separately executed
 live profile above supplies its own evidence. The single Linux diagnostic run
-`42395570310` receives source `b980adb5`; its observed state is in progress,
-without a result yet. It does not repeat the full matrix or establish release acceptance.
+`42395570310` receives source `b980adb5`: the complete selected controls entry
+passes, including revised-label GPU picks and markers. Its Jupyter step fails
+before launch because this source environment omitted JupyterLab; this is a
+new diagnostic acquisition omission, not the original browser cause. The
+correction declares JupyterLab/psutil, has a failing-before/passing-after
+regression and passes 89 workflow/dependency checks. A corrected diagnostic
+follows reviewed delivery; no full matrix or release acceptance is claimed.
 See the [diagnostic receipt](../hosted_receiving_diagnostics_20261107.json).
 
 The reviewed correction is published as `e4dd58cf`, with `[skip ci]`. Its one

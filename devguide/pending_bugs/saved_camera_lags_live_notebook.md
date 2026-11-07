@@ -34,6 +34,14 @@ the actual native/provider setup. It cannot qualify a candidate or complete
 the Python/notebook/core matrix. The actual Bash guard matrix and workflow
 checks pass 51 cases. See the [diagnostic receipt](../hosted_receiving_diagnostics_20261107.json).
 
+The first bounded diagnostic `42395570310` passes controls/popup receiving,
+but its Jupyter preflight rejects missing JupyterLab before starting a browser.
+The source environment now declares JupyterLab and psutil, matching the live
+guard requirements already present in the general test environment. The
+regression first fails for both omissions; the corrected workflow/dependency
+selection passes 89 cases. This does not explain the original Jupyter failure;
+its corrected receiving remains due.
+
 Checkpoint `9a569c55` is not accepted: the completed general Linux and
 three-platform Python 3.14 source-pair cells fail four pre-existing
 camera-envelope assertions which omit the newly required revision field.

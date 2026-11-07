@@ -44,3 +44,10 @@ with fixed selected driver/runtime bytes and all 17 owned processes closed.
 This does not establish the cause or resolve the original hosted failure.
 The source-only Linux diagnostic profile repeats just this entry and the
 independent live-Jupyter boundary against the exact hosted provider.
+
+The single hosted diagnostic `42395570310`, source `b980adb5` with the exact
+original MolSysMT provider, passes the complete controls entry and its revised
+label picks/selected markers under the original deadlines. Only passive
+diagnostics changed; this is non-reproduction, not a causal product fix. The
+independent Jupyter step fails its missing-tool preflight; both facts remain
+separate.

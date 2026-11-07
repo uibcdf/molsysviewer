@@ -63,8 +63,9 @@
   ],
   "remote_dispatch_performed": true,
   "remaining": [
-    "Inspect the single hosted diagnostic, native GPU observations and safe Jupyter phase.",
-    "Diagnose actual causes or obtain explicit disposition, preserve failures; complete required full acceptance separately."
+    "Deliver the source diagnostic acquisition correction and inspect one corrected diagnostic, not a full matrix.",
+    "Diagnose original hosted Jupyter cause and obtain an evidenced cause/disposition for the earlier pick failure; later passes alone do not close it.",
+    "Complete remaining original full acceptance separately."
   ],
   "private_receipt_sha256": {
     "diagnostic-red.json": "a0b6865c454603d4aeaf5726cfd3fb3f731b6402828572dca51fd7902c9d3092",
@@ -75,7 +76,11 @@
     "live-diagnostic-local-01/invocation.json": "cbff05bd1ab3d9dd681780773831d951f2b6a3c75a2fea1b65da5ff6c044ed1e",
     "mirror-diagnostic-local-01/invocation.json": "0f838136617a88dc1b18eb3ea23d3dcd0653687991526380686578e6fcf41044",
     "workflow-diag-final.json": "82282db2664877dd9712ace700dcae182aade8658b27b07c0f0f8b6ba36ff50b",
-    "diagnostic-typecheck-final.json": "24788dbc02b5f9cbf095037a16f2194cdf03b8369cfc07dc61b32c9a86cad895"
+    "diagnostic-typecheck-final.json": "24788dbc02b5f9cbf095037a16f2194cdf03b8369cfc07dc61b32c9a86cad895",
+    "diagnostic-hosted-job-128472100164-raw.log": "6f39f2eaf78608f124988f9d278738e6e9146b43f9bde6de4be52d18980ace60",
+    "diagnostic-hosted-receptor.log": "37148eeb530bf1efa62d75e5b71c1d60c8f4f994ca5ce70088d1cb076af159c8",
+    "diagnostic-tools-red.json": "1a35a012a68575bbdab21de757e3a5a251d877c484e2670adaf880349af98f80",
+    "diagnostic-tools-green.json": "17076169a9db1ce91112f2ca4493353797e5d370507a3f0bd5153caafa38b5d5"
   },
   "local_combined_checks": {
     "native_exit": 0,
@@ -115,9 +120,12 @@
     "molsysmt_source": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
     "pandas": "2.3.3",
     "scope": "One Linux diagnostic; source_receiving=true, receiving_scope=diagnostics. No candidate tags or package production.",
-    "observed_status": "in_progress",
-    "conclusion": null,
-    "submitted_once": true
+    "observed_status": "completed",
+    "conclusion": "failure",
+    "submitted_once": true,
+    "mirror_receiving": "success; 1/1 selected entry, edited annotation picks and markers received",
+    "jupyter_receiving": "Acquisition failure before browser launch: jupyterlab absent. Original hosted browser cause remains unknown.",
+    "artifact": "No receipt: import preflight failed before creating output; native log retained."
   },
   "selected_private_evidence_custody": {
     "custody_set": "hosted-diagnostics-20261107-1",
@@ -133,5 +141,26 @@
     "passed": 382,
     "native_exit": 0,
     "seconds": 2.16
+  },
+  "source_environment_correction": {
+    "path": "devtools/conda-envs/test_source_pair_py314.yaml",
+    "added_test_tools": [
+      "jupyterlab",
+      "psutil"
+    ],
+    "runtime_dependencies_unchanged": true,
+    "regression_red": {
+      "native_exit": 1,
+      "missing": [
+        "jupyterlab",
+        "psutil"
+      ]
+    },
+    "workflow_and_dependency_guards": {
+      "native_exit": 0,
+      "passed": 89,
+      "seconds": 12.7
+    },
+    "next": "Reviewed source delivery, then one diagnostic replacement with corrected acquisition; preserve previous run."
   }
 }
