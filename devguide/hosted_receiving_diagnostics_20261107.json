@@ -63,9 +63,9 @@
   ],
   "remote_dispatch_performed": true,
   "remaining": [
-    "Inspect the single corrected-acquisition source diagnostic 42396548782; no automatic retries.",
-    "Diagnose original hosted Jupyter cause and obtain an evidenced cause/disposition for the earlier pick failure; later passes alone do not close it.",
-    "Complete remaining original full acceptance separately."
+    "Original failing Jupyter phase and first updated-label pick cause remain unknown; later passes are non-reproduction, not causal closure.",
+    "Continue A5 continuous-playback/hidden-endpoint acceptance and its concrete box-display prerequisites #326/#327.",
+    "Complete original consolidated source/hosted/installed acceptance separately; this diagnostic does not replace full matrices."
   ],
   "private_receipt_sha256": {
     "diagnostic-red.json": "a0b6865c454603d4aeaf5726cfd3fb3f731b6402828572dca51fd7902c9d3092",
@@ -167,8 +167,31 @@
     "run_id": 42396548782,
     "url": "https://github.com/uibcdf/molsysviewer/actions/runs/42396548782",
     "exact_source": "aefbf992058c589ce089ee992778469dc2d45f3d",
-    "observed_status": "in_progress",
-    "conclusion": null,
-    "scope": "One corrected-acquisition Linux diagnostic; first run preserved; no full matrix/candidate/publication."
+    "observed_status": "completed",
+    "conclusion": "success",
+    "scope": "One corrected-acquisition Linux diagnostic; first run preserved; no full matrix/candidate/publication.",
+    "mirror_receiving": "success; complete selected controls entry, including revised-label picks and markers",
+    "actual_jupyter": {
+      "native_exit": 0,
+      "seconds": 58.36007875800004,
+      "process_cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "browser_summary": {
+        "status": "available",
+        "outcome": "passed",
+        "capture_restore_cases": 6,
+        "strong_restore_cases": 6,
+        "studio_cases": 4
+      }
+    },
+    "original_artifact": {
+      "id": 13583966416,
+      "bytes": 557,
+      "sha256": "c4967b746653f59cf94efacc8c1da546dfd15821c7eeacfe477414c743eb7a52",
+      "github_digest_verified": true
+    }
   }
 }

@@ -117,6 +117,7 @@ export interface StateCallbacks {
     getComponents: () => StructureComponentRef[];
     notify: (msg: any) => void;
     applyCameraNavigation?: (operation: () => void | Promise<void>, hooks?: CameraIntentApplication) => Promise<void>;
+    onViewpointIntent?: () => void;
     setManagedLayerVisibility?: (tag: string, kind: string, visible: boolean) => Promise<boolean>;
 }
 
@@ -1363,6 +1364,7 @@ export class StateHandlers {
      */
     markIntentionalViewpoint(): void {
         this.intentionalViewpoint = true;
+        this.callbacks.onViewpointIntent?.();
     }
 
     hasIntentionalViewpoint(): boolean {
@@ -1374,7 +1376,7 @@ export class StateHandlers {
         const input = (this.plugin as any).canvas3d?.input;
         if (!input) return;
         this.cameraInputTracked = true;
-        const mark = () => { this.intentionalViewpoint = true; };
+        const mark = () => this.markIntentionalViewpoint();
         input.drag?.subscribe?.(mark);
         input.wheel?.subscribe?.(mark);
         input.pinch?.subscribe?.(mark);
@@ -1772,7 +1774,7 @@ export class StateHandlers {
         if (!selection) return;
 
         const loci = StructureSelection.toLociWithSourceUnits(selection);
-        this.intentionalViewpoint = true;
+        this.markIntentionalViewpoint();
         const focus = () => this.plugin.managers.camera.focusLoci(loci, {
             durationMs: msg.options?.duration_ms,
             extraRadius: msg.options?.extra_radius,

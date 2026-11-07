@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 import tempfile
 from contextlib import nullcontext
@@ -124,6 +125,9 @@ class StateMixin:
             ``uid_high_water_mark``, ``tag_high_water_marks``, ``structure``, ``view``.
             ``sources`` contains compact load records bound to the ordered system.
             Optional `figure` records the workbench PNG preset, scale and background.
+            Optional `box_display` records cell-display style and its selected
+            structure, with width explicitly in angstrom. Scientific box vectors
+            remain in the molecular system, rather than being copied here.
 
             ``structure`` records the system the document was written from -- its atom
             count and a topological fingerprint -- and is absent when no system is
@@ -287,6 +291,7 @@ class StateMixin:
             {
                 "version": STATE_VERSION,
                 **({"figure": self._export_figure_state()} if getattr(self, "_current_figure_spec", None) else {}),
+                **({"box_display": box} if (box := self._export_box_display()) is not None else {}),
                 **({"view": view_state} if (view_state := self._export_view_state()) else {}),
                 **({"focus": focus_state} if (focus_state := self._export_focus_overlays()) else {}),
                 # Absent when no system is loaded, and absent from every document written
@@ -512,6 +517,9 @@ class StateMixin:
                 f"version {STATE_VERSION}; version 1 documents are no longer supported."
             )
         figure_spec = self._prepare_figure_import(state.get("figure"))
+        box_display = self._prepare_box_display_import(state.get("box_display"))
+        if box_display is not None and box_display["structure_index"] >= self.player.n_structures:
+            raise ValueError("State box display refers to a structure outside the loaded system.")
         interaction_records = state.get("interactions", [])
         if interaction_records:
             interaction_version = state.get("interaction_state_version")
@@ -695,6 +703,14 @@ class StateMixin:
                 self._restore_focus_overlays(state.get("focus"))
                 self.trajectory_plot._replace(plot_cards)
                 self._restore_view_state(state.get("view"))
+                if box_display is not None:
+                    self.show_box(
+                        color=box_display["color"],
+                        width=box_display["width_angstrom"],
+                        alpha=box_display["alpha"],
+                        structure_indices=box_display["structure_index"],
+                        skip_digestion=True,
+                    )
                 if figure_spec is not None:
                     self.set_figure_spec(figure_spec)
                 self._send_resolved_atom_colors(replay=True)
@@ -714,6 +730,39 @@ class StateMixin:
 
         if not already_suspended:
             self.history.clear()
+
+    def _export_box_display(self) -> dict | None:
+        if not self._box_visible or self._box_record is None:
+            return None
+        from ..colors import normalize_color
+
+        style = self._box_record
+        return {
+            "color": normalize_color(style["color"]),
+            "width_angstrom": float(style["width"]),
+            "alpha": float(style["alpha"]),
+            "structure_index": int(style["structure_indices"]),
+        }
+
+    @staticmethod
+    def _prepare_box_display_import(recorded: Any) -> dict | None:
+        if recorded is None:
+            return None
+        fields = {"color", "width_angstrom", "alpha", "structure_index"}
+        if not isinstance(recorded, dict) or not fields <= set(recorded):
+            raise ValueError("State box display must contain color, width_angstrom, alpha and structure_index.")
+        color, index = recorded["color"], recorded["structure_index"]
+        if type(color) is not int or not 0 <= color <= 0xFFFFFF or type(index) is not int or index < 0:
+            raise ValueError("State box display requires a portable color and nonnegative integer structure index.")
+        for field in ("width_angstrom", "alpha"):
+            value = recorded[field]
+            try:
+                finite = type(value) in (int, float) and math.isfinite(value)
+            except OverflowError:
+                finite = False
+            if not finite or (value <= 0 if field == "width_angstrom" else not 0 <= value <= 1):
+                raise ValueError("State box display requires a positive finite width and alpha between zero and one.")
+        return {field: recorded[field] for field in fields}
 
     def _export_figure_state(self) -> dict:
         """The workbench stores preset, scale and background, not export-only overrides."""

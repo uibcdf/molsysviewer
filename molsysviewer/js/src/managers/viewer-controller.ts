@@ -1685,6 +1685,7 @@ export class MolSysViewerController {
         
         this.state = new StateHandlers(plugin, {
             applyCameraNavigation: (operation, hooks) => this.withCameraNavigation(operation, hooks),
+            onViewpointIntent: () => this.cancelInitialFraming(),
             getStructure: () => this.getStructureData(),
             getLoadedStructure: () => this.loadedStructure,
             getCurrentStructureRef: () => this.currentStructure,
@@ -1856,6 +1857,7 @@ export class MolSysViewerController {
     }
 
     dispose(): void {
+        this.cancelInitialFraming();
         this.pendingCameraIntent?.release();
         this.pendingHtmlDownload = null;
         this.canvasResizeSubscription?.unsubscribe();
@@ -3416,7 +3418,12 @@ export class MolSysViewerController {
         // waiting for something else to need it. A visible canvas draws anyway;
         // an idle or offscreen one may not, and then the framing never happens.
         const request = () => {
-            canvas3d.requestCameraReset?.({ durationMs: 0 });
+            canvas3d.requestCameraReset?.({ durationMs: 0, snapshot: (_scene: unknown, camera: Camera) => {
+                // Mol* may consume this reset after a later explicit snapshot
+                // or input. Preserve that current pose if this initial-fit
+                // owner has retired; otherwise keep Mol*'s native focus.
+                return token === this.frameRequestToken ? {} : camera.getSnapshot();
+            } });
             canvas3d.requestDraw?.();
             requested = true;
         };
@@ -3462,6 +3469,10 @@ export class MolSysViewerController {
 
     /** Serialises framing so a newer load cannot be overtaken by an older one. */
     private frameRequestToken = 0;
+
+    private cancelInitialFraming(): void {
+        this.frameRequestToken++;
+    }
 
     /**
      * Say so when the camera ends up somewhere nobody chose.
@@ -4687,7 +4698,10 @@ export class MolSysViewerController {
         const intercept: typeof request = options => {
             const application = hooks ?? this.cameraNavigationFactory?.();
             if (application) this.requestCameraIntent(options, application, request);
-            else request.call(canvas, options);
+            else {
+                this.cancelInitialFraming();
+                request.call(canvas, options);
+            }
         };
         canvas.requestCameraReset = intercept;
         let pending: void | Promise<void>;
@@ -4708,6 +4722,7 @@ export class MolSysViewerController {
         if (hooks.signal.aborted) return;
         const canvas = this.plugin.canvas3d;
         if (!canvas || !request) throw new Error("No live canvas is available for the camera intent.");
+        this.cancelInitialFraming();
         // A newer provider will replace the older request; retiring its observer
         // must not issue a second reset or cancel the new canvas owner.
         this.pendingCameraIntent?.release();
@@ -4744,6 +4759,7 @@ export class MolSysViewerController {
 
     async setCameraSnapshot(snapshot?: Camera.Snapshot, durationMs?: number) {
         if (!snapshot) return;
+        this.cancelInitialFraming();
         this.state.markIntentionalViewpoint();
         try {
             await PluginCommands.Camera.SetSnapshot(this.plugin, {

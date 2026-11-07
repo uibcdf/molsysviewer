@@ -127,12 +127,20 @@ class HistoryMixin:
 
         if op == "clear_shapes_by_tag":
             cleared_tag = msg.get("tag")
+            if cleared_tag is None or cleared_tag == self._BOX_TAG:
+                self._box_visible = False
+                self._box_record = None
             if cleared_tag is None:
                 self._shape_history.clear()
                 return
             if not isinstance(cleared_tag, str):
                 return
             self._shape_history = [m for m in self._shape_history if self._tag_from_message(m) != cleared_tag]
+            return
+
+        if op == "clear_scene" and (msg.get("options") or {}).get("shapes") is True:
+            self._box_visible = False
+            self._box_record = None
             return
 
         if op in {"add_label", "add_distance_measurement", "add_angle_measurement", "add_dihedral_measurement"}:

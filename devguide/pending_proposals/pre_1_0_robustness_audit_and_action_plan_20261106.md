@@ -67,103 +67,80 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
-**Current checkpoint, 2026-11-07:** the applicable hosted gates are not all
-green. General CI passes all four Linux cells; four macOS cells remain queued.
-The minimum-provider source pair passes Windows and macOS, while Linux fails
-the updated-annotation GPU pick in the canvas popup. The separate browser lane
-passes all 44 core entries, then fails its actual-Jupyter receiving step.
-Its original command receipt does not establish the browser failure phase.
-Both failures remain open; later local passes do not establish their causes.
-The earlier message-envelope, native-error portability and Studio-budget
-corrections are delivered in `e4dd58cf`; their original failing runs remain
-preserved in the [hosted checkpoint](../robustness_hosted_checkpoint_20261107.json).
-The delivered counter remains **8/46 (17.4%)**; final acceptance remains **1/46**.
+**Current checkpoint, 2026-11-07:** the delivered counter remains
+**8/46 (17.4%)** and final acceptance **1/46 (2.2%)**. Bounded child defects do
+not increase the denominator or complete their parent. Movie #320 remains
+mandatory pre-1.0 work in addition to these original 46 leaves.
 
-Current source diagnostics add a closed-vocabulary Jupyter phase/error summary
-and bounded actual GPU observations for #325's updated annotation pick. The
-parser and real process cleanup pass 13 cases; actual Jupyter receiving passes
-in 70.94 seconds and the complete controls entry in 198.94 seconds on the
-separately qualified local provider route. Original hosted causes remain
-unresolved. A source-only Linux diagnostic profile preserves the full workflow
-default and rejects candidate/non-Linux requests; its actual Bash/profile
-checks pass 51 cases. The combined workflow/backlog/parser selection passes
-122 cases, with one explicitly unselected live profile; the separately executed
-live profile above supplies its own evidence. The single Linux diagnostic run
-`42395570310` receives source `b980adb5`: the complete selected controls entry
-passes, including revised-label GPU picks and markers. Its Jupyter step fails
-before launch because this source environment omitted JupyterLab; this is a
-new diagnostic acquisition omission, not the original browser cause. The
-correction declares JupyterLab/psutil, has a failing-before/passing-after
-regression and passes 89 workflow/dependency checks. The corrected diagnostic
-`42396548782` receives source `aefbf992`; its observed state is in progress,
-without a result yet. No full matrix or release acceptance is claimed.
-See the [diagnostic receipt](../hosted_receiving_diagnostics_20261107.json).
+**A5 is the active implementation slice.** Its camera/control foundation is
+delivered in `ebe3d46b`. Current prerequisite work fixes lost simulation-box
+state/session display (#326), physical stroke units and invalid widths (#327),
+and a newly reproduced initial-fit/camera-restore ordering defect under #319.
+The relevant Python selection passes 551 cases. The current runtime builds and
+all 367 canonical JavaScript cases pass. Three directed camera cases fail
+against the old source; all fifteen pass with the correction, including the
+positive control that a fresh molecular load still frames normally. The complete
+Studio entry passes in 213.27 seconds and controls/popup receiving in 292.48
+seconds, each with 4,299 fixed inputs and all owned processes closed. #326/#327
+are resolved bounded prerequisites; A5 acceptance remains incomplete.
 
-The reviewed correction is published as `e4dd58cf`, with `[skip ci]`. Its one
-replacement checkpoint uses general CI `42387339383`, core browser
-`42387347683` and minimum-provider source pair `42387355324`. The old runs and
-their native failures remain preserved; an attempted old-run cancellation was
-rejected by automatic review and was not performed. The original macOS result
-is not inferred from the replacement. C1 now delivers the reconciled contribution through PR #543 at `42f5ed3bc`,
-with 5,059 Python passes and all seventeen Jupyter steps received. Owner review
-and integration remain pending; MolSysMT main and unrelated human work are
-untouched. Exact source scopes and remaining C2 exits are recorded below.
+The first expanded native Studio run restores the box, frame and camera in
+primary/popup cases, then fails the detached-Studio session's saved-camera
+assertion. Its molecular initial-fit loop replaces the newer snapshot provider
+while changed box bounds keep the fit active. The correction retires old fit
+ownership on later explicit camera intent or physical input. This causal
+control does not identify the cause of earlier hosted failures with missing
+diagnostics. See the [active A5 report](../pending_bugs/saved_camera_lags_live_notebook.md)
+for the remaining playback/hidden-endpoint scope and retained failed attempts.
+The current actual-Jupyter run passes a strong state restore, then times out
+waiting for the session camera. A diagnostic-only driver change retains
+bounded passive camera/draw observations without changing the runtime,
+assertions or deadlines. Its complete six-restore/four-Studio run passes, but
+the earlier failure's cause remains unresolved under #319. Neither this pass
+nor the local controls pass closes the older hosted observations. The
+[box/framing receipt](../box_display_receiving_20261107.json) retains both
+outcomes and their exact source/diagnostic scopes.
 
-**Next actions:** finish A5's remaining capture acceptance, starting with the
-current hosted live-Jupyter and native-pick failures. B2's numerical correction
-is delivered; remaining DataCard lifecycle work follows the recorded B3 scope.
-C1 is delivered through the owner's PR; review/integration remain separate. A1/A3 source and guards are delivered
-in `38eb8785`, following explicit maintainer disclosure review; advisory drafts
-and unrestricted evidence stay private. A6/#318 is delivered in `1ea6b26e`;
-B1/#314 in `25061d9e`. A2/#317 (`ef7b1348`) and A4/#316 (`611c1574`) retain their
-earlier receiving. Six corrections are implemented/source-verified; their
-applicable consolidated hosted checkpoint and closure remain pending.
+**Hosted scope remains separate.** General run `42387339383` passes its four
+Linux cells; four macOS cells remained queued at the last inspection. Source
+pair `42387355324` passes Windows/macOS but fails Linux's updated-annotation
+GPU pick (#325). Core run `42387347683` passes 44/44 browser entries, then its
+actual Jupyter step fails without a preserved browser phase. The original
+causes remain unresolved. The bounded diagnostic `42395570310` passes controls
+but cannot launch Jupyter because acquisition omitted JupyterLab. Its corrected
+replacement `42396548782`, source `aefbf992`, passes both selected boundaries;
+the verified original artifact records six strong restores, four Studio cases
+and all seventeen owned processes closed. This is bounded non-reproduction,
+not a full matrix or causal closure. The [hosted checkpoint](../robustness_hosted_checkpoint_20261107.json)
+and [diagnostic receipt](../hosted_receiving_diagnostics_20261107.json) preserve
+source identities, native failures and the acquisition regression.
 
-The B1-specific complete core run passes **44/44** with 4,305 fixed selected
-inputs, before A1/A3/A6 integration. The final combined source separately passes
-**469 Python cases, one explicit legacy skip**, its affected actual-browser
-entry and canonical JS unit entry. See the
-[combined receipt](../robustness_combined_source_receiving_20261106.json),
+**Other delivered work remains applicable within its recorded inputs.**
+A1/A3 (`38eb8785`), A2 (`ef7b1348`), A4 (`611c1574`) and A6 (`1ea6b26e`)
+retain their scoped receiving; B1/B2 retain authority/numerical corrections and
+remaining card-lifecycle/consolidated acceptance. Earlier full Python and
+native Qt passes qualify their declared sources, not today's changed runtime.
+See the [combined receipt](../robustness_combined_source_receiving_20261106.json),
 [B1 receipt](../trajectory_plot_authority_receiving_20261106.json) and
-[private preparation scope](../robustness_integrity_preparation_receiving_20261106.json).
-Incremental commits carry `[skip ci]` at the principal maintainer's explicit
-request; batch pushes and one agreed substantive remote checkpoint replace
-per-change dispatches. No new remote run has been dispatched for this block.
-E0 custody and the publication/human-review pauses retain their separate scope.
+[A5 receipt](../live_state_capture_receiving_20261106.json). Approved E0 private
+custody retains original evidence; no off-host backup is claimed.
 
-The next A5 source checkpoint additionally passes the complete core Python
-selection: **3,760 passed, zero failures/errors, 22 documented skips and 16
-deselections**, with 5,401 selected inputs unchanged from its declared early-run
-digest through completion. The complete Studio browser entry and actual Jupyter
-guard separately pass camera-perturbation/restoration and owned-popup cases.
-These scopes overlap; see the [A5 receipt](../live_state_capture_receiving_20261106.json).
-A5 remains partial: a real before-draw probe reproduces delayed Cancel feedback,
-and continuous playback, hidden endpoints, native Qt and hosted/installed
-acceptance still need work. The terminal core results, that regression and B2's
-numeric observations have an additional verified private custody copy; original
-evidence is retained. No additional leaf is counted as received.
+**C1 is delivered for owner review through MolSysMT PR #543**, head
+`42f5ed3bc`, with 5,059 Python passes and seventeen actual Jupyter steps. The
+owner's main has subsequently advanced to `40bb54d0`; the PR is now reported
+non-mergeable. Reconcile in a separate contribution checkout, preserve human
+work and receive the changed boundary before updating that PR. Never integrate
+into MolSysMT main from this session. C2/owner and hosted acceptance remain
+pending; full details and scientific provider identity are in C1 below.
 
-The subsequent control/camera corrections now have **239 consolidated affected
-Python passes**, passing TypeScript/canonical JS-unit/build checks and a third
-durable native Qt pass on the actual Wayland/NVIDIA host. That native pass
-receives all four Studio/Python state/session formats/origins after camera and
-frame perturbation, a matching fresh draw, cancellation before a draw and clean
-owned-process shutdown. Earlier failed attempts remain historical evidence.
-A genuine held old camera packet establishes an ordering defect; the current
-correction also covers pending snapshots replaced by later reset/focus and
-keeps Mol*'s calculations. Its second complete Studio attempt passes all prior
-roundtrips, then fails the new navigation relay assertion. A narrow actual
-trace isolates a real transition completing on a tick without a final draw,
-leaving relay pending. Its working one-shot final-draw correction has a causal
-unit failure and eleven passing directed cases; actual receiving is in progress.
-The bounded receiving/integration remains open under #319.
-B2's new numerical fixtures additionally expose #322's public pixel-dimension
-digestion defect: its working correction passes 34 plot API/state cases, while
-the expanded boundary gate passes 146 cases and the actual full browser entry
-passes all fifteen independent Decimal controls, raw access, file recovery and
-popup/frame checks. Reviewed integration/consolidated acceptance remain pending.
-These follow-up results supersede
-any inference that an earlier complete pass qualifies the current working tree.
+**Next actions:** publish the reviewed bounded box/framing correction, then
+resolve the remaining Jupyter uncertainty and complete A5's continuous-playback
+and hidden-endpoint cases. Continue B3's
+DataCard lifecycle and the isolated owner-PR reconciliation. The remaining
+approved addon families and Movie #320 remain in scope. Incremental commits
+use `[skip ci]` at the principal maintainer's explicit instruction; no remote
+run is dispatched for each small change. Human review, candidates, tags,
+packages, promotions and both 1.0 publications remain paused.
 
 | Block | Current status | Owner and tracking | Exit evidence |
 | --- | --- | --- | --- |
@@ -442,6 +419,10 @@ to `42f5ed3bc`, a normal fast-forward update preserving its old head, qualified
 `e1199534` contribution and owner review `3f66f593` over published owner
 `030c201a`. Both histories, native source and unrelated human work are preserved;
 the queue index is generated. The owning team still reviews/integrates it.
+A later live inspection observes owner main `40bb54d0` and GitHub reports the
+PR as non-mergeable. Reconcile that newer base in an isolated contribution
+worktree after the current Viewer box-source batch; preserve the existing
+5,059-case and seventeen-step source scopes rather than relabelling them.
 Never push or merge MolSysMT main from this Viewer session. The
 [receiving record](../molsysmt_pr543_reconciliation_receiving_20261107.json)
 keeps exact producers, source scopes and remaining exits; the earlier

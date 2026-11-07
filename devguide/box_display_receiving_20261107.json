@@ -1,0 +1,238 @@
+{
+  "schema": "molsysviewer.box_display_receiving@1",
+  "observed_at": "2026-11-07T19:23:56.448142+00:00",
+  "plan": "uibcdf/molsysviewer#315 / A5",
+  "issues": [
+    "uibcdf/molsysviewer#326",
+    "uibcdf/molsysviewer#327",
+    "uibcdf/molsysviewer#319"
+  ],
+  "status": "Bounded source box/width/framing correction received; A5 and unexplained Jupyter restoration failure remain partial.",
+  "source": {
+    "base": "b25a4bff016f55c9b7fd5488d534128c9cab0b09",
+    "files_sha256": {
+      "molsysviewer/viewer/state.py": "a5d84dfaf46eb68d850450c64b60fd76bb449dd430cfdc55dc3fa7d6b5ca03e5",
+      "molsysviewer/viewer/scene.py": "744152daaf553f069ab0bd920f407d15314144dbf02e3e8fa8adf6aea222f2df",
+      "molsysviewer/viewer/history.py": "72433e8c23bfc56ec453e868e964a6d5bb60b4e763a881996c882863e7eaf73a",
+      "molsysviewer/tools/basic/_scene_transfer.py": "c1900252599e2119cb0364a954450c27062b5c0dab76a2724eb3fbb0b5bc0307",
+      "molsysviewer/js/src/managers/viewer-controller.ts": "bf8367ced51b0ba280fd88fe0047a89dd79901411b0372db0e2ff0e96cf15bc6",
+      "molsysviewer/js/src/managers/handlers/state-handlers.ts": "51225acc08bb17be730b1b5c803296e9229948a48a0105602723459c604edadf",
+      "tests/test_box_state_persistence.py": "dfc6dc10cb4c1d0f2ad8318ad1cf86d1992119984ecfd5ae7405753a6e651c48",
+      "molsysviewer/js/tests/unit/camera-sync.test.ts": "ed89b119e2bae8a324441100b959c5bd40d212d1f41843da1cbb969e48ef63e9",
+      "molsysviewer/js/tests/e2e/studio-live-capture-bridge.py": "020a66a109b2f086eb644a1389fc61165105002ae1309a00b699d0f0f4fd0288",
+      "molsysviewer/js/tests/e2e/studio-live-capture-scenarios.ts": "5ffa17025c52a71b0c385496283ace2517cf1183c07287e94f7049c7fd87d222",
+      "molsysviewer/js/tests/e2e/studio-box-display-scenarios.ts": "15dfaf587336fdfc839878138c7b6f738e57a2be49b79427ad1b373d52c735b8",
+      "tests/_jupyter_live_capture.mjs": "0a513ddba02ce195d032d784cceb91a63dcffc772aa8980c5b83583c3ed5f8d9"
+    },
+    "runtime_sha256": "6ff44364834a963cd611dc8e6d0f2bb021c884a469a042d63f453759938e680a",
+    "python": "3.14.7",
+    "node": "24.21.0",
+    "molstar": "5.4.1",
+    "scientific_provider": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+    "rust_sha256": "2f1f69f6e0539bd31ee419ec3b7a4deaab20f09045ce3e6504369c9130438525",
+    "route": "Explicit development interpreter plus reviewed contribution source and cached published support providers; not a fresh solver-installed package campaign."
+  },
+  "behavior": {
+    "box_display": "Optional state-v2 semantic recipe: RGB color, width_angstrom, alpha and selected structure_index; scientific vectors stay in the system.",
+    "width": "Bare scalar lengths retain angstrom; explicit lengths convert to angstrom. Non-scalar, boolean, nonpositive and nonfinite widths reject before changing the display.",
+    "restoration": "Recreate edges from scientific cells; retain later frame following, copy/extraction mapping, history, legacy import and atomic rejection.",
+    "camera": "Later explicit intent or physical input retires initial framing, including already queued native resets. A fresh molecular load still receives native initial focus."
+  },
+  "negative_controls": {
+    "missing_recipe": {
+      "native_exit": 1,
+      "failed": 4,
+      "scope": "Actual state/session content assertion before correction."
+    },
+    "width_contract": {
+      "native_exit": 1,
+      "failed": 18,
+      "passed": 6,
+      "deselected": 35,
+      "scope": "Original physical-width and invalid-input failures."
+    },
+    "wrong_restored_width": {
+      "native_exit": 1,
+      "failed": 4,
+      "source_restored": true
+    },
+    "initial_camera_fit": {
+      "native_exit": 1,
+      "tests": 15,
+      "failed": 3,
+      "passed": 12,
+      "source_restored": true,
+      "fixed_passed": 15,
+      "scope": "Real Mol* camera/protocol scheduling; native molecular receiving remains separate."
+    }
+  },
+  "receiving": {
+    "python": {
+      "native_exit": 0,
+      "tests": 551,
+      "box_subset": 61,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 202.99647761089727,
+      "warnings": 515,
+      "warning_groups": 17,
+      "selected_inputs": 4071,
+      "inputs_unchanged": true,
+      "log_sha256": "25a408bb576011d049085b3ff109f75335cd6adb23a25f921eb5d62cd7c54d89",
+      "junit_sha256": "2276f1efa5c819cfe5841376ed5f412d2b639da2711943abdb562d25cbf4d80a"
+    },
+    "javascript": {
+      "native_exit": 0,
+      "tests": 367,
+      "failed": 0,
+      "skipped": 0,
+      "includes_directed_camera_cases": 15,
+      "log_sha256": "425cb079ec6ac2afbe2d4e6dbc2fc4e02bb1cab2cb060654105a4d642035c2f2",
+      "node_scope": "Local Node 24.21.0; not a claim about hosted Node 22."
+    },
+    "builds": {
+      "runtime-build-current": {
+        "native_exit": 0,
+        "seconds": 1.9558925440069288
+      },
+      "harness-current": {
+        "native_exit": 0,
+        "seconds": 1.2582094459794462
+      },
+      "e2e-entries-current": {
+        "native_exit": 0,
+        "seconds": 1.0084334809798747
+      }
+    },
+    "studio": {
+      "native_exit": 0,
+      "seconds": 213.26579497009516,
+      "selected_inputs": 4299,
+      "inputs_unchanged": true,
+      "outer_timeout": false,
+      "owned_processes": 18,
+      "survivors": 0,
+      "cleanup_errors": 0,
+      "log_sha256": "c165ae4d199da4435646e66e4092df84e18c99f7f1b41bc3b802f0b8173bcb4e",
+      "scope": "Complete canonical Studio entry, including native box/camera/frame draws after perturbation in primary, canvas popup and detached Studio; old-packet and navigation/cancellation cases retained."
+    },
+    "controls": {
+      "native_exit": 0,
+      "seconds": 292.4761480789166,
+      "selected_inputs": 4299,
+      "inputs_unchanged": true,
+      "outer_timeout": false,
+      "owned_processes": 17,
+      "survivors": 0,
+      "cleanup_errors": 0,
+      "log_sha256": "b0e6e666787f24f6b88932d04b691c58250e1477e49bc509bccea6094fe7b28f",
+      "scope": "Complete canonical three-scenario controls entry, real widget/export/popup, native GPU picks, local layout and molecular/interaction geometry.",
+      "retained_warnings": {
+        "glMapBufferRange": 4,
+        "draft_return_advisory": 2
+      }
+    },
+    "actual_jupyter_failed": {
+      "exit_code": 1,
+      "seconds": 89.53609522385523,
+      "browser_summary": {
+        "status": "available",
+        "outcome": "failed",
+        "phase": "Python notebook session",
+        "error_type": "TimeoutError",
+        "capture_restore_cases": 1,
+        "strong_restore_cases": 1,
+        "studio_cases": 0
+      },
+      "selected_inputs": 4300,
+      "inputs_unchanged": true,
+      "runtime_sha256": "6ff44364834a963cd611dc8e6d0f2bb021c884a469a042d63f453759938e680a",
+      "owned_processes": 18,
+      "survivors": 0,
+      "cleanup_errors": 0,
+      "observations_sha256": "c9fca87eb638bc06a865fe54bbfc484eb0dfaebbf41f19ce4aef898efdfa20da"
+    },
+    "actual_jupyter_diagnostic": {
+      "exit_code": 0,
+      "seconds": 78.12333688605577,
+      "browser_summary": {
+        "status": "available",
+        "outcome": "passed",
+        "capture_restore_cases": 6,
+        "strong_restore_cases": 6,
+        "studio_cases": 4
+      },
+      "selected_inputs": 4301,
+      "inputs_unchanged": true,
+      "runtime_sha256": "6ff44364834a963cd611dc8e6d0f2bb021c884a469a042d63f453759938e680a",
+      "owned_processes": 18,
+      "survivors": 0,
+      "cleanup_errors": 0,
+      "observations_sha256": "dd1717648f1dca39078d3931b0895ea04bc6ab5c1168ec44480e0a30afe6b07e",
+      "change": "Only bounded passive camera-request/draw diagnostics were added to the driver; product runtime, assertions and deadlines unchanged.",
+      "interpretation": "Non-reproduction, not causal closure of the earlier session-camera failure."
+    },
+    "closeout": {
+      "native_exit": 0,
+      "passed": 411,
+      "deselected": 1,
+      "warnings": 1,
+      "scope": "Reporting/indexed links, architecture state, public API inventory and Jupyter summary/process-cleanup guards. The live Jupyter profile is explicitly unselected here and has its separate real receiving above.",
+      "log_sha256": "a9fbfae4130b286477bb3d447bfa77f5afacebbbb18a293abe0bb17e7cc23aae",
+      "junit_sha256": "d09f20f0e2520515602a426b08b88f0e2aaccd4fd1eea2ce455420ce0829cc73"
+    },
+    "ruff": {
+      "check_exit": 0,
+      "format_check_exit": 0,
+      "formatted_files_unchanged": 981
+    },
+    "queue_index": {
+      "check_exit": 0,
+      "archive_entries_indexed": 2
+    }
+  },
+  "retained_attempts": [
+    {
+      "case": "studio-box-01",
+      "native_exit": 1,
+      "scope": "Sandbox blocks Chromium setsockopt and browser exits before Viewer; not product receiving."
+    },
+    {
+      "case": "studio-box-02",
+      "native_exit": 1,
+      "seconds": 207.92,
+      "scope": "Real failed detached-Studio session camera restore with changed scientific box bounds; original logs and bounded pose details retained."
+    },
+    {
+      "case": "early_directed_camera_test",
+      "scope": "The first node --test invocation emitted only a file-level failure; direct native execution supplied actual failing assertions. An early authoring-order oracle was corrected before the final old-source causal control."
+    }
+  ],
+  "evidence_scope": "Python, JavaScript, Studio, controls and Jupyter scopes overlap; do not sum them. Product/runtime bytes stay fixed across receiving. The diagnostic-only notebook-driver change has its own declared inputs. Original failures remain retained.",
+  "remaining": [
+    "Resolve the unexplained current actual-Jupyter session-camera failure before declaring A5 complete.",
+    "Coherent capture during continuous playback and hidden endpoints.",
+    "Consolidated exact-source hosted/installed and applicable native Qt/human acceptance.",
+    "Remaining original 46 leaves and mandatory pre-1.0 Movie #320 work."
+  ],
+  "progress": {
+    "delivered_leaves": 8,
+    "original_leaves": 46,
+    "final_accepted_leaves": 1,
+    "child_issues_do_not_change_denominator": true
+  },
+  "publication": "Candidates, tags, packages, promotions and both 1.0 publications remain paused.",
+  "private_custody": {
+    "bundle": "box-and-camera-20261107-1",
+    "files": 123,
+    "bytes": 41685923,
+    "manifest_sha256": "59fab1fd08514f32187e1ee0d79dff2794a7867695e9711a5f9b3d472f8fac29",
+    "hashes_verified": true,
+    "directory_mode": "0700",
+    "file_mode": "0600",
+    "originals_retained": true,
+    "custodian": "Diego Prada Gracia",
+    "off_host_backup": false
+  }
+}

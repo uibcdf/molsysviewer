@@ -110,6 +110,9 @@ def _transfer_state(source, target, atom_map=None, frames=None, *, merge=False):
     if frames is not None:
         view = state.get("view", {})
         view["structure_index"] = remap_current_structure(view.get("structure_index", 0), frames)
+        if "box_display" in state:
+            display = state["box_display"]
+            display["structure_index"] = remap_current_structure(display["structure_index"], frames)
         state["trajectory_plots"] = remap_trajectory_cards(state.get("trajectory_plots", []), frames)
     return state
 
@@ -134,7 +137,7 @@ def _copy_auxiliary(source, target, atom_index_map=None):
             target._send(message)
     if plot is not None:
         target._send(plot)
-    if source._box_record is not None:
+    if source._box_record is not None and target._box_record is None:
         box = source._box_record
         target.show_box(
             color=box["color"],

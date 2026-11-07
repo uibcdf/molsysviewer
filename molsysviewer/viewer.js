@@ -148471,6 +148471,7 @@ var StateHandlers = class {
    */
   markIntentionalViewpoint() {
     this.intentionalViewpoint = true;
+    this.callbacks.onViewpointIntent?.();
   }
   hasIntentionalViewpoint() {
     return this.intentionalViewpoint;
@@ -148480,9 +148481,7 @@ var StateHandlers = class {
     const input = this.plugin.canvas3d?.input;
     if (!input) return;
     this.cameraInputTracked = true;
-    const mark = () => {
-      this.intentionalViewpoint = true;
-    };
+    const mark = () => this.markIntentionalViewpoint();
     input.drag?.subscribe?.(mark);
     input.wheel?.subscribe?.(mark);
     input.pinch?.subscribe?.(mark);
@@ -148794,7 +148793,7 @@ var StateHandlers = class {
     const selection = this.buildSelectionFromAtomIndices(structure, atomIndices);
     if (!selection) return;
     const loci = StructureSelection.toLociWithSourceUnits(selection);
-    this.intentionalViewpoint = true;
+    this.markIntentionalViewpoint();
     const focus = () => this.plugin.managers.camera.focusLoci(loci, {
       durationMs: msg.options?.duration_ms,
       extraRadius: msg.options?.extra_radius,
@@ -167721,6 +167720,7 @@ var MolSysViewerController = class _MolSysViewerController {
     });
     this.state = new StateHandlers(plugin, {
       applyCameraNavigation: (operation2, hooks) => this.withCameraNavigation(operation2, hooks),
+      onViewpointIntent: () => this.cancelInitialFraming(),
       getStructure: () => this.getStructureData(),
       getLoadedStructure: () => this.loadedStructure,
       getCurrentStructureRef: () => this.currentStructure,
@@ -168223,6 +168223,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.notify?.({ event: "webgl_context_restored" });
   }
   dispose() {
+    this.cancelInitialFraming();
     this.pendingCameraIntent?.release();
     this.pendingHtmlDownload = null;
     this.canvasResizeSubscription?.unsubscribe();
@@ -169780,7 +169781,9 @@ var MolSysViewerController = class _MolSysViewerController {
     let requested = !forceInitialGeometry;
     const sceneHasContent = () => (canvas3d.boundingSphere?.radius ?? 0) > 0;
     const request = () => {
-      canvas3d.requestCameraReset?.({ durationMs: 0 });
+      canvas3d.requestCameraReset?.({ durationMs: 0, snapshot: (_scene, camera) => {
+        return token === this.frameRequestToken ? {} : camera.getSnapshot();
+      } });
       canvas3d.requestDraw?.();
       requested = true;
     };
@@ -169805,6 +169808,9 @@ var MolSysViewerController = class _MolSysViewerController {
       else canvas3d.requestDraw?.();
       await new Promise((resolve) => setTimeout(resolve, 16));
     }
+  }
+  cancelInitialFraming() {
+    this.frameRequestToken++;
   }
   /**
    * Say so when the camera ends up somewhere nobody chose.
@@ -170872,7 +170878,10 @@ var MolSysViewerController = class _MolSysViewerController {
     const intercept = (options) => {
       const application = hooks ?? this.cameraNavigationFactory?.();
       if (application) this.requestCameraIntent(options, application, request);
-      else request.call(canvas, options);
+      else {
+        this.cancelInitialFraming();
+        request.call(canvas, options);
+      }
     };
     canvas.requestCameraReset = intercept;
     let pending;
@@ -170891,6 +170900,7 @@ var MolSysViewerController = class _MolSysViewerController {
     if (hooks.signal.aborted) return;
     const canvas = this.plugin.canvas3d;
     if (!canvas || !request) throw new Error("No live canvas is available for the camera intent.");
+    this.cancelInitialFraming();
     this.pendingCameraIntent?.release();
     const owner = { release: () => {
     } };
@@ -170924,6 +170934,7 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   async setCameraSnapshot(snapshot, durationMs) {
     if (!snapshot) return;
+    this.cancelInitialFraming();
     this.state.markIntentionalViewpoint();
     try {
       await PluginCommands.Camera.SetSnapshot(this.plugin, {

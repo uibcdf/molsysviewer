@@ -7,6 +7,7 @@ import { captureCanvasPopupControllers, mountCanvasPopupFixture } from "./canvas
 import { checkStudioCancelBeforeDraw } from "./studio-before-draw-scenarios";
 import { checkStudioCameraIntent } from "./studio-camera-intent-scenarios";
 import { installCameraPacketHold } from "./camera-packet-hold";
+import { observeBoxDraws, boxDrawMark, expectBoxDraw, disposeBoxDraws } from "./studio-box-display-scenarios";
 
 /** Actual widget/authority receiving, including correlated canvas and file bytes. */
 export async function checkStudioLiveCapture(page: Page, dir: string, workspace: string) {
@@ -93,6 +94,7 @@ export async function checkStudioLiveCapture(page: Page, dir: string, workspace:
             };
         });
         await observeRuntime(page);
+        await observeBoxDraws(page);
         const openWork = async (owner: Page) => {
             await owner.bringToFront();
             if (await owner.evaluate(() => !!(window as any).molsysviewer_init_options?.isPanelOnly)) {
@@ -164,8 +166,10 @@ export async function checkStudioLiveCapture(page: Page, dir: string, workspace:
                 overwrite: await work.getByLabel("Allow overwriting an existing file", { exact: true }).isChecked(),
             };
             await rotate(canvas);
+            await changeFrame(canvas);
             const changed = await canvas.evaluate(() => (window as any).__mirrorController.getCameraSnapshot());
             assert.notDeepEqual(changed.position, saved.view.camera.position);
+            const boxMark = await boxDrawMark(canvas);
             const result = await submit(owner, "restore_work_file");
             assert.equal(result.ok, true);
             const ownerIdentity = await identity(owner);
@@ -204,6 +208,7 @@ export async function checkStudioLiveCapture(page: Page, dir: string, workspace:
                 await popup?.screenshot({ path: resolve(dir, "../../../../.pytest_cache/robustness-20261106/studio-live-restore-popup-failure.png") });
                 throw error;
             }
+            await expectBoxDraw(canvas, saved.box_display.structure_index, boxMark, saved.view.camera);
             assert.ok(await owner.locator('[data-molsysviewer-work-files]').isVisible(), "restore returns to its requesting controls");
             assert.equal(await work.getByLabel("Path in Python session", { exact: true }).inputValue(), draft.path);
             assert.equal(await work.getByLabel("Work file format", { exact: true }).inputValue(), draft.kind);
@@ -214,6 +219,7 @@ export async function checkStudioLiveCapture(page: Page, dir: string, workspace:
         const saveAndInspect = async (owner: Page, canvas: Page, path: string, kind: "state" | "session") => {
             await rotate(canvas);
             const frame = await changeFrame(canvas);
+            const boxMark = await boxDrawMark(canvas);
             const work = await openWork(owner);
             await work.getByLabel("Work file format", { exact: true }).selectOption(kind);
             await work.getByLabel("Path in Python session", { exact: true }).fill(path);
@@ -251,6 +257,11 @@ export async function checkStudioLiveCapture(page: Page, dir: string, workspace:
             const saved = inspected.saved_state;
             assert.deepEqual(saved.view.camera, observed.snapshot.snapshot, "disk camera equals the correlated live reply exactly");
             assert.equal(saved.view.structure_index, frame);
+            assert.equal(saved.box_display.structure_index, frame);
+            assert.equal(saved.box_display.color, 0xff0000);
+            assert.equal(saved.box_display.alpha, .7);
+            assert.ok(Math.abs(saved.box_display.width_angstrom - 1.25) < 1e-12);
+            await expectBoxDraw(canvas, frame, boxMark, saved.view.camera);
             assert.ok(saved.annotations.some((annotation: any) => annotation.tag === "live-note"));
             if (kind === "state") assert.deepEqual(JSON.parse(await readFile(path, "utf8")), saved);
             else {
@@ -326,6 +337,7 @@ export async function checkStudioLiveCapture(page: Page, dir: string, workspace:
             return c.getStructureData()?.elementCount > 0 && c.plugin.canvas3d?.reprCount.value > 0;
         });
         await observeRuntime(popup);
+        await observeBoxDraws(popup);
         await checkStudioCancelBeforeDraw({ page, owner: popup, canvas: popup, path: resolve(workspace, "cancel-before-popup-draw.json"), openWork, identity, drain });
         progress("canvas popup cancellation before a real draw released its controls and scene queue");
 
@@ -448,6 +460,8 @@ export async function checkStudioLiveCapture(page: Page, dir: string, workspace:
         assert.deepEqual(errors, []);
         console.log("[E2E Studio] persistent primary/popup/detached saves captured exact camera/frame, restored perturbed scenes, and cancelled without writing");
     } finally {
+        await disposeBoxDraws(page);
+        if (popup) await disposeBoxDraws(popup);
         await panel?.close();
         await popup?.close();
         await page.evaluate(async () => {

@@ -7,6 +7,7 @@ import numpy as np
 from smonitor import signal
 
 from .._private.argdigest import digest
+from .._private.exceptions import ArgumentError
 from .._pyunitwizard import puw
 from ..figures import FigureSpec
 from ..regions import Region
@@ -186,12 +187,30 @@ class SceneMixin:
     def show_box(
         self,
         color: Any = "grey",
-        width: float = 0.15,
+        width: Any = 0.15,
         alpha: float = 1.0,
         structure_indices: Any = 0,
         skip_digestion: bool = False,
     ) -> None:
-        """Render the unit-cell or simulation-box edges in the canvas."""
+        """Render the unit-cell or simulation-box edges in the canvas.
+
+        ``width`` is a positive finite scalar length. Bare numbers retain the
+        frontend's angstrom convention; explicit length quantities are converted
+        to angstrom independently of the session's standard-unit policy.
+        """
+        original_width = width
+        if puw.is_quantity(width):
+            width = puw.get_value(width, to_unit="angstrom")
+        try:
+            if isinstance(width, (bool, np.bool_)) or np.ndim(width) != 0:
+                raise ValueError("The box width must be scalar.")
+            width = float(width)
+            if not np.isfinite(width) or width <= 0:
+                raise ValueError("The box width must be positive and finite.")
+        except (TypeError, ValueError, OverflowError) as error:
+            raise ArgumentError(
+                "width", value=original_width, message="expected a positive finite scalar length"
+            ) from error
         # The digester turns an int into np.array([i]); int() on a 1-d array is an error
         # under NumPy 2, which broke show_box() even with its default arguments.
         if structure_indices is None or isinstance(structure_indices, str):

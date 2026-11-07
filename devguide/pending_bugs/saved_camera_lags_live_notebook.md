@@ -15,6 +15,46 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
+## Current box/framing correction — 2026-11-07
+
+The NPT-style receiving fixture now has three non-consecutive molecular
+structures, distinct known cells and an explicitly unit-bearing box stroke.
+Its full Studio run receives primary and canvas-popup state/session restores
+and a detached-Studio state restore, then fails the detached session's camera
+assertion. Both cameras converge to the scene-bounds centre rather than the
+saved pose. This is a retained failed run, not a passing restoration.
+
+The molecular initial-fit loop can replace a newer explicit snapshot provider
+with a native default reset while the restored box changes the scene radius.
+The working correction retires initial-fit ownership on later explicit camera
+intent or physical input and makes already queued old fits preserve that
+newer pose. Fresh loads retain native fitting. Three directed cases fail
+against the unchanged old source and all fifteen camera cases pass with the
+correction; the complete canonical JavaScript selection passes 367 cases.
+The current complete Studio entry passes in 213.27 seconds: 4,299 selected
+inputs remain unchanged and all eighteen owned processes close. Primary,
+canvas-popup and detached-Studio state/session restores require the saved
+camera, frame and actual box mesh on a new draw after perturbation. Navigation,
+genuine old-message rejection and before-draw cancellation also pass. The
+final overlapping Python selection passes 551 cases with 4,071 fixed inputs.
+This causal control does not
+explain the older hosted Jupyter/picking failures whose missing evidence is
+recorded below. A5 remains partial for continuous playback, hidden endpoints
+and consolidated acceptance; #326/#327 are resolved bounded prerequisites.
+
+The same runtime's complete controls entry passes in 292.48 seconds with
+4,299 fixed inputs and all seventeen owned processes closed. Actual Jupyter
+then passes the Python state restore but times out after 30 seconds waiting
+for the Python session's camera: native exit one, 4,300 fixed inputs and all
+eighteen owned processes closed. Only one strong restore is established.
+The driver now retains a bounded passive trace of native camera requests and
+completed poses on failure, without changing requests, predicates or deadlines.
+That diagnostic execution passes all six strong restores and four Studio
+cases in 78.12 seconds, with 4,301 fixed inputs and eighteen processes closed.
+This is non-reproduction, not proof of the original failure's cause or repair.
+Keep the failure open under #319. Both attempts and the bounded correction are
+recorded in the [box/framing receipt](../box_display_receiving_20261107.json).
+
 ## Current hosted follow-up — 2026-11-07
 
 **Current diagnostics:** the corrected source `e4dd58cf` receives all 44 core
@@ -41,6 +81,13 @@ guard requirements already present in the general test environment. The
 regression first fails for both omissions; the corrected workflow/dependency
 selection passes 89 cases. This does not explain the original Jupyter failure;
 its corrected receiving remains due.
+
+The corrected-acquisition run `42396548782` now passes both selected browser
+boundaries on source `aefbf992`. Its original ZIP digest matches GitHub; the
+Jupyter receipt gives six strong restores, four Studio cases, exit zero and
+17 owned processes closed. Original failure causes remain unknown. Current
+work advances the accepted moving/hidden scope, starting with reproduced
+box-display persistence (#326) and physical-width (#327) prerequisites.
 
 Checkpoint `9a569c55` is not accepted: the completed general Linux and
 three-platform Python 3.14 source-pair cells fail four pre-existing

@@ -1,5 +1,8 @@
 # Archived implementation plans
 
+- [Simulation-box persistence](box_display_missing_from_saved_work.md) — #326 retains semantic cell display through state/session, extraction and history, with real completed-draw restoration.
+- [Simulation-box stroke units](box_display_width_units.md) — #327 converts explicit physical lengths, rejects invalid widths without scene changes and receives actual mesh widths.
+
 - [Canvas popup addon catalogue](canvas_popup_omits_addon_catalogue.md) — #300 reprojects current addon metadata without live widget replay; actual Jupyter and both popup lifecycles pass separately from human/Qt qualification.
 
 - [Addon diagnostic transport](addon_panel_pending_metadata.md) — #297 admits inherited host metadata helpers during managed-edit recovery without unblocking scientific or stale scene commands.

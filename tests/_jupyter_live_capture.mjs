@@ -12,9 +12,23 @@ const camera=target=>target.evaluate(()=>window.__captureControllers[0].getCamer
 async function observeDraws(target){
  await target.evaluate(()=>{
   const c=window.__captureControllers[0];window.__captureDraws={count:0,snapshot:null};let replay=true;
+  const trace=window.__captureCameraTrace={requests:[],poses:[],requestCount:0};
+  const request=c.plugin.canvas3d.requestCameraReset;
+  c.plugin.canvas3d.requestCameraReset=function(options){
+   trace.requestCount++;
+   trace.requests.push({time:performance.now(),frameToken:c.frameRequestToken,
+    provider:typeof options?.snapshot,camera:c.getCameraSnapshot()});
+   if(trace.requests.length>64)trace.requests.shift();
+   return request.call(this,options);
+  };
   c.plugin.canvas3d.didDraw.subscribe(()=>{
    if(replay){replay=false;return;}
    window.__captureDraws.count++;window.__captureDraws.snapshot=c.getCameraSnapshot();
+   const snapshot=window.__captureDraws.snapshot,previous=trace.poses.at(-1)?.snapshot;
+   if(!previous||['position','target','up'].some(key=>snapshot[key].some((value,i)=>Math.abs(value-previous[key][i])>1e-5))){
+    trace.poses.push({time:performance.now(),frameToken:c.frameRequestToken,snapshot});
+    if(trace.poses.length>64)trace.poses.shift();
+   }
   });
  });
 }
@@ -102,7 +116,17 @@ async function restored(target,saved,kind,name,work){
  }
  await target.waitForFunction(expected=>{
   const now=window.__captureControllers[0].getCameraSnapshot();return Math.max(...['position','target','up'].flatMap(key=>now[key].map((value,i)=>Math.abs(value-expected[key][i]))))<1e-4;
- },saved);
+ },saved).catch(async error=>{
+  // Private bounded observations retain the failed predicate's actual state;
+  // they never replace a camera request, result, assertion or deadline.
+  report.restore_failure={expected:saved,observed:await target.evaluate(()=>{
+   const c=window.__captureControllers[0];return {camera:c.getCameraSnapshot(),
+    frame:c.trajectory.getTrajectoryState().currentFrame,frameToken:c.frameRequestToken,
+    intentional:c.state.hasIntentionalViewpoint(),drawn:window.__captureDraws,
+    cameraTrace:window.__captureCameraTrace};
+  })};
+  throw error;
+ });
  await drawnCamera(target,drawMark,saved);
  report.strong_restore_cases++;
  return {before,perturbed};

@@ -9,6 +9,7 @@ import { ButtonsType, ModifiersKeys } from "molstar/lib/mol-util/input/input-obs
 import { MolSysViewerController } from "../../src/managers/viewer-controller";
 import { CameraSync, CameraSyncState } from "../../src/managers/camera-sync";
 import { SceneHandlers } from "../../src/managers/handlers/scene-handlers";
+import { StateHandlers } from "../../src/managers/handlers/state-handlers";
 
 // These isolate protocol/lifetime scheduling with real Mol* camera state and
 // Rx subjects. Molecular rendering and native input are covered in Studio E2E.
@@ -45,6 +46,83 @@ function fixture() {
     return { camera, canvas, controller, state, sync, command, apply, commit, draw, drag, commited,
         requested: () => requested, requestedDraws: () => requestedDraws, pending: () => request };
 }
+
+function startAutomaticFraming(f: ReturnType<typeof fixture>) {
+    f.canvas.boundingSphere = { radius: 20 };
+    f.controller.frameRequestToken = 0;
+    f.camera.setState({ ...f.camera.getSnapshot(), position: [0, 0, 40], radius: 5, radiusMax: 10 } as any, 0);
+    return f.controller.frameLoadedStructure(500) as Promise<void>;
+}
+
+test("automatic framing cannot replace a newer explicit snapshot provider", async () => {
+    const f = fixture();
+    try {
+        await f.apply({ op: "set_camera_sync_revision", camera_revision: 0 });
+        const framing = startAutomaticFraming(f);
+        const desired = { ...f.camera.getSnapshot(), position: [10, 20, 30], target: [1, 2, 3], radius: 4 };
+        await f.apply(f.command(1, desired));
+        await framing;
+        assert.equal(typeof f.pending()?.snapshot, "function", "an older default reset must not replace the explicit provider");
+        f.commit({ ...f.camera.getSnapshot(), position: [0, 0, 50], target: [0, 0, 0], radius: 20 });
+        f.draw();
+        assert.deepEqual(f.camera.getSnapshot().position, desired.position);
+        assert.deepEqual(f.camera.getSnapshot().target, desired.target);
+        assert.equal(f.sync.completedRevision, 1);
+    } finally { f.sync.dispose(); }
+});
+
+test("automatic framing cannot replace a later legacy snapshot request", async () => {
+    const f = fixture();
+    try {
+        const framing = startAutomaticFraming(f);
+        const desired = { ...f.camera.getSnapshot(), position: [10, 20, 30], target: [1, 2, 3], radius: 4 };
+        await f.controller.setCameraSnapshot(desired, 0);
+        await framing;
+        // Native SetSnapshot replaces the queued reset; its pose is applied
+        // when Mol* consumes that request, rather than at command dispatch.
+        f.commit({ ...f.camera.getSnapshot(), position: [0, 0, 50], target: [0, 0, 0], radius: 20 });
+        assert.deepEqual(f.camera.getSnapshot().position, desired.position);
+        assert.deepEqual(f.camera.getSnapshot().target, desired.target);
+    } finally { f.sync.dispose(); }
+});
+
+test("automatic framing already queued in MolStar preserves later real camera input", async () => {
+    const f = fixture();
+    try {
+        f.controller.state = new StateHandlers(f.controller.plugin, {
+            getStructure: () => undefined, getLoadedStructure: () => undefined,
+            getCurrentStructureRef: () => undefined, getComponents: () => [], notify() {},
+            onViewpointIntent: () => f.controller.cancelInitialFraming(),
+        });
+        f.controller.state.ensureCameraInputTracking();
+        const framing = startAutomaticFraming(f), automatic = f.pending();
+        const desired = { ...f.camera.getSnapshot(), position: [10, 20, 30], target: [1, 2, 3], radius: 4 };
+        f.camera.setState(desired as any, 0);
+        f.drag.next({ buttons: ButtonsType.Flag.Primary, modifiers: ModifiersKeys.create(), dx: 2, dy: 1 });
+        // Unlike SetSnapshot, trackball input changes the real camera while
+        // an older default reset may still be waiting for native scene commit.
+        const partial = typeof automatic.snapshot === "function" ? automatic.snapshot({}, f.camera) : automatic.snapshot;
+        f.camera.setState({ ...f.camera.getSnapshot(), position: [0, 0, 50], target: [0, 0, 0],
+            radius: 20, ...partial, radiusMax: 20 } as any, 0);
+        await framing;
+        assert.deepEqual(f.camera.getSnapshot().position, desired.position);
+        assert.deepEqual(f.camera.getSnapshot().target, desired.target);
+    } finally { f.sync.dispose(); f.drag.complete(); }
+});
+
+test("fresh molecular load still receives native initial focus after an earlier viewpoint", async () => {
+    const f = fixture();
+    try {
+        f.controller.state.hasIntentionalViewpoint = () => true;
+        const framing = startAutomaticFraming(f);
+        const focus = f.camera.getFocus(f.camera.state.target, 20);
+        f.commit({ ...focus, radiusMax: 20 });
+        await framing;
+        assert.deepEqual(f.camera.getSnapshot().position, focus.position);
+        assert.deepEqual(f.camera.getSnapshot().target, focus.target);
+        assert.equal(f.camera.getSnapshot().radius, focus.radius);
+    } finally { f.sync.dispose(); }
+});
 
 test("camera revision completes only after its correlated resolved reset reaches a real draw", async () => {
     const f = fixture();

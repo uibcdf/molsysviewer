@@ -1850,6 +1850,20 @@ its **`hidden`**, and its **`layer_tag`**. In particular:
 - Clipping planes get a **`sections`** key and restore as live `Section` handles,
   not as message-only records.
 
+Simulation-cell display uses the optional **`box_display`** recipe: `color`,
+`width_angstrom`, `alpha` and the selected `structure_index`. The vectors remain
+in the molecular system. Restore regenerates the twelve edges from that system
+and structure, retaining subsequent frame following. Explicit copy/extraction
+remaps the selected structure by the same first-retained-occurrence rule as the
+playhead. Import rejects invalid style or an unavailable/out-of-range cell
+before changing the destination. Legacy documents without the key retain the
+normal replace/merge behavior; clearing box shapes clears their display recipe.
+Bare `show_box` widths remain in angstrom, and explicit scalar length quantities
+convert to angstrom before rendering. Widths must be positive and finite.
+The real-system state/session, rejection, history and unit guards live in
+`tests/test_box_state_persistence.py`; the registered Studio browser entry also
+receives the restored native mesh, style, camera and frame on completed draws.
+
 `session_reproducibility.md` §"The rule for every future change" applies in
 full: a round-trip test that asserts the **content** (the hidden flag survived,
 the shape came back with its colour and radius), verified by mutation — not a
@@ -2069,6 +2083,16 @@ the underlying scene bounds. Commit the new renderables and request that first
 reset without waiting for the cached radius. Native refs alone are insufficient
 evidence: the shape-only browser guard must require an on-screen GPU pick in
 both canvases, alongside Render/Clear ownership and viewpoint preservation.
+
+**Initial molecular framing and later intent — 2026-11-07 (#319).** A pending
+initial fit belongs to its molecular load. A later explicit snapshot, focus,
+reset or physical camera input retires that fit, including a default reset
+already queued inside Mol*. An old fit must not overwrite the newer viewpoint
+while a restored simulation box changes the scene bounds. A fresh molecular
+load still obtains its own native initial fit; an earlier intentional viewpoint
+is not a permanent veto. The directed camera tests exercise both retirement
+and this positive control; actual Studio receiving additionally requires the
+saved camera, frame and box mesh on a newly completed draw.
 
 Mol\* derives state from the scene *as it currently stands*, and some of what it
 derives is **not recoverable** once the scene is complete again. Any moment in

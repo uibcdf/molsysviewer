@@ -6,6 +6,9 @@ import sys
 import zipfile
 from pathlib import Path
 
+import molsysmt as msm
+import numpy as np
+
 ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT))
 
@@ -43,6 +46,10 @@ def main():
         view = msv.new_view(source.molsys, structure_indices=[0, 8, 3], controls_mode="compact")
     finally:
         source.close()
+    cells = np.array([np.diag([length, length + 1, length + 2]) for length in [3.0, 4.0, 5.0]])
+    msm.set(view.molsys, box=msv.pyunitwizard.quantity(cells, "nm"))
+    view.apply_system_edit(view.molsys, skip_digestion=True)
+    view.show_box(color="red", width=msv.pyunitwizard.quantity(0.125, "nm"), alpha=0.7)
     view.whole.set_representation("ball-and-stick")
     view.set_figure_spec(FigureSpec(scale=1.5, background="white"))
     view.annotations.add("Saved live canvas", position="[1, 2, 3] nm", tag="live-note")
