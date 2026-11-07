@@ -682,3 +682,76 @@ test("bootPopup captures its own canvas after queued scene work and a fresh draw
         (globalThis as any).document = previousDocument;
     }
 });
+
+test("bootPopup authenticates lifecycle controls before bypassing a pending draw or scene barrier", async () => {
+    const previousWindow = (globalThis as any).window;
+    const previousDocument = (globalThis as any).document;
+    const env = makePopupTestEnv();
+    const subscribers = new Set<() => void>();
+    const handled: any[] = [];
+    let drawCount = 0, disposals = 0;
+    let releaseScene!: () => void;
+    const scene = new Promise<void>(resolve => { releaseScene = resolve; });
+    const ctrl: any = {
+        plugin: { canvas3d: {
+            didDraw: { subscribe(fn: () => void) { subscribers.add(fn); return { unsubscribe() { subscribers.delete(fn); } }; } },
+            requestDraw() { drawCount++; },
+        } },
+        async handleMessage(message: any) { handled.push(message); if (message.op === "hold_scene") await scene; },
+        dispose() { disposals++; },
+    };
+    (globalThis as any).window = env.windowObj;
+    (globalThis as any).document = env.document;
+    try {
+        await bootPopup(popupModule(ctrl));
+        await flushAsync();
+        const existingSubscriptions = subscribers.size; // CameraSync owns its independent draw listener.
+        const dispatch = (payload: any, valid = true) => {
+            const wire = hostWire("molsysviewer-sync-op", payload);
+            env.windowObj.dispatch("message", { source: env.windowObj.opener,
+                data: valid ? wire : { ...wire, channel: { ...wire.channel, token: "wrong-channel" } } });
+        };
+        const capture = { op: "request_visual_state", request_id: "broker-request", capture_revision: "revision" };
+        dispatch(capture);
+        await flushAsync();
+        assert.equal(drawCount, 1);
+        assert.equal(subscribers.size, existingSubscriptions + 1);
+        dispatch({ op: "studio_action_result", action: "restore_work_file", request_id: "restore-domain", ok: true });
+        const verdict = { op: "studio_action_result", action: "cancel_work_file", request_id: "studio-domain", ok: true };
+        dispatch({ ...capture, op: "cancel_visual_state" }, false);
+        dispatch(verdict, false);
+        await flushAsync();
+        assert.equal(subscribers.size, existingSubscriptions + 1, "an unauthenticated abort cannot release the canvas wait");
+        assert.equal(handled.length, 0, "unauthenticated verdicts and ordered restore must not bypass capture");
+        dispatch(verdict);
+        await flushAsync();
+        assert.deepEqual(handled, [verdict], "the original Studio id releases its controls without pretending to be the broker id");
+        assert.equal(subscribers.size, existingSubscriptions + 1);
+        dispatch({ ...capture, op: "cancel_visual_state", capture_revision: "wrong" });
+        await flushAsync();
+        assert.equal(subscribers.size, existingSubscriptions + 1);
+        dispatch({ ...capture, op: "cancel_visual_state" });
+        for (let index = 0; index < 4; index++) await flushAsync();
+        assert.equal(subscribers.size, existingSubscriptions);
+        assert.equal(handled[1].action, "restore_work_file");
+        assert.equal(env.postedToHost.some(message => message.envelope.payload?.event === "visual_state_snapshot"), false);
+
+        dispatch({ op: "hold_scene" });
+        dispatch({ ...capture, request_id: "queued-broker" });
+        dispatch({ ...capture, op: "cancel_visual_state", request_id: "queued-broker" });
+        await flushAsync();
+        releaseScene();
+        for (let index = 0; index < 4; index++) await flushAsync();
+        assert.equal(drawCount, 1, "a queued capture canceled before starting must never request a draw");
+        env.windowObj.dispatch("pagehide");
+        dispatch({ ...capture, request_id: "after-disposal" });
+        await flushAsync();
+        assert.equal(drawCount, 1);
+        assert.equal(disposals, 1);
+    } finally {
+        releaseScene();
+        env.windowObj.dispatch("pagehide");
+        (globalThis as any).window = previousWindow;
+        (globalThis as any).document = previousDocument;
+    }
+});

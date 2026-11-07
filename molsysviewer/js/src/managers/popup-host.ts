@@ -15,6 +15,7 @@ import {
     type RuntimeEnvelope,
 } from "../messages/runtime-router";
 import { popupActionAllows } from "../messages/runtime-actions";
+import { isFrontendControl, isStudioWorkFileResult } from "../messages/frontend-requests";
 
 type PopupSourceProvider = () => string | Promise<string>;
 
@@ -375,8 +376,19 @@ export class PopupHostManager {
         const ready = mode === "canvas" ? this.isReady : this.isPanelReady;
         const channel = this.channels.get(mode);
         if (!ready || !target || target.closed || !channel) return false;
+        const lifecycle = type === "molsysviewer-sync-op"
+            && (isFrontendControl(data) || isStudioWorkFileResult(data));
+        if (type === "molsysviewer-sync-op" && isFrontendControl(data)) {
+            // A canceled capture may not have crossed the bootstrap barrier yet.
+            // Remove that exact ticket before sending its lifecycle control.
+            const queued = this.bootstrapQueues.get(mode);
+            if (queued) this.bootstrapQueues.set(mode, queued.filter(entry => !(entry.type === "molsysviewer-sync-op"
+                && entry.data?.op === "request_visual_state" && entry.data.request_id === data.request_id
+                && entry.data.capture_revision === data.capture_revision)));
+        }
         if (
             this.bootstrapping.has(mode)
+            && !lifecycle
             && type !== "molsysviewer-initial-sync"
             && type !== "molsysviewer-structure-data"
         ) {

@@ -2,6 +2,10 @@ from __future__ import annotations
 
 
 class HistoryMixin:
+    # Explicit navigation shares one renderer-ordering domain: a later reset
+    # or focus can replace a pending snapshot before Mol* resolves its draw.
+    _CAMERA_INTENT_OPS = frozenset({"set_camera_snapshot", "reset_view", "reset_camera", "zoom", "zoom_to_position"})
+
     # Ops that (re)define the current materialized molecular projection. Kept in
     # sync with the frontend STRUCTURE_LOAD_OPS (js popup-replay-log.ts).
     _MOLECULAR_LOAD_OPS = {
@@ -359,11 +363,15 @@ class HistoryMixin:
         self._record_measurement_message(msg)
         self._record_selection_message(msg)
         self._record_scene_look_message(msg)
+        if msg.get("op") in self._CAMERA_INTENT_OPS:
+            msg = self._prepare_camera_intent_message(msg)
         if self._ready:
             self._deliver_transport_message(msg)
         self._sync_scene_object_summaries_for_message(msg)
 
     def _send_runtime_only(self, msg: dict) -> None:
+        if msg.get("op") in self._CAMERA_INTENT_OPS:
+            msg = self._prepare_camera_intent_message(msg)
         if self._ready:
             self._deliver_transport_message(msg)
 
@@ -371,6 +379,8 @@ class HistoryMixin:
         if msg.get("op") in self._MOLECULAR_LOAD_OPS:
             self._current_molecular_projection = msg
             self.widget.has_molecular_system = True
+        if msg.get("op") in self._CAMERA_INTENT_OPS:
+            msg = self._prepare_camera_intent_message(msg)
         if self._ready:
             self._deliver_transport_message(msg)
         self._sync_scene_object_summaries_for_message(msg)

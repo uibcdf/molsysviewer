@@ -99,10 +99,32 @@ acceptance still need work. The terminal core results, that regression and B2's
 numeric observations have an additional verified private custody copy; original
 evidence is retained. No additional leaf is counted as received.
 
+The subsequent control/camera corrections now have **239 consolidated affected
+Python passes**, passing TypeScript/canonical JS-unit/build checks and a third
+durable native Qt pass on the actual Wayland/NVIDIA host. That native pass
+receives all four Studio/Python state/session formats/origins after camera and
+frame perturbation, a matching fresh draw, cancellation before a draw and clean
+owned-process shutdown. Earlier failed attempts remain historical evidence.
+A genuine held old camera packet establishes an ordering defect; the current
+correction also covers pending snapshots replaced by later reset/focus and
+keeps Mol*'s calculations. Its second complete Studio attempt passes all prior
+roundtrips, then fails the new navigation relay assertion. A narrow actual
+trace isolates a real transition completing on a tick without a final draw,
+leaving relay pending. Its working one-shot final-draw correction has a causal
+unit failure and eleven passing directed cases; actual receiving is in progress.
+The bounded receiving/integration remains open under #319.
+B2's new numerical fixtures additionally expose #322's public pixel-dimension
+digestion defect: its working correction passes 34 plot API/state cases, while
+the expanded boundary gate passes 146 cases and the actual full browser entry
+passes all fifteen independent Decimal controls, raw access, file recovery and
+popup/frame checks. Reviewed integration/consolidated acceptance remain pending.
+These follow-up results supersede
+any inference that an earlier complete pass qualifies the current working tree.
+
 | Block | Current status | Owner and tracking | Exit evidence |
 | --- | --- | --- | --- |
-| A — integrity, restoration and cleanup | A1–A4/A6 source-delivered and verified; consolidated hosted acceptance pending; A5/#319 receives Python/Studio static saves, actual Jupyter and all popup paths, with native/playback/before-draw cancellation still pending | Viewer; #316/#317/#318/#319 and private handling under #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
-| B — plots and DataCards | #314 delivered; complete B1 core 44/44 and combined affected guard pass; B2 numeric precision reproduced under #321; provenance and card follow-up pending | Viewer and scientific producer; #314, #321, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
+| A — integrity, restoration and cleanup | A1–A4/A6 source-delivered and verified; consolidated hosted acceptance pending; A5/#319 has actual Jupyter, all popup-format paths and current native automated capture/cancel receiving; final navigation/browser, playback and hidden-endpoint acceptance remain partial | Viewer; #316/#317/#318/#319 and private handling under #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
+| B — plots and DataCards | #314 delivered; complete B1 core 44/44 and combined affected guard pass; B2 numeric precision #321 and its pixel-dimension prerequisite #322 have working corrections; actual receiving and provenance/card follow-up pending | Viewer and scientific producer; #314, #321, #322, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
 | C — contribution and host integration | Reconciled addon committed locally; remote PR older and reported conflicting; source gates incomplete | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421 and PR #543 | Reviewed delivery, current controlled pair, relevant full/hosted outcomes and explained failures |
 | D — scientific prerequisites and approved GUI families | Partial implementation; provider corrections and several task families remain | MolSysMT owns science; addon owns tasks; #264/#315 and uibcdf/molsysmt#421 | Received native fixes plus every required family/effect, without hidden preparation or copied algorithms |
 | E — integrated use, scale and human acceptance | E0 custody received; partial headless/Jupyter receiving; complete workflow/prolonged use pending; human review postponed | Viewer/addon; maintainer owns human observations | TcTIM/ensemble save–recover–continue, independent lifetimes and representative measured limits |
@@ -127,6 +149,71 @@ Update the numerator only after the applicable acceptance and closeout below.
 An implementation, report, local partial pass or provider issue closure alone
 does not count as a received item. A1–A4, A6 and B1 now have source corrections;
 the required consolidated hosted acceptance/closeout remains visible below.
+
+#### Progress reporting correction — 2026-11-07 UTC
+
+**Execution resumed by the principal maintainer on 2026-11-07.** The bounded
+camera/control, plot and standalone-ownership batch is source-verified and
+prepared for integration; the published baseline is still
+`ff60bdec778f997169a8cd0bb98be85fc320eee2` until delivery is recorded. The final
+complete Studio entry passes in **198.54 s**, with all 4,011 selected inputs
+unchanged and all 17 owned process identities closed. It receives both-format
+primary/canvas-popup/detached-Studio restoration, genuine old-message rejection,
+new input, partial snapshots, reset/focus supersession and before-draw Cancel
+after releasing the test instrumentation. The fourth actual native Qt receiving
+also passes (**32.34 s**, 4,341 unchanged inputs, zero process survivors); its
+four files independently match the correlated camera/frame and fresh-draw
+restores. The earlier approval rejection was reviewed again in the resumed
+execution context, and the ordinary approval route accepted this run.
+
+The maintainer-requested pause, interrupted Studio3 and all original failures
+remain recorded; they are not relabelled as passing runs. Python's 239 affected
+cases, TypeScript/canonical JS and the current plot diagnostic entry retain
+their own scopes. The earlier zero-axis-reference plot failure remains
+unexplained. No candidate/tag/package/publication action follows from this
+source checkpoint. After delivering this batch, continue the original plan and
+Movie; A5 still needs continuous-playback/hidden-endpoint and broader acceptance.
+
+The maintainer correctly identified that reporting final acceptance alone hides
+delivered work and does not help steer daily execution. It also exposed slow
+consolidation: completed corrections have accumulated while difficult camera
+receiving and adjacent defects kept the current batch open. Report these three
+overlapping stages together, retaining the original denominator and acceptance
+history:
+
+| Stage | Completed / original 46 | IDs and evidence meaning |
+| --- | --- | --- |
+| Consumer result complete and locally verified | **8/46 — 17.4%** | E0, A1, A2, A3, A4, A6, B1, B2. E0 is a custody result; the other seven are corrected source with scoped executed guards. B2 is still in the working tree. |
+| Consumer result delivered | **7/46 — 15.2%** | E0 plus A1, A2, A3, A4, A6 and B1. Viewer corrections are integrated/pushed; E0's approved custody transfer is verified. Delivery does not satisfy later consolidated acceptance. |
+| Final applicable acceptance recorded | **1/46 — 2.2%** | E0 only. Preserve the remaining acceptance obligations rather than silently promoting source delivery. |
+
+These stages are not additive, equally weighted effort estimates, time
+estimates or percentages of total 1.0 readiness. They measure outcomes from
+this audit; #320's mandatory movie stream remains separately visible. A5 is
+partial and contributes to none of these completed-stage numerators. Source
+support and upstream issue closure do not by themselves complete a consumer
+result. D2/D3/D4 have new owner fixes awaiting consumer receiving, as recorded
+below; do not describe them as waiting for an unimplemented owner fix.
+
+**Next execution checkpoint:** close the bounded camera/cancellation,
+standalone ownership and plot correction batch already in progress. Review
+and integrate its coherent source, preserve original failures, then perform
+the applicable consolidated checks at one substantive checkpoint, following
+the maintainer's `[skip ci]` and batched-CI instruction. Do not start another
+feature or broad audit before this integration. Route newly found nonblocking
+work to its owned backlog rather than repeatedly expanding the batch. Then
+resume C's owner integration and the remaining full plan, including Movie.
+Each update must identify which outcome was delivered, which stage changed
+and the next closure condition; a test count alone is not progress.
+
+The maintainer reaffirmed sibling feedback on 2026-11-07: defects and required
+missing capabilities in MolI/MolSysSuite components belong in issues in the
+owning repository, with reproduction/evidence, consumer impact and a link to
+the local work. Apply the existing
+[shared stewardship rule](../../MOLSYSSUITE_GUIDE.md#shared-stewardship-across-components)
+to support tools as well as scientific libraries. A local workaround or test
+disposition does not replace the owner handoff; external publication retains
+its separate authorization boundary.
 
 | Block | Fixed leaf IDs | Received / total |
 | --- | --- | --- |
@@ -303,6 +390,18 @@ conflict through the official generator. Remote 8ab2f5474 does not contain those
 local commits or the conformational GUI. Never push or merge MolSysMT main from
 this Viewer session.
 
+Read-only reconciliation on 2026-11-07 confirms PR #543 remains open and
+conflicting, with published head `8ab2f5474`. The qualified clean `e1199534`
+contribution descends from that head and preserves the later owner merge, so
+use a new worktree and a fixed published owner base; retain all unrelated owner
+work and never rewrite the frozen provider. Cached owner development changes
+the Rust MIC/PBC tree, invalidating automatic reuse of the old qualified native
+binary. All five host routes and the inventory still need one reviewed pushed
+Viewer SHA. Also reconcile the explicit Jupyter guard's seven Analysis checks
+with its actual seventeen-step driver before using that guard as C2 evidence.
+The read-only plan runs no tests and qualifies neither moving owner main nor a
+new binary/provider closure.
+
 **C2 — partial:** after B1's corrected Viewer source is reviewed and pushed, update
 all five controlled owner routes and the dependency inventory to that exact
 host. Run the complete new-addon collection and applicable hosted/source-pair
@@ -347,9 +446,9 @@ signatures to the fields needed by one form.
 | ID / current disposition | Scientific owner requirement and consumer acceptance |
 | --- | --- |
 | **D1 — waiting on owner** | uibcdf/molsysmt#602: public axis/angle construction for Rotate. Receive handedness, units, degeneracies and selection/structure effects against independent geometry and actual rendered coordinates. Do not copy a private rotation formula into the addon. |
-| **D2 — partial periodic family** | uibcdf/molsysmt#605, uibcdf/molsysmt#606, uibcdf/molsysmt#607 and uibcdf/molsysmt#608 cover invalid cells, changing-cell unwrap, oriented wrapping and unit-dependent origins. Retain the declared temporary admission profile and its review/removal condition. Receive independent lattice truth and in-place atomicity before declaring general periodic/cell tasks complete. |
-| **D3 — waiting on owner** | uibcdf/molsysmt#613: overlapping global configuration contexts can leak/restore the wrong execution policy. Per-View locks do not isolate separate Views. Receive simultaneous/nested/exception cases through the supported native solution; this is not proof of wrong GPU numerics. |
-| **D4 — waiting on owner** | uibcdf/molsysmt#616: compatible structure append fails after canonical H5MSM string restoration. Receive save/recover/continue with preserved scientific alignment. Do not rewrite chemistry tables or weaken identity checks downstream. |
+| **D2 — owner fixes published; consumer receiving pending** | uibcdf/molsysmt#605, uibcdf/molsysmt#606, uibcdf/molsysmt#607 and uibcdf/molsysmt#608 cover invalid cells, changing-cell unwrap, oriented wrapping and unit-dependent origins. The 2026-11-07 board review finds all four closed with correction `3eb7204`; this is upstream implementation evidence, not a received new consumer pair. Retain the declared temporary admission profile and its review/removal condition. Receive independent lattice truth and in-place atomicity before declaring general periodic/cell tasks complete. |
+| **D3 — owner fix published; consumer receiving pending** | uibcdf/molsysmt#613: overlapping global configuration contexts can leak/restore the wrong execution policy. The owner issue is closed with correction `f60e25b`. Per-View locks do not isolate separate Views. Receive simultaneous/nested/exception cases through the supported native solution; this is not proof of wrong GPU numerics. |
+| **D4 — owner fix published; consumer receiving pending** | uibcdf/molsysmt#616: compatible structure append fails after canonical H5MSM string restoration. The owner issue is closed with correction `19d6d55`. Receive save/recover/continue with preserved scientific alignment. Do not rewrite chemistry tables or weaken identity checks downstream. |
 | **D5 — dispositions still required** | Keep D5.1–D5.6 separate, with the qualified provider references below. Preserve scientific limitations or receive the owning definition before presenting provisional properties as verified physical areas/charges; interpretation questions are not demonstrated numerical errors. Test/CI/tool follow-ups retain their own issues. |
 
 **D6 — partial, all previously approved families remain required:** use the
@@ -704,6 +803,14 @@ receives 23 further original scripts/logs/receipts and source-patch snapshots
 for B1, A6 and the combined source. All copied hashes match; original custody
 manifests and files remain untouched. This transfer does not repeat passed
 tests or add another received leaf to the fixed progress denominator.
+
+The [camera/control batch custody receipt](../robustness_camera_control_custody_20261107.json)
+adds 475 verified files (172,150,200 bytes) under the already approved private
+custody. It retains original camera/plot/ownership failures, the interrupted
+run and final passing receiving, with task-source snapshots. All copied hashes
+and private permissions are verified; originals and earlier manifests remain
+intact. This is local retention, not an off-host backup or another completed
+plan leaf.
 
 | Evidence | SHA-256 / identity |
 | --- | --- |

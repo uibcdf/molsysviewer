@@ -9,6 +9,7 @@ import { Vec4 } from "molstar/lib/mol-math/linear-algebra/3d/vec4";
 import { Mat4 } from "molstar/lib/mol-math/linear-algebra/3d/mat4";
 import { Clip } from "molstar/lib/mol-util/clip";
 import { addTriangleFacesFromPython } from "../../shapes";
+import type { CameraIntentApplication } from "../camera-sync";
 import { clearPerAtomColors } from "../../themes/per-atom-color";
 import {
     ClearByTagMessage,
@@ -35,6 +36,7 @@ export interface SceneCallbacks {
     registerShapeRef: (ref: StateObjectRef | undefined, tag: string) => void;
     removeLoadedStructure: () => Promise<void>;
     notify: (msg: any) => void;
+    applyCameraNavigation?: (operation: () => void | Promise<void>, hooks?: CameraIntentApplication) => Promise<void>;
 }
 
 export class SceneHandlers {
@@ -80,8 +82,10 @@ export class SceneHandlers {
         } });
     }
 
-    async resetView() {
-        await PluginCommands.Camera.Reset(this.plugin, { durationMs: 250 });
+    async resetView(hooks?: CameraIntentApplication) {
+        const reset = () => PluginCommands.Camera.Reset(this.plugin, { durationMs: 250 });
+        if (this.callbacks.applyCameraNavigation) await this.callbacks.applyCameraNavigation(reset, hooks);
+        else await reset();
     }
 
     async toggleFullscreen(msg: ToggleFullscreenMessage | boolean) {
@@ -731,13 +735,15 @@ export class SceneHandlers {
         } as any);
     }
 
-    async zoomToPosition(msg: ZoomToPositionMessage) {
+    async zoomToPosition(msg: ZoomToPositionMessage, hooks?: CameraIntentApplication) {
         const [cx, cy, cz] = msg.center;
         const radius = msg.radius ?? 5;
         const sphere = Sphere3D.create(Vec3.create(cx, cy, cz), radius);
-        this.plugin.managers.camera.focusSphere(sphere, {
+        const focus = () => this.plugin.managers.camera.focusSphere(sphere, {
             durationMs: msg.duration_ms ?? 250,
         });
+        if (this.callbacks.applyCameraNavigation) await this.callbacks.applyCameraNavigation(focus, hooks);
+        else focus();
     }
 
     async clearScene(msg: ClearSceneMessage) {

@@ -31,6 +31,7 @@ import { StateHandlers } from "./handlers/state-handlers";
 import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handlers";
 import { MovieHandlers } from "./handlers/movie-handlers";
 import { waitForCanvasDraw } from "./canvas-draw";
+import type { CameraIntentApplication } from "./camera-sync";
 import { ContextMenuTarget, LastMeasurementSummary, RegionSummary, SavedSelectionSummary, ViewerContextMenu } from "../ui/context-menu";
 import { MeasurementEndpointPolicy, MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
 import { ToolStatusOverlay } from "../ui/tool-status";
@@ -603,6 +604,8 @@ export class MolSysViewerController {
     private splitResizeObserver?: ResizeObserver;
     private canvasResizeSubscription?: { unsubscribe(): void };
     private pendingHtmlDownload: string | null = null;
+    private pendingCameraIntent?: { release(): void };
+    private cameraNavigationFactory?: () => CameraIntentApplication | undefined;
     public readonly canvasHost: HTMLDivElement;
     private readonly isPanelOnly: boolean;
     private canvasInsetAnimFrame: ReturnType<typeof requestAnimationFrame> | null = null;
@@ -1213,7 +1216,7 @@ export class MolSysViewerController {
             this.activeSelection.handleItemClick(item, modifiers);
         }, (item) => {
             const loci = this.groupPanel.focusItem(item);
-            if (loci) this.plugin.managers.camera.focusLoci(loci);
+            if (loci) void this.focusLoci(loci);
         }, (item) => {
             if (!item) {
                 this.plugin.managers.interactivity.lociHighlights.clearHighlights();
@@ -1331,7 +1334,7 @@ export class MolSysViewerController {
             if (action === "show_help") { this.helpOpener?.(); return true; }
             if (action === "focus_all") {
                 const structure = this.getStructureData();
-                if (structure) this.plugin.managers.camera.focusLoci(Structure.Loci(structure));
+                if (structure) void this.focusLoci(Structure.Loci(structure));
                 return true;
             }
             if (action === "open_region_in_studio") {
@@ -1380,7 +1383,7 @@ export class MolSysViewerController {
             }
             if (action === "focus_target") {
                 if (target.kind !== "empty" && !target.atom_indices.length && target.focusable && this.lastContextLoci) {
-                    this.plugin.managers.camera.focusLoci(this.lastContextLoci);
+                    void this.focusLoci(this.lastContextLoci);
                     return true;
                 }
                 this.focusTarget(target);
@@ -1681,6 +1684,7 @@ export class MolSysViewerController {
         // Initialize handlers with necessary context callbacks
         
         this.state = new StateHandlers(plugin, {
+            applyCameraNavigation: (operation, hooks) => this.withCameraNavigation(operation, hooks),
             getStructure: () => this.getStructureData(),
             getLoadedStructure: () => this.loadedStructure,
             getCurrentStructureRef: () => this.currentStructure,
@@ -1725,6 +1729,7 @@ export class MolSysViewerController {
         });
 
         this.scene = new SceneHandlers(plugin, host, {
+            applyCameraNavigation: (operation, hooks) => this.withCameraNavigation(operation, hooks),
             clearShapes: () => this.state.clearShapesByTag(), // clear all shapes
             clearLabels: async () => {
                 await this.annotations.clearLabels();
@@ -1851,6 +1856,7 @@ export class MolSysViewerController {
     }
 
     dispose(): void {
+        this.pendingCameraIntent?.release();
         this.pendingHtmlDownload = null;
         this.canvasResizeSubscription?.unsubscribe();
         disposeControls(this);
@@ -2278,7 +2284,7 @@ export class MolSysViewerController {
         if (!selection || selection.source_kind === "empty" || selection.atom_indices.length === 0) return;
         const loci = this.atomIndicesToLoci(selection.atom_indices);
         if (!loci) return;
-        this.plugin.managers.camera.focusLoci(loci);
+        void this.focusLoci(loci);
     }
 
     /** Controls owns the help overlay; the context menu reuses that owner. */
@@ -2289,7 +2295,11 @@ export class MolSysViewerController {
         if (atomIndices.length === 0) return;
         const loci = this.atomIndicesToLoci(atomIndices);
         if (!loci) return;
-        this.plugin.managers.camera.focusLoci(loci);
+        void this.focusLoci(loci);
+    }
+
+    private focusLoci(loci: Loci): Promise<void> {
+        return this.withCameraNavigation(() => this.plugin.managers.camera.focusLoci(loci));
     }
 
     private syncWorkbenchContextFromPayload(payload: ContextInteractionPayload | null): void {
@@ -2466,7 +2476,7 @@ export class MolSysViewerController {
         return Math.hypot(x - anchor.x, y - anchor.y) > CONTEXT_MENU_DRAG_THRESHOLD_PX;
     }
 
-    async handleMessage(msg: ViewerMessage, options: { throwOnError?: boolean } = {}) {
+    async handleMessage(msg: ViewerMessage, options: { throwOnError?: boolean; cameraIntent?: CameraIntentApplication } = {}) {
         if (!msg || typeof msg !== "object") return;
         if (!("op" in msg)) {
             console.warn("[MolSysViewer] message missing 'op'", msg);
@@ -2607,7 +2617,7 @@ export class MolSysViewerController {
 
                 // Scene Ops
                 case "reset_view":
-                case "reset_camera": await this.scene.resetView(); break;
+                case "reset_camera": await this.scene.resetView(options.cameraIntent); break;
                 case "toggle_fullscreen": await this.scene.toggleFullscreen(msg); break;
                 case "toggle_background": await this.scene.toggleBackground(msg); break;
                 case "toggle_swing": await this.scene.toggleSwing(msg); break;
@@ -2927,13 +2937,14 @@ export class MolSysViewerController {
                     await this.state.hideWhole(msg);
                     this.refreshNavigatePanel(false);
                     break;
-                case "zoom": await this.state.zoom(msg); break;
-                case "zoom_to_position": await this.scene.zoomToPosition(msg as any); break;
+                case "zoom": await this.state.zoom(msg, options.cameraIntent); break;
+                case "zoom_to_position": await this.scene.zoomToPosition(msg as any, options.cameraIntent); break;
                 case "set_camera_snapshot":
                     // An explicitly applied snapshot is a deliberate viewpoint and
                     // must survive a later representation rebuild.
                     this.state.markIntentionalViewpoint();
-                    await this.setCameraSnapshot((msg as any).snapshot, (msg as any).duration_ms);
+                    if (options.cameraIntent) this.applyCameraSnapshotIntent((msg as any).snapshot, (msg as any).duration_ms, options.cameraIntent);
+                    else await this.setCameraSnapshot((msg as any).snapshot, (msg as any).duration_ms);
                     break;
                 case "clear_active_selection":
                     this.activeSelection.clear();
@@ -4660,6 +4671,75 @@ export class MolSysViewerController {
             console.error("[MolSysViewer] PNG export failed", error);
             this.groupPanel.setImageResult(false, message);
         }
+    }
+
+    setCameraNavigationHandler(factory: () => CameraIntentApplication | undefined): () => void {
+        this.cameraNavigationFactory = factory;
+        return () => { if (this.cameraNavigationFactory === factory) this.cameraNavigationFactory = undefined; };
+    }
+
+    private async withCameraNavigation(operation: () => void | Promise<void>, hooks?: CameraIntentApplication): Promise<void> {
+        const canvas = this.plugin.canvas3d;
+        if (!canvas) { await operation(); return; }
+        const request = canvas.requestCameraReset;
+        // Preserve Mol* focus calculations and durations. The interception is
+        // scoped to this operation and never remains installed on the canvas.
+        const intercept: typeof request = options => {
+            const application = hooks ?? this.cameraNavigationFactory?.();
+            if (application) this.requestCameraIntent(options, application, request);
+            else request.call(canvas, options);
+        };
+        canvas.requestCameraReset = intercept;
+        let pending: void | Promise<void>;
+        // The installed Camera.Reset/focusLoci/focusSphere request their reset
+        // synchronously. Restore before yielding to another operation/input.
+        try { pending = operation(); }
+        finally { if (canvas.requestCameraReset === intercept) canvas.requestCameraReset = request; }
+        await pending;
+    }
+
+    private applyCameraSnapshotIntent(snapshot: Camera.Snapshot | undefined, durationMs: number | undefined, hooks: CameraIntentApplication): void {
+        if (!snapshot) return;
+        this.requestCameraIntent({ snapshot, durationMs: Math.max(0, Number(durationMs ?? 0)) }, hooks);
+    }
+
+    private requestCameraIntent(options: Parameters<NonNullable<PluginContext["canvas3d"]>["requestCameraReset"]>[0], hooks: CameraIntentApplication,
+        request = this.plugin.canvas3d?.requestCameraReset): void {
+        if (hooks.signal.aborted) return;
+        const canvas = this.plugin.canvas3d;
+        if (!canvas || !request) throw new Error("No live canvas is available for the camera intent.");
+        // A newer provider will replace the older request; retiring its observer
+        // must not issue a second reset or cancel the new canvas owner.
+        this.pendingCameraIntent?.release();
+        const owner = { release: () => {} };
+        const release = () => {
+            hooks.signal.removeEventListener("abort", abort);
+            if (this.pendingCameraIntent === owner) this.pendingCameraIntent = undefined;
+        };
+        const abort = () => {
+            if (this.pendingCameraIntent !== owner) return;
+            release();
+            const current = canvas.camera.getSnapshot();
+            canvas.camera.transition.inTransition = false;
+            request.call(canvas, { snapshot: current, durationMs: 0 });
+            canvas.requestDraw();
+        };
+        owner.release = release;
+        this.pendingCameraIntent = owner;
+        hooks.registerCleanup(release);
+        hooks.signal.addEventListener("abort", abort, { once: true });
+        try {
+            request.call(canvas, { ...options, snapshot: (scene, camera) => {
+                if (hooks.signal.aborted || this.pendingCameraIntent !== owner) return canvas.camera.getSnapshot();
+                // Mol* resolves focus/defaults after the full scene is committed.
+                // Its next stateChanged is this provider's exact resolved reset.
+                hooks.beforeResolve();
+                // An empty partial preserves Camera.Reset's scene-derived
+                // focus while satisfying Mol*'s SnapshotProvider type.
+                return (typeof options?.snapshot === "function" ? options.snapshot(scene, camera) : options?.snapshot) ?? {};
+            } });
+            canvas.requestDraw();
+        } catch (error) { release(); throw error; }
     }
 
     async setCameraSnapshot(snapshot?: Camera.Snapshot, durationMs?: number) {

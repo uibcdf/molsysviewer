@@ -3,7 +3,7 @@ import process from "node:process";
 import { chromium } from "./e2e-browser";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
-import { checkTrajectoryPlotAuthority } from "./trajectory-plot-authority-scenarios";
+import { checkTrajectoryPlotAuthority, checkTrajectoryPlotPrecision } from "./trajectory-plot-authority-scenarios";
 import { checkDataCardTitles } from "./datacard-title-scenarios";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -140,6 +140,7 @@ async function run() {
 
     try {
         await checkTrajectoryPlotAuthority(page.context(), __dirname);
+        await checkTrajectoryPlotPrecision(page.context(), __dirname);
         await checkDataCardTitles(page.context(), __dirname);
     } finally {
         await browser.close();

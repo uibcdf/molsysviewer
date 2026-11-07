@@ -4,6 +4,7 @@ import argparse
 import html
 import tempfile
 import webbrowser
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -166,28 +167,48 @@ def _build_demo_gallery(
     links: list[tuple[str, str]] = []
     for demo_name in sorted(demo.keys()):
         demo_path = output_path.with_name(f"{output_path.stem}-demo-{demo_name}.html")
-        build_standalone0_html(
-            demo[demo_name],
-            str(demo_path),
-            title=f"MolSysViewer Standalone 0 · {demo_name}",
-            selection=selection,
-            structure_indices=structure_indices,
-            syntax=syntax,
-            load_mode=load_mode,
-            include_controls=include_controls,
-            include_popout=include_popout,
-            discover_addons=False,
-            addon_modules=(),
-            apply_project_config=False,
-            debug_js=debug_js,
-            generate_demo_gallery=False,
-            prepare_addons=False,
-            runtime_urls=runtime_urls,
-            host_event_transport=host_event_transport,
-            show_empty_host_overlay=show_empty_host_overlay,
-        )
+        # DemoCatalog returns a fresh View on every access. This caller owns
+        # that View; the nested writer merely borrows it.
+        with _standalone_view_owner(demo[demo_name], owned=True) as view:
+            build_standalone0_html(
+                view,
+                str(demo_path),
+                title=f"MolSysViewer Standalone 0 · {demo_name}",
+                selection=selection,
+                structure_indices=structure_indices,
+                syntax=syntax,
+                load_mode=load_mode,
+                include_controls=include_controls,
+                include_popout=include_popout,
+                discover_addons=False,
+                addon_modules=(),
+                apply_project_config=False,
+                debug_js=debug_js,
+                generate_demo_gallery=False,
+                prepare_addons=False,
+                runtime_urls=runtime_urls,
+                host_event_transport=host_event_transport,
+                show_empty_host_overlay=show_empty_host_overlay,
+            )
         links.append((demo_name, demo_path.name))
     return links
+
+
+@contextmanager
+def _standalone_view_owner(view: MolSysView | None, *, owned: bool):
+    """Release an internal HTML owner without replacing its original failure."""
+    try:
+        yield view
+    except BaseException as error:
+        if owned:
+            try:
+                view.close()
+            except BaseException as cleanup_error:
+                error.add_note(f"Standalone-owned View cleanup also failed: {cleanup_error!r}")
+        raise
+    else:
+        if owned:
+            view.close()
 
 
 def _resolve_view(
@@ -271,36 +292,37 @@ def build_standalone0_html(
         load_mode=load_mode,
         debug_js=debug_js,
     )
-    output_path = Path(output_filename).expanduser().resolve()
-    view._write_html_impl(  # noqa: SLF001
-        str(output_path),
-        title=title,
-        include_controls=include_controls,
-        include_popout=include_popout,
-        inline_messages=True,
-        runtime_urls=runtime_urls,
-        host_event_transport=host_event_transport,
-        skip_digestion=True,
-    )
-    if molecular_system is None and show_empty_host_overlay:
-        demo_links = (
-            _build_demo_gallery(
-                output_path,
-                selection=selection,
-                structure_indices=structure_indices,
-                syntax=syntax,
-                load_mode=load_mode,
-                include_controls=include_controls,
-                include_popout=include_popout,
-                debug_js=debug_js,
-                runtime_urls=runtime_urls,
-                host_event_transport=host_event_transport,
-                show_empty_host_overlay=show_empty_host_overlay,
-            )
-            if generate_demo_gallery
-            else []
+    with _standalone_view_owner(view, owned=view is not molecular_system):
+        output_path = Path(output_filename).expanduser().resolve()
+        view._write_html_impl(  # noqa: SLF001
+            str(output_path),
+            title=title,
+            include_controls=include_controls,
+            include_popout=include_popout,
+            inline_messages=True,
+            runtime_urls=runtime_urls,
+            host_event_transport=host_event_transport,
+            skip_digestion=True,
         )
-        _inject_empty_host_overlay(output_path, title, demo_links=demo_links)
+        if molecular_system is None and show_empty_host_overlay:
+            demo_links = (
+                _build_demo_gallery(
+                    output_path,
+                    selection=selection,
+                    structure_indices=structure_indices,
+                    syntax=syntax,
+                    load_mode=load_mode,
+                    include_controls=include_controls,
+                    include_popout=include_popout,
+                    debug_js=debug_js,
+                    runtime_urls=runtime_urls,
+                    host_event_transport=host_event_transport,
+                    show_empty_host_overlay=show_empty_host_overlay,
+                )
+                if generate_demo_gallery
+                else []
+            )
+            _inject_empty_host_overlay(output_path, title, demo_links=demo_links)
     return str(output_path)
 
 
@@ -383,18 +405,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         source = None
     else:
         source = demo[args.source] if args.demo else args.source
-    path = launch_standalone0(
-        source,
-        output_filename=args.output,
-        open_browser=not args.no_browser,
-        title=args.title,
-        selection=args.selection,
-        structure_indices=args.structure_indices,
-        syntax=args.syntax,
-        load_mode=args.load_mode,
-        discover_addons=args.discover_addons,
-        addon_modules=args.addon_module,
-    )
+    owns_demo = args.source is not None and args.demo
+    with _standalone_view_owner(source if owns_demo else None, owned=owns_demo):
+        path = launch_standalone0(
+            source,
+            output_filename=args.output,
+            open_browser=not args.no_browser,
+            title=args.title,
+            selection=args.selection,
+            structure_indices=args.structure_indices,
+            syntax=args.syntax,
+            load_mode=args.load_mode,
+            discover_addons=args.discover_addons,
+            addon_modules=args.addon_module,
+        )
     print(path)
     return 0
 

@@ -117,6 +117,9 @@ axis and card-lifecycle checks and invokes its real Python-authority scenario.
 That scenario clicks actual SVG points, checks Python index/public callbacks,
 distinct molecular conformations and actual canvas-popup feedback. A local
 playhead or a test-constructed Python event alone cannot protect this boundary.
+Its precision scenario additionally checks actual labels, complete raw-value
+access, SVG geometry against independent Decimal/binary64 controls and
+perturbed state-file recovery, retaining explicit units and frame identity.
 `tests/test_reporting_protocol.py` checks the fixed entry, receiving/fixture
 owners, build and core registration; those checks establish addressability.
 

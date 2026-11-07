@@ -15,6 +15,8 @@ import "./interaction-calculation-controls.test";
 import "./viewer-interaction.test";
 import "./popup-host.test";
 import "./popup-logic.test";
+import "./frontend-requests.test";
+import "./camera-sync.test";
 import "./popup-replay-log.test";
 import "./runtime-router.test";
 import "./remote-protocol.test";

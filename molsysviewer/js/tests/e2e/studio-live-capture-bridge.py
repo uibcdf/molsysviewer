@@ -14,6 +14,14 @@ from molsysviewer import FigureSpec
 
 
 def inspect_artifact(view, event):
+    if "studio_navigation" in event:
+        if event["studio_navigation"] == "reset":
+            view.camera.reset()
+        elif event["studio_navigation"] == "zoom":
+            view.camera.zoom(selection=[0, 1, 2], duration="0 ms")
+        else:
+            raise ValueError("Unknown Studio navigation fixture action")
+        return True
     if event.get("studio_inspect"):
         return {"authority_state": view.export_state()}
     if "studio_artifact" not in event:

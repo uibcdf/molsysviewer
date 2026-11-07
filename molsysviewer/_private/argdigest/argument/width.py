@@ -6,10 +6,6 @@ from ...exceptions import ArgumentError
 # but an iframe attribute is CSS: "100%", "480px". Same name, different domain,
 # so the caller decides which one is being asked for.
 _CSS_WIDTH_CALLERS = {
-    # A trajectory plot card is sized in pixels: the same argument name, a third
-    # meaning beside "a physical length" and "a CSS dimension".
-    "molsysviewer.trajectory_plot.show",
-    "molsysviewer.trajectory_plot.update",
     "molsysviewer.tools.embed.embed_iframe",
     "molsysviewer.tools.embed_iframe",
 }
@@ -17,6 +13,8 @@ _CSS_WIDTH_CALLERS = {
 
 def digest_width(width, caller=None):
     if caller in {
+        "molsysviewer.trajectory_plot.show",
+        "molsysviewer.trajectory_plot.update",
         "molsysviewer.standalone_qt.application.create_standalone_qt0_window",
         "molsysviewer.standalone_qt.application.launch_standalone_qt0",
     }:

@@ -1,0 +1,94 @@
+{
+  "schema": "molsysviewer.standalone_html_ownership_receiving@1",
+  "date": "2026-11-07",
+  "issue": "uibcdf/molsysviewer#324",
+  "plan": "uibcdf/molsysviewer#315 / additional A4-A6 ownership boundary",
+  "status": "corrected and locally verified in working source; reviewed integration and consolidated acceptance pending",
+  "source_sha256": {
+    "molsysviewer/standalone.py": "78be2e4f01a5f2b7aeb7ea17e89ff0db94c3bbb92575388a9e18df65214eaf0d",
+    "tests/test_standalone_view_ownership.py": "7a3e88194b26075fd2367a3d2675d8ea04a59d36fd295ea9f160a4cfe341ca37"
+  },
+  "ownership_contract": {
+    "internally_created_view": "HTML construction closes the View it creates after successful export or failure.",
+    "borrowed_view": "Caller-supplied Views retain their exact data, scene, callbacks and comms.",
+    "gallery_and_cli": "Gallery and CLI close their fresh DemoCatalog Views; the nested HTML writer borrows those objects.",
+    "exception_semantics": "Preserve the original writer/load error and add a diagnostic note if cleanup also fails. A cleanup-only failure remains observable.",
+    "preservation": "Already written files, unrelated caller output and caller-owned data remain intact. Close only newly owned objects."
+  },
+  "causal_before": {
+    "native_exit": 1,
+    "owned_cases_failed": 4,
+    "borrowed_controls_passed": 2,
+    "deselected": 11,
+    "seconds": 7.41,
+    "cause": "Owned success and writer-failure paths leave actual widget/comm registries above baseline before pytest teardown; borrowed controls pass.",
+    "original_evidence_retained_privately": true
+  },
+  "after_direct_module": {
+    "guard": "tests/test_standalone_view_ownership.py",
+    "native_exit": 0,
+    "passed": 17,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 27.6,
+    "warnings": 18,
+    "warning_scope": "LegacyH5MSMWarning"
+  },
+  "existing_boundary_selection": {
+    "native_exit": 0,
+    "passed": 24,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 9.91,
+    "warnings": 26,
+    "warning_scope": "LegacyH5MSMWarning",
+    "scope": "tests/test_new_view.py and five existing non-Qt standalone HTML/CLI selectors",
+    "count_limit": "Separate recorded selection; do not sum with the direct module or infer complete-source qualification."
+  },
+  "unchanged_original_probe": {
+    "probe_sha256": "c8a41b2eaec445451f065a6a3e03a200ba440feb6f74d7192b8d13336e63d3c3",
+    "fresh_processes": 3,
+    "builds_per_process": 4,
+    "inputs_unchanged": true,
+    "runs": [
+      {
+        "mode": "empty",
+        "native_exit": 0,
+        "unreturned_views_after_gc": 0,
+        "baseline_preserved_on_every_build": true
+      },
+      {
+        "mode": "molsys",
+        "native_exit": 0,
+        "unreturned_views_after_gc": 0,
+        "baseline_preserved_on_every_build": true
+      },
+      {
+        "mode": "borrowed",
+        "native_exit": 0,
+        "unreturned_views_after_gc": 0,
+        "baseline_preserved_on_every_build": true
+      }
+    ],
+    "scope": "Original observational probe reused without changes in fresh processes; original red observations remain retained. Collection is part of this observational probe, not the durable guard."
+  },
+  "proof_boundaries": [
+    "Durable registry, callback and comm assertions occur before pytest autouse teardown, without forced collection or a registry sweep.",
+    "Real empty input, native MolSys, dialanine and borrowed View; actual default gallery/CLI and native filesystem/load errors.",
+    "A real failing View close callback checks original-error preservation; no mocked writer or scientific provider.",
+    "No test assertion was weakened between causal red and green; only test import ordering/format changed.",
+    "No provider modification, browser/visible Qt acceptance, installed artifact or final candidate qualification is implied.",
+    "These are existing terminal receiving results, not tests executed while preparing this sanitized record.",
+    "Test counts are evidence selections, not additional completed plan leaves."
+  ],
+  "style_checks": {
+    "ruff_check_native_exit": 0,
+    "ruff_format_check_native_exit": 0,
+    "diff_check_native_exit": 0
+  },
+  "remaining": [
+    "Reviewed integration of the working source and regression.",
+    "Applicable consolidated hosted and installed qualification.",
+    "Formal scoped closeout; manual observations and publication retain their existing pauses."
+  ]
+}

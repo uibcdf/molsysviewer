@@ -213,6 +213,116 @@ def test_endpoint_loss_and_capacity_preserve_unrelated_requests():
     assert not owner._pending
 
 
+@pytest.mark.parametrize("termination", ["cancel", "future", "endpoint", "expiry", "close"])
+def test_abandoned_capture_notifies_its_exact_renderer_once_after_unlock(termination):
+    notifications = []
+    published = []
+    owner = FrontendRequests(publish=published.append, abandon=lambda ticket: notifications.append(ticket))
+    request = owner.begin(endpoint_id="canvas-a", reply_event="visual_state_snapshot", revision="r1", timeout=5)
+    other = owner.begin(endpoint_id="canvas-b", reply_event="visual_state_snapshot", revision="r2", timeout=5)
+    if termination == "cancel":
+        owner.cancel(request)
+        owner.cancel(request)
+    elif termination == "future":
+        request.future.cancel()
+    elif termination == "endpoint":
+        owner.cancel_endpoint("canvas-a")
+    elif termination == "expiry":
+        # A represented expired deadline avoids a test sleep or a second clock.
+        object.__setattr__(request, "deadline", time.monotonic() - 1)
+        owner.expire()
+    else:
+        owner.close()
+    assert not notifications
+    while published:
+        published.pop(0)()
+    expected = [request, other] if termination == "close" else [request]
+    assert notifications == expected
+    assert not owner.receive(response(request), endpoint_id="canvas-a")
+    if termination != "close":
+        assert not other.future.done()
+    owner.cancel(request)
+    while published:
+        published.pop(0)()
+    assert notifications == expected
+    owner.close()
+
+
+def test_successful_capture_wait_does_not_abort_its_renderer():
+    abandoned = []
+    owner = FrontendRequests(abandon=abandoned.append)
+    request = owner.begin(endpoint_id="canvas", reply_event="visual_state_snapshot", revision="r1", timeout=5)
+    assert owner.receive(response(request), endpoint_id="canvas")
+    assert asyncio.run(owner.wait(request))["snapshot"] == CAMERA
+    owner.cancel(request)
+    owner.close()
+    assert abandoned == []
+
+
+@pytest.mark.parametrize("termination", ["cancel", "expiry"])
+def test_failed_abort_transport_still_completes_and_releases_the_capture(termination):
+    def unavailable(_):
+        raise RuntimeError("Transport closed during cancellation")
+
+    owner = FrontendRequests(abandon=unavailable)
+    request = owner.begin(endpoint_id="canvas", reply_event="visual_state_snapshot", revision="r1", timeout=5)
+    with pytest.raises(RuntimeError, match="Transport closed"):
+        if termination == "cancel":
+            owner.cancel(request)
+        else:
+            object.__setattr__(request, "deadline", time.monotonic() - 1)
+            owner.expire()
+    assert request.future.done()
+    assert not owner._pending
+    owner.close()
+
+
+@pytest.mark.parametrize("termination", ["endpoint", "expiry", "close"])
+def test_failed_abort_transport_does_not_strand_other_retired_captures(termination):
+    abandoned = []
+
+    def unavailable(request):
+        abandoned.append(request.request_id)
+        raise RuntimeError("Transport closed during cancellation")
+
+    owner = FrontendRequests(abandon=unavailable)
+    requests = [
+        owner.begin(endpoint_id="canvas", reply_event="visual_state_snapshot", revision="r1", timeout=5)
+        for _ in range(3)
+    ]
+    with pytest.raises(ExceptionGroup) as errors:
+        if termination == "endpoint":
+            owner.cancel_endpoint("canvas")
+        elif termination == "expiry":
+            for request in requests:
+                object.__setattr__(request, "deadline", time.monotonic() - 1)
+            owner.expire()
+        else:
+            owner.close()
+    assert len(errors.value.exceptions) == 3
+    assert all(isinstance(error, RuntimeError) for error in errors.value.exceptions)
+    assert abandoned == [request.request_id for request in requests]
+    assert all(request.future.done() for request in requests)
+    assert not owner._pending
+    owner.close()
+
+
+@pytest.mark.parametrize("endpoint", [None, "popup-review"])
+def test_abandoned_capture_removes_only_its_matching_deferred_barrier(view, endpoint):
+    if endpoint is not None:
+        view._endpoint_transfers.register(endpoint, "canvas")
+    request = view._frontend_requests.begin(
+        endpoint_id=endpoint or "primary", reply_event="visual_state_snapshot", revision="r1", timeout=5
+    )
+    barrier = {"op": "request_visual_state", "request_id": request.request_id, "capture_revision": "r1"}
+    another = {**barrier, "capture_revision": "r2"}
+    scene = {"op": "clear_all"}
+    for message in (scene, barrier, another):
+        view._endpoint_transfers.defer(endpoint, message, None)
+    view._frontend_requests.cancel(request)
+    assert [m for m, _ in view._endpoint_transfers.state(endpoint).deferred] == [scene, another]
+
+
 @pytest.mark.parametrize("kind", ["state", "session"])
 def test_async_save_uses_exact_reply_despite_unrelated_camera_telemetry(view, tmp_path, kind):
     async def run():

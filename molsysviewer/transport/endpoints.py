@@ -98,6 +98,17 @@ class EndpointTransferRegistry:
         state.flushing = True
         return state
 
+    def discard_deferred(self, endpoint_id: str | None, predicate: Callable[[Mapping[str, Any]], bool]) -> int:
+        """Retire matching unsent control without reordering scene operations."""
+        state = self._state(endpoint_id)
+        if state is None:
+            return 0
+        retained = [item for item in state.deferred if not predicate(item[0])]
+        removed = len(state.deferred) - len(retained)
+        state.deferred.clear()
+        state.deferred.extend(retained)
+        return removed
+
     @staticmethod
     def end_flush(state: EndpointTransferState) -> None:
         state.flushing = False

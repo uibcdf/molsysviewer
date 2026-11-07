@@ -59,8 +59,42 @@ authority.
   release alone does not guarantee that the connector released its outer guard.
 - Static export has no independent journal or projector. `ExportMixin` is an
   entrypoint only; the canonical constructor lives in `popup_snapshot.py`.
+- Explicit camera snapshots, reset and focus commands share a per-View
+  authority revision allocated before endpoint fanout. Passive telemetry never
+  advances it. Endpoints record intent on authenticated receipt, before their
+  scene queue runs, and reject older peer camera packets. A live bootstrap's
+  latest-known revision does not certify its accompanying pose: that pose
+  retains the last revision actually completed by its renderer. Independent
+  static artifacts start a fresh revision domain.
+  Camera completion belongs to the surviving Mol* reset provider's resolved
+  full target and its actual draw, including transitions. A later reset/focus
+  may replace a pending snapshot; it must not leave the replaced provider as
+  the completion owner. Reuse Mol*'s reset/focus operations and snapshot
+  calculations, preserving partial snapshots, durations and non-unit up
+  vectors. If a transition reaches its target on a tick that does not render,
+  request one final draw through the existing committed-frame lifecycle;
+  completion still requires that subsequent `didDraw`. New physical input or deliberate local navigation can supersede
+  queued older intent. Peer application suppresses echoes; a missing echo is
+  not evidence that a correctly rendered peer projection failed.
 - Qt deliberately does not share the AnyWidget transfer manager. Its ordered
   queue and payload-reference scheme satisfy S8 at a different connector seam.
+  Only an exact `cancel_visual_state` and correlated Save/Cancel verdicts use
+  its bounded independent lifecycle-control lane; Restore and scene projections
+  keep ordered application. Control ACKs own their transport ID/generation,
+  and a retired capture's late ACK cannot release another scene command.
+  Abandonment removes an exact unsent capture from Python, bootstrap and native
+  queues before dispatching renderer cancellation; completed capture does not
+  produce cancellation. The renderer owns an abortable draw subscription and
+  retires it on cancellation/disposal without starting another render clock.
+  Awaitable Qt capture additionally requires an explicitly integrated GUI loop
+  on its owner thread. Preflight verifies dispatch compatibility, not the entire
+  embedding application's lifetime. Local PySide6 6.11.2/WebEngine receiving
+  reproduces a crash when standard `asyncio.Runner` re-enters a finished native
+  application for shutdown. The reviewed receiving route uses one
+  application-owned QtAsyncio loop: asynchronous cleanup occurs while that loop
+  is live, followed by one stop and close. Ordinary Studio Save does not require
+  an asyncio loop. No global loop policy, nested event pumping or worker is
+  silently installed; broader binding/loop compatibility remains experimental.
 - A remote connector does not turn `MolSysView` into a network server.
   `SessionRuntimeRouter` owns remote identities, placement and deduplication;
   `RemoteViewChannel` adapts only accepted domain messages at the existing

@@ -145770,9 +145770,9 @@ var InteractionHandlers = class {
   get currentFrame() {
     return this.frame;
   }
-  setSummaries(items, revision = -1) {
-    if (revision < this.latestRevision && revision !== -1) return false;
-    this.latestRevision = Math.max(this.latestRevision, revision);
+  setSummaries(items, revision2 = -1) {
+    if (revision2 < this.latestRevision && revision2 !== -1) return false;
+    this.latestRevision = Math.max(this.latestRevision, revision2);
     for (const tag of this.tokens.keys()) if (!items.some((item2) => item2.tag === tag)) this.drop(tag);
     this.summaries = items;
     this.latestRevision = Math.max(this.latestRevision, ...items.map((item2) => item2.projection_revision ?? -1));
@@ -146864,8 +146864,10 @@ var SceneHandlers = class {
       animate: this.motionFollower ? { name: "off", params: {} } : this.spinActive ? { name: "spin", params: { speed: this.motionSpeed } } : this.swingActive ? { name: "rock", params: { speed: this.motionSpeed, angle: 20 } } : { name: "off", params: {} }
     } });
   }
-  async resetView() {
-    await PluginCommands.Camera.Reset(this.plugin, { durationMs: 250 });
+  async resetView(hooks) {
+    const reset = () => PluginCommands.Camera.Reset(this.plugin, { durationMs: 250 });
+    if (this.callbacks.applyCameraNavigation) await this.callbacks.applyCameraNavigation(reset, hooks);
+    else await reset();
   }
   async toggleFullscreen(msg) {
     const enable = typeof msg === "boolean" ? msg : msg.enable;
@@ -147414,13 +147416,15 @@ var SceneHandlers = class {
       cameraFog: enabled ? { name: "on", params: { intensity } } : { name: "off", params: {} }
     });
   }
-  async zoomToPosition(msg) {
+  async zoomToPosition(msg, hooks) {
     const [cx, cy, cz] = msg.center;
     const radius = msg.radius ?? 5;
     const sphere = Sphere3D.create(Vec3.create(cx, cy, cz), radius);
-    this.plugin.managers.camera.focusSphere(sphere, {
+    const focus = () => this.plugin.managers.camera.focusSphere(sphere, {
       durationMs: msg.duration_ms ?? 250
     });
+    if (this.callbacks.applyCameraNavigation) await this.callbacks.applyCameraNavigation(focus, hooks);
+    else focus();
   }
   async clearScene(msg) {
     const options = msg.options;
@@ -148776,10 +148780,10 @@ var StateHandlers = class {
   async hideWhole(msg) {
     await this.handleShowHideGlobal(true, msg.target ?? "whole");
   }
-  async zoom(msg) {
+  async zoom(msg, hooks) {
     const structure = this.callbacks.getStructure();
     if (!structure) {
-      this.pendingZoom = msg;
+      this.pendingZoom = { message: msg, hooks };
       return;
     }
     const atomIndices = Array.isArray(msg.atom_indices) ? msg.atom_indices.map((i) => typeof i === "number" ? Math.trunc(i) : Number(i)).filter((i) => Number.isFinite(i)) : [];
@@ -148791,18 +148795,20 @@ var StateHandlers = class {
     if (!selection) return;
     const loci = StructureSelection.toLociWithSourceUnits(selection);
     this.intentionalViewpoint = true;
-    this.plugin.managers.camera.focusLoci(loci, {
+    const focus = () => this.plugin.managers.camera.focusLoci(loci, {
       durationMs: msg.options?.duration_ms,
       extraRadius: msg.options?.extra_radius,
       minRadius: msg.options?.min_radius
     });
+    if (this.callbacks.applyCameraNavigation) await this.callbacks.applyCameraNavigation(focus, hooks);
+    else focus();
   }
   // Public method to be called by Loader/Controller when structure is ready
   async onStructureLoaded() {
     if (this.pendingZoom) {
       const pending = this.pendingZoom;
       this.pendingZoom = void 0;
-      await this.zoom(pending);
+      await this.zoom(pending.message, pending.hooks);
     }
     if (this.pendingGlobalOps.length) {
       const ops = [...this.pendingGlobalOps];
@@ -149676,21 +149682,41 @@ var MovieHandlers = class {
 };
 
 // src/managers/canvas-draw.ts
-async function waitForCanvasDraw(canvas, timeoutMs = 3e4) {
+async function waitForCanvasDraw(canvas, timeoutMs = 3e4, signal) {
   await new Promise((resolve, reject) => {
     let requested = false;
-    const timer2 = setTimeout(() => {
-      subscription.unsubscribe();
-      reject(new Error("Canvas did not finish drawing."));
-    }, timeoutMs);
-    const subscription = canvas.didDraw.subscribe(() => {
-      if (!requested) return;
-      clearTimeout(timer2);
-      subscription.unsubscribe();
-      resolve();
-    });
-    requested = true;
-    canvas.requestDraw();
+    let settled = false;
+    let subscription;
+    let timer2;
+    const finish = (error2) => {
+      if (settled) return;
+      settled = true;
+      if (timer2 !== void 0) clearTimeout(timer2);
+      subscription?.unsubscribe();
+      signal?.removeEventListener("abort", abort2);
+      if (error2 !== void 0) reject(error2);
+      else resolve();
+    };
+    const abort2 = () => finish(new DOMException("Canvas draw wait cancelled.", "AbortError"));
+    if (signal?.aborted) {
+      abort2();
+      return;
+    }
+    signal?.addEventListener("abort", abort2, { once: true });
+    timer2 = setTimeout(() => finish(new Error("Canvas did not finish drawing.")), timeoutMs);
+    try {
+      subscription = canvas.didDraw.subscribe(() => {
+        if (requested) finish();
+      });
+      if (settled) {
+        subscription.unsubscribe();
+        return;
+      }
+      requested = true;
+      canvas.requestDraw();
+    } catch (error2) {
+      finish(error2);
+    }
   });
 }
 
@@ -151895,13 +151921,34 @@ function hex(color, fallback) {
   if (color === void 0 || color === null) return fallback;
   return "#" + (color >>> 0 & 16777215).toString(16).padStart(6, "0");
 }
-function formatValue(v4) {
-  if (Number.isInteger(v4)) return String(v4);
-  return v4.toFixed(2);
+function formatValue(value, precision = 6) {
+  if (value === 0) return "0";
+  if (Math.abs(value) < 1e-3 || Math.abs(value) >= 1e6) {
+    const [mantissa, exponent] = value.toExponential(precision - 1).split("e");
+    return `${trimFraction(mantissa)}e${Number(exponent)}`;
+  }
+  const rounded = value.toPrecision(precision);
+  return rounded.includes("e") ? String(Number(rounded)) : trimFraction(rounded);
+}
+function trimFraction(value) {
+  return value.includes(".") ? value.replace(/0+$/, "").replace(/\.$/, "") : value;
+}
+function axisPrecision(min5, max5) {
+  for (let precision = 6; precision < 17; precision++) {
+    const low = Number(formatValue(min5, precision));
+    const high = Number(formatValue(max5, precision));
+    if (min5 === max5 || Number.isFinite(low) && Number.isFinite(high) && low !== high) return precision;
+  }
+  return 17;
+}
+function rawValue(value) {
+  return Object.is(value, -0) ? "-0" : String(value);
 }
 function axisFraction(value, min5, max5) {
   if (min5 === max5) return 0.5;
-  const scale = Math.max(Math.abs(min5), Math.abs(max5), 1);
+  const span = max5 - min5;
+  if (Number.isFinite(span)) return (value - min5) / span;
+  const scale = Math.max(Math.abs(min5), Math.abs(max5));
   return (value / scale - min5 / scale) / (max5 / scale - min5 / scale);
 }
 var TrajectoryPlotOverlay = class {
@@ -152010,15 +152057,22 @@ var TrajectoryPlotOverlay = class {
       entry.playhead.setAttribute("x2", String(x));
       const opts = entry.options;
       if (entry.readoutText && opts.series) {
-        const xValStr = opts.x && opts.x.length > clamped ? formatValue(opts.x[clamped]) : `frame: ${clamped}`;
+        const xValue = opts.x?.[clamped];
+        const xValStr = xValue !== void 0 ? formatValue(xValue, entry.xPrecision) : `frame: ${clamped}`;
+        const xRaw = xValue !== void 0 ? `x: ${rawValue(xValue)}` : `frame: ${clamped}`;
+        let display;
+        let raw2;
         if (opts.series.length === 1) {
           const val = opts.series[0].values[clamped];
-          const valStr = val !== void 0 ? formatValue(val) : "\u2014";
-          entry.readoutText.textContent = opts.x ? `x: ${xValStr} \xB7 y: ${valStr}` : `${xValStr} \xB7 y: ${valStr}`;
+          const valStr = val !== void 0 ? formatValue(val, entry.yPrecision) : "\u2014";
+          display = opts.x ? `x: ${xValStr} \xB7 y: ${valStr}` : `${xValStr} \xB7 y: ${valStr}`;
+          raw2 = `${xRaw} \xB7 y: ${val !== void 0 ? rawValue(val) : "\u2014"}`;
         } else {
-          const seriesStr = opts.series.map((s) => `${s.label}: ${s.values[clamped] !== void 0 ? formatValue(s.values[clamped]) : "\u2014"}`).join(" \xB7 ");
-          entry.readoutText.textContent = `${xValStr} \xB7 ${seriesStr}`;
+          const seriesStr = opts.series.map((s) => `${s.label}: ${s.values[clamped] !== void 0 ? formatValue(s.values[clamped], entry.yPrecision) : "\u2014"}`).join(" \xB7 ");
+          display = `${opts.x ? "x: " : ""}${xValStr} \xB7 ${seriesStr}`;
+          raw2 = `${xRaw} \xB7 ${opts.series.map((s) => `${s.label}: ${s.values[clamped] !== void 0 ? rawValue(s.values[clamped]) : "\u2014"}`).join(" \xB7 ")}`;
         }
+        this.setNumericText(entry.readoutText, display, raw2);
       }
     }
   }
@@ -152082,6 +152136,9 @@ var TrajectoryPlotOverlay = class {
       min5 = 0;
       max5 = 1;
     }
+    const [xMin, xMax] = this.xRange(entry);
+    entry.xPrecision = axisPrecision(xMin, xMax);
+    entry.yPrecision = axisPrecision(min5, max5);
     const yOf = (v4) => M5.top + (1 - axisFraction(v4, min5, max5)) * plotHeight;
     const axis = document.createElementNS(SVG_NS, "path");
     axis.setAttribute("d", `M${M5.left},${M5.top} L${M5.left},${height - M5.bottom} L${width - M5.right},${height - M5.bottom}`);
@@ -152091,6 +152148,7 @@ var TrajectoryPlotOverlay = class {
     svg.appendChild(axis);
     const readoutText = this.text(width - M5.right, 14, "", "end", "rgba(244, 244, 245, 0.9)", 10);
     readoutText.setAttribute("font-weight", "600");
+    readoutText.setAttribute("data-molsysviewer-plot-value", "readout");
     svg.appendChild(readoutText);
     entry.readoutText = readoutText;
     for (const ev of opts.events ?? []) {
@@ -152130,9 +152188,15 @@ var TrajectoryPlotOverlay = class {
       t5.setAttribute("transform", `rotate(-90 12 ${height / 2})`);
       svg.appendChild(t5);
     }
-    const [xMin, xMax] = this.xRange(entry);
-    svg.appendChild(this.text(M5.left, height - M5.bottom + 11, formatValue(xMin), "middle", "rgba(242,242,242,0.5)", 9));
-    svg.appendChild(this.text(width - M5.right, height - M5.bottom + 11, formatValue(xMax), "middle", "rgba(242,242,242,0.5)", 9));
+    for (const [value, x, anchor, name] of [
+      [xMin, M5.left, "start", "x-min"],
+      [xMax, width - M5.right, "end", "x-max"]
+    ]) {
+      const label2 = this.text(x, height - M5.bottom + 11, "", anchor, "rgba(242,242,242,0.5)", 9);
+      label2.setAttribute("data-molsysviewer-plot-value", name);
+      this.setNumericText(label2, formatValue(value, entry.xPrecision), rawValue(value));
+      svg.appendChild(label2);
+    }
     if (opts.series.length > 1) {
       opts.series.forEach((s, i) => {
         const ly = M5.top + 2 + i * 13;
@@ -152164,6 +152228,15 @@ var TrajectoryPlotOverlay = class {
     t5.setAttribute("font-family", '"IBM Plex Sans", system-ui, sans-serif');
     t5.textContent = content;
     return t5;
+  }
+  setNumericText(text, display, raw2) {
+    const value = document.createElementNS(SVG_NS, "tspan");
+    value.textContent = display;
+    const title = document.createElementNS(SVG_NS, "title");
+    title.textContent = raw2;
+    text.replaceChildren(value, title);
+    text.setAttribute("aria-label", raw2);
+    text.setAttribute("tabindex", "0");
   }
   dispose() {
     this.clear();
@@ -167202,7 +167275,7 @@ var MolSysViewerController = class _MolSysViewerController {
       this.activeSelection.handleItemClick(item2, modifiers3);
     }, (item2) => {
       const loci = this.groupPanel.focusItem(item2);
-      if (loci) this.plugin.managers.camera.focusLoci(loci);
+      if (loci) void this.focusLoci(loci);
     }, (item2) => {
       if (!item2) {
         this.plugin.managers.interactivity.lociHighlights.clearHighlights();
@@ -167326,7 +167399,7 @@ var MolSysViewerController = class _MolSysViewerController {
       }
       if (action === "focus_all") {
         const structure = this.getStructureData();
-        if (structure) this.plugin.managers.camera.focusLoci(Structure.Loci(structure));
+        if (structure) void this.focusLoci(Structure.Loci(structure));
         return true;
       }
       if (action === "open_region_in_studio") {
@@ -167374,7 +167447,7 @@ var MolSysViewerController = class _MolSysViewerController {
       }
       if (action === "focus_target") {
         if (target.kind !== "empty" && !target.atom_indices.length && target.focusable && this.lastContextLoci) {
-          this.plugin.managers.camera.focusLoci(this.lastContextLoci);
+          void this.focusLoci(this.lastContextLoci);
           return true;
         }
         this.focusTarget(target);
@@ -167647,6 +167720,7 @@ var MolSysViewerController = class _MolSysViewerController {
       }
     });
     this.state = new StateHandlers(plugin, {
+      applyCameraNavigation: (operation2, hooks) => this.withCameraNavigation(operation2, hooks),
       getStructure: () => this.getStructureData(),
       getLoadedStructure: () => this.loadedStructure,
       getCurrentStructureRef: () => this.currentStructure,
@@ -167688,6 +167762,7 @@ var MolSysViewerController = class _MolSysViewerController {
       unregisterRef: (ref, tag) => this.state.unregisterTaggedRef(ref, tag, "measurement")
     });
     this.scene = new SceneHandlers(plugin, host, {
+      applyCameraNavigation: (operation2, hooks) => this.withCameraNavigation(operation2, hooks),
       clearShapes: () => this.state.clearShapesByTag(),
       // clear all shapes
       clearLabels: async () => {
@@ -168148,6 +168223,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.notify?.({ event: "webgl_context_restored" });
   }
   dispose() {
+    this.pendingCameraIntent?.release();
     this.pendingHtmlDownload = null;
     this.canvasResizeSubscription?.unsubscribe();
     disposeControls(this);
@@ -168518,7 +168594,7 @@ var MolSysViewerController = class _MolSysViewerController {
     if (!selection || selection.source_kind === "empty" || selection.atom_indices.length === 0) return;
     const loci = this.atomIndicesToLoci(selection.atom_indices);
     if (!loci) return;
-    this.plugin.managers.camera.focusLoci(loci);
+    void this.focusLoci(loci);
   }
   /** Controls owns the help overlay; the context menu reuses that owner. */
   setHelpOpener(open) {
@@ -168529,7 +168605,10 @@ var MolSysViewerController = class _MolSysViewerController {
     if (atomIndices.length === 0) return;
     const loci = this.atomIndicesToLoci(atomIndices);
     if (!loci) return;
-    this.plugin.managers.camera.focusLoci(loci);
+    void this.focusLoci(loci);
+  }
+  focusLoci(loci) {
+    return this.withCameraNavigation(() => this.plugin.managers.camera.focusLoci(loci));
   }
   syncWorkbenchContextFromPayload(payload) {
     if (!payload) {
@@ -168883,7 +168962,7 @@ var MolSysViewerController = class _MolSysViewerController {
         // Scene Ops
         case "reset_view":
         case "reset_camera":
-          await this.scene.resetView();
+          await this.scene.resetView(options.cameraIntent);
           break;
         case "toggle_fullscreen":
           await this.scene.toggleFullscreen(msg);
@@ -169235,14 +169314,15 @@ var MolSysViewerController = class _MolSysViewerController {
           this.refreshNavigatePanel(false);
           break;
         case "zoom":
-          await this.state.zoom(msg);
+          await this.state.zoom(msg, options.cameraIntent);
           break;
         case "zoom_to_position":
-          await this.scene.zoomToPosition(msg);
+          await this.scene.zoomToPosition(msg, options.cameraIntent);
           break;
         case "set_camera_snapshot":
           this.state.markIntentionalViewpoint();
-          await this.setCameraSnapshot(msg.snapshot, msg.duration_ms);
+          if (options.cameraIntent) this.applyCameraSnapshotIntent(msg.snapshot, msg.duration_ms, options.cameraIntent);
+          else await this.setCameraSnapshot(msg.snapshot, msg.duration_ms);
           break;
         case "clear_active_selection":
           this.activeSelection.clear();
@@ -170776,6 +170856,72 @@ var MolSysViewerController = class _MolSysViewerController {
       this.groupPanel.setImageResult(false, message);
     }
   }
+  setCameraNavigationHandler(factory3) {
+    this.cameraNavigationFactory = factory3;
+    return () => {
+      if (this.cameraNavigationFactory === factory3) this.cameraNavigationFactory = void 0;
+    };
+  }
+  async withCameraNavigation(operation2, hooks) {
+    const canvas = this.plugin.canvas3d;
+    if (!canvas) {
+      await operation2();
+      return;
+    }
+    const request = canvas.requestCameraReset;
+    const intercept = (options) => {
+      const application = hooks ?? this.cameraNavigationFactory?.();
+      if (application) this.requestCameraIntent(options, application, request);
+      else request.call(canvas, options);
+    };
+    canvas.requestCameraReset = intercept;
+    let pending;
+    try {
+      pending = operation2();
+    } finally {
+      if (canvas.requestCameraReset === intercept) canvas.requestCameraReset = request;
+    }
+    await pending;
+  }
+  applyCameraSnapshotIntent(snapshot, durationMs, hooks) {
+    if (!snapshot) return;
+    this.requestCameraIntent({ snapshot, durationMs: Math.max(0, Number(durationMs ?? 0)) }, hooks);
+  }
+  requestCameraIntent(options, hooks, request = this.plugin.canvas3d?.requestCameraReset) {
+    if (hooks.signal.aborted) return;
+    const canvas = this.plugin.canvas3d;
+    if (!canvas || !request) throw new Error("No live canvas is available for the camera intent.");
+    this.pendingCameraIntent?.release();
+    const owner = { release: () => {
+    } };
+    const release = () => {
+      hooks.signal.removeEventListener("abort", abort2);
+      if (this.pendingCameraIntent === owner) this.pendingCameraIntent = void 0;
+    };
+    const abort2 = () => {
+      if (this.pendingCameraIntent !== owner) return;
+      release();
+      const current2 = canvas.camera.getSnapshot();
+      canvas.camera.transition.inTransition = false;
+      request.call(canvas, { snapshot: current2, durationMs: 0 });
+      canvas.requestDraw();
+    };
+    owner.release = release;
+    this.pendingCameraIntent = owner;
+    hooks.registerCleanup(release);
+    hooks.signal.addEventListener("abort", abort2, { once: true });
+    try {
+      request.call(canvas, { ...options, snapshot: (scene, camera) => {
+        if (hooks.signal.aborted || this.pendingCameraIntent !== owner) return canvas.camera.getSnapshot();
+        hooks.beforeResolve();
+        return (typeof options?.snapshot === "function" ? options.snapshot(scene, camera) : options?.snapshot) ?? {};
+      } });
+      canvas.requestDraw();
+    } catch (error2) {
+      release();
+      throw error2;
+    }
+  }
   async setCameraSnapshot(snapshot, durationMs) {
     if (!snapshot) return;
     this.state.markIntentionalViewpoint();
@@ -170842,10 +170988,60 @@ var MolSysViewerController = class _MolSysViewerController {
 };
 
 // src/messages/frontend-requests.ts
+function captureKey(message) {
+  return typeof message?.request_id === "string" && message.request_id.length > 0 && typeof message?.capture_revision === "string" && message.capture_revision.length > 0 ? JSON.stringify([message.request_id, message.capture_revision]) : null;
+}
+var VisualStateCaptureRequests = class {
+  constructor() {
+    this.pending = /* @__PURE__ */ new Map();
+    this.retired = /* @__PURE__ */ new Set();
+    this.closed = false;
+  }
+  reserve(message) {
+    const key2 = captureKey(message);
+    if (!key2 || this.closed || this.pending.has(key2) || this.retired.has(key2)) return null;
+    const controller = new AbortController();
+    if (this.pending.size >= 32) {
+      this.retire(key2);
+      return { signal: controller.signal, refused: true, release() {
+      } };
+    }
+    this.pending.set(key2, controller);
+    return { signal: controller.signal, release: () => {
+      if (this.pending.get(key2) === controller) this.pending.delete(key2);
+      this.retire(key2);
+    } };
+  }
+  cancel(message) {
+    const key2 = captureKey(message);
+    if (!key2 || this.closed) return;
+    const controller = this.pending.get(key2);
+    this.pending.delete(key2);
+    this.retire(key2);
+    controller?.abort();
+  }
+  dispose() {
+    this.closed = true;
+    for (const controller of this.pending.values()) controller.abort();
+    this.pending.clear();
+    this.retired.clear();
+  }
+  retire(key2) {
+    if (this.closed) return;
+    this.retired.add(key2);
+    while (this.retired.size > 64) this.retired.delete(this.retired.values().next().value);
+  }
+};
+function isFrontendControl(message) {
+  return message?.op === "cancel_visual_state";
+}
+function isStudioWorkFileResult(message) {
+  return message?.op === "studio_action_result" && (message.action === "save_work_file" || message.action === "cancel_work_file");
+}
 function isFrontendRequest(message) {
   return message?.op === "request_camera_snapshot" || message?.op === "request_image_export" || message?.op === "request_visual_state";
 }
-async function handleFrontendRequest(controller, message, send) {
+async function handleFrontendRequest(controller, message, send, capture) {
   if (message.op === "request_visual_state") {
     const correlation = {
       event: "visual_state_snapshot",
@@ -170853,19 +171049,24 @@ async function handleFrontendRequest(controller, message, send) {
       capture_revision: message.capture_revision
     };
     try {
+      if (capture?.signal.aborted) return;
+      if (capture?.refused) throw new Error("Too many pending canvas captures.");
       const canvas = controller.plugin.canvas3d;
       if (!canvas) throw new Error("No live canvas is available for capture.");
       const timeout = Number(message.capture_timeout_ms);
-      await waitForCanvasDraw(canvas, Number.isFinite(timeout) && timeout > 0 ? Math.min(timeout, 3e4) : 5e3);
+      await waitForCanvasDraw(canvas, Number.isFinite(timeout) && timeout > 0 ? Math.min(timeout, 3e4) : 5e3, capture?.signal);
+      if (capture?.signal.aborted) return;
       let structure_index;
       const release = controller.onTrajectoryState((state) => {
         structure_index = state.currentFrame;
       }, { immediate: true });
       release();
       const snapshot = controller.getCameraSnapshot();
-      send({ ...correlation, ok: !!snapshot, snapshot, structure_index });
+      if (!capture?.signal.aborted) send({ ...correlation, ok: !!snapshot, snapshot, structure_index });
     } catch (error2) {
-      send({ ...correlation, ok: false, error_type: error2 instanceof Error ? error2.name : "Error" });
+      if (!capture?.signal.aborted) send({ ...correlation, ok: false, error_type: error2 instanceof Error ? error2.name : "Error" });
+    } finally {
+      capture?.release();
     }
     return;
   }
@@ -171045,6 +171246,7 @@ var runtime_actions_default = {
   },
   outbound_requests: [
     "request_visual_state",
+    "cancel_visual_state",
     "request_camera_snapshot",
     "request_image_export"
   ],
@@ -171621,45 +171823,270 @@ var ArrayNativeStreamReceiver = class {
 };
 
 // src/managers/camera-sync.ts
+function revision(value) {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+}
+var CameraSyncState = class {
+  constructor() {
+    this.completedRevision = 0;
+    this.inputSerial = 0;
+    this.authorityInputSerial = 0;
+    this.lastIntentRevision = -1;
+    this.authority = /* @__PURE__ */ new WeakMap();
+    this.peers = /* @__PURE__ */ new WeakMap();
+    this.bootstraps = /* @__PURE__ */ new WeakMap();
+  }
+  receive(message) {
+    if (!message || typeof message !== "object" || this.authority.has(message)) return;
+    if (message.op === "set_camera_sync_revision") {
+      if (revision(message.camera_revision) && (this.revision === void 0 || message.camera_revision > this.revision)) this.revision = message.camera_revision;
+      this.authority.set(message, { kind: "consume" });
+    } else if (["set_camera_snapshot", "reset_view", "reset_camera", "zoom", "zoom_to_position"].includes(message.op)) {
+      const next = message.camera_revision;
+      if (!revision(next)) {
+        if (this.revision !== void 0) this.authority.set(message, { kind: "consume" });
+        return;
+      }
+      if (this.revision !== void 0 && next < this.revision || next <= this.lastIntentRevision) {
+        this.authority.set(message, { kind: "consume" });
+        return;
+      }
+      this.revision = next;
+      this.lastIntentRevision = next;
+      this.authorityInputSerial = this.inputSerial;
+      const intent = this.intent = { revision: next, inputSerial: this.inputSerial, applied: false, superseded: false, completed: false };
+      this.authority.set(message, { kind: "intent", intent });
+    }
+  }
+  receivePeer(packet) {
+    if (!packet || typeof packet !== "object" || this.peers.has(packet)) return;
+    const versioned = "snapshot" in packet || "camera_revision" in packet;
+    const valid = versioned ? revision(packet.camera_revision) && this.revision !== void 0 && packet.camera_revision === this.revision && packet.snapshot && typeof packet.snapshot === "object" : this.revision === void 0;
+    this.peers.set(packet, valid ? {
+      snapshot: versioned ? packet.snapshot : packet,
+      revision: versioned ? packet.camera_revision : void 0,
+      inputSerial: this.inputSerial
+    } : null);
+  }
+  receiveBootstrap(data) {
+    if (data?.cameraSnapshot && typeof data === "object") this.bootstraps.set(data, {
+      snapshot: data.cameraSnapshot,
+      revision: revision(data.cameraSnapshotRevision) ? data.cameraSnapshotRevision : void 0,
+      inputSerial: this.inputSerial
+    });
+  }
+  plan(message) {
+    return this.authority.get(message);
+  }
+  peer(packet) {
+    this.receivePeer(packet);
+    return this.peers.get(packet) ?? null;
+  }
+  bootstrap(data) {
+    return this.bootstraps.get(data);
+  }
+  canApply(intent) {
+    return this.intent === intent && !intent.superseded && !intent.applied && intent.revision === this.revision && intent.inputSerial === this.inputSerial;
+  }
+  userInput() {
+    this.inputSerial++;
+    if (this.intent) this.intent.superseded = true;
+  }
+};
 var CameraSync = class {
-  constructor(controller, options) {
+  constructor(controller, options, state = new CameraSyncState()) {
     this.controller = controller;
     this.options = options;
+    this.state = state;
     this.key = "";
+    this.subscriptions = [];
     this.disposed = false;
-    this.subscription = controller.plugin.canvas3d?.didDraw?.subscribe(() => this.onDraw());
+    const canvas = controller.plugin.canvas3d;
+    let replay = true;
+    const draw = canvas?.didDraw?.subscribe(() => {
+      if (!replay) this.onDraw();
+    });
+    replay = false;
+    if (draw) this.subscriptions.push(draw);
+    const committed = canvas?.commited?.subscribe(() => this.onCommitted());
+    if (committed) this.subscriptions.push(committed);
+    const releaseNavigation = controller.setCameraNavigationHandler?.(() => {
+      if (this.disposed) return void 0;
+      this.state.userInput();
+      this.releaseWait(true);
+      if (this.state.revision === void 0) return void 0;
+      const wait = this.wait = {
+        kind: "navigation",
+        revision: this.state.revision,
+        inputSerial: this.state.inputSerial,
+        abort: new AbortController()
+      };
+      return this.application(wait);
+    });
+    if (releaseNavigation) this.subscriptions.push({ unsubscribe: releaseNavigation });
+    const input = canvas?.input;
+    const bindings = () => ({ ...DefaultTrackballBindings, ...canvas?.controls?.props?.bindings });
+    const subscribe = (stream, accepts) => {
+      const sub = stream?.subscribe((event) => {
+        if (accepts(event)) this.onUserInput();
+      });
+      if (sub) this.subscriptions.push(sub);
+    };
+    const buttonMatch = (names, event) => names.some((name) => bindings()?.[name] && Binding.match(bindings()[name], event.buttons, event.modifiers));
+    subscribe(input?.drag, (event) => buttonMatch(["dragRotate", "dragRotateZ", "dragPan", "dragZoom", "dragFocus", "dragFocusZoom"], event));
+    subscribe(input?.wheel, (event) => buttonMatch(["scrollZoom", "scrollFocus", "scrollFocusZoom"], event));
+    subscribe(input?.pinch, (event) => buttonMatch(["dragPan", "scrollZoom"], event));
+    subscribe(input?.move, (event) => !!input?.pointerLock && !!(event.movementX || event.movementY));
+    subscribe(input?.keyDown, (event) => Object.entries(bindings() ?? {}).some(([name, binding]) => name.startsWith("key") && Binding.matchKey(binding, event.code, event.modifiers, event.key)));
   }
-  fingerprint(snapshot) {
-    return JSON.stringify(snapshot, (_key, value) => typeof value === "number" ? Math.round(value * 1e8) / 1e8 : value);
+  get completedRevision() {
+    if (this.state.revision === void 0 || this.state.intent?.revision === this.state.completedRevision && !this.state.intent.completed) return void 0;
+    return this.state.completedRevision;
+  }
+  fingerprint(snapshot, cameraRevision) {
+    const value = cameraRevision === void 0 ? snapshot : { snapshot, camera_revision: cameraRevision };
+    return JSON.stringify(value, (_key, number) => typeof number === "number" ? Math.round(number * 1e8) / 1e8 : number);
+  }
+  reached(snapshot, target) {
+    const near = (a9, b9) => Number.isFinite(a9) && Number.isFinite(b9) && Math.abs(a9 - b9) <= 1e-6 * Math.max(1, Math.abs(a9), Math.abs(b9));
+    for (const field2 of ["position", "target"]) {
+      if (!target?.[field2] || !snapshot?.[field2] || !Array.from(target[field2]).every((value, index) => near(value, snapshot[field2][index]))) return false;
+    }
+    const a8 = snapshot.up, b8 = target.up;
+    const an = a8 && Math.hypot(...a8), bn = b8 && Math.hypot(...b8);
+    if (!an || !bn || !Array.from(b8).every((value, index) => near(value / bn, a8[index] / an))) return false;
+    return snapshot.mode === target.mode && near(snapshot.fov, target.fov) && near(snapshot.radius, Math.min(target.radius, snapshot.radiusMax));
+  }
+  releaseWait(cancel) {
+    const wait = this.wait;
+    if (!wait) return;
+    this.wait = void 0;
+    wait.releaseState?.();
+    if (cancel) wait.abort.abort();
+    wait.releaseController?.();
+    if (!cancel) wait.abort.abort();
+  }
+  onUserInput() {
+    if (this.disposed) return;
+    this.state.userInput();
+    this.releaseWait(true);
+    if (this.state.revision !== void 0) this.wait = {
+      kind: "input",
+      revision: this.state.revision,
+      inputSerial: this.state.inputSerial,
+      abort: new AbortController()
+    };
+  }
+  onCommitted() {
+    const wait = this.wait, canvas = this.controller.plugin.canvas3d;
+    if (this.disposed || !wait || wait.terminalDrawRequested || !wait.target || wait.revision !== this.state.revision || wait.inputSerial !== this.state.inputSerial || canvas?.camera?.transition?.inTransition) return;
+    const snapshot = this.controller.getCameraSnapshot();
+    if (!snapshot || !this.reached(snapshot, wait.target)) return;
+    wait.terminalDrawRequested = true;
+    canvas.requestDraw();
   }
   onDraw() {
     if (this.disposed) return;
     const snapshot = this.controller.getCameraSnapshot();
     if (!snapshot) return;
-    const key2 = this.fingerprint(snapshot);
+    const wait = this.wait, canvas = this.controller.plugin.canvas3d;
+    if (wait && wait.revision <= (this.state.revision ?? -1) && wait.inputSerial === this.state.inputSerial && (wait.kind === "input" || wait.target && !canvas?.camera?.transition?.inTransition && this.reached(snapshot, wait.target))) {
+      this.state.completedRevision = Math.max(this.state.completedRevision, wait.revision);
+      if (this.state.intent?.revision === wait.revision) this.state.intent.completed = true;
+      this.releaseWait(false);
+    }
+    const cameraRevision = this.completedRevision;
+    this.drawn = { snapshot, revision: cameraRevision };
+    if (this.state.revision !== void 0 && cameraRevision !== this.state.revision) return;
+    const key2 = this.fingerprint(snapshot, cameraRevision);
     if (!this.options.enabled() || key2 === this.key) return;
     if (this.timer === void 0) this.timer = setTimeout(() => {
       this.timer = void 0;
-      if (this.disposed || !this.options.enabled()) return;
-      const current2 = this.controller.getCameraSnapshot();
-      const currentKey = this.fingerprint(current2);
-      if (!current2 || currentKey === this.key) return;
+      if (this.disposed || !this.options.enabled() || !this.drawn) return;
+      const current2 = this.drawn;
+      if (this.state.revision !== void 0 && current2.revision !== this.state.revision) return;
+      const currentKey = this.fingerprint(current2.snapshot, current2.revision);
+      if (currentKey === this.key) return;
       this.key = currentKey;
-      this.options.send(current2);
+      this.options.send(current2.revision === void 0 ? current2.snapshot : { snapshot: current2.snapshot, camera_revision: current2.revision });
     }, 20);
   }
-  async apply(snapshot) {
-    if (!snapshot || this.disposed || this.options.interacting()) return;
-    if (this.timer !== void 0) clearTimeout(this.timer);
-    this.timer = void 0;
-    this.key = this.fingerprint(snapshot);
-    if (this.key === this.fingerprint(this.controller.getCameraSnapshot())) return;
-    await this.controller.setCameraSnapshot(snapshot, 0);
+  async applyVersioned(message, cameraRevision, kind) {
+    this.releaseWait(false);
+    const wait = this.wait = {
+      kind,
+      revision: cameraRevision,
+      inputSerial: this.state.inputSerial,
+      abort: new AbortController()
+    };
+    await this.controller.handleMessage?.(message, { throwOnError: true, cameraIntent: this.application(wait) });
+  }
+  application(wait) {
+    const canvas = this.controller.plugin.canvas3d;
+    return {
+      signal: wait.abort.signal,
+      registerCleanup: (release) => {
+        wait.releaseController = release;
+      },
+      beforeResolve: () => {
+        if (this.wait !== wait || wait.abort.signal.aborted) return;
+        let replay = true;
+        const subscription = canvas.camera.stateChanged.subscribe(() => {
+          if (replay || this.wait !== wait || wait.abort.signal.aborted) return;
+          subscription.unsubscribe();
+          wait.releaseState = void 0;
+          wait.target = structuredClone(canvas.camera.transition.target);
+        });
+        replay = false;
+        wait.releaseState = () => subscription.unsubscribe();
+      }
+    };
+  }
+  /** Returns true when this private camera protocol consumed the message. */
+  async handleMessage(message) {
+    const plan = this.state.plan(message);
+    if (!plan) return false;
+    if (plan.kind === "intent" && this.state.canApply(plan.intent)) {
+      plan.intent.applied = true;
+      await this.applyVersioned(message, plan.intent.revision, "authority");
+    }
+    return true;
+  }
+  async apply(packet) {
+    const receipt = this.state.peer(packet);
+    if (!receipt || this.disposed || receipt.inputSerial !== this.state.inputSerial) return;
+    if (receipt.revision === void 0) {
+      if (this.state.revision !== void 0 || this.options.interacting()) return;
+      this.key = this.fingerprint(receipt.snapshot);
+      if (this.key !== this.fingerprint(this.controller.getCameraSnapshot())) await this.controller.setCameraSnapshot(receipt.snapshot, 0);
+      return;
+    }
+    if (receipt.revision !== this.state.revision || this.options.interacting() && this.state.inputSerial > this.state.authorityInputSerial) return;
+    if (this.wait?.revision === receipt.revision && ["input", "navigation"].includes(this.wait.kind)) return;
+    if (this.state.intent) this.state.intent.superseded = true;
+    this.key = this.fingerprint(receipt.snapshot, receipt.revision);
+    await this.applyVersioned({ op: "set_camera_snapshot", snapshot: receipt.snapshot, duration_ms: 0 }, receipt.revision, "peer");
+  }
+  async applyBootstrap(data) {
+    const receipt = this.state.bootstrap(data);
+    if (!receipt || this.disposed || receipt.inputSerial !== this.state.inputSerial) return;
+    if (this.state.revision === void 0) {
+      await this.apply(receipt.snapshot);
+      return;
+    }
+    if (receipt.revision === void 0) return;
+    const completed = receipt.revision ?? 0;
+    if (completed > this.state.revision || completed < this.state.completedRevision) return;
+    if (this.state.intent && !this.state.intent.superseded && this.state.completedRevision < this.state.intent.revision && this.state.intent.revision > completed) return;
+    if (completed === this.state.revision && this.state.intent) this.state.intent.superseded = true;
+    this.key = this.fingerprint(receipt.snapshot, completed);
+    await this.applyVersioned({ op: "set_camera_snapshot", snapshot: receipt.snapshot, duration_ms: 0 }, completed, "bootstrap");
   }
   dispose() {
     this.disposed = true;
     if (this.timer !== void 0) clearTimeout(this.timer);
-    this.subscription?.unsubscribe();
+    this.releaseWait(true);
+    for (const subscription of this.subscriptions) subscription.unsubscribe();
   }
 };
 
@@ -171693,6 +172120,9 @@ var bootPopup = async (loadedModule) => {
     role: popupChannel.mode === "canvas" ? "canvas-popup" : "panel-popup"
   });
   let popupMessageCounter = 0;
+  let popupDisposed = false;
+  const visualStateCaptures = new VisualStateCaptureRequests();
+  const cameraSyncState = new CameraSyncState();
   let MolSysViewerController2;
   if (loadedModule) {
     if (loadedModule.MolSysViewerController) {
@@ -171727,7 +172157,7 @@ var bootPopup = async (loadedModule) => {
     return;
   }
   const sendToHost = (type3, data) => {
-    if (!openerWin || openerWin.closed) return;
+    if (popupDisposed || !openerWin || openerWin.closed) return;
     const direction = type3 === "molsysviewer-sync-op" || type3 === "molsysviewer-popup-interaction" ? "command" : "event";
     const envelope = {
       protocolVersion: RUNTIME_PROTOCOL_VERSION,
@@ -171922,11 +172352,11 @@ var bootPopup = async (loadedModule) => {
         enabled: () => sceneReady && !initOptions.isPanelOnly,
         interacting: () => isUserInteracting,
         send: (snapshot) => sendToHost("molsysviewer-sync-camera", snapshot)
-      });
+      }, cameraSyncState);
     });
     return ctrl3;
   })();
-  const handlePopupMessage = async (ev) => {
+  const acceptPopupMessage = (ev) => {
     const message = decodePopupEvent(ev, openerWin, popupChannel);
     if (!message) return;
     if (message.envelope.endpointId !== popupChannel.authorityEndpointId && message.envelope.endpointId !== popupChannel.hostEndpointId) return;
@@ -171943,9 +172373,19 @@ var bootPopup = async (loadedModule) => {
       );
       return;
     }
-    const type3 = routed.envelope.action;
-    const data = routed.envelope.payload;
+    const type3 = routed.envelope.action, data = routed.envelope.payload;
+    if (type3 === "molsysviewer-sync-op") cameraSyncState.receive(data);
+    if (type3 === "molsysviewer-sync-camera") cameraSyncState.receivePeer(data);
+    if (type3 === "molsysviewer-initial-sync") {
+      if (Array.isArray(data.messages)) for (const message2 of data.messages) cameraSyncState.receive(message2);
+      cameraSyncState.receiveBootstrap(data);
+    }
+    return { type: type3, data };
+  };
+  const handlePopupMessage = async (type3, data, capture) => {
+    if (popupDisposed || capture?.signal.aborted) return;
     const ctrl3 = await popControllerPromise;
+    if (popupDisposed || capture?.signal.aborted) return;
     applyingHostState = type3 === "molsysviewer-initial-sync" || type3 === "molsysviewer-sync-ui" || type3 === "molsysviewer-sync-autohide";
     try {
       switch (type3) {
@@ -171955,14 +172395,14 @@ var bootPopup = async (loadedModule) => {
           }
           if (Array.isArray(data.messages)) {
             for (const msg of data.messages) {
-              await ctrl3.handleMessage(msg);
+              if (!await cameraSync?.handleMessage(msg)) await ctrl3.handleMessage(msg);
             }
           }
           if (Number.isInteger(data.trajectoryFrame) && data.trajectoryFrame >= 0) {
             await ctrl3.setTrajectoryFrame(data.trajectoryFrame);
           }
           if (data.cameraSnapshot) {
-            await cameraSync?.apply(data.cameraSnapshot);
+            await cameraSync?.applyBootstrap(data);
           }
           if (data.isSpinActive) await ctrl3.toggleSpin(true);
           if (data.isSwingActive) await ctrl3.toggleSwing(true);
@@ -171997,6 +172437,7 @@ var bootPopup = async (loadedModule) => {
         case "molsysviewer-sync-op":
           if (isFrontendRequest(data)) {
             if (initOptions.isPanelOnly && data.op === "request_visual_state") {
+              capture?.release();
               sendToHost("molsysviewer-popup-interaction", {
                 event: "visual_state_snapshot",
                 request_id: data.request_id,
@@ -172008,11 +172449,12 @@ var bootPopup = async (loadedModule) => {
               await handleFrontendRequest(
                 ctrl3,
                 data,
-                (event) => sendToHost("molsysviewer-popup-interaction", event)
+                (event) => sendToHost("molsysviewer-popup-interaction", event),
+                capture
               );
             }
           } else {
-            await ctrl3.handleMessage(data);
+            if (!await cameraSync?.handleMessage(data)) await ctrl3.handleMessage(data);
           }
           break;
         case "molsysviewer-sync-hierarchy":
@@ -172042,9 +172484,26 @@ var bootPopup = async (loadedModule) => {
     }
   };
   let popupInboundQueue = Promise.resolve();
-  window.addEventListener("message", (ev) => {
-    popupInboundQueue = popupInboundQueue.then(() => handlePopupMessage(ev)).catch((error2) => console.error("Popout message queue error", error2));
-  });
+  const onPopupMessage = (ev) => {
+    if (popupDisposed) return;
+    const accepted2 = acceptPopupMessage(ev);
+    if (!accepted2) return;
+    const { type: type3, data } = accepted2;
+    if (type3 === "molsysviewer-sync-op" && isFrontendControl(data)) {
+      visualStateCaptures.cancel(data);
+      return;
+    }
+    if (type3 === "molsysviewer-sync-op" && isStudioWorkFileResult(data)) {
+      popControllerPromise.then((ctrl3) => {
+        if (!popupDisposed) return ctrl3.handleMessage(data);
+      }).catch((error2) => console.error("Popout file verdict delivery failed", error2));
+      return;
+    }
+    const capture = type3 === "molsysviewer-sync-op" && data?.op === "request_visual_state" ? visualStateCaptures.reserve(data) : void 0;
+    if (capture === null) return;
+    popupInboundQueue = popupInboundQueue.then(() => handlePopupMessage(type3, data, capture)).finally(() => capture?.release()).catch((error2) => console.error("Popout message queue error", error2));
+  };
+  window.addEventListener("message", onPopupMessage);
   const controlsProvider = loadedModule?.mountControls || mountControls;
   const ctrl2 = await popControllerPromise;
   if (!initOptions.isPanelOnly) controlsProvider(
@@ -172063,6 +172522,9 @@ var bootPopup = async (loadedModule) => {
     { popupButtonTitle: "Close popup" }
   );
   window.addEventListener("pagehide", () => {
+    popupDisposed = true;
+    visualStateCaptures.dispose();
+    window.removeEventListener("message", onPopupMessage);
     sceneReady = false;
     stopPanelReturnObserver();
     cameraSync?.dispose();
@@ -172363,7 +172825,12 @@ var PopupHostManager = class {
     const ready = mode === "canvas" ? this.isReady : this.isPanelReady;
     const channel = this.channels.get(mode);
     if (!ready || !target || target.closed || !channel) return false;
-    if (this.bootstrapping.has(mode) && type3 !== "molsysviewer-initial-sync" && type3 !== "molsysviewer-structure-data") {
+    const lifecycle = type3 === "molsysviewer-sync-op" && (isFrontendControl(data) || isStudioWorkFileResult(data));
+    if (type3 === "molsysviewer-sync-op" && isFrontendControl(data)) {
+      const queued = this.bootstrapQueues.get(mode);
+      if (queued) this.bootstrapQueues.set(mode, queued.filter((entry) => !(entry.type === "molsysviewer-sync-op" && entry.data?.op === "request_visual_state" && entry.data.request_id === data.request_id && entry.data.capture_revision === data.capture_revision)));
+    }
+    if (this.bootstrapping.has(mode) && !lifecycle && type3 !== "molsysviewer-initial-sync" && type3 !== "molsysviewer-structure-data") {
       this.bootstrapQueues.get(mode)?.push({ type: type3, data });
       return true;
     }
@@ -175354,6 +175821,14 @@ async function bootDocsView(opts) {
   };
   const ui = opts.ui || {};
   const hasAuthority = ui.host_event_transport === "url-scheme";
+  const visualStateCaptures = new VisualStateCaptureRequests();
+  const cameraSyncState = new CameraSyncState();
+  let docsMessageQueue = Promise.resolve();
+  let docsDisposed = false;
+  window.addEventListener("pagehide", () => {
+    docsDisposed = true;
+    visualStateCaptures.dispose();
+  }, { once: true });
   const model = createLocalUiModel(ui, (values2) => {
     if (!hasAuthority) return;
     const keys2 = [
@@ -175380,8 +175855,10 @@ async function bootDocsView(opts) {
     }
     initialMessages = data.messages;
   }
+  for (const message of initialMessages) cameraSyncState.receive(message);
   const popupReplay = new PopupReplayLog(initialMessages);
   const notifyHost = (event) => {
+    if (docsDisposed) return;
     if (!event || typeof event !== "object") return;
     if (ui.host_event_transport !== "url-scheme") return;
     try {
@@ -175408,32 +175885,52 @@ async function bootDocsView(opts) {
     });
   };
   window.__molsysviewerDocsHandleMessage = async (msg) => {
+    if (docsDisposed) return;
+    cameraSyncState.receive(msg);
     const meta = messageMeta(msg);
-    try {
-      const controller = await controllerPromise;
-      if (hasAuthority && msg?.op === "set_host_ui") {
-        for (const [key2, value] of Object.entries(msg.values || {})) model.set(key2, value);
-      } else if (hasAuthority && msg?.op === "commit_scene") {
-        const canvas = controller.plugin.canvas3d;
-        if (!canvas) throw new Error("The Qt host has no WebGL canvas.");
-        await waitForCanvasDraw(canvas);
-        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
-      } else if (hasAuthority && isFrontendRequest(msg)) {
-        await handleFrontendRequest(controller, msg, notifyHost);
-      } else {
-        await controller.handleMessage(msg, { throwOnError: true });
-        popupReplay.record(msg);
+    const capture = hasAuthority && msg?.op === "request_visual_state" ? visualStateCaptures.reserve(msg) : void 0;
+    const perform = async () => {
+      try {
+        if (hasAuthority && isFrontendControl(msg)) {
+          visualStateCaptures.cancel(msg);
+          notifyHost({ event: "message_ack", phase: "handled", ...meta });
+          return;
+        }
+        const controller = await controllerPromise;
+        if (hasAuthority && msg?.op === "set_host_ui") {
+          for (const [key2, value] of Object.entries(msg.values || {})) model.set(key2, value);
+        } else if (hasAuthority && msg?.op === "commit_scene") {
+          const canvas = controller.plugin.canvas3d;
+          if (!canvas) throw new Error("The Qt host has no WebGL canvas.");
+          await waitForCanvasDraw(canvas);
+          await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+        } else if (hasAuthority && isFrontendRequest(msg)) {
+          if (msg.op !== "request_visual_state" || capture) {
+            await handleFrontendRequest(controller, msg, notifyHost, capture ?? void 0);
+          }
+        } else if (hasAuthority && isStudioWorkFileResult(msg)) {
+          await controller.handleMessage(msg, { throwOnError: true });
+        } else if (await cameraSync?.handleMessage(msg)) {
+        } else {
+          await controller.handleMessage(msg, { throwOnError: true });
+          popupReplay.record(msg);
+        }
+        notifyHost({ event: "message_ack", phase: "handled", ...meta });
+        if (msg?.op === "load_molsys_payload" || msg?.op === "load_molsys_payload_ref" || msg?.op === "load_molsys_array_payload_ref") {
+          notifyHost({ event: "structure_ready", ...meta });
+          notifyRenderReady(msg);
+        }
+      } catch (error2) {
+        const message = error2 instanceof Error ? error2.message : String(error2);
+        notifyHost({ event: "message_error", phase: "handled", error: message, ...meta });
+        throw error2;
       }
-      notifyHost({ event: "message_ack", phase: "handled", ...meta });
-      if (msg?.op === "load_molsys_payload" || msg?.op === "load_molsys_payload_ref" || msg?.op === "load_molsys_array_payload_ref") {
-        notifyHost({ event: "structure_ready", ...meta });
-        notifyRenderReady(msg);
-      }
-    } catch (error2) {
-      const message = error2 instanceof Error ? error2.message : String(error2);
-      notifyHost({ event: "message_error", phase: "handled", error: message, ...meta });
-      throw error2;
-    }
+    };
+    if (isFrontendControl(msg) || isStudioWorkFileResult(msg)) return perform();
+    const pending = docsMessageQueue.then(perform);
+    docsMessageQueue = pending.catch(() => {
+    });
+    return pending;
   };
   const hostEl = opts.el;
   hostEl.innerHTML = "";
@@ -175555,7 +176052,7 @@ async function bootDocsView(opts) {
       enabled: () => popupMgr.isReady,
       interacting: () => isUserInteracting,
       send: (snapshot) => popupMgr.send("molsysviewer-sync-camera", snapshot)
-    });
+    }, cameraSyncState);
     const releaseTrajectorySync = syncTrajectoryFrames(
       c8,
       () => popupMgr.isReady,
@@ -175571,6 +176068,7 @@ async function bootDocsView(opts) {
     if (!popupMessage) return;
     const { type: type3 } = popupMessage;
     const data = popupMessage.data;
+    if (type3 === "molsysviewer-sync-camera") cameraSyncState.receivePeer(data);
     const controller = await controllerPromise;
     try {
       switch (type3) {
@@ -175580,6 +176078,7 @@ async function bootDocsView(opts) {
             messages: popupReplay.snapshot("canvas"),
             trajectoryFrame: controller.trajectory.getTrajectoryState().currentFrame,
             cameraSnapshot: controller.getCameraSnapshot(),
+            cameraSnapshotRevision: cameraSync?.completedRevision,
             isSpinActive: controller.isSpinActive,
             isSwingActive: controller.isSwingActive,
             isDarkMode: controller.isDarkMode,
@@ -175623,7 +176122,10 @@ async function bootDocsView(opts) {
           }
           break;
         case "molsysviewer-sync-camera":
-          await cameraSync?.apply(data);
+          docsMessageQueue = docsMessageQueue.then(async () => {
+            await cameraSync?.apply(data);
+          }).catch((error2) => console.error("[MolSysViewer docs] Camera projection failed:", error2));
+          await docsMessageQueue;
           break;
         case "molsysviewer-log-from-popout":
           sendLog("info", "[Popout Log]:", data?.msg);
@@ -175637,7 +176139,7 @@ async function bootDocsView(opts) {
   try {
     const controller = await controllerPromise;
     for (const msg of initialMessages) {
-      if (msg) await controller.handleMessage(msg, { throwOnError: true });
+      if (msg && !await cameraSync?.handleMessage(msg)) await controller.handleMessage(msg, { throwOnError: true });
     }
     const canvas = controller.plugin.canvas3d;
     if (!canvas) throw new Error("Exported scene has no WebGL canvas.");
@@ -175647,6 +176149,7 @@ async function bootDocsView(opts) {
     console.error("[MolSysViewer docs] Init error:", err);
     const message = err instanceof Error ? err.message : String(err);
     notifyHost({ event: "frontend_error", phase: "init", error: message });
+    visualStateCaptures.dispose();
     (await controllerPromise).dispose();
     throw err;
   }
@@ -175811,6 +176314,8 @@ function render({ model, el, runtimeSource }) {
   el.dataset.molsysviewerCanvasOutput = "true";
   const debug = !!model.get("debug_js");
   let disposed = false;
+  const visualStateCaptures = new VisualStateCaptureRequests();
+  const cameraSyncState = new CameraSyncState();
   const releaseRuntime = [];
   const envelopeAdapter = new WidgetEnvelopeAdapter(
     String(model.get("runtime_viewer_id") || ""),
@@ -176115,7 +176620,7 @@ function render({ model, el, runtimeSource }) {
         enabled: () => popupMgr.isReady,
         interacting: () => isUserInteracting,
         send: (snapshot) => popupMgr.send("molsysviewer-sync-camera", snapshot)
-      });
+      }, cameraSyncState);
       releaseRuntime.push(() => cameraSync?.dispose());
       const scheduleCameraSnapshot = () => {
         if (cameraSnapshotTimer) clearTimeout(cameraSnapshotTimer);
@@ -176157,6 +176662,7 @@ function render({ model, el, runtimeSource }) {
     if (!popupMessage) return;
     const { type: type3 } = popupMessage;
     const data = popupMessage.data;
+    if (type3 === "molsysviewer-sync-camera") cameraSyncState.receivePeer(data);
     const controller = await controllerPromise;
     try {
       switch (type3) {
@@ -176174,6 +176680,7 @@ function render({ model, el, runtimeSource }) {
             popupMgr.sendTo("canvas", "molsysviewer-initial-sync", {
               messages: canvasSnapshot ?? [],
               cameraSnapshot: controller.getCameraSnapshot(),
+              cameraSnapshotRevision: cameraSync?.completedRevision,
               isSpinActive: controller.isSpinActive,
               isSwingActive: controller.isSwingActive,
               isDarkMode: controller.isDarkMode,
@@ -176209,6 +176716,7 @@ function render({ model, el, runtimeSource }) {
               messages: panelSnapshot ?? [],
               hierarchyItems: lastRelayedHierarchy,
               cameraSnapshot: controller.getCameraSnapshot(),
+              cameraSnapshotRevision: cameraSync?.completedRevision,
               isSpinActive: controller.isSpinActive,
               isSwingActive: controller.isSwingActive,
               isDarkMode: controller.isDarkMode,
@@ -176265,7 +176773,10 @@ function render({ model, el, runtimeSource }) {
           }
           break;
         case "molsysviewer-sync-camera":
-          await cameraSync?.apply(data);
+          messageQueue = messageQueue.then(async () => {
+            await cameraSync?.apply(data);
+          }).catch((error2) => console.error("[MolSysViewer] Camera projection failed:", error2));
+          await messageQueue;
           break;
         case "molsysviewer-popup-interaction":
           if (data) {
@@ -176305,11 +176816,12 @@ function render({ model, el, runtimeSource }) {
   window.addEventListener("message", messageHandler);
   let lastRelayedHierarchy = null;
   const enqueueMessage = (msg, opts) => {
+    if (opts?.authorityCamera) cameraSyncState.receive(msg);
     messageQueue = messageQueue.then(async () => {
       if (!msg || typeof msg !== "object") return;
       if (debug) sendLog("info", "[MolSysViewer] msg from Python:", msg);
       const controller = await controllerPromise;
-      await controller.handleMessage(msg);
+      if (!await cameraSync?.handleMessage(msg)) await controller.handleMessage(msg);
       if (opts?.syncToPopup) popupMgr.send("molsysviewer-sync-op", msg);
       if (popupMgr.isPanelOpen) {
         const items = controller.getHierarchyItems();
@@ -176329,7 +176841,7 @@ function render({ model, el, runtimeSource }) {
       if (Array.isArray(initialMessages2) && initialMessages2.length) {
         for (const msg of initialMessages2) {
           if (msg) {
-            enqueueMessage(msg, { syncToPopup: false });
+            enqueueMessage(msg, { syncToPopup: false, authorityCamera: true });
           }
         }
         await messageQueue;
@@ -176381,7 +176893,7 @@ function render({ model, el, runtimeSource }) {
     if (typeof relayTarget === "string" && relayTarget && relayTarget !== envelopeAdapter.widgetHostEndpoint) {
       const mode = relayTarget === popupMgr.popupEndpointId("canvas") ? "canvas" : relayTarget === popupMgr.popupEndpointId("panel") ? "panel" : null;
       if (!mode) {
-        if (msg.op === "studio_action_result" || msg.op === "backend_error_occurred") return;
+        if (msg.op === "studio_action_result" || msg.op === "backend_error_occurred" || isFrontendControl(msg)) return;
         sendLog("error", `[MolSysViewer] relay target is not an open endpoint: ${relayTarget}`);
         return;
       }
@@ -176395,6 +176907,16 @@ function render({ model, el, runtimeSource }) {
         message: msg,
         buffers: buffers ?? []
       });
+      return;
+    }
+    if (isFrontendControl(msg)) {
+      visualStateCaptures.cancel(msg);
+      return;
+    }
+    if (isStudioWorkFileResult(msg)) {
+      controllerPromise.then((c8) => {
+        if (!disposed) return c8.handleMessage(msg);
+      }).catch((error2) => console.error("[MolSysViewer] File verdict delivery failed:", error2));
       return;
     }
     if (msg && (msg.op === "structure_data_begin" || msg.op === "structure_data_chunk" || msg.op === "structure_data_cancel")) {
@@ -176433,9 +176955,15 @@ function render({ model, el, runtimeSource }) {
     }
     if (isFrontendRequest(msg)) {
       if (msg.op === "request_visual_state") {
+        const capture = visualStateCaptures.reserve(msg);
+        if (!capture) return;
         messageQueue = messageQueue.then(async () => {
-          const c8 = await controllerPromise;
-          await handleFrontendRequest(c8, msg, sendToPython);
+          try {
+            const c8 = await controllerPromise;
+            await handleFrontendRequest(c8, msg, sendToPython, capture);
+          } finally {
+            capture.release();
+          }
         });
       } else {
         controllerPromise.then((c8) => handleFrontendRequest(c8, msg, sendToPython));
@@ -176443,7 +176971,7 @@ function render({ model, el, runtimeSource }) {
       return;
     }
     const panelLocal = msg.op === "mount_addon_panel" || msg.op === "addon_panel_message" || msg.op === "studio_action_result" || relayTarget === envelopeAdapter.widgetHostEndpoint;
-    enqueueMessage(msg, { syncToPopup: !panelLocal });
+    enqueueMessage(msg, { syncToPopup: !panelLocal, authorityCamera: true });
   };
   model.on("msg:custom", onCustomMsg);
   for (const trait of ["autohide_controls", "autohide_scope", "show_controls", "controls_position", "controls_position_fullscreen"]) {
@@ -176466,6 +176994,7 @@ function render({ model, el, runtimeSource }) {
       );
     }
     pendingWorkFileSaves.clear();
+    visualStateCaptures.dispose();
     popupMgr.dispose();
     arrayNativeStream.dispose();
     disposed = true;

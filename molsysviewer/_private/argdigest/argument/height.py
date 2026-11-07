@@ -3,6 +3,8 @@ from molsysviewer._private.exceptions import ArgumentError
 
 def digest_height(height, caller=None):
     if caller in {
+        "molsysviewer.trajectory_plot.show",
+        "molsysviewer.trajectory_plot.update",
         "molsysviewer.standalone_qt.application.create_standalone_qt0_window",
         "molsysviewer.standalone_qt.application.launch_standalone_qt0",
     }:

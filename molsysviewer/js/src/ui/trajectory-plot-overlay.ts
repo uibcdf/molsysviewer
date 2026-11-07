@@ -35,14 +35,45 @@ function hex(color: number | undefined, fallback: string): string {
     return "#" + ((color >>> 0) & 0xffffff).toString(16).padStart(6, "0");
 }
 
-function formatValue(v: number): string {
-    if (Number.isInteger(v)) return String(v);
-    return v.toFixed(2);
+function formatValue(value: number, precision = 6): string {
+    if (value === 0) return "0";
+    if (Math.abs(value) < 1e-3 || Math.abs(value) >= 1e6) {
+        const [mantissa, exponent] = value.toExponential(precision - 1).split("e");
+        return `${trimFraction(mantissa)}e${Number(exponent)}`;
+    }
+    const rounded = value.toPrecision(precision);
+    return rounded.includes("e") ? String(Number(rounded)) : trimFraction(rounded);
+}
+
+function trimFraction(value: string): string {
+    return value.includes(".") ? value.replace(/0+$/, "").replace(/\.$/, "") : value;
+}
+
+function axisPrecision(min: number, max: number): number {
+    // Adjacent binary64 limits may need all 17 significant digits. Readouts on
+    // that axis use the same precision; raw roundtrip values remain available
+    // even when other samples in a broad range round to the same display text.
+    for (let precision = 6; precision < 17; precision++) {
+        const low = Number(formatValue(min, precision));
+        const high = Number(formatValue(max, precision));
+        if (min === max || (Number.isFinite(low) && Number.isFinite(high) && low !== high)) return precision;
+    }
+    return 17;
+}
+
+function rawValue(value: number): string {
+    return Object.is(value, -0) ? "-0" : String(value);
 }
 
 function axisFraction(value: number, min: number, max: number): number {
     if (min === max) return 0.5;
-    const scale = Math.max(Math.abs(min), Math.abs(max), 1);
+    // Subtract nearby represented values before dividing: pre-scaling loses
+    // the low bits that distinguish samples with a large common offset.
+    const span = max - min;
+    if (Number.isFinite(span)) return (value - min) / span;
+    // Opposite finite extremes can overflow their span. Scaling is needed only
+    // in that case, where subtraction does not suffer narrow-range cancellation.
+    const scale = Math.max(Math.abs(min), Math.abs(max));
     return (value / scale - min / scale) / (max / scale - min / scale);
 }
 
@@ -57,6 +88,8 @@ interface PlotCardEntry {
     width: number;
     height: number;
     xBounds?: [number, number];
+    xPrecision?: number;
+    yPrecision?: number;
 }
 
 /**
@@ -184,18 +217,24 @@ export class TrajectoryPlotOverlay {
             // Narrow through `opts`, not `entry.options`: TypeScript does not carry
             // the check across the alias, so `opts.series` read as possibly undefined.
             if (entry.readoutText && opts.series) {
-                const xValStr = opts.x && opts.x.length > clamped ? formatValue(opts.x[clamped]) : `frame: ${clamped}`;
-                
+                const xValue = opts.x?.[clamped];
+                const xValStr = xValue !== undefined ? formatValue(xValue, entry.xPrecision) : `frame: ${clamped}`;
+                const xRaw = xValue !== undefined ? `x: ${rawValue(xValue)}` : `frame: ${clamped}`;
+                let display: string;
+                let raw: string;
                 if (opts.series.length === 1) {
                     const val = opts.series[0].values[clamped];
-                    const valStr = val !== undefined ? formatValue(val) : "—";
-                    entry.readoutText.textContent = opts.x ? `x: ${xValStr} · y: ${valStr}` : `${xValStr} · y: ${valStr}`;
+                    const valStr = val !== undefined ? formatValue(val, entry.yPrecision) : "—";
+                    display = opts.x ? `x: ${xValStr} · y: ${valStr}` : `${xValStr} · y: ${valStr}`;
+                    raw = `${xRaw} · y: ${val !== undefined ? rawValue(val) : "—"}`;
                 } else {
                     const seriesStr = opts.series
-                        .map((s) => `${s.label}: ${s.values[clamped] !== undefined ? formatValue(s.values[clamped]) : "—"}`)
+                        .map((s) => `${s.label}: ${s.values[clamped] !== undefined ? formatValue(s.values[clamped], entry.yPrecision) : "—"}`)
                         .join(" · ");
-                    entry.readoutText.textContent = `${xValStr} · ${seriesStr}`;
+                    display = `${opts.x ? "x: " : ""}${xValStr} · ${seriesStr}`;
+                    raw = `${xRaw} · ${opts.series.map(s => `${s.label}: ${s.values[clamped] !== undefined ? rawValue(s.values[clamped]) : "—"}`).join(" · ")}`;
                 }
+                this.setNumericText(entry.readoutText, display, raw);
             }
         }
     }
@@ -266,6 +305,9 @@ export class TrajectoryPlotOverlay {
             }
         }
         if (!isFinite(min) || !isFinite(max)) { min = 0; max = 1; }
+        const [xMin, xMax] = this.xRange(entry);
+        entry.xPrecision = axisPrecision(xMin, xMax);
+        entry.yPrecision = axisPrecision(min, max);
         const yOf = (v: number) => M.top + (1 - axisFraction(v, min, max)) * plotHeight;
 
         // Axes frame path
@@ -279,6 +321,7 @@ export class TrajectoryPlotOverlay {
         // Live X/Y Readout text (top right of plot area)
         const readoutText = this.text(width - M.right, 14, "", "end", "rgba(244, 244, 245, 0.9)", 10);
         readoutText.setAttribute("font-weight", "600");
+        readoutText.setAttribute("data-molsysviewer-plot-value", "readout");
         svg.appendChild(readoutText);
         entry.readoutText = readoutText;
 
@@ -328,9 +371,15 @@ export class TrajectoryPlotOverlay {
             t.setAttribute("transform", `rotate(-90 12 ${height / 2})`);
             svg.appendChild(t);
         }
-        const [xMin, xMax] = this.xRange(entry);
-        svg.appendChild(this.text(M.left, height - M.bottom + 11, formatValue(xMin), "middle", "rgba(242,242,242,0.5)", 9));
-        svg.appendChild(this.text(width - M.right, height - M.bottom + 11, formatValue(xMax), "middle", "rgba(242,242,242,0.5)", 9));
+        for (const [value, x, anchor, name] of [
+            [xMin, M.left, "start", "x-min"],
+            [xMax, width - M.right, "end", "x-max"],
+        ] as const) {
+            const label = this.text(x, height - M.bottom + 11, "", anchor, "rgba(242,242,242,0.5)", 9);
+            label.setAttribute("data-molsysviewer-plot-value", name);
+            this.setNumericText(label, formatValue(value, entry.xPrecision), rawValue(value));
+            svg.appendChild(label);
+        }
 
         // Legend (multi-series only)
         if (opts.series!.length > 1) {
@@ -368,6 +417,16 @@ export class TrajectoryPlotOverlay {
         t.setAttribute("font-family", '"IBM Plex Sans", system-ui, sans-serif');
         t.textContent = content;
         return t;
+    }
+
+    private setNumericText(text: SVGTextElement, display: string, raw: string): void {
+        const value = document.createElementNS(SVG_NS, "tspan");
+        value.textContent = display;
+        const title = document.createElementNS(SVG_NS, "title");
+        title.textContent = raw;
+        text.replaceChildren(value, title);
+        text.setAttribute("aria-label", raw);
+        text.setAttribute("tabindex", "0");
     }
 
     dispose(): void {

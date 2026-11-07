@@ -221,9 +221,12 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         except OSError as error:
             return [f"guard {selector!r} has no plot-authority receiving owner: {error}"]
         requirements += (
-            'import { checkTrajectoryPlotAuthority } from "./trajectory-plot-authority-scenarios";' in entry,
+            'import { checkTrajectoryPlotAuthority, checkTrajectoryPlotPrecision } from "./trajectory-plot-authority-scenarios";'
+            in entry,
             "await checkTrajectoryPlotAuthority(page.context(), __dirname);" in entry,
+            "await checkTrajectoryPlotPrecision(page.context(), __dirname);" in entry,
             "export async function checkTrajectoryPlotAuthority(" in receiving,
+            "export async function checkTrajectoryPlotPrecision(" in receiving,
             "PythonFixtureBridge" in receiving,
             "await svg.click({ position });" in receiving,
             "await mountCanvasPopupFixture(" in receiving,

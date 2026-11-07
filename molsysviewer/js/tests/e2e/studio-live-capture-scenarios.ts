@@ -4,6 +4,9 @@ import { resolve } from "node:path";
 import type { Page } from "playwright";
 import { PythonFixtureBridge } from "./python-fixture-bridge";
 import { captureCanvasPopupControllers, mountCanvasPopupFixture } from "./canvas-popup-fixture";
+import { checkStudioCancelBeforeDraw } from "./studio-before-draw-scenarios";
+import { checkStudioCameraIntent } from "./studio-camera-intent-scenarios";
+import { installCameraPacketHold } from "./camera-packet-hold";
 
 /** Actual widget/authority receiving, including correlated canvas and file bytes. */
 export async function checkStudioLiveCapture(page: Page, dir: string, workspace: string) {
@@ -17,11 +20,17 @@ export async function checkStudioLiveCapture(page: Page, dir: string, workspace:
     let panel: Page | undefined;
     try {
         release = await mountCanvasPopupFixture(page, bridge);
-        await captureCanvasPopupControllers(page);
+        await captureCanvasPopupControllers(page, true, `(${installCameraPacketHold.toString()})();`);
         progress("persistent widget authority loaded");
         await page.evaluate(() => {
             const w = window as any, model = w.__popupWidgetModel;
-            const transport: any = w.__studioCaptureTransport = { inbound: [], outbound: [], held: [], hold: false };
+            const transport: any = w.__studioCaptureTransport = { inbound: [], outbound: [], peerCameras: [], held: [], hold: false };
+            window.addEventListener("message", event => {
+                const wire = event.data;
+                if (wire?.envelope?.action === "molsysviewer-sync-camera" && wire.channel?.mode === "canvas") {
+                    transport.peerCameras.push(structuredClone(wire.envelope.payload));
+                }
+            });
             const send = model.send.bind(model);
             // Only the transport is observed/delayed. Every held reply was
             // sampled by the real renderer through the production handler.
@@ -36,7 +45,7 @@ export async function checkStudioLiveCapture(page: Page, dir: string, workspace:
             };
             model.on("msg:custom", (message: any) => {
                 const content = message.payload ?? message;
-                if (["request_visual_state", "studio_action_result", "set_camera_snapshot", "set_trajectory_frame",
+                if (["request_visual_state", "cancel_visual_state", "studio_action_result", "set_camera_snapshot", "reset_view", "zoom", "set_trajectory_frame",
                     "structure_data_begin", "structure_data_chunk", "structure_data_cancel"].includes(content.op)) transport.inbound.push(structuredClone(content));
             });
             w.__studioReleaseCapture = () => {
@@ -71,7 +80,7 @@ export async function checkStudioLiveCapture(page: Page, dir: string, workspace:
             };
             const handle = c.handleMessage.bind(c);
             c.handleMessage = async (...args: any[]) => {
-                const relevant = ["clear_all", "set_camera_snapshot", "set_trajectory_frame"].includes(args[0]?.op);
+                const relevant = ["clear_all", "set_camera_snapshot", "reset_view", "zoom", "set_trajectory_frame"].includes(args[0]?.op);
                 if (relevant) observe("message-begin", args[0]);
                 try { return await handle(...args); }
                 finally { if (relevant) observe("message-end", args[0]); }
@@ -302,6 +311,8 @@ export async function checkStudioLiveCapture(page: Page, dir: string, workspace:
         await assert.rejects(access(cancelled), { code: "ENOENT" });
         assert.equal(await work.getByLabel("Path in Python session", { exact: true }).inputValue(), cancelled);
         progress("pending cancellation rejected its late renderer reply without writing");
+        await checkStudioCancelBeforeDraw({ page, owner: page, canvas: page, path: resolve(workspace, "cancel-before-primary-draw.json"), openWork, identity, drain });
+        progress("primary cancellation before a real draw released its controls and scene queue");
 
         await page.evaluate(() => (window as any).__mirrorController.setPanelMode("navigate", false));
         const opened = page.waitForEvent("popup");
@@ -315,6 +326,8 @@ export async function checkStudioLiveCapture(page: Page, dir: string, workspace:
             return c.getStructureData()?.elementCount > 0 && c.plugin.canvas3d?.reprCount.value > 0;
         });
         await observeRuntime(popup);
+        await checkStudioCancelBeforeDraw({ page, owner: popup, canvas: popup, path: resolve(workspace, "cancel-before-popup-draw.json"), openWork, identity, drain });
+        progress("canvas popup cancellation before a real draw released its controls and scene queue");
 
         // A primary verdict with the same id must not complete another
         // window's pending GUI save. Both snapshots come from real renderers.
@@ -420,12 +433,18 @@ export async function checkStudioLiveCapture(page: Page, dir: string, workspace:
         await panel.locator("#molsysviewer-loading").waitFor({ state: "hidden" });
         await panel.locator('[data-molsysviewer-group-panel-tab="export"]').waitFor({ state: "attached" });
         assert.equal(await panel.locator("canvas").isVisible(), false);
+        let detachedSaved: any;
         for (const kind of ["state", "session"] as const) {
             const file = resolve(workspace, `detached-review.${kind === "state" ? "json" : "msv"}`);
             const captured = await saveAndInspect(panel, popup, file, kind);
+            detachedSaved = captured;
             await restoreAndCompare(panel, popup, captured);
             progress(`detached Studio ${kind} roundtrip used its originating canvas`);
         }
+        await checkStudioCameraIntent({ page, owner: panel, canvas: popup, saved: detachedSaved, openWork, rotate, drain });
+        progress("old genuine camera packet refused; new input and partial/nonunit-up camera intents completed on real draws");
+        await checkStudioCancelBeforeDraw({ page, owner: panel, canvas: popup, path: resolve(workspace, "cancel-before-origin-draw.json"), openWork, identity, drain });
+        progress("detached Studio cancellation released its owner and originating canvas before a draw");
         assert.deepEqual(errors, []);
         console.log("[E2E Studio] persistent primary/popup/detached saves captured exact camera/frame, restored perturbed scenes, and cancelled without writing");
     } finally {

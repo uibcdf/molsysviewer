@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib
 import json
 import logging
+import math
 import os
 import sys
 import time
@@ -384,11 +385,12 @@ def _frontend_event_validation_error(event: Any) -> str | None:
 
 
 class QtMessageBridge:
-    """Runtime-only queue for Qt -> JS viewer messages."""
+    """Ordered scene delivery with a separate, bounded lifecycle-control lane."""
 
     MAX_DELIVERY_ATTEMPTS = 5
     RETRY_BASE_DELAY_MS = 50
     RETRY_MAX_DELAY_MS = 1000
+    MAX_LIFECYCLE_CONTROLS = 128
 
     def __init__(self, webview, QTimer, *, status_callback=None, event_sink=None) -> None:
         self.webview = webview
@@ -404,6 +406,7 @@ class QtMessageBridge:
         self.ready = False
         self.queue: list[dict[str, Any]] = []
         self.inflight: dict[str, Any] | None = None
+        self._controls: dict[str, dict[str, Any]] = {}
         self.next_id = 0
         self.generation = 0
         self.failed_deliveries: list[dict[str, Any]] = []
@@ -417,6 +420,7 @@ class QtMessageBridge:
 
     def on_load_started(self) -> None:
         self.ready = False
+        self._clear_controls()
         if self.inflight is not None:
             self._cleanup_entry(self.inflight)
         self._cleanup_queue()
@@ -425,6 +429,7 @@ class QtMessageBridge:
 
     def begin_generation(self, *, clear_queue: bool = True) -> int:
         self.generation += 1
+        self._clear_controls()
         if self.inflight is not None:
             self._cleanup_entry(self.inflight)
         self.inflight = None
@@ -437,7 +442,72 @@ class QtMessageBridge:
         if self._closed:
             raise RuntimeError("The Qt host is closed.")
         entry = self._make_entry(message)
+        if self._is_lifecycle_control(message):
+            if len(self._controls) >= self.MAX_LIFECYCLE_CONTROLS or entry["id"] in self._controls:
+                raise RuntimeError("The Qt lifecycle-control delivery capacity is exhausted.")
+            if message["op"] == "cancel_visual_state":
+                self._retire_visual_capture(message)
+            self._controls[entry["id"]] = entry
+            self._flush_controls()
+            # A retired capture no longer blocks later scene delivery. The
+            # abort is dispatched first; its own ack cannot release that scene.
+            self._flush()
+            return
         self._enqueue_entry(entry)
+
+    @staticmethod
+    def _is_lifecycle_control(message: dict[str, Any]) -> bool:
+        op = message.get("op")
+        if op == "cancel_visual_state":
+            if not all(
+                isinstance(message.get(key), str) and message[key].strip() for key in ("request_id", "capture_revision")
+            ):
+                raise ValueError("Qt visual cancellation requires its exact request id and capture revision.")
+            return True
+        return (
+            op == "studio_action_result"
+            and message.get("action") in {"save_work_file", "cancel_work_file"}
+            and isinstance(message.get("request_id"), str)
+            and bool(message["request_id"].strip())
+        )
+
+    def _retire_visual_capture(self, control: dict[str, Any]) -> None:
+        def matches(entry):
+            message = entry["message"]
+            return (
+                message.get("op") == "request_visual_state"
+                and message.get("request_id") == control["request_id"]
+                and message.get("capture_revision") == control["capture_revision"]
+                and message.get("target_endpoint_id") == control.get("target_endpoint_id")
+            )
+
+        retained = []
+        for entry in self.queue:
+            if matches(entry):
+                self._cleanup_entry(entry)
+            else:
+                retained.append(entry)
+        self.queue = retained
+        if self.inflight is not None and matches(self.inflight):
+            self._cleanup_entry(self.inflight)
+            self.inflight = None
+
+    def _clear_controls(self) -> None:
+        for entry in self._controls.values():
+            self._cleanup_entry(entry)
+        self._controls.clear()
+
+    def _flush_controls(self) -> None:
+        if not self.ready or self._closed:
+            return
+        for entry in tuple(self._controls.values()):
+            if self._controls.get(entry["id"]) is entry and "deadline" not in entry:
+                entry["deadline"] = time.monotonic() + float(entry["timeout_s"])
+                self._arm_timeout(entry)
+                self._run_javascript(entry)
+
+    def _entry_is_active(self, entry: dict[str, Any]) -> bool:
+        return self.inflight is entry or self._controls.get(entry["id"]) is entry
 
     def _enqueue_entry(self, entry: dict[str, Any]) -> None:
         coalesce_key = entry.get("coalesce_key")
@@ -496,6 +566,7 @@ class QtMessageBridge:
         name = event.get("event")
         if name == "ready":
             self.ready = True
+            self._flush_controls()
             self._flush()
             self._forward_to_view(event)  # the view also needs "ready"
             return True
@@ -536,6 +607,7 @@ class QtMessageBridge:
         self._closed = True
         self.ready = False
         self.event_sink = None
+        self._clear_controls()
         self._cleanup_queue()
         self.queue.clear()
         if self.inflight is not None:
@@ -576,6 +648,17 @@ class QtMessageBridge:
             else "message_ack"
         )
         timeout_s = 30.0 if wait_event == "structure_ready" or op == "commit_scene" else 5.0
+        if op == "request_visual_state":
+            capture_ms = msg.get("capture_timeout_ms")
+            if (
+                isinstance(capture_ms, (int, float))
+                and not isinstance(capture_ms, bool)
+                and math.isfinite(capture_ms)
+                and capture_ms > 0
+            ):
+                # The broker owns capture expiry. Its legitimate draw wait must
+                # not be cut short by the bridge's ordinary five-second ack.
+                timeout_s = min(30.0, float(capture_ms) / 1000) + 1.0
         return {
             "id": msg["id"],
             "generation": msg["generation"],
@@ -657,7 +740,7 @@ class QtMessageBridge:
             )
             if accepted:
                 return
-            if self.inflight is entry:
+            if self._entry_is_active(entry):
                 self._retry_or_fail(entry, "frontend message handler is not ready")
 
         try:
@@ -669,11 +752,16 @@ class QtMessageBridge:
             self._retry_or_fail(entry, f"runJavaScript failed: {exc}")
 
     def _retry_or_fail(self, entry: dict[str, Any], reason: str) -> None:
+        if not self._entry_is_active(entry):
+            return
+        control = self._controls.get(entry["id"]) is entry
         if self.inflight is entry:
             self.inflight = None
         attempts = int(entry.get("delivery_attempts", 0))
         op = str(entry["message"].get("op", "unknown"))
         if attempts >= self.MAX_DELIVERY_ATTEMPTS:
+            if control:
+                self._controls.pop(entry["id"], None)
             self._cleanup_entry(entry)
             failure = {
                 "id": entry.get("id"),
@@ -686,9 +774,11 @@ class QtMessageBridge:
             self._show_status(
                 f"Viewer message delivery failed after {attempts} attempts: {op} ({reason})", kind="error"
             )
-            self._flush()
+            if not control:
+                self._flush()
             return
-        self.queue.insert(0, entry)
+        if not control:
+            self.queue.insert(0, entry)
         self._show_status(
             f"Viewer message delivery delayed (attempt {attempts}/{self.MAX_DELIVERY_ATTEMPTS}): {op} ({reason})",
             kind="progress",
@@ -697,9 +787,29 @@ class QtMessageBridge:
             self.RETRY_MAX_DELAY_MS,
             self.RETRY_BASE_DELAY_MS * (2 ** max(0, attempts - 1)),
         )
-        self._retry_later(delay_ms)
+        if control:
+
+            def retry_control():
+                if self.ready and not self._closed and self._controls.get(entry["id"]) is entry:
+                    self._run_javascript(entry)
+
+            self.QTimer.singleShot(delay_ms, retry_control)
+        else:
+            self._retry_later(delay_ms)
 
     def _handle_message_event(self, event: dict[str, Any]) -> None:
+        control = self._controls.get(event.get("id"))
+        if control is not None:
+            if event.get("generation") != control["generation"]:
+                return
+            if event.get("event") == "message_error":
+                self._controls.pop(control["id"])
+                self._cleanup_entry(control)
+                self._show_status(f"Viewer message failed: {event.get('error', 'unknown error')}", kind="error")
+            elif event.get("event") == control["wait_event"]:
+                self._controls.pop(control["id"])
+                self._cleanup_entry(control)
+            return
         entry = self.inflight
         if entry is None:
             return
@@ -725,14 +835,19 @@ class QtMessageBridge:
         self._flush()
 
     def _arm_timeout(self, entry: dict[str, Any]) -> None:
-        timeout_ms = max(1, int(float(entry["timeout_s"]) * 1000))
+        timeout_ms = max(1, math.ceil(float(entry["timeout_s"]) * 1000))
 
         def _check_timeout():
-            if self.inflight is not entry:
+            if not self._entry_is_active(entry):
                 return
-            if time.monotonic() <= float(entry.get("deadline", 0.0)):
+            remaining = float(entry.get("deadline", 0.0)) - time.monotonic()
+            if remaining > 0:
+                self.QTimer.singleShot(max(1, math.ceil(remaining * 1000)), _check_timeout)
                 return
-            self.inflight = None
+            if self._controls.get(entry["id"]) is entry:
+                self._controls.pop(entry["id"])
+            else:
+                self.inflight = None
             self._cleanup_entry(entry)
             self._show_status(f"Viewer message timed out: {entry['message'].get('op', 'unknown')}", kind="error")
             self._flush()

@@ -47,6 +47,7 @@ import {
     ZoomMessage,
 } from "../../messages/viewer-messages";
 import { LoadedStructure } from "../../plugin/structure";
+import type { CameraIntentApplication } from "../camera-sync";
 import {
     clearPerAtomColorsFor,
     clearPerAtomColors,
@@ -115,6 +116,7 @@ export interface StateCallbacks {
     getCurrentStructureRef: () => StateObjectRef | undefined;
     getComponents: () => StructureComponentRef[];
     notify: (msg: any) => void;
+    applyCameraNavigation?: (operation: () => void | Promise<void>, hooks?: CameraIntentApplication) => Promise<void>;
     setManagedLayerVisibility?: (tag: string, kind: string, visible: boolean) => Promise<boolean>;
 }
 
@@ -151,7 +153,7 @@ export class StateHandlers {
     // atom indices and the version they were stamped with. A delta only applies
     // when its base_version matches; otherwise we ask the kernel for a full resync.
     private requestedGlobalHidden: boolean | null = null;
-    private pendingZoom?: ZoomMessage;
+    private pendingZoom?: { message: ZoomMessage; hooks?: CameraIntentApplication };
 
     constructor(private plugin: PluginContext, private callbacks: StateCallbacks) {}
 
@@ -1751,10 +1753,10 @@ export class StateHandlers {
         await this.handleShowHideGlobal(true, msg.target ?? "whole");
     }
 
-    async zoom(msg: ZoomMessage) {
+    async zoom(msg: ZoomMessage, hooks?: CameraIntentApplication) {
         const structure = this.callbacks.getStructure();
         if (!structure) {
-            this.pendingZoom = msg;
+            this.pendingZoom = { message: msg, hooks };
             return;
         }
 
@@ -1771,11 +1773,13 @@ export class StateHandlers {
 
         const loci = StructureSelection.toLociWithSourceUnits(selection);
         this.intentionalViewpoint = true;
-        this.plugin.managers.camera.focusLoci(loci, {
+        const focus = () => this.plugin.managers.camera.focusLoci(loci, {
             durationMs: msg.options?.duration_ms,
             extraRadius: msg.options?.extra_radius,
             minRadius: msg.options?.min_radius,
         });
+        if (this.callbacks.applyCameraNavigation) await this.callbacks.applyCameraNavigation(focus, hooks);
+        else focus();
     }
 
     // Public method to be called by Loader/Controller when structure is ready
@@ -1783,7 +1787,7 @@ export class StateHandlers {
         if (this.pendingZoom) {
             const pending = this.pendingZoom;
             this.pendingZoom = void 0;
-            await this.zoom(pending);
+            await this.zoom(pending.message, pending.hooks);
         }
         if (this.pendingGlobalOps.length) {
             const ops = [...this.pendingGlobalOps];

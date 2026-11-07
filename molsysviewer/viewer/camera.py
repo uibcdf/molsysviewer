@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 from typing import Any
 
 # `zoom` resolves its selection through `msm.select` -- since uibcdf/molsysviewer#71 it
@@ -266,7 +267,7 @@ class CameraManager:
         if snap is None:
             return None
         if not pretty:
-            return dict(snap)
+            return deepcopy(snap)
         return json.dumps(snap, indent=2, sort_keys=True)
 
     @signal(tags=["camera"], extra_factory=camera_snapshot_extra)
@@ -295,7 +296,7 @@ class CameraManager:
         if duration_ms is not None:
             duration = duration_ms
         duration_value = int(quantity_value_in_unit(duration, "ms"))
-        self._view._last_camera_snapshot = dict(snapshot)  # noqa: SLF001
+        self._view._last_camera_snapshot = deepcopy(snapshot)  # noqa: SLF001
         self._view._send(  # noqa: SLF001
             {
                 "op": "set_camera_snapshot",

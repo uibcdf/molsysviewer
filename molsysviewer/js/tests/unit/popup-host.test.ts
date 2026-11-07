@@ -437,6 +437,38 @@ test("popup bootstrap queues only that endpoint and flushes after initial sync",
     }
 });
 
+test("popup lifecycle bypasses bootstrap and removes only its exact queued capture", async () => {
+    const previousWindow = (globalThis as any).window;
+    const canvas = makePopupWindow().popup;
+    (globalThis as any).window = {
+        location: { href: "https://notebook.example.dev/lab", origin: "https://notebook.example.dev" },
+        open: () => canvas, setInterval: () => 1, clearInterval() {},
+    };
+    const manager = new PopupHostManager({ source: "viewer-source", viewerId: "view-a", sessionId: "session-a" });
+    try {
+        await manager.open("canvas");
+        manager.isReady = true;
+        manager.beginBootstrap("canvas");
+        const capture = { op: "request_visual_state", request_id: "broker", capture_revision: "revision" };
+        const other = { ...capture, capture_revision: "other-revision" };
+        const restore = { op: "studio_action_result", action: "restore_work_file", request_id: "restore", ok: true };
+        manager.sendTo("canvas", "molsysviewer-sync-op", capture);
+        manager.sendTo("canvas", "molsysviewer-sync-op", other);
+        manager.sendTo("canvas", "molsysviewer-sync-op", restore);
+        const cancel = { ...capture, op: "cancel_visual_state" };
+        const verdict = { op: "studio_action_result", action: "cancel_work_file", request_id: "studio", ok: true };
+        manager.sendTo("canvas", "molsysviewer-sync-op", cancel);
+        manager.sendTo("canvas", "molsysviewer-sync-op", verdict);
+        assert.deepEqual(canvas.posted.map((entry: any) => entry.message.envelope.payload), [cancel, verdict]);
+        manager.completeBootstrap("canvas");
+        assert.deepEqual(canvas.posted.map((entry: any) => entry.message.envelope.payload), [cancel, verdict, other, restore]);
+        assert.ok(canvas.posted.every((entry: any) => entry.message.envelope.targetEndpointId === manager.popupEndpointId("canvas")));
+    } finally {
+        manager.dispose();
+        (globalThis as any).window = previousWindow;
+    }
+});
+
 test("closing a popup reports its exact endpoint once", async () => {
     const previousWindow = (globalThis as any).window;
     const { popup } = makePopupWindow();

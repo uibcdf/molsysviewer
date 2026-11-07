@@ -666,20 +666,21 @@ class RegionsMixin:
                     )
                 except Exception:
                     composition[key] = 0
-        contains: dict[str, int] = {}
-        for token, attribute in self._WHOLE_COMPOSITION_PROBES:
-            try:
-                contains[token] = int(
-                    msm.get(
-                        self._molsys,
-                        element="system",
-                        output_type="values",
-                        skip_digestion=True,
-                        **{attribute: True},
+        contains: dict[str, int] = dict.fromkeys((token for token, _ in self._WHOLE_COMPOSITION_PROBES), 0)
+        if self._molsys is not None:
+            for token, attribute in self._WHOLE_COMPOSITION_PROBES:
+                try:
+                    contains[token] = int(
+                        msm.get(
+                            self._molsys,
+                            element="system",
+                            output_type="values",
+                            skip_digestion=True,
+                            **{attribute: True},
+                        )
                     )
-                )
-            except Exception:
-                contains[token] = 0
+                except Exception:
+                    contains[token] = 0
         return {
             "representation": self.whole.representation,
             "preset": self.whole.preset,

@@ -207,6 +207,16 @@ def test_cancel_is_owner_scoped_and_late_capture_cannot_write(view, messages, tm
             ("cancel_work_file", True, None),
         ]
         assert all(message.get("target_endpoint_id") == "first" for message in results(messages))
+        aborts = [message for message in messages if message.get("op") == "cancel_visual_state"]
+        assert aborts == [
+            {
+                "op": "cancel_visual_state",
+                "request_id": ticket.request_id,
+                "capture_revision": ticket.revision,
+                "target_endpoint_id": "first",
+            }
+        ]
+        assert ticket.request_id != "save-review", "capture correlation is not the Studio domain id"
         reply(view, ticket)
         assert path.read_bytes() == b"original bytes"
         reply(view, other_ticket)
@@ -233,6 +243,24 @@ def test_cancel_after_commit_is_refused_after_the_original_success(view, message
             ("cancel_work_file", False),
         ]
         assert path.read_bytes() == saved
+
+    asyncio.run(receive())
+
+
+def test_view_close_releases_renderer_capture_before_closing_its_connector(view, messages, tmp_path):
+    async def receive():
+        path = tmp_path / "closed.json"
+        future, ticket = begin(view, intent(path))
+        view.close()
+        with pytest.raises(FrontendRequestError):
+            await asyncio.wrap_future(future)
+        aborts = [message for message in messages if message.get("op") == "cancel_visual_state"]
+        assert aborts == [
+            {"op": "cancel_visual_state", "request_id": ticket.request_id, "capture_revision": ticket.revision}
+        ]
+        assert view.widget._callbacks_closed
+        assert not path.exists()
+        assert not view._frontend_requests._pending and not view._work_file_saves._pending
 
     asyncio.run(receive())
 

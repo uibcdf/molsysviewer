@@ -16,7 +16,9 @@ from __future__ import annotations
 
 import logging
 import math
+from asyncio import get_running_loop
 from copy import deepcopy
+from importlib import import_module
 from threading import RLock, get_ident
 from typing import Any, Callable
 
@@ -188,6 +190,39 @@ class QtViewChannel(HasTraits):
             handle.cancel()
             raise
         return handle
+
+    def _require_async_capture_host(self):
+        """Refuse asyncio that cannot dispatch this native GUI's events.
+
+        The application chooses an integrated loop at startup; a save must not
+        install a policy, pump Qt events recursively or appoint a worker loop.
+        Ordinary Studio saves use their existing Future/QTimer route instead.
+        """
+        from ..viewer.frontend_requests import FrontendRequestError
+
+        if self._channel_closed or getattr(self._bridge, "_closed", False):
+            raise FrontendRequestError(reason="view_closed")
+        loop = get_running_loop()
+        binding = getattr(self._bridge.QTimer, "__module__", "").partition(".")[0]
+        loop_type = None
+        if binding in {"PySide6", "PySide6_uibcdf"}:
+            try:
+                loop_type = import_module(f"{binding}.QtAsyncio").QAsyncioEventLoop
+            except (ImportError, AttributeError):
+                pass
+        parent = self._bridge.webview
+        same_thread = get_ident() == self._callback_thread_ident
+        if parent is not None:
+            is_current = getattr(parent.thread(), "isCurrentThread", None)
+            same_thread = same_thread and (not callable(is_current) or is_current())
+        if loop_type is None or not isinstance(loop, loop_type) or not same_thread:
+            raise FrontendRequestError(
+                "Qt async saves require a QtAsyncio event loop on the owning GUI thread. "
+                "Use an explicitly application-owned integrated loop, or Save in Studio. "
+                "Ordinary asyncio.run() does not dispatch Qt events; native GUI lifetime and "
+                "shutdown must remain under the application's ownership.",
+                reason="qt_async_host_unsupported",
+            )
 
     def close(self) -> None:
         """Detach callbacks and the bridge event sink owned by this channel."""

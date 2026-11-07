@@ -88,8 +88,8 @@ export async function mountCanvasPopupFixture(page: Page, bridge: PythonFixtureB
 }
 
 /** Observe real controllers without replacing molecular or rendering operations. */
-export async function captureCanvasPopupControllers(page: Page, waitForController = true) {
-    await page.evaluate(() => {
+export async function captureCanvasPopupControllers(page: Page, waitForController = true, popupBootstrapPrelude = "") {
+    await page.evaluate(prelude => {
         const w=window as any;
         const C=w.__molsysviewer_anywidget_runtime__?.module.MolSysViewerController;
         if (C) {
@@ -104,7 +104,7 @@ export async function captureCanvasPopupControllers(page: Page, waitForControlle
             const append=win.Node.prototype.appendChild;
             win.Node.prototype.appendChild=function(node:any) {
                 if(node.tagName==='SCRIPT' && node.textContent.includes('await boot(module)')) {
-                    node.textContent=node.textContent.replace('await boot(module)', `const create=module.MolSysViewerController.create;
+                    node.textContent=node.textContent.replace('await boot(module)', `${prelude}; const create=module.MolSysViewerController.create;
                         module.MolSysViewerController.create=async function(...args) {
                             const ctrl=await create.apply(this,args); window.__mirrorController=ctrl; return ctrl;
                         }; await boot(module)`);
@@ -113,6 +113,6 @@ export async function captureCanvasPopupControllers(page: Page, waitForControlle
             };
             return win;
         }) as typeof window.open;
-    });
+    }, popupBootstrapPrelude);
     if (waitForController) await page.waitForFunction(()=>!!(window as any).__mirrorController);
 }

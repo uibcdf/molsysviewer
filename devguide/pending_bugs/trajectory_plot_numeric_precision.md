@@ -1,13 +1,13 @@
 ---
 summary: Trajectory labels hide nonzero values and narrow-offset axes lose numerical precision.
 issue: uibcdf/molsysviewer#321
-status: open
+status: partial
 opened: 2026-11-07
 closed:
 severity: medium
 verification: reproduced
 area: [trajectory-plot, numeric, frontend]
-guard:
+guard: molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts
 normative:
 blocked_by: []
 supersedes: []
@@ -15,7 +15,7 @@ supersedes: []
 
 # Numerical reading and geometry of trajectory plots
 
-**B2 — reproduced; implementation pending.** Viewer owns formatting and axis
+**B2 — corrected in working source; source receiving passes; delivery and consolidated acceptance pending.** Viewer owns formatting and axis
 arithmetic. This is a core visualization defect, not evidence of incorrect
 MolSysMT calculations. [#321](https://github.com/uibcdf/molsysviewer/issues/321)
 records the scoped work under #315.
@@ -109,3 +109,45 @@ large, narrow-offset and cross-unit-equivalent controls, with independent
 oracles on represented floats. Receive save/restore and popup behavior and
 retain the existing irregular/repeated/nonfinite contracts. A fixed-code
 regression, applicable source receiving and normal closeout are still pending.
+
+## Working correction and receiving limits
+
+The working correction subtracts represented values before dividing when the
+span is finite, retaining the scaled overflow fallback. Axis-aware significant
+digits and scientific notation preserve nonzero readings, distinguish unequal
+limits by numerical value across notation thresholds, and expose roundtrip
+raw values through titles/accessibility labels. Eleven isolated unit cases pass;
+the broader canonical unit entry and TypeScript also pass before the later
+notation-threshold refinement. The new actual browser fixtures have fifteen
+independent Decimal controls, including subnormal, threshold and near-maximum
+finite cases. These are not yet passing browser acceptance.
+
+The first sandbox browser attempt exits 1 before a page because Chrome sockets
+are denied. The actual-host entry then passes its existing public-authority,
+physical-frame, popup and static-output checks, but exits 1 before new numerical
+assertions: `width=650` exposes the separate public digestion defect #322.
+Its 12 selected receiving inputs remain unchanged. The fixture retains that
+requested width and now surfaces backend errors before inspecting records;
+it does not bypass the broken public argument. Correction of #322 and fresh
+actual numerical/browser receiving remain required.
+
+The later full actual browser entry **passes with native exit 0 in 91.12 s**.
+It receives all fifteen Decimal/binary64 controls, full-value title/ARIA/keyboard
+access, real source/popup frame changes and state-file restoration after
+perturbation. Existing irregular/repeated/nonfinite, static output, navigation
+and title contracts remain in the entry. All 17 declared selected inputs remain
+unchanged. Chromium uses Swiftshader; this is not a visible/native GPU claim.
+The [source receipt](../trajectory_plot_precision_receiving_20261107.json)
+separates these results from the retained earlier failures. Source delivery,
+consolidated acceptance and normal closeout remain pending.
+
+A subsequent run with the newer shared camera runtime exits **1** after the
+source precision/state controls and earlier navigation contracts pass. At the
+first `large-offset` case in the popup-stage endpoint loop, the SVG points are
+finite but normalization divides by an axis-reference bounding-box width of
+zero. The guard did not retain the exact endpoint or that bounding box. This
+does not yet establish an incorrect scientific value or plotted coordinate;
+capture the SVG geometry and ancestor visibility before changing the product
+or the numerical oracle. All 3,947 selected inputs remain unchanged and all 17
+owned process identities exit. The earlier passing run retains its own inputs;
+the current shared-runtime receiving remains pending.

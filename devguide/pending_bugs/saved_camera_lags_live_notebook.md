@@ -15,9 +15,11 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
-**A5 — partial; Python/Studio local receiving passes; native, playback and consolidated acceptance pending; P2.** The Viewer maintainer
+**A5 — partial; the bounded camera/control correction is verified locally and
+ready for delivery; playback, hidden endpoints and consolidated acceptance
+remain pending; P2.** The Viewer maintainer
 session owns implementation under #315/#319 for the covering artifact and
-accepted 1.0 scope. Core/Studio/native/hosted acceptance and closure remain
+accepted 1.0 scope. Broader hosted/installed acceptance and closure remain
 pending. No scientific provider algorithm needs changing. The
 [source receiving receipt](../live_state_capture_receiving_20261106.json)
 separates historical and current Python selections, actual Jupyter/full Studio
@@ -29,6 +31,116 @@ repeat passes with **3,760 passed, zero failures/errors, 22 skips and 16 explici
 deselections**, in 748.66 s. All 5,401 selected files remain unchanged from the
 declared early-run digest through completion. Hosted/installed acceptance and
 the remaining cases below are separate.
+
+## Earlier receiving and retained failures
+
+**The earlier control-correction receiving was not green.** After the delivered foundation,
+the before-draw control slice passes 173 Python cases, canonical JS units,
+TypeScript and runtime/harness builds. The complete actual Studio entry then
+exits 1: primary and popup cancellation before draw pass, but a later detached
+Studio state restore retains the perturbed camera in both canvases despite
+receiving the saved snapshot. All 4,660 selected inputs remain unchanged.
+The cause is not yet established; a passive real-camera reset/sync diagnostic
+is prepared. The earlier complete Studio pass qualifies its earlier source,
+not this unresolved attempt.
+
+The first native attempt renders with real NVIDIA WebGL2 on Wayland, then its
+QTest gesture fails to rotate before any save is attempted. Teardown ends in
+signal 11. The 4,339 selected inputs remain unchanged and all four tracked
+process identities exit. Input delivery and shutdown causes remain uncertain;
+there is no native capture acceptance. The QCore-only host preflight passes
+two cases, which does not resolve WebEngine/QtAsyncio lifecycle behavior.
+
+Later passive camera instrumentation receives all persistent save/restore and
+three before-draw cases with native exit 0 and 4,663 unchanged selected inputs.
+Its 881 camera observations show 17 authority poses eventually applied, with
+10.5–818.6 ms delays. It does not reproduce the original detached failure and
+does not replace that failed full-entry result. A controlled genuine older
+camera-message experiment is prepared to test pending reset/feedback ordering.
+
+Native attempt 2 receives four GUI/Python state/session saves, perturbed-camera
+and changed-frame restoration, and cancellation before a real draw, then still
+exits with signal 11 during `asyncio.Runner` cleanup. An independent actual
+WebEngine probe imports no Viewer code: ordinary Qt exits 0, standard
+QtAsyncio/Runner exits -11, and a single application-owned QtAsyncio loop exits
+0. Each retains 4,339 unchanged selected inputs and releases all four tracked
+process identities. The crash occurs when Runner re-enters Qt's application
+loop for asynchronous shutdown after WebEngine teardown. These controls isolate
+the local provider/lifetime seam; they do not turn the failed full native run
+into acceptance. The next native receiving uses explicit application-owned
+lifetime, with async cleanup while the loop is live and one final stop. No
+provider patch, nested GUI pumping or worker fallback is introduced.
+
+The application-owned native follow-up exits **0**, and its promoted durable
+pytest wrapper independently exits **0** (one native case passed, one portable
+collection case deselected). Four actual state/session saves through Studio
+and Python preserve their exact correlated camera/frame; restoration changes
+camera/frame first, then requires a matching fresh `didDraw`. Cancel unlocks
+in 23.43 ms with zero draws, no file and no revival after real rendering resumes.
+The GUI-thread heartbeat records 5,157 callbacks. All 4,341 declared inputs
+remain unchanged; the inner four and outer five tracked process identities
+exit without survivors/errors. This is local automated Wayland/NVIDIA WebGL2
+evidence, not human, installed, multi-platform or globally error-free acceptance.
+Eight startup errors are independently localized to Viewer #323 and now have
+a separate working correction; the native pass predates those changed bytes.
+
+The second durable native run receives the #323 caller correction with actual
+Wayland/NVIDIA WebGL2: the wrapper and native child both exit **0**. Four
+Studio/Python state/session saves preserve their exact correlated camera and
+frame; each restore first perturbs the camera and changes the frame, then
+requires the matching fresh `didDraw`. Cancel unlocks in 26.73 ms with **zero
+draws**, no file and no revival after rendering resumes. The GUI-thread
+heartbeat records 5,278 callbacks. All **4,341** selected inputs remain unchanged;
+the inner four and outer five tracked process identities have zero survivors
+and cleanup errors. Unsupported `None`/`get_form` stderr observations fall from
+eight to **zero**, without suppression. One GBM fallback and one D-Bus address
+diagnostic remain retained; this is not a globally error-free Qt claim.
+
+The third genuine older-camera probe subsequently exits **1**, with all
+**4,666** selected inputs unchanged. Its original held `MessageEvent` is
+delivered exactly once through the actual registered listener. With real Mol*
+drawing paused using `noDraw`, the first resumed draw shows the older camera
+instead of the saved authority pose. This establishes a stale-camera ordering
+regression in that controlled case. It does **not** establish that this is the
+exact temporal cause of the earlier canonical detached-Studio failure. The
+failed, inconclusive and passive attempts remain separate historical evidence.
+
+The next working correction stamps authoritative camera revisions, records
+camera intent before deferred scene application and rejects older camera
+feedback for that intent. The public camera API retains partial snapshots and
+non-unit `up` vectors. Six direct Python cases and the overlapping 87-case
+combined selection pass. Frontend source is prepared, but its current build,
+canonical units and complete Studio receiving are **in progress**, not passing
+evidence. The prior native and browser passes qualify their recorded inputs;
+they do not qualify these newly changed bytes. A5 remains partial.
+
+## Final resumed receiving of this source slice — 2026-11-07
+
+After the maintainer resumed execution, the complete canonical Studio entry
+passes with **native exit 0 in 198.54 s**. All 4,011 selected inputs remain
+unchanged, all 17 owned process identities close, and there is no opt-out.
+Actual primary, canvas-popup and detached-Studio state/session restores,
+genuine old-message rejection, new physical input, partial/non-unit-up
+snapshots, later reset/focus and cancellation before drawing all pass. The
+navigation cases pause both real renderers and require the originating canvas
+to complete and relay its camera before the primary resumes; intentional peer
+echo suppression is preserved. Releasing the test's message instrumentation
+also preserves production listeners for the following actual Cancel workflow.
+
+The fourth native Qt run is now accepted by the ordinary approval route and
+passes with **native exit 0 in 32.34 s**, all 4,341 selected inputs unchanged and
+zero process survivors. Its four saved files independently match their exact
+correlated camera/frame; all restores perturb the camera and frame first and
+require a matching fresh draw. Cancel unlocks in 39.95 ms with zero draws,
+without a file or revival. Unsupported-None and deprecation stderr counts are
+zero; one GBM fallback and one D-Bus diagnostic remain retained. This is actual
+local Wayland/NVIDIA WebGL2 receiving, not human or installed qualification.
+
+The bounded source correction is ready for reviewed delivery. A5 remains
+partial for continuous playback, hidden endpoints and applicable consolidated
+hosted/installed and postponed human acceptance. The interrupted Studio3 is
+operator cancellation, not a passing run or a newly diagnosed product defect;
+the earlier rejected Qt launch produced no process and remains historical.
 
 ## Observation and duplicate review
 
@@ -261,12 +373,12 @@ playback claim follows from these results.
 | Boundary | Current source receiving | Remaining acceptance |
 | --- | --- | --- |
 | Shared Studio capture/writer and truthful success | Python/actual Jupyter/full Studio entry pass; path, overwrite, actual bytes and captured camera are checked | Consolidated source/hosted/installed receiving for the intended artifact |
-| Authenticated popup/panel association | Primary, canvas popup and detached Studio both-format roundtrips; same-ID ownership and per-endpoint structural order pass | Deliberate changed-frame restore, hidden/background receiving and additional endpoint-lifetime combinations |
-| GUI deadline/cancel/disposal | Host-loop and owner tests, actual Jupyter autonomous timeout and delayed real-reply cancellation pass without late writes | Applicable native Qt and consolidated host acceptance |
-| Native Qt | Scheduler/transport contract checks pass | Actual native GUI-loop capture and both-format async/Studio receiving; visible manual observation remains postponed |
+| Authenticated popup/panel association | Primary, canvas popup and detached Studio both-format roundtrips, changed-frame restores, same-ID ownership and per-endpoint structural order pass | Hidden/background receiving and additional endpoint-lifetime combinations |
+| GUI deadline/cancel/disposal | Host-loop and owner tests, actual Jupyter timeout, full Studio and final native before-draw cancellation pass without late writes | Consolidated host/platform acceptance |
+| Native Qt | Fourth durable actual GUI-loop run receives the final camera/control runtime: four format/origin cases, perturbed camera/changed frame/fresh draw, heartbeat, before-draw cancel and application-owned clean shutdown pass; zero unsupported-None errors | Other bindings/platforms, consolidated qualification and postponed human observations remain separate |
 | Durable regressions | Existing registered Studio browser entry plus opt-in local Jupyter profile and explicit strict-release/hosted core CLI route; complete core repeat passes 3,760 cases/22 documented skips | Consolidated hosted and exact-installed gates remain pending |
 
-### Next receiving: cancellation before draw and moving structures
+### Historical before-draw regression and received control correction
 
 A private real-renderer probe now reproduces the control-queue problem with
 drawing suspended through Mol*'s actual animation loop API. In both primary and
@@ -285,6 +397,20 @@ and an abortable draw wait, correlated by the actual broker request and revision
 the draw barrier; dispose subscriptions/timers and prevent a late response from
 reviving the capture. Keep the backend deadline authoritative and retain the
 existing render clock; no GUI-only watchdog or hidden canvas switch is approved.
+
+The Python part of that correction was then received in working source. Abandoned
+broker reservations notify only their exact renderer/request/revision, after
+molecular ownership is released; successful captures do not send an abort.
+The endpoint registry removes an exact unsent barrier before the control is
+transmitted, preserving other captures and scene operations. A transport
+failure cannot leave the abandoned Future pending. Eight initial causal cases
+fail before the change; the expanded six-module capture/Studio/deadline/runtime
+and transport selection passes **141/141** in 22.95 s. These are protocol/file
+guards, not acceptance of the new browser or native Qt control route. That
+receiving was pending at this checkpoint; the later native results above and
+their own recorded inputs retain their separate scope.
+
+### Remaining moving-structure and hidden-endpoint receiving
 
 For playback, frame/camera and all frame-dependent projections must describe
 the same completed draw. Rewriting only a saved structure index is insufficient:

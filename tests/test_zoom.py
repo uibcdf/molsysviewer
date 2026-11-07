@@ -72,7 +72,12 @@ def test_focus_on_object_agrees_with_the_object_s_own_focus():
     shape.focus()
     through_object = [m for m in view._sent if m.get("op") == "zoom_to_position"][-1]  # noqa: SLF001
 
-    assert through_camera == through_object
+    # Each deliberate command has a distinct transport revision; its complete
+    # scientific/visual payload must still agree across these public routes.
+    assert through_object["camera_revision"] == through_camera["camera_revision"] + 1
+    assert {key: value for key, value in through_camera.items() if key != "camera_revision"} == {
+        key: value for key, value in through_object.items() if key != "camera_revision"
+    }
 
 
 def test_a_camera_padding_without_units_is_refused():

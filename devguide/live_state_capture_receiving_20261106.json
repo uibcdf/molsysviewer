@@ -1,10 +1,10 @@
 {
   "schema": "molsysviewer.live_state_capture_receiving@1",
   "date": "2026-11-06",
-  "observed_at": "2026-11-07T01:43:20.489085+00:00",
+  "observed_at": "2026-11-07T06:31:14.015477+00:00",
   "plan": "uibcdf/molsysviewer#315 / A5",
   "issue": "uibcdf/molsysviewer#319",
-  "status": "partial source implementation; Python/actual-Jupyter/full-Studio capture and restore receiving pass; continuous playback, hidden endpoints, native Qt and consolidated hosted/installed acceptance remain pending",
+  "status": "partial: final bounded camera/control source slice passes affected Python, TypeScript/JS, complete canonical Studio and current native Qt; delivery/consolidated and broader A5 acceptance remain pending",
   "decision": {
     "authority": "Principal maintainer explicitly selected the ambitious/user-useful coherent capture-and-save alternative in the 2026-11-06 session.",
     "public_source_api": [
@@ -202,11 +202,11 @@
     }
   ],
   "remaining": [
-    "Accepted cancellation before a completed draw: terminal control must bypass the scene queue and abort its owned draw wait.",
+    "Receive the current authority-revision/pending-intent frontend correction through build, canonical units, genuine stale-message forwarding and complete Studio; no current passing verdict is claimed here.",
     "Continuous playback and hidden/background capture without mixed camera/frame state or a second clock.",
-    "Native Qt async/Studio actual GUI-loop receiving; visible manual observation remains postponed.",
-    "Deliberately change the structure index before restore to strengthen the combined camera/frame boundary beyond current camera perturbations.",
-    "The full-source repeat passes; consolidated hosted and exact-installed acceptance and closeout remain pending."
+    "Preserve completed local native Qt receiving as input-specific; receive subsequent camera-intent changes where applicable, other required hosts/platforms and consolidated qualification. Visible human observation remains postponed.",
+    "Native second durable run changes the pre-restore frame and requires a fresh matching draw in all four cases; retain corresponding stronger coverage for the other applicable endpoint combinations.",
+    "The prior complete-source repeat passes only its declared bytes; reviewed delivery of current corrections, consolidated hosted/exact-installed acceptance and closeout remain pending."
   ],
   "limits": [
     "This does not adopt the wider F1 public immutable-scene proposal.",
@@ -527,6 +527,597 @@
       ],
       "human_sandbox_files_unchanged": 7
     },
-    "source_delivery_commit": "5148b6c5b105ba65695c07bde827a9de256348c6"
+    "source_delivery_commit": "5148b6c5b105ba65695c07bde827a9de256348c6",
+    "before_draw_python_correction": {
+      "state": "working source; frontend and Qt control receiving pending",
+      "causal_before": {
+        "native_exit": 1,
+        "failed": 8,
+        "scope": "Missing abandonment callback and exact deferred-capture removal"
+      },
+      "after": {
+        "native_exit": 0,
+        "passed": 141,
+        "seconds": 22.95,
+        "scope": "Six modules: capture, Studio files, connector deadlines, runtime and endpoint transport; overlaps earlier counts.",
+        "log_sha256": "28dcd0cfcad5e1a1d9dc47f07425452b41ea251d5386d4dfaf5ed437c9697c29",
+        "junit_sha256": "44a2f4c22704990d9957cb4f5dc078b81c7af2d3574426de90cc297956a99d69"
+      },
+      "mechanism": "Broker id/revision, exact unsent queue removal, successful capture sends no abort; future still terminates on transport failure."
+    },
+    "subsequent_control_slice": {
+      "source_state": "uncommitted working correction after 5148b6c5",
+      "python": {
+        "native_exit": 0,
+        "passed": 173,
+        "seconds": 35.72
+      },
+      "typescript": {
+        "native_exit": 0
+      },
+      "canonical_js_units": {
+        "native_exit": 0,
+        "bundled_runner_entries": 1
+      },
+      "complete_studio": {
+        "native_exit": 1,
+        "selected_inputs": 4660,
+        "changed_inputs": [],
+        "passed_cases": "Primary/popup before-draw cancel, primary strong file cases and popup state roundtrip before later failure.",
+        "failure": "Detached Studio state restore retains perturbed camera in primary and popup; correct frame and molecular structure survive. Cause unproven.",
+        "diagnosis": "Passive real camera reset/sync forwarding probe prepared; not yet run."
+      },
+      "native_qt": {
+        "native_exit": -11,
+        "selected_inputs": 4339,
+        "changed_inputs": [],
+        "provision": "Actual Wayland/NVIDIA WebGL2 renderer initialized.",
+        "failure": "QTest drag did not rotate before saving; teardown signal11. Input and shutdown causes unknown.",
+        "capture_acceptance": false,
+        "tracked_processes": 4,
+        "survivors": []
+      },
+      "qt_async_host_preflight": {
+        "native_exit": 0,
+        "passed": 2,
+        "seconds": 11.11,
+        "scope": "Actual QCore only; neither WebEngine loop lifecycle nor molecular capture acceptance."
+      },
+      "limits": "Original failures retained; no new formal received item or installed/hosted qualification.",
+      "passive_camera_diagnostic": {
+        "native_exit": 0,
+        "selected_inputs": 4663,
+        "changed_inputs": [],
+        "camera_observations": 881,
+        "applied_authority_poses": 17,
+        "apply_delay_ms": [
+          10.5,
+          818.6
+        ],
+        "scope": "Persistent helper with passive forwarding; does not reproduce original canonical detached failure or establish its cause.",
+        "remaining": "Controlled release of one genuine older camera message after authority restoration request."
+      },
+      "independent_qt_loop_comparison": {
+        "no_viewer_import": true,
+        "provider": "PySide6 6.11.2",
+        "ordinary_qt_native_exit": 0,
+        "standard_qtasyncio_runner_native_exit": -11,
+        "single_application_owned_loop_native_exit": 0,
+        "selected_inputs_each": 4339,
+        "changed_inputs": [],
+        "tracked_processes_each": 4,
+        "survivors": [],
+        "scope": "Actual native WebEngine lifetime control, not a complete capture acceptance.",
+        "next": "Full actual capture/restore/noDraw guard with explicit application-owned lifecycle."
+      },
+      "durable_native_qt": {
+        "state": "passed automated functional source guard; not human/installed qualification",
+        "pytest": {
+          "native_exit": 0,
+          "passed": 1,
+          "deselected": 1,
+          "seconds": 28.3
+        },
+        "outer_seconds": 30.3,
+        "inner_native_exit": 0,
+        "inner_seconds": 27.43,
+        "selected_inputs": 4341,
+        "changed_inputs": [],
+        "inner_processes": 4,
+        "outer_processes": 5,
+        "survivors": [],
+        "errors": [],
+        "host": {
+          "platform": "Wayland",
+          "gpu": "NVIDIA Quadro M2000",
+          "graphics": "actual WebGL2/ANGLE",
+          "qt": "PySide6 6.11.2",
+          "python": "3.14.7"
+        },
+        "cases": [
+          {
+            "source": "studio",
+            "kind": "state",
+            "exact_correlated_camera": true,
+            "heartbeat_progress": 700,
+            "perturbed_camera": true,
+            "changed_frame": 2,
+            "restored_frame": 1,
+            "fresh_restored_draw": true
+          },
+          {
+            "source": "python-async",
+            "kind": "state",
+            "exact_correlated_camera": true,
+            "heartbeat_progress": 621,
+            "perturbed_camera": true,
+            "changed_frame": 0,
+            "restored_frame": 2,
+            "fresh_restored_draw": true
+          },
+          {
+            "source": "studio",
+            "kind": "session",
+            "exact_correlated_camera": true,
+            "heartbeat_progress": 743,
+            "perturbed_camera": true,
+            "changed_frame": 1,
+            "restored_frame": 0,
+            "fresh_restored_draw": true
+          },
+          {
+            "source": "python-async",
+            "kind": "session",
+            "exact_correlated_camera": true,
+            "heartbeat_progress": 851,
+            "perturbed_camera": true,
+            "changed_frame": 2,
+            "restored_frame": 1,
+            "fresh_restored_draw": true
+          }
+        ],
+        "cancel": {
+          "unlocked_seconds": 0.023431281093508005,
+          "draws": 0,
+          "no_file": true,
+          "exact_abort": true,
+          "late_resume_no_revive": true
+        },
+        "gui_heartbeat_pulses": 5157,
+        "failed_deliveries": [],
+        "frontend_diagnostics": [],
+        "stderr_observations": {
+          "unsupported_none_get_form": 8,
+          "gbm_fallback": 1,
+          "dbus_address": 1,
+          "deprecation": 0,
+          "scope": "Observed stderr patterns, not an exhaustive diagnostic classification or a globally error-free host claim."
+        },
+        "runtime_metadata_version": "0.24.0+97.gdf4bf477.dirty",
+        "version_limit": "Observed generated development metadata, not a frozen Viewer version or installed artifact identity; actual module is the working checkout.",
+        "guards": [
+          "tests/test_qt_live_capture.py",
+          "tests/_qt_live_capture.py"
+        ],
+        "evidence_sha256": {
+          "pytest.xml": "5d8e9d4ae29c3ee42b46f072b87ea2b5391714dedb101bc79725227194533ed1",
+          "inputs-before.json": "538699c9a41cce0d09427363cabda5ea6b29bb291a2dcda9e166fa82d629af2a",
+          "inputs-after.json": "538699c9a41cce0d09427363cabda5ea6b29bb291a2dcda9e166fa82d629af2a",
+          "pytest/test_qt_live_capture_full_rend0/native-capture/report.json": "82a905af90e15a103736938fbe72f05bd3c4c37413b2e6e4686bc23cd4f6e988",
+          "pytest/test_qt_live_capture_full_rend0/native-capture/command-result.json": "391b0ab63fde4f3afdc776631ebfee303515106167f65b02e35489238fb86716",
+          "pytest/test_qt_live_capture_full_rend0/native-capture/events.json": "3527fda03425712e868ec8717795ae380734e430c5acb702e571da44676598cd",
+          "pytest/test_qt_live_capture_full_rend0/native-capture/stdout.log": "b614658fae2785ff1967bd18e1b240a8b16d9e0d179b3710ef916b99148a6b2b",
+          "pytest/test_qt_live_capture_full_rend0/native-capture/stderr.log": "e219259a64a580026f65ce850e127c71274e9bdf47dba119fb5ce3a27da97b92"
+        }
+      },
+      "diagnostic_stderr_owner": {
+        "issue": "uibcdf/molsysviewer#323",
+        "verification": "actual headless profile reproduces eight calls",
+        "owner": "Viewer _whole_summary_record unguarded contains loop queries msm.get(None) in empty panel snapshot; no provider correction required.",
+        "source_correction": "Working source corrected; five direct headless cases and 107 affected cases pass; subsequent native startup receiving pending.",
+        "guard": "tests/test_empty_whole_summary.py",
+        "subsequent_native_receiving": {
+          "native_exit": 0,
+          "selected_inputs": 4341,
+          "changed_inputs": [],
+          "unsupported_none_get_form": 0,
+          "previous_durable_observations": 8,
+          "scope": "Second durable actual Qt run receives the Viewer #323 caller correction without a provider patch or diagnostic suppression."
+        }
+      },
+      "subsequent_stale_camera_probe": {
+        "attempt1": {
+          "native_exit": 1,
+          "selected_inputs": 4666,
+          "changed_inputs": [],
+          "disposition": "Observer ordering and late event-listener preconditions fail before older packet release; not product proof."
+        },
+        "attempt2": {
+          "native_exit": 0,
+          "selected_inputs": 4666,
+          "changed_inputs": [],
+          "disposition": "Restored first draw matches; redispatch of stopped event does not reach passive downstream observer. Inconclusive forwarding, not proof of stale-message rejection or resolved canonical failure."
+        },
+        "next": "Private original-listener forwarding with unchanged real MessageEvent and explicit transport preflight; no producer fix justified yet.",
+        "attempt3": {
+          "native_exit": 1,
+          "selected_inputs": 4666,
+          "changed_inputs": [],
+          "original_native_event_forwarded": true,
+          "observer_old_event_deliveries": 1,
+          "draws_before_release": 0,
+          "draws_before_resume": 0,
+          "first_draw_matches_saved": false,
+          "first_draw_matches_held": true,
+          "older_reset_observed": true,
+          "cleanup_complete": true,
+          "driver_failure": null,
+          "disposition": "Intentional causal product red: original held real MessageEvent reaches the original listener and observer exactly once each; with real noDraw pause, the first resumed draw matches the genuine older camera rather than the saved authority pose.",
+          "limits": "Demonstrates the controlled older-message ordering regression; does not establish the exact temporal cause of the earlier canonical detached-Studio failure. Earlier attempt1/2 and passive observations retain their original scope.",
+          "evidence_sha256": {
+            "A5-Studio-stale-camera-observed-3.json": "9034b4f71a6e7d00bd797114b7fb2d0c2fb2999cdc2b0c7d516fcaea9db19f2b",
+            "A5-Studio-stale-camera-3-exit.json": "f24368b2d088a711b9381e2da18e417f23c9df2ca06ea487da7156f633389a15",
+            "A5-Studio-stale-camera-3.log": "14d5743b631627c72fc3de15cd4a861f1f89a9a71cb9d87408a953f896bb9952",
+            "A5-Studio-stale-camera-inputs-before-3.json": "5753a487c790d66f8974b84527a0b335db1fbf4a45eefd2b746cd6af3d895970",
+            "A5-Studio-stale-camera-inputs-after-3.json": "5753a487c790d66f8974b84527a0b335db1fbf4a45eefd2b746cd6af3d895970",
+            "A5-Studio-stale-camera-order-summary-3.json": "30207932fc048195e8f3c384840c5c4ceef0a803fa1cf2115c81a50a5cd32752"
+          }
+        },
+        "subsequent_decision": "The earlier next field describes the pre-attempt3 diagnostic plan. Attempt3 supplies controlled causal evidence; the following authority-revision source correction is now under receiving."
+      },
+      "durable_native_qt_after_empty_summary": {
+        "state": "passed second durable automated source guard after #323; not human/installed/candidate acceptance",
+        "outer_native_exit": 0,
+        "outer_seconds": 24.593585616908967,
+        "inner_native_exit": 0,
+        "inner_seconds": 21.29880016692914,
+        "selected_inputs": 4341,
+        "changed_inputs": [],
+        "inner_processes": 4,
+        "outer_processes": 5,
+        "survivors": [],
+        "outer_survivors": [],
+        "errors": [],
+        "host": {
+          "platform": "wayland",
+          "rendering": {
+            "canvas": true,
+            "webgl2": true,
+            "renderer": "ANGLE (NVIDIA Corporation, Quadro M2000/PCIe/SSE2, OpenGL ES 3.2)",
+            "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+          },
+          "qt_binding": "PySide6 6.11.2",
+          "python": "3.14.7"
+        },
+        "cases": [
+          {
+            "source": "studio",
+            "kind": "state",
+            "exact_correlated_camera": true,
+            "heartbeat_progress": 760,
+            "perturbed_camera": true,
+            "changed_frame": 2,
+            "restored_frame": 1,
+            "fresh_restored_draw": true
+          },
+          {
+            "source": "python-async",
+            "kind": "state",
+            "exact_correlated_camera": true,
+            "heartbeat_progress": 582,
+            "perturbed_camera": true,
+            "changed_frame": 0,
+            "restored_frame": 2,
+            "fresh_restored_draw": true
+          },
+          {
+            "source": "studio",
+            "kind": "session",
+            "exact_correlated_camera": true,
+            "heartbeat_progress": 875,
+            "perturbed_camera": true,
+            "changed_frame": 1,
+            "restored_frame": 0,
+            "fresh_restored_draw": true
+          },
+          {
+            "source": "python-async",
+            "kind": "session",
+            "exact_correlated_camera": true,
+            "heartbeat_progress": 909,
+            "perturbed_camera": true,
+            "changed_frame": 2,
+            "restored_frame": 1,
+            "fresh_restored_draw": true
+          }
+        ],
+        "cancel": {
+          "unlocked_seconds": 0.026728475000709295,
+          "draws": 0,
+          "no_file": true,
+          "exact_abort": true,
+          "late_resume_no_revive": true
+        },
+        "gui_heartbeat_pulses": 5278,
+        "failed_deliveries": [],
+        "frontend_diagnostics": [],
+        "stderr_observations": {
+          "unsupported_none_get_form": 0,
+          "gbm_fallback": 1,
+          "dbus_address": 1,
+          "deprecation": 0,
+          "scope": "Observed stderr patterns, not an exhaustive diagnostic classification or a globally error-free host claim."
+        },
+        "independent_file_review": {
+          "exact_camera_and_frame_files": 4,
+          "cancel_destination_absent": true,
+          "unsupported_none_form_stderr": 0
+        },
+        "closed": true,
+        "guards": [
+          "tests/test_qt_live_capture.py",
+          "tests/_qt_live_capture.py"
+        ],
+        "evidence_sha256": {
+          "pytest.xml": "f7a8c0b129b9e09fb24f9e84dc2d9c986eac515ef0a2144e401a491b266462e3",
+          "inputs-before.json": "18eb96dc492c7d8a9869dc20a0f72ee9b5177af93b65cd99ec0ff9d55e7b4ab5",
+          "inputs-after.json": "18eb96dc492c7d8a9869dc20a0f72ee9b5177af93b65cd99ec0ff9d55e7b4ab5",
+          "pytest/test_qt_live_capture_full_rend0/native-capture/report.json": "15273b0dbe61b6598ad6effb7122dd285542c0d9fc89fc4e3e801a52edea20c4",
+          "pytest/test_qt_live_capture_full_rend0/native-capture/command-result.json": "49f3adc60985cfbd230807dbe162bb28733fba38713a0783c21cfbeb72fd5492",
+          "pytest/test_qt_live_capture_full_rend0/native-capture/events.json": "9b5644979af88e53bd78c36b3408ea7d7ced7f863b8b80e6202baeaeda242b67",
+          "pytest/test_qt_live_capture_full_rend0/native-capture/stdout.log": "9210978153d05298a0c57427536d6bdb057895f8f800e4876463e8c604148244",
+          "pytest/test_qt_live_capture_full_rend0/native-capture/stderr.log": "c0294094a48a385cbdb47da98501fd746b1a7ef13508dc4592b0441b79672810"
+        },
+        "limits": "Actual local Wayland/NVIDIA WebGL2 only, without xvfb/mesa substitution; GBM fallback and D-Bus address diagnostics retained. Zero unsupported-None observations is not a globally error-free host claim. Earlier failures and first durable run remain historical evidence; this run does not qualify the later authority-revision source."
+      },
+      "authority_revision_working_correction": {
+        "state": "working Python/frontend source; implementation remains partial and unintegrated",
+        "mechanism": "Stamp authoritative camera revisions, record camera intent before deferred scene application, and reject older camera feedback for that pending intent. Preserve public partial snapshots and non-unit up vectors.",
+        "python_direct": {
+          "native_exit": 0,
+          "passed": 6
+        },
+        "python_combined": {
+          "native_exit": 0,
+          "passed": 87,
+          "overlaps_direct": true
+        },
+        "frontend_source": "prepared",
+        "frontend_build": "receiving in progress at this checkpoint; no passing claim",
+        "canonical_js_units": "receiving in progress at this checkpoint; no passing claim",
+        "complete_studio": "receiving in progress at this checkpoint; no passing claim",
+        "limits": "Earlier source/native/browser passes retain their exact input scope and do not qualify these newer bytes. No new public API, normalized-up requirement, accepted leaf, hosted/installed result or publication authorization is inferred."
+      }
+    }
+  },
+  "camera_revision_first_receiving": {
+    "status": "First revision inputs pass camera scenarios, full canonical entry native1; final guard lost its transport after test-instrumentation cleanup. Subsequent navigation correction remains in progress.",
+    "typescript": {
+      "native_exit": 0,
+      "seconds": 7.3
+    },
+    "canonical_unit": {
+      "native_exit": 0,
+      "bundled_entries_passed": 1,
+      "source_inputs_unchanged": 7159
+    },
+    "runtime_harness_e2e_builds": {
+      "native_exit_each": 0,
+      "development_runtime_only": true
+    },
+    "actual_studio": {
+      "native_exit": 1,
+      "seconds": 209.03292471007444,
+      "selected_inputs_unchanged": 4011,
+      "owned_processes_tracked": 17,
+      "owned_process_survivors": 0,
+      "original_receipt": "A5-camera-revision-Studio-1-exit.json",
+      "passed_before_failure": [
+        "primary state/session exact-camera and changed-frame restoration",
+        "primary and canvas before-draw Cancel",
+        "same-ID owner isolation",
+        "canvas popup state/session restoration",
+        "popup batch ownership",
+        "detached Studio state/session restoration",
+        "genuine held old camera packet rejection on first actual resumed draw",
+        "new native input supersession",
+        "partial snapshot with nonunit up vector"
+      ],
+      "terminal_failure": "Timeout awaiting request_visual_state in final detached before-draw guard; holder cleanup removed production message registrations."
+    },
+    "instrumentation_correction": "camera-packet-hold restores active original callbacks and native options in registration order; consumed once listeners stay consumed. Original native1 retained; full rerun pending.",
+    "later_navigation": {
+      "scope": "set_camera_snapshot followed before resolve by reset_view/reset_camera/zoom/zoom_to_position; replacing MolStar provider must not strand camera relay. Public raw options and existing MolStar focus/reset semantics preserved.",
+      "python_red": {
+        "native_exit": 1,
+        "failed": 5,
+        "deselected": 6
+      },
+      "initial_green_driver_error": {
+        "native_exit": 4,
+        "cause": "Root requested nonexistent tests/test_camera_mode.py; no tests ran."
+      },
+      "green2": {
+        "native_exit": 1,
+        "passed": 16,
+        "failed": 1,
+        "cause": "Existing equivalence guard compared two distinct private revisions. All visual/scientific fields still equal."
+      },
+      "green3": {
+        "native_exit": 0,
+        "passed": 17,
+        "seconds": 3.89,
+        "guard_update": "All payload fields still equal; consecutive private revisions explicitly required."
+      },
+      "frontend": "implementation/causal guard in progress, no current-source complete receiving claim"
+    },
+    "proof_boundary": "Earlier manifests certify their own fixed inputs only; later source changes require affected receiving. No human, hosted, installed, candidate or publication claim."
+  },
+  "current_control_camera_receiving": {
+    "status": "Current production source has scoped/consolidated Python, TypeScript/JS and native Qt acceptance; final browser navigation guard is under diagnosis. A5 remains partial.",
+    "python": {
+      "native_exit": 0,
+      "passed": 239,
+      "seconds": 142.6,
+      "warnings": {
+        "LegacyH5MSMWarning": 169
+      },
+      "log": "A5-batch-consolidated-1.log",
+      "junit": "A5-batch-consolidated-1.xml",
+      "scope": "18 affected camera/capture/state/transport/ownership/standalone/plot modules; not a new complete core run."
+    },
+    "typescript": {
+      "native_exit": 0,
+      "seconds": 10.12
+    },
+    "canonical_js": {
+      "native_exit": 0,
+      "seconds": 13.85,
+      "bundled_entries_passed": 1,
+      "unchanged_input_hashes": 7159
+    },
+    "native_qt": {
+      "receipt": "A5-native-durable-3/command-result.json",
+      "independent_file_review": "A5-native-durable-3/independent-file-review.json",
+      "native_exit": 0,
+      "selected_inputs_unchanged": 4341,
+      "outer_tracked_processes": 5,
+      "survivors_before_and_after_cleanup": 0,
+      "four_actual_files": "Exact correlated camera/frame, real perturbation/different frame before restore and matching fresh didDraw; session members verified.",
+      "heartbeat": 5677,
+      "cancel_before_draw": {
+        "seconds": 0.0282,
+        "draws": 0,
+        "no_file": true,
+        "late_resume_no_revive": true
+      },
+      "stderr": {
+        "unsupported_none_get_form": 0,
+        "traceback": 0,
+        "deprecation": 0,
+        "gbm_fallback": 1,
+        "dbus_address": 1
+      },
+      "scope": "Actual Wayland/NVIDIA/WebGL2, application-owned QtAsyncio loop; not human/other platform/installed acceptance."
+    },
+    "actual_studio2": {
+      "native_exit": 1,
+      "seconds": 226.89537629997358,
+      "unchanged_input_hashes": 4011,
+      "tracked_processes": 17,
+      "survivors": 0,
+      "scope": "All previous primary/canvas/detached roundtrips pass; failure waits for a peer camera packet in new pending-reset/focus scenario.",
+      "diagnosis": "Narrow actual run2 refutes echo as the cause in its reset phase: provider resolves, stateChanged fires and five actual draws occur while transition is true; a later tick finishes at the exact target without didDraw, leaving its completion owner pending and no outgoing/incoming new-epoch peer. Original full and narrow failures remain retained.",
+      "receipt": "A5-camera-navigation-Studio-2-exit.json"
+    },
+    "remaining": "Finish bounded actual navigation/fixture receiving and reviewed batch delivery. Continuous playback, hidden endpoints, current hosted/installed and postponed human acceptance retain separate pending scope.",
+    "final_draw_correction": {
+      "causal_actual": "A5-camera-navigation-narrow-2-observed.json",
+      "actual_native_exit": 1,
+      "actual_seconds": 46.57,
+      "actual_inputs_unchanged": 4014,
+      "mechanism": "MolStar can finish a same-pose camera transition without a final render; waiting only on didDraw strands the completed target.",
+      "working_correction": "Subscribe to existing commited lifecycle, request one final draw for the exact current resolved target/revision/input serial after transition completion, and complete only on the subsequent actual didDraw. Cleanup owns the subscription; no new timer/render clock.",
+      "unit_red": {
+        "native_exit": 1,
+        "prior_passed": 10,
+        "new_failed": 1
+      },
+      "unit_green": {
+        "native_exit": 0,
+        "passed": 11,
+        "selected_inputs_unchanged": 3
+      },
+      "status": "Runtime/harness/E2E builds0. New exact-source actual narrow and TypeScript/canonicalJS receiving are live; not declared passed."
+    }
+  },
+  "maintainer_pause_20261107": {
+    "status": "execution paused; working source not delivered",
+    "final_actual_narrow": {
+      "native_exit": 0,
+      "seconds": 24.87,
+      "selected_inputs_unchanged": 4014,
+      "owned_processes": 12,
+      "survivors": 0,
+      "scope": "Both real renderers paused; origin completes reset/zoom/local reset and relays before primary resumes, followed by matching actual primary pose."
+    },
+    "final_typescript": {
+      "native_exit": 0,
+      "seconds": 16.99
+    },
+    "final_canonical_js": {
+      "native_exit": 0,
+      "seconds": 12.2,
+      "bundled_entries_passed": 1,
+      "selected_inputs_unchanged": 7159
+    },
+    "complete_studio": "Interrupted by explicit maintainer pause, native1/118.52s,4011inputsunchanged,16ownedprocesses0survivors. Incomplete; not a pass or newly diagnosed product failure.",
+    "Qt4": "Automatic approval review rejected launch, citing an earlier read-only audit restriction. No process or result; no retry during pause.",
+    "remaining": "Complete Studio receiving, review Qt4 approval context, integrate current batch and its evidence. Broader A5 playback/hidden/hosted/installed/human acceptance remains pending."
+  },
+  "initial_observed_at": "2026-11-07T05:47:11.444524+00:00",
+  "resumed_final_source_receiving": {
+    "status": "Bounded current source slice verified; reviewed delivery pending, broader A5 remains partial.",
+    "base_head": "ff60bdec778f997169a8cd0bb98be85fc320eee2",
+    "source_sha256": {
+      "molsysviewer/viewer/core.py": "8f192ff07665c439cba57541044e8a59db1eaf51cdc52eaf26fad5b664b07bbd",
+      "molsysviewer/viewer/history.py": "5161b592e5e3ad439d6c06d7d55a6cb6fc4dbbd408e52c6f13ccfe5b9db2272e",
+      "molsysviewer/viewer/camera.py": "90e4907803155ab1ddf3684a8bdda41cdd2428ff3615a9cfce9cb22fc2e04937",
+      "molsysviewer/viewer/popup_snapshot.py": "5a381f55e43fb7cba83a0c208ac5b63a6bb39caa0870427d5e39f80725c99da5",
+      "molsysviewer/viewer/frontend_requests.py": "13951d155fdc23be27275ae733d324fab7a58a83874366804c4c7f943145b7a4",
+      "molsysviewer/viewer/visual_capture.py": "abf9e7f676187de5ca05b4750f6e3a728afe16b9f0d1f1a3c684fdb431239dd5",
+      "molsysviewer/transport/endpoints.py": "b9ede752795a19aedbc02a2b022c8d04e9785be592197ebde047bcd5587ccc4d",
+      "molsysviewer/standalone_qt/utils.py": "3fb8c5a51dd4a09f62e3ef092258bfab663445199746f4b6d88a3e3a549e2cf8",
+      "molsysviewer/standalone_qt/view_channel.py": "30394c55170e72fc39da565f099ad338b7fba9f3fea1515b1bc9c03ae5317ff3",
+      "molsysviewer/js/src/managers/camera-sync.ts": "5b11261fa0f5b3ad470ade2b33bea01126757161eaec01807b13f944b5de4ec4",
+      "molsysviewer/js/src/managers/canvas-draw.ts": "9f12a49b20cc0171b767285b0142f54b1720452a0e69ecb1bdb0d9a8f6d53a1a",
+      "molsysviewer/js/src/managers/viewer-controller.ts": "543bb329cde1df150181f9834c7343f11eed3183d94eff7a900ac992d30fe3b4",
+      "molsysviewer/js/src/managers/handlers/state-handlers.ts": "015cfeb899f14cd9e8c0c3b322b683b8d1522b40f36516b9bbeb44d75c86c105",
+      "molsysviewer/js/src/managers/handlers/scene-handlers.ts": "bc062bf779a03f31c2d42d3cc2a822e43627c26a93a2f19540bc69838466bca1",
+      "molsysviewer/js/src/index.ts": "a6a7e9933923c76d82c8f6036baa642887cc9fa2aa562ca5e6cef7c623d4cff8",
+      "molsysviewer/js/src/popup/popup-logic.ts": "c7a69e2c7cbb494230497a62f152dd6ed5015511c3e4928891e7dfb685c38607",
+      "molsysviewer/js/src/messages/frontend-requests.ts": "2176d0ab876bc020657ecd6b2ff129a409b51e3dac8fefd1b870aa88ac84fb6a",
+      "molsysviewer/viewer.js": "1c350481afcd8bd433e29c897de8896e39cfa5774c86ef15c1d014f04ae4dbcb"
+    },
+    "full_studio": {
+      "native_exit": 0,
+      "seconds": 198.54125549807213,
+      "selected_inputs_unchanged": 4011,
+      "owned_processes": 17,
+      "survivors": [],
+      "errors": [],
+      "log_sha256": "b5993dd234c462aca3374beeafb18ad43c4332baa833eec993f7c8f60450d08f",
+      "receipt": "A5-final-Studio-4-exit.json",
+      "scope": "Resumed full canonical Studio entry; actual Python/MolStar/Chromium, all save/restore/popup/cancellation workflows and final camera intent regressions; no human/nativeGPU/installed claim."
+    },
+    "native_qt": {
+      "native_exit": 0,
+      "seconds": 32.3414119980298,
+      "selected_inputs_unchanged": 4341,
+      "owned_processes": 5,
+      "survivors_before_cleanup": [],
+      "survivors_after_cleanup": [],
+      "independent_files": 4,
+      "fresh_restored_draws": 4,
+      "heartbeat_count": 6427,
+      "cancel_before_draw_seconds": 0.03995413496159017,
+      "cancel_draws": 0,
+      "no_file_and_no_revival": true,
+      "stderr": {
+        "unsupported_none_get_form": 0,
+        "deprecation": 0,
+        "gbm_fallback": 1,
+        "dbus_address": 1
+      },
+      "receipt": "A5-native-durable-4/command-result.json",
+      "independent_review": "A5-native-durable-4/independent-file-review.json",
+      "scope": "Actual local Wayland/NVIDIA/WebGL2, no display/GL override; not human/multiplatform/installed qualification."
+    },
+    "approval_context": "Previous Qt4 launch rejection is retained; after the maintainer explicitly resumed execution, the renewed request explained the completed read-only audit and ordinary approval review accepted the same bounded native validation.",
+    "remaining": [
+      "Reviewed current batch delivery and applicable consolidated hosted checkpoint.",
+      "Continuous-playback frame/camera/derived-geometry coherence and hidden endpoints.",
+      "Exact installed qualification and postponed human observations; no publication authorization."
+    ]
   }
 }

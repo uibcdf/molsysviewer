@@ -23,14 +23,15 @@ test("numeric x positions, events and playhead agree for irregular samples", () 
         overlay.setFrame(0);
         svg.dispatch("click", { clientX: positions[1], preventDefault() {} });
         assert.equal(sought.at(-1), 1, "otherwise a tie chooses the earliest matching frame");
-        assert.ok(svg.findAll("text").some(text => text.textContent === "10"));
-        assert.ok(svg.findAll("text").some(text => text.textContent === "20"));
+        assert.equal(numericText(svg, "x-min").find("tspan")!.textContent, "10");
+        assert.equal(numericText(svg, "x-max").find("tspan")!.textContent, "20");
     });
 });
 
 test("finite extreme and constant plot values produce finite SVG coordinates", () => {
     withFakeDom(() => {
-        for (const values of [[-1e308, 0, 1e308], [1e300, 1e300, 1e300]]) {
+        for (const values of [[-1e308, 0, 1e308], [1e300, 1e300, 1e300],
+            [Number.MIN_VALUE, 2 * Number.MIN_VALUE, 3 * Number.MIN_VALUE]]) {
             const host = new FakeElement();
             const overlay = new TrajectoryPlotOverlay(host as unknown as HTMLElement, () => {});
             overlay.set({ visible: true, n_frames: 3, x: [-1e308, 0, 1e308],
@@ -41,6 +42,97 @@ test("finite extreme and constant plot values produce finite SVG coordinates", (
         }
     });
 });
+
+test("tiny signed values and narrow limits remain distinct without changing raw values", () => {
+    withFakeDom(() => {
+        const host = new FakeElement();
+        const overlay = new TrajectoryPlotOverlay(host as unknown as HTMLElement, () => {});
+        const cases = [
+            { x: [1.0001, 1.0002, 1.0005], y: [0.0001, 0.0002, 0.0005], limits: ["1.0001", "1.0005"], y0: "1e-4" },
+            { x: [1.0001, 1.0002, 1.0005], y: [0.001, 0.002, 0.005], limits: ["1.0001", "1.0005"], y0: "0.001" },
+            { x: [-2e-8, 0, 2e-8], y: [-1e-8, 0, 1e-8], limits: ["-2e-8", "2e-8"], y0: "-1e-8" },
+            { x: [1, 1 + Number.EPSILON, 1 + 2 * Number.EPSILON], y: [1, 2, 3],
+                limits: ["1", "1.0000000000000004"], y0: "1" },
+            { x: [999999.9999999999, 1e6, 1e6], y: [1, 2, 3],
+                limits: ["999999.9999999999", "1e6"], y0: "1" },
+            { x: [0.0009999999999999998, 0.001, 0.001], y: [1, 2, 3],
+                limits: ["9.999999999999998e-4", "0.001"], y0: "1" },
+        ];
+        for (const fixture of cases) {
+            const before = structuredClone(fixture);
+            overlay.set({ x: fixture.x, series: [{ label: "control", values: fixture.y }] });
+            overlay.setFrame(0);
+            const svg = host.find("svg")!;
+            assert.deepEqual(["x-min", "x-max"].map(name => numericText(svg, name).find("tspan")!.textContent), fixture.limits);
+            const readout = numericText(svg, "readout");
+            assert.equal(readout.find("tspan")!.textContent, `x: ${fixture.limits[0]} · y: ${fixture.y0}`);
+            assert.equal(readout.find("title")!.textContent, `x: ${fixture.x[0]} · y: ${fixture.y[0]}`);
+            assert.equal(readout.attributes["aria-label"], readout.find("title")!.textContent);
+            assert.equal(readout.attributes.tabindex, "0");
+            assert.deepEqual(fixture, before, "formatting must not modify the caller's values");
+        }
+    });
+});
+
+test("adjacent limits near the maximum finite value do not round beyond binary64", () => {
+    withFakeDom(() => {
+        const host = new FakeElement();
+        const overlay = new TrajectoryPlotOverlay(host as unknown as HTMLElement, () => {});
+        const values = [1.7976931348623153e308, 1.7976931348623155e308, Number.MAX_VALUE];
+        overlay.set({ x: values, series: [{ label: "extreme", values }] });
+        const svg = host.find("svg")!;
+        const limits = ["x-min", "x-max"].map(name => numericText(svg, name).find("tspan")!.textContent);
+        assert.deepEqual(limits.map(Number), [values[0], values[2]]);
+        assert.ok(limits.map(Number).every(Number.isFinite));
+    });
+});
+
+test("large-offset geometry subtracts represented values before normalization", () => {
+    withFakeDom(() => {
+        const host = new FakeElement();
+        const overlay = new TrajectoryPlotOverlay(host as unknown as HTMLElement, () => {});
+        const values = [1e12 + 0.001, 1e12 + 0.002, 1e12 + 0.003];
+        overlay.set({ x: values, series: [{ label: "offset", values }] });
+        const svg = host.find("svg")!;
+        const points = svg.find("polyline")!.attributes.points.split(" ").map(point => point.split(",").map(Number));
+        // These represented binary64 offsets are 8, 16 and 25 times 2^-13.
+        const expected = 8 / 17;
+        for (const dimension of [0, 1]) {
+            const fraction = (points[1][dimension] - points[0][dimension]) / (points[2][dimension] - points[0][dimension]);
+            assert.ok(Math.abs(fraction - expected) < 1e-12);
+        }
+        overlay.setFrame(1);
+        const readout = numericText(svg, "readout");
+        assert.equal(readout.find("tspan")!.textContent, "x: 1.000000000000002e12 · y: 1.000000000000002e12");
+        assert.equal(readout.find("title")!.textContent, "x: 1000000000000.002 · y: 1000000000000.002");
+        assert.notEqual(numericText(svg, "x-min").find("tspan")!.textContent, numericText(svg, "x-max").find("tspan")!.textContent);
+    });
+});
+
+test("rounded readouts in broad ranges retain full raw access for nearby samples and signed zero", () => {
+    withFakeDom(() => {
+        const host = new FakeElement();
+        const overlay = new TrajectoryPlotOverlay(host as unknown as HTMLElement, () => {});
+        const values = [0, 1e12 + 0.001, 1e12 + 0.002];
+        overlay.set({ x: values, series: [{ label: "broad", values: [-0, 1e-8, 2e-8] }] });
+        const svg = host.find("svg")!;
+        const readout = numericText(svg, "readout");
+        overlay.setFrame(0);
+        assert.equal(readout.find("tspan")!.textContent, "x: 0 · y: 0");
+        assert.equal(readout.find("title")!.textContent, "x: 0 · y: -0");
+        overlay.setFrame(1);
+        assert.equal(readout.find("tspan")!.textContent, "x: 1e12 · y: 1e-8");
+        assert.equal(readout.attributes["aria-label"], "x: 1000000000000.001 · y: 1e-8");
+        overlay.setFrame(2);
+        assert.equal(readout.attributes["aria-label"], "x: 1000000000000.002 · y: 2e-8");
+    });
+});
+
+function numericText(svg: FakeElement, name: string): FakeElement {
+    const result = svg.findAll("text").find(text => text.attributes["data-molsysviewer-plot-value"] === name);
+    assert.ok(result, `missing numeric plot text ${name}`);
+    return result;
+}
 
 class FakeElement {
     public readonly style: Record<string, string> = {};
@@ -55,7 +147,11 @@ class FakeElement {
 
     setAttribute(name: string, value: string) { this.attributes[name] = value; }
     appendChild(child: FakeElement) { child.parentElement = this; this.children.push(child); return child; }
-    replaceChildren() { for (const c of this.children) c.parentElement = null; this.children = []; }
+    replaceChildren(...children: FakeElement[]) {
+        for (const c of this.children) c.parentElement = null;
+        this.children = [];
+        for (const child of children) this.appendChild(child);
+    }
     addEventListener(type: string, cb: (e: any) => void) { (this.listeners[type] ||= []).push(cb); }
     getBoundingClientRect() { return { left: 0, top: 0, width: 440, height: 168 }; }
     remove() {

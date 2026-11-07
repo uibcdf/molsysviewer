@@ -375,3 +375,211 @@ def test_a_load_waits_for_the_structure_and_not_merely_for_the_message():
 
     assert bridge.inflight["wait_event"] == "message_ack"
     assert bridge.inflight["timeout_s"] == 5.0
+
+
+def _capture(request_id="capture-a", revision="revision-a"):
+    return {
+        "op": "request_visual_state",
+        "request_id": request_id,
+        "capture_revision": revision,
+        "capture_timeout_ms": 10000,
+    }
+
+
+def _cancel_capture(request_id="capture-a", revision="revision-a"):
+    return {"op": "cancel_visual_state", "request_id": request_id, "capture_revision": revision}
+
+
+def test_qt_abort_reaches_a_waiting_capture_and_late_ack_cannot_release_the_next_scene():
+    bridge, webview = _ready_bridge()
+    bridge.send(_capture())
+    original = bridge.inflight
+    bridge.send({"op": "add_label", "tag": "next"})
+    bridge.send(_cancel_capture())
+    assert len(webview.delivered) == 3
+    assert '"op":"cancel_visual_state"' in webview.delivered[1]
+    assert '"op":"add_label"' in webview.delivered[2]
+    following = bridge.inflight
+    assert following is not original
+    bridge.send({"op": "clear_all"})
+    bridge.handle_frontend_event({"event": "message_ack", "id": original["id"], "generation": original["generation"]})
+    assert bridge.inflight is following
+    assert len(webview.delivered) == 3
+    control = next(iter(bridge._controls.values()))
+    bridge.handle_frontend_event({"event": "message_ack", "id": control["id"], "generation": control["generation"]})
+    assert bridge.inflight is following and not bridge._controls
+    _acknowledge(bridge)
+    assert '"op":"clear_all"' in webview.delivered[-1]
+
+
+def test_qt_abort_purges_only_its_exact_unsent_capture_tuple():
+    bridge, webview = _ready_bridge()
+    bridge.send({"op": "clear_all"})
+    original = bridge.inflight
+    bridge.send(_capture())
+    bridge.send(_capture(revision="revision-b"))
+    bridge.send(_capture(request_id="capture-b"))
+    bridge.send(_cancel_capture())
+    assert bridge.inflight is original
+    assert len(webview.delivered) == 2
+    assert [entry["message"] for entry in bridge.queue] == [
+        {**_capture(revision="revision-b"), "id": "qt-3", "generation": 0},
+        {**_capture(request_id="capture-b"), "id": "qt-4", "generation": 0},
+    ]
+
+
+@pytest.mark.parametrize("action", ["save_work_file", "cancel_work_file"])
+def test_qt_save_verdict_has_its_own_ack_while_restore_stays_ordered(action):
+    bridge, webview = _ready_bridge()
+    bridge.send(_capture())
+    original = bridge.inflight
+    bridge.send({"op": "studio_action_result", "action": action, "request_id": "studio-a", "ok": True})
+    bridge.send({"op": "studio_action_result", "action": "restore_work_file", "request_id": "restore", "ok": True})
+    assert bridge.inflight is original
+    assert len(webview.delivered) == 2
+    assert len(bridge.queue) == 1
+    control = next(iter(bridge._controls.values()))
+    bridge.handle_frontend_event({"event": "message_ack", "id": control["id"], "generation": control["generation"] + 1})
+    assert bridge._controls
+    bridge.handle_frontend_event(
+        {"event": "message_error", "id": control["id"], "generation": control["generation"], "error": "rejected"}
+    )
+    assert not bridge._controls
+    assert bridge.inflight is original and len(webview.delivered) == 2
+
+
+def test_qt_capture_ack_deadline_covers_its_requested_draw_wait():
+    bridge, _ = _ready_bridge()
+    bridge.send(_capture())
+    assert bridge.inflight["timeout_s"] >= 11.0
+
+
+@pytest.mark.parametrize("transition", ["reload", "generation", "close"])
+def test_qt_control_ownership_ends_on_reload_generation_or_close(transition):
+    bridge, webview = _ready_bridge()
+    bridge.ready = False
+    bridge.send(_capture())
+    bridge.send(_cancel_capture())
+    assert not bridge.queue, "an unseen cancelled capture must not survive bootstrap"
+    assert not webview.delivered and len(bridge._controls) == 1
+    if transition == "reload":
+        bridge.on_load_started()
+    elif transition == "generation":
+        bridge.begin_generation()
+    else:
+        bridge._close()
+    assert not bridge._controls
+    bridge._flush_controls()
+    assert not webview.delivered
+
+
+def test_qt_lifecycle_lane_is_bounded_and_malformed_abort_cannot_retire_a_capture():
+    bridge, webview = _ready_bridge()
+    bridge.MAX_LIFECYCLE_CONTROLS = 2
+    bridge.send(_capture())
+    original = bridge.inflight
+    with pytest.raises(ValueError, match="exact request id"):
+        bridge.send({"op": "cancel_visual_state", "request_id": "capture-a"})
+    assert bridge.inflight is original
+    for request_id in ("a", "b"):
+        bridge.send({"op": "studio_action_result", "action": "save_work_file", "request_id": request_id, "ok": True})
+    with pytest.raises(RuntimeError, match="capacity"):
+        bridge.send(_cancel_capture())
+    assert bridge.inflight is original and len(bridge._controls) == 2
+    assert len(webview.delivered) == 3
+
+
+def test_qt_pending_control_flushes_before_queued_scene_at_real_ready():
+    bridge, webview = _ready_bridge()
+    bridge.ready = False
+    bridge.send({"op": "clear_all"})
+    bridge.send(_cancel_capture())
+    assert not webview.delivered
+    bridge.handle_frontend_event({"event": "ready"})
+    assert len(webview.delivered) == 2
+    assert '"op":"cancel_visual_state"' in webview.delivered[0]
+    assert '"op":"clear_all"' in webview.delivered[1]
+
+
+def test_qt_controls_retry_and_expire_on_real_qt_timers_without_changing_the_scene_owner():
+    """Native loop/transport evidence; this is not WebEngine/capture acceptance."""
+    import json
+    import subprocess
+    import sys
+    import textwrap
+
+    pytest.importorskip("PySide6.QtCore")
+    script = textwrap.dedent(
+        """
+        import json, runpy, time
+        from PySide6.QtCore import QCoreApplication, QTimer
+        from molsysviewer.standalone_qt.utils import QtMessageBridge
+
+        app = QCoreApplication([])
+        transport = runpy.run_path("tests/test_qt_transport_contract.py")
+        Page = transport["_RecordingWebView"]
+        capture = transport["_capture"]
+        cancel = transport["_cancel_capture"]
+        class DelayedPage(Page):
+            def runJavaScript(self, script, callback=None):
+                self.delivered.append(script)
+                if callback:
+                    callback("molsysviewer-handler-missing" if len(self.delivered) == 2
+                             else "molsysviewer-message-accepted")
+        page = DelayedPage()
+        statuses = []
+        bridge = QtMessageBridge(page, QTimer, status_callback=statuses.append)
+        bridge.ready = True
+        bridge.RETRY_BASE_DELAY_MS = 1
+        bridge.send(capture())
+        scene = bridge.inflight
+        bridge.send({"op":"studio_action_result", "action":"save_work_file", "request_id":"studio", "ok":True})
+        control = next(iter(bridge._controls.values()))
+        timed = QtMessageBridge(Page(), QTimer, status_callback=statuses.append)
+        timed.ready = True
+        timed.send(capture())
+        timed_scene = timed.inflight
+        timed.send({"op":"studio_action_result", "action":"cancel_work_file", "request_id":"timeout", "ok":True})
+        expiry = next(iter(timed._controls.values()))
+        expiry["timeout_s"] = 0.005
+        expiry["deadline"] = time.monotonic() + 0.005
+        timed._arm_timeout(expiry)
+        retired = []
+        for transition in ("generation", "reload", "close"):
+            item = QtMessageBridge(DelayedPage(), QTimer)
+            item.ready = True
+            item.RETRY_BASE_DELAY_MS = 1
+            item.send(capture())
+            item.send({"op":"studio_action_result", "action":"save_work_file", "request_id":transition, "ok":True})
+            before = len(item.webview.delivered)
+            {"generation":item.begin_generation, "reload":item.on_load_started, "close":item._close}[transition]()
+            retired.append((item, before))
+        failure = []
+        def finish():
+            try:
+                assert control["delivery_attempts"] == 2
+                assert bridge.inflight is scene
+                assert not bridge.queue
+                bridge.handle_frontend_event({"event":"message_ack", "id":control["id"], "generation":control["generation"]})
+                assert not bridge._controls and bridge.inflight is scene
+                assert not timed._controls and timed.inflight is timed_scene
+                assert any("timed out" in str(item) for item in statuses)
+                for item, before in retired:
+                    assert len(item.webview.delivered) == before and not item._controls
+                print(json.dumps({"retry_attempts":control["delivery_attempts"], "expiry":True,
+                                  "scene_owners_unchanged":True, "retired_controls":len(retired)}), flush=True)
+            except BaseException as error:
+                failure.append(error)
+            finally:
+                bridge._close(); timed._close()
+                for item, _ in retired: item._close()
+                app.quit()
+        QTimer.singleShot(40, finish)
+        app.exec()
+        if failure: raise failure[0]
+        """
+    )
+    result = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stdout + result.stderr
+    report = json.loads(result.stdout.strip().splitlines()[-1])
+    assert report == {"retry_attempts": 2, "expiry": True, "scene_owners_unchanged": True, "retired_controls": 3}

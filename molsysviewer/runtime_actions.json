@@ -117,6 +117,7 @@
   },
   "outbound_requests": [
     "request_visual_state",
+    "cancel_visual_state",
     "request_camera_snapshot",
     "request_image_export"
   ],

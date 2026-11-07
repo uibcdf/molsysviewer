@@ -1,0 +1,62 @@
+{
+  "schema": "molsysviewer.empty_whole_summary_receiving@1",
+  "issue": "uibcdf/molsysviewer#323",
+  "status": "source corrected; actual headless regression and affected Python suite pass; native after-change receiving separate",
+  "owner": "Viewer",
+  "source_sha256": {
+    "molsysviewer/viewer/regions.py": "a7d108f9c091836ed6f322aeea3751d4ac65b74104ac54f7268134e5031dcfd5",
+    "tests/test_empty_whole_summary.py": "e8987de346d667af8828bd4bf9b4bd0fe85d0bd7b2a97bfc7108b0b324dc11a4"
+  },
+  "source_inputs_unchanged_during_broader_gate": true,
+  "selected_inputs": 2,
+  "input_scope": "Only the two changed source/guard files; not a universal dependency/whole-worktree immutable-input claim.",
+  "before": {
+    "native_exit": 1,
+    "failed": 3,
+    "passed": 2,
+    "seconds": 6.7,
+    "observed_none_probes": [
+      24,
+      24,
+      8
+    ],
+    "full_receptor_preserved": true
+  },
+  "after_scoped": {
+    "native_exit": 0,
+    "passed": 5,
+    "seconds": 4.97,
+    "scope": "Empty/absolute-shape panel+canvas+standaloneHTML, actualNonebootstrap, native loaded pentalanine counts and prior-profiler forwarding/restoration."
+  },
+  "after_broader": {
+    "native_exit": 0,
+    "passed": 107,
+    "deselected": 4,
+    "seconds": 61.93,
+    "warnings": {
+      "LegacyH5MSMWarning": 55
+    },
+    "none_form_diagnostics": 0,
+    "scope": "Whole API/panel, popup completeness/fidelity, static/buildHTML, standalone core and newemptyguard; qt_runtime deselections are not native passes."
+  },
+  "effects": "No hidden MolSys creation or scientific provider change. Empty contains stays eight zeros; loaded native counts and exact absolute geometry/state persist.",
+  "test_precondition_refinement": "Unexecuted shape assertion was corrected from top-level tag to the actual add_sphere.options.tag schema before first green; the causal no-None assertions are unchanged.",
+  "limits": "No GUI/GPU rerun for these changed source bytes yet; previous native3/durable1 retain their exact source scope. Tests explicitly opt out only if an existing noncallable native profiler cannot be composed; local receiving has no skips.",
+  "log_hashes": {
+    "A5-empty-whole-red-1.log": "e8859be52152154687b9a23b721e900e0778ef919246cd51a9af7abe204c7729",
+    "A5-empty-whole-red-1.xml": "ba98341a400b099c5bed8df0ef3a0e13440ec8cef430b42643cf39ee81cac188",
+    "A5-empty-whole-red-1-receptor.txt": "e323adf151a0aa136731efd08f4ba4373bd50dc179701a10e684f11e37ec8d67",
+    "A5-empty-whole-green-1.log": "9dafeaa713d4ce962b0011f824e55994f1491435fa64444ba3dfcaf7debad760",
+    "A5-empty-whole-green-1.xml": "b0dc4957cb9dc4cfb44cacbe32dcb41715bd8698c9c1dfaf87a6dabd69af2995",
+    "A5-empty-whole-green-2.log": "66b304ab0785c668e2cf60d8bd96f191d0b500ecc112dba62f87c4ef1e690ed4",
+    "A5-empty-whole-green-2.xml": "e638e3672aee817a58be70d07b17a58e534ad333b0f9a96187693505a46b3766"
+  },
+  "final_shared_runtime_native_receiving": {
+    "native_exit": 0,
+    "selected_inputs_unchanged": 4341,
+    "unsupported_none_form_errors": 0,
+    "process_survivors": 0,
+    "independent_saved_file_matches": 4,
+    "scope": "Actual final-runtime Qt4 receiving; one GBM and one D-Bus observation retained. Delivery/hosted/installed acceptance separate."
+  }
+}

@@ -50,7 +50,7 @@ class FrontendRequests:
     No lock or scientific-edit context is held across the asynchronous wait.
     """
 
-    def __init__(self, *, capacity: int = 32, publish=None):
+    def __init__(self, *, capacity: int = 32, publish=None, abandon=None):
         if type(capacity) is not int or capacity < 1:
             raise ValueError("Frontend request capacity must be a positive integer.")
         self._capacity = capacity
@@ -59,6 +59,7 @@ class FrontendRequests:
         self._owner_id = uuid4().hex
         self._lock = RLock()
         self._publish = publish if publish is not None else lambda callback: callback()
+        self._abandon = abandon
 
     def begin(self, *, endpoint_id: str, reply_event: str, revision: str, timeout: float) -> FrontendRequest:
         for value in (endpoint_id, reply_event, revision):
@@ -78,7 +79,9 @@ class FrontendRequests:
             self._pending[request.request_id] = request
             # Cancellation releases this entry too; a late reply cannot revive
             # it or complete a subsequent request.
-            request.future.add_done_callback(lambda _: self._release(request))
+            request.future.add_done_callback(
+                lambda future: self.cancel(request) if future.cancelled() else self._release(request)
+            )
         return request
 
     def receive(self, content: dict, *, endpoint_id: str) -> bool:
@@ -105,7 +108,10 @@ class FrontendRequests:
         if not request.future.set_running_or_notify_cancel():
             return False
         if request.deadline <= time.monotonic():
-            self._publish(lambda: request.future.set_exception(FrontendRequestError(reason="request_timeout")))
+            try:
+                self._notify_abandon(request)
+            finally:
+                self._publish(lambda: request.future.set_exception(FrontendRequestError(reason="request_timeout")))
             return False
         if content.get("ok") is not True:
             self._publish(lambda: request.future.set_exception(FrontendRequestError(reason="renderer_refused")))
@@ -126,20 +132,21 @@ class FrontendRequests:
         except TimeoutError as error:
             raise FrontendRequestError(reason="request_timeout") from error
         finally:
-            self._release(request)
             self.cancel(request)
 
     def cancel(self, request: FrontendRequest) -> None:
-        self._release(request)
-        self._publish(request.future.cancel)
+        try:
+            if self._release(request):
+                self._notify_abandon(request)
+        finally:
+            self._publish(request.future.cancel)
 
     def cancel_endpoint(self, endpoint_id: str) -> None:
         with self._lock:
             pending = [request for request in self._pending.values() if request.endpoint_id == endpoint_id]
             for request in pending:
                 self._pending.pop(request.request_id)
-        for request in pending:
-            self._fail(request, "endpoint_closed")
+        self._fail_all(pending, "endpoint_closed")
 
     def expire(self) -> None:
         now = time.monotonic()
@@ -147,23 +154,42 @@ class FrontendRequests:
             pending = [request for request in self._pending.values() if request.deadline <= now]
             for request in pending:
                 self._pending.pop(request.request_id)
-        for request in pending:
-            self._fail(request, "request_timeout")
+        self._fail_all(pending, "request_timeout")
 
     def close(self) -> None:
         with self._lock:
             self._closed = True
             pending = tuple(self._pending.values())
             self._pending.clear()
-        for request in pending:
-            self._fail(request, "view_closed")
+        self._fail_all(pending, "view_closed")
 
-    def _release(self, request: FrontendRequest) -> None:
+    def _release(self, request: FrontendRequest) -> bool:
         with self._lock:
             if self._pending.get(request.request_id) is request:
                 self._pending.pop(request.request_id)
+                return True
+        return False
+
+    def _notify_abandon(self, request: FrontendRequest) -> None:
+        if self._abandon is not None:
+            self._publish(lambda: self._abandon(request))
 
     def _fail(self, request: FrontendRequest, reason: str) -> None:
         self._release(request)
-        if request.future.set_running_or_notify_cancel():
-            self._publish(lambda: request.future.set_exception(FrontendRequestError(reason=reason)))
+        try:
+            self._notify_abandon(request)
+        finally:
+            if request.future.set_running_or_notify_cancel():
+                self._publish(lambda: request.future.set_exception(FrontendRequestError(reason=reason)))
+
+    def _fail_all(self, pending, reason):
+        errors = []
+        for request in pending:
+            try:
+                self._fail(request, reason)
+            except BaseException as error:
+                errors.append(error)
+        if len(errors) == 1:
+            raise errors[0]
+        if errors:
+            raise BaseExceptionGroup("Renderer capture cleanup failed", errors)

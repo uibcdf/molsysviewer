@@ -9,6 +9,7 @@ import warnings
 import weakref
 from collections import OrderedDict
 from contextlib import contextmanager
+from copy import deepcopy
 from typing import Any, Dict, Mapping, Sequence
 
 import molsysmt as msm
@@ -335,7 +336,11 @@ class MolSysView(
         self._current_molecular_projection: dict | None = None
         self._molecular_projection_revision = 0
         self._last_camera_snapshot: dict | None = None
-        self._frontend_requests = FrontendRequests(publish=self._system_edits._after_unlock)
+        self._camera_projection_revision = 0
+        self._pending_camera_intent: dict | None = None
+        self._frontend_requests = FrontendRequests(
+            publish=self._system_edits._after_unlock, abandon=self._abandon_frontend_request
+        )
         self._work_file_saves = WorkFileSaves(self)
         self._current_figure_spec: dict | None = None
         self._last_image_export_event: dict | None = None
@@ -1388,6 +1393,34 @@ class MolSysView(
         # to flush, so a lost flush degrades to a late delivery, never a lost one.
         self._flush_deferred_widget_messages(defer_for_endpoint)
 
+    def _abandon_frontend_request(self, request) -> None:
+        """Release an exact renderer barrier, including an unsent capture.
+
+        This is lifecycle control, independent of its canvas's structural queue.
+        The broker invokes it only for an abandoned reservation, after molecular
+        ownership is released. Successful capture never sends an abort.
+        """
+        if request.reply_event != "visual_state_snapshot":
+            return
+        endpoint = None if request.endpoint_id == "primary" else request.endpoint_id
+        self._endpoint_transfers.discard_deferred(
+            endpoint,
+            lambda message: (
+                message.get("op") == "request_visual_state"
+                and message.get("request_id") == request.request_id
+                and message.get("capture_revision") == request.revision
+            ),
+        )
+        if self._ready or self.closed:
+            message = {
+                "op": "cancel_visual_state",
+                "request_id": request.request_id,
+                "capture_revision": request.revision,
+            }
+            if endpoint is not None:
+                message["target_endpoint_id"] = endpoint
+            self._transmit_widget_message(message)
+
     def _transmit_widget_message(self, message: Mapping[str, Any], buffers: Any = None) -> None:
         """Hand a message to the connector, bypassing the structure-stream gate.
 
@@ -1534,6 +1567,8 @@ class MolSysView(
         )
 
     def _deliver_transport_message(self, message: dict[str, Any]) -> None:
+        if message.get("op") in self._CAMERA_INTENT_OPS and "camera_revision" not in message:
+            message = self._prepare_camera_intent_message(message)
         is_molecular = message.get("op") in self._MOLECULAR_LOAD_OPS
         if not is_molecular:
             target = message.get("target_endpoint_id")
@@ -1576,6 +1611,37 @@ class MolSysView(
                     },
                     defer_for_endpoint=endpoint_id,
                 )
+
+    def _prepare_camera_intent_message(self, message: Mapping[str, Any]) -> dict[str, Any]:
+        """Detach one authority navigation intent before any endpoint fanout.
+
+        Passive camera telemetry and portable scene records do not advance this
+        renderer-local ordering domain. An explicit pre-ready request remains a
+        command for the first primary canvas; it is never a popup camera cache.
+        """
+        if message.get("op") == "set_camera_snapshot" and not message.get("snapshot"):
+            return dict(message)
+        self._camera_projection_revision += 1
+        stamped = {**deepcopy(dict(message)), "camera_revision": self._camera_projection_revision}
+        self._pending_camera_intent = deepcopy(stamped) if not self._ready else None
+        return stamped
+
+    def _deliver_pending_camera_intent(self) -> None:
+        pending = self._pending_camera_intent
+        if pending is None:
+            return
+        self._pending_camera_intent = None
+        message = deepcopy(pending)
+        # The primary's pending explicit command must not rewind an existing
+        # popup. Native/remote connectors retain their owned primary default.
+        if self._runtime_router is not None:
+            message["target_endpoint_id"] = f"widget-host:{self._binary_session_id}"
+        try:
+            self._send_widget_message(message)
+        except BaseException:
+            if self._camera_projection_revision == pending["camera_revision"]:
+                self._pending_camera_intent = pending
+            raise
 
     def _is_read_only_addon_request(self, content: Mapping[str, Any]) -> bool:
         """Classify only a currently mounted, endpoint-owned panel action."""
@@ -1664,6 +1730,7 @@ class MolSysView(
             )
             for message in messages:
                 self._deliver_transport_message(message)
+            self._deliver_pending_camera_intent()
         elif event in {
             "structure_data_begin_ack",
             "structure_data_chunk_ack",

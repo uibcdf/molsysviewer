@@ -141,6 +141,9 @@ def write_captured_state(view, captured: CapturedState, path, *, kind: str) -> N
 
 async def capture_live_state(view, *, timeout: float) -> CapturedState:
     """Await a coherent primary capture without retaining the edit lock."""
+    require_host = getattr(view.widget, "_require_async_capture_host", None)
+    if callable(require_host):
+        require_host()
     captured, request = prepare_live_capture(view, timeout=timeout)
     send_live_capture(view, request)
     reply = await view._frontend_requests.wait(request)

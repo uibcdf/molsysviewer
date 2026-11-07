@@ -1,7 +1,8 @@
 // src/index.ts
 
 import { MolSysViewerController, suppressCanvasContextMenu } from "./managers/viewer-controller";
-import { handleFrontendRequest, isFrontendRequest } from "./messages/frontend-requests";
+import { handleFrontendRequest, isFrontendControl, isFrontendRequest, isStudioWorkFileResult,
+    VisualStateCaptureRequests } from "./messages/frontend-requests";
 import { ViewerMessage } from "./messages/viewer-messages";
 import { trajectorySyncToAuthority } from "./messages/trajectory-intent";
 import { frontendSceneProjection, FRONTEND_CONTEXT_ACTIONS } from "./messages/frontend-scene-projection";
@@ -10,7 +11,7 @@ import { PopupHostManager } from "./managers/popup-host";
 import { presentResult } from "./ui/presentation-surface";
 export { presentationSurface } from "./ui/presentation-surface";
 import { waitForCanvasDraw } from "./managers/canvas-draw";
-import { CameraSync } from "./managers/camera-sync";
+import { CameraSync, CameraSyncState } from "./managers/camera-sync";
 import { syncTrajectoryFrames } from "./managers/trajectory-sync";
 import { mountControls } from "./ui/controls";
 import { createLocalUiModel } from "./ui/local-ui-model";
@@ -234,6 +235,14 @@ export async function bootDocsView(opts: {
 
     const ui = opts.ui || {};
     const hasAuthority = ui.host_event_transport === "url-scheme";
+    const visualStateCaptures = new VisualStateCaptureRequests();
+    const cameraSyncState = new CameraSyncState();
+    let docsMessageQueue = Promise.resolve();
+    let docsDisposed = false;
+    window.addEventListener("pagehide", () => {
+        docsDisposed = true;
+        visualStateCaptures.dispose();
+    }, { once: true });
     const model = createLocalUiModel(ui, values => {
         if (!hasAuthority) return;
         const keys = ["viewer_mode", "controls_mode", "panel_mode_style", "show_controls",
@@ -251,8 +260,10 @@ export async function bootDocsView(opts: {
         }
         initialMessages = data.messages;
     }
+    for (const message of initialMessages) cameraSyncState.receive(message);
     const popupReplay = new PopupReplayLog(initialMessages);
     const notifyHost = (event: Record<string, any>) => {
+        if (docsDisposed) return;
         if (!event || typeof event !== "object") return;
         if (ui.host_event_transport !== "url-scheme") return;
         try {
@@ -282,8 +293,17 @@ export async function bootDocsView(opts: {
     };
 
     (window as any).__molsysviewerDocsHandleMessage = async (msg: ViewerMessage) => {
+        if (docsDisposed) return;
+        cameraSyncState.receive(msg);
         const meta = messageMeta(msg);
-        try {
+        const capture = hasAuthority && (msg as any)?.op === "request_visual_state"
+            ? visualStateCaptures.reserve(msg) : undefined;
+        const perform = async () => { try {
+            if (hasAuthority && isFrontendControl(msg)) {
+                visualStateCaptures.cancel(msg);
+                notifyHost({ event: "message_ack", phase: "handled", ...meta });
+                return;
+            }
             const controller = await controllerPromise;
             if (hasAuthority && (msg as any)?.op === "set_host_ui") {
                 for (const [key, value] of Object.entries((msg as any).values || {})) model.set(key, value);
@@ -295,7 +315,14 @@ export async function bootDocsView(opts: {
                 // or capture reports this generation as visible.
                 await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
             } else if (hasAuthority && isFrontendRequest(msg)) {
-                await handleFrontendRequest(controller, msg, notifyHost);
+                if ((msg as any).op !== "request_visual_state" || capture) {
+                    await handleFrontendRequest(controller, msg, notifyHost, capture ?? undefined);
+                }
+            } else if (hasAuthority && isStudioWorkFileResult(msg)) {
+                // Qt delivers these controls outside its scene transport queue.
+                await controller.handleMessage(msg, { throwOnError: true });
+            } else if (await cameraSync?.handleMessage(msg)) {
+                // Private camera protocol, applied through the resolved-reset hook.
             } else {
                 await controller.handleMessage(msg, { throwOnError: true });
                 popupReplay.record(msg);
@@ -309,7 +336,11 @@ export async function bootDocsView(opts: {
             const message = error instanceof Error ? error.message : String(error);
             notifyHost({ event: "message_error", phase: "handled", error: message, ...meta });
             throw error;
-        }
+        } };
+        if (isFrontendControl(msg) || isStudioWorkFileResult(msg)) return perform();
+        const pending = docsMessageQueue.then(perform);
+        docsMessageQueue = pending.catch(() => {});
+        return pending;
     };
 
     // Setup DOM
@@ -452,7 +483,7 @@ export async function bootDocsView(opts: {
             enabled: () => popupMgr.isReady,
             interacting: () => isUserInteracting,
             send: snapshot => popupMgr.send("molsysviewer-sync-camera", snapshot),
-        });
+        }, cameraSyncState);
         const releaseTrajectorySync = syncTrajectoryFrames(c, () => popupMgr.isReady,
             message => popupMgr.send("molsysviewer-sync-op", message));
         window.addEventListener("pagehide", () => {
@@ -467,6 +498,7 @@ export async function bootDocsView(opts: {
         if (!popupMessage) return;
         const { type } = popupMessage;
         const data: any = popupMessage.data;
+        if (type === "molsysviewer-sync-camera") cameraSyncState.receivePeer(data);
         const controller = await controllerPromise;
         try {
             switch (type) {
@@ -476,6 +508,7 @@ export async function bootDocsView(opts: {
                         messages: popupReplay.snapshot("canvas"),
                         trajectoryFrame: controller.trajectory.getTrajectoryState().currentFrame,
                         cameraSnapshot: controller.getCameraSnapshot(),
+                        cameraSnapshotRevision: cameraSync?.completedRevision,
                         isSpinActive: controller.isSpinActive,
                         isSwingActive: controller.isSwingActive,
                         isDarkMode: controller.isDarkMode,
@@ -523,7 +556,9 @@ export async function bootDocsView(opts: {
                     }
                     break;
                 case "molsysviewer-sync-camera":
-                    await cameraSync?.apply(data);
+                    docsMessageQueue = docsMessageQueue.then(async () => { await cameraSync?.apply(data); })
+                        .catch(error => console.error("[MolSysViewer docs] Camera projection failed:", error));
+                    await docsMessageQueue;
                     break;
                 case "molsysviewer-log-from-popout":
                     sendLog("info", "[Popout Log]:", data?.msg);
@@ -539,7 +574,7 @@ export async function bootDocsView(opts: {
     try {
         const controller = await controllerPromise;
         for (const msg of initialMessages) {
-            if (msg) await controller.handleMessage(msg, { throwOnError: true });
+            if (msg && !(await cameraSync?.handleMessage(msg))) await controller.handleMessage(msg, { throwOnError: true });
         }
         const canvas = controller.plugin.canvas3d;
         if (!canvas) throw new Error("Exported scene has no WebGL canvas.");
@@ -549,6 +584,7 @@ export async function bootDocsView(opts: {
         console.error("[MolSysViewer docs] Init error:", err);
         const message = err instanceof Error ? err.message : String(err);
         notifyHost({ event: "frontend_error", phase: "init", error: message });
+        visualStateCaptures.dispose();
         (await controllerPromise).dispose();
         throw err;
     }
@@ -838,6 +874,8 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
         el.dataset.molsysviewerCanvasOutput = "true";
         const debug = !!model.get("debug_js");
         let disposed = false;
+        const visualStateCaptures = new VisualStateCaptureRequests();
+        const cameraSyncState = new CameraSyncState();
         const releaseRuntime: Array<() => void> = [];
 
         // R1 seam: every browser->Python message goes through sendToPython, which
@@ -1218,7 +1256,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                     enabled: () => popupMgr.isReady,
                     interacting: () => isUserInteracting,
                     send: snapshot => popupMgr.send("molsysviewer-sync-camera", snapshot),
-                });
+                }, cameraSyncState);
                 releaseRuntime.push(() => cameraSync?.dispose());
 
                 const scheduleCameraSnapshot = () => {
@@ -1268,6 +1306,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
             if (!popupMessage) return;
             const { type } = popupMessage;
             const data: any = popupMessage.data;
+            if (type === "molsysviewer-sync-camera") cameraSyncState.receivePeer(data);
 
             const controller = await controllerPromise;
 
@@ -1291,6 +1330,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                             popupMgr.sendTo("canvas", "molsysviewer-initial-sync", {
                                 messages: canvasSnapshot ?? [],
                                 cameraSnapshot: controller.getCameraSnapshot(),
+                                cameraSnapshotRevision: cameraSync?.completedRevision,
                                 isSpinActive: controller.isSpinActive,
                                 isSwingActive: controller.isSwingActive,
                                 isDarkMode: controller.isDarkMode,
@@ -1333,6 +1373,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                                 messages: panelSnapshot ?? [],
                                 hierarchyItems: lastRelayedHierarchy,
                                 cameraSnapshot: controller.getCameraSnapshot(),
+                                cameraSnapshotRevision: cameraSync?.completedRevision,
                                 isSpinActive: controller.isSpinActive,
                                 isSwingActive: controller.isSwingActive,
                                 isDarkMode: controller.isDarkMode,
@@ -1400,7 +1441,9 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
 
                     case "molsysviewer-sync-camera":
                         // Apply camera from popup ONLY if user is NOT interacting with host
-                        await cameraSync?.apply(data);
+                        messageQueue = messageQueue.then(async () => { await cameraSync?.apply(data); })
+                            .catch(error => console.error("[MolSysViewer] Camera projection failed:", error));
+                        await messageQueue;
                         break;
 
                     case "molsysviewer-popup-interaction":
@@ -1454,13 +1497,14 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
         // structure change reaches it without re-sending on every message.
         let lastRelayedHierarchy: unknown = null;
 
-        const enqueueMessage = (msg: ViewerMessage, opts?: { syncToPopup?: boolean }) => {
+        const enqueueMessage = (msg: ViewerMessage, opts?: { syncToPopup?: boolean; authorityCamera?: boolean }) => {
+            if (opts?.authorityCamera) cameraSyncState.receive(msg);
             messageQueue = messageQueue
                 .then(async () => {
                     if (!msg || typeof msg !== "object") return;
                     if (debug) sendLog("info", "[MolSysViewer] msg from Python:", msg);
                     const controller = await controllerPromise;
-                    await controller.handleMessage(msg);
+                    if (!(await cameraSync?.handleMessage(msg))) await controller.handleMessage(msg);
                     if (opts?.syncToPopup) popupMgr.send("molsysviewer-sync-op", msg);
                     if (popupMgr.isPanelOpen) {
                         const items = controller.getHierarchyItems();
@@ -1483,7 +1527,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                 if (Array.isArray(initialMessages) && initialMessages.length) {
                     for (const msg of initialMessages) {
                         if (msg) {
-                            enqueueMessage(msg, { syncToPopup: false });
+                            enqueueMessage(msg, { syncToPopup: false, authorityCamera: true });
                         }
                     }
                     await messageQueue;
@@ -1559,7 +1603,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                 if (!mode) {
                     // A closed Studio has nobody left to consume its final
                     // save/cancel verdict. Endpoint closure is expected here.
-                    if (msg.op === "studio_action_result" || msg.op === "backend_error_occurred") return;
+                    if (msg.op === "studio_action_result" || msg.op === "backend_error_occurred" || isFrontendControl(msg)) return;
                     sendLog("error", `[MolSysViewer] relay target is not an open endpoint: ${relayTarget}`);
                     return;
                 }
@@ -1574,6 +1618,15 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                     message: msg,
                     buffers: buffers ?? [],
                 });
+                return;
+            }
+            if (isFrontendControl(msg)) {
+                visualStateCaptures.cancel(msg);
+                return;
+            }
+            if (isStudioWorkFileResult(msg)) {
+                controllerPromise.then(c => { if (!disposed) return c.handleMessage(msg); })
+                    .catch(error => console.error("[MolSysViewer] File verdict delivery failed:", error));
                 return;
             }
             if (
@@ -1624,9 +1677,13 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                 if ((msg as any).op === "request_visual_state") {
                     // A capture is a barrier, not a shortcut around pending
                     // scene/frame work. Keep legacy best-effort requests apart.
+                    const capture = visualStateCaptures.reserve(msg);
+                    if (!capture) return;
                     messageQueue = messageQueue.then(async () => {
-                        const c = await controllerPromise;
-                        await handleFrontendRequest(c, msg, sendToPython);
+                        try {
+                            const c = await controllerPromise;
+                            await handleFrontendRequest(c, msg, sendToPython, capture);
+                        } finally { capture.release(); }
                     });
                 } else {
                     controllerPromise.then(c => handleFrontendRequest(c, msg, sendToPython));
@@ -1636,7 +1693,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
             const panelLocal = msg.op === "mount_addon_panel" || msg.op === "addon_panel_message"
                 || msg.op === "studio_action_result"
                 || relayTarget === envelopeAdapter.widgetHostEndpoint;
-            enqueueMessage(msg, { syncToPopup: !panelLocal });
+            enqueueMessage(msg, { syncToPopup: !panelLocal, authorityCamera: true });
         };
 
         model.on("msg:custom", onCustomMsg);
@@ -1660,6 +1717,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                     endpoint.owner, endpoint.canvas);
             }
             pendingWorkFileSaves.clear();
+            visualStateCaptures.dispose();
             popupMgr.dispose();
             arrayNativeStream.dispose();
             disposed = true;

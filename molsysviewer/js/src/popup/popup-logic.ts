@@ -16,9 +16,10 @@ import { ArrayNativeStreamReceiver } from "../messages/array-native-stream";
 import { popupActionAllows } from "../messages/runtime-actions";
 import { mountControls } from "../ui/controls";
 import { createLocalUiModel } from "../ui/local-ui-model";
-import { CameraSync } from "../managers/camera-sync";
+import { CameraSync, CameraSyncState } from "../managers/camera-sync";
 import { trajectorySyncToAuthority } from "../messages/trajectory-intent";
-import { handleFrontendRequest, isFrontendRequest } from "../messages/frontend-requests";
+import { handleFrontendRequest, isFrontendControl, isFrontendRequest, isStudioWorkFileResult,
+    VisualStateCaptureRequests, type VisualStateCaptureReservation } from "../messages/frontend-requests";
 
 /** Boot the popup through the same imported runtime module as its host. */
 export const bootPopup = async (loadedModule?: any) => {
@@ -51,6 +52,9 @@ export const bootPopup = async (loadedModule?: any) => {
         role: popupChannel.mode === "canvas" ? "canvas-popup" : "panel-popup",
     });
     let popupMessageCounter = 0;
+    let popupDisposed = false;
+    const visualStateCaptures = new VisualStateCaptureRequests();
+    const cameraSyncState = new CameraSyncState();
     
     // Load the viewer module dynamically using the global path set by the opener
     let MolSysViewerController;
@@ -96,7 +100,7 @@ export const bootPopup = async (loadedModule?: any) => {
     }
 
     const sendToHost = (type: string, data: any) => {
-        if (!openerWin || openerWin.closed) return;
+        if (popupDisposed || !openerWin || openerWin.closed) return;
         const direction: RuntimeDirection =
             type === "molsysviewer-sync-op"
             || type === "molsysviewer-popup-interaction"
@@ -302,7 +306,7 @@ export const bootPopup = async (loadedModule?: any) => {
                 enabled: () => sceneReady && !initOptions.isPanelOnly,
                 interacting: () => isUserInteracting,
                 send: snapshot => sendToHost("molsysviewer-sync-camera", snapshot),
-            });
+            }, cameraSyncState);
 
         });
 
@@ -310,7 +314,7 @@ export const bootPopup = async (loadedModule?: any) => {
     })();
 
     // Logic to handle incoming messages
-    const handlePopupMessage = async (ev: MessageEvent) => {
+    const acceptPopupMessage = (ev: MessageEvent) => {
         const message = decodePopupEvent(ev, openerWin, popupChannel);
         if (!message) return;
         if (
@@ -331,10 +335,20 @@ export const bootPopup = async (loadedModule?: any) => {
             );
             return;
         }
-        const type = routed.envelope.action;
-        const data: any = routed.envelope.payload;
+        const type = routed.envelope.action, data = routed.envelope.payload as any;
+        if (type === "molsysviewer-sync-op") cameraSyncState.receive(data);
+        if (type === "molsysviewer-sync-camera") cameraSyncState.receivePeer(data);
+        if (type === "molsysviewer-initial-sync") {
+            if (Array.isArray(data.messages)) for (const message of data.messages) cameraSyncState.receive(message);
+            cameraSyncState.receiveBootstrap(data);
+        }
+        return { type, data };
+    };
+    const handlePopupMessage = async (type: string, data: any, capture?: VisualStateCaptureReservation) => {
+        if (popupDisposed || capture?.signal.aborted) return;
         // We need to await the controller promise created above
         const ctrl = await popControllerPromise;
+        if (popupDisposed || capture?.signal.aborted) return;
 
         applyingHostState = type === "molsysviewer-initial-sync"
             || type === "molsysviewer-sync-ui" || type === "molsysviewer-sync-autohide";
@@ -348,14 +362,14 @@ export const bootPopup = async (loadedModule?: any) => {
                     }
                     if (Array.isArray(data.messages)) {
                         for (const msg of data.messages) {
-                            await ctrl.handleMessage(msg);
+                            if (!(await cameraSync?.handleMessage(msg))) await ctrl.handleMessage(msg);
                         }
                     }
                     if (Number.isInteger(data.trajectoryFrame) && data.trajectoryFrame >= 0) {
                         await ctrl.setTrajectoryFrame(data.trajectoryFrame);
                     }
                     if (data.cameraSnapshot) {
-                        await cameraSync?.apply(data.cameraSnapshot);
+                        await cameraSync?.applyBootstrap(data);
                     }
                     if (data.isSpinActive) await ctrl.toggleSpin(true);
                     if (data.isSwingActive) await ctrl.toggleSwing(true);
@@ -400,16 +414,17 @@ export const bootPopup = async (loadedModule?: any) => {
                         // Studio has no visible canvas and must never sample its
                         // hidden controller in place of its originating viewer.
                         if (initOptions.isPanelOnly && data.op === "request_visual_state") {
+                            capture?.release();
                             sendToHost("molsysviewer-popup-interaction", {
                                 event: "visual_state_snapshot", request_id: data.request_id,
                                 capture_revision: data.capture_revision, ok: false, error_type: "NoLiveCanvas",
                             });
                         } else {
                             await handleFrontendRequest(ctrl, data,
-                                event => sendToHost("molsysviewer-popup-interaction", event));
+                                event => sendToHost("molsysviewer-popup-interaction", event), capture);
                         }
                     } else {
-                        await ctrl.handleMessage(data);
+                        if (!(await cameraSync?.handleMessage(data))) await ctrl.handleMessage(data);
                     }
                     break;
 
@@ -444,11 +459,30 @@ export const bootPopup = async (loadedModule?: any) => {
         }
     };
     let popupInboundQueue = Promise.resolve();
-    window.addEventListener("message", (ev) => {
+    const onPopupMessage = (ev: MessageEvent) => {
+        if (popupDisposed) return;
+        // Authenticate and deduplicate once, before choosing a dispatch lane.
+        const accepted = acceptPopupMessage(ev);
+        if (!accepted) return;
+        const { type, data } = accepted;
+        if (type === "molsysviewer-sync-op" && isFrontendControl(data)) {
+            visualStateCaptures.cancel(data);
+            return;
+        }
+        if (type === "molsysviewer-sync-op" && isStudioWorkFileResult(data)) {
+            popControllerPromise.then(ctrl => { if (!popupDisposed) return ctrl.handleMessage(data); })
+                .catch(error => console.error("Popout file verdict delivery failed", error));
+            return;
+        }
+        const capture = type === "molsysviewer-sync-op" && data?.op === "request_visual_state"
+            ? visualStateCaptures.reserve(data) : undefined;
+        if (capture === null) return;
         popupInboundQueue = popupInboundQueue
-            .then(() => handlePopupMessage(ev))
+            .then(() => handlePopupMessage(type, data, capture))
+            .finally(() => capture?.release())
             .catch(error => console.error("Popout message queue error", error));
-    });
+    };
+    window.addEventListener("message", onPopupMessage);
 
     // Canvas controls share mode, reveal policy and lifetime with the widget.
     // A panel-only popup has no canvas controls or hidden trajectory bar.
@@ -465,6 +499,9 @@ export const bootPopup = async (loadedModule?: any) => {
         }, container!, () => window.close(),
         { popupButtonTitle: "Close popup" });
     window.addEventListener("pagehide", () => {
+        popupDisposed = true;
+        visualStateCaptures.dispose();
+        window.removeEventListener("message", onPopupMessage);
         sceneReady = false;
         stopPanelReturnObserver();
         cameraSync?.dispose();

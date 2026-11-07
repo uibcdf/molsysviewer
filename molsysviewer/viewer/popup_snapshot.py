@@ -317,12 +317,16 @@ class PopupSnapshotMixin:
         messages.append(self.interactions._summary_message())
         if self._current_figure_spec:
             messages.append(deepcopy(self._current_figure_spec))
+        # A portable artifact owns a fresh peer-ordering domain. It cannot
+        # acknowledge or inherit a live endpoint's outstanding camera intent.
+        messages.append({"op": "set_camera_sync_revision", "camera_revision": 0})
         if self._last_camera_snapshot:
             messages.append(
                 {
                     "op": "set_camera_snapshot",
                     "snapshot": deepcopy(self._last_camera_snapshot),
                     "duration_ms": 0,
+                    "camera_revision": 0,
                 }
             )
         return messages
@@ -345,6 +349,7 @@ class PopupSnapshotMixin:
         messages.extend(
             message for message in self._build_panel_snapshot() if message.get("op") not in _PANEL_OPS_ALREADY_IN_CANVAS
         )
+        messages.append({"op": "set_camera_sync_revision", "camera_revision": self._camera_projection_revision})
         messages.append(self._system_edits._message())
         return messages
 

@@ -1,0 +1,19 @@
+{
+  "schema": "molsysviewer.camera_control_custody@1",
+  "date": "2026-11-07",
+  "plan": "uibcdf/molsysviewer#315 / E0 additive custody",
+  "opaque_reference": "msv-robustness-audit-20261106/camera-control-batch-20261107-1",
+  "custodian": "Diego Prada Gracia",
+  "files_verified": 475,
+  "bytes": 172150200,
+  "manifest_sha256": "9ec1313afc4dd0aad06facf241dec37e83923150c01a29c2b6231c25d30d9d88",
+  "originals_retained": true,
+  "private_access": "Directories0700/files0600; prior maintainer-approved user-only local custody.",
+  "scope": "Terminal current camera/control/plot/ownership evidence and 65 task source snapshots before reviewed delivery; original failures and operator pause retained.",
+  "limitations": [
+    "Local-disk custody; no independently verified off-host backup.",
+    "Original approved custody copies and evidence are not deleted or overwritten.",
+    "This preserves executed evidence; it does not rerun tests or add completed plan leaves.",
+    "No private advisory publication or candidate/release/package action."
+  ]
+}

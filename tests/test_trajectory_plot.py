@@ -1,6 +1,40 @@
 import pytest
+from molsysviewer._private.exceptions import ArgumentError
 
-from molsysviewer import MolSysView
+from molsysviewer import MolSysView, demo
+
+
+@pytest.fixture
+def molecular_plot():
+    with demo["pentalanine"] as original, original.extract(structure_indices=[0, 8, 3]) as view:
+        yield view
+
+
+@pytest.mark.parametrize("method", ["show", "update"])
+def test_plot_pixel_dimensions_keep_public_data_and_state(molecular_plot, tmp_path, method):
+    view = molecular_plot
+    getattr(view.trajectory_plot, method)([0.1, 0.2, 0.5], width=650, height=240, tag="pixel-control")
+    record = view.trajectory_plot.records()[0]
+    assert record["width"] == 650 and type(record["width"]) is int
+    assert record["height"] == 240 and type(record["height"]) is int
+    assert record["series"][0]["values"] == [0.1, 0.2, 0.5]
+    path = tmp_path / "pixel-state.json"
+    view.save_state(path)
+    with demo["pentalanine"] as original, original.extract(structure_indices=[0, 8, 3]) as restored:
+        restored.load_state(path)
+        assert restored.trajectory_plot.records() == [record]
+
+
+@pytest.mark.parametrize("method", ["show", "update"])
+@pytest.mark.parametrize("dimension", ["width", "height"])
+@pytest.mark.parametrize("value", [0, -1, True, 2.5, "650px", float("nan")])
+def test_invalid_plot_pixel_dimensions_preserve_the_existing_card(molecular_plot, method, dimension, value):
+    plot = molecular_plot.trajectory_plot
+    plot.show([0.1, 0.2, 0.5], title="Keep this card")
+    before = plot.records()
+    with pytest.raises(ArgumentError):
+        getattr(plot, method)([9, 9, 9], title="Must not replace", **{dimension: value})
+    assert plot.records() == before
 
 
 def _view_with_capture():
