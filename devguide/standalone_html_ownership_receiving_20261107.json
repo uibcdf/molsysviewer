@@ -3,7 +3,7 @@
   "date": "2026-11-07",
   "issue": "uibcdf/molsysviewer#324",
   "plan": "uibcdf/molsysviewer#315 / additional A4-A6 ownership boundary",
-  "status": "corrected and locally verified in working source; reviewed integration and consolidated acceptance pending",
+  "status": "source correction and guards delivered in ebe3d46b; recorded current local receiving passes; applicable consolidated acceptance and scoped closeout pending",
   "source_sha256": {
     "molsysviewer/standalone.py": "78be2e4f01a5f2b7aeb7ea17e89ff0db94c3bbb92575388a9e18df65214eaf0d",
     "tests/test_standalone_view_ownership.py": "7a3e88194b26075fd2367a3d2675d8ea04a59d36fd295ea9f160a4cfe341ca37"
@@ -87,8 +87,15 @@
     "diff_check_native_exit": 0
   },
   "remaining": [
-    "Reviewed integration of the working source and regression.",
     "Applicable consolidated hosted and installed qualification.",
     "Formal scoped closeout; manual observations and publication retain their existing pauses."
-  ]
+  ],
+  "source_delivery": {
+    "commit": "ebe3d46be7422fe402151fc6ecf7bd1215c3d30d",
+    "branch": "main",
+    "remote_ref_independently_verified": true,
+    "skip_ci": true,
+    "scope": "Reviewed source/guard delivery; applicable hosted and installed/publication qualification remain separate."
+  },
+  "delivery_status": "source delivered; applicable consolidated acceptance and formal issue closeout pending"
 }

@@ -6,7 +6,7 @@
     "uibcdf/molsysviewer#322"
   ],
   "plan": "uibcdf/molsysviewer#315 / B2",
-  "status": "working source receiving passes; source integration, consolidated acceptance and closeout pending",
+  "status": "source correction and guards delivered in ebe3d46b; recorded current local receiving passes; applicable consolidated acceptance and scoped closeout pending",
   "viewer_base": "ff60bdec778f997169a8cd0bb98be85fc320eee2",
   "providers": {
     "molsysmt": "e119953435a25c72e9a65b7428f74b1c2430b4f1",
@@ -122,5 +122,13 @@
     "original_failure": "B2-shared-runtime-receiving-et4AVe/diagnosis.json",
     "evidence": "B2-layout-diagnostic-cnNM7B/diagnosis.json",
     "limit": "Does not establish the earlier hidden/transient-layout cause or justify claiming a repaired product. Repeated execution without a new causal input is not closure."
-  }
+  },
+  "source_delivery": {
+    "commit": "ebe3d46be7422fe402151fc6ecf7bd1215c3d30d",
+    "branch": "main",
+    "remote_ref_independently_verified": true,
+    "skip_ci": true,
+    "scope": "Reviewed source/guard delivery; applicable hosted and installed/publication qualification remain separate."
+  },
+  "delivery_status": "source delivered; applicable consolidated acceptance and formal issue closeout pending"
 }

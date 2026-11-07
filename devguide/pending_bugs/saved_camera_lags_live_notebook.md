@@ -15,8 +15,8 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
-**A5 — partial; the bounded camera/control correction is verified locally and
-ready for delivery; playback, hidden endpoints and consolidated acceptance
+**A5 — partial; the bounded camera/control correction is delivered in
+`ebe3d46b`; playback, hidden endpoints and consolidated acceptance
 remain pending; P2.** The Viewer maintainer
 session owns implementation under #315/#319 for the covering artifact and
 accepted 1.0 scope. Broader hosted/installed acceptance and closure remain
@@ -136,7 +136,7 @@ without a file or revival. Unsupported-None and deprecation stderr counts are
 zero; one GBM fallback and one D-Bus diagnostic remain retained. This is actual
 local Wayland/NVIDIA WebGL2 receiving, not human or installed qualification.
 
-The bounded source correction is ready for reviewed delivery. A5 remains
+The bounded source correction is delivered in `ebe3d46b`. A5 remains
 partial for continuous playback, hidden endpoints and applicable consolidated
 hosted/installed and postponed human acceptance. The interrupted Studio3 is
 operator cancellation, not a passing run or a newly diagnosed product defect;

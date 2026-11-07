@@ -15,8 +15,8 @@ supersedes: []
 
 # Empty Whole summary calls
 
-**Corrected in working source; headless/affected Python and automated native Qt
-receiving pass; integration pending.** The initial actual Qt #319 receiving passes its
+**Corrected and delivered in `ebe3d46b`; headless/affected Python and automated
+native Qt receiving pass; consolidated acceptance pending.** The initial actual Qt #319 receiving passes its
 four functional capture/restore cases, but stderr retains eight
 `get_form(None)` errors. Independent headless `sys.setprofile` observations
 localize all eight calls to empty standalone HTML construction, without

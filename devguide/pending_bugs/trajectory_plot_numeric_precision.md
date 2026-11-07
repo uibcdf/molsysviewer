@@ -15,7 +15,8 @@ supersedes: []
 
 # Numerical reading and geometry of trajectory plots
 
-**B2 — corrected in working source; source receiving passes; delivery and consolidated acceptance pending.** Viewer owns formatting and axis
+**B2 — corrected and delivered in `ebe3d46b`; source receiving passes;
+consolidated acceptance pending.** Viewer owns formatting and axis
 arithmetic. This is a core visualization defect, not evidence of incorrect
 MolSysMT calculations. [#321](https://github.com/uibcdf/molsysviewer/issues/321)
 records the scoped work under #315.

@@ -123,8 +123,8 @@ any inference that an earlier complete pass qualifies the current working tree.
 
 | Block | Current status | Owner and tracking | Exit evidence |
 | --- | --- | --- | --- |
-| A — integrity, restoration and cleanup | A1–A4/A6 source-delivered and verified; consolidated hosted acceptance pending; A5/#319 has actual Jupyter, all popup-format paths and current native automated capture/cancel receiving; final navigation/browser, playback and hidden-endpoint acceptance remain partial | Viewer; #316/#317/#318/#319 and private handling under #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
-| B — plots and DataCards | #314 delivered; complete B1 core 44/44 and combined affected guard pass; B2 numeric precision #321 and its pixel-dimension prerequisite #322 have working corrections; actual receiving and provenance/card follow-up pending | Viewer and scientific producer; #314, #321, #322, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
+| A — integrity, restoration and cleanup | A1–A4/A6 source-delivered and verified; A5/#319 current full Studio and native camera/control receiving passes and is delivered in `ebe3d46b`; playback, hidden-endpoint and consolidated acceptance remain partial | Viewer; #316/#317/#318/#319 and private handling under #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
+| B — plots and DataCards | B1/#314 and B2/#321 with #322 are delivered; current numerical/state/popup receiving passes. Retain the unexplained earlier zero-reference-bounds guard failure; provenance/card and consolidated follow-up remain | Viewer and scientific producer; #314, #321, #322, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
 | C — contribution and host integration | Reconciled addon committed locally; remote PR older and reported conflicting; source gates incomplete | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421 and PR #543 | Reviewed delivery, current controlled pair, relevant full/hosted outcomes and explained failures |
 | D — scientific prerequisites and approved GUI families | Partial implementation; provider corrections and several task families remain | MolSysMT owns science; addon owns tasks; #264/#315 and uibcdf/molsysmt#421 | Received native fixes plus every required family/effect, without hidden preparation or copied algorithms |
 | E — integrated use, scale and human acceptance | E0 custody received; partial headless/Jupyter receiving; complete workflow/prolonged use pending; human review postponed | Viewer/addon; maintainer owns human observations | TcTIM/ensemble save–recover–continue, independent lifetimes and representative measured limits |
@@ -153,9 +153,9 @@ the required consolidated hosted acceptance/closeout remains visible below.
 #### Progress reporting correction — 2026-11-07 UTC
 
 **Execution resumed by the principal maintainer on 2026-11-07.** The bounded
-camera/control, plot and standalone-ownership batch is source-verified and
-prepared for integration; the published baseline is still
-`ff60bdec778f997169a8cd0bb98be85fc320eee2` until delivery is recorded. The final
+camera/control, plot and standalone-ownership batch is delivered in
+`ebe3d46be7422fe402151fc6ecf7bd1215c3d30d`, independently verified on remote
+main. Its receiving baseline was `ff60bdec778f997169a8cd0bb98be85fc320eee2`. The final
 complete Studio entry passes in **198.54 s**, with all 4,011 selected inputs
 unchanged and all 17 owned process identities closed. It receives both-format
 primary/canvas-popup/detached-Studio restoration, genuine old-message rejection,
@@ -183,8 +183,8 @@ history:
 
 | Stage | Completed / original 46 | IDs and evidence meaning |
 | --- | --- | --- |
-| Consumer result complete and locally verified | **8/46 — 17.4%** | E0, A1, A2, A3, A4, A6, B1, B2. E0 is a custody result; the other seven are corrected source with scoped executed guards. B2 is still in the working tree. |
-| Consumer result delivered | **7/46 — 15.2%** | E0 plus A1, A2, A3, A4, A6 and B1. Viewer corrections are integrated/pushed; E0's approved custody transfer is verified. Delivery does not satisfy later consolidated acceptance. |
+| Consumer result complete and locally verified | **8/46 — 17.4%** | E0, A1, A2, A3, A4, A6, B1, B2. E0 is a custody result; the other seven are corrected source with scoped executed guards. B2 is delivered in `ebe3d46b`. |
+| Consumer result delivered | **8/46 — 17.4%** | E0 plus A1, A2, A3, A4, A6, B1 and B2. Viewer corrections are integrated/pushed; E0's approved custody transfer is verified. Delivery does not satisfy later consolidated acceptance. |
 | Final applicable acceptance recorded | **1/46 — 2.2%** | E0 only. Preserve the remaining acceptance obligations rather than silently promoting source delivery. |
 
 These stages are not additive, equally weighted effort estimates, time
@@ -195,12 +195,11 @@ support and upstream issue closure do not by themselves complete a consumer
 result. D2/D3/D4 have new owner fixes awaiting consumer receiving, as recorded
 below; do not describe them as waiting for an unimplemented owner fix.
 
-**Next execution checkpoint:** close the bounded camera/cancellation,
-standalone ownership and plot correction batch already in progress. Review
-and integrate its coherent source, preserve original failures, then perform
-the applicable consolidated checks at one substantive checkpoint, following
-the maintainer's `[skip ci]` and batched-CI instruction. Do not start another
-feature or broad audit before this integration. Route newly found nonblocking
+**Next execution checkpoint:** receive the delivered bounded batch through the
+applicable consolidated hosted checks at one substantive checkpoint, following
+the maintainer's `[skip ci]` and batched-CI instruction. Its reviewed integration
+is complete; retain original failures and distinguish source delivery from
+final acceptance. Route newly found nonblocking
 work to its owned backlog rather than repeatedly expanding the batch. Then
 resume C's owner integration and the remaining full plan, including Movie.
 Each update must identify which outcome was delivered, which stage changed
@@ -358,7 +357,7 @@ issue is not a declaration that any of them is fixed.
 | ID / status | Required work and rationale | Acceptance |
 | --- | --- | --- |
 | **B1 — source-verified, #314** | Finish plot-origin navigation through the existing authority route. The broad guard calls a queue drain before a popup's asynchronous `postMessage` is necessarily received; this is a plausible guard race, not a proven exclusive explanation of the failure. | One actual click must have correlated Python acceptance, one appropriate public callback and correct coordinates in both renderers. Exercise repeated selection, reverse Python navigation, retained plots, independent exported HTML and a single playback clock. Preserve the original causal red and broad failure; diagnose before rerunning. |
-| **B2 — reproduced, #321, open** | [Actual browser controls](../pending_bugs/trajectory_plot_numeric_precision.md) show nonzero values as zero, unequal limits as equal and narrow large-offset coordinates shifted by cancellation error. Raw records survive state round trips. | Use suitable significant digits/scientific notation with units. Test tiny/large/signed values, narrow spans and cross-unit equivalents in actual labels. Preserve full stored values and correct numerical axis geometry without wide-range overflow. |
+| **B2 — corrected in `ebe3d46b`, hosted checkpoint pending, #321** | [Actual browser controls](../pending_bugs/trajectory_plot_numeric_precision.md) show the original nonzero/equal-limit/narrow-offset defects; their source corrections and fifteen Decimal controls are delivered. Raw records survive state round trips. | Current source/popup/state receiving passes. Retain the unexplained earlier zero-reference-bounds guard failure and its atomic diagnostic; complete applicable hosted acceptance and normal closeout. |
 | **B3 — mixed inspection/reproduction, open** | Complete the DataCard lifecycle around A3: visible errors/retry for blocked or failed windows, current titles after update, usable bounds on small/resized hosts, keyboard/value access, and disposal during drag/resize. Global listener cleanup is incomplete in source; a universal retained-memory leak has not been measured. | Exercise ordinary popup gestures, failure acknowledgement, resize/fullscreen, rename/restore, active-gesture disposal and source independence. Apply the same semantics across hosts. Evaluate blur/opacity consistency as polish, not as a violation of Studio's specific accepted settings. |
 | **B4 — inspected, new recommendation; scope/design decision pending** | Retained conformational plots store values/title/axes but not the exact calculation recipe from the private mounted report. After Clear, different references/populations can become indistinguishable. | Proposed direction: producer-supplied, versioned observation metadata that core preserves without interpreting science. If adopted, persist method/software, parameters, exact ordered populations/reference, weights and mass source, native/display units, structure coverage and source/revision linkage. Keep historical observations distinct from current applicability and never recalculate implicitly. |
 

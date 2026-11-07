@@ -15,8 +15,8 @@ supersedes: []
 
 # Standalone HTML ownership
 
-**Corrected and locally verified in working source; reviewed integration and
-consolidated acceptance remain pending.** Repeated real HTML construction with
+**Corrected, locally verified and delivered in `ebe3d46b`; consolidated
+acceptance remains pending.** Repeated real HTML construction with
 `None` or a native MolSys retains one unreturned View and two widget/comm
 registrations per call. Four calls in each fresh-process control leave four
 Views and eight registrations after collection. A borrowed View remains at its

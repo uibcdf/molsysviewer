@@ -1,7 +1,7 @@
 {
   "schema": "molsysviewer.empty_whole_summary_receiving@1",
   "issue": "uibcdf/molsysviewer#323",
-  "status": "source corrected; actual headless regression and affected Python suite pass; native after-change receiving separate",
+  "status": "source correction and guards delivered in ebe3d46b; recorded current local receiving passes; applicable consolidated acceptance and scoped closeout pending",
   "owner": "Viewer",
   "source_sha256": {
     "molsysviewer/viewer/regions.py": "a7d108f9c091836ed6f322aeea3751d4ac65b74104ac54f7268134e5031dcfd5",
@@ -58,5 +58,13 @@
     "process_survivors": 0,
     "independent_saved_file_matches": 4,
     "scope": "Actual final-runtime Qt4 receiving; one GBM and one D-Bus observation retained. Delivery/hosted/installed acceptance separate."
-  }
+  },
+  "source_delivery": {
+    "commit": "ebe3d46be7422fe402151fc6ecf7bd1215c3d30d",
+    "branch": "main",
+    "remote_ref_independently_verified": true,
+    "skip_ci": true,
+    "scope": "Reviewed source/guard delivery; applicable hosted and installed/publication qualification remain separate."
+  },
+  "delivery_status": "source delivered; applicable consolidated acceptance and formal issue closeout pending"
 }

@@ -15,7 +15,8 @@ supersedes: []
 
 # Pixel dimensions of trajectory plot cards
 
-**Reproduced; correction and receiving in progress.** The #321 precision
+**Corrected, locally verified and delivered in `ebe3d46b`; consolidated
+acceptance pending.** The #321 precision
 fixture exposed a different public-API defect before numerical assertions:
 `show(..., width=650)` reaches `int('650px')` and raises ValueError. The same
 CSS conversion applies to height. The fixture's preceding explicit `clear()`

@@ -4,7 +4,7 @@
   "observed_at": "2026-11-07T06:31:14.015477+00:00",
   "plan": "uibcdf/molsysviewer#315 / A5",
   "issue": "uibcdf/molsysviewer#319",
-  "status": "partial: final bounded camera/control source slice passes affected Python, TypeScript/JS, complete canonical Studio and current native Qt; delivery/consolidated and broader A5 acceptance remain pending",
+  "status": "partial: bounded camera/control correction delivered; current local full Studio/native receiving passes, broader A5 and consolidated hosted/installed acceptance pending",
   "decision": {
     "authority": "Principal maintainer explicitly selected the ambitious/user-useful coherent capture-and-save alternative in the 2026-11-06 session.",
     "public_source_api": [
@@ -1057,7 +1057,7 @@
   },
   "initial_observed_at": "2026-11-07T05:47:11.444524+00:00",
   "resumed_final_source_receiving": {
-    "status": "Bounded current source slice verified; reviewed delivery pending, broader A5 remains partial.",
+    "status": "Bounded current source slice verified and delivered; broader A5 remains partial.",
     "base_head": "ff60bdec778f997169a8cd0bb98be85fc320eee2",
     "source_sha256": {
       "molsysviewer/viewer/core.py": "8f192ff07665c439cba57541044e8a59db1eaf51cdc52eaf26fad5b664b07bbd",
@@ -1115,9 +1115,16 @@
     },
     "approval_context": "Previous Qt4 launch rejection is retained; after the maintainer explicitly resumed execution, the renewed request explained the completed read-only audit and ordinary approval review accepted the same bounded native validation.",
     "remaining": [
-      "Reviewed current batch delivery and applicable consolidated hosted checkpoint.",
+      "Applicable consolidated hosted checkpoint and scoped closeout of delivered source.",
       "Continuous-playback frame/camera/derived-geometry coherence and hidden endpoints.",
       "Exact installed qualification and postponed human observations; no publication authorization."
     ]
+  },
+  "source_delivery": {
+    "commit": "ebe3d46be7422fe402151fc6ecf7bd1215c3d30d",
+    "branch": "main",
+    "remote_ref_independently_verified": true,
+    "skip_ci": true,
+    "scope": "Reviewed source/guard delivery; applicable hosted and installed/publication qualification remain separate."
   }
 }
