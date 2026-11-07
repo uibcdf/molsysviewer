@@ -1,0 +1,41 @@
+{
+  "schema": "molsysviewer.robustness_integrity_preparation@1",
+  "date": "2026-11-06",
+  "plan": "uibcdf/molsysviewer#315",
+  "status": "A1/A3 corrections prepared and integration explicitly authorized; source delivery and applicable hosted receiving pending",
+  "private_source_base": "e3cf77e0f95c2d1c927df118d0596bb5679ecd8d",
+  "A1": {
+    "directed": {"passed": 39, "exit_code": 0},
+    "session_source_analysis_boundary": {"passed": 157, "exit_code": 0},
+    "guard": "tests/test_session_member_integrity.py",
+    "scope": "Private source receiving on the declared controlled providers; scopes overlap. Original causal failure retained."
+  },
+  "A3": {
+    "actual_browser": {"named_checks": 5, "exit_code": 0},
+    "durable_trajectory_plot_browser_entry": {"exit_code": 0},
+    "canonical_js_unit_entry": {"exit_code": 0, "skipped": 0},
+    "guard": "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts",
+    "scope": "Real Mol*/Chromium and Python-derived pentalanine/title restoration; synthetic plot values are not detector results. Not live Jupyter, visible Qt or installed-package qualification."
+  },
+  "source_review": "Ruff check and format check pass. Fixture import-order-only formatting followed browser receiving. Package metadata unchanged; generated runtime built only in the isolated private worktree.",
+  "integration_authorization": {
+    "owner": "Diego Prada Gracia",
+    "date": "2026-11-06",
+    "scope": "Explicit approval to integrate reviewed A1/A3 source patches and regression tests on main. Private advisory drafts and unrestricted evidence remain private; no tag, package or 1.0 publication authorization."
+  },
+  "additive_custody": {
+    "opaque_reference": "msv-robustness-audit-20261106/private-fixes-20261106-e3cf77e0",
+    "custodian": "Diego Prada Gracia",
+    "files_verified": 31,
+    "bytes": 88066,
+    "manifest_sha256": "46324e06f48923a0c10631e68357339f64073efa3d031d766d40ce5f0712c67f",
+    "originals_retained": true,
+    "access": "Owner-only local custody; no off-host backup claim."
+  },
+  "limitations": [
+    "A1/A3 do not enter the completed progress numerator yet.",
+    "Private advisory metadata is provisional; no tested published version range or severity is claimed.",
+    "The B1 full core run has fixed inputs excluding these private corrections; its result will not qualify different source bytes.",
+    "Broader DataCard lifecycle and A6 close failure work remain separate."
+  ]
+}

@@ -19,9 +19,10 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (1)
+### Being worked on (2)
 
 - [`trajectory_plot_seek_skips_python_authority.md`](trajectory_plot_seek_skips_python_authority.md) — [#314](https://github.com/uibcdf/molsysviewer/issues/314) — Trajectory plot navigation changes the canvas without updating Python structure state. *(high, reproduced)*
+- [`view_close_failure_blocks_cleanup.md`](view_close_failure_blocks_cleanup.md) — [#318](https://github.com/uibcdf/molsysviewer/issues/318) — A provider panel close error prevents remaining View resources from closing. *(medium, reproduced)*
 
 ### Partially done (2)
 

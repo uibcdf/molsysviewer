@@ -26,6 +26,14 @@ requests unless the user requests one.
 Keep the applicable validation and CI evidence, synchronize remote changes, and
 preserve unrelated local work before integrating or publishing commits.
 
+For the principal maintainer's current incremental development work, include
+`[skip ci]` in commit messages and batch reviewed changes before pushing.
+This is an explicit maintainer instruction to avoid a hosted run for every
+small change. Keep scoped local validation and record outstanding hosted
+evidence; execute applicable remote gates at agreed substantive checkpoints.
+The skip does not qualify a candidate, waive release gates or turn missing CI
+into passing evidence.
+
 Contributions to MolSysMT, including `molsysviewer_molsysmt`, must be delivered
 as pull requests. Its development team owns review and integration. Do not push
 directly to MolSysMT `main` or merge those pull requests from this session.

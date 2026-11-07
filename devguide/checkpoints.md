@@ -910,12 +910,19 @@ previous qualification records retain their original candidate and environment.
 owns the work order and stable IDs. Start with its reproduced file/state
 integrity and lifecycle findings, then plot authority and scientific figures.
 It separates new design recommendations from the already approved complete
-addon/task-session scope. Recording the audit implements none of its repairs.
+addon/task-session scope. E0 custody is received (progress 1/46, 2.2%); A2/A4
+are delivered and await hosted Python receiving. A1/A3 private source checks
+pass and their source/guard integration is explicitly authorized; advisories
+and unrestricted evidence stay private. See the active ledger and
+[preparation receipt](robustness_integrity_preparation_receiving_20261106.json).
+A6 is reproduced under [#318](pending_bugs/view_close_failure_blocks_cleanup.md).
 
 [Viewer #314](pending_bugs/trajectory_plot_seek_skips_python_authority.md) has a
 local causal correction and isolated/actual-Jupyter passes, but its complete
-core-browser attempt fails at 43/44 on popup-to-Python navigation. A guard
-queue-order race is plausible, not an established exclusive cause. The addon
+earlier core-browser attempt fails at 43/44 on popup-to-Python navigation. The
+directed guard now passes after waiting for actual host receipt of the popup
+intent before draining its transport queue. A new fixed-input core run remains
+in progress; neither isolated passes nor the guard race erase the old failure. The addon
 conformation work is locally committed at e11995343, including owner
 reconciliation, and has 245 directed passes plus 17 real Jupyter steps; remote
 PR #543 remains at 8ab2f5474. These are not a complete green new-source gate or

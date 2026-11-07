@@ -67,19 +67,24 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
-**Next actions:** scope A1/A3 and finish
+**Next actions:** integrate the reviewed A1/A3 corrections and finish
 [A2 / #317](../pending_bugs/direct_state_rejection_erases_scene.md), now passing
 its final 180-case source selection and awaiting hosted receiving.
 A4 is delivered in `611c1574` under [#316](../pending_bugs/failed_factory_retains_owned_view.md),
 with 73 related factory/lifecycle/session/API checks passing; applicable hosted
-receiving remains pending. A2 is delivered in `ef7b1348`. Keep private handling where
-appropriate. Safe source investigation and B1's
-existing #314 diagnosis can proceed in parallel. E0 prevents premature cleanup
+receiving remains pending. A2 is delivered in `ef7b1348`. A1/A3 have private
+advisory drafts and source receiving; the principal maintainer explicitly
+authorized integrating their reviewed patches and regressions on 2026-11-06,
+while keeping advisory drafts and unrestricted evidence private. The
+[preparation receipt](../robustness_integrity_preparation_receiving_20261106.json)
+retains the exact scope. B1's acknowledged directed guard passes; one fixed-input
+core run is in progress, excluding A1/A3. A6 is reproduced under
+[#318](../pending_bugs/view_close_failure_blocks_cleanup.md). E0 prevents premature cleanup
 or disclosure; it does not require all unrelated development to stop.
 
 | Block | Current status | Owner and tracking | Exit evidence |
 | --- | --- | --- | --- |
-| A — integrity, restoration and cleanup | A4 delivered under #316, hosted receiving pending; A2 source-verified under #317; A1/A3 await scoped handling; A5/A6 remain investigations | Viewer; coordination #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
+| A — integrity, restoration and cleanup | A4/#316 and A2/#317 delivered, hosted Python receiving pending; A1/A3 privately source-verified, integration authorized; A6 reproduced/#318; A5 remains investigation | Viewer; coordination #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
 | B — plots and DataCards | #314 correction/regression local; broad core failed; precision, provenance and card follow-up pending | Viewer and scientific producer; #314, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
 | C — contribution and host integration | Reconciled addon committed locally; remote PR older and reported conflicting; source gates incomplete | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421 and PR #543 | Reviewed delivery, current controlled pair, relevant full/hosted outcomes and explained failures |
 | D — scientific prerequisites and approved GUI families | Partial implementation; provider corrections and several task families remain | MolSysMT owns science; addon owns tasks; #264/#315 and uibcdf/molsysmt#421 | Received native fixes plus every required family/effect, without hidden preparation or copied algorithms |
@@ -118,8 +123,8 @@ subsequent transitions rather than reading this dated observation as live CI:
 
 | Work item / delivered source | Local receiving | Hosted receiving still required |
 | --- | --- | --- |
-| A4 / `611c1574aa82538d79e15b93667497fc1f27b9ce` | 73 related cases; causal failure retained | [General CI](https://github.com/uibcdf/molsysviewer/actions/runs/42307829448) and [source pair](https://github.com/uibcdf/molsysviewer/actions/runs/42307829326) queued; [core browser](https://github.com/uibcdf/molsysviewer/actions/runs/42307829340) in progress at observation |
-| A2 / `ef7b134835a539bcd2cf36536aeec131d468aa7c` | 180 combined cases plus 351 documentation/protocol cases; scopes separate | [General CI](https://github.com/uibcdf/molsysviewer/actions/runs/42310818888) and [source pair](https://github.com/uibcdf/molsysviewer/actions/runs/42310818936) queued; [core browser](https://github.com/uibcdf/molsysviewer/actions/runs/42310818882) in progress at observation |
+| A4 / `611c1574aa82538d79e15b93667497fc1f27b9ce` | 73 related cases; causal failure retained | [General CI](https://github.com/uibcdf/molsysviewer/actions/runs/42307829448) and [source pair](https://github.com/uibcdf/molsysviewer/actions/runs/42307829326) queued; [core browser](https://github.com/uibcdf/molsysviewer/actions/runs/42307829340) success |
+| A2 / `ef7b134835a539bcd2cf36536aeec131d468aa7c` | 180 combined cases plus 351 documentation/protocol cases; scopes separate | [General CI](https://github.com/uibcdf/molsysviewer/actions/runs/42310818888) and [source pair](https://github.com/uibcdf/molsysviewer/actions/runs/42310818936) queued; [core browser](https://github.com/uibcdf/molsysviewer/actions/runs/42310818882) success |
 
 B3.6, B4, E3 and F1 remain separately tracked design decisions, outside this
 denominator until explicitly accepted. Any scope change records its date,
@@ -156,10 +161,10 @@ values to the reporting protocol.
 | ID | Priority / milestone | Closure owner and record | Dependency and next observable gate |
 | --- | --- | --- | --- |
 | E0 | Received, 2026-11-06 | Principal maintainer accepted custody/destination; Viewer verified transfer; #315 | [Private inventory, hashes and actual restore received](../robustness_evidence_custody_20261106.json); disclosure and cleanup retain separate controls |
-| A1/A3 | P1 integrity; affected covering artifact and 1.0 | Viewer; scoped reports to be registered under #315 | Sanitized/private triage as appropriate, then real rejection/literal-text guards on the failing paths |
+| A1/A3 | P1 integrity; affected covering artifact and 1.0 | Viewer; private advisory drafts registered under #315 | Private source receiving passed; maintainer authorized source/guard integration; deliver after the fixed-input B1 run, then receive applicable combined-source gates |
 | A2 | P1 scene rejection; affected covering artifact and 1.0 | Viewer; #317, implemented/source-verified | Final 180-case source selection includes direct/file rejection, real target conflicts and diagnostics; applicable hosted receiving remains |
 | A4 | P2 lifecycle; affected covering artifact and 1.0 | Viewer; #316, delivered/source-verified | Six real failure cases first reproduced the leak; 19 factory and 73 related checks pass. Applicable hosted receiving remains |
-| A5–A6 | P2 investigation; gate depends on established effect | Viewer; scoped record when activated | Reproduce or record a bounded, evidenced disposition; do not delay unrelated fixes waiting for a hypothetical defect |
+| A5–A6 | P2; A5 investigation, A6 reproduced | Viewer; A6/#318 | A6 needs independent cleanup after actual provider close failure and retry; A5 still needs actual camera evidence or an evidenced disposition |
 | B1–B2 | P1 scientific reading/navigation; affected covering artifact and 1.0 | Viewer; #314 and a scoped precision report | Correlated Python/render acceptance and numerical-label truth; retain original failed runs |
 | B3.1–B3.5 | P2 robustness; applicable candidate/1.0 scope | Viewer; split by mechanism under #315 | Reproduce each inspected path, then receive its window/title/layout/keyboard/cleanup outcome |
 | B3.6, B4, E3, F1 | Scope/design decision; not an automatic release gate | Principal maintainer decides scope; relevant owner implements | Record accept/reject/defer and contract before implementation; accepted work gains its explicit milestone and guard |
@@ -228,7 +233,7 @@ original producers and scopes.
 | **A3 — reproduced, open** | A real DataCard popup parses an inert title marker as markup, while the original card shows literal text. Source: [DataCard](../../molsysviewer/js/src/ui/floating-data-card.ts), `openPopoutWindow`. Executable injection scope was not tested. | Use literal title/header handling consistently; review disclosure privately. Guard initial/restored/updated titles, special characters, ordinary popup input and original/popup parity without executable test payloads. |
 | **A4 — reproduced, open** | `new_view` with a failing selection leaves one unreturned open View and two registered widgets. Source: [factory](../../molsysviewer/new_view.py). Repeated ordinary errors can retain resources. | Close the factory-owned View on initialization failure, preserving the original error. Never close a caller-supplied View. Guard invalid selection, conversion/load rejection, repeated failures and restored widget/resource ownership with real demos. |
 | **A5 — inspected, investigate** | `save_state` asks for a fresh camera; `save_session` delegates to cached state. Immediate save after camera movement may differ within the debounce interval. This is an inspected asymmetry, not a reproduced camera-loss finding. | Reproduce from notebook and popup with actual camera movement and saved/recovered vantage points. Agree one capture policy and preserve the appropriate headless behavior. Share the qualified mechanism where applicable. |
-| **A6 — inspected, investigate** | `close` marks the View closed before all callbacks/widgets are released; an intermediate exception may prevent the remaining cleanup and make retry return early. No universal leak is claimed. | Exercise legitimate addon/transport cleanup failures, retain diagnostics and independently release owned resources. Define idempotent repeated-close behavior. Do not replace real lifecycle tests with a successful-message assertion. |
+| **A6 — reproduced, #318** | An actual provider panel close error leaves six owned widgets/layouts registered, another panel mounted and both View links retained; retry returns early. Ordinary successful closes are not claimed to fail. | [Independent cleanup and retry receiving](../pending_bugs/view_close_failure_blocks_cleanup.md), including actual provider/transport failures, unrelated View preservation and observable diagnostics. |
 
 Register scoped reports after duplicate review, including related closed #127
 and #210 where useful. The private receipts support A1–A4; the coordination
