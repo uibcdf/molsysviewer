@@ -96,6 +96,15 @@ The file is a zip holding three members:
 | `state.json` | the `export_state` document, unchanged |
 | `structure.h5msm` | the molecular system, in MolSysMT's own form |
 
+Required members are unique regular archive files; manifest and state headers
+must be JSON objects with a supported format/version. A declared structure
+member is a portable relative archive key, including safe nested names. The
+loader streams that exact member into its own fixed temporary file before
+calling the scientific reader. An archive name never selects an external file.
+Invalid or ambiguous required members are rejected before changing an existing
+destination View. These rules do not promise a universal archive-size or memory
+bound; the scientific/source correspondence checks still apply.
+
 ### Preserving loaded source occurrences
 
 State v2 carries an additive `sources` extension (version 1): source occurrence

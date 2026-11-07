@@ -135,7 +135,7 @@ export class TrajectoryPlotOverlay {
         } else {
             entry.options = options;
             entry.nFrames = nFrames;
-            entry.card.titleElement.textContent = resolvedTitle;
+            entry.card.setTitle(resolvedTitle);
         }
 
         if (options.visible === false) entry.card.hide(); else entry.card.show();

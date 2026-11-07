@@ -398,8 +398,20 @@ export class FloatingDataCard {
         this.resizeObserver.observe(this.card);
     }
 
+    public setTitle(title: string): void {
+        this.options.title = title;
+        this.titleElement.textContent = title;
+        if (this.popoutWindow && !this.popoutWindow.closed) {
+            const doc = this.popoutWindow.document;
+            doc.title = title || "MolSysViewer Data Card";
+            const header = doc.getElementById("card-pop-header");
+            if (header) header.textContent = title;
+        }
+    }
+
     public openPopoutWindow(): void {
         if (this.popoutWindow && !this.popoutWindow.closed) {
+            this.setTitle(this.options.title);
             this.popoutWindow.focus();
             return;
         }
@@ -415,7 +427,7 @@ export class FloatingDataCard {
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>${this.options.title || "MolSysViewer Data Card"}</title>
+  <title>MolSysViewer Data Card</title>
   <style>
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #121216; color: #f4f4f5; font-family: "IBM Plex Sans", system-ui, sans-serif; }
     #card-pop-host { width: 100%; height: 100%; display: flex; flex-direction: column; }
@@ -425,13 +437,14 @@ export class FloatingDataCard {
 </head>
 <body>
   <div id="card-pop-host">
-    <div id="card-pop-header">${this.options.title}</div>
+    <div id="card-pop-header"></div>
     <div id="card-pop-body"></div>
   </div>
 </body>
 </html>
         `);
         doc.close();
+        this.setTitle(this.options.title);
 
         const popBody = doc.getElementById("card-pop-body");
         if (popBody) {

@@ -151793,8 +151793,19 @@ var FloatingDataCard = class {
     });
     this.resizeObserver.observe(this.card);
   }
+  setTitle(title) {
+    this.options.title = title;
+    this.titleElement.textContent = title;
+    if (this.popoutWindow && !this.popoutWindow.closed) {
+      const doc = this.popoutWindow.document;
+      doc.title = title || "MolSysViewer Data Card";
+      const header2 = doc.getElementById("card-pop-header");
+      if (header2) header2.textContent = title;
+    }
+  }
   openPopoutWindow() {
     if (this.popoutWindow && !this.popoutWindow.closed) {
+      this.setTitle(this.options.title);
       this.popoutWindow.focus();
       return;
     }
@@ -151808,7 +151819,7 @@ var FloatingDataCard = class {
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>${this.options.title || "MolSysViewer Data Card"}</title>
+  <title>MolSysViewer Data Card</title>
   <style>
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #121216; color: #f4f4f5; font-family: "IBM Plex Sans", system-ui, sans-serif; }
     #card-pop-host { width: 100%; height: 100%; display: flex; flex-direction: column; }
@@ -151818,13 +151829,14 @@ var FloatingDataCard = class {
 </head>
 <body>
   <div id="card-pop-host">
-    <div id="card-pop-header">${this.options.title}</div>
+    <div id="card-pop-header"></div>
     <div id="card-pop-body"></div>
   </div>
 </body>
 </html>
         `);
     doc.close();
+    this.setTitle(this.options.title);
     const popBody = doc.getElementById("card-pop-body");
     if (popBody) {
       popBody.appendChild(this.body);
@@ -151956,7 +151968,7 @@ var TrajectoryPlotOverlay = class {
     } else {
       entry.options = options;
       entry.nFrames = nFrames;
-      entry.card.titleElement.textContent = resolvedTitle;
+      entry.card.setTitle(resolvedTitle);
     }
     if (options.visible === false) entry.card.hide();
     else entry.card.show();

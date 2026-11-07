@@ -26,9 +26,11 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
+import stat
 import tempfile
 import zipfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any
 
 from depdigest import dep_digest
@@ -50,18 +52,54 @@ class SessionFormatError(ValueError):
     """A file that is not a MolSysViewer session, or is one this build cannot read."""
 
 
+def _unique_session_member(archive: zipfile.ZipFile, name: str) -> zipfile.ZipInfo:
+    matches = [entry for entry in archive.infolist() if entry.filename == name]
+    if not matches:
+        raise KeyError(name)
+    if len(matches) != 1:
+        raise SessionFormatError("The session has duplicate required archive entries.")
+    entry = matches[0]
+    mode = stat.S_IFMT(entry.external_attr >> 16)
+    if entry.is_dir() or mode not in (0, stat.S_IFREG):
+        raise SessionFormatError("A required session entry is not a regular file.")
+    return entry
+
+
+def _structure_member_name(manifest: dict) -> str:
+    structure = manifest.get("structure")
+    if structure is None:
+        structure = {}
+    if not isinstance(structure, dict):
+        raise SessionFormatError("The session structure declaration must be a JSON object.")
+    member = structure.get("member")
+    if member is None or member == "":
+        member = _STRUCTURE_MEMBER
+    if (
+        not isinstance(member, str)
+        or "\x00" in member
+        or "\\" in member
+        or PurePosixPath(member).is_absolute()
+        or PureWindowsPath(member).drive
+        or any(part in {"", ".", ".."} for part in member.split("/"))
+    ):
+        raise SessionFormatError("The structure member must be a portable relative archive name.")
+    return member
+
+
 def _read_manifest(archive: zipfile.ZipFile) -> dict:
     try:
-        manifest = json.loads(archive.read(_MANIFEST_MEMBER).decode("utf-8"))
+        manifest = json.loads(archive.read(_unique_session_member(archive, _MANIFEST_MEMBER)).decode("utf-8"))
     except KeyError as error:
         raise SessionFormatError("This file is not a MolSysViewer session: it has no manifest.") from error
     except (json.JSONDecodeError, UnicodeDecodeError) as error:
         raise SessionFormatError("The session manifest is not readable JSON.") from error
 
+    if not isinstance(manifest, dict):
+        raise SessionFormatError("The session manifest must be a JSON object.")
     if manifest.get("format") != SESSION_FORMAT:
         raise SessionFormatError(f"This file declares format {manifest.get('format')!r}, not {SESSION_FORMAT!r}.")
     version = manifest.get("version")
-    if version != SESSION_VERSION:
+    if type(version) is not int or version != SESSION_VERSION:
         raise SessionFormatError(
             f"Unsupported session version: {version!r}. This build reads version {SESSION_VERSION}."
         )
@@ -179,18 +217,25 @@ def load_session(
     with zipfile.ZipFile(source) as archive:
         manifest = _read_manifest(archive)
         try:
-            state = json.loads(archive.read(_STATE_MEMBER).decode("utf-8"))
+            state = json.loads(archive.read(_unique_session_member(archive, _STATE_MEMBER)).decode("utf-8"))
         except KeyError as error:
             raise SessionFormatError("The session carries no state document.") from error
-        member = str((manifest.get("structure") or {}).get("member") or _STRUCTURE_MEMBER)
+        except (json.JSONDecodeError, UnicodeDecodeError) as error:
+            raise SessionFormatError("The session state document is not readable JSON.") from error
+        if not isinstance(state, dict):
+            raise SessionFormatError("The session state document must be a JSON object.")
+        member = _structure_member_name(manifest)
+        try:
+            structure_entry = _unique_session_member(archive, member)
+        except KeyError as error:
+            raise SessionFormatError("The session does not contain its declared structure member.") from error
         with tempfile.TemporaryDirectory() as workspace:
-            try:
-                archive.extract(member, workspace)
-            except KeyError as error:
-                raise SessionFormatError(
-                    f"The session names {member!r} as its structure, and does not contain it."
-                ) from error
-            structure_path = str(Path(workspace) / member)
+            # The archive member is a lookup key, never a filesystem path.
+            # Keep portable nested names while the reader uses one fixed file.
+            target = Path(workspace) / _STRUCTURE_MEMBER
+            with archive.open(structure_entry) as incoming, target.open("xb") as output:
+                shutil.copyfileobj(incoming, output)
+            structure_path = str(target)
             if manifest.get("interaction_analyses") is not None:
                 reader = getattr(getattr(msm, "h5msm", None), "read", None)
                 if reader is None:

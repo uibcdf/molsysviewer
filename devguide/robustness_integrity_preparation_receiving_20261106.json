@@ -2,18 +2,32 @@
   "schema": "molsysviewer.robustness_integrity_preparation@1",
   "date": "2026-11-06",
   "plan": "uibcdf/molsysviewer#315",
-  "status": "A1/A3 corrections prepared and integration explicitly authorized; source delivery and applicable hosted receiving pending",
+  "status": "reviewed A1/A3 patches and guards integrated; source commit/consolidated hosted receiving pending",
   "private_source_base": "e3cf77e0f95c2d1c927df118d0596bb5679ecd8d",
   "A1": {
-    "directed": {"passed": 39, "exit_code": 0},
-    "session_source_analysis_boundary": {"passed": 157, "exit_code": 0},
+    "directed": {
+      "passed": 39,
+      "exit_code": 0
+    },
+    "session_source_analysis_boundary": {
+      "passed": 157,
+      "exit_code": 0
+    },
     "guard": "tests/test_session_member_integrity.py",
     "scope": "Private source receiving on the declared controlled providers; scopes overlap. Original causal failure retained."
   },
   "A3": {
-    "actual_browser": {"named_checks": 5, "exit_code": 0},
-    "durable_trajectory_plot_browser_entry": {"exit_code": 0},
-    "canonical_js_unit_entry": {"exit_code": 0, "skipped": 0},
+    "actual_browser": {
+      "named_checks": 5,
+      "exit_code": 0
+    },
+    "durable_trajectory_plot_browser_entry": {
+      "exit_code": 0
+    },
+    "canonical_js_unit_entry": {
+      "exit_code": 0,
+      "skipped": 0
+    },
     "guard": "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts",
     "scope": "Real Mol*/Chromium and Python-derived pentalanine/title restoration; synthetic plot values are not detector results. Not live Jupyter, visible Qt or installed-package qualification."
   },
@@ -37,5 +51,12 @@
     "Private advisory metadata is provisional; no tested published version range or severity is claimed.",
     "The B1 full core run has fixed inputs excluding these private corrections; its result will not qualify different source bytes.",
     "Broader DataCard lifecycle and A6 close failure work remain separate."
-  ]
+  ],
+  "combined_runtime_browser": {
+    "exit_code": 0,
+    "seconds": 45.455201423028484,
+    "inputs_unchanged": true,
+    "log_sha256": "d172eb07eb52614362af9ea7124434d6143be9a0876b343e09cf33660336ecdd",
+    "scope": "Integrated B1 navigation plus initial/updated/reopened/Python-restored literal titles and ordinary plot input; includes prepared A6 Python source. Not the earlier 44-suite core run."
+  }
 }
