@@ -177,12 +177,32 @@ test("new camera input cancels its owned pending reset without applying the old 
     const f = fixture();
     try {
         await f.apply({ op: "set_camera_sync_revision", camera_revision: 0 });
+        f.camera.setState({ radius: 1 }, 0);
         const current = f.camera.getSnapshot();
         await f.apply(f.command(1, { position: [1, 2, 30] }));
         f.drag.next({ buttons: ButtonsType.Flag.Primary, modifiers: ModifiersKeys.create(), dx: 3, dy: 2 });
-        assert.deepEqual(f.pending().snapshot, current, "cancellation uses the actual camera, not the superseded target");
         f.commit(current);
+        assert.deepEqual(f.camera.getSnapshot(), current, "cancellation preserves the actual camera, not the superseded target");
         f.draw();
+        assert.equal(f.sync.completedRevision, 1);
+    } finally { f.sync.dispose(); }
+});
+
+test("cancelling a pending reset preserves native input applied before scene commit", async () => {
+    const f = fixture();
+    try {
+        await f.apply({ op: "set_camera_sync_revision", camera_revision: 0 });
+        const current = f.camera.getSnapshot();
+        await f.apply(f.command(1, { position: [1, 2, 30] }));
+        f.drag.next({ buttons: ButtonsType.Flag.Primary, modifiers: ModifiersKeys.create(), dx: 3, dy: 2 });
+        // PluginAnimationLoop.start calls resetTime/controls.start before the
+        // next canvas commit, applying input accumulated while drawing stopped.
+        const moved = { ...current, position: [100, 0, 0] };
+        f.camera.setState(moved as any, 0);
+        f.commit(moved);
+        f.draw();
+        assert.deepEqual(f.camera.getSnapshot().position, moved.position);
+        assert.deepEqual(f.camera.getSnapshot().target, moved.target);
         assert.equal(f.sync.completedRevision, 1);
     } finally { f.sync.dispose(); }
 });

@@ -50,6 +50,8 @@ MANAGED_EDITS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/coordinate-edits.e2e.ts
 WORKSPACE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts"
 STUDIO_LIST_BROWSER_GUARD = "molsysviewer/js/tests/e2e/studio-list-workflows.e2e.ts"
 STUDIO_BROWSER_GUARD = "molsysviewer/js/tests/e2e/studio-usability.e2e.ts"
+MOVING_CAPTURE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/moving-state-capture.e2e.ts"
+BOX_TRAJECTORY_BROWSER_GUARD = "molsysviewer/js/tests/e2e/box-trajectory.e2e.ts"
 GROUP_PANEL_UNIT_GUARD = "molsysviewer/js/tests/unit/group-panel.test.ts"
 ADDON_PANEL_UNIT_GUARD = "molsysviewer/js/tests/unit/addon-panel-lifecycle.test.ts"
 
@@ -97,6 +99,8 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         WORKSPACE_BROWSER_GUARD,
         STUDIO_BROWSER_GUARD,
         STUDIO_LIST_BROWSER_GUARD,
+        MOVING_CAPTURE_BROWSER_GUARD,
+        BOX_TRAJECTORY_BROWSER_GUARD,
     ):
         return validate_pytest_guard(root, selector)
     js_root = root / "molsysviewer/js"
@@ -122,6 +126,15 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             'import { runInteractionsSuite } from "./interactions-subpanel-scenarios";' in entry,
             'runInteractionsSuite(chromium, "calculation").catch' in entry,
             "export async function runInteractionsSuite(" in owner,
+        )
+    elif selector == MOVING_CAPTURE_BROWSER_GUARD:
+        requirements += (
+            'import { checkMovingCapture } from "./moving-capture-scenarios";' in entry,
+            "await checkMovingCapture(page," in entry,
+            "run().catch(" in entry,
+            (js_root / "tests/e2e/moving-capture-scenarios.ts").is_file(),
+            (js_root / "tests/e2e/moving-capture-bridge.py").is_file(),
+            (js_root / "tests/e2e/annotation-presentation-scenarios.ts").is_file(),
         )
     elif selector == COMPOSITE_LOAD_BROWSER_GUARD:
         requirements += (
@@ -164,8 +177,6 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             "await checkStudioLiveCapture(livePage, dir, downloadDir);" in entry,
             'import { checkTrajectoryShapeRefresh } from "./trajectory-shape-refresh-scenarios";' in entry,
             "await checkTrajectoryShapeRefresh(page, dir);" in entry,
-            'import { checkBoxTrajectory } from "./box-trajectory-scenarios";' in entry,
-            "await checkBoxTrajectory(page, dir);" in entry,
             'import { PythonFixtureBridge } from "./python-fixture-bridge";' in entry,
             "await page.waitForEvent" in entry or 'page.waitForEvent("download")' in entry,
             "bytes.readUInt32BE(16)" in entry,
@@ -176,8 +187,15 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             (js_root / "tests/e2e/studio-live-capture-bridge.py").is_file(),
             (js_root / "tests/e2e/canvas-popup-bridge.py").is_file(),
             (js_root / "tests/e2e/trajectory-shape-refresh-scenarios.ts").is_file(),
+        )
+    elif selector == BOX_TRAJECTORY_BROWSER_GUARD:
+        requirements += (
+            'import { checkBoxTrajectory } from "./box-trajectory-scenarios";' in entry,
+            "await checkBoxTrajectory(page, dirname(fileURLToPath(import.meta.url)));" in entry,
+            "run().catch(" in entry,
             (js_root / "tests/e2e/box-trajectory-scenarios.ts").is_file(),
             (js_root / "tests/e2e/box-trajectory-bridge.py").is_file(),
+            (js_root / "tests/e2e/canvas-popup-fixture.ts").is_file(),
         )
     elif selector == WORKSPACE_BROWSER_GUARD:
         requirements += (
@@ -576,6 +594,8 @@ def test_browser_guard_resolves_its_build_entrypoint_and_core_lane() -> None:
     assert validate_guard(ROOT, MANAGED_EDITS_BROWSER_GUARD) == []
     assert validate_guard(ROOT, WORKSPACE_BROWSER_GUARD) == []
     assert validate_guard(ROOT, STUDIO_BROWSER_GUARD) == []
+    assert validate_guard(ROOT, MOVING_CAPTURE_BROWSER_GUARD) == []
+    assert validate_guard(ROOT, BOX_TRAJECTORY_BROWSER_GUARD) == []
 
 
 def test_group_panel_unit_guard_is_bounded_and_registered() -> None:
@@ -605,6 +625,10 @@ def test_browser_guard_rejects_missing_or_unadopted_targets(tmp_path: Path) -> N
     assert validate_guard(tmp_path, WORKSPACE_BROWSER_GUARD)
     assert validate_guard(ROOT, WORKSPACE_BROWSER_GUARD + "::run")
     assert validate_guard(tmp_path, STUDIO_BROWSER_GUARD)
+    assert validate_guard(tmp_path, MOVING_CAPTURE_BROWSER_GUARD)
+    assert validate_guard(tmp_path, BOX_TRAJECTORY_BROWSER_GUARD)
+    assert validate_guard(ROOT, BOX_TRAJECTORY_BROWSER_GUARD + "::run")
+    assert validate_guard(ROOT, MOVING_CAPTURE_BROWSER_GUARD + "::run")
     assert validate_guard(ROOT, STUDIO_BROWSER_GUARD + "::run")
     assert validate_guard(ROOT, CONTROLS_BROWSER_GUARD + "::run")
     assert validate_guard(ROOT, MOVIE_BROWSER_GUARD + "::run")

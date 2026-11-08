@@ -15,6 +15,44 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
+**Current bounded checkpoint — 2026-11-07:** #330–#335 are received and
+archived as bounded prerequisites. The final canonical Studio/box/moving
+selection passes 3/3 in 429.86 seconds, with 4,323 fixed inputs and thirty
+owned processes closed. Node passes 406/406; the recorded Python boundary
+passes 672/672 on its separately identified source. See the
+[receiving record](../moving_capture_renderer_receiving_20261107.json).
+A5 stays partial and the frontend still advertises capture version 1 only.
+Version-2 popup/detached routing, hidden/unavailable/closed endpoint semantics,
+current actual-Jupyter and consolidated/hosted acceptance remain. Earlier
+dated sections retain their original narrower source and diagnostic scope.
+
+
+## Receiver prototype and new presentation prerequisite — 2026-11-07
+
+The current working tree adds nonblocking protocol-2 scene prefixes, filtered
+completed-draw reads, actual owner playback metadata and private frame/geometry
+readiness. Protocol 1 retains its strict queue and reply shape; advertised
+capabilities remain `[1]`. The first real moving pilot receives Python's
+dynamic-region replies and leaves playback running, but initially timed out because the
+camera-relative callout is updated after the draw that should consume it.
+[#330](../archive/camera_relative_callout_draw_phase.md) records the native position
+measurements and required render-phase correction. Do not describe this
+prototype or its directed passing tests as completed moving capture. Its
+first corrected render-phase pilot now passes real primary state/session
+saves and independent restoration with playback active, in 70.44 seconds and
+4,316 unchanged inputs. Both accepted samples are frame 0/backward; broader
+frames, offsets, images, picks and other endpoints remain. Full
+source/hidden/actual-Jupyter receiving and Movie #320 remain in scope.
+
+The expanded canonical guard has reached frames 0/backward and 2/forward with
+three-axis camera offsets and native group-loci centers, but is not green.
+An isolated stopped-trajectory control reproduces [#331](../archive/late_playback_feedback_overwrites_python_seek.md):
+late stop feedback undoes a newer explicit Python seek, even without file
+reconstruction between operations. A separately observed uninterrupted
+session timeout remains causally unresolved. The original failed runs and
+current working corrections are retained; neither child increases the audit
+denominator or completes A5.
+
 ## Native cell projection prerequisite — 2026-11-07
 
 Child [#329](../archive/box_display_lags_native_trajectory.md) corrects a stale native

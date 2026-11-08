@@ -1,0 +1,698 @@
+{
+  "schema": "molsysviewer.working_receiving@1",
+  "date": "2026-11-07",
+  "status": "Bounded six-defect correction received; prepared for reviewed integration. Parent A5 remains partial.",
+  "owner_issue": "uibcdf/molsysviewer#319",
+  "parent_plan": "uibcdf/molsysviewer#315",
+  "source_base": "5390fadbcd2904cb148d326b299632271073994a",
+  "frontend_advertises_capture_versions": [
+    1
+  ],
+  "progress": {
+    "original_leaves": 46,
+    "delivered": 8,
+    "delivered_percent": 17.4,
+    "finally_accepted": 1,
+    "finally_accepted_percent": 2.2,
+    "mandatory_movie_issue": "uibcdf/molsysviewer#320"
+  },
+  "child_reports": [
+    "uibcdf/molsysviewer#330",
+    "uibcdf/molsysviewer#331",
+    "uibcdf/molsysviewer#332",
+    "uibcdf/molsysviewer#333",
+    "uibcdf/molsysviewer#334",
+    "uibcdf/molsysviewer#335"
+  ],
+  "checks": [
+    {
+      "scope": "canonical Node before navigation revision change",
+      "passed": 400,
+      "failed": 0
+    },
+    {
+      "scope": "TypeScript including navigation revision change",
+      "native_exit": 0
+    },
+    {
+      "scope": "Python player/popup/live/moving capture after navigation correction, before new recovery correction",
+      "passed": 173,
+      "failed": 0,
+      "legacy_h5msm_warnings": 153
+    },
+    {
+      "scope": "Reporting profile before the two later child reports",
+      "passed": 381,
+      "failed": 0
+    },
+    {
+      "scope": "Late-feedback real-demo causal cases before correction",
+      "passed": 0,
+      "failed": 2
+    },
+    {
+      "scope": "Saved-structure region recovery before correction",
+      "passed": 4,
+      "failed": 2
+    },
+    {
+      "scope": "Unchanged saved-structure region recovery after correction",
+      "passed": 6,
+      "failed": 0,
+      "legacy_h5msm_warnings": 6
+    },
+    {
+      "scope": "Broader dynamic-region/isolation/state-v2/moving-state after recovery correction",
+      "passed": 115,
+      "failed": 0,
+      "seconds": 45.91,
+      "warnings": 152,
+      "overlaps_other_selections": true
+    },
+    {
+      "scope": "Final bounded playback/render readiness TypeScript and runtime/harness/all-E2E builds",
+      "native_exit": 0
+    },
+    {
+      "scope": "Canonical Node after bounded playback pacing and owned-timer disposal",
+      "passed": 404,
+      "failed": 0,
+      "skips": 0,
+      "seconds": 10.937,
+      "cpu_quota_percent": 200,
+      "memory_limit_gib": 2
+    },
+    {
+      "scope": "Whole-envelope rejection probe before correction",
+      "native_exit": 1,
+      "cause": "A stale frame envelope still applies its cell after the frame itself is rejected."
+    },
+    {
+      "scope": "Canonical Node after whole-envelope rejection; no production/runtime unit input changes in the later E2E-entry split",
+      "passed": 405,
+      "failed": 0,
+      "skips": 0,
+      "seconds": 8.6687
+    },
+    {
+      "scope": "Changed Python wire/rebuild expectations before contract update",
+      "passed": 47,
+      "failed": 4,
+      "seconds": 15.84,
+      "reason": "Complete expected dictionaries omitted navigation_revision and the retained box_follow field; no scientific assertion was weakened."
+    },
+    {
+      "scope": "Unchanged three-file boundary after exact envelope expectations",
+      "passed": 51,
+      "failed": 0,
+      "seconds": 16.87,
+      "warnings": 50
+    },
+    {
+      "scope": "Fourteen-file Python player/popup/capture/dynamic/state/protocol receiving",
+      "passed": 672,
+      "failed": 0,
+      "skips": 0,
+      "wrapper_seconds": 119.98,
+      "fixed_inputs": 4320,
+      "inputs_unchanged": true,
+      "cpu_quota_percent": 100,
+      "memory_limit_gib": 2,
+      "peak_owned_rss_mib": 692.6
+    },
+    {
+      "scope": "Ruff full repository lint and format",
+      "native_exit": 0,
+      "formatted_files": 984
+    },
+    {
+      "scope": "New split E2E-entry TypeScript and all-E2E build",
+      "native_exit": 0
+    },
+    {
+      "scope": "Canonical Node after commit-time camera cancellation preserves native input; valid radius control retains full snapshot equality",
+      "passed": 406,
+      "failed": 0,
+      "skips": 0,
+      "native_seconds": 8.7312,
+      "wrapper_seconds": 11.11,
+      "raw_receipt_directory": "checks-after-camera-cancellation-02",
+      "preserved_in_create_only_directory": true
+    },
+    {
+      "scope": "Final six archival dispositions, guard profiles and reporting schema",
+      "passed": 383,
+      "failed": 0,
+      "skips": 0,
+      "seconds": 1.84,
+      "overlaps_the_672_case_selection": true
+    },
+    {
+      "scope": "Final full Ruff lint/format, devguide index and patch whitespace",
+      "native_exit": 0,
+      "formatted_files": 984
+    }
+  ],
+  "native_attempts": [
+    {
+      "attempt": "moving-after-01",
+      "phase": "all",
+      "state": "completed",
+      "native_exit": 0,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": true,
+      "seconds": 70.44375896896236,
+      "inputs_fixed": true,
+      "selected_inputs": 4316,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "b3b0376b8f10637354fad638f1045c97e6c70927af4b5035bb3b9bdc88d0b7b9",
+      "sampled_aggregate_owned_rss_peak_mib": null
+    },
+    {
+      "attempt": "moving-after-02",
+      "phase": "all",
+      "state": "completed",
+      "native_exit": 1,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": false,
+      "seconds": 16.435843707993627,
+      "inputs_fixed": true,
+      "selected_inputs": 4318,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "8d71c621b6def7600042a7240a6de5c71a01df52b55fbaccac7a7ff0507b4928",
+      "sampled_aggregate_owned_rss_peak_mib": null
+    },
+    {
+      "attempt": "moving-after-03",
+      "phase": "all",
+      "state": "completed",
+      "native_exit": 1,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": false,
+      "seconds": 50.40547362808138,
+      "inputs_fixed": true,
+      "selected_inputs": 4318,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "10a67981d94746204c6694bd2aa4f670845c6ff11e979d4ac168498c21f091a1",
+      "sampled_aggregate_owned_rss_peak_mib": null
+    },
+    {
+      "attempt": "moving-after-04",
+      "phase": "all",
+      "state": "completed",
+      "native_exit": 1,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": false,
+      "seconds": 29.974730510031804,
+      "inputs_fixed": true,
+      "selected_inputs": 4318,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "6374b65f8a136c3b3f70ab6f0d1b1075e81f3fee48083d1919f09d355abda38f",
+      "sampled_aggregate_owned_rss_peak_mib": null
+    },
+    {
+      "attempt": "moving-after-05",
+      "phase": "empty",
+      "state": "completed",
+      "native_exit": 1,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": false,
+      "seconds": 45.664816732984036,
+      "inputs_fixed": true,
+      "selected_inputs": 4318,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "9cd1fc11c5640b659a594ce1132a9938dcbcd2936aadb4f7cf319976e98f6f06",
+      "sampled_aggregate_owned_rss_peak_mib": null
+    },
+    {
+      "attempt": "moving-after-06",
+      "phase": "presentation",
+      "state": "completed",
+      "native_exit": 1,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": false,
+      "seconds": 45.51534880511463,
+      "inputs_fixed": true,
+      "selected_inputs": 4319,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "934e494e87e24db0d5e5a1ae282a21d2a2ce97bc224e19ac76eb8e6039076fbb",
+      "sampled_aggregate_owned_rss_peak_mib": null
+    },
+    {
+      "attempt": "moving-after-07",
+      "phase": "empty",
+      "state": "completed",
+      "native_exit": 1,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": false,
+      "seconds": 20.66427639196627,
+      "inputs_fixed": true,
+      "selected_inputs": 4319,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "051969480f7a4e58eadf60809def3a64f059d244ffbfa522f448f4b706b4591c",
+      "sampled_aggregate_owned_rss_peak_mib": null
+    },
+    {
+      "attempt": "moving-after-08",
+      "phase": "presentation",
+      "state": "completed",
+      "native_exit": 0,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": true,
+      "seconds": 50.724263767013326,
+      "inputs_fixed": true,
+      "selected_inputs": 4319,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "288d620211676db3e9d0ac5365ce69169bfaf7faa37415d0afc9bf5b8fe40808",
+      "sampled_aggregate_owned_rss_peak_mib": 2039.5
+    },
+    {
+      "attempt": "moving-after-09",
+      "phase": "all",
+      "state": "completed",
+      "native_exit": 0,
+      "outer_timeout": true,
+      "resource_stop": null,
+      "passing_receiving": false,
+      "seconds": 420.62494499702007,
+      "inputs_fixed": true,
+      "selected_inputs": 4319,
+      "closed_owned_processes": 14,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "c0ed56d1378e3685c6e12ae3be4ec6cfebf713444c55dffc48e628a6ce9adc60",
+      "sampled_aggregate_owned_rss_peak_mib": 2384.1
+    },
+    {
+      "attempt": "moving-after-10",
+      "phase": "all",
+      "state": "completed",
+      "native_exit": 1,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": false,
+      "seconds": 63.38856131397188,
+      "inputs_fixed": true,
+      "selected_inputs": 4319,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "6c5287436d2bcbbd6f797db5e62a5177743c7779b3d18a92986901cbbd789697",
+      "sampled_aggregate_owned_rss_peak_mib": 2144.6
+    },
+    {
+      "attempt": "moving-after-11",
+      "phase": "state",
+      "state": "interrupted",
+      "native_exit": 0,
+      "outer_timeout": false,
+      "resource_stop": "Global resource margin/pressure requires releasing this owned execution",
+      "passing_receiving": false,
+      "seconds": 5.603330224985257,
+      "inputs_fixed": true,
+      "selected_inputs": 4319,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "92aa8666b0d6e77425caca2448b15182b06bd823e792d19d2d9689c0cb2e7d9d",
+      "sampled_aggregate_owned_rss_peak_mib": 1414.7
+    },
+    {
+      "attempt": "moving-after-12",
+      "phase": "state",
+      "state": "completed",
+      "native_exit": 1,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": false,
+      "seconds": 57.16418421105482,
+      "inputs_fixed": true,
+      "selected_inputs": 4319,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "3b68ee0805b84566894e39d8260e0106be5dfcf921190a07335e026ada86c4d9",
+      "sampled_aggregate_owned_rss_peak_mib": 2164.1
+    },
+    {
+      "attempt": "moving-after-13",
+      "phase": "state",
+      "state": "completed",
+      "native_exit": 1,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": false,
+      "seconds": 62.547807049937546,
+      "inputs_fixed": true,
+      "selected_inputs": 4319,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "deceffdca36e8f0a605e6754083fc0b7cd0070f0894075841053e08c7c9f9a0b",
+      "sampled_aggregate_owned_rss_peak_mib": 2140.5
+    },
+    {
+      "attempt": "moving-after-14",
+      "phase": "state",
+      "state": "completed",
+      "native_exit": 1,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": false,
+      "seconds": 59.48342520697042,
+      "inputs_fixed": true,
+      "selected_inputs": 4319,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "05f2d1f86b9ac7286710053294fe76ad5178314ae51237b17772694ea311fad7",
+      "sampled_aggregate_owned_rss_peak_mib": 2171.4
+    },
+    {
+      "attempt": "moving-after-15",
+      "phase": "state",
+      "state": "completed",
+      "native_exit": 1,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": false,
+      "seconds": 39.044059047009796,
+      "inputs_fixed": true,
+      "selected_inputs": 4319,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "1d1bfbd9bc0c3b87faaea70d0a076f3732dadbe111534fe22f65b25d984eff87",
+      "sampled_aggregate_owned_rss_peak_mib": 2149.8
+    },
+    {
+      "attempt": "moving-after-16",
+      "phase": "state",
+      "state": "completed",
+      "native_exit": 1,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": false,
+      "seconds": 31.329774718964472,
+      "inputs_fixed": true,
+      "selected_inputs": 4319,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "4481877f0b890c05f12e525355df1e56b017cc6232f346c9d4873115469b03b7",
+      "sampled_aggregate_owned_rss_peak_mib": 2241.4
+    },
+    {
+      "attempt": "moving-after-17",
+      "phase": "state",
+      "state": "completed",
+      "native_exit": 0,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": true,
+      "seconds": 22.55191640299745,
+      "inputs_fixed": true,
+      "selected_inputs": 4319,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "1a4bdeb5dd98839eeb43611f0fbb9fbeea0fc768d742750f8d59a761cca553f0",
+      "sampled_aggregate_owned_rss_peak_mib": 2176.0
+    },
+    {
+      "attempt": "moving-after-18",
+      "phase": "all",
+      "state": "completed",
+      "native_exit": 0,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": true,
+      "seconds": 36.20225137309171,
+      "inputs_fixed": true,
+      "selected_inputs": 4319,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "0e3406883ae3db18ad287ad51b0e51682f3bfe7748cbfdfc912a0c4d5b0d8370",
+      "sampled_aggregate_owned_rss_peak_mib": 2276.9
+    },
+    {
+      "attempt": "moving-before-01",
+      "phase": "all",
+      "state": "completed",
+      "native_exit": 1,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": false,
+      "seconds": 27.39997932710685,
+      "inputs_fixed": true,
+      "selected_inputs": 4314,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "3742e1b4cd0b2f49f70d42be2827e3c5cb35431a7ee12ebb71af1648da075de6",
+      "sampled_aggregate_owned_rss_peak_mib": null
+    },
+    {
+      "attempt": "moving-before-02",
+      "phase": "all",
+      "state": "completed",
+      "native_exit": 1,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": false,
+      "seconds": 27.982620174065232,
+      "inputs_fixed": true,
+      "selected_inputs": 4314,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "f29f3e86dbb7cb998435cc3f236fe20ef692533e505b8a0a8d1ccaaa902b105a",
+      "sampled_aggregate_owned_rss_peak_mib": null
+    },
+    {
+      "attempt": "moving-before-03",
+      "phase": "all",
+      "state": "completed",
+      "native_exit": 1,
+      "outer_timeout": false,
+      "resource_stop": null,
+      "passing_receiving": false,
+      "seconds": 26.84089786792174,
+      "inputs_fixed": true,
+      "selected_inputs": 4314,
+      "closed_owned_processes": 13,
+      "survivors": [],
+      "cleanup_errors": [],
+      "original_receipt_sha256": "5b8e4e60bc70352c4a76bd0c56bc3cddaf05471ce0827b1909ba1e6906905d41",
+      "sampled_aggregate_owned_rss_peak_mib": null
+    }
+  ],
+  "evidence_custody": {
+    "bundle": "moving-renderer-20261107-2",
+    "custodian": "Diego Prada Gracia",
+    "files": 432,
+    "total_bytes": 89505789,
+    "manifest_sha256": "7a3b5675b9f3d7e02713c47da2eb9c68b0081da5294e454163713c5d46d089f7",
+    "verified": true,
+    "originals_retained": true,
+    "permissions": "directories 0700; files 0600",
+    "off_host_backup_claimed": false,
+    "contents": "Retained raw native failures, current successful receipts, source checkpoint and original causal-before executable. The earlier local Node-405 raw pass log was replaced as explicitly recorded in the incident; it is not claimed to be preserved. Final delivery/custody pointers are maintained separately."
+  },
+  "not_yet_qualified": [
+    "Protocol-2 canvas popup and detached Studio routing while moving, with actual owning-canvas geometry and resolved playback.",
+    "Hidden/unavailable/closed/disposed version-2 endpoint lifetime and fail-closed semantics; no arbitrary canvas fallback.",
+    "Current-source actual-Jupyter and applicable consolidated/hosted receiving, preserving prior uncertainties and #325.",
+    "Announce protocol 2 only after its required endpoint acceptance; retain synchronous capture contracts.",
+    "C1 current owner-pair receiving, all remaining original audit leaves, postponed human review and mandatory Movie #320."
+  ],
+  "publication": "Tags, packages and both 1.0 publications remain paused.",
+  "next_action": "Preserve this bounded batch, publish reviewed direct commits with the authorized skip-ci cadence, close #330\u2013#335 with their guards and records; then continue the remaining A5 endpoint acceptance before advertising version 2.",
+  "latest_full_native_receiving": {
+    "attempt": "moving-after-18",
+    "native_exit": 0,
+    "seconds": 36.20225137309171,
+    "fixed_inputs": 4319,
+    "cleanup": {
+      "tracked": 13,
+      "survivors": [],
+      "errors": []
+    },
+    "peak_owned_rss_mib": 2276.9,
+    "cpu_quota_percent": 400,
+    "memory_limit_gib": 4,
+    "memory_swap_limit_gib": 0,
+    "scope": "Unadvertised v2 through real primary widget authority: uninterrupted state/session with actual held replies and two frame changes; stopped empty frame and independent recovery; perspective/orthographic camera offsets, native CPU/GPU geometry, alternate-camera PNG and immediate live restoration, actual GPU picks/markers. This is not qualification of v2 popup/hidden endpoints or a package."
+  },
+  "legacy_integrated_receiving": {
+    "attempt": "integrated-after-02",
+    "native_exit": 1,
+    "seconds": 589.9747882790398,
+    "fixed_inputs": 4321,
+    "inputs_unchanged": true,
+    "cleanup": {
+      "tracked": 28,
+      "survivors": [],
+      "errors": []
+    },
+    "peak_owned_rss_mib": 3380.7,
+    "cpu_quota_percent": 400,
+    "memory_limit_gib": 4,
+    "scope": "Controls entry completed; Studio reached its canonical 360-second limit after primary/canvas-popup/detached saves, cancellation/navigation, shape refresh and exported-box controls. The native widget/popup box phase was not completed. Failed integrated run, not a passing 2/2 result.",
+    "inner_studio_timeout_ms": 360000,
+    "passing_receiving": false,
+    "original_receipt_sha256": "d1ee991569f6a9e5c99744de3c48805fb86115cd9ae43dfb77b337ceee7a38fd"
+  },
+  "isolated_native_box_receiving": {
+    "native_exit": 0,
+    "seconds": 62.404691407922655,
+    "selected_inputs": 4319,
+    "inputs_unchanged": true,
+    "cleanup": {
+      "tracked": 14,
+      "survivors": [],
+      "errors": []
+    },
+    "peak_owned_rss_mib": 2102.7,
+    "resource_stop": null,
+    "scope": "Exact complete unchanged box function after whole-envelope rejection, isolated from the accumulated Studio timeout. No full integrated pass claimed."
+  },
+  "split_receiving": {
+    "issue": "uibcdf/molsysviewer#334",
+    "state": "completed",
+    "attempt": "split-after-01",
+    "scope": "Canonical shared-browser core selection of Studio, box and moving entries; every assertion and original deadline retained.",
+    "native_exit": 1,
+    "seconds": 339.80890812911093,
+    "fixed_inputs": 4322,
+    "inputs_unchanged": true,
+    "cleanup": {
+      "tracked": 18,
+      "survivors": [],
+      "errors": []
+    },
+    "peak_owned_rss_mib": 3433.9,
+    "passing_receiving": false,
+    "unreached_entries": [
+      "box-trajectory",
+      "moving-state-capture"
+    ],
+    "failure": "Genuine 30-second wait for physical mouse input to move the camera after a stopped renderer restarts, after all six state/session restore routes passed. This is different from the preceding 360-second accumulated-entry timeout."
+  },
+  "operator_evidence_incident": {
+    "schema": "molsysviewer.receiving_evidence_incident@1",
+    "scope": "Local uncommitted check wrapper reused the final-checks-0 log/receipt and resources filename.",
+    "lost_raw_pass_result": "Earlier canonical Node 405/405 pass raw log/receipt replaced by the first 406-case attempt (405 passed/1 failed). Earlier console observations and source history remain; the replaced pass is not an independently archived raw result.",
+    "preserved": "All original causal failures, native attempts and previously approved custody bundle are unchanged. Checks 1\u20136 in checks-after-camera-cancellation-01 predate the new failed check 0; they are not a new complete run.",
+    "repair": "Future final-check invocations require a fresh create-only directory before any command; an existing directory aborts rather than overwriting. New complete validation will supply independent current evidence.",
+    "first_406_failure": "The old cancellation case newly compares the applied full native snapshot; default radius zero is normalized to 0.01 by Camera.setState. It now initializes a valid radius of one, retaining exact full snapshot equality. The new delayed-controls causal case already passes.",
+    "original_failure_counts": {
+      "tests": 406,
+      "passed": 405,
+      "failed": 1
+    }
+  },
+  "camera_cancellation": {
+    "issue": "uibcdf/molsysviewer#335",
+    "causal_before": {
+      "tests": 1,
+      "passed": 0,
+      "failed": 1,
+      "scope": "Real Molstar Camera and existing controller/sync fixture; control input applied after cancellation, before native commit."
+    },
+    "source_change": "Cancellation resolves the native camera at commit instead of replaying a pre-input snapshot. Ownership/revisions are unchanged.",
+    "native_receiving": "Passed in the complete final canonical Studio entry; physical input and reset/zoom navigation complete on actual draws and mirror correctly."
+  },
+  "bounded_resolutions": {
+    "330": "devguide/archive/camera_relative_callout_draw_phase.md",
+    "331": "devguide/archive/late_playback_feedback_overwrites_python_seek.md",
+    "332": "devguide/archive/dynamic_region_restore_uses_wrong_structure.md",
+    "333": "devguide/archive/playback_outpaces_frame_presentation.md",
+    "334": "devguide/archive/studio_accumulated_browser_budget.md",
+    "335": "devguide/archive/cancelled_camera_reset_erases_input.md"
+  },
+  "final_canonical_receiving": {
+    "state": "completed",
+    "native_exit": 0,
+    "seconds": 429.8646770538762,
+    "outer_timeout": false,
+    "resource_stop": null,
+    "selected_inputs": 4323,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 3337.8,
+    "cleanup": {
+      "tracked": 30,
+      "survivors": [],
+      "errors": []
+    },
+    "tracking_errors": [],
+    "attempt": "split-after-02",
+    "entries": [
+      "studio-usability",
+      "box-trajectory",
+      "moving-state-capture"
+    ],
+    "passing_receiving": true,
+    "cpu_quota_percent": 400,
+    "logical_cpu_affinity": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "memory_limit_gib": 4,
+    "memory_swap_limit_gib": 0,
+    "entry_budgets_ms": [
+      360000,
+      180000,
+      180000
+    ],
+    "scopes": "Full actual primary/popup/detached v1 saves/restores/cancellation/navigation and physical input; full native box owner; unadvertised primary-widget v2 moving state/session, empty dynamic frame, independent geometry, native images/CPU loci/GPU selection."
+  },
+  "remaining_acceptance": [
+    "Protocol-2 canvas popup and detached Studio routing while moving, with actual owning-canvas geometry and resolved playback.",
+    "Hidden/unavailable/closed/disposed version-2 endpoint lifetime and fail-closed semantics; no arbitrary canvas fallback.",
+    "Current-source actual-Jupyter and applicable consolidated/hosted receiving, preserving prior uncertainties and #325.",
+    "Announce protocol 2 only after its required endpoint acceptance; retain synchronous capture contracts.",
+    "C1 current owner-pair receiving, all remaining original audit leaves, postponed human review and mandatory Movie #320."
+  ],
+  "issue_closure": "Prepared; remote closure follows source delivery.",
+  "code_review": "Reviewed source and directed causal guards; generated runtime rebuilt through build:runtime, no package-version metadata rewrite; seven human sandbox files unchanged and excluded.",
+  "previous_evidence_custody": {
+    "bundle": "moving-renderer-20261107-1",
+    "custodian": "Diego Prada Gracia",
+    "files": 178,
+    "total_bytes": 43979341,
+    "manifest_sha256": "a7fd005143d699ebbdd1d35ccb176f658f9e150c57ecb87116d26f00a0d6e0f0",
+    "verified": true,
+    "originals_retained": true,
+    "permissions": "directories 0700; files 0600",
+    "off_host_backup_claimed": false,
+    "contents": "All terminal attempt receipts, original failed logs/input hashes, native PNGs, selected source patch and new-source checkpoint; final custody pointers are maintained separately."
+  }
+}

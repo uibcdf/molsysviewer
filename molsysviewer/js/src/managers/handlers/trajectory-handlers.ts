@@ -15,13 +15,15 @@ import { Task } from "molstar/lib/mol-task";
 import { UUID } from "molstar/lib/mol-util/uuid";
 import { CustomProperties } from "molstar/lib/mol-model/custom-property";
 import type { BoxDisplayProjection } from "../../messages/box-display";
+import type { PlaybackSnapshot } from "../../messages/visual-state-snapshot";
 
 export interface TrajectoryContext {
     getLoadedStructure: () => LoadedStructure | undefined;
     notifyTrajectoryState: () => void;
     afterFrameApplied?: () => Promise<void>;
+    isFrameReady?: (frame: number) => boolean;
     /** Called when playback stops; receives the final frame index. */
-    onPlaybackStopped?: (frame: number) => void;
+    onPlaybackStopped?: (frame: number, navigationRevision?: number) => void;
     notify?: (msg: any) => void;
     getBoxProjection?: () => BoxDisplayProjection | undefined;
 }
@@ -75,6 +77,14 @@ export function nextPlaybackStep(
     return { index: wrapped, delta, stop: false };
 }
 
+/** Ready scenes keep their requested cadence. A pending scene receives at
+ * most one ordinary frame period after its first draw (or application when
+ * hidden); unavailable replies never become an indefinite playback barrier. */
+export function canAdvancePlaybackFrame(pendingUpdates: number, frameReady: boolean,
+    presentedOrAppliedAt: number, now: number, intervalMs: number): boolean {
+    return pendingUpdates === 0 && (frameReady || now - presentedOrAppliedAt >= intervalMs);
+}
+
 export class TrajectoryHandlers {
     private readonly pendingFrames = new Set<Promise<void>>();
     private follower = false;
@@ -82,6 +92,26 @@ export class TrajectoryHandlers {
     private playbackOptions: { fps: number; step: number; mode: PlaybackMode; direction: "forward" | "backward" } = {
         fps: 30, step: 1, mode: "loop", direction: "forward",
     };
+    private activePlaybackOptions?: typeof this.playbackOptions;
+    private travelDirection?: "forward" | "backward";
+    private resolvedPlayback?: PlaybackSnapshot;
+    private resolvedPlaybackFrame?: number;
+    private navigationRevision?: number;
+    private disposed = false;
+    private framePacingFrame?: number;
+    private framePacingSince = 0;
+    private firstDrawPending = false;
+    private frameDrawRelease?: () => void;
+
+    get feedbackRevision(): number | undefined { return this.navigationRevision; }
+
+    private acceptNavigationRevision(value: number | undefined): boolean {
+        if (value === undefined) return true; // Legacy/static projection.
+        if (!Number.isSafeInteger(value) || value < 0) throw new Error("Invalid trajectory navigation revision.");
+        if (this.navigationRevision !== undefined && value < this.navigationRevision) return false;
+        this.navigationRevision = value;
+        return true;
+    }
 
     setFollower(enabled: boolean) { this.follower = enabled; }
     get isFollower(): boolean { return this.follower; }
@@ -163,13 +193,16 @@ export class TrajectoryHandlers {
         this.updateTrajectoryState();
     }
 
-    async setTrajectoryFrame(msg: SetTrajectoryFrameMessage | number) {
-        const pending = this.applyTrajectoryFrame(msg);
+    async setTrajectoryFrame(msg: SetTrajectoryFrameMessage | number, direction?: "forward" | "backward"): Promise<boolean> {
+        if (this.disposed) return false;
+        if (typeof msg !== "number" && !this.acceptNavigationRevision(msg.navigation_revision)) return false;
+        const pending = this.applyTrajectoryFrame(msg, direction);
         this.pendingFrames.add(pending);
         try { await pending; } finally { this.pendingFrames.delete(pending); }
+        return !this.disposed;
     }
 
-    private async applyTrajectoryFrame(msg: SetTrajectoryFrameMessage | number) {
+    private async applyTrajectoryFrame(msg: SetTrajectoryFrameMessage | number, direction?: "forward" | "backward") {
         const index = typeof msg === 'number' ? msg : (msg.index ?? 0);
         const frameCount = this.getFrameCount();
         if (frameCount < 1) return;
@@ -182,12 +215,17 @@ export class TrajectoryHandlers {
         for (const m of models) {
             update.to(m).update({ modelIndex: clamped });
         }
-        await this.plugin.runTask(this.plugin.state.data.updateTree(update));
+        try { await this.plugin.runTask(this.plugin.state.data.updateTree(update)); }
+        catch (error) { if (this.disposed) return; throw error; }
+        if (this.disposed) return;
         await this.context.afterFrameApplied?.();
+        if (direction && this.getCurrentFrameIndex() === clamped) this.travelDirection = direction;
         this.updateTrajectoryState();
     }
 
     async setTrajectoryPlayback(msg: SetTrajectoryPlaybackMessage) {
+        if (this.disposed) return;
+        if (!this.acceptNavigationRevision(msg.navigation_revision)) return;
         const action = msg.action ?? (this.getTrajectoryState().isPlaying ? "play" : "stop");
         const fps = msg.fps ?? this.playbackOptions.fps;
         const step = msg.step ?? this.playbackOptions.step;
@@ -202,6 +240,7 @@ export class TrajectoryHandlers {
     }
 
     async playTrajectory(options: { fps?: number; mode?: PlaybackMode; direction?: "forward" | "backward"; step?: number } = {}) {
+        if (this.disposed) return;
         const frameCount = this.getFrameCount();
         if (frameCount < 2) {
             console.warn("[MolSysViewer] playTrajectory ignored: trajectory has less than 2 frames");
@@ -216,6 +255,9 @@ export class TrajectoryHandlers {
 
         // Stop any existing animation/timer first
         await this.stopTrajectoryPlayback(false);
+        if (this.disposed) return;
+        this.activePlaybackOptions = { fps, step, direction, mode };
+        this.travelDirection = direction;
 
         if (this.follower) {
             this.followerPlaying = true;
@@ -225,14 +267,35 @@ export class TrajectoryHandlers {
 
         const intervalMs = Math.max(1, Math.floor(1000 / Math.max(fps, 1)));
         let delta = direction === "backward" ? -step : step;
+        this.framePacingFrame = this.getCurrentFrameIndex();
+        this.framePacingSince = performance.now();
+        this.firstDrawPending = true;
+        const canvas = this.plugin.canvas3d;
+        if (canvas) {
+            let observing = false;
+            const subscription = canvas.didDraw.subscribe(() => {
+                // didDraw is a BehaviorSubject: its immediate replay is not a
+                // newly completed draw of the current playback frame.
+                if (!observing || this.disposed || !this.firstDrawPending || this.pendingFrames.size
+                    || this.framePacingFrame !== this.getCurrentFrameIndex()) return;
+                this.firstDrawPending = false;
+                this.framePacingSince = performance.now();
+            });
+            observing = true;
+            this.frameDrawRelease = () => subscription.unsubscribe();
+            canvas.requestDraw();
+        }
 
         // `mode` used to be accepted and then ignored: playback always advanced
         // with Mol*'s wrap-around, so "loop" worked by accident while "once"
         // never stopped and "palindrome" never bounced.
         this.playbackTimer = setInterval(() => {
-            const next = nextPlaybackStep(this.getCurrentFrameIndex(), delta, frameCount, mode);
+            const current = this.getCurrentFrameIndex();
+            if (!canAdvancePlaybackFrame(this.pendingFrames.size, this.context.isFrameReady?.(current) ?? true,
+                this.framePacingSince, performance.now(), intervalMs)) return;
+            const next = nextPlaybackStep(current, delta, frameCount, mode);
             delta = next.delta;
-            void this.setTrajectoryFrame(next.index);
+            void this.setTrajectoryFrame(next.index, delta < 0 ? "backward" : "forward");
             if (next.stop) void this.stopTrajectoryPlayback();
         }, intervalMs);
 
@@ -245,8 +308,12 @@ export class TrajectoryHandlers {
     }
 
     async stopTrajectoryPlayback(notifyStopped = true) {
+        const revision = this.navigationRevision;
         const wasPlaying = !!this.playbackTimer;
         this.followerPlaying = false;
+        this.frameDrawRelease?.(); this.frameDrawRelease = undefined;
+        this.firstDrawPending = false;
+        this.framePacingFrame = undefined;
         this.plugin.managers.animation.stop();
         if (this.playbackTimer) {
             clearInterval(this.playbackTimer);
@@ -259,8 +326,8 @@ export class TrajectoryHandlers {
         await Promise.all(Array.from(this.pendingFrames));
         await this.context.afterFrameApplied?.();
         this.updateTrajectoryState();
-        if (wasPlaying && notifyStopped) {
-            this.context.onPlaybackStopped?.(this.getCurrentFrameIndex());
+        if (!this.disposed && wasPlaying && notifyStopped) {
+            this.context.onPlaybackStopped?.(this.getCurrentFrameIndex(), revision);
         }
     }
 
@@ -277,6 +344,31 @@ export class TrajectoryHandlers {
             fps: this.playbackOptions.fps, step: this.playbackOptions.step };
     }
 
+    getPlaybackSnapshot(): PlaybackSnapshot {
+        if (this.follower && this.resolvedPlayback) return { ...this.resolvedPlayback };
+        const playing = this.getTrajectoryState().isPlaying;
+        const options = playing ? this.activePlaybackOptions ?? this.playbackOptions : this.playbackOptions;
+        return { fps: options.fps, step_size: options.step,
+            mode: options.mode === "palindrome" ? "ping-pong" : options.mode,
+            direction: playing ? this.travelDirection ?? options.direction : options.direction, playing };
+    }
+
+    /** Apply metadata only; a follower must never start a playback timer. */
+    applyPlaybackProjection(value: PlaybackSnapshot | undefined, frame: number): void {
+        if (!this.follower || !value || !Number.isSafeInteger(value.fps) || value.fps < 1
+            || !Number.isSafeInteger(value.step_size) || value.step_size < 1
+            || !["loop", "once", "ping-pong"].includes(value.mode)
+            || !["forward", "backward"].includes(value.direction) || typeof value.playing !== "boolean") return;
+        this.resolvedPlayback = { ...value };
+        this.resolvedPlaybackFrame = frame;
+        this.followerPlaying = value.playing;
+        this.updateTrajectoryState();
+    }
+
+    isCaptureFrameReady(frame: number): boolean {
+        return !this.follower || (this.resolvedPlaybackFrame === frame && !!this.resolvedPlayback);
+    }
+
     onTrajectoryState(cb: (state: TrajectoryState) => void, opts?: { immediate?: boolean }): () => void {
         this.trajectoryListeners.add(cb);
         if (opts?.immediate ?? true) cb(this.getTrajectoryState());
@@ -291,23 +383,43 @@ export class TrajectoryHandlers {
     }
 
     notifyListeners() {
+        if (this.disposed) return;
         const state = this.getTrajectoryState();
         for (const cb of this.trajectoryListeners) cb(state);
     }
 
     private notifyPlaybackFrameChanged(isPlaying: boolean) {
+        if (this.disposed) return;
         const box = this.context.getBoxProjection?.();
         this.context.notify?.({
             event: "trajectory_frame_changed",
             frame: this.getCurrentFrameIndex(),
             is_playing: isPlaying,
+            ...(this.navigationRevision === undefined ? {} : { navigation_revision: this.navigationRevision }),
             ...(box ? { box_display: box } : {}),
         });
     }
 
     private updateTrajectoryState() {
+        if (this.disposed) return;
+        const frame = this.getCurrentFrameIndex();
+        if (this.playbackTimer && frame !== this.framePacingFrame) {
+            this.framePacingFrame = frame;
+            this.framePacingSince = performance.now();
+            this.firstDrawPending = true;
+        }
         this.context.notifyTrajectoryState();
         this.notifyListeners();
+    }
+
+    dispose(): void {
+        this.disposed = true;
+        if (this.playbackTimer) clearInterval(this.playbackTimer);
+        if (this.trajectoryPoll) clearInterval(this.trajectoryPoll);
+        this.playbackTimer = undefined; this.trajectoryPoll = undefined;
+        this.frameDrawRelease?.(); this.frameDrawRelease = undefined;
+        this.followerPlaying = false;
+        this.trajectoryListeners.clear();
     }
 
     private getTrajectoryRef(): StateObjectRef | undefined {

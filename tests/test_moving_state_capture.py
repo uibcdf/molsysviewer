@@ -49,6 +49,31 @@ def view():
             yield result
 
 
+@pytest.mark.parametrize("kind", ["state", "session"])
+@pytest.mark.parametrize("frame", [0, 1, 2])
+def test_dynamic_region_recovery_uses_the_saved_structure(view, tmp_path, kind, frame):
+    view.regions.add(selection=[1], tag="fixed")
+    view.player.go_to_structure(frame)
+    view._handle_dynamic_region_evaluation_request({"frame": frame})
+    expected = () if frame == 1 else (1,)
+    assert view.regions["near"].atom_indices == expected
+    path = tmp_path / ("state.json" if kind == "state" else "session.msv")
+    if kind == "session":
+        view.save_session(path)
+        restored = msv.load_session(path)
+    else:
+        view.save_state(path)
+        restored = msv.new_view(view.molsys)
+        restored.player.go_to_structure((frame + 1) % 3)
+        restored.load_state(path)
+    with restored:
+        assert restored.player.index == frame
+        assert restored.regions["near"].mode == "dynamic"
+        assert restored.regions["near"].uid == view.regions["near"].uid
+        assert restored.regions["near"].atom_indices == expected
+        assert restored.regions["fixed"].atom_indices == (1,)
+
+
 def reply(ticket, frame, *, box_frame=None):
     return {
         "event": "visual_state_snapshot",

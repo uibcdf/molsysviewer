@@ -6,10 +6,21 @@ import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { Structure, StructureElement, Unit } from "molstar/lib/mol-model/structure";
 import { StructureSelection } from "molstar/lib/mol-model/structure/query";
 import { Color } from "molstar/lib/mol-util/color";
-import { Vec3 } from "molstar/lib/mol-math/linear-algebra";
+import { Mat4, Vec3 } from "molstar/lib/mol-math/linear-algebra";
+import { Shape } from "molstar/lib/mol-model/shape";
+import { Geometry } from "molstar/lib/mol-geo/geometry/geometry";
+import type { ICamera } from "molstar/lib/mol-canvas3d/camera";
+import type { Scene } from "molstar/lib/mol-gl/scene";
+import { registerRenderPresentation } from "../../plugin/render-presentation";
 
 import { AddLabelMessage, LabelStyle, UpdateLabelMessage } from "../../messages/viewer-messages";
-import { AnnotationGeometry, cameraOffsetPosition, renderAnnotation } from "../../shapes/annotation-callout";
+import { AnnotationGeometry, cameraOffsetBasis, cameraOffsetPosition, renderAnnotation } from "../../shapes/annotation-callout";
+
+function geometryKey(geometry: AnnotationGeometry): string {
+    if (!geometry.camera_basis) return JSON.stringify(geometry);
+    const { position: _position, camera_basis: _basis, camera_base_position: _base, ...semantic } = geometry;
+    return JSON.stringify(semantic);
+}
 
 function styleToVisualParams(style?: LabelStyle): Record<string, unknown> | undefined {
     if (!style) return undefined;
@@ -39,10 +50,17 @@ export interface AnnotationCallbacks {
 export class AnnotationHandlers {
     private readonly labelRefs = new Set<StateTransform.Ref>();
     private readonly hiddenTags = new Set<string>();
-    private readonly callouts = new Map<string, { ref: string; signature: string }>();
+    private readonly callouts = new Map<string, { ref: string; signature: string; presentedView?: number[] }>();
     private refreshQueue = Promise.resolve();
     private cameraSignature = "";
     private disposed = false;
+    private refreshFailed = false;
+    private presentationFailed = false;
+    private releasePresentation?: () => void;
+    private readonly presentationBasis = Mat4.identity();
+    private readonly presentationInverse = Mat4.identity();
+    private readonly presentationTransform = Mat4.identity();
+    private readonly presentationPoint = Vec3();
     private readonly refsByTag = new Map<string, Set<StateTransform.Ref>>();
     private readonly specsByTag = new Map<string, {
         text: string;
@@ -62,7 +80,11 @@ export class AnnotationHandlers {
     constructor(
         private readonly plugin: PluginContext,
         private readonly callbacks: AnnotationCallbacks,
-    ) {}
+    ) {
+        const canvas = plugin.canvas3d;
+        if (canvas?.webgl && canvas.camera) this.releasePresentation = registerRenderPresentation(
+            canvas.webgl, canvas.camera, (camera, scene) => this.present(camera, scene));
+    }
 
     async addLabel(msg: AddLabelMessage) {
         const structure = this.callbacks.getStructure();
@@ -124,7 +146,7 @@ export class AnnotationHandlers {
             const geometry = this.geometryFor(tag);
             if (!geometry) return;
             const ref = await renderAnnotation(this.plugin, geometry);
-            this.callouts.set(tag, { ref, signature: JSON.stringify(geometry) });
+            this.callouts.set(tag, { ref, signature: geometryKey(geometry) });
             this.labelRefs.add(ref);
             this.refsByTag.set(tag, new Set([ref]));
             this.callbacks.registerRef(ref, tag);
@@ -355,6 +377,8 @@ export class AnnotationHandlers {
             ? anchor.map((value, i) => value + offset[i]) : cameraOffsetPosition(anchor, offset, camera);
         const style = styleToVisualParams(spec.style) ?? {};
         return { tag, text: spec.text, anchor, position,
+            ...(spec.offset_mode !== "world" && camera ? { camera_basis: cameraOffsetBasis(camera),
+                camera_offset: [...offset], camera_base_position: [...position] } : {}),
             color: Number(style.textColor ?? 0), size: Number(style.textSize ?? 0.5),
             background: Boolean(style.background ?? false), backgroundOpacity: Number(style.backgroundOpacity ?? 0.5),
             leader: !!spec.leader_line, pattern: spec.leader_line_style ?? "dashed" };
@@ -366,14 +390,32 @@ export class AnnotationHandlers {
             for (const [tag, callout] of this.callouts) {
                 const geometry = this.geometryFor(tag);
                 if (!geometry) continue;
-                const signature = JSON.stringify(geometry);
-                if (signature === callout.signature) continue;
+                const signature = geometryKey(geometry);
+                if (!this.refreshFailed && signature === callout.signature) continue;
                 await renderAnnotation(this.plugin, geometry, callout.ref);
                 if (this.callouts.get(tag) === callout) callout.signature = signature;
             }
+            this.refreshFailed = false;
         });
-        this.refreshQueue = update.catch(() => {});
+        this.refreshQueue = update.catch(() => { this.refreshFailed = true; });
         return update;
+    }
+
+    /** Callouts store resolved geometry; ordinary labels follow the Mol* tree. */
+    isGeometryCurrent(): boolean {
+        if (this.disposed) return false;
+        if (!this.callouts.size) return true;
+        if (this.refreshFailed) return false;
+        for (const [tag, callout] of this.callouts) {
+            const geometry = this.geometryFor(tag);
+            if (!geometry || geometryKey(geometry) !== callout.signature) return false;
+            if (geometry.camera_basis) {
+                if (this.presentationFailed) return false;
+                const view = this.plugin.canvas3d?.camera.view;
+                if (!view || !callout.presentedView || callout.presentedView.some((value, index) => value !== view[index])) return false;
+            }
+        }
+        return true;
     }
 
     onCamera(snapshot: unknown): void {
@@ -381,10 +423,65 @@ export class AnnotationHandlers {
         const signature = JSON.stringify(snapshot);
         if (signature === this.cameraSignature) return;
         this.cameraSignature = signature;
-        void this.refresh().catch(error => console.warn("[MolSysViewer] Annotation refresh failed", error));
+        // Camera-only motion is presented synchronously by Renderer.update.
+        // Enqueuing a state transaction here would always describe an older draw.
     }
 
-    dispose(): void { this.disposed = true; this.callouts.clear(); }
+    dispose(): void { this.disposed = true; this.releasePresentation?.(); this.releasePresentation = undefined; this.callouts.clear(); }
+
+    private present(camera: ICamera, scene: Scene): void {
+        if (this.disposed || !this.callouts.size) return;
+        const changed: any[] = [];
+        let ownedScene = false;
+        try {
+            const basis = this.presentationBasis;
+            for (let row = 0; row < 3; row++) for (let column = 0; column < 3; column++) {
+                basis[column*4+row] = camera.view[row*4+column];
+            }
+            for (const callout of this.callouts.values()) {
+                const repr = this.plugin.state.data.cells.get(callout.ref)?.obj?.data?.repr;
+                if (!repr) continue;
+                let presented = false;
+                for (const loci of repr.getAllLoci()) {
+                    const shape = (loci as any).shape as Shape | undefined;
+                    const data = shape?.sourceData as AnnotationGeometry | undefined;
+                    if (!shape || !data?.camera_basis || !data.camera_base_position) continue;
+                    const object = repr.renderObjects.find((item: any) => item.type === shape.geometry.kind);
+                    if (!object || !scene.has(object)) continue;
+                    ownedScene = true;
+                    if (shape.transforms.length !== 1) throw new Error("A callout must have one presentation instance.");
+                    const transform = this.presentationTransform;
+                    Mat4.invert(this.presentationInverse, data.camera_basis);
+                    Mat4.mul(transform, basis, this.presentationInverse);
+                    Vec3.fromArray(this.presentationPoint, data.anchor, 0);
+                    Vec3.transformMat4(this.presentationPoint, this.presentationPoint, transform);
+                    for (let i = 0; i < 3; i++) transform[12+i] = data.anchor[i] - this.presentationPoint[i];
+                    if (shape.transforms[0].some((value, index) => value !== transform[index])) {
+                        Mat4.copy(shape.transforms[0], transform);
+                        // These are the same transform/bounds updates used by
+                        // ShapeRepresentation; CPU loci and GPU instances agree.
+                        Shape.createTransform(shape.transforms, shape.geometry.boundingSphere,
+                            repr.props.cellSize, repr.props.batchSize, object.values);
+                        (Geometry.getUtils(shape.geometry) as any).updateBoundingSphere(object.values, shape.geometry);
+                        changed.push(object);
+                    }
+                    Vec3.fromArray(this.presentationPoint, data.camera_base_position, 0);
+                    Vec3.transformMat4(this.presentationPoint, this.presentationPoint, transform);
+                    for (let i = 0; i < 3; i++) data.position[i] = this.presentationPoint[i];
+                    presented = true;
+                }
+                if (presented) {
+                    callout.presentedView ??= new Array(16);
+                    for (let i = 0; i < 16; i++) callout.presentedView[i] = camera.view[i];
+                }
+            }
+            if (changed.length) scene.update(changed, false);
+            if (ownedScene) this.presentationFailed = false;
+        } catch (error) {
+            if (!this.presentationFailed) console.warn("[MolSysViewer] Annotation presentation failed", error);
+            this.presentationFailed = true;
+        }
+    }
 
     private buildLociFromAtomIndices(structure: Structure, atomIndices: number[]) {
         const selectionBuilder = StructureSelection.LinearBuilder(structure);

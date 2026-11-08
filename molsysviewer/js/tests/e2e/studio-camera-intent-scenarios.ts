@@ -7,11 +7,26 @@ export async function checkStudioCameraIntent(options: {
     openWork(owner: Page): Promise<Locator>; rotate(canvas: Page): Promise<unknown>; drain(): Promise<void>;
 }) {
     const { page, owner, canvas, saved, openWork, rotate, drain } = options;
+    let phase = "held-old-packet";
     await canvas.evaluate(camera => {
         const w = window as any, c = w.__mirrorController;
         const same = (a: any, b: any) => ["position", "target", "up"].every(key => a?.[key]?.every((v: number, i: number) => Math.abs(v - b[key][i]) < 1e-5));
         const p = w.__staleCameraProbe = { saved: camera, observations: [], armed: true, held: undefined,
-            draws: [], received: [] };
+            draws: [], received: [], input: [] };
+        const recordInput = (kind: string, data: any) => {
+            p.input.push({ kind, data, camera: c.getCameraSnapshot(), pendingOwner: !!c.pendingCameraIntent });
+            if (p.input.length > 64) p.input.shift();
+        };
+        const drag = c.plugin.canvas3d.input.drag.subscribe((event: any) => recordInput("native-drag", {
+            x: event.x, y: event.y, dx: event.dx, dy: event.dy, buttons: event.buttons, isStart: event.isStart,
+        }));
+        const element = c.plugin.canvas3dContext.canvas;
+        const input = (event: MouseEvent) => {
+            if (event.type !== "mousemove" || event.buttons) recordInput(event.type, {
+                x: event.clientX, y: event.clientY, buttons: event.buttons, trusted: event.isTrusted,
+            });
+        };
+        for (const name of ["mousedown", "mousemove", "mouseup"]) element.addEventListener(name, input, true);
         const listener = (event: MessageEvent) => {
             if (event.source === window.opener && event.data?.envelope?.action === "molsysviewer-sync-camera") {
                 const envelope = event.data.envelope;
@@ -26,6 +41,8 @@ export async function checkStudioCameraIntent(options: {
         w.__finishCameraIntentGuard = () => {
             window.removeEventListener("message", listener);
             sub.unsubscribe();
+            drag.unsubscribe();
+            for (const name of ["mousedown", "mousemove", "mouseup"]) element.removeEventListener(name, input, true);
             w.__staleReleaseMessageHooks();
             c.plugin.animationLoop.start();
         };
@@ -86,6 +103,7 @@ export async function checkStudioCameraIntent(options: {
         // A new real gesture after the newer intent is received must supersede
         // the pending reset and continue mirroring at that same authority epoch.
         await rotate(canvas);
+        phase = "physical-input-before-first-draw";
         await canvas.evaluate(() => (window as any).__mirrorController.plugin.animationLoop.stop({ noDraw: true }));
         const nextStart = await page.evaluate(() => (window as any).__studioCaptureTransport.inbound.length);
         await page.evaluate(snapshot => (window as any).__popupWidgetModel.send({ mirror_fixture: "camera", snapshot }), saved.view.camera);
@@ -97,6 +115,7 @@ export async function checkStudioCameraIntent(options: {
         await canvas.bringToFront();
         await canvas.evaluate(() => (window as any).__mirrorController.setPanelMode("navigate", false));
         const beforeInput = await canvas.evaluate(() => (window as any).__mirrorController.getCameraSnapshot().position);
+        await canvas.evaluate(() => { (window as any).__staleCameraProbe.input.length = 0; });
         const box = await canvas.locator("canvas").boundingBox(); assert.ok(box);
         const point = { x: box.x + box.width * .55, y: box.y + box.height * .65 };
         assert.ok(await canvas.evaluate(p => document.elementFromPoint(p.x, p.y)?.tagName === "CANVAS", point));
@@ -111,12 +130,14 @@ export async function checkStudioCameraIntent(options: {
         await page.waitForFunction(revision => (window as any).__studioCaptureTransport.peerCameras.some((packet: any) => packet.camera_revision === revision), next.camera_revision);
         const current = await canvas.evaluate(() => (window as any).__mirrorController.getCameraSnapshot());
         assert.notDeepEqual(current.position, saved.view.camera.position);
+        phase = "mirrored-physical-input";
         await page.waitForFunction(position => (window as any).__mirrorController.getCameraSnapshot().position
             .every((value: number, index: number) => Math.abs(value - position[index]) < 1e-5), current.position);
 
         // Exercise the unchanged Python partial-snapshot API with a valid
         // nonunit up vector. Completion uses Mol*'s resolved full target.
         const up = current.up.map((value: number) => value * 2);
+        phase = "partial-camera";
         const partialStart = await page.evaluate(() => (window as any).__studioCaptureTransport.inbound.length);
         await page.evaluate(up => (window as any).__popupWidgetModel.send({ mirror_fixture: "camera", snapshot: { up } }), up);
         await page.waitForFunction(start => (window as any).__studioCaptureTransport.inbound.slice(start).some((msg: any) => msg.op === "set_camera_snapshot"), partialStart);
@@ -127,7 +148,25 @@ export async function checkStudioCameraIntent(options: {
         const expectedNorm = Math.hypot(...up), actualNorm = Math.hypot(...actualUp);
         assert.ok(up.every((value: number, index: number) => Math.abs(value / expectedNorm - actualUp[index] / actualNorm) < 1e-5));
 
+        phase = "camera-navigation";
         await checkStudioCameraNavigation({ page, canvas, camera: saved.view.camera, drain });
+    } catch (error) {
+        console.error("[E2E Studio camera input failure]", phase, error);
+        try {
+            const diagnostic = await canvas.evaluate(() => {
+                const w = window as any, c = w.__mirrorController, live = c.plugin.canvas3d;
+                return { camera: c.getCameraSnapshot(), target: live.camera.transition.target,
+                    transition: live.camera.transition.inTransition, pendingOwner: !!c.pendingCameraIntent,
+                    input: w.__staleCameraProbe.input, draws: w.__staleCameraProbe.draws.slice(-8),
+                    applied: w.__studioAppliedOps?.slice(-12), trackball: live.props.trackball,
+                    focus: document.hasFocus(), visibility: document.visibilityState,
+                    viewport: live.camera.viewport, canvas: c.plugin.canvas3dContext.canvas.getBoundingClientRect().toJSON() };
+            });
+            console.error("[E2E Studio camera input diagnostic] " + JSON.stringify({ phase, ...diagnostic }));
+        } catch (diagnosticError) {
+            console.error("[E2E Studio camera input diagnostic unavailable]", phase, diagnosticError);
+        }
+        throw error;
     } finally {
         await canvas.evaluate(() => (window as any).__finishCameraIntentGuard?.());
     }

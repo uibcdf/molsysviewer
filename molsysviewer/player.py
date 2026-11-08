@@ -37,8 +37,15 @@ class PlayerManager:
         self._mode: str = "loop"
         self._direction: str = "forward"
         self._is_playing: bool = False
+        self._intent_revision = 0
         self._frame_events: deque[dict] = deque()
         self._dispatching_frame_events = False
+
+    def _send_intent(self, message: dict) -> None:
+        """Correlate renderer feedback with the latest accepted Python intent."""
+        revision = self._intent_revision + 1
+        self._view._send({**message, "navigation_revision": revision})  # noqa: SLF001
+        self._intent_revision = revision
 
     def _notify_frame_change(self, previous: tuple[int, bool]) -> None:
         """Publish accepted authority state, not a rendering acknowledgement."""
@@ -163,7 +170,7 @@ class PlayerManager:
         if isinstance(index, bool) or not isinstance(index, Integral) or not 0 <= index < count:
             raise ArgumentError("index", value=index)
         previous = (self.index, self.is_playing)
-        self._view._send({"op": "set_trajectory_frame", "index": int(index), "box_follow": True})  # noqa: SLF001
+        self._send_intent({"op": "set_trajectory_frame", "index": int(index), "box_follow": True})
         self._view._current_structure_index = int(index)  # noqa: SLF001
         self._sync_summary()
         self._view._sync_measurement_summaries_runtime()  # noqa: SLF001
@@ -251,7 +258,7 @@ class PlayerManager:
 
         self._is_playing = True
         self._store_state()
-        self._view._send(self._playback_message(action="play"))  # noqa: SLF001
+        self._send_intent(self._playback_message(action="play"))
         self._sync_summary()
         if has_frames:
             self._notify_frame_change(previous)
@@ -264,7 +271,7 @@ class PlayerManager:
             raise RuntimeError("Cannot pause a closed view.")
         has_frames = self.n_structures > 0
         previous = (self.index, self.is_playing)
-        self._view._send({"op": "set_trajectory_playback", "action": "stop"})  # noqa: SLF001
+        self._send_intent({"op": "set_trajectory_playback", "action": "stop"})
         self._is_playing = False
         self._store_state()
         self._sync_summary()
@@ -282,7 +289,7 @@ class PlayerManager:
         """
         self._fps = int(fps)
         self._store_state()
-        self._view._send({"op": "set_trajectory_playback", "fps": self._fps})  # noqa: SLF001
+        self._send_intent({"op": "set_trajectory_playback", "fps": self._fps})
         self._sync_summary()
 
     @signal(tags=["structures"])

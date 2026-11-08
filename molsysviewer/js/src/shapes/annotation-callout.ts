@@ -4,7 +4,7 @@ import { PluginStateObject as SO } from "molstar/lib/mol-plugin-state/objects";
 import { StateTransformer } from "molstar/lib/mol-state";
 import { ParamDefinition as PD } from "molstar/lib/mol-util/param-definition";
 import { Task } from "molstar/lib/mol-task";
-import { Vec3 } from "molstar/lib/mol-math/linear-algebra";
+import { Mat4, Vec3 } from "molstar/lib/mol-math/linear-algebra";
 import { Shape } from "molstar/lib/mol-model/shape";
 import { ShapeRepresentation } from "molstar/lib/mol-repr/shape/representation";
 import { Representation } from "molstar/lib/mol-repr/representation";
@@ -25,6 +25,9 @@ export interface AnnotationGeometry {
     backgroundOpacity: number;
     leader: boolean;
     pattern: "solid" | "dashed" | "dotted";
+    camera_basis?: Mat4;
+    camera_offset?: number[];
+    camera_base_position?: number[];
 }
 
 const Params = { ...Text.Params, ...Lines.Params };
@@ -106,8 +109,15 @@ export async function renderAnnotation(plugin: PluginContext, geometry: Annotati
 
 /** Camera offsets use the camera basis; world anchors never move on camera rotation. */
 export function cameraOffsetPosition(anchor: number[], offset: number[], camera: { position: ArrayLike<number>; target: ArrayLike<number>; up: ArrayLike<number> }): number[] {
+    const basis = cameraOffsetBasis(camera);
+    return anchor.map((value, i) => value + offset[0] * basis[i] + offset[1] * basis[4+i] + offset[2] * basis[8+i]);
+}
+
+export function cameraOffsetBasis(camera: { position: ArrayLike<number>; target: ArrayLike<number>; up: ArrayLike<number> }): Mat4 {
     const toward = Vec3.normalize(Vec3(), Vec3.sub(Vec3(), camera.position as Vec3, camera.target as Vec3));
     const right = Vec3.normalize(Vec3(), Vec3.cross(Vec3(), camera.up as Vec3, toward));
     const up = Vec3.normalize(Vec3(), Vec3.cross(Vec3(), toward, right));
-    return anchor.map((value, i) => value + offset[0] * right[i] + offset[1] * up[i] + offset[2] * toward[i]);
+    const basis = Mat4.identity();
+    for (let i = 0; i < 3; i++) { basis[i] = right[i]; basis[4+i] = up[i]; basis[8+i] = toward[i]; }
+    return basis;
 }

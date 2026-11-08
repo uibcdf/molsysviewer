@@ -49,15 +49,28 @@ export async function mountCanvasPopupFixture(page: Page, bridge: PythonFixtureB
                     ].map(trait => [trait, traits[trait]])) });
                 },
                 send(message: unknown) {
+                    // A notebook comm sends immediately; it does not wait for
+                    // the previous Python reply. Preserve response delivery
+                    // order separately so a busy draw cannot starve outgoing
+                    // control or dependent scientific requests.
+                    const response = Promise.resolve(w.__popupFixtureRequest(message)).then(
+                        result => ({ result, error: undefined }), error => ({ result: undefined, error }));
                     queue = queue.then(async () => {
-                        const result = await w.__popupFixtureRequest(message);
+                        const received = await response;
+                        if (received.error) throw received.error;
+                        const result = received.result;
                         // Simulate only the notebook transport, with real Python responses.
                         for (const { content, buffers } of result.messages) {
                             const views = buffers.map((encoded: string) => new DataView(
                                 Uint8Array.from(atob(encoded), char => char.charCodeAt(0)).buffer));
                             for (const callback of listeners.get("msg:custom") || []) callback(content, views);
                         }
+                        return result;
                     }).catch(error => { errors.push(String(error)); console.error(error); });
+                    // Test-only transport acknowledgment for this envelope.
+                    // A global drain can starve during continuous playback as
+                    // later frame/interaction events keep joining the queue.
+                    return queue;
                 },
             };
             const errors = w.__popupFixtureErrors = [];

@@ -19,7 +19,7 @@ import { createLocalUiModel } from "../ui/local-ui-model";
 import { CameraSync, CameraSyncState } from "../managers/camera-sync";
 import { trajectorySyncToAuthority } from "../messages/trajectory-intent";
 import { handleFrontendRequest, isFrontendControl, isFrontendRequest, isStudioWorkFileResult,
-    VisualStateCaptureRequests, type VisualStateCaptureReservation } from "../messages/frontend-requests";
+    VisualStateCaptureRequests, captureAtScenePrefix, type VisualStateCaptureReservation } from "../messages/frontend-requests";
 
 /** Boot the popup through the same imported runtime module as its host. */
 export const bootPopup = async (loadedModule?: any) => {
@@ -367,7 +367,8 @@ export const bootPopup = async (loadedModule?: any) => {
                     }
                     if (Number.isInteger(data.trajectoryFrame) && data.trajectoryFrame >= 0) {
                         await ctrl.handleMessage({ op: "set_trajectory_frame", index: data.trajectoryFrame,
-                            box_display: data.boxDisplay });
+                            box_display: data.boxDisplay, playback_projection: data.playback,
+                            navigation_revision: data.navigationRevision });
                     }
                     if (data.cameraSnapshot) {
                         await cameraSync?.applyBootstrap(data);
@@ -421,8 +422,9 @@ export const bootPopup = async (loadedModule?: any) => {
                                 capture_revision: data.capture_revision, ok: false, error_type: "NoLiveCanvas",
                             });
                         } else {
-                            await handleFrontendRequest(ctrl, data,
-                                event => sendToHost("molsysviewer-popup-interaction", event), capture);
+                            const send = (event: any) => sendToHost("molsysviewer-popup-interaction", event);
+                            if (capture) await captureAtScenePrefix(ctrl, data, send, capture);
+                            else await handleFrontendRequest(ctrl, data, send);
                         }
                     } else {
                         if (!(await cameraSync?.handleMessage(data))) await ctrl.handleMessage(data);
@@ -480,8 +482,8 @@ export const bootPopup = async (loadedModule?: any) => {
         if (capture === null) return;
         popupInboundQueue = popupInboundQueue
             .then(() => handlePopupMessage(type, data, capture))
-            .finally(() => capture?.release())
-            .catch(error => console.error("Popout message queue error", error));
+            .finally(() => { if (data?.capture_version !== 2) capture?.release(); })
+            .catch(error => { capture?.release(); console.error("Popout message queue error", error); });
     };
     window.addEventListener("message", onPopupMessage);
 

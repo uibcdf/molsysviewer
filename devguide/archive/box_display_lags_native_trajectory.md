@@ -7,13 +7,18 @@ closed: 2026-11-07
 severity: medium
 verification: reproduced
 area: [trajectory, box, export, capture]
-guard: molsysviewer/js/tests/e2e/studio-usability.e2e.ts
+guard: molsysviewer/js/tests/e2e/box-trajectory.e2e.ts
 normative:
 blocked_by: []
 supersedes: []
 ---
 
 # Box geometry follows the actual native frame
+
+**Guard migration — 2026-11-07:** #334 gives the unchanged complete box
+receiving function its own mandatory core browser entry. Its build/runner
+profile is validated by `tests/test_reporting_protocol.py`; no assertion or
+per-operation deadline is removed. Original Studio receipts keep their scope.
 
 The public pentalanine HTML export has three non-consecutive structures and
 explicit orthogonal, rotated and triclinic row-vector cells. Its producing

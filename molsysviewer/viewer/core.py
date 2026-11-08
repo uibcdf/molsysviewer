@@ -2082,6 +2082,10 @@ class MolSysView(
         elif event == "trajectory_frame_changed":
             if self.closed:
                 return
+            if "navigation_revision" in content:
+                revision = content["navigation_revision"]
+                if type(revision) is not int or revision != self.player._intent_revision:  # noqa: SLF001
+                    return
             # Emitted by TS when playback stops; update Python-side frame index and NPT box.
             previous = (self.player.index, self.player.is_playing)
             frame = int(content.get("frame", 0))
@@ -2089,7 +2093,9 @@ class MolSysView(
             self.player._is_playing = bool(content.get("is_playing", False))  # noqa: SLF001
             self.player._store_state()  # noqa: SLF001
             if not self.player._is_playing:  # noqa: SLF001
-                self._send_runtime_only({"op": "set_trajectory_frame", "index": frame})
+                self._send_runtime_only(
+                    {"op": "set_trajectory_frame", "index": frame, "navigation_revision": self.player._intent_revision}  # noqa: SLF001
+                )
             self._sync_trajectory_summary_runtime()
             self._sync_measurement_summaries_runtime()
             box_display = content.get("box_display")
@@ -3019,6 +3025,7 @@ class MolSysView(
                 {
                     "op": "set_trajectory_frame",
                     "index": self._local_structure_index_for_player(),
+                    "navigation_revision": self.player._intent_revision,  # noqa: SLF001
                 }
             )
         if self._player_state:
@@ -3028,6 +3035,7 @@ class MolSysView(
                 "mode": str(self._player_state.get("mode", "loop")),
                 "direction": str(self._player_state.get("direction", "forward")),
                 "step": int(self._player_state.get("step", 1)),
+                "navigation_revision": self.player._intent_revision,  # noqa: SLF001
             }
             if self._player_state.get("is_playing"):
                 playback["action"] = "play"

@@ -322,7 +322,7 @@ def test_frame_change_refreshes_measurements_without_republishing_static_domains
         "set_trajectory_summary",
         "set_measurement_summaries",
     ]
-    assert sent[0] == {"op": "set_trajectory_frame", "index": 0}
+    assert sent[0] == {"op": "set_trajectory_frame", "index": 0, "navigation_revision": 0}
 
 
 def test_measurement_summary_reports_the_current_frame_value_in_presentation_units():

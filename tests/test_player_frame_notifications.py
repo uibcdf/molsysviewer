@@ -131,6 +131,60 @@ def test_python_navigation_while_playing_retains_playback_state(view):
     assert view.player.is_playing
 
 
+@pytest.mark.parametrize("playing", [False, True])
+def test_late_playback_feedback_cannot_undo_newer_python_seek(view, playing):
+    view.player.play()
+    view.player.pause()
+    stopped_revision = getattr(view.player, "_intent_revision", 0)
+    view.player.go_to_structure(1)
+    before = view.export_state()
+    seen = []
+    view.on_frame_change(seen.append)
+    view._handle_frontend_event(
+        {
+            "event": "trajectory_frame_changed",
+            "frame": 2,
+            "is_playing": playing,
+            "navigation_revision": stopped_revision,
+        }
+    )
+    assert view.player.index == 1
+    assert view.player.is_playing is False
+    assert view.export_state() == before
+    assert seen == []
+
+
+@pytest.mark.parametrize("revision", [True, -1, "0", 0.0, None, 1000])
+def test_invalid_or_unissued_feedback_revision_cannot_change_authority(view, revision):
+    view.player.go_to_structure(1)
+    before = view.export_state()
+    seen = []
+    view.on_frame_change(seen.append)
+    view._handle_frontend_event(
+        {"event": "trajectory_frame_changed", "frame": 2, "is_playing": True, "navigation_revision": revision}
+    )
+    assert view.export_state() == before
+    assert seen == []
+
+
+def test_current_revision_feedback_is_accepted_and_old_feedback_cannot_stop_playback(view):
+    view.player.pause()
+    old = view.player._intent_revision
+    view.player.play()
+    current = view.player._intent_revision
+    seen = []
+    view.on_frame_change(seen.append)
+    view._handle_frontend_event(
+        {"event": "trajectory_frame_changed", "frame": 1, "is_playing": True, "navigation_revision": current}
+    )
+    view._handle_frontend_event(
+        {"event": "trajectory_frame_changed", "frame": 2, "is_playing": False, "navigation_revision": old}
+    )
+    assert view.player.index == 1
+    assert view.player.is_playing
+    assert seen == [_event(1, True)]
+
+
 def test_python_play_and_pause_publish_state_before_identical_frontend_echo(view):
     seen = []
     view.on_frame_change(seen.append)

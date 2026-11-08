@@ -1,6 +1,17 @@
 # MolSysMT tools add-on — implementation plan
 
-**Current continuation — 2026-11-06:** PR #543 publishes `8ab2f5474`, correcting
+**Current continuation — 2026-11-07:** the MolSysMT team merged PR #543,
+head `42f5ed3bc`, as `0ddb99c2b`; its observed main `3b16f23c5` contains that
+merge. Another rebase of the merged contribution is unnecessary. The
+[integration receipt](molsysmt_pr543_reconciliation_receiving_20261107.json)
+retains 5,059 Python passes and 17 actual-Jupyter steps against Viewer
+`e4dd58cf`, with their exact older source scope. The queried PR-head full,
+Ruff and policy runs failed; no merge-SHA run was observed. Inspect the owner's
+current dispositions and receive the current source pair next. Owner
+integration is verified; installed qualification, full task/session acceptance,
+postponed human review and publication remain separate.
+
+**Earlier continuation — 2026-11-06:** PR #543 publishes `8ab2f5474`, correcting
 the strict build namespace expectation after the complete af8eabcd8 attempt.
 The [recovery receipt](molsysmt_reference_full_recovery_20261106.json) retains
 4,966 original passes/eight failures, 63 affected recovery passes and 36 preflight

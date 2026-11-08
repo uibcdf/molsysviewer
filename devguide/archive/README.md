@@ -1,5 +1,12 @@
 # Archived implementation plans
 
+- [#330: Camera-relative callout presentation now matches the consumed render camera, native loci and image/picking passes.](camera_relative_callout_draw_phase.md)
+- [#331: Navigation revisions reject old stopped feedback and the complete obsolete frame/cell/playback envelope.](late_playback_feedback_overwrites_python_seek.md)
+- [#332: Dynamic recipes recover their saved molecular frame, including empty membership, through state and session files.](dynamic_region_restore_uses_wrong_structure.md)
+- [#333: One owned playback interval gives pending projections a bounded presentation opportunity and releases timers on disposal.](playback_outpaces_frame_presentation.md)
+- [#334: Native box receiving has its own mandatory core entry, retaining every assertion and the original suite budgets.](studio_accumulated_browser_budget.md)
+- [#335: Owned camera cancellation resolves the native pose at commit, preserving physical input applied before that commit.](cancelled_camera_reset_erases_input.md)
+
 - [Native simulation-box convergence](box_display_lags_native_trajectory.md) — #329 follows raw row-vector cells without Python and preserves explicit cell choices across native widget/popup navigation, replacement, hide and clear.
 
 - [Trajectory-shape convergence](trajectory_shape_refresh_loses_latest_frame.md) — #328 coalesces overlapping updates to the latest frame and creates first shapes on the actual frame, guarded by real pentalanine meshes and completed draws.

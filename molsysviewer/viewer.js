@@ -142253,6 +142253,47 @@ var LoaderHandlers = class {
   }
 };
 
+// src/plugin/render-presentation.ts
+var presentations = /* @__PURE__ */ new WeakMap();
+var attached = /* @__PURE__ */ new WeakSet();
+function attachRenderPresentation(renderer, context2) {
+  if (attached.has(renderer)) return;
+  attached.add(renderer);
+  const update10 = renderer.update;
+  renderer.update = (camera, scene) => {
+    for (const entry of presentations.get(context2) ?? []) entry.present(camera, scene);
+    update10.call(renderer, camera, scene);
+  };
+}
+function registerRenderPresentation(context2, camera, present) {
+  let entries3 = presentations.get(context2);
+  if (!entries3) {
+    entries3 = /* @__PURE__ */ new Set();
+    presentations.set(context2, entries3);
+  }
+  const entry = { camera, present };
+  entries3.add(entry);
+  return () => {
+    entries3.delete(entry);
+    if (!entries3.size && presentations.get(context2) === entries3) presentations.delete(context2);
+  };
+}
+var createRenderer = Renderer.create;
+Renderer.create = (...args) => {
+  const renderer = createRenderer(...args);
+  attachRenderPresentation(renderer, args[0]);
+  return renderer;
+};
+var renderImage = ImagePass.prototype.render;
+ImagePass.prototype.render = async function(...args) {
+  try {
+    return await renderImage.apply(this, args);
+  } finally {
+    const pass = this;
+    for (const entry of presentations.get(pass.webgl) ?? []) entry.present(entry.camera, pass.scene);
+  }
+};
+
 // src/shapes/annotation-callout.ts
 var Params = { ...Text.Params, ...Lines.Params };
 function textShape(_ctx, data, props, previous) {
@@ -142337,13 +142378,28 @@ async function renderAnnotation(plugin, geometry, ref) {
   return appliedRef;
 }
 function cameraOffsetPosition(anchor, offset4, camera) {
+  const basis = cameraOffsetBasis(camera);
+  return anchor.map((value, i) => value + offset4[0] * basis[i] + offset4[1] * basis[4 + i] + offset4[2] * basis[8 + i]);
+}
+function cameraOffsetBasis(camera) {
   const toward = Vec3.normalize(Vec3(), Vec3.sub(Vec3(), camera.position, camera.target));
   const right = Vec3.normalize(Vec3(), Vec3.cross(Vec3(), camera.up, toward));
   const up3 = Vec3.normalize(Vec3(), Vec3.cross(Vec3(), toward, right));
-  return anchor.map((value, i) => value + offset4[0] * right[i] + offset4[1] * up3[i] + offset4[2] * toward[i]);
+  const basis = Mat4.identity();
+  for (let i = 0; i < 3; i++) {
+    basis[i] = right[i];
+    basis[4 + i] = up3[i];
+    basis[8 + i] = toward[i];
+  }
+  return basis;
 }
 
 // src/managers/handlers/annotation-handlers.ts
+function geometryKey(geometry) {
+  if (!geometry.camera_basis) return JSON.stringify(geometry);
+  const { position: _position, camera_basis: _basis, camera_base_position: _base, ...semantic } = geometry;
+  return JSON.stringify(semantic);
+}
 function styleToVisualParams(style) {
   if (!style) return void 0;
   const params = {};
@@ -142369,10 +142425,22 @@ var AnnotationHandlers = class {
     this.refreshQueue = Promise.resolve();
     this.cameraSignature = "";
     this.disposed = false;
+    this.refreshFailed = false;
+    this.presentationFailed = false;
+    this.presentationBasis = Mat4.identity();
+    this.presentationInverse = Mat4.identity();
+    this.presentationTransform = Mat4.identity();
+    this.presentationPoint = Vec3();
     this.refsByTag = /* @__PURE__ */ new Map();
     this.specsByTag = /* @__PURE__ */ new Map();
     /** Maps layer_tag → Set of annotation tags that belong to it. */
     this.layerTagIndex = /* @__PURE__ */ new Map();
+    const canvas = plugin.canvas3d;
+    if (canvas?.webgl && canvas.camera) this.releasePresentation = registerRenderPresentation(
+      canvas.webgl,
+      canvas.camera,
+      (camera, scene) => this.present(camera, scene)
+    );
   }
   async addLabel(msg) {
     const structure = this.callbacks.getStructure();
@@ -142420,7 +142488,7 @@ var AnnotationHandlers = class {
       const geometry = this.geometryFor(tag);
       if (!geometry) return;
       const ref = await renderAnnotation(this.plugin, geometry);
-      this.callouts.set(tag, { ref, signature: JSON.stringify(geometry) });
+      this.callouts.set(tag, { ref, signature: geometryKey(geometry) });
       this.labelRefs.add(ref);
       this.refsByTag.set(tag, /* @__PURE__ */ new Set([ref]));
       this.callbacks.registerRef(ref, tag);
@@ -142638,6 +142706,11 @@ var AnnotationHandlers = class {
       text: spec.text,
       anchor,
       position,
+      ...spec.offset_mode !== "world" && camera ? {
+        camera_basis: cameraOffsetBasis(camera),
+        camera_offset: [...offset4],
+        camera_base_position: [...position]
+      } : {},
       color: Number(style.textColor ?? 0),
       size: Number(style.textSize ?? 0.5),
       background: Boolean(style.background ?? false),
@@ -142652,26 +142725,101 @@ var AnnotationHandlers = class {
       for (const [tag, callout] of this.callouts) {
         const geometry = this.geometryFor(tag);
         if (!geometry) continue;
-        const signature2 = JSON.stringify(geometry);
-        if (signature2 === callout.signature) continue;
+        const signature2 = geometryKey(geometry);
+        if (!this.refreshFailed && signature2 === callout.signature) continue;
         await renderAnnotation(this.plugin, geometry, callout.ref);
         if (this.callouts.get(tag) === callout) callout.signature = signature2;
       }
+      this.refreshFailed = false;
     });
     this.refreshQueue = update10.catch(() => {
+      this.refreshFailed = true;
     });
     return update10;
+  }
+  /** Callouts store resolved geometry; ordinary labels follow the Mol* tree. */
+  isGeometryCurrent() {
+    if (this.disposed) return false;
+    if (!this.callouts.size) return true;
+    if (this.refreshFailed) return false;
+    for (const [tag, callout] of this.callouts) {
+      const geometry = this.geometryFor(tag);
+      if (!geometry || geometryKey(geometry) !== callout.signature) return false;
+      if (geometry.camera_basis) {
+        if (this.presentationFailed) return false;
+        const view2 = this.plugin.canvas3d?.camera.view;
+        if (!view2 || !callout.presentedView || callout.presentedView.some((value, index) => value !== view2[index])) return false;
+      }
+    }
+    return true;
   }
   onCamera(snapshot) {
     if (!this.callouts.size) return;
     const signature2 = JSON.stringify(snapshot);
     if (signature2 === this.cameraSignature) return;
     this.cameraSignature = signature2;
-    void this.refresh().catch((error2) => console.warn("[MolSysViewer] Annotation refresh failed", error2));
   }
   dispose() {
     this.disposed = true;
+    this.releasePresentation?.();
+    this.releasePresentation = void 0;
     this.callouts.clear();
+  }
+  present(camera, scene) {
+    if (this.disposed || !this.callouts.size) return;
+    const changed = [];
+    let ownedScene = false;
+    try {
+      const basis = this.presentationBasis;
+      for (let row3 = 0; row3 < 3; row3++) for (let column = 0; column < 3; column++) {
+        basis[column * 4 + row3] = camera.view[row3 * 4 + column];
+      }
+      for (const callout of this.callouts.values()) {
+        const repr = this.plugin.state.data.cells.get(callout.ref)?.obj?.data?.repr;
+        if (!repr) continue;
+        let presented = false;
+        for (const loci of repr.getAllLoci()) {
+          const shape = loci.shape;
+          const data = shape?.sourceData;
+          if (!shape || !data?.camera_basis || !data.camera_base_position) continue;
+          const object = repr.renderObjects.find((item2) => item2.type === shape.geometry.kind);
+          if (!object || !scene.has(object)) continue;
+          ownedScene = true;
+          if (shape.transforms.length !== 1) throw new Error("A callout must have one presentation instance.");
+          const transform3 = this.presentationTransform;
+          Mat4.invert(this.presentationInverse, data.camera_basis);
+          Mat4.mul(transform3, basis, this.presentationInverse);
+          Vec3.fromArray(this.presentationPoint, data.anchor, 0);
+          Vec3.transformMat4(this.presentationPoint, this.presentationPoint, transform3);
+          for (let i = 0; i < 3; i++) transform3[12 + i] = data.anchor[i] - this.presentationPoint[i];
+          if (shape.transforms[0].some((value, index) => value !== transform3[index])) {
+            Mat4.copy(shape.transforms[0], transform3);
+            Shape.createTransform(
+              shape.transforms,
+              shape.geometry.boundingSphere,
+              repr.props.cellSize,
+              repr.props.batchSize,
+              object.values
+            );
+            Geometry.getUtils(shape.geometry).updateBoundingSphere(object.values, shape.geometry);
+            changed.push(object);
+          }
+          Vec3.fromArray(this.presentationPoint, data.camera_base_position, 0);
+          Vec3.transformMat4(this.presentationPoint, this.presentationPoint, transform3);
+          for (let i = 0; i < 3; i++) data.position[i] = this.presentationPoint[i];
+          presented = true;
+        }
+        if (presented) {
+          callout.presentedView ??= new Array(16);
+          for (let i = 0; i < 16; i++) callout.presentedView[i] = camera.view[i];
+        }
+      }
+      if (changed.length) scene.update(changed, false);
+      if (ownedScene) this.presentationFailed = false;
+    } catch (error2) {
+      if (!this.presentationFailed) console.warn("[MolSysViewer] Annotation presentation failed", error2);
+      this.presentationFailed = true;
+    }
   }
   buildLociFromAtomIndices(structure, atomIndices) {
     const selectionBuilder = StructureSelection.LinearBuilder(structure);
@@ -145788,6 +145936,7 @@ var InteractionHandlers = class {
     this.request = 0;
     this.pending = null;
     this.work = Promise.resolve();
+    this.pendingWork = 0;
     this.generation = 0;
     this.latestRevision = -1;
     this.tokens = /* @__PURE__ */ new Map();
@@ -145826,6 +145975,7 @@ var InteractionHandlers = class {
     if (!this.tokens.has(message.tag)) this.tokens.set(message.tag, {});
     const token = this.tokens.get(message.tag);
     const valid = () => generation === this.generation && this.tokens.get(message.tag) === token && message.frame === this.frame && (message.projection_revision ?? this.latestRevision) >= this.latestRevision;
+    this.pendingWork++;
     this.work = this.work.then(async () => {
       if (!valid()) return;
       await this.remove(message.tag);
@@ -145870,8 +146020,13 @@ var InteractionHandlers = class {
         this.summaries = this.summaries.map((item2) => item2.tag === message.tag ? { ...item2, status: "render-error", n_supported: 0, n_segments: 0 } : item2);
         this.ctx.summaries(this.summaries, this.frame);
       }
+    }).finally(() => {
+      this.pendingWork--;
     });
     await this.work;
+  }
+  isFrameReady(frame) {
+    return this.frame === frame && this.pendingWork === 0 && this.pending === null && this.summaries.every((item2) => item2.frame === frame && !["pending", "render-error", "unavailable"].includes(item2.status));
   }
   finishResponse(requestId) {
     if (requestId === this.pending) {
@@ -146234,6 +146389,7 @@ var ShapeHandlers = class {
     this.context?.notifyShapeRenderStatus?.(status);
   }
   isFrameReady(frame) {
+    if (this.frameUpdateInProgress) return false;
     if (this.trajectoryShapes.size === 0) return true;
     if (this.frameUpdateInProgress || this.frameRefreshFailed || this.currentFrame !== frame || this.renderedFrame !== void 0 && this.renderedFrame !== frame) return false;
     for (const tag of this.trajectoryShapes.keys()) {
@@ -149437,6 +149593,9 @@ function nextPlaybackStep(current2, delta2, frameCount, mode) {
   const wrapped = (raw2 % frameCount + frameCount) % frameCount;
   return { index: wrapped, delta: delta2, stop: false };
 }
+function canAdvancePlaybackFrame(pendingUpdates, frameReady, presentedOrAppliedAt, now2, intervalMs) {
+  return pendingUpdates === 0 && (frameReady || now2 - presentedOrAppliedAt >= intervalMs);
+}
 var TrajectoryHandlers = class {
   constructor(plugin, context2) {
     this.plugin = plugin;
@@ -149450,7 +149609,20 @@ var TrajectoryHandlers = class {
       mode: "loop",
       direction: "forward"
     };
+    this.disposed = false;
+    this.framePacingSince = 0;
+    this.firstDrawPending = false;
     this.trajectoryListeners = /* @__PURE__ */ new Set();
+  }
+  get feedbackRevision() {
+    return this.navigationRevision;
+  }
+  acceptNavigationRevision(value) {
+    if (value === void 0) return true;
+    if (!Number.isSafeInteger(value) || value < 0) throw new Error("Invalid trajectory navigation revision.");
+    if (this.navigationRevision !== void 0 && value < this.navigationRevision) return false;
+    this.navigationRevision = value;
+    return true;
   }
   setFollower(enabled) {
     this.follower = enabled;
@@ -149527,16 +149699,19 @@ var TrajectoryHandlers = class {
     });
     this.updateTrajectoryState();
   }
-  async setTrajectoryFrame(msg) {
-    const pending = this.applyTrajectoryFrame(msg);
+  async setTrajectoryFrame(msg, direction) {
+    if (this.disposed) return false;
+    if (typeof msg !== "number" && !this.acceptNavigationRevision(msg.navigation_revision)) return false;
+    const pending = this.applyTrajectoryFrame(msg, direction);
     this.pendingFrames.add(pending);
     try {
       await pending;
     } finally {
       this.pendingFrames.delete(pending);
     }
+    return !this.disposed;
   }
-  async applyTrajectoryFrame(msg) {
+  async applyTrajectoryFrame(msg, direction) {
     const index = typeof msg === "number" ? msg : msg.index ?? 0;
     const frameCount = this.getFrameCount();
     if (frameCount < 1) return;
@@ -149549,11 +149724,20 @@ var TrajectoryHandlers = class {
     for (const m of models) {
       update10.to(m).update({ modelIndex: clamped });
     }
-    await this.plugin.runTask(this.plugin.state.data.updateTree(update10));
+    try {
+      await this.plugin.runTask(this.plugin.state.data.updateTree(update10));
+    } catch (error2) {
+      if (this.disposed) return;
+      throw error2;
+    }
+    if (this.disposed) return;
     await this.context.afterFrameApplied?.();
+    if (direction && this.getCurrentFrameIndex() === clamped) this.travelDirection = direction;
     this.updateTrajectoryState();
   }
   async setTrajectoryPlayback(msg) {
+    if (this.disposed) return;
+    if (!this.acceptNavigationRevision(msg.navigation_revision)) return;
     const action = msg.action ?? (this.getTrajectoryState().isPlaying ? "play" : "stop");
     const fps = msg.fps ?? this.playbackOptions.fps;
     const step = msg.step ?? this.playbackOptions.step;
@@ -149567,6 +149751,7 @@ var TrajectoryHandlers = class {
     }
   }
   async playTrajectory(options = {}) {
+    if (this.disposed) return;
     const frameCount = this.getFrameCount();
     if (frameCount < 2) {
       console.warn("[MolSysViewer] playTrajectory ignored: trajectory has less than 2 frames");
@@ -149578,6 +149763,9 @@ var TrajectoryHandlers = class {
     const mode = normalizePlaybackMode(options.mode ?? this.playbackOptions.mode);
     this.playbackOptions = { fps, step, direction, mode };
     await this.stopTrajectoryPlayback(false);
+    if (this.disposed) return;
+    this.activePlaybackOptions = { fps, step, direction, mode };
+    this.travelDirection = direction;
     if (this.follower) {
       this.followerPlaying = true;
       this.updateTrajectoryState();
@@ -149585,10 +149773,33 @@ var TrajectoryHandlers = class {
     }
     const intervalMs = Math.max(1, Math.floor(1e3 / Math.max(fps, 1)));
     let delta2 = direction === "backward" ? -step : step;
+    this.framePacingFrame = this.getCurrentFrameIndex();
+    this.framePacingSince = performance.now();
+    this.firstDrawPending = true;
+    const canvas = this.plugin.canvas3d;
+    if (canvas) {
+      let observing = false;
+      const subscription = canvas.didDraw.subscribe(() => {
+        if (!observing || this.disposed || !this.firstDrawPending || this.pendingFrames.size || this.framePacingFrame !== this.getCurrentFrameIndex()) return;
+        this.firstDrawPending = false;
+        this.framePacingSince = performance.now();
+      });
+      observing = true;
+      this.frameDrawRelease = () => subscription.unsubscribe();
+      canvas.requestDraw();
+    }
     this.playbackTimer = setInterval(() => {
-      const next = nextPlaybackStep(this.getCurrentFrameIndex(), delta2, frameCount, mode);
+      const current2 = this.getCurrentFrameIndex();
+      if (!canAdvancePlaybackFrame(
+        this.pendingFrames.size,
+        this.context.isFrameReady?.(current2) ?? true,
+        this.framePacingSince,
+        performance.now(),
+        intervalMs
+      )) return;
+      const next = nextPlaybackStep(current2, delta2, frameCount, mode);
       delta2 = next.delta;
-      void this.setTrajectoryFrame(next.index);
+      void this.setTrajectoryFrame(next.index, delta2 < 0 ? "backward" : "forward");
       if (next.stop) void this.stopTrajectoryPlayback();
     }, intervalMs);
     if (this.trajectoryPoll) clearInterval(this.trajectoryPoll);
@@ -149599,8 +149810,13 @@ var TrajectoryHandlers = class {
     this.updateTrajectoryState();
   }
   async stopTrajectoryPlayback(notifyStopped = true) {
+    const revision2 = this.navigationRevision;
     const wasPlaying = !!this.playbackTimer;
     this.followerPlaying = false;
+    this.frameDrawRelease?.();
+    this.frameDrawRelease = void 0;
+    this.firstDrawPending = false;
+    this.framePacingFrame = void 0;
     this.plugin.managers.animation.stop();
     if (this.playbackTimer) {
       clearInterval(this.playbackTimer);
@@ -149613,8 +149829,8 @@ var TrajectoryHandlers = class {
     await Promise.all(Array.from(this.pendingFrames));
     await this.context.afterFrameApplied?.();
     this.updateTrajectoryState();
-    if (wasPlaying && notifyStopped) {
-      this.context.onPlaybackStopped?.(this.getCurrentFrameIndex());
+    if (!this.disposed && wasPlaying && notifyStopped) {
+      this.context.onPlaybackStopped?.(this.getCurrentFrameIndex(), revision2);
     }
   }
   getTrajectoryState() {
@@ -149635,6 +149851,29 @@ var TrajectoryHandlers = class {
       step: this.playbackOptions.step
     };
   }
+  getPlaybackSnapshot() {
+    if (this.follower && this.resolvedPlayback) return { ...this.resolvedPlayback };
+    const playing = this.getTrajectoryState().isPlaying;
+    const options = playing ? this.activePlaybackOptions ?? this.playbackOptions : this.playbackOptions;
+    return {
+      fps: options.fps,
+      step_size: options.step,
+      mode: options.mode === "palindrome" ? "ping-pong" : options.mode,
+      direction: playing ? this.travelDirection ?? options.direction : options.direction,
+      playing
+    };
+  }
+  /** Apply metadata only; a follower must never start a playback timer. */
+  applyPlaybackProjection(value, frame) {
+    if (!this.follower || !value || !Number.isSafeInteger(value.fps) || value.fps < 1 || !Number.isSafeInteger(value.step_size) || value.step_size < 1 || !["loop", "once", "ping-pong"].includes(value.mode) || !["forward", "backward"].includes(value.direction) || typeof value.playing !== "boolean") return;
+    this.resolvedPlayback = { ...value };
+    this.resolvedPlaybackFrame = frame;
+    this.followerPlaying = value.playing;
+    this.updateTrajectoryState();
+  }
+  isCaptureFrameReady(frame) {
+    return !this.follower || this.resolvedPlaybackFrame === frame && !!this.resolvedPlayback;
+  }
   onTrajectoryState(cb2, opts) {
     this.trajectoryListeners.add(cb2);
     if (opts?.immediate ?? true) cb2(this.getTrajectoryState());
@@ -149645,21 +149884,42 @@ var TrajectoryHandlers = class {
     this.notifyListeners();
   }
   notifyListeners() {
+    if (this.disposed) return;
     const state = this.getTrajectoryState();
     for (const cb2 of this.trajectoryListeners) cb2(state);
   }
   notifyPlaybackFrameChanged(isPlaying) {
+    if (this.disposed) return;
     const box5 = this.context.getBoxProjection?.();
     this.context.notify?.({
       event: "trajectory_frame_changed",
       frame: this.getCurrentFrameIndex(),
       is_playing: isPlaying,
+      ...this.navigationRevision === void 0 ? {} : { navigation_revision: this.navigationRevision },
       ...box5 ? { box_display: box5 } : {}
     });
   }
   updateTrajectoryState() {
+    if (this.disposed) return;
+    const frame = this.getCurrentFrameIndex();
+    if (this.playbackTimer && frame !== this.framePacingFrame) {
+      this.framePacingFrame = frame;
+      this.framePacingSince = performance.now();
+      this.firstDrawPending = true;
+    }
     this.context.notifyTrajectoryState();
     this.notifyListeners();
+  }
+  dispose() {
+    this.disposed = true;
+    if (this.playbackTimer) clearInterval(this.playbackTimer);
+    if (this.trajectoryPoll) clearInterval(this.trajectoryPoll);
+    this.playbackTimer = void 0;
+    this.trajectoryPoll = void 0;
+    this.frameDrawRelease?.();
+    this.frameDrawRelease = void 0;
+    this.followerPlaying = false;
+    this.trajectoryListeners.clear();
   }
   getTrajectoryRef() {
     return this.context.getLoadedStructure()?.trajectory;
@@ -149746,6 +150006,10 @@ var MovieHandlers = class {
     this.playbackGeneration = 0;
     this.lastMovieTime = 0;
     this.lastVisibility = {};
+  }
+  /** Movie timeline/visibility capture needs the separate #320 contract. */
+  get isCaptureSafe() {
+    return this.rafId === void 0 && this.cameraWrites.size === 0 && !this.cameraNeedsDraw && Object.keys(this.lastVisibility).length === 0;
   }
   // ── Browser playback ──────────────────────────────────────────────────
   async play(keyframes, loop = false, startTimeMs = 0) {
@@ -149909,7 +150173,7 @@ var MovieHandlers = class {
 };
 
 // src/managers/canvas-draw.ts
-async function readCanvasDraw(canvas, read, timeoutMs = 3e4, signal) {
+async function readCanvasDraw(canvas, read, timeoutMs = 3e4, signal, ready) {
   return new Promise((resolve, reject) => {
     let requested = false;
     let settled = false;
@@ -149935,6 +150199,7 @@ async function readCanvasDraw(canvas, read, timeoutMs = 3e4, signal) {
       subscription = canvas.didDraw.subscribe(() => {
         if (!requested || settled) return;
         try {
+          if (ready && !ready()) return;
           finish({ value: read() });
         } catch (error2) {
           finish({ error: error2 });
@@ -167318,6 +167583,9 @@ var MolSysViewerController = class _MolSysViewerController {
     this.shapeRenderStatuses = /* @__PURE__ */ new Map();
     this.dynamicRegionEvaluationInFlight = null;
     this.dynamicRegionEvaluationPendingFrame = null;
+    this.dynamicRegionEvaluationAppliedFrame = null;
+    this.dynamicRegionObservedFrame = null;
+    this.disposed = false;
     this.addonsScene = null;
     this.addonsList = [];
     this.addonWorkspaces = [];
@@ -168027,11 +168295,17 @@ var MolSysViewerController = class _MolSysViewerController {
     });
     this.trajectory = new TrajectoryHandlers(plugin, {
       afterFrameApplied: () => this.annotations.refresh(),
+      isFrameReady: (frame) => this.areFrameProjectionsCurrent(frame),
       getLoadedStructure: () => this.loadedStructure,
       notifyTrajectoryState: () => this.notifyTrajectoryState(),
-      onPlaybackStopped: (frame) => {
+      onPlaybackStopped: (frame, navigationRevision) => {
         const box5 = this.boxDisplay.projection;
-        this.notify?.({ event: "trajectory_frame_changed", frame, ...box5 ? { box_display: box5 } : {} });
+        this.notify?.({
+          event: "trajectory_frame_changed",
+          frame,
+          ...navigationRevision === void 0 ? {} : { navigation_revision: navigationRevision },
+          ...box5 ? { box_display: box5 } : {}
+        });
       },
       notify: (msg) => this.notify?.(msg),
       getBoxProjection: () => this.boxDisplay?.projection
@@ -168063,7 +168337,9 @@ var MolSysViewerController = class _MolSysViewerController {
       layerHidden: (tag) => this.layerSummaries.some((item2) => item2.tag === tag && item2.hidden)
     });
     this.movie = new MovieHandlers({
-      setTrajectoryFrame: (index) => this.trajectory.setTrajectoryFrame(index),
+      setTrajectoryFrame: async (index) => {
+        await this.trajectory.setTrajectoryFrame(index);
+      },
       setCameraSnapshot: (snap, durationMs) => this.setCameraSnapshot(snap, durationMs),
       getCameraSnapshot: () => this.getCameraSnapshot(),
       waitForDraw: async () => {
@@ -168088,7 +168364,10 @@ var MolSysViewerController = class _MolSysViewerController {
         this.trajectoryPlotOverlay.setFrame(state.currentFrame);
         this.interactions.onFrame(state.currentFrame);
         void this.annotations.refresh().catch((error2) => console.warn("[MolSysViewer] Annotation refresh failed", error2));
-        this.requestDynamicRegionEvaluationForFrame(state.currentFrame);
+        if (this.dynamicRegionObservedFrame !== state.currentFrame) {
+          this.dynamicRegionObservedFrame = state.currentFrame;
+          this.requestDynamicRegionEvaluationForFrame(state.currentFrame);
+        }
       },
       { immediate: false }
     );
@@ -168481,6 +168760,8 @@ var MolSysViewerController = class _MolSysViewerController {
     this.notify?.({ event: "webgl_context_restored" });
   }
   dispose() {
+    this.disposed = true;
+    this.trajectory?.dispose();
     this.boxDisplay?.dispose();
     this.cancelInitialFraming();
     this.pendingCameraIntent?.release();
@@ -169143,6 +169424,7 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "interaction_frame_complete":
           this.interactions.finishResponse(msg.request_id);
+          this.plugin.canvas3d?.requestDraw();
           break;
         case "set_interaction_series":
           this.contextMenu.invalidateInteractionContext();
@@ -169637,13 +169919,17 @@ var MolSysViewerController = class _MolSysViewerController {
           await this.trajectory.stepTrajectory(msg);
           break;
         case "set_trajectory_frame":
-          await this.trajectory.setTrajectoryFrame(msg);
+          if (!await this.trajectory.setTrajectoryFrame(msg)) break;
           if (msg.box_follow === true) {
             this.boxDisplay.onFrame(this.trajectory.getTrajectoryState().currentFrame, true);
             await this.boxDisplay.whenSettled();
             this.trajectory.notifyListeners();
           }
           await this.boxDisplay.applyProjection(msg.box_display);
+          this.trajectory.applyPlaybackProjection(
+            msg.playback_projection,
+            this.trajectory.getTrajectoryState().currentFrame
+          );
           break;
         case "set_trajectory_playback":
           await this.trajectory.setTrajectoryPlayback(msg);
@@ -171183,9 +171469,8 @@ var MolSysViewerController = class _MolSysViewerController {
     const abort2 = () => {
       if (this.pendingCameraIntent !== owner) return;
       release();
-      const current2 = canvas.camera.getSnapshot();
       canvas.camera.transition.inTransition = false;
-      request.call(canvas, { snapshot: current2, durationMs: 0 });
+      request.call(canvas, { snapshot: () => canvas.camera.getSnapshot(), durationMs: 0 });
       canvas.requestDraw();
     };
     owner.release = release;
@@ -171234,14 +171519,44 @@ var MolSysViewerController = class _MolSysViewerController {
     const completed = Math.trunc(Number(frame));
     if (Number.isFinite(completed) && this.dynamicRegionEvaluationInFlight === completed) {
       this.dynamicRegionEvaluationInFlight = null;
-    } else {
-      this.dynamicRegionEvaluationInFlight = null;
-    }
+      this.dynamicRegionEvaluationAppliedFrame = completed;
+    } else return;
     const pending = this.dynamicRegionEvaluationPendingFrame;
     this.dynamicRegionEvaluationPendingFrame = null;
     if (pending !== null && pending !== completed) {
       this.requestDynamicRegionEvaluationForFrame(pending);
     }
+    this.plugin.canvas3d?.requestDraw();
+  }
+  prepareMovingVisualCapture() {
+    this.assertLiveCaptureCanvas();
+    this.requestDynamicRegionEvaluationForFrame(this.trajectory.getTrajectoryState().currentFrame);
+  }
+  assertLiveCaptureCanvas() {
+    const element = this.plugin.canvas3dContext?.canvas;
+    if (this.disposed || !element?.isConnected || !Array.from(element.getClientRects()).some((rect) => rect.width > 0 && rect.height > 0) || getComputedStyle(element).visibility === "hidden") {
+      throw new DOMException("The requested canvas is not visible.", "NoLiveCanvas");
+    }
+  }
+  /** Called synchronously by the completed-draw reader; never mutates the scene. */
+  readMovingVisualState() {
+    this.assertLiveCaptureCanvas();
+    const frame = this.trajectory.getTrajectoryState().currentFrame;
+    if (!this.areFrameProjectionsCurrent(frame)) return;
+    const snapshot = this.getCameraSnapshot();
+    if (!snapshot) return;
+    const box5 = this.boxDisplay.structureIndex;
+    return {
+      snapshot,
+      structure_index: frame,
+      playback: this.trajectory.getPlaybackSnapshot(),
+      ...box5 === void 0 ? {} : { box_structure_index: box5 }
+    };
+  }
+  areFrameProjectionsCurrent(frame) {
+    if (this.systemSyncState !== "synchronized" || this.plugin.state.data.behaviors.isUpdating.value || !this.trajectory.isCaptureFrameReady(frame) || !this.boxDisplay.isFrameReady(frame) || !this.shapes.isFrameReady(frame) || !this.interactions.isFrameReady(frame) || !this.annotations.isGeometryCurrent() || !this.movie.isCaptureSafe) return false;
+    if (this.state.hasFrameDependentDynamicRegions() && (this.dynamicRegionEvaluationInFlight !== null || this.dynamicRegionEvaluationPendingFrame !== null || this.dynamicRegionEvaluationAppliedFrame !== frame)) return false;
+    return true;
   }
   notifyTrajectoryState() {
   }
@@ -171324,6 +171639,12 @@ function isStudioWorkFileResult(message) {
 function isFrontendRequest(message) {
   return message?.op === "request_camera_snapshot" || message?.op === "request_image_export" || message?.op === "request_visual_state";
 }
+async function captureAtScenePrefix(controller, message, send, capture) {
+  const pending = handleFrontendRequest(controller, message, send, capture);
+  if (message.capture_version === 2) {
+    void pending.catch((error2) => console.error("[MolSysViewer] Visual capture reply failed", error2));
+  } else await pending;
+}
 async function handleFrontendRequest(controller, message, send, capture) {
   if (message.op === "request_visual_state") {
     const correlation = {
@@ -171337,6 +171658,20 @@ async function handleFrontendRequest(controller, message, send, capture) {
       const canvas = controller.plugin.canvas3d;
       if (!canvas) throw new Error("No live canvas is available for capture.");
       const timeout = Number(message.capture_timeout_ms);
+      if (message.capture_version === 2) {
+        if (!controller.readMovingVisualState) throw new Error("Moving capture is unavailable on this renderer.");
+        controller.prepareMovingVisualCapture?.();
+        let sample;
+        const captured = await readCanvasDraw(
+          canvas,
+          () => sample,
+          Number.isFinite(timeout) && timeout > 0 ? Math.min(timeout, 3e4) : 5e3,
+          capture?.signal,
+          () => !!(sample = controller.readMovingVisualState())
+        );
+        if (!capture?.signal.aborted) send({ ...correlation, ok: true, capture_version: 2, ...captured });
+        return;
+      }
       const { snapshot, structure_index } = await readCanvasDraw(canvas, () => {
         let structure_index2;
         const release = controller.onTrajectoryState((state) => {
@@ -172685,7 +173020,9 @@ var bootPopup = async (loadedModule) => {
             await ctrl3.handleMessage({
               op: "set_trajectory_frame",
               index: data.trajectoryFrame,
-              box_display: data.boxDisplay
+              box_display: data.boxDisplay,
+              playback_projection: data.playback,
+              navigation_revision: data.navigationRevision
             });
           }
           if (data.cameraSnapshot) {
@@ -172733,12 +173070,9 @@ var bootPopup = async (loadedModule) => {
                 error_type: "NoLiveCanvas"
               });
             } else {
-              await handleFrontendRequest(
-                ctrl3,
-                data,
-                (event) => sendToHost("molsysviewer-popup-interaction", event),
-                capture
-              );
+              const send = (event) => sendToHost("molsysviewer-popup-interaction", event);
+              if (capture) await captureAtScenePrefix(ctrl3, data, send, capture);
+              else await handleFrontendRequest(ctrl3, data, send);
             }
           } else {
             if (!await cameraSync?.handleMessage(data)) await ctrl3.handleMessage(data);
@@ -172788,7 +173122,12 @@ var bootPopup = async (loadedModule) => {
     }
     const capture = type3 === "molsysviewer-sync-op" && data?.op === "request_visual_state" ? visualStateCaptures.reserve(data) : void 0;
     if (capture === null) return;
-    popupInboundQueue = popupInboundQueue.then(() => handlePopupMessage(type3, data, capture)).finally(() => capture?.release()).catch((error2) => console.error("Popout message queue error", error2));
+    popupInboundQueue = popupInboundQueue.then(() => handlePopupMessage(type3, data, capture)).finally(() => {
+      if (data?.capture_version !== 2) capture?.release();
+    }).catch((error2) => {
+      capture?.release();
+      console.error("Popout message queue error", error2);
+    });
   };
   window.addEventListener("message", onPopupMessage);
   const controlsProvider = loadedModule?.mountControls || mountControls;
@@ -173402,13 +173741,17 @@ function syncTrajectoryFrames(controller, enabled, send) {
   let previous;
   return controller.onTrajectoryState((state) => {
     const box5 = controller.boxDisplay?.projection;
-    const key2 = JSON.stringify([state.currentFrame, box5]);
+    const playback = controller.trajectory?.getPlaybackSnapshot();
+    const revision2 = controller.trajectory?.feedbackRevision;
+    const key2 = JSON.stringify([state.currentFrame, box5, playback, revision2]);
     const changed = previous !== key2;
     previous = key2;
     if (changed && enabled()) send({
       op: "set_trajectory_frame",
       index: state.currentFrame,
-      ...box5 ? { box_display: box5 } : {}
+      ...revision2 === void 0 ? {} : { navigation_revision: revision2 },
+      ...box5 ? { box_display: box5 } : {},
+      ...playback ? { playback_projection: playback } : {}
     });
   });
 }
@@ -176210,7 +176553,8 @@ async function bootDocsView(opts) {
           await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
         } else if (hasAuthority && isFrontendRequest(msg)) {
           if (msg.op !== "request_visual_state" || capture) {
-            await handleFrontendRequest(controller, msg, notifyHost, capture ?? void 0);
+            if (capture) await captureAtScenePrefix(controller, msg, notifyHost, capture);
+            else await handleFrontendRequest(controller, msg, notifyHost);
           }
         } else if (hasAuthority && isStudioWorkFileResult(msg)) {
           await controller.handleMessage(msg, { throwOnError: true });
@@ -176382,6 +176726,8 @@ async function bootDocsView(opts) {
             messages: popupReplay.snapshot("canvas"),
             trajectoryFrame: controller.trajectory.getTrajectoryState().currentFrame,
             boxDisplay: controller.boxDisplay.projection,
+            playback: controller.trajectory.getPlaybackSnapshot(),
+            navigationRevision: controller.trajectory.feedbackRevision,
             cameraSnapshot: controller.getCameraSnapshot(),
             cameraSnapshotRevision: cameraSync?.completedRevision,
             isSpinActive: controller.isSpinActive,
@@ -176986,6 +177332,8 @@ function render({ model, el, runtimeSource }) {
               messages: canvasSnapshot ?? [],
               trajectoryFrame: controller.trajectory.getTrajectoryState().currentFrame,
               boxDisplay: controller.boxDisplay.projection,
+              playback: controller.trajectory.getPlaybackSnapshot(),
+              navigationRevision: controller.trajectory.feedbackRevision,
               cameraSnapshot: controller.getCameraSnapshot(),
               cameraSnapshotRevision: cameraSync?.completedRevision,
               isSpinActive: controller.isSpinActive,
@@ -177267,9 +177615,10 @@ function render({ model, el, runtimeSource }) {
         messageQueue = messageQueue.then(async () => {
           try {
             const c8 = await controllerPromise;
-            await handleFrontendRequest(c8, msg, sendToPython, capture);
-          } finally {
+            await captureAtScenePrefix(c8, msg, sendToPython, capture);
+          } catch (error2) {
             capture.release();
+            throw error2;
           }
         });
       } else {

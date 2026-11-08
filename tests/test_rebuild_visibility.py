@@ -146,6 +146,7 @@ def test_player_state_survives_rebuild_and_export():
         "mode": "ping-pong",
         "direction": "backward",
         "step": 2,
+        "navigation_revision": 2,
     }
 
     exported_playback = [
@@ -160,8 +161,9 @@ def test_player_state_survives_rebuild_and_export():
             "mode": "ping-pong",
             "direction": "backward",
             "step": 2,
+            "navigation_revision": 2,
         },
-        {"op": "set_trajectory_playback", "action": "play"},
+        {"op": "set_trajectory_playback", "action": "play", "navigation_revision": 2},
     ]
 
 
@@ -184,6 +186,7 @@ def test_player_settings_export_without_autoplay_when_paused():
         "mode": "ping-pong",
         "direction": "forward",
         "step": 3,
+        "navigation_revision": 1,
     }
 
 

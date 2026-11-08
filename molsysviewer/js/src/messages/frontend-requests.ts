@@ -1,7 +1,9 @@
 import type { MolSysViewerController } from "../managers/viewer-controller";
 import { readCanvasDraw } from "../managers/canvas-draw";
+import type { MovingVisualSnapshot } from "./visual-state-snapshot";
 
-type RequestController = Pick<MolSysViewerController, "getCameraSnapshot" | "getImageDataUri" | "onTrajectoryState" | "plugin">;
+type RequestController = Pick<MolSysViewerController, "getCameraSnapshot" | "getImageDataUri" | "onTrajectoryState" | "plugin">
+    & { prepareMovingVisualCapture?(): void; readMovingVisualState?(): MovingVisualSnapshot | undefined };
 
 export type VisualStateCaptureReservation = {
     signal: AbortSignal;
@@ -73,6 +75,17 @@ export function isFrontendRequest(message: any): boolean {
     return message?.op === "request_camera_snapshot" || message?.op === "request_image_export" || message?.op === "request_visual_state";
 }
 
+/** Start only after the scene prefix, leaving v2's dependent replies runnable. */
+export async function captureAtScenePrefix(controller: RequestController, message: any,
+    send: (event: any) => void, capture: VisualStateCaptureReservation): Promise<void> {
+    const pending = handleFrontendRequest(controller, message, send, capture);
+    if (message.capture_version === 2) {
+        // Reservations own the signal/deadline/subscription until completion.
+        // A failing transport callback must not become an unhandled rejection.
+        void pending.catch(error => console.error("[MolSysViewer] Visual capture reply failed", error));
+    } else await pending;
+}
+
 /** Camera/image replies belong to the live frontend, irrespective of its connector. */
 export async function handleFrontendRequest(controller: RequestController, message: any, send: (event: any) => void,
     capture?: VisualStateCaptureReservation): Promise<void> {
@@ -85,6 +98,16 @@ export async function handleFrontendRequest(controller: RequestController, messa
             const canvas = controller.plugin.canvas3d;
             if (!canvas) throw new Error("No live canvas is available for capture.");
             const timeout = Number(message.capture_timeout_ms);
+            if (message.capture_version === 2) {
+                if (!controller.readMovingVisualState) throw new Error("Moving capture is unavailable on this renderer.");
+                controller.prepareMovingVisualCapture?.();
+                let sample: MovingVisualSnapshot | undefined;
+                const captured = await readCanvasDraw(canvas, () => sample!,
+                    Number.isFinite(timeout) && timeout > 0 ? Math.min(timeout, 30000) : 5000,
+                    capture?.signal, () => !!(sample = controller.readMovingVisualState!()));
+                if (!capture?.signal.aborted) send({ ...correlation, ok: true, capture_version: 2, ...captured });
+                return;
+            }
             // Read inside the didDraw callback. A Promise continuation can run
             // after another subscriber has advanced the model or camera.
             const { snapshot, structure_index } = await readCanvasDraw(canvas, () => {

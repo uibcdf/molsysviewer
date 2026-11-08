@@ -83,7 +83,7 @@ def test_trajectory_context_actions_mutate_python_authority_and_project_summary(
     assert sent[-1]["structure_index"] == 4
     assert sent[-1]["measurements"] == []
     assert sent[-3:-1] == [
-        {"op": "set_trajectory_frame", "index": 4},
+        {"op": "set_trajectory_frame", "index": 4, "box_follow": True, "navigation_revision": 1},
         {
             "op": "set_trajectory_summary",
             "frame": 4,

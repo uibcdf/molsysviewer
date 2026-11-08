@@ -127,6 +127,7 @@ export class ShapeHandlers {
     }
 
     isFrameReady(frame: number): boolean {
+        if (this.frameUpdateInProgress) return false;
         if (this.trajectoryShapes.size === 0) return true;
         if (
             this.frameUpdateInProgress || this.frameRefreshFailed || this.currentFrame !== frame

@@ -2,6 +2,38 @@ import assert from "node:assert";
 import test from "node:test";
 
 import { MolSysViewerController } from "../../src/managers/viewer-controller";
+import { TrajectoryHandlers } from "../../src/managers/handlers/trajectory-handlers";
+import { makeTrajectoryPluginMock } from "./helpers";
+
+test("obsolete frame envelopes cannot replace the accepted cell or playback projection", async () => {
+    const controller = Object.create(MolSysViewerController.prototype) as any;
+    controller.contextMenu = { close() {} };
+    controller.groupPanel = { clearContextInspection() {} };
+    controller.refreshPanelWorkspaceChrome = controller.syncStripOverlaysForMessage = () => {};
+    controller.trajectory = new TrajectoryHandlers(makeTrajectoryPluginMock() as any, {
+        getLoadedStructure: () => undefined, notifyTrajectoryState() {},
+    });
+    controller.trajectory.setFollower(true);
+    const currentBox = { definition_revision: 0, structure_index: 0 };
+    const currentPlayback = { fps: 11, step_size: 2, mode: "loop", direction: "forward", playing: true };
+    let box: unknown = currentBox, playback: unknown = currentPlayback;
+    controller.boxDisplay = { async applyProjection(value: unknown) { box = value; } };
+    const apply = controller.trajectory.applyPlaybackProjection.bind(controller.trajectory);
+    controller.trajectory.applyPlaybackProjection = (value: unknown, frame: number) => { playback = value; apply(value, frame); };
+    try {
+        await controller.trajectory.setTrajectoryFrame({ op: "set_trajectory_frame", index: 0, navigation_revision: 8 });
+        const incoming = { op: "set_trajectory_frame", index: 0, navigation_revision: 7,
+            box_display: { definition_revision: 0, structure_index: 1 },
+            playback_projection: { fps: 7, step_size: 1, mode: "once", direction: "backward", playing: false } };
+        await controller.handleMessage(incoming, { throwOnError: true });
+        assert.strictEqual(box, currentBox, "obsolete navigation must not replace the current cell");
+        assert.strictEqual(playback, currentPlayback, "obsolete navigation must not replace resolved playback");
+        await controller.handleMessage({ ...incoming, navigation_revision: 9 }, { throwOnError: true });
+        assert.strictEqual(box, incoming.box_display, "accepted navigation retains its cell");
+        assert.strictEqual(playback, incoming.playback_projection, "accepted navigation retains its playback");
+        assert.strictEqual(controller.trajectory.feedbackRevision, 9);
+    } finally { controller.trajectory.dispose(); }
+});
 
 test("viewer controller does not rebuild System chrome for non-invalidating messages", async () => {
     const controller = Object.create(MolSysViewerController.prototype) as MolSysViewerController & {
@@ -62,6 +94,8 @@ test("viewer controller coalesces dynamic-region frame evaluation requests", () 
         notify?: (message: unknown) => void;
     };
     const messages: unknown[] = [];
+    let draws = 0;
+    (controller as any).plugin = { canvas3d: { requestDraw() { draws++; } } };
     controller.state = { hasFrameDependentDynamicRegions: () => true };
     controller.notify = (message: unknown) => messages.push(message);
     (controller as any).dynamicRegionEvaluationInFlight = null;
@@ -81,6 +115,7 @@ test("viewer controller coalesces dynamic-region frame evaluation requests", () 
         { event: "request_dynamic_region_evaluation", frame: 1 },
         { event: "request_dynamic_region_evaluation", frame: 3 },
     ]);
+    assert.equal(draws, 1, "a completed no-change evaluation must still permit a fresh capture draw");
 });
 
 test("viewer controller does not request dynamic-region evaluation without frame-dependent regions", () => {

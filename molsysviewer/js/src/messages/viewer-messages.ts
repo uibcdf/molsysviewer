@@ -441,11 +441,13 @@ export type StepTrajectoryMessage = {
 export type SetTrajectoryFrameMessage = {
     op: "set_trajectory_frame";
     index?: number;
+    navigation_revision?: number;
 };
 
 export type SetTrajectoryPlaybackMessage = {
     op: "set_trajectory_playback";
     action?: "play" | "stop";
+    navigation_revision?: number;
     fps?: number;
     step?: number;
     mode?: "loop" | "palindrome" | "once";

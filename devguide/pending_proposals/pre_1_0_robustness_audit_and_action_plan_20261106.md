@@ -170,17 +170,17 @@ See the [combined receipt](../robustness_combined_source_receiving_20261106.json
 [A5 receipt](../live_state_capture_receiving_20261106.json). Approved E0 private
 custody retains original evidence; no off-host backup is claimed.
 
-**C1 is delivered for owner review through MolSysMT PR #543**, head
-`42f5ed3bc`, with 5,059 Python passes and seventeen actual Jupyter steps. The
-owner's main has subsequently advanced to `40bb54d0`; the PR is now reported
-non-mergeable. Reconcile in a separate contribution checkout, preserve human
-work and receive the changed boundary before updating that PR. Never integrate
-into MolSysMT main from this session. C2/owner and hosted acceptance remain
-pending; full details and scientific provider identity are in C1 below.
+**C1's contribution is merged by its owner:** MolSysMT PR #543, head
+`42f5ed3bc`, merged as `0ddb99c2b`; observed main `3b16f23c5` contains it.
+The recorded 5,059 Python passes and seventeen actual Jupyter steps keep their
+older Viewer `e4dd58cf` source scope. Do not reconcile the already merged PR
+again. Inspect current owner dispositions and receive the post-integration
+source pair next; no MolSysMT main integration is performed from this session.
+C2/task and hosted acceptance remain pending; C1 below holds the exact evidence.
 
 **Next actions:** resolve the remaining Jupyter uncertainty and complete A5's
 continuous-playback and hidden-endpoint cases. Continue B3's
-DataCard lifecycle and the isolated owner-PR reconciliation. The remaining
+DataCard lifecycle and current owner-pair receiving after integration. The remaining
 approved addon families and Movie #320 remain in scope. Incremental commits
 use `[skip ci]` at the principal maintainer's explicit instruction; no remote
 run is dispatched for each small change. Human review, candidates, tags,
@@ -276,6 +276,33 @@ native box receiving passes with 4,310 fixed inputs. The [receipt](../trajectory
 distinguishes complete Studio/controls receiving on the immediately preceding
 source from final changed-boundary checks. This prerequisite does not add another audit denominator item or
 complete continuous-playback capture. The mandatory Movie #320 stream remains.
+
+The bounded A5 correction receives and archives six child defects; they do
+not add six original-plan leaves or complete A5:
+
+- [#330](../archive/camera_relative_callout_draw_phase.md) presents callouts with the consumed camera, including native CPU/GPU/image/pick geometry.
+- [#331](../archive/late_playback_feedback_overwrites_python_seek.md) correlates navigation and rejects the entire obsolete frame/cell/playback envelope.
+- [#332](../archive/dynamic_region_restore_uses_wrong_structure.md) materializes dynamic recipes at the saved molecular frame, including empty results.
+- [#333](../archive/playback_outpaces_frame_presentation.md) gives pending projections bounded presentation time through the existing owned clock.
+- [#334](../archive/studio_accumulated_browser_budget.md) keeps all native box assertions in a separate mandatory core entry, retaining every deadline.
+- [#335](../archive/cancelled_camera_reset_erases_input.md) resolves cancelled camera poses at native commit so accumulated physical input survives.
+
+The complete final shared-browser Studio/box/moving selection passes 3/3 in
+429.86 seconds, with 4,323 fixed inputs and thirty owned processes closed.
+Canonical Node passes 406/406. The recorded fourteen-file Python boundary
+passes 672/672 before the later camera/test-only corrections; Python production
+inputs remain unchanged by those corrections. Final scoped governance receiving
+follows archival. All original causal failures, the secondary diagnostic error
+and the local pass-log replacement incident remain explicit in the
+[receiving record](../moving_capture_renderer_receiving_20261107.json).
+
+A5 remains partial. The frontend advertises only capture version 1. Next receive
+version-2 popup/detached routing, hidden/unavailable/disposed endpoint semantics
+and current actual-Jupyter/consolidated evidence before advertising version 2.
+Earlier controls receiving keeps its earlier source scope; final Studio checks
+the changed physical camera/popup boundaries. Source delivery does not qualify
+packages, hosted CI or human review. The original count remains 8/46 delivered,
+1/46 finally accepted, with Movie #320 mandatory and publication paused.
 
 **Next execution checkpoint:** receive the delivered bounded batch through the
 applicable consolidated hosted checks at one substantive checkpoint, following
@@ -464,16 +491,21 @@ reproduced title defect. A3 remains the owner of literal-text safety.
 
 ## C — deliver and receive the actual integration
 
-**C1 — partial; contribution delivered:** uibcdf/molsysmt PR #543 now points
-to `42f5ed3bc`, a normal fast-forward update preserving its old head, qualified
-`e1199534` contribution and owner review `3f66f593` over published owner
-`030c201a`. Both histories, native source and unrelated human work are preserved;
-the queue index is generated. The owning team still reviews/integrates it.
-A later live inspection observes owner main `40bb54d0` and GitHub reports the
-PR as non-mergeable. Reconcile that newer base in an isolated contribution
-worktree after the current Viewer box-source batch; preserve the existing
-5,059-case and seventeen-step source scopes rather than relabelling them.
-Never push or merge MolSysMT main from this Viewer session. The
+**C1 — partial; owner integration now verified:** the MolSysMT team merged
+[PR #543](https://github.com/uibcdf/molsysmt/pull/543), head `42f5ed3bc`, on
+2026-11-07 at 18:32:18 UTC as `0ddb99c2b`. The current owner main is
+`3b16f23c5`; the earlier non-mergeable observation is superseded. Do not prepare
+another reconciliation of the already merged PR. This Viewer session did not
+merge or change owner main. Keep the historical 5,059-case and seventeen-step
+receiving on Viewer `e4dd58cf` at their original sources.
+
+Remaining acceptance is exact-source receiving after integration: the PR-head
+full matrix `42391330474`, Ruff `42391330371` and policy `42391330659` failed;
+metadata inspection through published GH Run Receptor 1.1.1 retains those
+verdicts. No run is observed at the merge SHA in the queried inventory.
+Integration is not a passing CI or current-pair qualification. Inspect current
+owner dispositions before proposing any contribution; owner review and
+integration authority remain with MolSysMT. The
 [receiving record](../molsysmt_pr543_reconciliation_receiving_20261107.json)
 keeps exact producers, source scopes and remaining exits; the earlier
 read-only/conflicting snapshot is historical evidence, not current delivery.

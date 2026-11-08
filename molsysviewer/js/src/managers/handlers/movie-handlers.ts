@@ -72,6 +72,12 @@ export class MovieHandlers {
 
     constructor(private context: MovieContext) {}
 
+    /** Movie timeline/visibility capture needs the separate #320 contract. */
+    get isCaptureSafe(): boolean {
+        return this.rafId === undefined && this.cameraWrites.size === 0
+            && !this.cameraNeedsDraw && Object.keys(this.lastVisibility).length === 0;
+    }
+
     // ── Browser playback ──────────────────────────────────────────────────
 
     async play(keyframes: MovieKeyframe[], loop: boolean = false, startTimeMs: number = 0.0): Promise<void> {

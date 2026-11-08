@@ -5,6 +5,8 @@ import { StructureSelection } from "molstar/lib/mol-model/structure/query";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { Vec2 } from "molstar/lib/mol-math/linear-algebra";
+import { Camera } from "molstar/lib/mol-canvas3d/camera";
+import { SyncRuntimeContext } from "molstar/lib/mol-task/execution/synchronous";
 import { Vec3 } from "molstar/lib/mol-math/linear-algebra/3d/vec3";
 import { Vec4 } from "molstar/lib/mol-math/linear-algebra/3d/vec4";
 import { cameraProject } from "molstar/lib/mol-canvas3d/camera/util";
@@ -40,13 +42,76 @@ export function projectScenePosition(controller: MolSysViewerController, positio
 }
 
 /** Waitable GPU pick, without creating loci or opening a menu artificially. */
-export function pickScenePosition(controller: MolSysViewerController, position: [number, number, number]) {
+export function pickScenePosition(controller: MolSysViewerController, position: [number, number, number], pixelOffset: [number, number] = [0, 0]) {
     const point = projectScenePosition(controller, position);
+    point.x += pixelOffset[0]; point.y += pixelOffset[1];
     const rect = controller.plugin.canvas3dContext!.canvas.getBoundingClientRect();
     const canvas = controller.plugin.canvas3d!;
     const hit = canvas.getLoci(canvas.identify(Vec2.create(point.x - rect.left, point.y - rect.top))?.id);
     const target = (controller as any).normalizeManagedContextPayload(normalizeContextInteractionEvent({ current: hit }), hit.loci);
-    return { point, target };
+    const shape = (hit.loci as any)?.shape;
+    const bounds = Loci.getBoundingSphere(hit.loci);
+    return { point, target, owner: shape ? controller.state.findShapeOwner(shape.sourceData) : undefined,
+        shapeKind: shape?.geometry.kind, lociKind: hit.loci.kind, cpuCenter: bounds ? [...bounds.center] : undefined };
+}
+
+/** Inspect real CPU loci, shape instances and GPU buffers, without deriving a
+ * second representation from the public annotation recipe. */
+export function inspectAnnotationPresentation(controller: MolSysViewerController, tag: string) {
+    const refs = controller.state.tagIndex.get(`annotation\u0000${tag}`) ?? new Set();
+    return [...refs].flatMap(ref => {
+        const repr = controller.plugin.state.data.cells.get(ref)?.obj?.data?.repr;
+        return (repr?.getAllLoci() ?? []).flatMap((loci: any) => {
+            const shape = loci.shape;
+            if (!shape) return [];
+            const geometry = shape.geometry, data = shape.sourceData;
+            const object = repr.renderObjects.find((item: any) => item.type === geometry.kind);
+            const world = (buffer: Float32Array) => Array.from(Vec3.transformMat4(Vec3(),
+                Vec3.fromArray(Vec3(), buffer, 0), shape.transforms[0]));
+            // getAllLoci returns Shape.Loci, whose Mol* contract is the raw
+            // geometry sphere. Resolve the native group/instance through the
+            // representation's own pick mapping for transformed CPU bounds.
+            const group = repr.getLoci({ objectId: object.id, instanceId: 0, groupId: 0 });
+            const bounds = Loci.getBoundingSphere(group);
+            return [{ kind: geometry.kind, anchor: [...data.anchor], position: [...data.position],
+                textCenter: geometry.kind === "text" ? world(geometry.centerBuffer.ref.value) : undefined,
+                lineStart: geometry.kind === "lines" ? world(geometry.startBuffer.ref.value) : undefined,
+                lineEnd: geometry.kind === "lines" ? world(geometry.endBuffer.ref.value) : undefined,
+                cpuCenter: bounds ? [...bounds.center] : undefined, lociKind: group.kind,
+                shapeTransform: [...shape.transforms[0]],
+                gpuTransform: Array.from(object.values.aTransform.ref.value.slice(0, 16)),
+                markers: Array.from(object.values.tMarker?.ref.value.array ?? []) }];
+        });
+    });
+}
+
+/** Use the actual Mol* image pass with another camera, then observe restoration
+ * to the live canvas. The wrapper observes, rather than supplies, presentation. */
+export async function inspectAnnotationImage(controller: MolSysViewerController, tag: string) {
+    const pass: any = controller.plugin.helpers.viewportScreenshot!.imagePass;
+    const liveCamera = pass.camera, update = pass.renderer.update;
+    const imageCamera = new Camera({ ...controller.getCameraSnapshot(),
+        position: [80, 25, 60], target: [0, 0, 0], up: [0, 1, 0], radius: 30, radiusMax: 100 });
+    const observations: any[] = [];
+    pass.camera = imageCamera;
+    pass.setProps({ multiSample: { mode: "off" }, illumination: { enabled: false } });
+    pass.renderer.update = (camera: any, scene: any) => {
+        update.call(pass.renderer, camera, scene);
+        if (camera === pass._camera && observations.length < 4) observations.push({
+            camera: structuredClone(camera.state), geometry: inspectAnnotationPresentation(controller, tag) });
+    };
+    try {
+        const image = await pass.getImageData(SyncRuntimeContext, 320, 240);
+        const canvas = document.createElement("canvas");
+        canvas.width = image.width; canvas.height = image.height;
+        canvas.getContext("2d")!.putImageData(image, 0, 0);
+        return { width: image.width, height: image.height,
+            png: canvas.toDataURL("image/png").split(",")[1], observations,
+            restored: inspectAnnotationPresentation(controller, tag), liveCamera: controller.getCameraSnapshot() };
+    } finally {
+        pass.camera = liveCamera;
+        pass.renderer.update = update;
+    }
 }
 
 /** Read generated link groups for the single-unit peptide guard. */
@@ -1956,6 +2021,8 @@ if (typeof window !== "undefined") {
         probeAtomColors,
         inspectTaggedRefs,
         inspectMeasurementGeometry,
+        inspectAnnotationPresentation,
+        inspectAnnotationImage,
         loadArrayNativeFixture,
         probePopupChannel,
         probePopupReconstruction,

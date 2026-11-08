@@ -2,7 +2,7 @@
 
 import { MolSysViewerController, suppressCanvasContextMenu } from "./managers/viewer-controller";
 import { handleFrontendRequest, isFrontendControl, isFrontendRequest, isStudioWorkFileResult,
-    VisualStateCaptureRequests } from "./messages/frontend-requests";
+    VisualStateCaptureRequests, captureAtScenePrefix } from "./messages/frontend-requests";
 import { ViewerMessage } from "./messages/viewer-messages";
 import { trajectorySyncToAuthority } from "./messages/trajectory-intent";
 import { frontendSceneProjection, FRONTEND_CONTEXT_ACTIONS } from "./messages/frontend-scene-projection";
@@ -316,7 +316,8 @@ export async function bootDocsView(opts: {
                 await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
             } else if (hasAuthority && isFrontendRequest(msg)) {
                 if ((msg as any).op !== "request_visual_state" || capture) {
-                    await handleFrontendRequest(controller, msg, notifyHost, capture ?? undefined);
+                    if (capture) await captureAtScenePrefix(controller, msg, notifyHost, capture);
+                    else await handleFrontendRequest(controller, msg, notifyHost);
                 }
             } else if (hasAuthority && isStudioWorkFileResult(msg)) {
                 // Qt delivers these controls outside its scene transport queue.
@@ -508,6 +509,8 @@ export async function bootDocsView(opts: {
                         messages: popupReplay.snapshot("canvas"),
                         trajectoryFrame: controller.trajectory.getTrajectoryState().currentFrame,
                         boxDisplay: controller.boxDisplay.projection,
+                        playback: controller.trajectory.getPlaybackSnapshot(),
+                        navigationRevision: controller.trajectory.feedbackRevision,
                         cameraSnapshot: controller.getCameraSnapshot(),
                         cameraSnapshotRevision: cameraSync?.completedRevision,
                         isSpinActive: controller.isSpinActive,
@@ -1332,6 +1335,8 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                                 messages: canvasSnapshot ?? [],
                                 trajectoryFrame: controller.trajectory.getTrajectoryState().currentFrame,
                                 boxDisplay: controller.boxDisplay.projection,
+                                playback: controller.trajectory.getPlaybackSnapshot(),
+                                navigationRevision: controller.trajectory.feedbackRevision,
                                 cameraSnapshot: controller.getCameraSnapshot(),
                                 cameraSnapshotRevision: cameraSync?.completedRevision,
                                 isSpinActive: controller.isSpinActive,
@@ -1685,8 +1690,8 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                     messageQueue = messageQueue.then(async () => {
                         try {
                             const c = await controllerPromise;
-                            await handleFrontendRequest(c, msg, sendToPython, capture);
-                        } finally { capture.release(); }
+                            await captureAtScenePrefix(c, msg, sendToPython, capture);
+                        } catch (error) { capture.release(); throw error; }
                     });
                 } else {
                     controllerPromise.then(c => handleFrontendRequest(c, msg, sendToPython));

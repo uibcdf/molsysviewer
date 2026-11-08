@@ -4,7 +4,7 @@ import type { Canvas3D } from "molstar/lib/mol-canvas3d/canvas3d";
  * The reader must not change the scene or return an asynchronous operation.
  */
 export async function readCanvasDraw<T>(canvas: Canvas3D, read: () => T, timeoutMs = 30000,
-    signal?: AbortSignal): Promise<T> {
+    signal?: AbortSignal, ready?: () => boolean): Promise<T> {
     return new Promise<T>((resolve, reject) => {
         let requested = false;
         let settled = false;
@@ -25,7 +25,10 @@ export async function readCanvasDraw<T>(canvas: Canvas3D, read: () => T, timeout
         try {
             subscription = canvas.didDraw.subscribe(() => {
                 if (!requested || settled) return;
-                try { finish({ value: read() }); } catch (error) { finish({ error }); }
+                try {
+                    if (ready && !ready()) return;
+                    finish({ value: read() });
+                } catch (error) { finish({ error }); }
             });
             if (settled) { subscription.unsubscribe(); return; }
             requested = true;

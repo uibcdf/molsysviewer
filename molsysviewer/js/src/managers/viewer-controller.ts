@@ -34,6 +34,7 @@ import { StateHandlers } from "./handlers/state-handlers";
 import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handlers";
 import { MovieHandlers } from "./handlers/movie-handlers";
 import { waitForCanvasDraw } from "./canvas-draw";
+import type { MovingVisualSnapshot } from "../messages/visual-state-snapshot";
 import type { CameraIntentApplication } from "./camera-sync";
 import { ContextMenuTarget, LastMeasurementSummary, RegionSummary, SavedSelectionSummary, ViewerContextMenu } from "../ui/context-menu";
 import { MeasurementEndpointPolicy, MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
@@ -645,6 +646,9 @@ export class MolSysViewerController {
     private shapeRenderStatuses = new Map<string, ShapeRenderStatus>();
     private dynamicRegionEvaluationInFlight: number | null = null;
     private dynamicRegionEvaluationPendingFrame: number | null = null;
+    private dynamicRegionEvaluationAppliedFrame: number | null = null;
+    private dynamicRegionObservedFrame: number | null = null;
+    private disposed = false;
     private addonsScene: { styleTag?: string; preset?: string; figurePreset?: string; figureScale?: number; figureVariants?: string[]; figureBackground?: string } | null = null;
     private addonsList: AddonRuntimeSummary[] = [];
     private addonWorkspaces: WorkspaceRuntime[] = [];
@@ -1762,11 +1766,14 @@ export class MolSysViewerController {
 
         this.trajectory = new TrajectoryHandlers(plugin, {
             afterFrameApplied: () => this.annotations.refresh(),
+            isFrameReady: frame => this.areFrameProjectionsCurrent(frame),
             getLoadedStructure: () => this.loadedStructure,
             notifyTrajectoryState: () => this.notifyTrajectoryState(),
-            onPlaybackStopped: frame => {
+            onPlaybackStopped: (frame, navigationRevision) => {
                 const box = this.boxDisplay.projection;
-                this.notify?.({ event: "trajectory_frame_changed", frame, ...(box ? { box_display: box } : {}) });
+                this.notify?.({ event: "trajectory_frame_changed", frame,
+                    ...(navigationRevision === undefined ? {} : { navigation_revision: navigationRevision }),
+                    ...(box ? { box_display: box } : {}) });
             },
             notify: (msg) => this.notify?.(msg),
             getBoxProjection: () => this.boxDisplay?.projection,
@@ -1795,7 +1802,7 @@ export class MolSysViewerController {
             layerHidden: tag => this.layerSummaries.some(item => item.tag === tag && item.hidden),
         });
         this.movie = new MovieHandlers({
-            setTrajectoryFrame: (index) => this.trajectory.setTrajectoryFrame(index),
+            setTrajectoryFrame: async index => { await this.trajectory.setTrajectoryFrame(index); },
             setCameraSnapshot: (snap, durationMs) => this.setCameraSnapshot(snap, durationMs),
             getCameraSnapshot: () => this.getCameraSnapshot(),
             waitForDraw: async () => {
@@ -1821,7 +1828,13 @@ export class MolSysViewerController {
                 this.trajectoryPlotOverlay.setFrame(state.currentFrame);
                 this.interactions.onFrame(state.currentFrame);
                 void this.annotations.refresh().catch(error => console.warn("[MolSysViewer] Annotation refresh failed", error));
-                this.requestDynamicRegionEvaluationForFrame(state.currentFrame);
+                // Playback/default summaries also notify this subscription.
+                // They must not continuously restart a query for an unchanged
+                // frame before its already applied geometry can be drawn.
+                if (this.dynamicRegionObservedFrame !== state.currentFrame) {
+                    this.dynamicRegionObservedFrame = state.currentFrame;
+                    this.requestDynamicRegionEvaluationForFrame(state.currentFrame);
+                }
             },
             { immediate: false },
         );
@@ -1883,6 +1896,8 @@ export class MolSysViewerController {
     }
 
     dispose(): void {
+        this.disposed = true;
+        this.trajectory?.dispose();
         this.boxDisplay?.dispose();
         this.cancelInitialFraming();
         this.pendingCameraIntent?.release();
@@ -2595,7 +2610,10 @@ export class MolSysViewerController {
                 case "set_interaction_frame":
                     this.contextMenu.invalidateInteractionContext();
                     await this.interactions.apply(msg); break;
-                case "interaction_frame_complete": this.interactions.finishResponse(msg.request_id); break;
+                case "interaction_frame_complete":
+                    this.interactions.finishResponse(msg.request_id);
+                    this.plugin.canvas3d?.requestDraw();
+                    break;
                 case "set_interaction_series":
                     this.contextMenu.invalidateInteractionContext();
                     await this.interactions.setSeries(msg); break;
@@ -3024,13 +3042,15 @@ export class MolSysViewerController {
                 // Trajectory Ops
                 case "step_trajectory": await this.trajectory.stepTrajectory(msg); break;
                 case "set_trajectory_frame":
-                    await this.trajectory.setTrajectoryFrame(msg);
+                    if (!await this.trajectory.setTrajectoryFrame(msg)) break;
                     if ((msg as any).box_follow === true) {
                         this.boxDisplay.onFrame(this.trajectory.getTrajectoryState().currentFrame, true);
                         await this.boxDisplay.whenSettled();
                         this.trajectory.notifyListeners();
                     }
                     await this.boxDisplay.applyProjection((msg as any).box_display);
+                    this.trajectory.applyPlaybackProjection((msg as any).playback_projection,
+                        this.trajectory.getTrajectoryState().currentFrame);
                     break;
                 case "set_trajectory_playback": await this.trajectory.setTrajectoryPlayback(msg); break;
                 case "partial_coordinates_update": await this.trajectory.partialCoordinatesUpdate(msg as any); break;
@@ -4778,9 +4798,11 @@ export class MolSysViewerController {
         const abort = () => {
             if (this.pendingCameraIntent !== owner) return;
             release();
-            const current = canvas.camera.getSnapshot();
             canvas.camera.transition.inTransition = false;
-            request.call(canvas, { snapshot: current, durationMs: 0 });
+            // Native controls may consume queued input before the next scene
+            // commit. Resolve that newer pose at commit, rather than restoring
+            // the camera from before the gesture was applied.
+            request.call(canvas, { snapshot: () => canvas.camera.getSnapshot(), durationMs: 0 });
             canvas.requestDraw();
         };
         owner.release = release;
@@ -4833,14 +4855,51 @@ export class MolSysViewerController {
         const completed = Math.trunc(Number(frame));
         if (Number.isFinite(completed) && this.dynamicRegionEvaluationInFlight === completed) {
             this.dynamicRegionEvaluationInFlight = null;
-        } else {
-            this.dynamicRegionEvaluationInFlight = null;
-        }
+            this.dynamicRegionEvaluationAppliedFrame = completed;
+        } else return;
         const pending = this.dynamicRegionEvaluationPendingFrame;
         this.dynamicRegionEvaluationPendingFrame = null;
         if (pending !== null && pending !== completed) {
             this.requestDynamicRegionEvaluationForFrame(pending);
         }
+        this.plugin.canvas3d?.requestDraw();
+    }
+
+    prepareMovingVisualCapture(): void {
+        this.assertLiveCaptureCanvas();
+        this.requestDynamicRegionEvaluationForFrame(this.trajectory.getTrajectoryState().currentFrame);
+    }
+
+    private assertLiveCaptureCanvas(): void {
+        const element = this.plugin.canvas3dContext?.canvas;
+        if (this.disposed || !element?.isConnected || !Array.from(element.getClientRects()).some(rect => rect.width > 0 && rect.height > 0)
+            || getComputedStyle(element).visibility === "hidden") {
+            throw new DOMException("The requested canvas is not visible.", "NoLiveCanvas");
+        }
+    }
+
+    /** Called synchronously by the completed-draw reader; never mutates the scene. */
+    readMovingVisualState(): MovingVisualSnapshot | undefined {
+        this.assertLiveCaptureCanvas();
+        const frame = this.trajectory.getTrajectoryState().currentFrame;
+        if (!this.areFrameProjectionsCurrent(frame)) return;
+        const snapshot = this.getCameraSnapshot();
+        if (!snapshot) return;
+        const box = this.boxDisplay.structureIndex;
+        return { snapshot, structure_index: frame, playback: this.trajectory.getPlaybackSnapshot(),
+            ...(box === undefined ? {} : { box_structure_index: box }) };
+    }
+
+    private areFrameProjectionsCurrent(frame: number): boolean {
+        // Native labels and centroid measurements are dependencies in this tree.
+        // Callouts and other explicit projections expose their own applied state.
+        if (this.systemSyncState !== "synchronized" || this.plugin.state.data.behaviors.isUpdating.value
+            || !this.trajectory.isCaptureFrameReady(frame) || !this.boxDisplay.isFrameReady(frame)
+            || !this.shapes.isFrameReady(frame) || !this.interactions.isFrameReady(frame)
+            || !this.annotations.isGeometryCurrent() || !this.movie.isCaptureSafe) return false;
+        if (this.state.hasFrameDependentDynamicRegions() && (this.dynamicRegionEvaluationInFlight !== null
+            || this.dynamicRegionEvaluationPendingFrame !== null || this.dynamicRegionEvaluationAppliedFrame !== frame)) return false;
+        return true;
     }
 
     private notifyTrajectoryState() {

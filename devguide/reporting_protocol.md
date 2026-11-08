@@ -251,6 +251,25 @@ popup mirror. The mirror waits for applied geometry rather than treating a
 received frame summary as completion. The offline validator checks these
 receiving owners; a Python-only series assertion cannot guard a renderer defect.
 
+### Moving-state capture browser guard profile
+
+The bounded selector is exactly
+`molsysviewer/js/tests/e2e/moving-state-capture.e2e.ts`, without node suffixes,
+globs or commands. From `molsysviewer/js`, run `npm run build:harness` and
+`npm run build:e2e:all`, then `node tests/e2e/moving-state-capture.e2e.js`.
+The entry also runs in `test:e2e:core`, with the ordinary suite deadline;
+browser/WebGL failure fails and an opt-out is not passing evidence.
+Its real Python pentalanine authority exercises state/session saves while
+camera and trajectory keep moving, genuine delayed dynamic-region replies,
+independent restoration and actual frame-dependent box/shape/annotation/
+measurement/interaction geometry. A separate explicit stopped-frame control
+receives an empty dynamic selection. Native callout text/leader transforms,
+CPU loci and alternate-camera images are checked by its presentation scenario.
+The receiver remains unadvertised until its endpoint qualification is complete;
+registration of a guard is not capability or release acceptance.
+`tests/test_reporting_protocol.py` verifies its entry, receiving owners and
+build/core registration.
+
 ### GroupPanel unit guard profile
 
 The bounded frontend unit selector is exactly
@@ -434,13 +453,6 @@ checks the first trajectory shape created after navigating an otherwise
 shape-free controller. The timing gate replaces no geometry or reply. These
 assertions, rather than a desired-frame field alone, guard refresh convergence;
 the same fixed Studio selector retains the build/core and fixture registration.
-Its `box-trajectory-scenarios.ts` owner receives a public pentalanine HTML
-export after its Python View closes, checking the twelve native edge meshes
-against independent orthogonal, rotated and triclinic row-vector controls.
-The same owner uses the persistent `box-trajectory-bridge.py` and actual
-widget/canvas popup to check frame following, explicit other-frame cells,
-rebootstrap, same-frame navigation, cell replacement, hide and clear on fresh
-completed draws. A numeric target index alone is not geometry evidence.
 The complementary `tests/test_jupyter_live_capture.py` profile uses an actual
 JupyterLab/kernel and fresh draw observations. Select
 `MOLSYSVIEWER_JUPYTER_TEST=1` to run it locally with JupyterLab, ipykernel,
@@ -451,6 +463,27 @@ This profile retains private raw logs, cleans its own processes/credentials and
 checks autonomous timeout as well as cancellation without late writes.
 Keyboard Settings and shared control fade assertions additionally belong to the
 existing `controls-visibility.e2e.ts` profile.
+
+### Native simulation-box browser guard profile
+
+The bounded selector is exactly
+`molsysviewer/js/tests/e2e/box-trajectory.e2e.ts`, without suffixes, globs or
+commands. From `molsysviewer/js`, build with `npm run build:harness` and
+`npm run build:e2e:all`, then run `node tests/e2e/box-trajectory.e2e.js`.
+The same entry is mandatory in `test:e2e:core`, with its ordinary 180-second
+budget and the shared Chromium process. Browser/WebGL failure fails; an
+opt-out does not qualify closure. The offline validator checks this exact
+entry, receiving owners and build/core registration.
+
+Its unchanged `box-trajectory-scenarios.ts` owner receives a public
+pentalanine HTML export after the Python View closes. Twelve native edge
+meshes must match independent orthogonal, rotated and triclinic row-vector
+controls. The persistent `box-trajectory-bridge.py` and actual widget/canvas
+popup check frame following, explicit other-frame cells, rebootstrap,
+same-frame navigation, replacement, styling, hide and clear on fresh completed
+draws. A target index alone is not geometry evidence. #334 moves this complete
+receiving function out of Studio's accumulated entry without removing any
+assertion or changing operation deadlines; Studio retains its 360-second bound.
 
 ### Studio saved-list browser guard profile
 

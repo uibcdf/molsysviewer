@@ -11,6 +11,8 @@ const SUITES = [
     "context-menu",
     "controls-visibility",
     "studio-usability",
+    "box-trajectory",
+    "moving-state-capture",
     "studio-list-workflows",
     "annotations-interaction",
     "annotations-subpanel",

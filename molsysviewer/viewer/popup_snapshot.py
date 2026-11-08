@@ -185,7 +185,13 @@ class PopupSnapshotMixin:
 
         # 13. current frame and playback. The settings are current state; the play
         #     action is only replayed when playback is actually running.
-        messages.append({"op": "set_trajectory_frame", "index": int(self._current_structure_index)})
+        messages.append(
+            {
+                "op": "set_trajectory_frame",
+                "index": int(self._current_structure_index),
+                "navigation_revision": self.player._intent_revision,
+            }
+        )  # noqa: SLF001
         player = getattr(self, "player", None)
         if player is not None:
             messages.append(
@@ -195,10 +201,13 @@ class PopupSnapshotMixin:
                     "mode": player._mode,  # noqa: SLF001
                     "direction": player._direction,  # noqa: SLF001
                     "step": player._step_size,  # noqa: SLF001
+                    "navigation_revision": player._intent_revision,  # noqa: SLF001
                 }
             )
             if getattr(player, "_is_playing", False):  # noqa: SLF001
-                messages.append({"op": "set_trajectory_playback", "action": "play"})
+                messages.append(
+                    {"op": "set_trajectory_playback", "action": "play", "navigation_revision": player._intent_revision}
+                )  # noqa: SLF001
 
         # A late canvas also hosts Studio and contextual addon actions. Rebuild
         # their current catalogue; existing widget instances remain endpoint-local.

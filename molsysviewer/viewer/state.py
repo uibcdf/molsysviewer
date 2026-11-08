@@ -520,6 +520,15 @@ class StateMixin:
         box_display = self._prepare_box_display_import(state.get("box_display"))
         if box_display is not None and box_display["structure_index"] >= self.player.n_structures:
             raise ValueError("State box display refers to a structure outside the loaded system.")
+        # Region recipes are materialized before camera/player restoration.
+        # Supply that eventual frame without navigating or publishing callbacks
+        # early; otherwise a dynamic recipe silently uses structure zero.
+        region_structure_index = self.player.index
+        recorded_view = state.get("view")
+        if isinstance(recorded_view, dict):
+            recorded_index = recorded_view.get("structure_index")
+            if isinstance(recorded_index, int) and 0 <= recorded_index < self.player.n_structures:
+                region_structure_index = recorded_index
         interaction_records = state.get("interactions", [])
         if interaction_records:
             interaction_version = state.get("interaction_state_version")
@@ -638,7 +647,9 @@ class StateMixin:
                         restored_record = deepcopy(record)
                         restored_record["tag"] = tag
                         restored_record["layer"] = layer_tag_map.get(record.get("layer"), record.get("layer"))
-                        restored_region = self._restore_region_v2(restored_record)
+                        restored_region = self._restore_region_v2(
+                            restored_record, structure_index=region_structure_index
+                        )
                         if record.get("show_only"):
                             isolated_region = restored_region
                 else:
@@ -1527,7 +1538,7 @@ class StateMixin:
         if base_layer:
             self._atom_color_layers["whole"] = base_layer
 
-    def _restore_region_v2(self, record: dict) -> Region | None:
+    def _restore_region_v2(self, record: dict, *, structure_index: int | None = None) -> Region | None:
         tag = record.get("tag")
         atom_indices = record.get("atom_indices")
         if not tag:
@@ -1559,7 +1570,12 @@ class StateMixin:
                         uid=str(record["uid"]) if record.get("uid") is not None else None,
                         provenance=provenance,
                     )
-                atom_indices = self._evaluate_region_provenance(probe) or []
+                atom_indices = (
+                    self._evaluate_region_provenance(
+                        probe, structure_index=structure_index if record.get("mode") == "dynamic" else None
+                    )
+                    or []
+                )
             else:
                 return
         # Empty membership does not invalidate a recipe or its isolation. An

@@ -1,4 +1,5 @@
 import "./trajectory-handler.test";
+import "./render-presentation.test";
 import "./box-display.test";
 import "./movie-handler.test";
 import "./playback-modes.test";

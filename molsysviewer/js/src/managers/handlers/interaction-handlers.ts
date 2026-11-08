@@ -54,6 +54,7 @@ export class InteractionHandlers {
     private request = 0;
     private pending: number | null = null;
     private work: Promise<void> = Promise.resolve();
+    private pendingWork = 0;
     private generation = 0;
     private latestRevision = -1;
     private tokens = new Map<string, object>();
@@ -93,6 +94,7 @@ export class InteractionHandlers {
         const token = this.tokens.get(message.tag);
         const valid = () => generation === this.generation && this.tokens.get(message.tag) === token
             && message.frame === this.frame && (message.projection_revision ?? this.latestRevision) >= this.latestRevision;
+        this.pendingWork++;
         this.work = this.work.then(async () => {
             if (!valid()) return;
             await this.remove(message.tag);
@@ -126,8 +128,14 @@ export class InteractionHandlers {
                 this.summaries = this.summaries.map(item => item.tag === message.tag ? { ...item, status: "render-error", n_supported: 0, n_segments: 0 } : item);
                 this.ctx.summaries(this.summaries, this.frame);
             }
-        });
+        }).finally(() => { this.pendingWork--; });
         await this.work;
+    }
+
+    isFrameReady(frame: number): boolean {
+        return this.frame === frame && this.pendingWork === 0 && this.pending === null
+            && this.summaries.every(item => item.frame === frame
+                && !["pending", "render-error", "unavailable"].includes(item.status));
     }
     finishResponse(requestId: number) {
         if (requestId === this.pending) {

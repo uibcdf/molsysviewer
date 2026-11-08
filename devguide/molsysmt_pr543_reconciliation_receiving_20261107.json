@@ -42,10 +42,36 @@
   "raw_evidence": "Approved private custody; originals retained.",
   "publication": "Candidate/tag/package/release and both 1.0 publications paused.",
   "remaining": [
-    "Owner review/integration and exact updated-head hosted outcomes.",
+    "Inspect the owning team current dispositions and complete exact-source receiving after integration; PR #543 is merged, not awaiting another rebase/reconciliation. The queried PR-head full, Ruff and policy runs failed, and no merge-SHA run was observed.",
     "Complete controlled-support-source/installed campaign remains distinct from the tested cached public support payload route.",
     "Viewer current hosted Jupyter and native-pick failures plus general macOS queued cells remain open. Source-pair macOS and Windows complete successfully; Linux fails its native-pick browser guard.",
     "Full original audit and mandatory Movie stream remain required."
   ],
-  "progress": "8/46 delivered,1/46 final acceptance; C1 still requires owner review/integration."
+  "progress": "8/46 delivered, 1/46 final acceptance; C1 owner integration is verified, exact-source hosted/current-pair receiving remains.",
+  "upstream_integration_observed": {
+    "observed_at_utc": "2026-11-08T03:21:51.145001+00:00",
+    "pr_url": "https://github.com/uibcdf/molsysmt/pull/543",
+    "merged": true,
+    "merged_at": "2026-11-07T18:32:18Z",
+    "merge_commit": "0ddb99c2b31ba4f63c40c0c43da038895b21c70d",
+    "pr_head": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+    "owner_main": "3b16f23c5e2e794da981e609b2ba9169c78aac35",
+    "merge_performed_by_this_viewer_session": false,
+    "historical_owner_receipt_inside_merge_retains_its_premerge_scope": true,
+    "pr_head_hosted_failure_runs": [
+      42391330474,
+      42391330371,
+      42391330659
+    ],
+    "runs_observed_at_merge_sha": 0,
+    "receptor_version_used": "1.1.1",
+    "source_pair_requalified_after_merge": false,
+    "owner_main_contains_merge": {
+      "status": "ahead",
+      "ahead_by": 21,
+      "behind_by": 0,
+      "merge_base": "0ddb99c2b31ba4f63c40c0c43da038895b21c70d",
+      "owner_main": "3b16f23c5e2e794da981e609b2ba9169c78aac35"
+    }
+  }
 }
