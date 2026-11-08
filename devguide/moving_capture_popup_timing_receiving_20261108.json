@@ -32,6 +32,15 @@
       "native_exit": 0,
       "python_files_formatted": 984,
       "evidence_route": "Observed local command output; separate pytest/JUnit records above retain native test outcomes."
+    },
+    {
+      "scope": "Final devguide reporting/guard contract",
+      "native_exit": 0,
+      "passed": 388,
+      "failed": 0,
+      "skipped": 0,
+      "private_record": "query-reporting-final-01",
+      "custody_scope": "Final reporting raw logs retained in the separate closeout addendum."
     }
   ],
   "executions": [
@@ -693,5 +702,20 @@
     "owner_issue": "uibcdf/molsysviewer#319",
     "recovery_route": "Resolve detached moving capture, qualify all seven canonical moving cases plus endpoint availability/cancellation and actual Jupyter/Qt where applicable, then execute and inspect the applicable consolidated exact-source CI checkpoint."
   },
-  "source_checkpoint": "Pending direct main integration; tested code inputs retain their per-execution manifests."
+  "source_checkpoint": {
+    "commit": "d2c6158588341e8c8507ff0ca7636c9591835e26",
+    "branch": "main",
+    "commit_subject": "[skip ci] Isolate interaction frame replies and reduce follower refreshes",
+    "scope": "Reviewed source integration; no full consolidated/hosted or installed-package qualification is claimed. Per-execution input manifests distinguish the earlier backend cohort from the final invalid-mode guard."
+  },
+  "evidence_closeout_addendum": {
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/moving-query-closeout-20261108-1",
+    "custodian": "Diego Prada Gracia",
+    "files": 8,
+    "bytes": 585616,
+    "manifest_sha256": "cc44196d856a1b1e9ff39c694763a2bab522c30ddff2e37608ee9d1d3d252c82",
+    "originals_retained": true,
+    "off_host_backup_claimed": false,
+    "scope_limit": "This identity field is later Git metadata; the already-frozen addendum retains the preceding receipt bytes and final reporting logs."
+  }
 }
