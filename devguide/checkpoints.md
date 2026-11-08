@@ -915,7 +915,9 @@ their recorded delivered results; consolidated acceptance remains separate.
 The current [dynamic-frame/box receipt](dynamic_region_frame_receiving_20261108.json)
 records 218 affected scientific/projection cases, 493 transport/protocol/reporting
 cases and 428 canonical Node cases passing. Native box receiving and canonical
-v1 popup bootstrap/Retry also pass. Requester/frame guards and the feedback-echo
+v1 popup bootstrap/Retry also pass. Executable source checkpoint is
+`c6e89b39a6fae7eefbc27ff5427bfa44a2a5f1a8` (`[skip ci]`); consolidated hosted
+and installed qualification remain pending. Requester/frame guards and the feedback-echo
 correction are distinct from moving acceptance: the latest bounded two-query
 attempt still times out at popup-state, so the other three moving roles do not
 execute. Keep v2 unadvertised. The next investigation must separate actual native

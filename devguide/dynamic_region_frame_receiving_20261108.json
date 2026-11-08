@@ -666,5 +666,13 @@
       "files": 7,
       "baseline": "/tmp/msv-audit-plan-preservation-20261106.json"
     }
+  },
+  "implementation_checkpoint": {
+    "commit": "c6e89b39a6fae7eefbc27ff5427bfa44a2a5f1a8",
+    "route": "Reviewed direct-main checkpoint with [skip ci]; no tag or package",
+    "execution_provenance": "Checks executed on the precommit working source based on source_base; the checkpoint freezes the selected executable bytes. Later receipt maintenance changes no executable input.",
+    "runtime_sha256": "87057e40bdb738f4cd160f5777ba2fe1bdb83e013e9a1f4e04d6d51bef223b15",
+    "consolidated_hosted_ci": "pending",
+    "moving_capture_acceptance": "pending; latest attempt08 fails popup-state; no claim for its unexecuted roles"
   }
 }
