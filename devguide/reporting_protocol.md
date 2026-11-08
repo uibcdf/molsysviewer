@@ -251,6 +251,24 @@ popup mirror. The mirror waits for applied geometry rather than treating a
 received frame summary as completion. The offline validator checks these
 receiving owners; a Python-only series assertion cannot guard a renderer defect.
 
+### Popup scene-bootstrap browser guard profile
+
+The bounded selector `molsysviewer/js/tests/e2e/popup-scene-bootstrap.e2e.ts`
+uses the same build/harness and real Mol*/Chromium/Python transport lane as
+the moving guard below. It is built by `build:e2e:all` and belongs to the core
+runner, retaining its ordinary 180-second entry budget and operation deadlines.
+Run `node tests/e2e/popup-scene-bootstrap.e2e.js` after building. No suffixes,
+globs or browser opt-out qualify a closure.
+
+Its bootstrap phase withholds a genuine Python canonical reply at the test
+comm seam, receives visible timeout/retry controls, releases the original late
+reply and requires it to remain expired. An actual retry then reconstructs
+native sphere, cell, labels, distance and dynamic-region geometry from the
+authoritative scene without a second playback clock or molecular mutation.
+Playback runs during bootstrap; the oracle deliberately stops at frame 1 for
+geometry inspection. This control does not qualify uninterrupted moving saves.
+`tests/test_reporting_protocol.py` protects entry/build/core addressability.
+
 ### Moving-state capture browser guard profile
 
 The bounded selector is exactly
@@ -267,6 +285,14 @@ receives an empty dynamic selection. Native callout text/leader transforms,
 CPU loci and alternate-camera images are checked by its presentation scenario.
 The receiver remains unadvertised until its endpoint qualification is complete;
 registration of a guard is not capability or release acceptance.
+The endpoint cases submit actual Studio saves from the canvas popup and its
+detached Studio. Requester, capture target and result owner must agree with
+their authenticated endpoints. `moving-canvas-observer.ts` observes each local
+canvas's completed geometry and native frames; it never supplies a capture
+reply. Genuine Python replies remain held until that owning canvas advances
+twice, while the authority's playback continues. Optional receiving artifacts
+retain the actual JSON/MSV files before fixture cleanup. These are required
+assertions; the separate receiving record states which cases actually passed.
 `tests/test_reporting_protocol.py` verifies its entry, receiving owners and
 build/core registration.
 

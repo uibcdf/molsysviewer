@@ -67,6 +67,18 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
+**Latest bounded endpoint correction, 2026-11-08:**
+[#336](../archive/popup_snapshot_expires_during_molecular_load.md) fixes lost
+popup scene bootstrap while the molecular generation is being applied. The
+canonical failure/late-reply/Retry browser guard passes in 51.75 s, with native
+frame-1 geometry, 4,327 unchanged inputs and thirteen owned processes closed;
+JavaScript passes 416/416. The uninterrupted popup save still times out after
+this correction, so #319/A5 remains partial. See the
+[endpoint receipt](../moving_capture_endpoints_receiving_20261107.json).
+Progress remains 8/46 delivered (17.4%), 1/46 finally accepted (2.2%); Movie
+#320 remains mandatory. This child does not add a denominator item or qualify
+version 2, current Jupyter, hosted checks, packages or human review.
+
 **Current checkpoint, 2026-11-07:** the delivered counter remains
 **8/46 (17.4%)** and final acceptance **1/46 (2.2%)**. Bounded child defects do
 not increase the denominator or complete their parent. Movie #320 remains

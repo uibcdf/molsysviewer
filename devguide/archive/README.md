@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [#336: Popup scene requests survive bounded molecular loading, keep the canonical bootstrap barrier and recover visibly from lost/late replies through Retry.](popup_snapshot_expires_during_molecular_load.md)
+
 - [#330: Camera-relative callout presentation now matches the consumed render camera, native loci and image/picking passes.](camera_relative_callout_draw_phase.md)
 - [#331: Navigation revisions reject old stopped feedback and the complete obsolete frame/cell/playback envelope.](late_playback_feedback_overwrites_python_seek.md)
 - [#332: Dynamic recipes recover their saved molecular frame, including empty membership, through state and session files.](dynamic_region_restore_uses_wrong_structure.md)

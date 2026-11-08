@@ -431,6 +431,21 @@ test("popup bootstrap queues only that endpoint and flushes after initial sync",
             canvas.posted[1].message.envelope.payload,
             { op: "live-after-request" },
         );
+        canvas.posted.length = 0;
+        manager.beginBootstrap("canvas");
+        manager.sendTo("canvas", "molsysviewer-sync-op", { op: "obsolete-before-failure" });
+        manager.failBootstrap("canvas");
+        manager.sendTo("canvas", "molsysviewer-initial-sync", { bootstrapError: "request_timeout" });
+        assert.equal(manager.sendTo("canvas", "molsysviewer-sync-op", { op: "partial-after-failure" }), false);
+        manager.completeBootstrap("canvas");
+        assert.equal(canvas.posted.length, 1, "failure drops queued scene work instead of rendering a partial scene");
+        manager.beginBootstrap("canvas");
+        manager.sendTo("canvas", "molsysviewer-sync-op", { op: "live-after-retry" });
+        manager.sendTo("canvas", "molsysviewer-initial-sync", { messages: [{ op: "current-snapshot" }] });
+        manager.completeBootstrap("canvas");
+        assert.deepStrictEqual(canvas.posted.slice(1).map((item: any) => item.message.envelope.payload), [
+            { messages: [{ op: "current-snapshot" }] }, { op: "live-after-retry" },
+        ]);
     } finally {
         manager.dispose();
         (globalThis as any).window = previousWindow;

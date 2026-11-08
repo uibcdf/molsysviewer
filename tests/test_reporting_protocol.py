@@ -52,6 +52,7 @@ STUDIO_LIST_BROWSER_GUARD = "molsysviewer/js/tests/e2e/studio-list-workflows.e2e
 STUDIO_BROWSER_GUARD = "molsysviewer/js/tests/e2e/studio-usability.e2e.ts"
 MOVING_CAPTURE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/moving-state-capture.e2e.ts"
 BOX_TRAJECTORY_BROWSER_GUARD = "molsysviewer/js/tests/e2e/box-trajectory.e2e.ts"
+POPUP_BOOTSTRAP_BROWSER_GUARD = "molsysviewer/js/tests/e2e/popup-scene-bootstrap.e2e.ts"
 GROUP_PANEL_UNIT_GUARD = "molsysviewer/js/tests/unit/group-panel.test.ts"
 ADDON_PANEL_UNIT_GUARD = "molsysviewer/js/tests/unit/addon-panel-lifecycle.test.ts"
 
@@ -101,6 +102,7 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         STUDIO_LIST_BROWSER_GUARD,
         MOVING_CAPTURE_BROWSER_GUARD,
         BOX_TRAJECTORY_BROWSER_GUARD,
+        POPUP_BOOTSTRAP_BROWSER_GUARD,
     ):
         return validate_pytest_guard(root, selector)
     js_root = root / "molsysviewer/js"
@@ -135,6 +137,8 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             (js_root / "tests/e2e/moving-capture-scenarios.ts").is_file(),
             (js_root / "tests/e2e/moving-capture-bridge.py").is_file(),
             (js_root / "tests/e2e/annotation-presentation-scenarios.ts").is_file(),
+            (js_root / "tests/e2e/moving-canvas-observer.ts").is_file(),
+            (js_root / "tests/e2e/moving-work-file-ui.ts").is_file(),
         )
     elif selector == COMPOSITE_LOAD_BROWSER_GUARD:
         requirements += (
@@ -187,6 +191,15 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             (js_root / "tests/e2e/studio-live-capture-bridge.py").is_file(),
             (js_root / "tests/e2e/canvas-popup-bridge.py").is_file(),
             (js_root / "tests/e2e/trajectory-shape-refresh-scenarios.ts").is_file(),
+        )
+    elif selector == POPUP_BOOTSTRAP_BROWSER_GUARD:
+        requirements += (
+            'import { checkMovingCapture } from "./moving-capture-scenarios";' in entry,
+            'await checkMovingCapture(page, dirname(fileURLToPath(import.meta.url)), "bootstrap");' in entry,
+            "run().catch(" in entry,
+            (js_root / "tests/e2e/moving-capture-scenarios.ts").is_file(),
+            (js_root / "tests/e2e/moving-capture-bridge.py").is_file(),
+            (js_root / "tests/e2e/moving-canvas-observer.ts").is_file(),
         )
     elif selector == BOX_TRAJECTORY_BROWSER_GUARD:
         requirements += (
@@ -596,6 +609,7 @@ def test_browser_guard_resolves_its_build_entrypoint_and_core_lane() -> None:
     assert validate_guard(ROOT, STUDIO_BROWSER_GUARD) == []
     assert validate_guard(ROOT, MOVING_CAPTURE_BROWSER_GUARD) == []
     assert validate_guard(ROOT, BOX_TRAJECTORY_BROWSER_GUARD) == []
+    assert validate_guard(ROOT, POPUP_BOOTSTRAP_BROWSER_GUARD) == []
 
 
 def test_group_panel_unit_guard_is_bounded_and_registered() -> None:
@@ -627,6 +641,8 @@ def test_browser_guard_rejects_missing_or_unadopted_targets(tmp_path: Path) -> N
     assert validate_guard(tmp_path, STUDIO_BROWSER_GUARD)
     assert validate_guard(tmp_path, MOVING_CAPTURE_BROWSER_GUARD)
     assert validate_guard(tmp_path, BOX_TRAJECTORY_BROWSER_GUARD)
+    assert validate_guard(tmp_path, POPUP_BOOTSTRAP_BROWSER_GUARD)
+    assert validate_guard(ROOT, POPUP_BOOTSTRAP_BROWSER_GUARD + "::run")
     assert validate_guard(ROOT, BOX_TRAJECTORY_BROWSER_GUARD + "::run")
     assert validate_guard(ROOT, MOVING_CAPTURE_BROWSER_GUARD + "::run")
     assert validate_guard(ROOT, STUDIO_BROWSER_GUARD + "::run")

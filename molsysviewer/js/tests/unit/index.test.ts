@@ -16,6 +16,7 @@ import "./shapes-panel.test";
 import "./interaction-calculation-controls.test";
 import "./viewer-interaction.test";
 import "./popup-host.test";
+import "./popup-scene-snapshots.test";
 import "./popup-logic.test";
 import "./frontend-requests.test";
 import "./camera-sync.test";

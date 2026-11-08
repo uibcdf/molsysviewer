@@ -130,7 +130,8 @@ export const bootPopup = async (loadedModule?: any) => {
         container.tabIndex = 0;
         Object.assign(container.style, { touchAction: "none", outline: "none", cursor: "default" });
     }
-    const loading = document.getElementById("molsysviewer-loading");
+    let loading = document.getElementById("molsysviewer-loading");
+    let loadingRemoval: number | undefined;
     let sceneReady = false;
     let cameraSync: CameraSync | undefined;
     let isUserInteracting = false; // Local input has priority over incoming viewpoints.
@@ -155,13 +156,48 @@ export const bootPopup = async (loadedModule?: any) => {
         if (loading) {
             loading.style.opacity = "0";
             loading.style.pointerEvents = "none";
-            window.setTimeout(() => {
-                try { loading.remove(); } catch (e) {}
+            const completed = loading;
+            loadingRemoval = window.setTimeout(() => {
+                try { completed.remove(); } catch (e) {}
+                if (loading === completed) loading = null;
+                loadingRemoval = undefined;
             }, 300);
         }
     };
 
-    const revealTimer = window.setTimeout(revealViewer, 2500);
+    const showBootstrapState = (failed: boolean) => {
+        sceneReady = false;
+        if (loadingRemoval !== undefined) window.clearTimeout(loadingRemoval);
+        loadingRemoval = undefined;
+        if (!loading) {
+            loading = document.createElement("div");
+            loading.id = "molsysviewer-loading";
+            document.body.appendChild(loading);
+        }
+        loading.textContent = "";
+        loading.role = failed ? "alert" : "status";
+        loading.style.opacity = "1";
+        loading.style.pointerEvents = "auto";
+        if (!failed) {
+            const spinner = document.createElement("div");
+            spinner.className = "spinner";
+            loading.appendChild(spinner);
+        }
+        const text = document.createElement("div");
+        text.textContent = failed ? "Your scene could not be loaded. You can try again." : "Loading your scene…";
+        loading.appendChild(text);
+        if (failed) {
+            const retry = document.createElement("button");
+            retry.type = "button";
+            retry.textContent = "Try again";
+            retry.addEventListener("click", () => {
+                retry.disabled = true;
+                showBootstrapState(false);
+                sendToHost(initOptions.isPanelOnly ? "molsysviewer-panel-ready" : "molsysviewer-pop-ready", null);
+            }, { once: true });
+            loading.appendChild(retry);
+        }
+    };
 
     // D4: this popup assembles its own typed molecular generation from the
     // chunks Python addressed to it (the host only relays). Acknowledgements go
@@ -355,6 +391,10 @@ export const bootPopup = async (loadedModule?: any) => {
         try {
             switch (type) {
                 case "molsysviewer-initial-sync":
+                    if (data.bootstrapError || !Array.isArray(data.messages)) {
+                        showBootstrapState(true);
+                        break;
+                    }
                     // Before the messages: the subpanels render as the summaries
                     // arrive, and System needs its hierarchy to be there already.
                     if (Array.isArray(data.hierarchyItems)) {
@@ -390,7 +430,6 @@ export const bootPopup = async (loadedModule?: any) => {
 
                     // Sync autohide state
                     updateControlsUi(data);
-                    window.clearTimeout(revealTimer);
                     revealViewer();
                     sceneReady = true;
                     break;
@@ -415,7 +454,7 @@ export const bootPopup = async (loadedModule?: any) => {
                         // The inbound queue is the canvas barrier. A detached
                         // Studio has no visible canvas and must never sample its
                         // hidden controller in place of its originating viewer.
-                        if (initOptions.isPanelOnly && data.op === "request_visual_state") {
+                        if ((initOptions.isPanelOnly || !sceneReady) && data.op === "request_visual_state") {
                             capture?.release();
                             sendToHost("molsysviewer-popup-interaction", {
                                 event: "visual_state_snapshot", request_id: data.request_id,
@@ -457,6 +496,7 @@ export const bootPopup = async (loadedModule?: any) => {
             }
         } catch (e) {
             console.error("Popout sync error", e);
+            if (type === "molsysviewer-initial-sync") showBootstrapState(true);
         } finally {
             applyingHostState = false;
         }
@@ -509,7 +549,7 @@ export const bootPopup = async (loadedModule?: any) => {
         stopPanelReturnObserver();
         cameraSync?.dispose();
         if (wheelTimeout) clearTimeout(wheelTimeout);
-        window.clearTimeout(revealTimer);
+        if (loadingRemoval !== undefined) window.clearTimeout(loadingRemoval);
         ctrl.dispose();
     }, { once: true });
     // Notify host

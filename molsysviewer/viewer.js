@@ -172800,7 +172800,8 @@ var bootPopup = async (loadedModule) => {
     container.tabIndex = 0;
     Object.assign(container.style, { touchAction: "none", outline: "none", cursor: "default" });
   }
-  const loading = document.getElementById("molsysviewer-loading");
+  let loading = document.getElementById("molsysviewer-loading");
+  let loadingRemoval;
   let sceneReady = false;
   let cameraSync;
   let isUserInteracting = false;
@@ -172828,15 +172829,50 @@ var bootPopup = async (loadedModule) => {
     if (loading) {
       loading.style.opacity = "0";
       loading.style.pointerEvents = "none";
-      window.setTimeout(() => {
+      const completed = loading;
+      loadingRemoval = window.setTimeout(() => {
         try {
-          loading.remove();
+          completed.remove();
         } catch (e) {
         }
+        if (loading === completed) loading = null;
+        loadingRemoval = void 0;
       }, 300);
     }
   };
-  const revealTimer = window.setTimeout(revealViewer, 2500);
+  const showBootstrapState = (failed) => {
+    sceneReady = false;
+    if (loadingRemoval !== void 0) window.clearTimeout(loadingRemoval);
+    loadingRemoval = void 0;
+    if (!loading) {
+      loading = document.createElement("div");
+      loading.id = "molsysviewer-loading";
+      document.body.appendChild(loading);
+    }
+    loading.textContent = "";
+    loading.role = failed ? "alert" : "status";
+    loading.style.opacity = "1";
+    loading.style.pointerEvents = "auto";
+    if (!failed) {
+      const spinner = document.createElement("div");
+      spinner.className = "spinner";
+      loading.appendChild(spinner);
+    }
+    const text = document.createElement("div");
+    text.textContent = failed ? "Your scene could not be loaded. You can try again." : "Loading your scene\u2026";
+    loading.appendChild(text);
+    if (failed) {
+      const retry = document.createElement("button");
+      retry.type = "button";
+      retry.textContent = "Try again";
+      retry.addEventListener("click", () => {
+        retry.disabled = true;
+        showBootstrapState(false);
+        sendToHost(initOptions.isPanelOnly ? "molsysviewer-panel-ready" : "molsysviewer-pop-ready", null);
+      }, { once: true });
+      loading.appendChild(retry);
+    }
+  };
   const relayedBuffers = (payload) => {
     const buffers = payload?.buffers;
     if (!Array.isArray(buffers)) return [];
@@ -173008,6 +173044,10 @@ var bootPopup = async (loadedModule) => {
     try {
       switch (type3) {
         case "molsysviewer-initial-sync":
+          if (data.bootstrapError || !Array.isArray(data.messages)) {
+            showBootstrapState(true);
+            break;
+          }
           if (Array.isArray(data.hierarchyItems)) {
             ctrl3.setHierarchyItems(data.hierarchyItems);
           }
@@ -173041,7 +173081,6 @@ var bootPopup = async (loadedModule) => {
             else if (data.isSplit !== void 0) ctrl3.sharedShell.setSplit(data.isSplit);
           }
           updateControlsUi(data);
-          window.clearTimeout(revealTimer);
           revealViewer();
           sceneReady = true;
           break;
@@ -173060,7 +173099,7 @@ var bootPopup = async (loadedModule) => {
           break;
         case "molsysviewer-sync-op":
           if (isFrontendRequest(data)) {
-            if (initOptions.isPanelOnly && data.op === "request_visual_state") {
+            if ((initOptions.isPanelOnly || !sceneReady) && data.op === "request_visual_state") {
               capture?.release();
               sendToHost("molsysviewer-popup-interaction", {
                 event: "visual_state_snapshot",
@@ -173100,6 +173139,7 @@ var bootPopup = async (loadedModule) => {
       }
     } catch (e) {
       console.error("Popout sync error", e);
+      if (type3 === "molsysviewer-initial-sync") showBootstrapState(true);
     } finally {
       applyingHostState = false;
     }
@@ -173155,7 +173195,7 @@ var bootPopup = async (loadedModule) => {
     stopPanelReturnObserver();
     cameraSync?.dispose();
     if (wheelTimeout) clearTimeout(wheelTimeout);
-    window.clearTimeout(revealTimer);
+    if (loadingRemoval !== void 0) window.clearTimeout(loadingRemoval);
     ctrl2.dispose();
   }, { once: true });
   sendToHost(initOptions.isPanelOnly ? "molsysviewer-panel-ready" : "molsysviewer-pop-ready", null);
@@ -173171,6 +173211,7 @@ var PopupHostManager = class {
     this.messageCounter = 0;
     this.channels = /* @__PURE__ */ new Map();
     this.bootstrapping = /* @__PURE__ */ new Set();
+    this.failedBootstraps = /* @__PURE__ */ new Set();
     this.bootstrapQueues = /* @__PURE__ */ new Map();
     if (typeof viewer === "string") {
       this.viewerJsSource = viewer;
@@ -173197,6 +173238,7 @@ var PopupHostManager = class {
     return this.channels.get(mode)?.popupEndpointId ?? null;
   }
   beginBootstrap(mode) {
+    this.failedBootstraps.delete(mode);
     if (this.bootstrapping.has(mode)) return;
     this.bootstrapping.add(mode);
     this.bootstrapQueues.set(mode, []);
@@ -173206,6 +173248,11 @@ var PopupHostManager = class {
     const queued = this.bootstrapQueues.get(mode) ?? [];
     this.bootstrapQueues.delete(mode);
     for (const { type: type3, data } of queued) this.sendTo(mode, type3, data);
+  }
+  failBootstrap(mode) {
+    this.bootstrapping.delete(mode);
+    this.bootstrapQueues.delete(mode);
+    this.failedBootstraps.add(mode);
   }
   async resolveViewerJsSource() {
     if (this.viewerJsSource) return this.viewerJsSource;
@@ -173304,6 +173351,7 @@ var PopupHostManager = class {
     #molsysviewer-pop { position: relative; width: 100%; height: 100%; min-height: 300px; }
     #molsysviewer-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #fff; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 14px; letter-spacing: 0.2px; background: #121216; z-index: 1000; transition: opacity 240ms ease; }
     #molsysviewer-loading .spinner { width: 28px; height: 28px; border-radius: 999px; border: 3px solid rgba(255,255,255,0.12); border-top-color: rgba(255,255,255,0.45); animation: molsysviewer-spin 0.9s linear infinite; }
+    #molsysviewer-loading button { padding: 8px 16px; border: 1px solid #666; border-radius: 6px; color: #fff; background: #303038; font: inherit; cursor: pointer; }
     @keyframes molsysviewer-spin { to { transform: rotate(360deg); } }
   </style>
   ${resolvedModuleUrl ? `<link rel="modulepreload" href="${resolvedModuleUrl}">` : ""}
@@ -173415,6 +173463,7 @@ var PopupHostManager = class {
         this.channels.delete("canvas");
         if (channel) this.router.unregisterEndpoint(channel.popupEndpointId);
         this.bootstrapping.delete("canvas");
+        this.failedBootstraps.delete("canvas");
         this.bootstrapQueues.delete("canvas");
         if (channel) this.onEndpointClosed?.("canvas", channel.popupEndpointId);
       }
@@ -173427,6 +173476,7 @@ var PopupHostManager = class {
         this.channels.delete("panel");
         if (channel) this.router.unregisterEndpoint(channel.popupEndpointId);
         this.bootstrapping.delete("panel");
+        this.failedBootstraps.delete("panel");
         this.bootstrapQueues.delete("panel");
         if (channel) this.onEndpointClosed?.("panel", channel.popupEndpointId);
       }
@@ -173452,6 +173502,7 @@ var PopupHostManager = class {
     const channel = this.channels.get(mode);
     if (!ready || !target || target.closed || !channel) return false;
     const lifecycle = type3 === "molsysviewer-sync-op" && (isFrontendControl(data) || isStudioWorkFileResult(data));
+    if (this.failedBootstraps.has(mode) && !lifecycle && type3 !== "molsysviewer-initial-sync") return false;
     if (type3 === "molsysviewer-sync-op" && isFrontendControl(data)) {
       const queued = this.bootstrapQueues.get(mode);
       if (queued) this.bootstrapQueues.set(mode, queued.filter((entry) => !(entry.type === "molsysviewer-sync-op" && entry.data?.op === "request_visual_state" && entry.data.request_id === data.request_id && entry.data.capture_revision === data.capture_revision)));
@@ -173542,6 +173593,87 @@ var PopupHostManager = class {
       throw new Error(`Popup projection rejected: ${detail}`);
     }
     target.postMessage(encodePopupMessage(channel, envelope), this.targetOrigin());
+  }
+};
+
+// src/messages/popup-scene-snapshots.ts
+var PopupSceneSnapshots = class {
+  constructor(responseMs = 5e3, transferMs = 3e4) {
+    this.responseMs = responseMs;
+    this.transferMs = transferMs;
+    this.pending = /* @__PURE__ */ new Map();
+    this.latest = /* @__PURE__ */ new Map();
+    this.disposed = false;
+  }
+  request(id, mode, endpoint) {
+    this.cancel(mode, "superseded");
+    let entry;
+    const promise = new Promise((resolve) => {
+      entry = { id: id ?? "", mode, endpoint, settled: false, resolve };
+      this.latest.set(mode, entry);
+      if (this.disposed || !id) {
+        this.finish(entry, { ok: false, reason: this.disposed ? "disposed" : "send_failed" });
+        return;
+      }
+      this.pending.set(id, entry);
+      this.arm(entry, this.responseMs, "request_timeout");
+    });
+    return { promise, isCurrent: () => !this.disposed && this.latest.get(mode) === entry };
+  }
+  has(mode) {
+    return [...this.pending.values()].some((entry) => entry.mode === mode);
+  }
+  resolve(id, messages) {
+    const entry = id ? this.pending.get(id) : void 0;
+    if (!entry) return;
+    this.finish(entry, Array.isArray(messages) ? { ok: true, messages } : { ok: false, reason: "invalid_snapshot" });
+  }
+  /** Only authenticated traffic for this exact destination/generation counts
+   * as progress. A foreign acknowledgement cannot keep a request alive. */
+  structure(endpoint, message) {
+    const entry = this.latest.get("canvas");
+    if (!entry || entry.settled || entry.endpoint !== endpoint) return;
+    const stream = typeof message?.stream_id === "string" && Number.isSafeInteger(message.generation) && message.generation > 0 ? `${message.stream_id}:${message.generation}` : void 0;
+    if (message?.op === "load_molsys_payload") {
+      entry.stream = void 0;
+      this.arm(entry, this.transferMs, "transfer_timeout");
+    } else if (message?.op === "structure_data_begin" && stream) {
+      if (entry.generation !== void 0 && message.generation <= entry.generation) return;
+      entry.stream = stream;
+      entry.generation = message.generation;
+      this.arm(entry, this.transferMs, "transfer_timeout");
+    } else if (message?.event === "structure_data_json_complete") {
+      entry.stream = void 0;
+      this.arm(entry, this.responseMs, "request_timeout");
+    } else if (stream && entry.stream === stream) {
+      if (message.op === "structure_data_cancel" || message.event === "structure_data_complete") {
+        entry.stream = void 0;
+        this.arm(entry, this.responseMs, "request_timeout");
+      } else if (message.op === "structure_data_chunk" || message.event === "structure_data_begin_ack" || message.event === "structure_data_chunk_ack") {
+        this.arm(entry, this.transferMs, "transfer_timeout");
+      }
+    }
+  }
+  cancel(mode, reason = "cancelled") {
+    const entry = this.latest.get(mode);
+    if (entry) this.finish(entry, { ok: false, reason });
+    this.latest.delete(mode);
+  }
+  dispose() {
+    this.disposed = true;
+    this.cancel("canvas", "disposed");
+    this.cancel("panel", "disposed");
+  }
+  arm(entry, ms, reason) {
+    if (entry.timer !== void 0) clearTimeout(entry.timer);
+    entry.timer = setTimeout(() => this.finish(entry, { ok: false, reason }), ms);
+  }
+  finish(entry, result2) {
+    if (entry.settled) return;
+    entry.settled = true;
+    if (entry.timer !== void 0) clearTimeout(entry.timer);
+    this.pending.delete(entry.id);
+    entry.resolve(result2);
   }
 };
 
@@ -177015,34 +177147,18 @@ function render({ model, el, runtimeSource }) {
     return sendToPython(stamped);
   };
   const panelCanvasEndpoints = /* @__PURE__ */ new Map();
-  const pendingSceneSnapshots = /* @__PURE__ */ new Map();
+  const pendingSceneSnapshots = new PopupSceneSnapshots();
   const cancelSceneSnapshotsFor = (mode) => {
-    for (const [messageId, entry] of [...pendingSceneSnapshots]) {
-      if (entry.mode !== mode) continue;
-      pendingSceneSnapshots.delete(messageId);
-      entry.settle(null);
-    }
+    pendingSceneSnapshots.cancel(mode);
   };
-  const requestPopupSceneSnapshot = (mode, popupEndpointId) => new Promise((resolve) => {
+  const requestPopupSceneSnapshot = (mode, popupEndpointId) => {
     const messageId = sendToPython({
       event: "request_popup_scene_snapshot",
       mode,
       popup_endpoint_id: popupEndpointId
     });
-    if (!messageId) {
-      resolve(null);
-      return;
-    }
-    let done = false;
-    const settle = (messages) => {
-      if (done) return;
-      done = true;
-      pendingSceneSnapshots.delete(messageId);
-      resolve(messages);
-    };
-    pendingSceneSnapshots.set(messageId, { mode, settle });
-    window.setTimeout(() => settle(null), 5e3);
-  });
+    return pendingSceneSnapshots.request(messageId, mode, popupEndpointId);
+  };
   const initialMessages = model.get("initial_messages");
   const trajInfo = parseInitialTrajectoryInfo(initialMessages);
   let messageQueue = Promise.resolve();
@@ -177320,16 +177436,22 @@ function render({ model, el, runtimeSource }) {
         case "molsysviewer-pop-ready": {
           popupMgr.isReady = true;
           popupMgr.beginBootstrap("canvas");
-          const canvasSnapshot = await requestPopupSceneSnapshot(
+          const endpointId = popupMgr.popupEndpointId("canvas");
+          const request = requestPopupSceneSnapshot(
             "canvas",
-            popupMgr.popupEndpointId("canvas")
+            endpointId
           );
-          if (!canvasSnapshot) {
+          const canvasSnapshot = await request.promise;
+          if (!request.isCurrent() || popupMgr.popupEndpointId("canvas") !== endpointId) break;
+          if (!canvasSnapshot.ok) {
             sendLog("error", "[MolSysViewer] canvas popup bootstrap: Python did not answer the scene snapshot request");
+            popupMgr.failBootstrap("canvas");
+            popupMgr.sendTo("canvas", "molsysviewer-initial-sync", { bootstrapError: canvasSnapshot.reason });
+            break;
           }
           try {
             popupMgr.sendTo("canvas", "molsysviewer-initial-sync", {
-              messages: canvasSnapshot ?? [],
+              messages: canvasSnapshot.messages,
               trajectoryFrame: controller.trajectory.getTrajectoryState().currentFrame,
               boxDisplay: controller.boxDisplay.projection,
               playback: controller.trajectory.getPlaybackSnapshot(),
@@ -177358,17 +177480,23 @@ function render({ model, el, runtimeSource }) {
         case "molsysviewer-panel-ready": {
           popupMgr.isPanelReady = true;
           popupMgr.beginBootstrap("panel");
-          const panelSnapshot = await requestPopupSceneSnapshot(
+          const endpointId = popupMgr.popupEndpointId("panel");
+          const request = requestPopupSceneSnapshot(
             "panel",
-            popupMgr.popupEndpointId("panel")
+            endpointId
           );
-          if (!panelSnapshot) {
+          const panelSnapshot = await request.promise;
+          if (!request.isCurrent() || popupMgr.popupEndpointId("panel") !== endpointId) break;
+          if (!panelSnapshot.ok) {
             sendLog("error", "[MolSysViewer] panel popup bootstrap: Python did not answer the scene snapshot request");
+            popupMgr.failBootstrap("panel");
+            popupMgr.sendTo("panel", "molsysviewer-initial-sync", { bootstrapError: panelSnapshot.reason });
+            break;
           }
           lastRelayedHierarchy = controller.getHierarchyItems();
           try {
             popupMgr.sendTo("panel", "molsysviewer-initial-sync", {
-              messages: panelSnapshot ?? [],
+              messages: panelSnapshot.messages,
               hierarchyItems: lastRelayedHierarchy,
               cameraSnapshot: controller.getCameraSnapshot(),
               cameraSnapshotRevision: cameraSync?.completedRevision,
@@ -177414,16 +177542,17 @@ function render({ model, el, runtimeSource }) {
         case "molsysviewer-structure-data-ack":
           if (data) {
             const sourceMode = popupMessage.channel.mode;
+            const endpointId = popupMgr.popupEndpointId(sourceMode);
+            if (endpointId) pendingSceneSnapshots.structure(endpointId, data);
             if (data.event === "structure_data_json_complete") {
-              popupMgr.completeBootstrap(sourceMode);
+              if (!pendingSceneSnapshots.has(sourceMode)) popupMgr.completeBootstrap(sourceMode);
               break;
             }
-            const endpointId = popupMgr.popupEndpointId(sourceMode);
             if (endpointId) {
               sendToPython(bindStreamEventToEndpoint(data, endpointId));
             }
             if (data.event === "structure_data_complete") {
-              popupMgr.completeBootstrap(sourceMode);
+              if (!pendingSceneSnapshots.has(sourceMode)) popupMgr.completeBootstrap(sourceMode);
             }
           }
           break;
@@ -177529,10 +177658,7 @@ function render({ model, el, runtimeSource }) {
       if (event === "command_duplicate_ack") return;
       if (event === "popup_scene_snapshot") {
         const correlationId = inbound.envelope.correlationId;
-        const entry = correlationId ? pendingSceneSnapshots.get(correlationId) : void 0;
-        if (entry) {
-          entry.settle(inbound.message.messages ?? []);
-        }
+        pendingSceneSnapshots.resolve(correlationId, inbound.message.messages);
         return;
       }
       msg = inbound.message;
@@ -177558,6 +177684,7 @@ function render({ model, el, runtimeSource }) {
         return;
       }
       if (msg.op === "structure_data_begin") popupMgr.beginBootstrap(mode);
+      pendingSceneSnapshots.structure(relayTarget, msg);
       popupMgr.sendTo(mode, "molsysviewer-structure-data", {
         message: msg,
         buffers: buffers ?? []
@@ -177650,6 +177777,7 @@ function render({ model, el, runtimeSource }) {
       );
     }
     pendingWorkFileSaves.clear();
+    pendingSceneSnapshots.dispose();
     visualStateCaptures.dispose();
     popupMgr.dispose();
     arrayNativeStream.dispose();

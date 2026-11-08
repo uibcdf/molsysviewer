@@ -8,6 +8,7 @@ import time
 import traceback
 import zipfile
 from collections import deque
+from copy import deepcopy
 from pathlib import Path
 
 import molsysmt as msm
@@ -62,6 +63,9 @@ def main():
     jobs = {}
     held = []
     holding = False
+    holding_bootstrap = False
+    held_bootstraps = []
+    original_send = None
     started = time.monotonic()
     timeline = deque(maxlen=128)
 
@@ -87,7 +91,7 @@ def main():
             }
 
     def action(owner, event):
-        nonlocal holding
+        nonlocal holding, holding_bootstrap, original_send
         payload = event.get("payload", event)
         if payload.get("event") in {
             "request_dynamic_region_evaluation",
@@ -103,7 +107,11 @@ def main():
         if command is None:
             return False
         if command != "inspect":
-            observe(command, held=len(held), pending_saves=sum(not job["done"] for job in jobs.values()))
+            observe(
+                command,
+                held=len(held),
+                pending_saves=sum(not job["done"] for job in jobs.values()) + len(owner._work_file_saves._pending),
+            )
         if command == "enable":
             # Exercise the new receiver without advertising a shipped capability.
             owner._frontend_capabilities["visual_state_capture"] = [1, 2]
@@ -134,6 +142,24 @@ def main():
             owner.scene.set_projection(event["mode"])
         elif command == "hold":
             holding = True
+        elif command == "hold_bootstrap":
+            holding_bootstrap = True
+            if original_send is None:
+                original_send = owner.widget.send
+
+                def filter_bootstrap(content, buffers=None):
+                    payload = content.get("payload", content)
+                    if holding_bootstrap and payload.get("event") == "popup_scene_snapshot":
+                        held_bootstraps.append((deepcopy(content), buffers))
+                    else:
+                        original_send(content, buffers=buffers)
+
+                owner.widget.send = filter_bootstrap
+        elif command == "release_bootstrap":
+            holding_bootstrap = False
+            for content, buffers in held_bootstraps:
+                original_send(content, buffers=buffers)
+            held_bootstraps.clear()
         elif command == "release":
             holding = False
             for message in held[:]:
@@ -149,6 +175,8 @@ def main():
             return {
                 "jobs": dict(jobs),
                 "held": len(held),
+                "held_bootstraps": len(held_bootstraps),
+                "pending_studio_saves": len(owner._work_file_saves._pending),
                 "same_molsys": owner.molsys is original,
                 "coordinates_unchanged": bool(
                     np.array_equal(msv.pyunitwizard.get_value(owner.get_coordinates(), to_unit="nm"), coordinates)

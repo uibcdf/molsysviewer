@@ -15,6 +15,19 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
+**Endpoint checkpoint — 2026-11-08:** bounded child
+[#336](../archive/popup_snapshot_expires_during_molecular_load.md) corrects a
+five-second expiry that discarded the complete scene while the popup applied
+its molecular generation. The native bootstrap/failure/late-reply/Retry guard
+passes in 51.75 s with 4,327 fixed inputs and thirteen owned processes closed;
+the canonical JavaScript index passes 416/416. This is a version-1 bootstrap
+control with a deliberate stopped-frame geometry oracle. The corrected-source
+uninterrupted popup save still times out (`endpoint-after-04`); it is retained
+as the next A5 investigation, not presented as a passing moving save. The
+[endpoint receipt](../moving_capture_endpoints_receiving_20261107.json) keeps
+these scopes separate. Production still advertises only version 1 and A5 stays
+partial; no original-plan percentage changes.
+
 **Current bounded checkpoint — 2026-11-07:** #330–#335 are received and
 archived as bounded prerequisites in delivered source `a6e271f1`. The final canonical Studio/box/moving
 selection passes 3/3 in 429.86 seconds, with 4,323 fixed inputs and thirty
@@ -25,6 +38,24 @@ A5 stays partial and the frontend still advertises capture version 1 only.
 Version-2 popup/detached routing, hidden/unavailable/closed endpoint semantics,
 current actual-Jupyter and consolidated/hosted acceptance remain. Earlier
 dated sections retain their original narrower source and diagnostic scope.
+
+**Endpoint receiving in progress — 2026-11-07:** the extended guard separates
+the requesting Studio window from the visible owning canvas. A read-only
+observer records each actual canvas and verifies local document ownership;
+the source emits genuine held geometry only after two native frame changes
+at the requested endpoint. Actual Studio buttons submit popup/detached
+state/session saves. Original serialized files are retained when a receiving
+artifact directory is provided. Start with one popup state case, then receive
+the full primary/popup/detached selection. Production negotiation remains
+version 1. The first targeted popup case now fails its native trajectory-sphere
+assertion after a positive save reply: the primary draw contains user scene
+objects while the observed popup draw lacks the sphere, annotation and distance
+geometry. Its actual canvas ownership, correlated request and two frame changes
+before releasing genuine Python replies pass. Bootstrap loss versus observer
+failure was the initial unresolved diagnosis; later receiving establishes
+#336's request-expiry cause above. The 57.22-second run retains 4,323 unchanged inputs, closes
+all thirteen owned processes and respects its resource limits. See the
+[endpoint receipt](../moving_capture_endpoints_receiving_20261107.json).
 
 
 ## Receiver prototype and new presentation prerequisite — 2026-11-07

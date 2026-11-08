@@ -305,6 +305,23 @@ test("bootPopup replays initial sync and projects controls preferences", async (
             source: env.windowObj.opener,
             data: hostWire(
                 "molsysviewer-initial-sync",
+                { bootstrapError: "request_timeout" },
+            ),
+        });
+        await flushAsync();
+        assert.equal(env.loading.role, "alert");
+        const retry = env.loading.children.find((child: any) => child.textContent === "Try again");
+        assert.ok(retry, "failed bootstrap must provide a real retry action");
+        assert.deepStrictEqual(calls.handled, [], "failed bootstrap cannot apply an empty successful scene");
+        retry.dispatch("click");
+        assert.equal(retry.disabled, true);
+        assert.equal(env.loading.role, "status");
+        assert.equal(env.postedToHost.filter(message => message.envelope.action === "molsysviewer-pop-ready").length, 2);
+
+        env.windowObj.dispatch("message", {
+            source: env.windowObj.opener,
+            data: hostWire(
+                "molsysviewer-initial-sync",
                 {
                     messages: [{ op: "load_molsys_payload" }, { op: "hide_whole", target: "whole" }],
                     cameraSnapshot: { target: [0, 0, 0] },
@@ -661,6 +678,9 @@ test("bootPopup captures its own canvas after queued scene work and a fresh draw
         const dispatch = (payload: any) => env.windowObj.dispatch("message", {
             source: env.windowObj.opener, data: hostWire("molsysviewer-sync-op", payload),
         });
+        env.windowObj.dispatch("message", { source: env.windowObj.opener,
+            data: hostWire("molsysviewer-initial-sync", { messages: [] }) });
+        await flushAsync();
         dispatch({ op: "set_camera_snapshot", snapshot: appliedCamera });
         dispatch({ op: "request_visual_state", request_id: "capture-popup", capture_revision: "revision-a", capture_timeout_ms: 500 });
         await flushAsync();
@@ -706,6 +726,9 @@ test("bootPopup authenticates lifecycle controls before bypassing a pending draw
         await bootPopup(popupModule(ctrl));
         await flushAsync();
         const existingSubscriptions = subscribers.size; // CameraSync owns its independent draw listener.
+        env.windowObj.dispatch("message", { source: env.windowObj.opener,
+            data: hostWire("molsysviewer-initial-sync", { messages: [] }) });
+        await flushAsync();
         const dispatch = (payload: any, valid = true) => {
             const wire = hostWire("molsysviewer-sync-op", payload);
             env.windowObj.dispatch("message", { source: env.windowObj.opener,

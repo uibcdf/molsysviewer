@@ -13,6 +13,7 @@ const SUITES = [
     "studio-usability",
     "box-trajectory",
     "moving-state-capture",
+    "popup-scene-bootstrap",
     "studio-list-workflows",
     "annotations-interaction",
     "annotations-subpanel",

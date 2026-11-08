@@ -1,0 +1,357 @@
+{
+  "schema": "molsysviewer.working_receiving@1",
+  "date": "2026-11-07",
+  "owner_issue": "uibcdf/molsysviewer#319",
+  "parent_plan": "uibcdf/molsysviewer#315",
+  "source_base": "fe4b82fb3ba124363907f39fc0ab61c19e9b08fa",
+  "provider_source": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+  "status": "Source-verified bounded #336 bootstrap correction; actual popup moving save still times out and A5 remains partial",
+  "advertised_capture_versions": [
+    1
+  ],
+  "planned_roles": [
+    "primary public Python state/session",
+    "canvas-popup actual Studio state/session",
+    "detached-Studio actual state/session targeting its originating canvas"
+  ],
+  "invariants": [
+    "Two actual owning-canvas frame changes after a real v2 request while genuine Python dependent replies are held",
+    "Source playback and camera keep moving; no pause/seek for capture and no second popup playback clock",
+    "Each serialized camera/frame/playback/cell matches the owning canvas completed draw and its native geometry",
+    "Requester/capture target/result owner correlation; no panel-only controller sampled in place of a visible canvas",
+    "Independent saved-file restoration and unchanged molecular object/coordinates",
+    "Original JSON/MSV bytes retained when an artifact directory is requested"
+  ],
+  "checks": [
+    {
+      "scope": "Strict TypeScript for the two new read-only observer/UI helpers",
+      "native_exit": 0,
+      "seconds": 2.13
+    },
+    {
+      "scope": "Private bounded entry and all canonical E2E entries built",
+      "native_exit": 0
+    },
+    {
+      "scope": "Changed real Python fixture Ruff lint/format",
+      "native_exit": 0
+    },
+    {
+      "scope": "Actual canvas-popup Studio state save with uninterrupted playback and genuine held Python replies; diagnostic subset only",
+      "native_exit": 1,
+      "seconds": 57.22396214795299,
+      "selected_inputs": 4323,
+      "inputs_unchanged": true,
+      "observation": "The real version-2 request, two native owning-canvas frame changes before release, endpoint correlation and positive file-save response pass. The native trajectory sphere is absent from the sampled popup draw; annotations and measurement geometry are also absent in its retained diagnostics, while the primary canvas has them. Bootstrap loss versus observer failure is not yet established.",
+      "peak_owned_rss_mib": 2593.0,
+      "owned_processes_closed": 13,
+      "owned_survivors": 0,
+      "cleanup_errors": 0,
+      "resource_interruption": false,
+      "private_evidence": ".pytest_cache/robustness-20261106/A5-moving-endpoints-20261107/endpoint-after-01",
+      "artifact_limit": "Failure diagnostics and source state are retained. The failed case did not reach the original saved-file copy step; do not claim its original JSON bytes were preserved outside the cleaned fixture workspace."
+    },
+    {
+      "scope": "Production TypeScript check and regenerated runtime after #336 correction",
+      "native_exit": 0,
+      "record": "checks-build-04/final-checks-0.json; checks-build-04/final-checks-1.json"
+    },
+    {
+      "scope": "Ten directed real request-owner lifecycle/deadline cases; clock advancement is test-only",
+      "native_exit": 0,
+      "passed": 10,
+      "record": "checks-build-04/final-checks-6.log"
+    },
+    {
+      "scope": "Canonical JavaScript index including popup failure/retry and lifecycle setup",
+      "native_exit": 0,
+      "passed": 416,
+      "skipped": 0,
+      "seconds": 11.09,
+      "record": "checks-node-01/final-checks-0.log"
+    },
+    {
+      "scope": "Final archive/profile reporting checks with published pytest-receptor 1.2.1",
+      "native_exit": 0,
+      "passed": 384,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "record": "python-final-governance-archives-01.xml"
+    },
+    {
+      "scope": "Repository Ruff lint/format and generated devguide queue index",
+      "native_exit": 0,
+      "record": "checks-quality-01/final-checks-0.json through final-checks-2.json"
+    }
+  ],
+  "remaining": [
+    "Diagnose the retained actual popup v2 moving-save timeout after complete bootstrap, keeping the 10-second Studio operation bound",
+    "Full primary/popup/detached native receiving without paused source playback",
+    "Hidden/unavailable/closed/disposed v2 endpoints",
+    "Current actual-Jupyter and applicable consolidated/hosted acceptance before advertising v2"
+  ],
+  "progress": {
+    "original_leaves": 46,
+    "delivered": 8,
+    "delivered_percent": 17.4,
+    "finally_accepted": 1,
+    "finally_accepted_percent": 2.2,
+    "mandatory_movie_issue": "uibcdf/molsysviewer#320"
+  },
+  "publication": "Tags, packages and both 1.0 publications remain paused.",
+  "updated": "2026-11-08",
+  "bounded_child_issue": "uibcdf/molsysviewer#336",
+  "executions": [
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=400%",
+        "-p",
+        "MemoryMax=4G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 1,
+      "seconds": 57.22396214795299,
+      "selected_inputs": 4323,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2593.0,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-moving-endpoints-20261107/endpoint-after-01",
+      "digests": {
+        "invocation.json": "2314aa173ef2e7201e978395eda81d76139a6fb61c6d010a850d235af4cb9b5d",
+        "inputs-before.json": "ca32027c819df7282925c3552110b58b0583c643a953ebcc842731e00dba67fd",
+        "inputs-after.json": "ca32027c819df7282925c3552110b58b0583c643a953ebcc842731e00dba67fd",
+        "stdout.log": "9d0a8823f6be6efecc1373f0517d57cfdec5dc095998e4b6b36bafb73ff5d439",
+        "capture-failure.json": "9a013cc3fb5817fc668648de5734160db995e5da59ffd15e76abd0564653797a"
+      },
+      "outcome": "Positive save reply, missing native sphere; initial observer diagnosis only"
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=400%",
+        "-p",
+        "MemoryMax=4G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 1,
+      "seconds": 62.192181929945946,
+      "selected_inputs": 4323,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2545.6,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-moving-endpoints-20261107/endpoint-after-02",
+      "digests": {
+        "invocation.json": "31dabb2e33cf6eefcb8a1778f57c722a3d24d7779d5705e853f492ef3c47087c",
+        "inputs-before.json": "b611f84056e1756acb8ed115a05a3a49f73c78c3f174628f662eac3b9e0a4b4a",
+        "inputs-after.json": "b611f84056e1756acb8ed115a05a3a49f73c78c3f174628f662eac3b9e0a4b4a",
+        "stdout.log": "4e7d495f5b7bf2f713a6f23c8ee8e11b0c8130d8caef82844c469290314bf292",
+        "capture-failure.json": "91b1613996a3c02a9a7e003d8275e79b09726fa362dd3619d95a1a0b44c048a6",
+        "popup-state.json": "52e6adb3c519989bab6417b842da5c21f103ee324c74590a016e21d254062730"
+      },
+      "outcome": "Same native sphere failure; genuine complete source snapshot observed, original saved JSON retained"
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=400%",
+        "-p",
+        "MemoryMax=4G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 1,
+      "seconds": 59.20130998408422,
+      "selected_inputs": 4323,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2523.7,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-moving-endpoints-20261107/endpoint-after-03",
+      "digests": {
+        "invocation.json": "9b3d990f5a5310c109efb389b28132a3a4c4a3a05985d5a1302f611ffa443885",
+        "inputs-before.json": "f1751b782def35c4f8510e9884325c7f70f0fa00d61a5c1642a523609da841ee",
+        "inputs-after.json": "f1751b782def35c4f8510e9884325c7f70f0fa00d61a5c1642a523609da841ee",
+        "stdout.log": "f7add6459b2d5d22338a74dda9bdeebe2342f1647124f28388a2de6671b645c8",
+        "capture-failure.json": "1553d5ea655afa89a3f9310c1d13061cba0c60a7f6a91cfa98d547d5596f790c"
+      },
+      "outcome": "Popup bootstrap has empty messages; complete source snapshot arrives too late; moving save timeout"
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=400%",
+        "-p",
+        "MemoryMax=4G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 1,
+      "seconds": 93.84143434790894,
+      "selected_inputs": 4325,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2923.1,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-moving-endpoints-20261107/endpoint-after-04",
+      "digests": {
+        "invocation.json": "f3b37f3388bb61e3d21e6ef14d4fa08ac66f9bbeceffadeebf958cbe3c5f515b",
+        "inputs-before.json": "a09499c6090374bf57a7a59d7b52006229e85f173f9016ad29d31e6c302960f2",
+        "inputs-after.json": "a09499c6090374bf57a7a59d7b52006229e85f173f9016ad29d31e6c302960f2",
+        "stdout.log": "8239eed908f7d37c471dd05f6077fdbc63def128c8394a50f43191bc0d4f2950",
+        "capture-failure.json": "ccc4e50abaa6896d4d95774ac93555f0f2ff63d945adcbf0984bb001cd009a00"
+      },
+      "outcome": "Corrected bootstrap applies full scene and creates native objects; uninterrupted popup save still times out"
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=400%",
+        "-p",
+        "MemoryMax=4G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/popup-scene-bootstrap.e2e.js"
+      ],
+      "native_exit": 0,
+      "seconds": 51.75002258014865,
+      "selected_inputs": 4327,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2525.3,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-moving-endpoints-20261107/endpoint-after-05",
+      "digests": {
+        "invocation.json": "72db2310351bd9f2f14e9c3e2ed172024359a5d9e7ddb57938e9433e13a0db61",
+        "inputs-before.json": "7f9b65f8a5aeb59ef5ed8050754ce2425410d1f3bbf80526b29192406a19bc9e",
+        "inputs-after.json": "7f9b65f8a5aeb59ef5ed8050754ce2425410d1f3bbf80526b29192406a19bc9e",
+        "stdout.log": "41288d7328c0536eb086d89c09bc391ea2e2106cc80b2d7ccda02b4573b9e0e3",
+        "bootstrap-recovery.json": "f6379a8ef72d3d60b789b7a814276d79c82fd75800073f5af6578d67b82d4054"
+      },
+      "outcome": "Canonical popup-scene-bootstrap entry passes actual withheld/late response, visible Retry and native frame-1 sphere/cell/label/distance/empty-region recovery"
+    }
+  ],
+  "recovery_control": {
+    "scope": "Version-1 bootstrap and recovery only; playback runs while opening/retrying, then deliberately stops at frame 1 for the native geometry oracle",
+    "native_exit": 0,
+    "seconds": 51.75002258014865,
+    "selected_inputs": 4327,
+    "input_immutability": true,
+    "sphere_angstrom": [
+      10,
+      0,
+      0
+    ],
+    "first_box_vector_angstrom": [
+      0,
+      40,
+      0
+    ],
+    "dynamic_region_atoms": 0,
+    "molecular_object_and_coordinates_unchanged": true,
+    "follower_clock_absent": true,
+    "guard": "molsysviewer/js/tests/e2e/popup-scene-bootstrap.e2e.ts",
+    "does_not_qualify": "Uninterrupted v2 save, full core/hosted CI, current actual Jupyter, visible Qt or installed artifacts"
+  },
+  "resource_review": {
+    "automatic_approval_rejection": "One browser command was rejected before starting because occupied swap was nearly full; no process was started by that command",
+    "new_evidence": "Seven read-only samples over twelve seconds: 15.77\u201315.79 GiB available, zero swap traffic, zero memory PSI, CPU 2\u20133.7 percent. Subsequent bounded executions were approved.",
+    "limits": "Single Chromium execution; four CPU, 4 GiB, MemorySwapMax=0, conservative reserve preflight and five-second monitor; all owned processes closed",
+    "private_resources_record": ".pytest_cache/robustness-20261106/A5-moving-endpoints-20261107/resources-after-review-rejection-01.json"
+  },
+  "post_receiving_comment_only_rebuild": {
+    "scope": "Removed an obsolete source comment claiming a replay fallback; regenerated executable runtime remains byte-identical to the received runtime",
+    "sha256": "e30eefb992546639c9ac2a8f2b907b19bbb64c01133b33462e6abfec37b654ae"
+  },
+  "custody": {
+    "custody_path": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/moving-endpoints-20261108-1",
+    "files": 137,
+    "bytes": 18372924,
+    "manifest_sha256": "420d150cbab1d95ba2a0d6b4de9acd56b17887b5e6b70a19534cdf1ec3c6e4d5",
+    "originals_retained": true,
+    "off_host_backup_claimed": false
+  },
+  "source_delivery": {
+    "state": "Reviewed for direct main delivery; exact commit and remote verification are recorded at the next receipt checkpoint",
+    "publication": "No tag, package, full-CI acceptance or version-2 capability promotion"
+  }
+}

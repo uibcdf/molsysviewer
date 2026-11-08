@@ -55,6 +55,7 @@ export class PopupHostManager {
     private readonly onEndpointClosed?: (mode: PopupMode, endpointId: string) => void;
     private readonly onContractRejection?: PopupHostOptions["onContractRejection"];
     private readonly bootstrapping = new Set<PopupMode>();
+    private readonly failedBootstraps = new Set<PopupMode>();
     private readonly bootstrapQueues = new Map<PopupMode, Array<{ type: string; data: any }>>();
 
     /** Endpoint id of the live popup for `mode`, or null when none is open. */
@@ -63,6 +64,7 @@ export class PopupHostManager {
     }
 
     beginBootstrap(mode: PopupMode): void {
+        this.failedBootstraps.delete(mode);
         if (this.bootstrapping.has(mode)) return;
         this.bootstrapping.add(mode);
         this.bootstrapQueues.set(mode, []);
@@ -73,6 +75,12 @@ export class PopupHostManager {
         const queued = this.bootstrapQueues.get(mode) ?? [];
         this.bootstrapQueues.delete(mode);
         for (const { type, data } of queued) this.sendTo(mode, type, data);
+    }
+
+    failBootstrap(mode: PopupMode): void {
+        this.bootstrapping.delete(mode);
+        this.bootstrapQueues.delete(mode);
+        this.failedBootstraps.add(mode);
     }
 
     constructor(viewer: string | PopupHostOptions) {
@@ -215,6 +223,7 @@ export class PopupHostManager {
     #molsysviewer-pop { position: relative; width: 100%; height: 100%; min-height: 300px; }
     #molsysviewer-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #fff; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 14px; letter-spacing: 0.2px; background: #121216; z-index: 1000; transition: opacity 240ms ease; }
     #molsysviewer-loading .spinner { width: 28px; height: 28px; border-radius: 999px; border: 3px solid rgba(255,255,255,0.12); border-top-color: rgba(255,255,255,0.45); animation: molsysviewer-spin 0.9s linear infinite; }
+    #molsysviewer-loading button { padding: 8px 16px; border: 1px solid #666; border-radius: 6px; color: #fff; background: #303038; font: inherit; cursor: pointer; }
     @keyframes molsysviewer-spin { to { transform: rotate(360deg); } }
   </style>
   ${resolvedModuleUrl ? `<link rel="modulepreload" href="${resolvedModuleUrl}">` : ""}
@@ -337,6 +346,7 @@ export class PopupHostManager {
                 this.channels.delete("canvas");
                 if (channel) this.router.unregisterEndpoint(channel.popupEndpointId);
                 this.bootstrapping.delete("canvas");
+                this.failedBootstraps.delete("canvas");
                 this.bootstrapQueues.delete("canvas");
                 if (channel) this.onEndpointClosed?.("canvas", channel.popupEndpointId);
             }
@@ -349,6 +359,7 @@ export class PopupHostManager {
                 this.channels.delete("panel");
                 if (channel) this.router.unregisterEndpoint(channel.popupEndpointId);
                 this.bootstrapping.delete("panel");
+                this.failedBootstraps.delete("panel");
                 this.bootstrapQueues.delete("panel");
                 if (channel) this.onEndpointClosed?.("panel", channel.popupEndpointId);
             }
@@ -378,6 +389,9 @@ export class PopupHostManager {
         if (!ready || !target || target.closed || !channel) return false;
         const lifecycle = type === "molsysviewer-sync-op"
             && (isFrontendControl(data) || isStudioWorkFileResult(data));
+        // A later retry receives a new authoritative snapshot. Do not build an
+        // unbounded backlog or render partial scene updates after failure.
+        if (this.failedBootstraps.has(mode) && !lifecycle && type !== "molsysviewer-initial-sync") return false;
         if (type === "molsysviewer-sync-op" && isFrontendControl(data)) {
             // A canceled capture may not have crossed the bootstrap barrier yet.
             // Remove that exact ticket before sending its lifecycle control.

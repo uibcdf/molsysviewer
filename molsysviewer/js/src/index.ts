@@ -8,6 +8,7 @@ import { trajectorySyncToAuthority } from "./messages/trajectory-intent";
 import { frontendSceneProjection, FRONTEND_CONTEXT_ACTIONS } from "./messages/frontend-scene-projection";
 import { bootPopup } from "./popup/popup-logic";
 import { PopupHostManager } from "./managers/popup-host";
+import { PopupSceneSnapshots } from "./messages/popup-scene-snapshots";
 import { presentResult } from "./ui/presentation-surface";
 export { presentationSurface } from "./ui/presentation-surface";
 import { waitForCanvasDraw } from "./managers/canvas-draw";
@@ -946,45 +947,23 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
         // R2: the canonical popup scene snapshot is built by Python from live
         // state. The host requests it on popup ready and resolves the pending
         // promise when the correlated projection arrives.
-        const pendingSceneSnapshots = new Map<
-            string,
-            { mode: "canvas" | "panel"; settle: (messages: ViewerMessage[] | null) => void }
-        >();
+        const pendingSceneSnapshots = new PopupSceneSnapshots();
         /** Cancel requests owned by an endpoint that went away, instead of
          *  leaving them pending until their timeout. */
         const cancelSceneSnapshotsFor = (mode: "canvas" | "panel") => {
-            for (const [messageId, entry] of [...pendingSceneSnapshots]) {
-                if (entry.mode !== mode) continue;
-                pendingSceneSnapshots.delete(messageId);
-                entry.settle(null);
-            }
+            pendingSceneSnapshots.cancel(mode);
         };
         const requestPopupSceneSnapshot = (
             mode: "canvas" | "panel",
             popupEndpointId: string | null,
-        ): Promise<ViewerMessage[] | null> =>
-            new Promise(resolve => {
-                const messageId = sendToPython({
-                    event: "request_popup_scene_snapshot",
-                    mode,
-                    popup_endpoint_id: popupEndpointId,
-                });
-                if (!messageId) {
-                    resolve(null);
-                    return;
-                }
-                let done = false;
-                const settle = (messages: ViewerMessage[] | null) => {
-                    if (done) return;
-                    done = true;
-                    pendingSceneSnapshots.delete(messageId);
-                    resolve(messages);
-                };
-                pendingSceneSnapshots.set(messageId, { mode, settle });
-                // Never leave a popup blocked on a lost answer: fall back to the
-                // compatibility replay if Python does not respond.
-                window.setTimeout(() => settle(null), 5000);
+        ) => {
+            const messageId = sendToPython({
+                event: "request_popup_scene_snapshot",
+                mode,
+                popup_endpoint_id: popupEndpointId,
             });
+            return pendingSceneSnapshots.request(messageId, mode, popupEndpointId);
+        };
 
         const initialMessages = model.get("initial_messages") as ViewerMessage[] | undefined;
         const trajInfo = parseInitialTrajectoryInfo(initialMessages);
@@ -1320,19 +1299,25 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                         popupMgr.isReady = true;
                         popupMgr.beginBootstrap("canvas");
                         // R2: bootstrap from Python's canonical current-scene
-                        // projection; the replay journal is the fallback only.
-                        const canvasSnapshot = await requestPopupSceneSnapshot(
+                        // projection, after its endpoint's molecular application.
+                        const endpointId = popupMgr.popupEndpointId("canvas");
+                        const request = requestPopupSceneSnapshot(
                             "canvas",
-                            popupMgr.popupEndpointId("canvas"),
+                            endpointId,
                         );
+                        const canvasSnapshot = await request.promise;
+                        if (!request.isCurrent() || popupMgr.popupEndpointId("canvas") !== endpointId) break;
                         // Endpoint-targeted: this bootstrap carries molecular data
                         // and must never reach a panel popup.
-                        if (!canvasSnapshot) {
+                        if (!canvasSnapshot.ok) {
                             sendLog("error", "[MolSysViewer] canvas popup bootstrap: Python did not answer the scene snapshot request");
+                            popupMgr.failBootstrap("canvas");
+                            popupMgr.sendTo("canvas", "molsysviewer-initial-sync", { bootstrapError: canvasSnapshot.reason });
+                            break;
                         }
                         try {
                             popupMgr.sendTo("canvas", "molsysviewer-initial-sync", {
-                                messages: canvasSnapshot ?? [],
+                                messages: canvasSnapshot.messages,
                                 trajectoryFrame: controller.trajectory.getTrajectoryState().currentFrame,
                                 boxDisplay: controller.boxDisplay.projection,
                                 playback: controller.trajectory.getPlaybackSnapshot(),
@@ -1363,12 +1348,18 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                         popupMgr.isPanelReady = true;
                         popupMgr.beginBootstrap("panel");
                         // R2: canonical UI-only projection from Python.
-                        const panelSnapshot = await requestPopupSceneSnapshot(
+                        const endpointId = popupMgr.popupEndpointId("panel");
+                        const request = requestPopupSceneSnapshot(
                             "panel",
-                            popupMgr.popupEndpointId("panel"),
+                            endpointId,
                         );
-                        if (!panelSnapshot) {
+                        const panelSnapshot = await request.promise;
+                        if (!request.isCurrent() || popupMgr.popupEndpointId("panel") !== endpointId) break;
+                        if (!panelSnapshot.ok) {
                             sendLog("error", "[MolSysViewer] panel popup bootstrap: Python did not answer the scene snapshot request");
+                            popupMgr.failBootstrap("panel");
+                            popupMgr.sendTo("panel", "molsysviewer-initial-sync", { bootstrapError: panelSnapshot.reason });
+                            break;
                         }
                         // The System subpanel is the one Studio section built from
                         // the structure rather than from a Python summary. The panel
@@ -1378,7 +1369,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                         lastRelayedHierarchy = controller.getHierarchyItems();
                         try {
                             popupMgr.sendTo("panel", "molsysviewer-initial-sync", {
-                                messages: panelSnapshot ?? [],
+                                messages: panelSnapshot.messages,
                                 hierarchyItems: lastRelayedHierarchy,
                                 cameraSnapshot: controller.getCameraSnapshot(),
                                 cameraSnapshotRevision: cameraSync?.completedRevision,
@@ -1433,16 +1424,17 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                         // next chunk from these, so they must reach the authority.
                         if (data) {
                             const sourceMode = popupMessage.channel.mode;
+                            const endpointId = popupMgr.popupEndpointId(sourceMode);
+                            if (endpointId) pendingSceneSnapshots.structure(endpointId, data);
                             if (data.event === "structure_data_json_complete") {
-                                popupMgr.completeBootstrap(sourceMode);
+                                if (!pendingSceneSnapshots.has(sourceMode)) popupMgr.completeBootstrap(sourceMode);
                                 break;
                             }
-                            const endpointId = popupMgr.popupEndpointId(sourceMode);
                             if (endpointId) {
                                 sendToPython(bindStreamEventToEndpoint(data, endpointId));
                             }
                             if (data.event === "structure_data_complete") {
-                                popupMgr.completeBootstrap(sourceMode);
+                                if (!pendingSceneSnapshots.has(sourceMode)) popupMgr.completeBootstrap(sourceMode);
                             }
                         }
                         break;
@@ -1585,10 +1577,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                 if (event === "popup_scene_snapshot") {
                     // Consumed at the seam: resolve the request that asked for it.
                     const correlationId = inbound.envelope.correlationId;
-                    const entry = correlationId ? pendingSceneSnapshots.get(correlationId) : undefined;
-                    if (entry) {
-                        entry.settle(((inbound.message as any).messages ?? []) as ViewerMessage[]);
-                    }
+                    pendingSceneSnapshots.resolve(correlationId, (inbound.message as any).messages);
                     return;
                 }
                 msg = inbound.message as typeof msg;
@@ -1622,6 +1611,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                     return;
                 }
                 if (msg.op === "structure_data_begin") popupMgr.beginBootstrap(mode);
+                pendingSceneSnapshots.structure(relayTarget, msg);
                 popupMgr.sendTo(mode, "molsysviewer-structure-data", {
                     message: msg,
                     buffers: buffers ?? [],
@@ -1725,6 +1715,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                     endpoint.owner, endpoint.canvas);
             }
             pendingWorkFileSaves.clear();
+            pendingSceneSnapshots.dispose();
             visualStateCaptures.dispose();
             popupMgr.dispose();
             arrayNativeStream.dispose();
