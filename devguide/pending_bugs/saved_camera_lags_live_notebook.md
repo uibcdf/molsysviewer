@@ -16,7 +16,7 @@ supersedes: []
 # Camera capture when saving notebook work
 
 **Current bounded checkpoint — 2026-11-07:** #330–#335 are received and
-archived as bounded prerequisites. The final canonical Studio/box/moving
+archived as bounded prerequisites in delivered source `a6e271f1`. The final canonical Studio/box/moving
 selection passes 3/3 in 429.86 seconds, with 4,323 fixed inputs and thirty
 owned processes closed. Node passes 406/406; the recorded Python boundary
 passes 672/672 on its separately identified source. See the

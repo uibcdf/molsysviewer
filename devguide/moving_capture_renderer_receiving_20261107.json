@@ -1,7 +1,7 @@
 {
   "schema": "molsysviewer.working_receiving@1",
   "date": "2026-11-07",
-  "status": "Bounded six-defect correction received; prepared for reviewed integration. Parent A5 remains partial.",
+  "status": "Bounded six-defect correction delivered on main; #330\u2013#335 closed. Parent A5 remains partial.",
   "owner_issue": "uibcdf/molsysviewer#319",
   "parent_plan": "uibcdf/molsysviewer#315",
   "source_base": "5390fadbcd2904cb148d326b299632271073994a",
@@ -532,7 +532,7 @@
     "C1 current owner-pair receiving, all remaining original audit leaves, postponed human review and mandatory Movie #320."
   ],
   "publication": "Tags, packages and both 1.0 publications remain paused.",
-  "next_action": "Preserve this bounded batch, publish reviewed direct commits with the authorized skip-ci cadence, close #330\u2013#335 with their guards and records; then continue the remaining A5 endpoint acceptance before advertising version 2.",
+  "next_action": "Continue A5 version-2 popup/detached ownership and hidden/unavailable/disposed endpoint acceptance, then current actual-Jupyter and applicable consolidated/hosted receiving before advertising protocol 2. Keep original 46-leaf scope and Movie #320.",
   "latest_full_native_receiving": {
     "attempt": "moving-after-18",
     "native_exit": 0,
@@ -609,7 +609,7 @@
     "scope": "Local uncommitted check wrapper reused the final-checks-0 log/receipt and resources filename.",
     "lost_raw_pass_result": "Earlier canonical Node 405/405 pass raw log/receipt replaced by the first 406-case attempt (405 passed/1 failed). Earlier console observations and source history remain; the replaced pass is not an independently archived raw result.",
     "preserved": "All original causal failures, native attempts and previously approved custody bundle are unchanged. Checks 1\u20136 in checks-after-camera-cancellation-01 predate the new failed check 0; they are not a new complete run.",
-    "repair": "Future final-check invocations require a fresh create-only directory before any command; an existing directory aborts rather than overwriting. New complete validation will supply independent current evidence.",
+    "repair": "All subsequent final checks require a fresh create-only directory. Independently retained current evidence now includes 406/406 Node cases and 3/3 canonical browser entries; causal failed originals and earlier approved custody are preserved.",
     "first_406_failure": "The old cancellation case newly compares the applied full native snapshot; default radius zero is normalized to 0.01 by Camera.setState. It now initializes a valid radius of one, retaining exact full snapshot equality. The new delayed-controls causal case already passes.",
     "original_failure_counts": {
       "tests": 406,
@@ -681,7 +681,50 @@
     "Announce protocol 2 only after its required endpoint acceptance; retain synchronous capture contracts.",
     "C1 current owner-pair receiving, all remaining original audit leaves, postponed human review and mandatory Movie #320."
   ],
-  "issue_closure": "Prepared; remote closure follows source delivery.",
+  "issue_closure": [
+    {
+      "issue": 330,
+      "state": "closed",
+      "closed_at": "2026-11-08T05:08:00Z",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/330",
+      "comment_id": 6717562358
+    },
+    {
+      "issue": 331,
+      "state": "closed",
+      "closed_at": "2026-11-08T05:09:08Z",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/331",
+      "comment_id": 6717572549
+    },
+    {
+      "issue": 332,
+      "state": "closed",
+      "closed_at": "2026-11-08T05:09:16Z",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/332",
+      "comment_id": 6717573767
+    },
+    {
+      "issue": 333,
+      "state": "closed",
+      "closed_at": "2026-11-08T05:09:50Z",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/333",
+      "comment_id": 6717578731
+    },
+    {
+      "issue": 334,
+      "state": "closed",
+      "closed_at": "2026-11-08T05:09:59Z",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/334",
+      "comment_id": 6717580022
+    },
+    {
+      "issue": 335,
+      "state": "closed",
+      "closed_at": "2026-11-08T05:10:07Z",
+      "url": "https://github.com/uibcdf/molsysviewer/issues/335",
+      "comment_id": 6717581046
+    }
+  ],
   "code_review": "Reviewed source and directed causal guards; generated runtime rebuilt through build:runtime, no package-version metadata rewrite; seven human sandbox files unchanged and excluded.",
   "previous_evidence_custody": {
     "bundle": "moving-renderer-20261107-1",
@@ -694,5 +737,15 @@
     "permissions": "directories 0700; files 0600",
     "off_host_backup_claimed": false,
     "contents": "All terminal attempt receipts, original failed logs/input hashes, native PNGs, selected source patch and new-source checkpoint; final custody pointers are maintained separately."
+  },
+  "source_delivery": {
+    "commit": "a6e271f17c1672993ccb0ea12250f58a0dc30523",
+    "branch": "main",
+    "direct_push": true,
+    "skip_ci": true,
+    "remote_ref_verified_equal": true,
+    "executable_inputs_unchanged_after_final_native_receiving": true,
+    "seven_human_sandbox_files_excluded": true,
+    "scope": "Source and guarded bounded corrections; not hosted/full-core/installed-package or human acceptance."
   }
 }

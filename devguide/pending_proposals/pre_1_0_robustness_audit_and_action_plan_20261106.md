@@ -277,7 +277,8 @@ distinguishes complete Studio/controls receiving on the immediately preceding
 source from final changed-boundary checks. This prerequisite does not add another audit denominator item or
 complete continuous-playback capture. The mandatory Movie #320 stream remains.
 
-The bounded A5 correction receives and archives six child defects; they do
+The bounded A5 correction is delivered in `a6e271f1`; #330–#335 are closed
+and archived. They do
 not add six original-plan leaves or complete A5:
 
 - [#330](../archive/camera_relative_callout_draw_phase.md) presents callouts with the consumed camera, including native CPU/GPU/image/pick geometry.
@@ -292,7 +293,7 @@ The complete final shared-browser Studio/box/moving selection passes 3/3 in
 Canonical Node passes 406/406. The recorded fourteen-file Python boundary
 passes 672/672 before the later camera/test-only corrections; Python production
 inputs remain unchanged by those corrections. Final scoped governance receiving
-follows archival. All original causal failures, the secondary diagnostic error
+passes 383/383 after archival. All original causal failures, the secondary diagnostic error
 and the local pass-log replacement incident remain explicit in the
 [receiving record](../moving_capture_renderer_receiving_20261107.json).
 
