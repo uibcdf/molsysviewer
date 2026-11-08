@@ -138966,6 +138966,17 @@ function trajectorySyncToAuthority(msg) {
   return null;
 }
 
+// src/messages/frame-query.ts
+function ownFrameQuery(message, endpoint) {
+  return message.event === "request_interaction_frame" || message.event === "request_dynamic_region_evaluation" ? { ...message, _query_endpoint_id: endpoint } : message;
+}
+function dynamicRegionReplyAction(reply, currentFrame, pendingFrame, pendingRequest) {
+  if (typeof reply.frame !== "number" || !Number.isSafeInteger(reply.frame) || reply.frame < 0) return "ignore";
+  if (reply.request_id === void 0) return reply.frame === currentFrame ? "project" : "ignore";
+  if (reply.frame !== pendingFrame || reply.request_id !== pendingRequest) return "ignore";
+  return reply.frame === currentFrame ? "apply" : "complete";
+}
+
 // node_modules/molstar/lib/mol-plugin-state/animation/built-in/assembly-unwind.js
 var AnimateAssemblyUnwind = PluginStateAnimation.create({
   name: "built-in.animate-assembly-unwind",
@@ -145940,7 +145951,8 @@ var InteractionHandlers = class {
     this.generation = 0;
     this.latestRevision = -1;
     this.tokens = /* @__PURE__ */ new Map();
-    this.requestTimeout = null;
+    // Overlap one obsolete query with the current frame; never queue a trajectory.
+    this.requests = /* @__PURE__ */ new Map();
     this.requestedFrame = -1;
   }
   get currentFrame() {
@@ -145948,10 +145960,12 @@ var InteractionHandlers = class {
   }
   setSummaries(items, revision2 = -1, requestGeometry = true) {
     if (revision2 < this.latestRevision && revision2 !== -1) return false;
+    const previousRevision = this.latestRevision;
     this.latestRevision = Math.max(this.latestRevision, revision2);
     for (const tag of this.tokens.keys()) if (!items.some((item2) => item2.tag === tag)) this.drop(tag);
     this.summaries = items;
     this.latestRevision = Math.max(this.latestRevision, ...items.map((item2) => item2.projection_revision ?? -1));
+    if (!items.length || this.latestRevision > previousRevision) this.resetRequests();
     if (requestGeometry && items.some((item2) => item2.frame !== this.frame)) {
       this.pending = null;
       this.requestedFrame = -1;
@@ -146029,16 +146043,19 @@ var InteractionHandlers = class {
     return this.frame === frame && this.pendingWork === 0 && this.pending === null && this.summaries.every((item2) => item2.frame === frame && !["pending", "render-error", "unavailable"].includes(item2.status));
   }
   finishResponse(requestId) {
-    if (requestId === this.pending) {
-      this.pending = null;
-      if (this.requestTimeout) clearTimeout(this.requestTimeout);
-      this.requestFrame();
-    }
+    const request = this.requests.get(requestId);
+    if (!request) return;
+    clearTimeout(request.timeout);
+    this.requests.delete(requestId);
+    if (requestId === this.pending) this.pending = null;
+    this.requestFrame();
   }
   onFrame(frame) {
     if (frame === this.frame) return;
     this.frame = frame;
     this.generation++;
+    this.pending = null;
+    this.requestedFrame = -1;
     this.summaries = this.summaries.map((item2) => ({ ...item2, frame, status: "pending", n_observations: 0, n_supported: 0, n_segments: 0, n_skipped: 0 }));
     this.ctx.summaries(this.summaries, frame);
     for (const ref of this.refs.values()) setSubtreeVisibility(this.plugin.state.data, ref, true);
@@ -146049,16 +146066,28 @@ var InteractionHandlers = class {
     } else this.requestFrame();
   }
   requestFrame() {
-    if (!this.summaries.length || this.pending !== null || this.requestedFrame === this.frame) return;
+    if (!this.summaries.length) return;
+    for (const [id2, request] of this.requests) {
+      if (request.frame !== this.frame) continue;
+      this.pending = id2;
+      this.requestedFrame = this.frame;
+      return;
+    }
+    if (this.requestedFrame === this.frame || this.requests.size >= 2) return;
     this.requestedFrame = this.frame;
-    this.pending = ++this.request;
-    this.ctx.notify({ event: "request_interaction_frame", frame: this.frame, request_id: this.pending });
-    if (this.requestTimeout) clearTimeout(this.requestTimeout);
-    this.requestTimeout = setTimeout(() => {
-      this.pending = null;
-      this.summaries = this.summaries.map((item2) => ({ ...item2, status: "unavailable" }));
-      this.ctx.summaries(this.summaries, this.frame);
+    const id = ++this.request;
+    this.pending = id;
+    const timeout = setTimeout(() => {
+      this.requests.delete(id);
+      if (this.pending === id) {
+        this.pending = null;
+        this.summaries = this.summaries.map((item2) => ({ ...item2, status: "unavailable" }));
+        this.ctx.summaries(this.summaries, this.frame);
+      }
+      this.requestFrame();
     }, 1e4);
+    this.requests.set(id, { frame: this.frame, timeout });
+    this.ctx.notify({ event: "request_interaction_frame", frame: this.frame, request_id: id });
   }
   async remove(tag) {
     const ref = this.refs.get(tag);
@@ -146071,20 +146100,25 @@ var InteractionHandlers = class {
       removeParentGhosts: true
     });
   }
+  resetRequests() {
+    for (const request of this.requests.values()) clearTimeout(request.timeout);
+    this.requests.clear();
+    this.pending = null;
+    this.requestedFrame = -1;
+  }
   drop(tag) {
     this.tokens.delete(tag);
     this.series.delete(tag);
     this.summaries = this.summaries.filter((item2) => item2.tag !== tag);
+    if (!this.summaries.length) this.resetRequests();
     void this.remove(tag);
   }
   clear() {
-    if (this.requestTimeout) clearTimeout(this.requestTimeout);
+    this.resetRequests();
     this.generation++;
     this.tokens.clear();
     this.series.clear();
     this.summaries = [];
-    this.pending = null;
-    this.requestedFrame = -1;
     for (const tag of this.refs.keys()) void this.remove(tag);
   }
 };
@@ -149732,6 +149766,7 @@ var TrajectoryHandlers = class {
       throw error2;
     }
     if (this.disposed) return;
+    this.context.onFrameModelApplied?.(this.getCurrentFrameIndex());
     await this.context.afterFrameApplied?.();
     if (direction && this.getCurrentFrameIndex() === clamped) this.travelDirection = direction;
     this.updateTrajectoryState();
@@ -167588,6 +167623,9 @@ var MolSysViewerController = class _MolSysViewerController {
     this.dynamicRegionEvaluationPendingFrame = null;
     this.dynamicRegionEvaluationAppliedFrame = null;
     this.dynamicRegionObservedFrame = null;
+    this.dynamicRegionRequestSequence = 0;
+    this.dynamicRegionRequestId = null;
+    this.dynamicRegionRequests = /* @__PURE__ */ new Map();
     this.disposed = false;
     this.addonsScene = null;
     this.addonsList = [];
@@ -168292,12 +168330,14 @@ var MolSysViewerController = class _MolSysViewerController {
       captureCurrentStructure: () => this.captureCurrentStructure(),
       setLoadedStructure: (ls) => {
         this.loadedStructure = ls;
+        this.resetDynamicRegionEvaluation();
       },
       getLoadedStructure: () => this.loadedStructure,
       setExpectedFrameCount: (n) => this.trajectory.setExpectedFrameCount(n)
     });
     this.trajectory = new TrajectoryHandlers(plugin, {
       afterFrameApplied: () => this.annotations.refresh(),
+      onFrameModelApplied: (frame) => this.prepareFrameDependentQueries(frame),
       isFrameReady: (frame) => this.areFrameProjectionsCurrent(frame),
       getLoadedStructure: () => this.loadedStructure,
       notifyTrajectoryState: () => this.notifyTrajectoryState(),
@@ -168365,12 +168405,8 @@ var MolSysViewerController = class _MolSysViewerController {
         this.groupPanel.clearContextInspection();
         this.triggerLocalAddonEvent("frame-changed", state.currentFrame);
         this.trajectoryPlotOverlay.setFrame(state.currentFrame);
-        this.interactions.onFrame(state.currentFrame);
+        this.prepareFrameDependentQueries(state.currentFrame);
         void this.annotations.refresh().catch((error2) => console.warn("[MolSysViewer] Annotation refresh failed", error2));
-        if (this.dynamicRegionObservedFrame !== state.currentFrame) {
-          this.dynamicRegionObservedFrame = state.currentFrame;
-          this.requestDynamicRegionEvaluationForFrame(state.currentFrame);
-        }
       },
       { immediate: false }
     );
@@ -169585,6 +169621,7 @@ var MolSysViewerController = class _MolSysViewerController {
           this.checkCameraAfterSceneMutation("clear_scene");
           break;
         case "clear_all":
+          this.resetDynamicRegionEvaluation();
           this.boxDisplay.forget();
           this.setStructureLoadPending(msg.awaiting_structure === true);
           this.interactions.clear();
@@ -169600,6 +169637,7 @@ var MolSysViewerController = class _MolSysViewerController {
           await this.state.setFocusFade(msg);
           break;
         case "create_region": {
+          this.resetDynamicRegionEvaluation();
           await this.state.createRegion(msg);
           const tag = msg.tag || "region";
           this.showToast(`Region '${tag}' created`);
@@ -169629,6 +169667,10 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "set_region_summaries":
           this.state.setRegionSummaries(msg);
+          if (this.dynamicRegionObservedFrame === null && this.state.hasFrameDependentDynamicRegions()) {
+            this.dynamicRegionObservedFrame = this.trajectory.getTrajectoryState().currentFrame;
+            this.requestDynamicRegionEvaluationForFrame(this.dynamicRegionObservedFrame);
+          }
           break;
         case "set_layer_summaries": {
           const records = Array.isArray(msg.layers) ? msg.layers : [];
@@ -169763,12 +169805,33 @@ var MolSysViewerController = class _MolSysViewerController {
           }
           break;
         }
-        case "set_dynamic_region_atoms":
-          await this.state.setDynamicRegionAtoms(msg);
-          this.handleDynamicRegionEvaluationResponse(msg.frame);
+        case "set_dynamic_region_atoms": {
+          if (this.isPanelOnly) break;
+          const requestedFrame = msg.request_id === void 0 ? void 0 : this.dynamicRegionRequests.get(msg.request_id);
+          const action = dynamicRegionReplyAction(
+            msg,
+            this.trajectory.getTrajectoryState().currentFrame,
+            requestedFrame ?? null,
+            requestedFrame === void 0 ? null : msg.request_id
+          );
+          if (action === "ignore") break;
+          if (action !== "complete") await this.state.setDynamicRegionAtoms(msg);
+          if (action === "apply" || action === "complete") {
+            this.handleDynamicRegionEvaluationResponse(msg.frame, msg.request_id, action === "apply");
+          } else if (this.dynamicRegionEvaluationInFlight === null) {
+            this.dynamicRegionEvaluationAppliedFrame = msg.frame;
+            this.plugin.canvas3d?.requestDraw();
+          }
           break;
+        }
         case "dynamic_region_evaluation_warning": {
           const tag = typeof msg.tag === "string" ? msg.tag : "region";
+          if (msg.action === "frozen_to_static" && Array.isArray(msg.atom_indices)) {
+            await this.state.setDynamicRegionAtoms({
+              op: "set_dynamic_region_atoms",
+              regions: [{ tag, atom_indices: msg.atom_indices }]
+            });
+          }
           const elapsed = Number(msg.elapsed_ms);
           const budget = Number(msg.budget_ms);
           const timing = Number.isFinite(elapsed) && Number.isFinite(budget) ? ` (${elapsed.toFixed(0)}ms > ${budget.toFixed(0)}ms budget)` : "";
@@ -169811,6 +169874,7 @@ var MolSysViewerController = class _MolSysViewerController {
           await this.state.applyRegionOperations(msg);
           break;
         case "delete_region": {
+          this.resetDynamicRegionEvaluation();
           await this.state.deleteRegion(msg);
           const tag = msg.tag || "region";
           this.showToast(`Region '${tag}' deleted`);
@@ -169829,6 +169893,7 @@ var MolSysViewerController = class _MolSysViewerController {
           await this.state.hideLayer(msg);
           break;
         case "delete_layer":
+          if (msg.kind === "region") this.resetDynamicRegionEvaluation();
           await this.state.deleteLayer(msg, () => {
             if (msg.kind === "interaction" && msg.tag) this.interactions.drop(msg.tag);
             if (msg.kind === "annotation" && typeof msg.tag === "string" && this.annotations.hasTag(msg.tag)) {
@@ -169840,6 +169905,7 @@ var MolSysViewerController = class _MolSysViewerController {
           });
           break;
         case "set_layer_tag":
+          if (msg.kind === "region") this.resetDynamicRegionEvaluation();
           if (msg.kind === "annotation" && typeof msg.tag === "string" && typeof msg.new_tag === "string" && this.annotations.hasTag(msg.tag)) {
             this.annotations.renameTag(msg.tag, msg.new_tag);
           }
@@ -169941,6 +170007,7 @@ var MolSysViewerController = class _MolSysViewerController {
           await this.trajectory.setTrajectoryPlayback(msg);
           break;
         case "partial_coordinates_update":
+          this.resetDynamicRegionEvaluation();
           await this.trajectory.partialCoordinatesUpdate(msg);
           break;
         // Movie Ops
@@ -170220,6 +170287,14 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         }
         case "backend_error_occurred": {
+          if (msg.trigger_event === "request_dynamic_region_evaluation") {
+            const id = msg.request_id;
+            const frame = this.dynamicRegionRequests.get(id);
+            if (frame !== void 0) {
+              if (id === this.dynamicRegionRequestId) this.dynamicRegionEvaluationAppliedFrame = null;
+              this.handleDynamicRegionEvaluationResponse(frame, id, false, false);
+            }
+          }
           const errorType = typeof msg.error_type === "string" ? msg.error_type : "BackendError";
           const errorMessage = typeof msg.error_message === "string" ? msg.error_message : "Backend action failed.";
           this.showToast(`${errorType}: ${errorMessage}`, 6e3);
@@ -171508,29 +171583,61 @@ var MolSysViewerController = class _MolSysViewerController {
       console.warn("[MolSysViewer] setCameraSnapshot failed", err);
     }
   }
+  prepareFrameDependentQueries(frame) {
+    if (this.isPanelOnly) return;
+    this.interactions.onFrame(frame);
+    if (this.dynamicRegionObservedFrame !== frame) {
+      this.dynamicRegionObservedFrame = frame;
+      this.requestDynamicRegionEvaluationForFrame(frame);
+    }
+  }
   requestDynamicRegionEvaluationForFrame(frame) {
-    if (!this.state.hasFrameDependentDynamicRegions()) return;
+    if (this.disposed || this.isPanelOnly || !this.state.hasFrameDependentDynamicRegions()) return;
     const normalizedFrame = Math.max(0, Math.trunc(Number(frame) || 0));
-    if (this.dynamicRegionEvaluationInFlight !== null) {
+    for (const [id, requestedFrame] of this.dynamicRegionRequests) {
+      if (requestedFrame !== normalizedFrame) continue;
+      this.dynamicRegionEvaluationInFlight = normalizedFrame;
+      this.dynamicRegionRequestId = id;
+      this.dynamicRegionEvaluationPendingFrame = null;
+      return;
+    }
+    this.dynamicRegionEvaluationInFlight = null;
+    this.dynamicRegionRequestId = null;
+    if (this.dynamicRegionRequests.size >= 2) {
       this.dynamicRegionEvaluationPendingFrame = normalizedFrame;
       return;
     }
+    this.dynamicRegionEvaluationPendingFrame = null;
     this.dynamicRegionEvaluationInFlight = normalizedFrame;
+    this.dynamicRegionRequestId = ++this.dynamicRegionRequestSequence;
+    this.dynamicRegionRequests.set(this.dynamicRegionRequestId, normalizedFrame);
     this.notify?.({
       event: "request_dynamic_region_evaluation",
-      frame: normalizedFrame
+      frame: normalizedFrame,
+      request_id: this.dynamicRegionRequestId
     });
   }
-  handleDynamicRegionEvaluationResponse(frame) {
-    const completed = Math.trunc(Number(frame));
-    if (Number.isFinite(completed) && this.dynamicRegionEvaluationInFlight === completed) {
-      this.dynamicRegionEvaluationInFlight = null;
-      this.dynamicRegionEvaluationAppliedFrame = completed;
-    } else return;
-    const pending = this.dynamicRegionEvaluationPendingFrame;
+  resetDynamicRegionEvaluation() {
+    this.dynamicRegionRequests.clear();
+    this.dynamicRegionEvaluationInFlight = null;
     this.dynamicRegionEvaluationPendingFrame = null;
-    if (pending !== null && pending !== completed) {
-      this.requestDynamicRegionEvaluationForFrame(pending);
+    this.dynamicRegionEvaluationAppliedFrame = null;
+    this.dynamicRegionObservedFrame = null;
+    this.dynamicRegionRequestId = null;
+  }
+  handleDynamicRegionEvaluationResponse(frame, requestId, applied = false, retryCurrent = true) {
+    const completed = Math.trunc(Number(frame));
+    if (requestId === void 0 || !Number.isFinite(completed) || this.dynamicRegionRequests.get(requestId) !== completed) return;
+    this.dynamicRegionRequests.delete(requestId);
+    if (requestId === this.dynamicRegionRequestId) {
+      this.dynamicRegionEvaluationInFlight = null;
+      this.dynamicRegionRequestId = null;
+    }
+    if (applied) this.dynamicRegionEvaluationAppliedFrame = completed;
+    this.dynamicRegionEvaluationPendingFrame = null;
+    const current2 = this.trajectory.getTrajectoryState().currentFrame;
+    if (this.dynamicRegionEvaluationAppliedFrame !== current2 && (retryCurrent || current2 !== completed)) {
+      this.requestDynamicRegionEvaluationForFrame(current2);
     }
     this.plugin.canvas3d?.requestDraw();
   }
@@ -174139,11 +174246,6 @@ var WidgetEnvelopeAdapter = class {
     return { kind: "message", message: payload, envelope: env };
   }
 };
-
-// src/messages/interaction-query.ts
-function ownInteractionQuery(message, endpoint) {
-  return message.event === "request_interaction_frame" ? { ...message, _query_endpoint_id: endpoint } : message;
-}
 
 // ../remote_protocol.json
 var remote_protocol_default = {
@@ -176776,7 +176878,7 @@ async function bootDocsView(opts) {
   const missingAuthority = makeMissingAuthorityReporter(hostEl);
   const controllerPromise = MolSysViewerController.create(target, (message) => {
     if (hasAuthority) {
-      notifyHost(ownInteractionQuery(message, primaryEndpoint));
+      notifyHost(ownFrameQuery(message, primaryEndpoint));
       return;
     }
     const projection = frontendSceneProjection(message);
@@ -176919,7 +177021,7 @@ async function bootDocsView(opts) {
         case "molsysviewer-popup-interaction":
           {
             if (hasAuthority) {
-              notifyHost(ownInteractionQuery(data, popupMessage.channel.popupEndpointId));
+              notifyHost(ownFrameQuery(data, popupMessage.channel.popupEndpointId));
               break;
             }
             const projection = frontendSceneProjection(data);
@@ -177162,7 +177264,7 @@ function render({ model, el, runtimeSource }) {
   const pendingWorkFileSaves = /* @__PURE__ */ new Map();
   const workFileKey = (owner, requestId) => JSON.stringify([owner, requestId]);
   const sendEndpointAction = (message, owner, canvas) => {
-    message = ownInteractionQuery(message, owner);
+    message = ownFrameQuery(message, owner);
     const correlated = message.event === "interaction_context_action" && typeof message.request_id === "string" && message.request_id.trim() !== "";
     const owned = correlated ? { ...message, _studio_owner_endpoint_id: owner } : message;
     if (message.event !== "interaction_context_action" || message.action !== "save_work_file" && message.action !== "cancel_work_file") {

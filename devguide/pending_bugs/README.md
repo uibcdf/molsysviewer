@@ -19,8 +19,10 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (2)
+### Being worked on (4)
 
+- [`applied_box_feedback_reprojects_geometry.md`](applied_box_feedback_reprojects_geometry.md) — [#339](https://github.com/uibcdf/molsysviewer/issues/339) — Applied cell feedback reissues scene geometry to every renderer. *(medium, reproduced)*
+- [`dynamic_region_queries_cross_renderer_frames.md`](dynamic_region_queries_cross_renderer_frames.md) — [#338](https://github.com/uibcdf/molsysviewer/issues/338) — Dynamic-region query replies cross renderer frames and omit unchanged memberships. *(medium, reproduced)*
 - [`interaction_frame_query_crosses_canvas_owners.md`](interaction_frame_query_crosses_canvas_owners.md) — [#337](https://github.com/uibcdf/molsysviewer/issues/337) — Interaction frame query replies reach unrelated renderer-local request IDs. *(medium, reproduced)*
 - [`updated_annotation_pick_receiving_timeout.md`](updated_annotation_pick_receiving_timeout.md) — [#325](https://github.com/uibcdf/molsysviewer/issues/325) — Updated annotation GPU pick times out in hosted canvas-popup receiving. *(medium, measured)*
 

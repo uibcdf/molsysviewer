@@ -396,7 +396,7 @@ export async function checkMovingCapture(page: Page, dir: string,
                 });
                 const source = await inspectSource?.();
                 const popupBootstrap = await popup?.evaluate(() => ({ initial: (window as any).__movingBootstrap,
-                    tail: (window as any).__movingBootstrapTail }));
+                    tail: (window as any).__movingBootstrapTail, frameDelivery: (window as any).__movingFrameDelivery }));
                 await writeFile(resolve(process.env.E2E_MOVING_CAPTURE_ARTIFACT_DIR ?? workspace, "capture-failure.json"),
                     JSON.stringify({ error: String(error), renderer, source, popupBootstrap, endpointErrors, endpointWarnings,
                         transport: bridge.getTransportObservation() }, null, 2));

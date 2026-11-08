@@ -105,6 +105,7 @@ def main():
                 frame=payload.get("frame"),
                 holding=holding,
                 request_id=payload.get("request_id"),
+                query_endpoint_id=payload.get("_query_endpoint_id"),
                 error_type=payload.get("error_type"),
                 ok=payload.get("ok"),
                 ticket_remaining_ms=(pending.deadline - time.monotonic()) * 1000 if pending is not None else None,

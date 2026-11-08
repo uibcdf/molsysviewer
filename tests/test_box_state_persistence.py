@@ -90,6 +90,38 @@ def test_repeated_box_frame_projection_keeps_one_recipe_and_a_single_definition(
     assert len([m for m in view._shape_history if view._tag_from_message(m) == view._BOX_TAG]) == 1
 
 
+@pytest.mark.parametrize("frame", [0, 2])
+def test_applied_box_feedback_updates_records_without_redrawing_the_renderers(view, frame):
+    view.show_box(color="red", width=0.2, alpha=0.7)
+    view._ready = True
+    revision = view._box_definition_revision
+    camera_revision = view._camera_projection_revision
+    view._endpoint_transfers.register("canvas", "canvas")
+    sent = []
+    view.widget.send = lambda message, buffers=None: sent.append(dict(message))
+    for _ in range(4):
+        view._handle_frontend_event(
+            {
+                "event": "trajectory_frame_changed",
+                "frame": frame,
+                "is_playing": True,
+                "box_display": {"definition_revision": revision, "structure_index": frame},
+            }
+        )
+    assert view.export_state()["box_display"] == recipe(frame)
+    np.testing.assert_array_equal(box_edges(view)[0], [[0, 0, 0], [10 * (frame + 3), 0, 0]])
+    assert view._box_definition_revision == revision
+    assert view._camera_projection_revision == camera_revision
+    assert not any(
+        message["op"] in {"clear_shapes_by_tag", "add_network_links", "set_camera_snapshot"} for message in sent
+    )
+    sent.clear()
+    view.player.go_to_structure(frame)
+    assert any(message["op"] == "add_network_links" for message in sent), (
+        "an explicit Python seek still projects its cell"
+    )
+
+
 @pytest.mark.parametrize("ready", [False, True])
 @pytest.mark.parametrize("kind", ["state", "session"])
 def test_saved_box_keeps_style_cell_and_frame_following(view, tmp_path, ready, kind):

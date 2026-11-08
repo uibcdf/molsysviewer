@@ -3,6 +3,14 @@ export function observeMovingPopupBootstrap(runtime: any) {
     const w = window as any;
     const observations: any[] = w.__movingBootstrap = [];
     const tail: any[] = w.__movingBootstrapTail = [];
+    const delivery: any[] = w.__movingFrameDelivery = [];
+    const frameOps = new Set(["set_trajectory_frame", "set_dynamic_region_atoms", "set_interaction_frame", "interaction_frame_complete"]);
+    const observeDelivery = (stage: string, message: any, currentFrame?: number) => {
+        if (!frameOps.has(message?.op)) return;
+        delivery.push({ ms: window.opener.performance.now(), stage, op: message.op,
+            frame: message.index ?? message.frame, request_id: message.request_id, currentFrame });
+        if (delivery.length > 1024) delivery.shift();
+    };
     const record = (item: any) => {
         const entry = { ms: performance.now(), ...item };
         // Preserve the bootstrap itself; rolling trajectory summaries must not
@@ -14,6 +22,7 @@ export function observeMovingPopupBootstrap(runtime: any) {
     window.addEventListener("message", event => {
         if (event.source !== window.opener) return;
         const envelope = event.data?.envelope;
+        if (envelope?.action === "molsysviewer-sync-op") observeDelivery("received", envelope.payload);
         if (envelope?.action === "molsysviewer-initial-sync") record({ stage: "received-bootstrap",
             error: envelope.payload?.bootstrapError,
             messages: envelope.payload?.messages?.map((message: any) => ({ op: message.op, tag: message.tag ?? message.options?.tag })) });
@@ -22,6 +31,7 @@ export function observeMovingPopupBootstrap(runtime: any) {
         const original = runtime.MolSysViewerController.prototype[method];
         runtime.MolSysViewerController.prototype[method] = async function(...args: any[]) {
             const op = method === "handleMessage" ? args[0]?.op : method;
+            if (method === "handleMessage") observeDelivery("before", args[0], this.trajectory.getTrajectoryState().currentFrame);
             const sample = (stage: string, error?: unknown) => record({ stage, op,
                 tag: args[0]?.tag ?? args[0]?.options?.tag,
                 frame: this.trajectory.getTrajectoryState().currentFrame,
@@ -29,6 +39,7 @@ export function observeMovingPopupBootstrap(runtime: any) {
             sample("before");
             try {
                 const result = await original.apply(this, args);
+                if (method === "handleMessage") observeDelivery("after", args[0], this.trajectory.getTrajectoryState().currentFrame);
                 sample("after");
                 return result;
             } catch (error) { sample("failed", error); throw error; }

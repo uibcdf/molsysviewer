@@ -175,11 +175,15 @@ class SceneMixin:
             return
         self._follow_box_frame(self.player.index)
 
-    def _follow_box_frame(self, index: int) -> None:
-        """Project a frame change without declaring a new box-display definition."""
+    def _follow_box_frame(self, index: int, *, project: bool = True) -> None:
+        """Retain the resolved cell; explicit navigation also projects it."""
         if self._box_record is not None:
             style = self._box_record
-            self._draw_box(style["color"], style["width"], style["alpha"], index, definition_change=False)
+            if not project and style["structure_indices"] == index:
+                return
+            self._draw_box(
+                style["color"], style["width"], style["alpha"], index, definition_change=False, project=project
+            )
 
     @signal(tags=["scene", "box"])
     @digest()
@@ -219,7 +223,9 @@ class SceneMixin:
 
         self._draw_box(color, width, alpha, sidx, definition_change=True)
 
-    def _draw_box(self, color, width: float, alpha: float, sidx: int, *, definition_change: bool) -> None:
+    def _draw_box(
+        self, color, width: float, alpha: float, sidx: int, *, definition_change: bool, project: bool = True
+    ) -> None:
         box_q = msm.get(self._molsys, element="system", box=True, structure_indices=[sidx], skip_digestion=True)
         if box_q is None:
             raise ValueError("The loaded system does not have box information.")
@@ -268,11 +274,12 @@ class SceneMixin:
 
         if definition_change:
             self._box_definition_revision += 1
+        emit = self._send if project else self._record_shape_message
         if self._box_visible:
             clear = {"op": "clear_shapes_by_tag", "tag": self._BOX_TAG}
             if not definition_change:
                 clear["box_frame_update"] = self._box_definition_revision
-            self._send(clear)
+            emit(clear)
 
         msg = {
             "op": "add_network_links",
@@ -290,7 +297,7 @@ class SceneMixin:
                 },
             },
         }
-        self._send(msg)
+        emit(msg)
         self._box_visible = True
         self._box_record = {
             "color": color,

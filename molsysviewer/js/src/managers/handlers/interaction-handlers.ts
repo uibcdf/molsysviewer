@@ -58,7 +58,8 @@ export class InteractionHandlers {
     private generation = 0;
     private latestRevision = -1;
     private tokens = new Map<string, object>();
-    private requestTimeout: ReturnType<typeof setTimeout> | null = null;
+    // Overlap one obsolete query with the current frame; never queue a trajectory.
+    private requests = new Map<number, { frame: number; timeout: ReturnType<typeof setTimeout> }>();
     constructor(private plugin: PluginContext, private ctx: {
         register: (ref: string, tag: string) => void; unregister: (ref: string, tag: string) => void;
         notify: (message: unknown) => void; summaries: (items: InteractionSummary[], frame: number) => void;
@@ -68,10 +69,12 @@ export class InteractionHandlers {
     get currentFrame(): number { return this.frame; }
     setSummaries(items: InteractionSummary[], revision = -1, requestGeometry = true): boolean {
         if (revision < this.latestRevision && revision !== -1) return false;
+        const previousRevision = this.latestRevision;
         this.latestRevision = Math.max(this.latestRevision, revision);
         for (const tag of this.tokens.keys()) if (!items.some(item => item.tag === tag)) this.drop(tag);
         this.summaries = items;
         this.latestRevision = Math.max(this.latestRevision, ...items.map(item => item.projection_revision ?? -1));
+        if (!items.length || this.latestRevision > previousRevision) this.resetRequests();
         if (requestGeometry && items.some(item => item.frame !== this.frame)) {
             this.pending = null; this.requestedFrame = -1; this.requestFrame();
         }
@@ -138,16 +141,19 @@ export class InteractionHandlers {
                 && !["pending", "render-error", "unavailable"].includes(item.status));
     }
     finishResponse(requestId: number) {
-        if (requestId === this.pending) {
-            this.pending = null;
-            if (this.requestTimeout) clearTimeout(this.requestTimeout);
-            this.requestFrame();
-        }
+        const request = this.requests.get(requestId);
+        if (!request) return;
+        clearTimeout(request.timeout);
+        this.requests.delete(requestId);
+        if (requestId === this.pending) this.pending = null;
+        this.requestFrame();
     }
     onFrame(frame: number) {
         if (frame === this.frame) return;
         this.frame = frame;
         this.generation++;
+        this.pending = null;
+        this.requestedFrame = -1;
         this.summaries = this.summaries.map(item => ({ ...item, frame, status: "pending", n_observations: 0, n_supported: 0, n_segments: 0, n_skipped: 0 }));
         this.ctx.summaries(this.summaries, frame);
         // Hide immediately: no links belonging to the preceding structure.
@@ -160,16 +166,28 @@ export class InteractionHandlers {
     }
     private requestedFrame = -1;
     private requestFrame() {
-        if (!this.summaries.length || this.pending !== null || this.requestedFrame === this.frame) return;
+        if (!this.summaries.length) return;
+        for (const [id, request] of this.requests) {
+            if (request.frame !== this.frame) continue;
+            this.pending = id;
+            this.requestedFrame = this.frame;
+            return;
+        }
+        if (this.requestedFrame === this.frame || this.requests.size >= 2) return;
         this.requestedFrame = this.frame;
-        this.pending = ++this.request;
-        this.ctx.notify({ event: "request_interaction_frame", frame: this.frame, request_id: this.pending });
-        if (this.requestTimeout) clearTimeout(this.requestTimeout);
-        this.requestTimeout = setTimeout(() => {
-            this.pending = null;
-            this.summaries = this.summaries.map(item => ({ ...item, status: "unavailable" }));
-            this.ctx.summaries(this.summaries, this.frame);
+        const id = ++this.request;
+        this.pending = id;
+        const timeout = setTimeout(() => {
+            this.requests.delete(id);
+            if (this.pending === id) {
+                this.pending = null;
+                this.summaries = this.summaries.map(item => ({ ...item, status: "unavailable" }));
+                this.ctx.summaries(this.summaries, this.frame);
+            }
+            this.requestFrame();
         }, 10000);
+        this.requests.set(id, { frame: this.frame, timeout });
+        this.ctx.notify({ event: "request_interaction_frame", frame: this.frame, request_id: id });
     }
     private async remove(tag: string) {
         const ref = this.refs.get(tag);
@@ -180,6 +198,12 @@ export class InteractionHandlers {
             state: this.plugin.state.data, ref, removeParentGhosts: true,
         });
     }
-    drop(tag: string) { this.tokens.delete(tag); this.series.delete(tag); this.summaries = this.summaries.filter(item => item.tag !== tag); void this.remove(tag); }
-    clear() { if (this.requestTimeout) clearTimeout(this.requestTimeout); this.generation++; this.tokens.clear(); this.series.clear(); this.summaries = []; this.pending = null; this.requestedFrame = -1; for (const tag of this.refs.keys()) void this.remove(tag); }
+    private resetRequests() {
+        for (const request of this.requests.values()) clearTimeout(request.timeout);
+        this.requests.clear();
+        this.pending = null;
+        this.requestedFrame = -1;
+    }
+    drop(tag: string) { this.tokens.delete(tag); this.series.delete(tag); this.summaries = this.summaries.filter(item => item.tag !== tag); if (!this.summaries.length) this.resetRequests(); void this.remove(tag); }
+    clear() { this.resetRequests(); this.generation++; this.tokens.clear(); this.series.clear(); this.summaries = []; for (const tag of this.refs.keys()) void this.remove(tag); }
 }

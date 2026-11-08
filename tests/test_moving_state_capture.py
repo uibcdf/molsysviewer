@@ -74,6 +74,91 @@ def test_dynamic_region_recovery_uses_the_saved_structure(view, tmp_path, kind, 
         assert restored.regions["fixed"].atom_indices == (1,)
 
 
+def test_dynamic_frame_queries_return_complete_membership_only_to_their_canvas(view):
+    """Two native renderers may query equal frames with different local caches."""
+    view._endpoint_transfers.register("canvas-a", "canvas")
+    view._endpoint_transfers.register("canvas-b", "canvas")
+    view._endpoint_transfers.register("studio", "panel")
+    sent = []
+    view.widget.send = lambda message, buffers=None: sent.append(dict(message))
+    for endpoint, frame in [("canvas-a", 1), ("canvas-b", 1), ("canvas-b", 0), ("canvas-a", 1)]:
+        sent.clear()
+        view._handle_frontend_event(
+            {
+                "event": "request_dynamic_region_evaluation",
+                "frame": frame,
+                "request_id": 7,
+                "_query_endpoint_id": endpoint,
+            }
+        )
+        replies = [message for message in sent if message.get("op") == "set_dynamic_region_atoms"]
+        assert replies == [
+            {
+                "op": "set_dynamic_region_atoms",
+                "frame": frame,
+                "request_id": 7,
+                "target_endpoint_id": endpoint,
+                "regions": [{"tag": "near", "atom_indices": [] if frame == 1 else [1]}],
+            }
+        ]
+    assert view.player.index == 0
+
+
+@pytest.mark.parametrize("endpoint", ["foreign", "closed", "studio"])
+def test_dynamic_frame_queries_refuse_non_canvas_owners(view, endpoint):
+    view._endpoint_transfers.register("closed", "canvas")
+    view._endpoint_transfers.close("closed")
+    view._endpoint_transfers.register("studio", "panel")
+    sent = []
+    view.widget.send = lambda message, buffers=None: sent.append(dict(message))
+    view._handle_frontend_event(
+        {"event": "request_dynamic_region_evaluation", "frame": 1, "request_id": 7, "_query_endpoint_id": endpoint}
+    )
+    assert not any(message.get("op") == "set_dynamic_region_atoms" for message in sent)
+
+
+def test_dynamic_frame_query_failure_is_owned_and_does_not_change_membership(view):
+    view._endpoint_transfers.register("canvas-a", "canvas")
+    view._endpoint_transfers.register("canvas-b", "canvas")
+    before = view.regions["near"].atom_indices
+    sent = []
+    view.widget.send = lambda message, buffers=None: sent.append(dict(message))
+    view._handle_frontend_event(
+        {
+            "event": "request_dynamic_region_evaluation",
+            "frame": "invalid",
+            "request_id": 7,
+            "_query_endpoint_id": "canvas-a",
+        }
+    )
+    assert len(sent) == 1
+    assert sent[0]["op"] == "backend_error_occurred"
+    assert sent[0]["target_endpoint_id"] == "canvas-a"
+    assert sent[0]["request_id"] == 7
+    assert view.regions["near"].atom_indices == before
+
+
+def test_budget_freeze_projects_its_complete_static_membership_to_every_canvas(view):
+    view._dynamic_region_evaluation_budget_ms = -1.0
+    view._endpoint_transfers.register("canvas-a", "canvas")
+    view._endpoint_transfers.register("canvas-b", "canvas")
+    sent = []
+    view.widget.send = lambda message, buffers=None: sent.append(dict(message))
+    view._handle_frontend_event(
+        {"event": "request_dynamic_region_evaluation", "frame": 1, "request_id": 7, "_query_endpoint_id": "canvas-a"}
+    )
+    freeze = [message for message in sent if message.get("op") == "dynamic_region_evaluation_warning"]
+    assert {message["target_endpoint_id"] for message in freeze} == {
+        f"widget-host:{view._binary_session_id}",
+        "canvas-a",
+        "canvas-b",
+    }
+    assert all(message["action"] == "frozen_to_static" and message["atom_indices"] == [] for message in freeze)
+    assert view.regions["near"].mode == "static"
+    replies = [message for message in sent if message.get("op") == "set_dynamic_region_atoms"]
+    assert len(replies) == 1 and replies[0]["target_endpoint_id"] == "canvas-a"
+
+
 def reply(ticket, frame, *, box_frame=None):
     return {
         "event": "visual_state_snapshot",

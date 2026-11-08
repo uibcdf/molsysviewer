@@ -649,6 +649,7 @@ export type SetShapeSummariesMessage = {
 
 export type SetDynamicRegionAtomsMessage = {
     op: "set_dynamic_region_atoms";
+    request_id?: number;
     frame?: number;
     regions?: Array<{
         tag?: string;

@@ -21,6 +21,7 @@ export interface TrajectoryContext {
     getLoadedStructure: () => LoadedStructure | undefined;
     notifyTrajectoryState: () => void;
     afterFrameApplied?: () => Promise<void>;
+    onFrameModelApplied?: (frame: number) => void;
     isFrameReady?: (frame: number) => boolean;
     /** Called when playback stops; receives the final frame index. */
     onPlaybackStopped?: (frame: number, navigationRevision?: number) => void;
@@ -225,6 +226,7 @@ export class TrajectoryHandlers {
         try { await this.plugin.runTask(this.plugin.state.data.updateTree(update)); }
         catch (error) { if (this.disposed) return; throw error; }
         if (this.disposed) return;
+        this.context.onFrameModelApplied?.(this.getCurrentFrameIndex());
         await this.context.afterFrameApplied?.();
         if (direction && this.getCurrentFrameIndex() === clamped) this.travelDirection = direction;
         this.updateTrajectoryState();

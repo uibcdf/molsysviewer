@@ -63,6 +63,7 @@ def test_dynamic_region_request_sends_one_runtime_message_for_all_changed_region
     assert len(dynamic_messages) == 1
     assert dynamic_messages[0] == {
         "op": "set_dynamic_region_atoms",
+        "target_endpoint_id": f"widget-host:{view._binary_session_id}",
         "frame": 4,
         "regions": [
             {"tag": "a", "atom_indices": [4]},

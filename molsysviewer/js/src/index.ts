@@ -29,7 +29,7 @@ import {
 } from "./messages/array-native-stream";
 import { PopupReplayLog } from "./messages/popup-replay-log";
 import { WidgetEnvelopeAdapter } from "./messages/widget-envelope";
-import { ownInteractionQuery } from "./messages/interaction-query";
+import { ownFrameQuery } from "./messages/frame-query";
 import { ACTION_CATEGORIES, FRONTEND_AUTHORITATIVE } from "./messages/runtime-actions";
 
 export { RemoteInputAdapter } from "./messages/remote-input-adapter";
@@ -401,7 +401,7 @@ export async function bootDocsView(opts: {
     const missingAuthority = makeMissingAuthorityReporter(hostEl);
     const controllerPromise = MolSysViewerController.create(target, message => {
         if (hasAuthority) {
-            notifyHost(ownInteractionQuery(message, primaryEndpoint));
+            notifyHost(ownFrameQuery(message, primaryEndpoint));
             return;
         }
         const projection = frontendSceneProjection(message);
@@ -569,7 +569,7 @@ export async function bootDocsView(opts: {
                 case "molsysviewer-popup-interaction":
                     {
                         if (hasAuthority) {
-                            notifyHost(ownInteractionQuery(data, popupMessage.channel.popupEndpointId));
+                            notifyHost(ownFrameQuery(data, popupMessage.channel.popupEndpointId));
                             break;
                         }
                         const projection = frontendSceneProjection(data);
@@ -948,7 +948,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
         const pendingWorkFileSaves = new Map<string, { requestId: string; owner: string; canvas: string }>();
         const workFileKey = (owner: string, requestId: string) => JSON.stringify([owner, requestId]);
         const sendEndpointAction = (message: Record<string, unknown>, owner: string, canvas: string) => {
-            message = ownInteractionQuery(message, owner);
+            message = ownFrameQuery(message, owner);
             const correlated = message.event === "interaction_context_action"
                 && typeof message.request_id === "string" && message.request_id.trim() !== "";
             const owned = correlated ? { ...message, _studio_owner_endpoint_id: owner } : message;

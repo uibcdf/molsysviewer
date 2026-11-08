@@ -3,7 +3,7 @@
 Use this page as the source of truth for the Python ↔ TypeScript boundary.
 These contracts are stability-critical.
 
-## Renderer-owned interaction queries
+## Renderer-owned frame queries
 
 `request_interaction_frame` uses a renderer-local integer `request_id`. The
 authenticated widget or live Qt host stamps `_query_endpoint_id` from the
@@ -22,6 +22,30 @@ edits remain scene-wide projections; requester isolation only scopes query
 answers. A targeted reply is relayed to its owner instead of entering the
 primary canvas or its replay log. These internal transport fields are not a
 new public Python API or a visual-state-capture stability declaration.
+
+`request_dynamic_region_evaluation` uses the same owner stamp and returns a
+complete membership for each evaluated region, including unchanged and empty
+selections. New requests carry a local monotonically increasing `request_id`;
+replies match both ID and frame. Obsolete replies may release their own query
+without changing another frame's atoms. Model/coordinate and region-lifetime
+changes retire pending IDs. Uncorrelated managed scene projections apply only
+at their actual current frame. A budget-triggered freeze is a separate shared
+static-scene change: its warning carries the complete frozen `atom_indices`
+for every renderer, independently of each local trajectory frame.
+
+Frame-query consumers allow at most two outstanding requests per family and
+renderer. This overlaps an older answer with the current frame; further desired
+frames coalesce to the latest frame instead of accumulating trajectory-wide
+requests. Completion retires only its own request, and an obsolete completion
+does not restart an already satisfied current frame. This internal scheduling
+bound does not establish moving-capture availability or a universal memory bound.
+
+`trajectory_frame_changed.box_display` confirms an already applied native cell.
+After validating its definition revision and index, Python updates its canonical
+cell/shape records without sending that geometry back to the renderers.
+Duplicate feedback is idempotent. Explicit Python seeks and box/style changes
+retain normal projection, as does the legacy feedback path without a resolved
+cell declaration.
 
 ## ViewerMessage protocol
 

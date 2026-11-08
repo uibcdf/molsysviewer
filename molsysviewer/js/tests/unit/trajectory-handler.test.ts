@@ -130,6 +130,38 @@ test("repeated complete follower frames do not rebuild unchanged molecular and d
     f.handler.dispose();
 });
 
+test("model-dependent queries start before awaited derived refresh and public frame notification", async () => {
+    const f = projectedFrameFixture();
+    const order: string[] = [];
+    let release!: () => void;
+    let started!: () => void;
+    const derivedStarted = new Promise<void>(resolve => { started = resolve; });
+    const context = Reflect.get(f.handler, "context");
+    context.onFrameModelApplied = (frame: number) => { assert.equal(frame, 2); order.push("query"); };
+    context.afterFrameApplied = async () => {
+        order.push("derived-start");
+        await new Promise<void>(resolve => { release = resolve; started(); });
+        order.push("derived-end");
+    };
+    f.handler.onTrajectoryState(() => order.push("public-frame"), { immediate: false });
+    const pending = f.handler.setTrajectoryFrame({ ...f.projection, index: 2 });
+    await derivedStarted;
+    try { assert.deepEqual([...order], ["query", "derived-start"]); }
+    finally { release(); await pending; f.handler.dispose(); }
+    assert.deepEqual(order, ["query", "derived-start", "derived-end", "public-frame"]);
+});
+
+test("disposing before native model application prevents new scientific queries", async () => {
+    const f = projectedFrameFixture();
+    let complete!: () => void, queries = 0;
+    f.gates.push(new Promise<void>(resolve => { complete = resolve; }));
+    Reflect.get(f.handler, "context").onFrameModelApplied = () => { queries++; };
+    const pending = f.handler.setTrajectoryFrame({ ...f.projection, index: 2 });
+    f.handler.dispose(); complete();
+    assert.equal(await pending, false);
+    assert.equal(queries, 0);
+});
+
 test("same-index follower optimization never drops a return while a different frame is in flight", async () => {
     const f = projectedFrameFixture();
     let finishFirst!: () => void, finishReturn!: () => void;

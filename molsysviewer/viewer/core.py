@@ -638,8 +638,8 @@ class MolSysView(
             request_id = content.get("request_id")
             if isinstance(request_id, str):
                 error_payload["request_id"] = request_id
-        elif event == "request_interaction_frame":
-            target = self._interaction_query_target(content)
+        elif event in {"request_interaction_frame", "request_dynamic_region_evaluation"}:
+            target = self._frame_query_target(content)
             if target is None:
                 return
             error_payload["target_endpoint_id"] = target
@@ -1650,7 +1650,7 @@ class MolSysView(
                 self._pending_camera_intent = pending
             raise
 
-    def _interaction_query_target(self, content: Mapping[str, Any]) -> str | None:
+    def _frame_query_target(self, content: Mapping[str, Any]) -> str | None:
         """Resolve a host-stamped query owner without broadcasting local IDs."""
         host = f"widget-host:{self._binary_session_id}"
         endpoint = content.get("_query_endpoint_id", "primary")
@@ -2083,7 +2083,7 @@ class MolSysView(
         elif event == "interaction_measurement_created":
             self.measurements._register_interactive_measurement(dict(content))  # noqa: SLF001
         elif event == "request_interaction_frame":
-            target = self._interaction_query_target(content)
+            target = self._frame_query_target(content)
             if target is None:
                 return
             frame = content.get("frame")
@@ -2139,14 +2139,19 @@ class MolSysView(
                     and self.molsys is not None
                     and 0 <= box_index < int(msm.get(self.molsys, element="system", n_structures=True))
                 ):
-                    self._follow_box_frame(box_index)
+                    # This is a receipt for geometry already applied by that
+                    # renderer, not another command for every open canvas.
+                    self._follow_box_frame(box_index, project=False)
             elif previous[0] != frame:
                 # Legacy endpoints have no resolved cell. Duplicate frame
                 # feedback must not undo an explicitly selected other cell.
                 self._follow_box_frame(frame)
             self.player._notify_frame_change(previous)  # noqa: SLF001
         elif event == "request_dynamic_region_evaluation":
-            self._handle_dynamic_region_evaluation_request(content)
+            try:
+                self._handle_dynamic_region_evaluation_request(content)
+            except Exception as exc:
+                self._send_backend_error_ack(content, exc)
         elif event == "panel_mode_state":
             self._last_panel_mode_state_event = dict(content)
         elif event in {"panel_navigate", "panel_unmount", "addon_panel_action"}:

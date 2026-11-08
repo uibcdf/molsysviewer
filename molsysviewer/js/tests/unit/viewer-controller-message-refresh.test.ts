@@ -100,22 +100,46 @@ test("viewer controller coalesces dynamic-region frame evaluation requests", () 
     controller.notify = (message: unknown) => messages.push(message);
     (controller as any).dynamicRegionEvaluationInFlight = null;
     (controller as any).dynamicRegionEvaluationPendingFrame = null;
+    (controller as any).dynamicRegionRequestSequence = 0;
+    (controller as any).dynamicRegionRequestId = null;
+    (controller as any).dynamicRegionRequests = new Map();
+    (controller as any).trajectory = { getTrajectoryState: () => ({ currentFrame: 3 }) };
 
     (controller as any).requestDynamicRegionEvaluationForFrame(1);
     (controller as any).requestDynamicRegionEvaluationForFrame(2);
     (controller as any).requestDynamicRegionEvaluationForFrame(3);
 
     assert.deepStrictEqual(messages, [
-        { event: "request_dynamic_region_evaluation", frame: 1 },
+        { event: "request_dynamic_region_evaluation", frame: 1, request_id: 1 },
+        { event: "request_dynamic_region_evaluation", frame: 2, request_id: 2 },
     ]);
 
-    (controller as any).handleDynamicRegionEvaluationResponse(1);
+    (controller as any).handleDynamicRegionEvaluationResponse(1, 9);
+    assert.equal(messages.length, 2, "a foreign response cannot retire the pending query");
+    assert.equal(draws, 0);
+    (controller as any).handleDynamicRegionEvaluationResponse(1, 1, false);
 
     assert.deepStrictEqual(messages, [
-        { event: "request_dynamic_region_evaluation", frame: 1 },
-        { event: "request_dynamic_region_evaluation", frame: 3 },
+        { event: "request_dynamic_region_evaluation", frame: 1, request_id: 1 },
+        { event: "request_dynamic_region_evaluation", frame: 2, request_id: 2 },
+        { event: "request_dynamic_region_evaluation", frame: 3, request_id: 3 },
     ]);
     assert.equal(draws, 1, "a completed no-change evaluation must still permit a fresh capture draw");
+    (controller as any).resetDynamicRegionEvaluation();
+    (controller as any).requestDynamicRegionEvaluationForFrame(3);
+    assert.deepStrictEqual(messages.at(-1), { event: "request_dynamic_region_evaluation", frame: 3, request_id: 4 });
+    (controller as any).handleDynamicRegionEvaluationResponse(3, 2);
+    assert.equal((controller as any).dynamicRegionRequestId, 4, "scene replacement invalidates an old same-frame reply");
+    (controller as any).handleDynamicRegionEvaluationResponse(3, 4, true);
+    assert.equal((controller as any).dynamicRegionRequestId, null);
+    assert.equal(draws, 2);
+    (controller as any).requestDynamicRegionEvaluationForFrame(1);
+    (controller as any).requestDynamicRegionEvaluationForFrame(3);
+    const count = messages.length;
+    (controller as any).handleDynamicRegionEvaluationResponse(3, 6, true);
+    (controller as any).handleDynamicRegionEvaluationResponse(1, 5, false);
+    assert.equal(messages.length, count, "an old completion cannot restart an already applied current frame");
+    assert.equal((controller as any).dynamicRegionEvaluationAppliedFrame, 3);
 });
 
 test("viewer controller does not request dynamic-region evaluation without frame-dependent regions", () => {

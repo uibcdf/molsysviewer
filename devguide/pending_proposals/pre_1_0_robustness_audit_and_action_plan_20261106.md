@@ -14,6 +14,23 @@ supersedes: []
 
 # Pre-1.0 robustness audit and action plan — 2026-11-06
 
+**Current selected receiving — 2026-11-08:**
+[#338](../pending_bugs/dynamic_region_queries_cross_renderer_frames.md) isolates
+complete dynamic-region replies; [#339](../pending_bugs/applied_box_feedback_reprojects_geometry.md)
+stops confirmed native-cell feedback from reissuing scene geometry. The selected
+source passes 218 affected Python and 428 canonical JavaScript cases. Failed
+queue/admission alternatives are preserved as prototypes and removed from the
+selected source. Actual four-role receiving of the direct corrections is in
+progress with unchanged deadlines and scientific assertions. Early model I/O
+alone still fails native attempt 07. Attempt 08 also fails the first popup-state
+case with the bounded two-query window, despite 12 passing affected protocol
+cases. No moving role is accepted on this source. The unchanged canonical box
+browser guard passes independently (46.24 s), as does v1 popup bootstrap/Retry
+(38.41 s); 493 transport/protocol/reporting cases pass. These bounded results
+do not close the combined moving-capture gate. The
+[receipt](../dynamic_region_frame_receiving_20261108.json) distinguishes each
+source cohort. A5 remains open and progress stays 8/46 (17.4%).
+
 **Current A5 investigation — 2026-11-08:** native popup-state and popup-session
 pass after the current refinement; detached Studio state still times out and
 its session case does not execute. Independent

@@ -255,18 +255,24 @@ class RegionsMixin:
         ]
 
     def _handle_dynamic_region_evaluation_request(self, content: Mapping[str, Any]) -> None:
+        target = self._frame_query_target(content)
+        if target is None:
+            return
         frame = int(content.get("frame", 0))
-        changed = self._evaluate_dynamic_regions_for_frame(frame)
+        regions = self._evaluate_dynamic_regions_for_frame(frame, full=True)
         self._send_runtime_only(
             {
                 "op": "set_dynamic_region_atoms",
                 "frame": frame,
-                "regions": changed,
+                "regions": regions,
+                "target_endpoint_id": target,
+                **({"request_id": content["request_id"]} if "request_id" in content else {}),
             }
         )
 
-    def _evaluate_dynamic_regions_for_frame(self, structure_index: int) -> list[dict[str, Any]]:
+    def _evaluate_dynamic_regions_for_frame(self, structure_index: int, *, full: bool = False) -> list[dict[str, Any]]:
         changed: list[dict[str, Any]] = []
+        projections: list[dict[str, Any]] = []
         frame = int(structure_index)
         budget_ms = float(getattr(self, "_dynamic_region_evaluation_budget_ms", 25.0))
         for region in self._dynamic_regions_requiring_frame_evaluation():
@@ -302,16 +308,19 @@ class RegionsMixin:
                             "elapsed_ms": elapsed_ms,
                             "budget_ms": budget_ms,
                             "action": "frozen_to_static",
+                            "atom_indices": list(cached),
                         }
                     )
             current = tuple(region.atom_indices or ())
+            projection = {"tag": region.tag, "atom_indices": list(cached)}
+            projections.append(projection)
             if tuple(cached) == current:
                 continue
             region._set_atom_indices(cached)  # noqa: SLF001
-            changed.append({"tag": region.tag, "atom_indices": list(cached)})
+            changed.append(projection)
         if changed:
             self._sync_region_summaries_runtime()
-        return changed
+        return projections if full else changed
 
     def _label_for_split_region(self, *, element_label: str, item_index: int) -> str | None:
         template = "{name}"

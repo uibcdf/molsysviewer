@@ -2,6 +2,7 @@ import { getFloatingPanelSize } from "../ui/floating-panel-layout";
 import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { createSecureRuntimeId } from "../messages/popup-channel";
 import { trajectorySyncToAuthority } from "../messages/trajectory-intent";
+import { dynamicRegionReplyAction } from "../messages/frame-query";
 import { DefaultPluginSpec } from "molstar/lib/mol-plugin/spec";
 import { PluginBehaviors } from "molstar/lib/mol-plugin/behavior";
 import { StateObjectRef } from "molstar/lib/mol-state";
@@ -648,6 +649,9 @@ export class MolSysViewerController {
     private dynamicRegionEvaluationPendingFrame: number | null = null;
     private dynamicRegionEvaluationAppliedFrame: number | null = null;
     private dynamicRegionObservedFrame: number | null = null;
+    private dynamicRegionRequestSequence = 0;
+    private dynamicRegionRequestId: number | null = null;
+    private dynamicRegionRequests = new Map<number, number>();
     private disposed = false;
     private addonsScene: { styleTag?: string; preset?: string; figurePreset?: string; figureScale?: number; figureVariants?: string[]; figureBackground?: string } | null = null;
     private addonsList: AddonRuntimeSummary[] = [];
@@ -1759,13 +1763,17 @@ export class MolSysViewerController {
         this.loader = new LoaderHandlers(plugin, {
             clearGlobalRepresentations: () => this.state.clearGlobalRepresentations(),
             captureCurrentStructure: () => this.captureCurrentStructure(),
-            setLoadedStructure: (ls) => { this.loadedStructure = ls; },
+            setLoadedStructure: (ls) => {
+                this.loadedStructure = ls;
+                this.resetDynamicRegionEvaluation();
+            },
             getLoadedStructure: () => this.loadedStructure,
             setExpectedFrameCount: (n) => this.trajectory.setExpectedFrameCount(n),
         });
 
         this.trajectory = new TrajectoryHandlers(plugin, {
             afterFrameApplied: () => this.annotations.refresh(),
+            onFrameModelApplied: frame => this.prepareFrameDependentQueries(frame),
             isFrameReady: frame => this.areFrameProjectionsCurrent(frame),
             getLoadedStructure: () => this.loadedStructure,
             notifyTrajectoryState: () => this.notifyTrajectoryState(),
@@ -1826,15 +1834,8 @@ export class MolSysViewerController {
                 this.groupPanel.clearContextInspection();
                 this.triggerLocalAddonEvent("frame-changed", state.currentFrame);
                 this.trajectoryPlotOverlay.setFrame(state.currentFrame);
-                this.interactions.onFrame(state.currentFrame);
+                this.prepareFrameDependentQueries(state.currentFrame);
                 void this.annotations.refresh().catch(error => console.warn("[MolSysViewer] Annotation refresh failed", error));
-                // Playback/default summaries also notify this subscription.
-                // They must not continuously restart a query for an unchanged
-                // frame before its already applied geometry can be drawn.
-                if (this.dynamicRegionObservedFrame !== state.currentFrame) {
-                    this.dynamicRegionObservedFrame = state.currentFrame;
-                    this.requestDynamicRegionEvaluationForFrame(state.currentFrame);
-                }
             },
             { immediate: false },
         );
@@ -2715,6 +2716,7 @@ export class MolSysViewerController {
                         this.checkCameraAfterSceneMutation("clear_scene");
                     break;
                 case "clear_all":
+                    this.resetDynamicRegionEvaluation();
                     this.boxDisplay.forget();
                     this.setStructureLoadPending(msg.awaiting_structure === true);
                     this.interactions.clear();
@@ -2729,6 +2731,7 @@ export class MolSysViewerController {
                 // State/Region Ops
                 case "set_focus_fade": await this.state.setFocusFade(msg); break;
                 case "create_region": {
+                    this.resetDynamicRegionEvaluation();
                     await this.state.createRegion(msg);
                     const tag = (msg as any).tag || "region";
                     this.showToast(`Region '${tag}' created`);
@@ -2744,7 +2747,13 @@ export class MolSysViewerController {
                 case "hide_region": await this.state.hideRegion(msg); break;
                 case "set_region_enabled": await this.state.setRegionEnabled(msg); break;
                 case "set_regions_visibility": await this.state.setRegionsVisibility(msg as any); break;
-                case "set_region_summaries": this.state.setRegionSummaries(msg as any); break;
+                case "set_region_summaries":
+                    this.state.setRegionSummaries(msg as any);
+                    if (this.dynamicRegionObservedFrame === null && this.state.hasFrameDependentDynamicRegions()) {
+                        this.dynamicRegionObservedFrame = this.trajectory.getTrajectoryState().currentFrame;
+                        this.requestDynamicRegionEvaluationForFrame(this.dynamicRegionObservedFrame);
+                    }
+                    break;
                 case "set_layer_summaries": {
                     const records = Array.isArray((msg as any).layers) ? (msg as any).layers : [];
                     this.layerSummaries = records
@@ -2891,16 +2900,33 @@ export class MolSysViewerController {
                     }
                     break;
                 }
-                case "set_dynamic_region_atoms":
-                    await this.state.setDynamicRegionAtoms(msg as any);
-                    this.handleDynamicRegionEvaluationResponse((msg as any).frame);
+                case "set_dynamic_region_atoms": {
+                    if (this.isPanelOnly) break;
+                    const requestedFrame = msg.request_id === undefined ? undefined : this.dynamicRegionRequests.get(msg.request_id);
+                    const action = dynamicRegionReplyAction(msg, this.trajectory.getTrajectoryState().currentFrame,
+                        requestedFrame ?? null, requestedFrame === undefined ? null : msg.request_id!);
+                    if (action === "ignore") break;
+                    if (action !== "complete") await this.state.setDynamicRegionAtoms(msg);
+                    if (action === "apply" || action === "complete") {
+                        this.handleDynamicRegionEvaluationResponse(msg.frame, msg.request_id, action === "apply");
+                    } else if (this.dynamicRegionEvaluationInFlight === null) {
+                        this.dynamicRegionEvaluationAppliedFrame = msg.frame!;
+                        this.plugin.canvas3d?.requestDraw();
+                    }
                     break;
+                }
                 case "dynamic_region_evaluation_warning": {
                     // Python freezes a dynamic region to static when evaluating it
                     // blows the per-frame budget. It has always sent this warning,
                     // but no handler existed, so the region just stopped following
                     // the trajectory with nothing said on screen.
                     const tag = typeof (msg as any).tag === "string" ? (msg as any).tag : "region";
+                    if ((msg as any).action === "frozen_to_static" && Array.isArray((msg as any).atom_indices)) {
+                        // Freezing is a shared static scene definition, rather
+                        // than geometry for the recipient's current query frame.
+                        await this.state.setDynamicRegionAtoms({ op: "set_dynamic_region_atoms",
+                            regions: [{ tag, atom_indices: (msg as any).atom_indices }] });
+                    }
                     const elapsed = Number((msg as any).elapsed_ms);
                     const budget = Number((msg as any).budget_ms);
                     const timing = Number.isFinite(elapsed) && Number.isFinite(budget)
@@ -2939,6 +2965,7 @@ export class MolSysViewerController {
                 case "whole_details": this.groupPanel.updateWholeDetails(msg as any); break;
                 case "batch_region_operations": await this.state.applyRegionOperations(msg as any); break;
                 case "delete_region": {
+                    this.resetDynamicRegionEvaluation();
                     await this.state.deleteRegion(msg);
                     const tag = (msg as any).tag || "region";
                     this.showToast(`Region '${tag}' deleted`);
@@ -2949,6 +2976,7 @@ export class MolSysViewerController {
                 case "show_layer": await this.state.showLayer(msg); break;
                 case "hide_layer": await this.state.hideLayer(msg); break;
                 case "delete_layer":
+                    if (msg.kind === "region") this.resetDynamicRegionEvaluation();
                     await this.state.deleteLayer(msg, () => {
                         if (msg.kind === "interaction" && msg.tag) this.interactions.drop(msg.tag);
                         if (msg.kind === "annotation" && typeof msg.tag === "string" && this.annotations.hasTag(msg.tag)) {
@@ -2960,6 +2988,7 @@ export class MolSysViewerController {
                     });
                     break;
                 case "set_layer_tag":
+                    if ((msg as any).kind === "region") this.resetDynamicRegionEvaluation();
                     if (
                         (msg as any).kind === "annotation"
                         && typeof (msg as any).tag === "string"
@@ -3056,7 +3085,10 @@ export class MolSysViewerController {
                         this.trajectory.getTrajectoryState().currentFrame);
                     break;
                 case "set_trajectory_playback": await this.trajectory.setTrajectoryPlayback(msg); break;
-                case "partial_coordinates_update": await this.trajectory.partialCoordinatesUpdate(msg as any); break;
+                case "partial_coordinates_update":
+                    this.resetDynamicRegionEvaluation();
+                    await this.trajectory.partialCoordinatesUpdate(msg as any);
+                    break;
 
                 // Movie Ops
                 case "play_movie": {
@@ -3329,6 +3361,14 @@ export class MolSysViewerController {
                 }
 
                 case "backend_error_occurred": {
+                    if ((msg as any).trigger_event === "request_dynamic_region_evaluation") {
+                        const id = (msg as any).request_id;
+                        const frame = this.dynamicRegionRequests.get(id);
+                        if (frame !== undefined) {
+                            if (id === this.dynamicRegionRequestId) this.dynamicRegionEvaluationAppliedFrame = null;
+                            this.handleDynamicRegionEvaluationResponse(frame, id, false, false);
+                        }
+                    }
                     const errorType = typeof (msg as any).error_type === "string" ? (msg as any).error_type : "BackendError";
                     const errorMessage = typeof (msg as any).error_message === "string" ? (msg as any).error_message : "Backend action failed.";
                     this.showToast(`${errorType}: ${errorMessage}`, 6000);
@@ -4840,30 +4880,69 @@ export class MolSysViewerController {
         }
     }
 
+    private prepareFrameDependentQueries(frame: number) {
+        if (this.isPanelOnly) return;
+        this.interactions.onFrame(frame);
+        // Begin I/O as soon as the model applies, overlapping derived refresh.
+        // Repeated metadata notifications must not restart the same query.
+        if (this.dynamicRegionObservedFrame !== frame) {
+            this.dynamicRegionObservedFrame = frame;
+            this.requestDynamicRegionEvaluationForFrame(frame);
+        }
+    }
+
     private requestDynamicRegionEvaluationForFrame(frame: number) {
-        if (!this.state.hasFrameDependentDynamicRegions()) return;
+        if (this.disposed || this.isPanelOnly || !this.state.hasFrameDependentDynamicRegions()) return;
         const normalizedFrame = Math.max(0, Math.trunc(Number(frame) || 0));
-        if (this.dynamicRegionEvaluationInFlight !== null) {
+        for (const [id, requestedFrame] of this.dynamicRegionRequests) {
+            if (requestedFrame !== normalizedFrame) continue;
+            this.dynamicRegionEvaluationInFlight = normalizedFrame;
+            this.dynamicRegionRequestId = id;
+            this.dynamicRegionEvaluationPendingFrame = null;
+            return;
+        }
+        this.dynamicRegionEvaluationInFlight = null;
+        this.dynamicRegionRequestId = null;
+        if (this.dynamicRegionRequests.size >= 2) {
             this.dynamicRegionEvaluationPendingFrame = normalizedFrame;
             return;
         }
+        this.dynamicRegionEvaluationPendingFrame = null;
         this.dynamicRegionEvaluationInFlight = normalizedFrame;
+        this.dynamicRegionRequestId = ++this.dynamicRegionRequestSequence;
+        this.dynamicRegionRequests.set(this.dynamicRegionRequestId, normalizedFrame);
         this.notify?.({
             event: "request_dynamic_region_evaluation",
             frame: normalizedFrame,
+            request_id: this.dynamicRegionRequestId,
         });
     }
 
-    private handleDynamicRegionEvaluationResponse(frame: unknown) {
-        const completed = Math.trunc(Number(frame));
-        if (Number.isFinite(completed) && this.dynamicRegionEvaluationInFlight === completed) {
-            this.dynamicRegionEvaluationInFlight = null;
-            this.dynamicRegionEvaluationAppliedFrame = completed;
-        } else return;
-        const pending = this.dynamicRegionEvaluationPendingFrame;
+    private resetDynamicRegionEvaluation() {
+        this.dynamicRegionRequests.clear();
+        this.dynamicRegionEvaluationInFlight = null;
         this.dynamicRegionEvaluationPendingFrame = null;
-        if (pending !== null && pending !== completed) {
-            this.requestDynamicRegionEvaluationForFrame(pending);
+        this.dynamicRegionEvaluationAppliedFrame = null;
+        this.dynamicRegionObservedFrame = null;
+        this.dynamicRegionRequestId = null;
+        // Keep the sequence monotonic across scene replacement: an old response
+        // must not acquire the identity of the new scene's first query.
+    }
+
+    private handleDynamicRegionEvaluationResponse(frame: unknown, requestId?: number, applied = false, retryCurrent = true) {
+        const completed = Math.trunc(Number(frame));
+        if (requestId === undefined || !Number.isFinite(completed)
+            || this.dynamicRegionRequests.get(requestId) !== completed) return;
+        this.dynamicRegionRequests.delete(requestId);
+        if (requestId === this.dynamicRegionRequestId) {
+            this.dynamicRegionEvaluationInFlight = null;
+            this.dynamicRegionRequestId = null;
+        }
+        if (applied) this.dynamicRegionEvaluationAppliedFrame = completed;
+        this.dynamicRegionEvaluationPendingFrame = null;
+        const current = this.trajectory.getTrajectoryState().currentFrame;
+        if (this.dynamicRegionEvaluationAppliedFrame !== current && (retryCurrent || current !== completed)) {
+            this.requestDynamicRegionEvaluationForFrame(current);
         }
         this.plugin.canvas3d?.requestDraw();
     }

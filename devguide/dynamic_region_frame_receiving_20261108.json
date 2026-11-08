@@ -1,0 +1,670 @@
+{
+  "schema": "molsysviewer.working_receiving@1",
+  "date": "2026-11-08",
+  "owner_issue": "uibcdf/molsysviewer#338",
+  "capture_issue": "uibcdf/molsysviewer#319",
+  "related_issue": "uibcdf/molsysviewer#337",
+  "parent_plan": "uibcdf/molsysviewer#315",
+  "source_base": "c1ed1c909f7a2c31b351ff0c6f9ba2edd40b166d",
+  "provider_source": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+  "status": "Affected Python/frontend, canonical box and v1 popup bootstrap guards pass; moving popup-state still times out after bounded-window attempt08. No current moving role or A5 closure claimed.",
+  "advertised_capture_versions": [
+    1
+  ],
+  "changes": [
+    "Authenticated frame-query ownership includes dynamic regions",
+    "Every requester receives full cached memberships including empty and unchanged regions",
+    "Renderer-local monotonic request IDs distinguish replies across repeated frames and model replacement",
+    "Obsolete replies may release only their own query without applying other-frame atoms",
+    "Current-frame managed coordinate projections remain admitted; panel-only endpoints request no geometry",
+    "Budget freezes distribute the complete static membership as a separate scene definition",
+    "Validated applied-cell feedback records the native cell without echoing geometry; explicit navigation still projects"
+  ],
+  "before_control": {
+    "private_record": ".pytest_cache/robustness-20261106/A5-moving-timeout-20261108/query-dynamic-before-01",
+    "native_exit": 1,
+    "passed": 0,
+    "failed": 4,
+    "scientific_mock_used": false
+  },
+  "python_checks": {
+    "private_record": ".pytest_cache/robustness-20261106/A5-dynamic-frames-20261108/query-selected-python-final-01",
+    "native_exit": 0,
+    "passed": 218,
+    "failed": 0,
+    "skipped": 0,
+    "selection": [
+      "tests/test_box_state_persistence.py",
+      "tests/test_moving_state_capture.py",
+      "tests/test_dynamic_regions.py",
+      "tests/test_region_enablement.py",
+      "tests/test_interactions_scene.py"
+    ],
+    "receptor": "llm",
+    "peak_owned_rss_mib": 667.8,
+    "seconds": 82.15254978300072
+  },
+  "frontend_checks": {
+    "production_typescript": 0,
+    "runtime_build": 0,
+    "harness_build": 0,
+    "canonical_node": {
+      "native_exit": 0,
+      "passed": 424,
+      "failed": 0,
+      "skipped": 0
+    },
+    "e2e_build": 0,
+    "private_entry_build": 0,
+    "private_records": [
+      "checks-dynamic-routing-01",
+      "checks-dynamic-routing-02",
+      "checks-selected-source-01",
+      "checks-follower-draw-fence-01"
+    ],
+    "retained_failure": "First canonical execution passes423/fails1: the old Object.create protocol fixture omitted new constructor fields and expected the old frame-only contract. Updated fixture initializes identity, guards stale replies and requires monotonic IDs across replacement; unchanged successful build stages retained.",
+    "selected_canonical_node": {
+      "native_exit": 0,
+      "passed": 428,
+      "failed": 0,
+      "skipped": 0,
+      "private_record": "checks-bounded-frame-queries-01"
+    }
+  },
+  "runtime_sha256": "87057e40bdb738f4cd160f5777ba2fe1bdb83e013e9a1f4e04d6d51bef223b15",
+  "active_execution": null,
+  "executions": [
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--unit=msv-moving-2947218-endpoint-after-01",
+        "--quiet",
+        "-p",
+        "CPUQuota=800%",
+        "-p",
+        "MemoryMax=6G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3,4,5,6,7",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 1,
+      "seconds": 73.55771488905884,
+      "selected_inputs": 4329,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2896.4,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-dynamic-frames-20261108/endpoint-after-01",
+      "scope": "Requester/frame isolation only; first popup state times out",
+      "completed_roles": [],
+      "failed_role": "popup-state",
+      "unexecuted_roles": [
+        "popup-session",
+        "detached-state",
+        "detached-session"
+      ],
+      "digests": {
+        "invocation.json": "59524bb6f32e1ea531851aeca33bccbaa56c4bb2cd01ef94752467f65ac0ab5b",
+        "inputs-before.json": "a7402bfa4bb3f7e106d7d415bb9b978080838977963f796fb294878f843388c0",
+        "inputs-after.json": "a7402bfa4bb3f7e106d7d415bb9b978080838977963f796fb294878f843388c0",
+        "stdout.log": "7e352862082f7a7ffe250a2e72522e193b54f9e4c60b772a9feec8d21421d4cb",
+        "capture-failure.json": "b1a2020ab52043578b144a2c383ef1ec9907636bf3cc2ff086bb9605d0f84edd"
+      }
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--unit=msv-moving-2952136-endpoint-after-02",
+        "--quiet",
+        "-p",
+        "CPUQuota=800%",
+        "-p",
+        "MemoryMax=6G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3,4,5,6,7",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 1,
+      "seconds": 74.82711021997966,
+      "selected_inputs": 4329,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2768.7,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-dynamic-frames-20261108/endpoint-after-02",
+      "scope": "Same runtime with passive received/before/after timing; first popup state times out",
+      "completed_roles": [],
+      "failed_role": "popup-state",
+      "unexecuted_roles": [
+        "popup-session",
+        "detached-state",
+        "detached-session"
+      ],
+      "digests": {
+        "invocation.json": "5795278cc0297e9417fe3eca9b317005405dac96056d110d0f69fc18f35cf2ef",
+        "inputs-before.json": "c2e21f6d0efba8bfbb8d63a4bbc86bc1e6117511d21885c37d936f7d9ce68d9f",
+        "inputs-after.json": "c2e21f6d0efba8bfbb8d63a4bbc86bc1e6117511d21885c37d936f7d9ce68d9f",
+        "stdout.log": "697ced4c56d571c39462dc9e4f631c08a2a0797bafa60398c3f4ec2e16741236",
+        "capture-failure.json": "0620c85928c28fca735abe38ceefb200cf0aeef787e5040cdc054683666c8187"
+      }
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--unit=msv-moving-2964819-endpoint-after-03",
+        "--quiet",
+        "-p",
+        "CPUQuota=800%",
+        "-p",
+        "MemoryMax=6G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3,4,5,6,7",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 1,
+      "seconds": 67.68985312711447,
+      "selected_inputs": 4329,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2786.8,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-dynamic-frames-20261108/endpoint-after-03",
+      "scope": "Discarded separate-reply/admission prototype; first popup state times out",
+      "completed_roles": [],
+      "failed_role": "popup-state",
+      "unexecuted_roles": [
+        "popup-session",
+        "detached-state",
+        "detached-session"
+      ],
+      "digests": {
+        "invocation.json": "ff97534f47fe9e0acd216aa66eccb6dc38ae33f305b34f60a5b95e6a964d522b",
+        "inputs-before.json": "1bac1a80e9f8973fdc6940abcf8bb2f382b7bac7131f197191dd321561c9ce88",
+        "inputs-after.json": "1bac1a80e9f8973fdc6940abcf8bb2f382b7bac7131f197191dd321561c9ce88",
+        "stdout.log": "23d5fc8bf1d8e8e77e1ca9bc86e2785e705e36d5e03ed68c058fccc5efe161e2",
+        "capture-failure.json": "74979498a1cf3c3e9f5141cabc8dcd2b1d00699bbc1f46681c1cfc8230cf0b94"
+      }
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--unit=msv-moving-2976506-endpoint-after-04",
+        "--quiet",
+        "-p",
+        "CPUQuota=800%",
+        "-p",
+        "MemoryMax=6G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3,4,5,6,7",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 1,
+      "seconds": 67.3392081449274,
+      "selected_inputs": 4331,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2758.2,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-dynamic-frames-20261108/endpoint-after-04",
+      "scope": "Discarded coalesced-frame prototype; first popup state times out",
+      "completed_roles": [],
+      "failed_role": "popup-state",
+      "unexecuted_roles": [
+        "popup-session",
+        "detached-state",
+        "detached-session"
+      ],
+      "digests": {
+        "invocation.json": "eede74fd61aa2886923e674a92dd061a2a8a9332a9d5ecac4069371dc99beb9b",
+        "inputs-before.json": "299548c636247fafd497f17f368859bae4abd0a42f57a87947176d274815bca1",
+        "inputs-after.json": "299548c636247fafd497f17f368859bae4abd0a42f57a87947176d274815bca1",
+        "stdout.log": "c79df35766875009bb32210837d283be6a6c9cf1704279a51657f854be32e649",
+        "capture-failure.json": "a6e8fdfcc97a8ef5a4db10b73c03f7f706c83e4a18c818837f015a5dad490cc9"
+      }
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--unit=msv-moving-2996563-endpoint-after-05",
+        "--quiet",
+        "-p",
+        "CPUQuota=800%",
+        "-p",
+        "MemoryMax=6G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3,4,5,6,7",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 1,
+      "seconds": 75.0583793418482,
+      "selected_inputs": 4329,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2607.7,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-dynamic-frames-20261108/endpoint-after-05",
+      "scope": "Direct producer correction with original scene queue; no echo remains in terminal popup tail, but first popup-state still times out. Actual capture prepare starts38 ms after Python request.",
+      "completed_roles": [],
+      "failed_role": "popup-state",
+      "unexecuted_roles": [
+        "popup-session",
+        "detached-state",
+        "detached-session"
+      ],
+      "digests": {
+        "invocation.json": "c714e53c421218aa9d22ba8688af73864099822f6af07120424a4f6b062a8882",
+        "inputs-before.json": "7eb624d4f914cb7e4a9a86beff2f3cf3a4c04bf98e4307712266a185f83f9a78",
+        "inputs-after.json": "7eb624d4f914cb7e4a9a86beff2f3cf3a4c04bf98e4307712266a185f83f9a78",
+        "stdout.log": "71475bec764c1acce42dab062f142e1183f0e165bd42126a6e172d4065265255",
+        "capture-failure.json": "d415730e2ee70a56eb110ddaff8035df02f6d7bd9f0b769837e42677b6b2492c"
+      }
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--unit=msv-moving-3003213-endpoint-after-06",
+        "--quiet",
+        "-p",
+        "CPUQuota=800%",
+        "-p",
+        "MemoryMax=6G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3,4,5,6,7",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 1,
+      "seconds": 62.789696843130514,
+      "selected_inputs": 4329,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2614.3,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-dynamic-frames-20261108/endpoint-after-06",
+      "scope": "Discarded single-draw follower fence; first popup-state still times out",
+      "completed_roles": [],
+      "failed_role": "popup-state",
+      "unexecuted_roles": [
+        "popup-session",
+        "detached-state",
+        "detached-session"
+      ]
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--unit=msv-moving-3014652-endpoint-after-07",
+        "--quiet",
+        "-p",
+        "CPUQuota=800%",
+        "-p",
+        "MemoryMax=6G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3,4,5,6,7",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 1,
+      "seconds": 74.36791993700899,
+      "selected_inputs": 4329,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2554.2,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-dynamic-frames-20261108/endpoint-after-07",
+      "scope": "Early model-dependent query I/O; first popup-state still times out",
+      "completed_roles": [],
+      "failed_role": "popup-state",
+      "unexecuted_roles": [
+        "popup-session",
+        "detached-state",
+        "detached-session"
+      ],
+      "digests": {
+        "invocation.json": "78e47aaddf9f1ce5a3b1aa20c336930b702a3f9e8a524db46986d95b6ee83904",
+        "inputs-before.json": "65b71c0e8ca43a1287525f213725593ef6b45d26d1858375c018a85aec43326f",
+        "inputs-after.json": "65b71c0e8ca43a1287525f213725593ef6b45d26d1858375c018a85aec43326f",
+        "stdout.log": "2ff5245054e55b06ee88958f5a013a96e06307ad088229d81755df2d2acbf122",
+        "capture-failure.json": "272aee391ed8de9dad37529de6aa095c8b366c45eca458e9c124fca458e6e2c3"
+      }
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--unit=msv-moving-3030854-endpoint-after-08",
+        "--quiet",
+        "-p",
+        "CPUQuota=800%",
+        "-p",
+        "MemoryMax=6G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3,4,5,6,7",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 1,
+      "seconds": 70.4239600689616,
+      "selected_inputs": 4329,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2588.3,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-dynamic-frames-20261108/endpoint-after-08",
+      "scope": "Bounded two-query window; first popup-state still times out",
+      "completed_roles": [],
+      "failed_role": "popup-state",
+      "unexecuted_roles": [
+        "popup-session",
+        "detached-state",
+        "detached-session"
+      ]
+    }
+  ],
+  "resource_scope": {
+    "maximum_logical_cpus": 8,
+    "maximum_ram_gib": 6,
+    "swap_max_gib": 0,
+    "minimum_available_reserve_gib": 2,
+    "tasks_max": 256,
+    "single_intensive_execution": true,
+    "reserved_or_exclusive_memory_claimed": false
+  },
+  "not_relaxed": [
+    "Ten-second Studio operation deadline",
+    "Two actual owning-canvas frame changes after the real capture request",
+    "Genuine delayed Python geometry, zero early replies, actual native camera/frame/box/shape/annotation/distance/interaction/dynamic-region checks",
+    "Independent state/session restoration and original source identity/coordinates"
+  ],
+  "remaining": [
+    "Complete and inspect actual four-role receiving",
+    "Receive primary state/session, stopped empty frame and presentation controls on the current source",
+    "Qualify hidden/unavailable/closed/disposed and actual Jupyter/Qt endpoints before advertising v2",
+    "Retain original failures and execute the applicable consolidated exact-source CI checkpoint"
+  ],
+  "progress": {
+    "delivered": 8,
+    "original_leaves": 46,
+    "delivered_percent": 17.4,
+    "finally_accepted": 1,
+    "mandatory_movie_issue": "uibcdf/molsysviewer#320"
+  },
+  "publication": "Tags, packages and both 1.0 publications remain paused.",
+  "box_feedback_issue": "uibcdf/molsysviewer#339",
+  "previous_python_checks": {
+    "private_record": ".pytest_cache/robustness-20261106/A5-moving-timeout-20261108/query-dynamic-after-01",
+    "native_exit": 0,
+    "passed": 147,
+    "failed": 0,
+    "skipped": 0,
+    "selection": [
+      "tests/test_moving_state_capture.py",
+      "tests/test_dynamic_regions.py",
+      "tests/test_region_enablement.py",
+      "tests/test_interactions_scene.py"
+    ],
+    "receptor": "llm"
+  },
+  "box_feedback_control": {
+    "before": {
+      "native_exit": 1,
+      "passed": 0,
+      "failed": 2,
+      "private_record": ".pytest_cache/robustness-20261106/A5-dynamic-frames-20261108/query-box-feedback-before-01"
+    },
+    "after": {
+      "native_exit": 0,
+      "passed": 217,
+      "failed": 0,
+      "private_record": ".pytest_cache/robustness-20261106/A5-dynamic-frames-20261108/query-box-feedback-after-01"
+    },
+    "selected_semantics": "Confirmed native cell feedback updates only canonical Python records; duplicate receipts are idempotent. Explicit Python navigation and legacy fallback still project geometry."
+  },
+  "prototype_disposition": {
+    "selected_for_integration": false,
+    "scope": "Separate query completion lanes, follower frame admission and frame-coalescing queue removed from selected source; source echoes corrected directly",
+    "source_capsule": ".pytest_cache/robustness-20261106/A5-dynamic-frames-20261108/source-prototype-before-box-feedback-01",
+    "source_capsule_manifest_sha256": "2a94495aa58f937cee49bdd78dafebc356f34d6e066cb51de39cd2195bc0a8f6",
+    "prototype_node_results": [
+      {
+        "passed": 429,
+        "failed": 0,
+        "private_record": "checks-follower-admission-01"
+      },
+      {
+        "passed": 432,
+        "failed": 0,
+        "private_record": "checks-follower-queue-01"
+      }
+    ],
+    "scope_limit": "Prototype unit passes are not current-source or native moving acceptance."
+  },
+  "minimal_draw_fence": {
+    "scope": "A resolved playing follower gives its currently visible model one fresh completed draw before replacement; hidden canvases skip the wait, missing draws are bounded at one second, later explicit intents/disposal abort it. No new playback clock or message reordering.",
+    "status": "Discarded after native06 still times out; source bytes preserved in source-draw-fence-prototype-01",
+    "protocol_controls": "fresh draw, no follower timer, later explicit seek, disposal, typed timeout/subscription cleanup"
+  },
+  "selected_query_timing": {
+    "scope": "Queries begin after native model application and overlap awaited annotation refresh. Existing public trajectory notifications still follow the awaited derived refresh. No extra clock, pacing wait, cache or message reordering.",
+    "directed_before": {
+      "passed": 12,
+      "failed": 1,
+      "private_record": "checks-model-query-before-01"
+    },
+    "directed_after": {
+      "passed": 14,
+      "failed": 0,
+      "private_record": "checks-model-query-after-01"
+    },
+    "canonical_node": {
+      "passed": 426,
+      "failed": 0,
+      "skipped": 0,
+      "private_record": "checks-model-query-overlap-01"
+    },
+    "native_status": "Attempt07 fails popup-state; remaining three roles unexecuted"
+  },
+  "bounded_query_window": {
+    "maximum_outstanding_per_family_per_renderer": 2,
+    "coalescing": "Latest desired frame only; no trajectory-wide geometry cache",
+    "before": {
+      "private_record": "checks-query-window-before-01",
+      "passed": 9,
+      "failed": 2,
+      "native_exit": 1
+    },
+    "after": {
+      "private_record": "checks-query-window-after-02",
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "native_exit": 0
+    },
+    "canonical_node": {
+      "private_record": "checks-bounded-frame-queries-01",
+      "passed": 428,
+      "failed": 0,
+      "skipped": 0,
+      "native_exit": 0
+    },
+    "native_status": "Attempt08 fails popup-state; remaining three roles unexecuted"
+  },
+  "box_browser_receiving": {
+    "native_exit": 0,
+    "seconds": 46.24314086185768,
+    "selected_inputs": 4329,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 2174.6,
+    "cleanup": {
+      "tracked": 14,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": "endpoint-after-09",
+    "guard": "molsysviewer/js/tests/e2e/box-trajectory.e2e.ts",
+    "scope": "Unchanged canonical native box guard: exported orthogonal/rotated/triclinic cells, widget/popup navigation, explicit cell, rebootstrap, same-frame navigation, replacement, style, hide and clear. Does not qualify moving capture.",
+    "manifest_limitation": "The 4,329-file selection includes executed source, runtime and harness but omits the compiled box entry; no full-executed-input immutability claim.",
+    "compiled_entry_sha256": "bfe0de4b3387975b163f8c3978928668c50665be8b59bee18b32e30ab938d463",
+    "compiled_entry_digest_observation": "After execution; not a before/after witness"
+  },
+  "boundary_checks": {
+    "native_exit": 0,
+    "seconds": 41.016334519023076,
+    "peak_owned_rss_mib": 716.5,
+    "cleanup": {
+      "tracked": 2,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "passed": 493,
+    "failed": 0,
+    "skipped": 0,
+    "private_record": "query-boundary-final-01",
+    "selection": [
+      "tests/test_transport_ownership.py",
+      "tests/test_popup_snapshot.py",
+      "tests/test_qt_transport_contract.py",
+      "tests/test_runtime_router.py",
+      "tests/test_reporting_protocol.py"
+    ],
+    "receptor": "llm"
+  },
+  "popup_v1_receiving": {
+    "native_exit": 0,
+    "seconds": 38.40876035299152,
+    "selected_inputs": 4329,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 2617.8,
+    "cleanup": {
+      "tracked": 13,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": "endpoint-after-10",
+    "guard": "molsysviewer/js/tests/e2e/popup-scene-bootstrap.e2e.ts",
+    "scope": "Unchanged canonical v1 bootstrap/late/lost reply/visible retry and native frame-1 geometry; does not qualify moving v2"
+  },
+  "private_custody": {
+    "schema": "molsysviewer.private_capture_custody_receipt@1",
+    "custodian": "Diego Prada Gracia",
+    "opaque_reference": "robustness-20261106/dynamic-frame-corrections-20261108-1",
+    "files_verified": 309,
+    "total_bytes": 76168577,
+    "manifest_sha256": "728f83f318d7eb269ea451366b0c43e4ab1546c8f651fb1225f983328bc9d1e6",
+    "originals_retained": true,
+    "owner_only_permissions_verified": true,
+    "off_host_backup_claimed": false
+  },
+  "maintenance_checks": {
+    "ruff_check": "passed",
+    "ruff_format_check": {
+      "passed": true,
+      "files": 984
+    },
+    "board_reconciliation": {
+      "passed": true,
+      "documents": 50,
+      "acquisition": "complete paginated inventory"
+    },
+    "human_sandbox_preservation": {
+      "passed": true,
+      "files": 7,
+      "baseline": "/tmp/msv-audit-plan-preservation-20261106.json"
+    }
+  }
+}

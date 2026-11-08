@@ -905,12 +905,25 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**Current priority — robustness audit and action ledger, 2026-11-07:**
+**Current priority — robustness audit and action ledger, 2026-11-08:**
 [The active #315 plan](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md)
 owns the full work order and stable IDs. Delivered progress is **8/46 (17.4%)**;
 final acceptance is **1/46 (2.2%)**. Neither is total release readiness, and
 Movie #320 remains an additional mandatory stream. E0, A1–A4/A6 and B1/B2 have
 their recorded delivered results; consolidated acceptance remains separate.
+
+The current [dynamic-frame/box receipt](dynamic_region_frame_receiving_20261108.json)
+records 218 affected scientific/projection cases, 493 transport/protocol/reporting
+cases and 428 canonical Node cases passing. Native box receiving and canonical
+v1 popup bootstrap/Retry also pass. Requester/frame guards and the feedback-echo
+correction are distinct from moving acceptance: the latest bounded two-query
+attempt still times out at popup-state, so the other three moving roles do not
+execute. Keep v2 unadvertised. The next investigation must separate actual native
+scene work, cross-window delivery and coherent completed draws; unit/compile
+passes and resource expansion do not close A5. All raw failures, successful
+controls and source capsules have verified approved private custody. Local
+executions are sequential, at most eight logical CPUs/six GiB, with no swap and
+the maintainer's two-GiB minimum globally available reserve.
 
 A5/#319 is the active slice. The camera/box corrections and #328's latest-frame
 shape convergence are delivered; the latter is `2bb82bbd`. Native cell
@@ -2727,14 +2740,15 @@ Resume toward **1.0** through the
 Its dashboard owns progress; use its stable IDs rather than adding another
 chronological status narrative here.
 
-**Current order — 2026-11-07:**
+**Current order — 2026-11-08:**
 
 1. **A:** complete A5's moving/hidden capture and resolve the actual-Jupyter
    uncertainty; preserve the other delivered rejection/cleanup corrections
    before consolidated acceptance.
 2. **B:** retain delivered B1/B2 authority/precision corrections and finish
    DataCard provenance, lifecycle and accessible popup/result receiving.
-3. **C:** deliver and receive the reconciled owner PR #543 and current host,
+3. **C:** receive owner-integrated PR #543 against the current native baseline
+   and host; do not reopen or rebase the already merged contribution,
    completing #264/#301/#304/#306 while retaining #305's unexplained failure.
 4. **D:** receive owner scientific corrections and every previously approved
    Geometry/Chemistry/Analysis task family. New recommendations need their

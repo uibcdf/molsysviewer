@@ -15,6 +15,74 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
+**Current bounded-query receiving — 2026-11-08:** early model-dependent I/O
+still times out in native attempt 07 (74.37 s; 4,329 unchanged selected inputs;
+all thirteen owned processes closed). Prepare begins promptly, but a single
+outstanding query delays requesting the newly visible frame until the previous
+response has traversed the scene queue. Two directed protocol controls reproduce
+that serialization (nine passes/two failures).
+
+The selected source permits at most two outstanding queries per family and
+renderer. A third desired frame coalesces to the latest current frame; stale
+completions retire only their own slot, and replacements retain monotonic IDs.
+Revision changes invalidate old interaction queries. The affected controls pass
+12/12 and the canonical JavaScript entry passes 428/428, without skips; strict
+runtime, harness and E2E builds pass. Native attempt 08 still fails popup-state
+after 70.42 s, with all 4,329 selected inputs unchanged, thirteen owned processes
+closed and no resource stop; the other three roles do not execute. The reply
+transport itself is measured in milliseconds, while native scene work and
+cross-window delivery still leave frame-dependent geometry behind. This does
+not establish a general performance cause or qualify the bounded window as a
+solution. The existing Python correction retains 218 passes;
+this scheduling change adds no Python scientific computation. A5 remains open.
+
+**Earlier query scheduling receiving — 2026-11-08:** the direct box-feedback
+correction removes the repeated scene echo. Its observed prepare delay is 38 ms
+versus 1.58 s in the preceding ordinary-queue diagnostic; this is a scoped trace,
+not a generalized benchmark. Capture still times out. A single-draw follower
+fence also fails and is removed with its own preserved source capsule.
+
+Source inspection and a directed red control identify another scheduling gap:
+scientific queries start only after awaited annotation refresh, just before a
+following frame can replace the model. The selected callback now begins those
+queries immediately after the native model applies, overlapping I/O with the
+derived refresh. Public trajectory notifications remain after that awaited
+refresh. The directed before is 12 passes/one failure; after is 14/14, including
+disposal. Strict builds and 426 canonical JavaScript cases pass. No new clock,
+pacing wait, cached trajectory or message reordering is selected. Native
+attempt 07 fails the first popup-state case; the remaining three roles do not
+execute. A5 acceptance remains open.
+
+**Selected producer-side correction — 2026-11-08:** native traces identify
+[#339](applied_box_feedback_reprojects_geometry.md): valid applied-cell feedback
+reissues box clearing, edge creation and shape summaries, even for a duplicate
+receipt. This floods the popup with actual scene barriers. Two real-system
+controls fail before correction; the affected 217-case selection passes after
+separating confirmed feedback records from explicit Python rendering intents.
+Explicit navigation, definition revisions, canonical cell edges and persistence
+remain protected. Final freeze/projection controls are being received separately.
+
+The frame-reply/presentation experiments did not solve capture. Passive
+observations measured queue waits up to 1.5 s and a prepare starting about
+9.15 s after the source request. Separate reply lanes, bounded follower admission
+and coalesced frame slots all retain failing native records and a private source
+capsule. They have been removed from the selected source; ordinary scene/prefix
+ordering and the authority's existing single playback clock remain unchanged.
+Mol* 5.4.1's state queue/builder behavior was inspected during those experiments;
+no Mol* algorithm was changed. The selected runtime again passes 424 canonical
+JavaScript cases. No prototype pass is presented as current acceptance.
+
+**Dynamic query isolation in receiving — 2026-11-08:** the preceding detached
+failure leads to independently reproduced
+[#338](dynamic_region_queries_cross_renderer_frames.md): dynamic replies are
+broadcast across native frames and omit unchanged memberships needed by another
+renderer. The source correction retains native scientific evaluation/cache and
+adds complete requester-owned replies, monotonic request identity and
+before-write frame rejection. All 147 affected Python and 424 canonical
+JavaScript cases pass; unchanged actual four-role receiving is in progress.
+See the [separate source receipt](../dynamic_region_frame_receiving_20261108.json).
+Neither the previous popup passes nor this new protocol result closes A5.
+
 **Requester isolation in receiving — 2026-11-08:** the follower refinement
 passes 420 canonical JavaScript cases and receives popup-state, but the next
 popup-session still times out. Actual independent renderer counters reuse
