@@ -184,18 +184,38 @@ async function run() {
             const cell = Array.from(controller.plugin.state.data.cells.values()).find((cell: any) =>
                 cell.obj?.data?.sourceData?.tag === tag) as any;
             if (!cell) throw new Error(`Missing annotation geometry ${tag}`);
-            return { ...cell.obj.data.sourceData,
+            const text = cell.obj.data.repr.getAllLoci().find((loci: any) => loci.shape?.geometry.kind === "text")?.shape.geometry;
+            if (!text) throw new Error(`Missing native text geometry ${tag}`);
+            return { ...structuredClone(cell.obj.data.sourceData),
+                font: { id: text.fontTexture.ref.id, version: text.fontTexture.ref.version,
+                    width: text.fontTexture.ref.value.width, height: text.fontTexture.ref.value.height },
+                charCount: text.charCount,
+                textCenters: Array.from(text.centerBuffer.ref.value.slice(0, text.charCount * 12)),
+                textSphereCenter: [...text.boundingSphere.center],
                 drawCounts: cell.obj.data.repr.renderObjects.map((object: any) => object.values.drawCount.ref.value) };
         };
+        const draw = () => new Promise<void>((resolve, reject) => {
+            const timeout = setTimeout(() => { sub.unsubscribe(); reject(new Error("No completed annotation draw")); }, 10000);
+            let armed = false;
+            const sub = controller.plugin.canvas3d.didDraw.subscribe(() => {
+                if (!armed) return;
+                clearTimeout(timeout); sub.unsubscribe(); resolve();
+            });
+            armed = true;
+            controller.plugin.canvas3d.requestDraw(true);
+        });
+        await draw();
         const world = ["solid", "dashed", "dotted"].map(pattern => geometry(`world-${pattern}`));
         const cameraBefore = geometry("camera-dotted");
         const camera = controller.plugin.canvas3d.camera;
         camera.setState({ position: [30, 0, 10], target: fixture.point, up: [0, 1, 0] }, 0);
         controller.annotations.onCamera(camera.getSnapshot());
         await controller.annotations.refresh();
+        await draw();
         const cameraAfter = geometry("camera-dotted");
         const worldAfter = geometry("world-dotted");
         await controller.handleMessage({ op: "set_trajectory_frame", index: 2 });
+        await draw();
         const lastFrame = geometry("camera-dotted");
         const worldLast = geometry("world-dotted");
         await controller.handleMessage({ op: "set_trajectory_frame", index: 0 });
@@ -210,11 +230,15 @@ async function run() {
                 await controller.handleMessage({ op: "set_trajectory_playback", action: "play", fps: 30, mode: "once" });
             } catch (error) { clearTimeout(timeout); unsubscribe(); reject(error); }
         });
+        await draw();
         const afterPlayback = geometry("camera-dotted");
         // World-to-atom transition must clear the old absolute position.
         await controller.handleMessage({ op: "update_label", tag: "world-solid", options: {
             position: null, atom_indices: [0], text: "now atom anchored" } });
         const reanchored = geometry("world-solid");
+        await controller.handleMessage({ op: "update_label", tag: "world-solid", options: {
+            style: { background: !reanchored.background } } });
+        const backgroundChanged = geometry("world-solid");
         await controller.handleMessage({ op: "hide_layer", tag: "world-dotted", kind: "annotation" });
         const hidden = !Array.from(controller.plugin.state.data.cells.values()).some((cell: any) =>
             cell.obj?.data?.sourceData?.tag === "world-dotted");
@@ -235,7 +259,8 @@ async function run() {
             controller.plugin.canvas3d.requestDraw(true);
         });
         subscription.unsubscribe();
-        return { world, cameraBefore, cameraAfter, worldAfter, lastFrame, afterPlayback, worldLast, reanchored, hidden, hiddenAfterEdit, shown, draws };
+        return { world, cameraBefore, cameraAfter, worldAfter, lastFrame, afterPlayback, worldLast, reanchored,
+            backgroundChanged, hidden, hiddenAfterEdit, shown, draws };
     }, fixture);
     const close = (actual: number[], expected: number[]) =>
         actual.forEach((value, i) => assert.ok(Math.abs(value - expected[i]) < 1e-4, `${value} differs from ${expected[i]}`));
@@ -251,7 +276,18 @@ async function run() {
     assert.notDeepEqual(observed.cameraBefore.position, observed.cameraAfter.position);
     close(observed.lastFrame.anchor, fixture.atom_at_last_frame);
     close(observed.afterPlayback.anchor, fixture.atom_at_last_frame);
+    for (const text of [observed.cameraBefore, observed.cameraAfter, observed.lastFrame, observed.afterPlayback]) {
+        assert.deepStrictEqual(text.font, observed.cameraBefore.font,
+            "coordinate-only callout movement must not reupload the unchanged font texture");
+        const position = text.camera_base_position ?? text.position;
+        for (let offset = 0; offset < text.textCenters.length; offset += 3) close(text.textCenters.slice(offset, offset + 3), position);
+        close(text.textSphereCenter, position);
+    }
     close(observed.reanchored.anchor, fixture.atom_at_last_frame);
+    assert.notEqual(observed.reanchored.charCount, observed.world[0].charCount, "changed text must rebuild its glyph layout");
+    assert.equal(observed.backgroundChanged.background, !observed.reanchored.background);
+    assert.equal(Math.abs(observed.backgroundChanged.charCount - observed.reanchored.charCount), 1,
+        "a background change must add or remove the native background quad");
     assert.ok(observed.hidden);
     assert.ok(observed.hiddenAfterEdit);
     assert.equal(observed.shown.text, "edited while hidden");

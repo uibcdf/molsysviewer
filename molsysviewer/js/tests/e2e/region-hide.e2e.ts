@@ -3,6 +3,7 @@ import process from "node:process";
 import { chromium } from "./e2e-browser";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
+import { execFileSync } from "node:child_process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -88,7 +89,8 @@ async function run() {
     const visibility = await page.evaluate(async pdb => {
         const w = window as any;
         const controller = w.__controller;
-        const send = (message: Record<string, unknown>) => controller.handleMessage(message);
+        const send = (message: Record<string, unknown>) => controller.handleMessage(message.op === "set_dynamic_region_atoms"
+            ? { ...message, frame: controller.trajectory.getTrajectoryState().currentFrame } : message);
         await send({ op: "clear_all" });
         await send({ op: "load_structure_from_string", data: pdb, format: "pdb" });
         await send({ op: "set_whole_representation", representation: "ball-and-stick" });
@@ -178,7 +180,8 @@ async function run() {
     const isolation = await page.evaluate(async () => {
         const w = window as any;
         const controller = w.__controller;
-        const send = (message: Record<string, unknown>) => controller.handleMessage(message);
+        const send = (message: Record<string, unknown>) => controller.handleMessage(message.op === "set_dynamic_region_atoms"
+            ? { ...message, frame: controller.trajectory.getTrajectoryState().currentFrame } : message);
         const snapshots: Record<string, any> = {};
         const snapshot = (name: string) => {
             snapshots[name] = { transparency: w.Harness.inspectSceneTransparency(controller, [0, 1, 2, 3]),
@@ -268,6 +271,58 @@ async function run() {
             label: "reload-after-clear-all",
         });
     }, PDB_TEXT);
+
+    const fixture = JSON.parse(execFileSync(process.env.PYTHON || "python", [
+        resolve(__dirname, "annotation-callout-bridge.py"),
+    ], { encoding: "utf8" }));
+    const emptyCycle = await page.evaluate(async fixture => {
+        const c = (window as any).__controller;
+        await c.handleMessage({ op: "clear_all" });
+        for (const message of fixture.messages) await c.handleMessage(message);
+        await c.handleMessage({ op: "create_region", tag: "invalid-index", atom_indices: [1_000_000] });
+        await c.handleMessage({ op: "create_region", tag: "missing-indices" });
+        const invalidRegistered = c.state.regionIndex.has("invalid-index") || c.state.regionIndex.has("missing-indices");
+        const tag = "initially-empty";
+        await c.handleMessage({ op: "create_region", tag, atom_indices: [], representation: "ball-and-stick", enabled: false });
+        const inspect = () => {
+            const entry = c.state.regionIndex.get(tag);
+            const ref = typeof entry?.component === "string" ? entry.component : entry?.component?.ref;
+            return { exists: !!entry, atoms: ref ? c.plugin.state.data.cells.get(ref)?.obj?.data?.elementCount ?? 0 : 0,
+                representation: entry?.representation, enabled: entry?.enabled, hidden: entry?.hidden,
+                representations: entry?.representations.length ?? 0,
+                visible: entry?.representations.some((ref: string) => !c.plugin.state.data.cells.get(ref)?.state.isHidden) ?? false };
+        };
+        const initial = inspect();
+        await c.handleMessage({ op: "set_region_representation", tag, representation: "line" });
+        await c.handleMessage({ op: "hide_region", tag });
+        const fill = (atoms: number[]) => c.handleMessage({ op: "set_dynamic_region_atoms",
+            frame: c.trajectory.getTrajectoryState().currentFrame, regions: [{ tag, atom_indices: atoms }] });
+        await fill([1]); const filled = inspect();
+        await c.handleMessage({ op: "set_region_enabled", tag, enabled: true });
+        await c.handleMessage({ op: "show_region", tag });
+        const shown = inspect();
+        await fill([]); const emptied = inspect();
+        await fill([0, 1]); const refilled = inspect();
+        await c.handleMessage({ op: "delete_region", tag });
+        await fill([1]); const deleted = inspect();
+        return { invalidRegistered, initial, filled, shown, emptied, refilled, deleted };
+    }, fixture);
+    assert.equal(emptyCycle.invalidRegistered, false, "invalid or missing indices must not become a valid empty definition");
+    assert.ok(emptyCycle.initial.exists, "an initially empty region must retain its definition");
+    assert.equal(emptyCycle.initial.atoms, 0);
+    assert.equal(emptyCycle.initial.representations, 0);
+    assert.equal(emptyCycle.filled.atoms, 1);
+    assert.equal(emptyCycle.filled.representation, "line", "style changes while empty must survive materialization");
+    assert.equal(emptyCycle.filled.enabled, false);
+    assert.equal(emptyCycle.filled.hidden, true);
+    assert.equal(emptyCycle.filled.visible, false);
+    assert.equal(emptyCycle.shown.visible, true);
+    assert.equal(emptyCycle.emptied.exists, true);
+    assert.equal(emptyCycle.emptied.atoms, 0);
+    assert.equal(emptyCycle.refilled.atoms, 2);
+    assert.equal(emptyCycle.refilled.visible, true);
+    assert.equal(emptyCycle.deleted.exists, false, "a late dynamic reply must not recreate a deleted region");
+    console.log("[E2E] Initially empty real-demo region retains style, visibility, enablement and repeated membership lifecycle");
 
     await browser.close();
 

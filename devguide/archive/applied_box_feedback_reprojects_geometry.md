@@ -1,13 +1,13 @@
 ---
 summary: Applied cell feedback reissues scene geometry to every renderer.
 issue: uibcdf/molsysviewer#339
-status: active
+status: resolved
 opened: 2026-11-08
-closed:
+closed: 2026-11-08
 severity: medium
 verification: reproduced
 area: [box, trajectory, popup, transport]
-guard:
+guard: tests/test_box_state_persistence.py::test_applied_box_feedback_updates_records_without_redrawing_the_renderers
 normative:
 blocked_by: []
 supersedes: []
@@ -58,7 +58,7 @@ the source request). Those alternatives are preserved with exact prototype
 bytes and raw failures, then removed from the selected source. No additional
 clock, pacing delay or queue reordering is shipped to conceal producer echo.
 
-## Remaining receiving
+## Earlier receiving
 
 The final affected Python box/capture/region/interaction selection passes
 218/218, and the separate transport/popup/Qt-protocol/reporting selection passes
@@ -74,7 +74,12 @@ on the selected source in 38.41 s with thirteen owned processes closed.
 
 These results independently support the producer-side box correction. Moving
 capture still times out in the first popup-state case and its three later roles
-do not execute. Keep the child finding active until its reviewed integration
-and explicit disposition; do not close A5 from the box result. Capture version
+do not execute. The final combined native entry subsequently passes all seven moving/stopped
+save cases and both presentation modes. This closes the bounded box finding;
+it does not close A5. Capture version
 2 and publication remain paused. The [working receipt](../dynamic_region_frame_receiving_20261108.json)
 retains successful and failed source cohorts separately.
+
+## Resolution — 2026-11-08
+
+Resolved in reviewed source. Validated native feedback records its cell without echoing geometry. Explicit seeks still project. The original box controls and final seven-case native moving entry receive this boundary; broader A5 host/hidden/combined acceptance remains open. The [final source receipt](../moving_capture_font_and_region_receiving_20261108.json) records commands, exact input witnesses, retained failures, resource limits and cleanup. Public capture capabilities remain v1; publication stays paused.

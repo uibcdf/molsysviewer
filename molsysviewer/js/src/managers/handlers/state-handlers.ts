@@ -883,7 +883,24 @@ export class StateHandlers {
             ? msg.atom_indices.map(i => (typeof i === "number" ? Math.trunc(i) : Number(i))).filter(i => Number.isFinite(i))
             : [];
         const selection = this.buildSelectionFromAtomIndices(structure, atomIndices);
+        const definition: RegionEntry = {
+            representations: [], atomIndices, selection: msg.selection,
+            hidden: false, enabled: msg.enabled !== false,
+            representationState: this.regionStateFromMessage(msg),
+            representation: msg.representation, preset: msg.preset,
+            userPreset: msg.user_preset, params: { ...(msg.params ?? {}) },
+            order: typeof msg.order === "number" ? msg.order : 0,
+        };
         if (!selection) {
+            if (Array.isArray(msg.atom_indices) && msg.atom_indices.length === 0) {
+                // A valid empty result retains its identity and latent style.
+                // Membership updates can materialize its component later.
+                if (this.regionIndex.has(tag)) return;
+                this.regionIndex.set(tag, definition);
+                await this.applyComposedTransparency();
+                this.callbacks.notify({ event: "region_ack", tag, atom_indices: [], selection: msg.selection });
+                return;
+            }
             console.warn("[MolSysViewer] create_region missing valid atom indices");
             return;
         }
@@ -907,7 +924,7 @@ export class StateHandlers {
                 return;
             }
             
-            const representationState = this.regionStateFromMessage(msg);
+            const representationState = definition.representationState;
             const representations: StateTransform.Ref[] = [];
             if (representationState === "inherit") {
                 representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params, atomIndices));
@@ -916,18 +933,9 @@ export class StateHandlers {
             }
             
             this.regionIndex.set(tag, {
+                ...definition,
                 component: componentRef,
                 representations,
-                atomIndices,
-                selection: msg.selection,
-                hidden: false,
-                enabled: msg.enabled !== false,
-                representationState,
-                representation: msg.representation,
-                preset: msg.preset,
-                userPreset: msg.user_preset,
-                params: { ...(msg.params ?? {}) },
-                order: typeof msg.order === "number" ? msg.order : 0,
             });
             if (msg.enabled === false) {
                 representations.forEach(ref => setSubtreeVisibility(this.plugin.state.data, ref, true));
@@ -943,7 +951,12 @@ export class StateHandlers {
     async setRegionRepresentation(msg: SetRegionRepresentationMessage) {
         const tag = msg.tag ?? "region";
         const entry = this.regionIndex.get(tag);
-        if (!entry || !entry.component) return;
+        if (!entry) return;
+        if (!entry.component) {
+            this.setRegionRepresentationDefinition(entry, msg);
+            await this.applyComposedTransparency();
+            return;
+        }
 
         const structure = this.callbacks.getStructure();
         const structureRef = this.callbacks.getLoadedStructure()?.structure;
@@ -982,12 +995,7 @@ export class StateHandlers {
             entry.representations = [];
         }
 
-        entry.representationState = this.regionStateFromMessage(msg);
-        entry.representation = msg.representation;
-        entry.preset = msg.preset;
-        entry.userPreset = msg.user_preset;
-        entry.params = { ...(msg.params ?? {}) };
-        if (typeof msg.order === "number") entry.order = msg.order;
+        this.setRegionRepresentationDefinition(entry, msg);
 
         if (entry.representationState === "inherit") {
             entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params, entry.atomIndices));
@@ -1007,6 +1015,15 @@ export class StateHandlers {
             );
         }
         await this.applyComposedTransparency();
+    }
+
+    private setRegionRepresentationDefinition(entry: RegionEntry, msg: SetRegionRepresentationMessage) {
+        entry.representationState = this.regionStateFromMessage(msg);
+        entry.representation = msg.representation;
+        entry.preset = msg.preset;
+        entry.userPreset = msg.user_preset;
+        entry.params = { ...(msg.params ?? {}) };
+        if (typeof msg.order === "number") entry.order = msg.order;
     }
 
     private async addRepresentationsForRegionEntry(entry: RegionEntry, tag: string, componentRef: StateObjectRef) {

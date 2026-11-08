@@ -15,7 +15,35 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
-**Current bounded-query receiving — 2026-11-08:** early model-dependent I/O
+**Current texture/lifecycle receiving — 2026-11-08:** a passive profile
+identifies repeated large font-texture uploads as the dominant sampled popup
+cost. [#340](../archive/moving_annotations_reupload_font_textures.md) receives an exact
+native before-control (unchanged 3287 × 3286 atlas dirtied by movement), followed
+by a passing annotation guard retaining glyph centres/bounds and text/background
+rebuild controls. The working correction moves only native centre buffers when
+the glyph layout is unchanged. Strict builds and 428 canonical Node cases pass.
+
+The subsequent full moving entry passes primary state/session and reaches a
+successful popup save, but rejects that popup's native region count. The
+independently reproduced [#341](../archive/initially_empty_region_loses_definition.md)
+shows an initially empty region discarded before later memberships arrive.
+Its retained-definition/latent-style correction passes the complete native
+region visibility/isolation entry, including repeated empty/nonempty cycles.
+The full combined native entry then passes in 94.72 s: state/session from primary,
+canvas popup and detached Studio, plus the stopped empty frame. Each saved file
+is independently restored with actual camera/frame/box/shape/annotation/distance/
+interaction/region geometry checked. Both perspective and orthographic controls
+receive three-axis offsets, native loci, alternate-camera PNG and GPU markers.
+All 4,330 selected inputs are unchanged, thirteen owned processes close and no
+resource stop occurs. The original failures remain preserved in the
+[final source receipt](../moving_capture_font_and_region_receiving_20261108.json).
+
+This resolves bounded #339/#340/#341. A5 still needs current native Qt/query/freeze
+receiving, hidden/unavailable/lifetime combinations, actual-Jupyter scope and
+consolidated host/installed qualification. Human review stays postponed. V2 is
+not advertised, and the eight-CPU/six-GiB ceiling/two-GiB reserve are unchanged.
+
+**Earlier bounded-query receiving — 2026-11-08:** early model-dependent I/O
 still times out in native attempt 07 (74.37 s; 4,329 unchanged selected inputs;
 all thirteen owned processes closed). Prepare begins promptly, but a single
 outstanding query delays requesting the newly visible frame until the previous
@@ -54,7 +82,7 @@ attempt 07 fails the first popup-state case; the remaining three roles do not
 execute. A5 acceptance remains open.
 
 **Selected producer-side correction — 2026-11-08:** native traces identify
-[#339](applied_box_feedback_reprojects_geometry.md): valid applied-cell feedback
+[#339](../archive/applied_box_feedback_reprojects_geometry.md): valid applied-cell feedback
 reissues box clearing, edge creation and shape summaries, even for a duplicate
 receipt. This floods the popup with actual scene barriers. Two real-system
 controls fail before correction; the affected 217-case selection passes after

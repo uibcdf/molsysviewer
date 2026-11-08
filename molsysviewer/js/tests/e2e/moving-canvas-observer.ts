@@ -66,6 +66,45 @@ export function observeMovingCaptureCanvas() {
     monitor.endpointId = endpointId;
     monitor.localDocument = c.plugin.canvas3dContext.canvas.ownerDocument.defaultView === window;
     if (!monitor.localDocument) throw new Error("Capture observer must inspect its own native canvas.");
+    const stages: any[] = monitor.stages = [];
+    const clock = () => endpointId === "primary" || !window.opener || window.opener.closed
+        ? performance.now() : window.opener.performance.now();
+    const recordStage = (item: any) => {
+        stages.push(item);
+        if (stages.length > 1024) stages.shift();
+    };
+    const restore: (() => void)[] = [];
+    let sequence = 0;
+    const observe = (owner: any, key: string, name: string) => {
+        const original = owner[key];
+        const wrapped = function(this: any, ...args: any[]) {
+            const id = ++sequence, started = clock();
+            const detail = name === "task" ? args[0]?.name : args[0]?.frame ?? args[0]?.index;
+            recordStage({ id, name, detail, stage: "start", ms: started });
+            const finish = (error = false) => { const ended = clock();
+                recordStage({ id, name, detail, stage: "end", ms: ended, duration: ended - started, error }); };
+            try {
+                const result = original.apply(this, args);
+                if (result?.then) result.then(() => finish(), () => finish(true));
+                else finish();
+                return result;
+            } catch (error) { finish(true); throw error; }
+        };
+        owner[key] = wrapped;
+        restore.push(() => { if (owner[key] === wrapped) owner[key] = original; });
+    };
+    observe(c.plugin, "runTask", "task");
+    observe(c.trajectory, "applyTrajectoryFrame", "model");
+    observe(c.annotations, "refresh", "annotations");
+    observe(c.state, "setDynamicRegionAtoms", "dynamic");
+    observe(c.interactions, "apply", "interactions");
+    const offset = clock() - performance.now();
+    const longTasks = new PerformanceObserver(list => {
+        for (const entry of list.getEntries()) recordStage({ name: "longtask", ms: entry.startTime + offset,
+            duration: entry.duration });
+    });
+    longTasks.observe({ entryTypes: ["longtask"] });
+    monitor.releaseInstrumentation = () => { longTasks.disconnect(); for (const release of restore) release(); };
     authority.monitors ??= new Map();
     authority.monitors.set(endpointId, monitor);
     const hostAlias = endpointId === "primary" ? `widget-host:${w.__popupWidgetModel.get("runtime_session_id")}` : undefined;
@@ -175,4 +214,5 @@ export function releaseMovingCaptureObserver() {
     monitor?.subscription?.unsubscribe();
     monitor?.releaseFrames?.();
     monitor?.releaseMessages?.();
+    monitor?.releaseInstrumentation?.();
 }

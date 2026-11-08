@@ -1,0 +1,277 @@
+{
+  "schema": "molsysviewer.working_receiving@1",
+  "date": "2026-11-08",
+  "owner_issue": "uibcdf/molsysviewer#319",
+  "related_issues": [
+    "uibcdf/molsysviewer#339",
+    "uibcdf/molsysviewer#340",
+    "uibcdf/molsysviewer#341"
+  ],
+  "source_base": "df474175fa7d4469d483098761fd9abde5039ff3",
+  "provider_source": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+  "status": "Complete canonical native moving-capture entry passes; A5 hidden/host/combined acceptance remains open. Capture v2 remains unadvertised.",
+  "runtime_sha256": "337576d70c249194d550b95a187b3a43da7fffef1a83189c818f679979f9230a",
+  "advertised_capture_versions": [
+    1
+  ],
+  "profile_before": {
+    "native_exit": 1,
+    "seconds": 75.50414896896109,
+    "selected_inputs": 4330,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 2762.2,
+    "cleanup": {
+      "tracked": 13,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": ".pytest_cache/robustness-20261106/A5-native-profile-20261108/endpoint-after-01",
+    "invocation_sha256": "9d3301adac50f69ea0c5f0ffba45439495be2ec88835018e5a4c0851cf2fd47f",
+    "scope": "Passive CPU profile; not release/timing acceptance",
+    "profiles": [
+      {
+        "file": "cpu-1.cpuprofile",
+        "samples": 17054,
+        "render_update_teximage2d_sampled_ms": 41373.465
+      },
+      {
+        "file": "cpu-2.cpuprofile",
+        "samples": 12090,
+        "render_update_teximage2d_sampled_ms": 39281.748
+      }
+    ]
+  },
+  "annotation_initial_observation_failure": {
+    "native_exit": 1,
+    "seconds": 11.573613423854113,
+    "selected_inputs": 4331,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 1819.2,
+    "cleanup": {
+      "tracked": 13,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": ".pytest_cache/robustness-20261106/A5-native-profile-20261108/endpoint-after-02",
+    "invocation_sha256": "d6ae7093b97f3b37db8fcf740e911b9a46fa1a0fe0ad20d44950511509d10236",
+    "scope": "Pre-existing shallow mutable sample and read-before-draw assertion; does not reproduce font invalidation."
+  },
+  "annotation_before": {
+    "native_exit": 1,
+    "seconds": 12.249720976920798,
+    "selected_inputs": 4331,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 1817.4,
+    "cleanup": {
+      "tracked": 13,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": ".pytest_cache/robustness-20261106/A5-native-profile-20261108/endpoint-after-03",
+    "invocation_sha256": "d026f14d736f5c8ab022b4955e01a910cb4c8a8d500397c312d53e6edc5f7b51",
+    "scope": "Actual unchanged 3287x3286 font texture version changes from0 to1 on coordinate movement."
+  },
+  "annotation_after": {
+    "native_exit": 0,
+    "seconds": 12.265595474978909,
+    "selected_inputs": 4331,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 1818.8,
+    "cleanup": {
+      "tracked": 13,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": ".pytest_cache/robustness-20261106/A5-native-profile-20261108/endpoint-after-04",
+    "invocation_sha256": "446edde461039162ca83c68621c14fcf7f03383f74abe682a23c6359c24be0cc",
+    "scope": "Unchanged font identity/version, all native centres and bounds, text/background layout changes and earlier annotation cases."
+  },
+  "full_moving_intermediate_failure": {
+    "native_exit": 1,
+    "seconds": 42.057873086072505,
+    "selected_inputs": 4330,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 2613.0,
+    "cleanup": {
+      "tracked": 13,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": ".pytest_cache/robustness-20261106/A5-native-profile-20261108/endpoint-after-05",
+    "invocation_sha256": "81ab99957b8c0c7fe8fd812a7de6ff3016dc694f9b01eff60af4622d5eaac95b",
+    "completed_roles": [
+      "state",
+      "session"
+    ],
+    "failed_role": "popup-state",
+    "reason": "Save completes but actual popup region count0 differs from expected1; initially empty definition was discarded."
+  },
+  "region_before": {
+    "native_exit": 1,
+    "seconds": 13.180535179097205,
+    "selected_inputs": 4331,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 1815.2,
+    "cleanup": {
+      "tracked": 13,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": ".pytest_cache/robustness-20261106/A5-native-profile-20261108/endpoint-after-06",
+    "invocation_sha256": "8517fb6c019f1b9b83c4f6498476d4edc69074a189a503286478ba04907ef52f",
+    "scope": "Existing mask/isolation controls pass; the real-demo initial-empty definition assertion fails."
+  },
+  "region_after": {
+    "native_exit": 0,
+    "seconds": 13.900023028021678,
+    "selected_inputs": 4331,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 1815.6,
+    "cleanup": {
+      "tracked": 13,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": ".pytest_cache/robustness-20261106/A5-native-profile-20261108/endpoint-after-07",
+    "invocation_sha256": "05629dfea98a9421278152a13c2c868e63e17e9fdaf56b23d6c5c129af44f3bd",
+    "scope": "Complete native region guard passes retained definition, latent style/hidden/disabled state, repeated materialization and late deletion reply."
+  },
+  "full_moving_after": {
+    "native_exit": 0,
+    "seconds": 94.72453358606435,
+    "selected_inputs": 4330,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 2957.6,
+    "cleanup": {
+      "tracked": 13,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": ".pytest_cache/robustness-20261106/A5-native-profile-20261108/endpoint-after-08",
+    "invocation_sha256": "abad048489a355e7b2cf6bcf3607388f2fdd4afdbb3cf755b2f429a7242db0dc",
+    "completed_roles": [
+      "state",
+      "session",
+      "popup-state",
+      "popup-session",
+      "detached-state",
+      "detached-session",
+      "empty-state"
+    ],
+    "presentation_modes": [
+      "perspective",
+      "orthographic"
+    ],
+    "scientific_assertions": "Real native camera/frame/playback/box/shape/annotation/distance/interaction/dynamic-region coherence, genuine held replies after two owner frame changes, independent state/session restoration and unchanged source identity/coordinates.",
+    "deadline_relaxed": false,
+    "profiler_enabled": false,
+    "source_stopped_for_moving_capture": false,
+    "wrapper_metadata_note": "The original wrapper scope string is the conservative profiler-template description. The recorded command selects the unprofiled canonical moving-state-capture.e2e.js; no CPU-profile entry is imported."
+  },
+  "frontend_checks": {
+    "private_record": "checks-empty-region-01",
+    "production_typescript": 0,
+    "runtime_build": 0,
+    "harness_build": 0,
+    "canonical_node": {
+      "native_exit": 0,
+      "passed": 428,
+      "failed": 0,
+      "skipped": 0
+    },
+    "e2e_build": 0
+  },
+  "resource_policy": {
+    "maximum_logical_cpus": 8,
+    "maximum_ram_gib": 6,
+    "swap_gib": 0,
+    "minimum_globally_available_gib": 2,
+    "single_intensive_execution": true,
+    "exclusive_reservation_claimed": false
+  },
+  "remaining": [
+    "Receive current native Qt frame-query routing and dynamic-freeze path",
+    "Receive hidden/unavailable/closed/disposed endpoints and current actual-Jupyter capture scope",
+    "Run the consolidated exact-source hosted and intended installed gates when appropriate",
+    "Human observations remain postponed; both 1.0 publications, tags and packages remain paused"
+  ],
+  "progress": {
+    "delivered": 8,
+    "original_leaves": 46,
+    "percent": 17.4,
+    "finally_accepted": 1,
+    "mandatory_movie_issue": "uibcdf/molsysviewer#320"
+  },
+  "reporting_checks": {
+    "native_exit": 0,
+    "seconds": 8.387098025996238,
+    "peak_owned_rss_mib": 169.2,
+    "cleanup": {
+      "tracked": 1,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": "query-reporting-final-01",
+    "passed": 395,
+    "failed": 0,
+    "skipped": 0,
+    "receptor": "llm",
+    "selection": [
+      "tests/test_reporting_protocol.py"
+    ]
+  },
+  "maintenance_checks": {
+    "ruff_check": "passed",
+    "ruff_format_check": {
+      "passed": true,
+      "files": 984
+    },
+    "index_check": "passed",
+    "issue_reconciliation": "pending closure synchronization",
+    "human_sandbox_preservation": {
+      "passed": true,
+      "files": 7
+    }
+  },
+  "post_receiving_delta": {
+    "changed_selected_inputs_after_success": [
+      "molsysviewer/js/tests/e2e/region-hide.e2e.ts"
+    ],
+    "scope": "Only the unexecuted region-hide regression is extended to assert invalid/missing-index rejection. Product source, runtime, executed moving entry and actual scientific fixture remain unchanged; the affected region entry is received separately."
+  },
+  "region_final_negative_control": {
+    "native_exit": 0,
+    "seconds": 13.139826970174909,
+    "selected_inputs": 4331,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 1819.5,
+    "cleanup": {
+      "tracked": 13,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": "endpoint-after-09",
+    "scope": "Complete region guard including explicit valid-empty versus invalid/missing-index rejection; only this unexecuted regression changed after full moving success."
+  },
+  "private_custody": {
+    "schema": "molsysviewer.private_capture_custody_receipt@1",
+    "custodian": "Diego Prada Gracia",
+    "opaque_reference": "robustness-20261106/font-region-receiving-20261108-1",
+    "files_verified": 160,
+    "total_bytes": 37475718,
+    "manifest_sha256": "c8b54d6b24c6738eaa82fd5ac74dfb8226f4a047806bebbca5fd21fd46062b97",
+    "originals_retained": true,
+    "owner_only_permissions_verified": true,
+    "off_host_backup_claimed": false
+  }
+}

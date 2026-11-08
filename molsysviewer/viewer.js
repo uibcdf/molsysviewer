@@ -142307,10 +142307,26 @@ ImagePass.prototype.render = async function(...args) {
 
 // src/shapes/annotation-callout.ts
 var Params = { ...Text.Params, ...Lines.Params };
+var textLayouts = /* @__PURE__ */ new WeakMap();
 function textShape(_ctx, data, props, previous) {
-  const builder = TextBuilder.create(props, 32, 32, previous?.geometry);
-  builder.add(data.text, data.position[0], data.position[1], data.position[2], 0, 1, 0);
-  return Shape.create(data.tag, data, builder.getText(), () => Color(data.color), () => data.size, () => data.tag);
+  const key2 = JSON.stringify(props);
+  let geometry = previous?.geometry;
+  const layout = geometry && textLayouts.get(geometry);
+  if (geometry && layout?.text === data.text && layout.props === key2) {
+    const centers = geometry.centerBuffer.ref.value;
+    for (let offset4 = 0; offset4 < geometry.charCount * 12; offset4 += 3) {
+      centers[offset4] = data.position[0];
+      centers[offset4 + 1] = data.position[1];
+      centers[offset4 + 2] = data.position[2];
+    }
+    ValueCell.update(geometry.centerBuffer, centers);
+  } else {
+    const builder = TextBuilder.create(props, 32, 32, geometry);
+    builder.add(data.text, data.position[0], data.position[1], data.position[2], 0, 1, 0);
+    geometry = builder.getText();
+    textLayouts.set(geometry, { text: data.text, props: key2 });
+  }
+  return Shape.create(data.tag, data, geometry, () => Color(data.color), () => data.size, () => data.tag);
 }
 function leaderShape(_ctx, data, _props, previous) {
   const builder = LinesBuilder.create(32, 32, previous?.geometry);
@@ -148480,7 +148496,27 @@ var StateHandlers = class {
     const tag = msg.tag ?? "region";
     const atomIndices = Array.isArray(msg.atom_indices) ? msg.atom_indices.map((i) => typeof i === "number" ? Math.trunc(i) : Number(i)).filter((i) => Number.isFinite(i)) : [];
     const selection = this.buildSelectionFromAtomIndices(structure, atomIndices);
+    const definition = {
+      representations: [],
+      atomIndices,
+      selection: msg.selection,
+      hidden: false,
+      enabled: msg.enabled !== false,
+      representationState: this.regionStateFromMessage(msg),
+      representation: msg.representation,
+      preset: msg.preset,
+      userPreset: msg.user_preset,
+      params: { ...msg.params ?? {} },
+      order: typeof msg.order === "number" ? msg.order : 0
+    };
     if (!selection) {
+      if (Array.isArray(msg.atom_indices) && msg.atom_indices.length === 0) {
+        if (this.regionIndex.has(tag)) return;
+        this.regionIndex.set(tag, definition);
+        await this.applyComposedTransparency();
+        this.callbacks.notify({ event: "region_ack", tag, atom_indices: [], selection: msg.selection });
+        return;
+      }
       console.warn("[MolSysViewer] create_region missing valid atom indices");
       return;
     }
@@ -148500,7 +148536,7 @@ var StateHandlers = class {
         console.warn("[MolSysViewer] create_region: empty component for", tag);
         return;
       }
-      const representationState = this.regionStateFromMessage(msg);
+      const representationState = definition.representationState;
       const representations = [];
       if (representationState === "inherit") {
         representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params, atomIndices));
@@ -148508,18 +148544,9 @@ var StateHandlers = class {
         representations.push(...await this.addOwnRegionRepresentations(componentRef, tag, msg));
       }
       this.regionIndex.set(tag, {
+        ...definition,
         component: componentRef,
-        representations,
-        atomIndices,
-        selection: msg.selection,
-        hidden: false,
-        enabled: msg.enabled !== false,
-        representationState,
-        representation: msg.representation,
-        preset: msg.preset,
-        userPreset: msg.user_preset,
-        params: { ...msg.params ?? {} },
-        order: typeof msg.order === "number" ? msg.order : 0
+        representations
       });
       if (msg.enabled === false) {
         representations.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, true));
@@ -148533,7 +148560,12 @@ var StateHandlers = class {
   async setRegionRepresentation(msg) {
     const tag = msg.tag ?? "region";
     const entry = this.regionIndex.get(tag);
-    if (!entry || !entry.component) return;
+    if (!entry) return;
+    if (!entry.component) {
+      this.setRegionRepresentationDefinition(entry, msg);
+      await this.applyComposedTransparency();
+      return;
+    }
     const structure = this.callbacks.getStructure();
     const structureRef = this.callbacks.getLoadedStructure()?.structure;
     if (!structure || !structureRef) return;
@@ -148561,12 +148593,7 @@ var StateHandlers = class {
     } else {
       entry.representations = [];
     }
-    entry.representationState = this.regionStateFromMessage(msg);
-    entry.representation = msg.representation;
-    entry.preset = msg.preset;
-    entry.userPreset = msg.user_preset;
-    entry.params = { ...msg.params ?? {} };
-    if (typeof msg.order === "number") entry.order = msg.order;
+    this.setRegionRepresentationDefinition(entry, msg);
     if (entry.representationState === "inherit") {
       entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params, entry.atomIndices));
     } else if (entry.representationState === "own") {
@@ -148582,6 +148609,14 @@ var StateHandlers = class {
       );
     }
     await this.applyComposedTransparency();
+  }
+  setRegionRepresentationDefinition(entry, msg) {
+    entry.representationState = this.regionStateFromMessage(msg);
+    entry.representation = msg.representation;
+    entry.preset = msg.preset;
+    entry.userPreset = msg.user_preset;
+    entry.params = { ...msg.params ?? {} };
+    if (typeof msg.order === "number") entry.order = msg.order;
   }
   async addRepresentationsForRegionEntry(entry, tag, componentRef) {
     entry.representations = [];

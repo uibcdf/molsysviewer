@@ -52,6 +52,8 @@ STUDIO_LIST_BROWSER_GUARD = "molsysviewer/js/tests/e2e/studio-list-workflows.e2e
 STUDIO_BROWSER_GUARD = "molsysviewer/js/tests/e2e/studio-usability.e2e.ts"
 MOVING_CAPTURE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/moving-state-capture.e2e.ts"
 BOX_TRAJECTORY_BROWSER_GUARD = "molsysviewer/js/tests/e2e/box-trajectory.e2e.ts"
+ANNOTATIONS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/annotations-interaction.e2e.ts"
+REGIONS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/region-hide.e2e.ts"
 POPUP_BOOTSTRAP_BROWSER_GUARD = "molsysviewer/js/tests/e2e/popup-scene-bootstrap.e2e.ts"
 GROUP_PANEL_UNIT_GUARD = "molsysviewer/js/tests/unit/group-panel.test.ts"
 ADDON_PANEL_UNIT_GUARD = "molsysviewer/js/tests/unit/addon-panel-lifecycle.test.ts"
@@ -102,6 +104,8 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         STUDIO_LIST_BROWSER_GUARD,
         MOVING_CAPTURE_BROWSER_GUARD,
         BOX_TRAJECTORY_BROWSER_GUARD,
+        ANNOTATIONS_BROWSER_GUARD,
+        REGIONS_BROWSER_GUARD,
         POPUP_BOOTSTRAP_BROWSER_GUARD,
     ):
         return validate_pytest_guard(root, selector)
@@ -209,6 +213,29 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             (js_root / "tests/e2e/box-trajectory-scenarios.ts").is_file(),
             (js_root / "tests/e2e/box-trajectory-bridge.py").is_file(),
             (js_root / "tests/e2e/canvas-popup-fixture.ts").is_file(),
+        )
+    elif selector == ANNOTATIONS_BROWSER_GUARD:
+        requirements += (
+            'resolve(__dirname, "annotation-callout-bridge.py")' in entry,
+            "structuredClone(cell.obj.data.sourceData)" in entry,
+            "coordinate-only callout movement must not reupload the unchanged font texture" in entry,
+            "text.textCenters.slice(offset, offset + 3)" in entry,
+            "close(text.textSphereCenter, position)" in entry,
+            "a background change must add or remove the native background quad" in entry,
+            "run().catch(" in entry,
+            (js_root / "tests/e2e/annotation-callout-bridge.py").is_file(),
+            "annotations-interaction.e2e.js" in scripts.get("test:e2e:annotations", ""),
+        )
+    elif selector == REGIONS_BROWSER_GUARD:
+        requirements += (
+            'resolve(__dirname, "annotation-callout-bridge.py")' in entry,
+            "an initially empty region must retain its definition" in entry,
+            "style changes while empty must survive materialization" in entry,
+            "a late dynamic reply must not recreate a deleted region" in entry,
+            "assert.equal(emptyCycle.refilled.atoms, 2)" in entry,
+            "assert.equal(emptyCycle.filled.visible, false)" in entry,
+            "run().catch(" in entry,
+            (js_root / "tests/e2e/annotation-callout-bridge.py").is_file(),
         )
     elif selector == WORKSPACE_BROWSER_GUARD:
         requirements += (
@@ -609,6 +636,8 @@ def test_browser_guard_resolves_its_build_entrypoint_and_core_lane() -> None:
     assert validate_guard(ROOT, STUDIO_BROWSER_GUARD) == []
     assert validate_guard(ROOT, MOVING_CAPTURE_BROWSER_GUARD) == []
     assert validate_guard(ROOT, BOX_TRAJECTORY_BROWSER_GUARD) == []
+    assert validate_guard(ROOT, ANNOTATIONS_BROWSER_GUARD) == []
+    assert validate_guard(ROOT, REGIONS_BROWSER_GUARD) == []
     assert validate_guard(ROOT, POPUP_BOOTSTRAP_BROWSER_GUARD) == []
 
 
@@ -641,6 +670,10 @@ def test_browser_guard_rejects_missing_or_unadopted_targets(tmp_path: Path) -> N
     assert validate_guard(tmp_path, STUDIO_BROWSER_GUARD)
     assert validate_guard(tmp_path, MOVING_CAPTURE_BROWSER_GUARD)
     assert validate_guard(tmp_path, BOX_TRAJECTORY_BROWSER_GUARD)
+    assert validate_guard(tmp_path, ANNOTATIONS_BROWSER_GUARD)
+    assert validate_guard(ROOT, ANNOTATIONS_BROWSER_GUARD + "::run")
+    assert validate_guard(tmp_path, REGIONS_BROWSER_GUARD)
+    assert validate_guard(ROOT, REGIONS_BROWSER_GUARD + "::run")
     assert validate_guard(tmp_path, POPUP_BOOTSTRAP_BROWSER_GUARD)
     assert validate_guard(ROOT, POPUP_BOOTSTRAP_BROWSER_GUARD + "::run")
     assert validate_guard(ROOT, BOX_TRAJECTORY_BROWSER_GUARD + "::run")

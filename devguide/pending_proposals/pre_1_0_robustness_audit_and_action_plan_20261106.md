@@ -14,9 +14,23 @@ supersedes: []
 
 # Pre-1.0 robustness audit and action plan — 2026-11-06
 
-**Current selected receiving — 2026-11-08:**
+**Current native moving receiving — 2026-11-08:** the complete canonical entry
+passes all seven save cases in 94.72 s, including primary/canvas-popup/detached
+Studio state/session and the empty frame. Actual scene geometry, source
+immutability, independent restoration, perspective/orthographic PNG and GPU
+markers pass. A passive profile led to independently reproduced and received
+[#340](../archive/moving_annotations_reupload_font_textures.md) font uploads and
+[#341](../archive/initially_empty_region_loses_definition.md) empty-region
+lifecycle corrections; bounded [#339](../archive/applied_box_feedback_reprojects_geometry.md)
+is also received by the combined native entry. Strict builds and 428 Node
+cases pass. The [source receipt](../moving_capture_font_and_region_receiving_20261108.json)
+retains original failures, before/after controls and exact input/cleanup facts.
+A5 remains partial for current host/hidden/lifetime and consolidated acceptance;
+v2 and publication stay unadvertised/paused. Progress remains 8/46 (17.4%).
+
+**Earlier selected receiving — 2026-11-08:**
 [#338](../pending_bugs/dynamic_region_queries_cross_renderer_frames.md) isolates
-complete dynamic-region replies; [#339](../pending_bugs/applied_box_feedback_reprojects_geometry.md)
+complete dynamic-region replies; [#339](../archive/applied_box_feedback_reprojects_geometry.md)
 stops confirmed native-cell feedback from reissuing scene geometry. The selected
 source passes 218 affected Python and 428 canonical JavaScript cases. Failed
 queue/admission alternatives are preserved as prototypes and removed from the

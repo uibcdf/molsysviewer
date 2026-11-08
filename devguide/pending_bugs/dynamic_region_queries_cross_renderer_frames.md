@@ -64,7 +64,7 @@ The source retains the original ordered scene queue. Separate completion lanes,
 follower pacing and coalescing were unsuccessful A5 experiments and were removed;
 their source capsule and four failed native attempts remain preserved. Subsequent
 traces identify the producer-side
-[#339 box echo](applied_box_feedback_reprojects_geometry.md). The selected source
+[#339 box echo](../archive/applied_box_feedback_reprojects_geometry.md). The selected source
 is receiving that direct correction together with the requester/frame guards.
 Budget-triggered freezing publishes the complete static membership as a shared
 scene change, separately from frame-scoped query answers, so a different-frame

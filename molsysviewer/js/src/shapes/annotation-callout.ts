@@ -13,6 +13,7 @@ import { TextBuilder } from "molstar/lib/mol-geo/geometry/text/text-builder";
 import { Lines } from "molstar/lib/mol-geo/geometry/lines/lines";
 import { LinesBuilder } from "molstar/lib/mol-geo/geometry/lines/lines-builder";
 import { Color } from "molstar/lib/mol-util/color";
+import { ValueCell } from "molstar/lib/mol-util/value-cell";
 
 export interface AnnotationGeometry {
     tag: string;
@@ -31,11 +32,29 @@ export interface AnnotationGeometry {
 }
 
 const Params = { ...Text.Params, ...Lines.Params };
+const textLayouts = new WeakMap<Text, { text: string; props: string }>();
 
 function textShape(_ctx: any, data: AnnotationGeometry, props: any, previous?: Shape<Text>) {
-    const builder = TextBuilder.create(props, 32, 32, previous?.geometry);
-    builder.add(data.text, data.position[0], data.position[1], data.position[2], 0, 1, 0);
-    return Shape.create(data.tag, data, builder.getText(), () => Color(data.color), () => data.size, () => data.tag);
+    const key = JSON.stringify(props);
+    let geometry = previous?.geometry;
+    const layout = geometry && textLayouts.get(geometry);
+    if (geometry && layout?.text === data.text && layout.props === key) {
+        // One callout places every glyph/background quad at the same anchor.
+        // Moving it changes centres and bounds, not the font atlas or layout.
+        const centers = geometry.centerBuffer.ref.value;
+        for (let offset = 0; offset < geometry.charCount * 12; offset += 3) {
+            centers[offset] = data.position[0];
+            centers[offset + 1] = data.position[1];
+            centers[offset + 2] = data.position[2];
+        }
+        ValueCell.update(geometry.centerBuffer, centers);
+    } else {
+        const builder = TextBuilder.create(props, 32, 32, geometry);
+        builder.add(data.text, data.position[0], data.position[1], data.position[2], 0, 1, 0);
+        geometry = builder.getText();
+        textLayouts.set(geometry, { text: data.text, props: key });
+    }
+    return Shape.create(data.tag, data, geometry, () => Color(data.color), () => data.size, () => data.tag);
 }
 
 function leaderShape(_ctx: any, data: AnnotationGeometry, _props: any, previous?: Shape<Lines>) {

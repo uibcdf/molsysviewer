@@ -927,6 +927,16 @@ controls and source capsules have verified approved private custody. Local
 executions are sequential, at most eight logical CPUs/six GiB, with no swap and
 the maintainer's two-GiB minimum globally available reserve.
 
+The later [font/lifecycle receiving](moving_capture_font_and_region_receiving_20261108.json)
+now receives the complete native moving entry: all seven actual saves and
+independent restorations pass in 94.72 s, with real coherent scene geometry,
+both projection modes, alternate-camera images and GPU selection. #339/#340/#341
+have bounded fixes and guards; their failed before-controls remain preserved.
+This supersedes the preceding popup timeout as the current browser result.
+Keep A5 partial and v2 unadvertised until the remaining current Qt/query/freeze,
+hidden/lifetime, actual-Jupyter and consolidated qualification scopes are met.
+The executable checkpoint for these new corrections is recorded in that receipt.
+
 A5/#319 is the active slice. The camera/box corrections and #328's latest-frame
 shape convergence are delivered; the latter is `2bb82bbd`. Native cell
 convergence #329 now receives raw rotated/triclinic cells without Python,

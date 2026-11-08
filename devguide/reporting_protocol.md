@@ -548,3 +548,38 @@ contents; the same lane checks bounded managed-state events and panel cleanup.
 regression name, index and build/runner. This is component behavior evidence;
 real browser, consumer/Python, popup and visible-host evidence retain their
 separate scope. Other unregistered unit targets retain the default profile.
+
+### Annotation text geometry browser guard profile
+
+The bounded selector is exactly
+`molsysviewer/js/tests/e2e/annotations-interaction.e2e.ts`, without node
+suffixes, globs or commands. From `molsysviewer/js`, run
+`npm run test:e2e:annotations`; the same entry is built by `build:e2e:all`
+and executed by `test:e2e:core`. Browser/WebGL failure is an error and an
+explicit opt-out is not qualification. The offline validator checks the fixed
+entry, real Python demo fixture, failing catch handler and core/build routes.
+
+The real-pentalanine regression takes independent native geometry samples
+after completed draws. It checks font-texture identity/version across camera
+and trajectory movement, every glyph centre and its native bounds, plus actual
+text/background layout changes. The existing entry also retains annotation
+visibility, registry, measurement, tooltip, leader and playback controls.
+Registration proves addressability; moving-save, alternate-camera PNG, GPU
+picking and platform acceptance retain their separately executed scope.
+
+### Region membership lifecycle browser guard profile
+
+The bounded selector is exactly `molsysviewer/js/tests/e2e/region-hide.e2e.ts`,
+without node suffixes, globs or commands. From `molsysviewer/js`, build with
+`npm run build:harness` and `npm run build:e2e:all`, then run
+`node tests/e2e/region-hide.e2e.js`. It also belongs to `test:e2e:core`;
+browser/WebGL failure is an error and an opt-out is not qualification.
+
+The existing Whole/region mask, overlap, isolation, style, fade and cleanup
+checks remain. Its initially empty lifecycle uses the real pentalanine Python
+fixture and actual Mol* components. It checks retained identity, no initial
+representation, latent style/hidden/disabled state, repeated materialization
+and no recreation after deletion. Direct frame projections declare their
+actual current frame. `tests/test_reporting_protocol.py::validate_guard`
+checks the exact entry, assertion owners, fixture and build/core routes.
+This does not substitute for actual popup bootstrap or moving-save receiving.

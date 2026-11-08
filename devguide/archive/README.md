@@ -1,5 +1,9 @@
 # Archived implementation plans
 
+- [#339: Applied native-cell feedback records the canonical box without reissuing scene geometry.](applied_box_feedback_reprojects_geometry.md)
+- [#340: Coordinate-only callouts retain their font texture while glyph centres, bounds, images and picking stay coherent.](moving_annotations_reupload_font_textures.md)
+- [#341: Initially empty regions retain identity and latent style, then materialize through repeated memberships.](initially_empty_region_loses_definition.md)
+
 - [#336: Popup scene requests survive bounded molecular loading, keep the canonical bootstrap barrier and recover visibly from lost/late replies through Retry.](popup_snapshot_expires_during_molecular_load.md)
 
 - [#330: Camera-relative callout presentation now matches the consumed render camera, native loci and image/picking passes.](camera_relative_callout_draw_phase.md)
