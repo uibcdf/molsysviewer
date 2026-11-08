@@ -77,7 +77,8 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "record": "python-final-governance-archives-01.xml"
+      "record": "python-final-governance-archives-02.xml",
+      "note": "Final metadata/archived record after remote source delivery and issue closure; preceding 384-case result retained separately."
     },
     {
       "scope": "Repository Ruff lint/format and generated devguide queue index",
@@ -348,10 +349,15 @@
     "bytes": 18372924,
     "manifest_sha256": "420d150cbab1d95ba2a0d6b4de9acd56b17887b5e6b70a19534cdf1ec3c6e4d5",
     "originals_retained": true,
-    "off_host_backup_claimed": false
+    "off_host_backup_claimed": false,
+    "scope": "137 files frozen before the later delivery-only metadata updates; includes original failures, passing native recovery, source checkpoint, runtime identity, first final reporting result and resource receipts. Later metadata is tracked in Git and the original working evidence remains retained."
   },
   "source_delivery": {
-    "state": "Reviewed for direct main delivery; exact commit and remote verification are recorded at the next receipt checkpoint",
+    "state": "Delivered to main and independently verified on origin/main",
+    "commit": "11402e9bbddc97c8c78dfef6ac51d10df3db22c2",
+    "issue_336": "closed/completed",
+    "closing_comment_id": 6718124428,
+    "ci": "Commit carries [skip ci]; applicable consolidated/hosted acceptance remains pending",
     "publication": "No tag, package, full-CI acceptance or version-2 capability promotion"
   }
 }

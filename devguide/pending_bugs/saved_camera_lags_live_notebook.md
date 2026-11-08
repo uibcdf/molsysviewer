@@ -25,7 +25,7 @@ control with a deliberate stopped-frame geometry oracle. The corrected-source
 uninterrupted popup save still times out (`endpoint-after-04`); it is retained
 as the next A5 investigation, not presented as a passing moving save. The
 [endpoint receipt](../moving_capture_endpoints_receiving_20261107.json) keeps
-these scopes separate. Production still advertises only version 1 and A5 stays
+these scopes separate. The fix is delivered in `11402e9b`. Production still advertises only version 1 and A5 stays
 partial; no original-plan percentage changes.
 
 **Current bounded checkpoint — 2026-11-07:** #330–#335 are received and

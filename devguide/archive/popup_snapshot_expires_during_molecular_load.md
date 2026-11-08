@@ -15,7 +15,7 @@ supersedes: []
 
 # Canonical popup scene expiry during molecular loading
 
-**Resolved in reviewed source; delivery recorded in the linked receipt.** This is a bounded child
+**Delivered in `11402e9b`, independently verified on origin/main; #336 closed.** This is a bounded child
 of #319/A5, not another original-plan completion. The frontend advertises only
 capture version 1. All publications remain paused.
 

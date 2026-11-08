@@ -69,7 +69,8 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 **Latest bounded endpoint correction, 2026-11-08:**
 [#336](../archive/popup_snapshot_expires_during_molecular_load.md) fixes lost
-popup scene bootstrap while the molecular generation is being applied. The
+popup scene bootstrap while the molecular generation is being applied; source
+`11402e9b` is verified on remote main and the bounded issue is closed. The
 canonical failure/late-reply/Retry browser guard passes in 51.75 s, with native
 frame-1 geometry, 4,327 unchanged inputs and thirteen owned processes closed;
 JavaScript passes 416/416. The uninterrupted popup save still times out after
