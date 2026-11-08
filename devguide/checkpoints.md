@@ -935,7 +935,9 @@ have bounded fixes and guards; their failed before-controls remain preserved.
 This supersedes the preceding popup timeout as the current browser result.
 Keep A5 partial and v2 unadvertised until the remaining current Qt/query/freeze,
 hidden/lifetime, actual-Jupyter and consolidated qualification scopes are met.
-The executable checkpoint for these new corrections is recorded in that receipt.
+The executable checkpoint is `f5330ac9bdcd2ca520a89cb1b34f7433c1400baf`
+(`[skip ci]`), recorded in that receipt. Issues #339/#340/#341 are closed with
+their addressable guards and archived records; #319 remains partial.
 
 A5/#319 is the active slice. The camera/box corrections and #328's latest-frame
 shape convergence are delivered; the latter is `2bb82bbd`. Native cell
