@@ -3,6 +3,26 @@
 Use this page as the source of truth for the Python ↔ TypeScript boundary.
 These contracts are stability-critical.
 
+## Renderer-owned interaction queries
+
+`request_interaction_frame` uses a renderer-local integer `request_id`. The
+authenticated widget or live Qt host stamps `_query_endpoint_id` from the
+actual originating canvas, overriding any domain-payload value. Python accepts
+the primary or a registered open canvas, then targets both
+`set_interaction_frame` and `interaction_frame_complete` to that requester.
+Failures use the same destination. A legacy request without this private field
+belongs to the primary. The IDs do not identify a query across renderers.
+
+The live Qt host reports authenticated `popup_endpoint_opened` and
+`popup_endpoint_closed` lifetime events; widgets retain registration through
+their canonical popup snapshot request. Closed, unknown and panel-only
+endpoints cannot request graphical interaction frames. Detached Studio consumes
+authority summaries without requesting invisible geometry. Actual interaction
+edits remain scene-wide projections; requester isolation only scopes query
+answers. A targeted reply is relayed to its owner instead of entering the
+primary canvas or its replay log. These internal transport fields are not a
+new public Python API or a visual-state-capture stability declaration.
+
 ## ViewerMessage protocol
 
 All Python → frontend operations are JSON-like dictionaries.

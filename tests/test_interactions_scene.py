@@ -84,6 +84,95 @@ def test_frame_coverage_is_distinct_from_visual_filter(view):
     assert view.interactions._frame(obj, 0)["n_supported"] == 2
 
 
+@pytest.mark.parametrize("owner", ["primary", "host", "canvas-a", "canvas-b"])
+def test_frame_query_replies_belong_only_to_the_requesting_canvas(view, owner):
+    """Independent renderers may legitimately reuse the same local query ID."""
+    view.interactions.add("contacts", tag="hb")
+    view._ready = True
+    host = f"widget-host:{view._binary_session_id}"
+    view._endpoint_transfers.register("canvas-a", "canvas")
+    view._endpoint_transfers.register("canvas-b", "canvas")
+    view._endpoint_transfers.register("studio", "panel")
+    owner = host if owner == "host" else owner
+    sent = []
+    view.widget.send = lambda message, buffers=None: sent.append(dict(message))
+    for frame in (0, 1):
+        sent.clear()
+        view._handle_frontend_event(
+            {"event": "request_interaction_frame", "frame": frame, "request_id": 9, "_query_endpoint_id": owner}
+        )
+        assert [message["op"] for message in sent] == ["set_interaction_frame", "interaction_frame_complete"]
+        assert all(message["target_endpoint_id"] == (host if owner == "primary" else owner) for message in sent)
+        assert all(message["request_id"] == 9 for message in sent)
+        assert sent[0]["frame"] == frame
+        assert len(sent[0]["links"]) == (2 if frame == 0 else 0)
+    assert view.player.index == 0
+
+
+def test_legacy_primary_frame_query_is_not_broadcast_to_popups(view):
+    view.interactions.add("contacts", tag="hb")
+    view._ready = True
+    view._endpoint_transfers.register("canvas-a", "canvas")
+    sent = []
+    view.widget.send = lambda message, buffers=None: sent.append(dict(message))
+    view._handle_frontend_event({"event": "request_interaction_frame", "frame": 0, "request_id": 1})
+    assert len(sent) == 2
+    assert all(message["target_endpoint_id"] == f"widget-host:{view._binary_session_id}" for message in sent)
+
+
+@pytest.mark.parametrize("owner", ["closed", "foreign", "studio", None, 7, {}])
+def test_frame_query_does_not_reply_to_non_canvas_endpoints(view, owner):
+    view.interactions.add("contacts", tag="hb")
+    view._ready = True
+    view._endpoint_transfers.register("closed", "canvas")
+    view._endpoint_transfers.close("closed")
+    view._endpoint_transfers.register("studio", "panel")
+    sent = []
+    view.widget.send = lambda message, buffers=None: sent.append(dict(message))
+    view._handle_frontend_event(
+        {"event": "request_interaction_frame", "frame": 0, "request_id": 9, "_query_endpoint_id": owner}
+    )
+    assert not sent
+
+
+def test_invalid_frame_query_reports_failure_only_to_its_canvas(view):
+    view.interactions.add("contacts", tag="hb")
+    view._ready = True
+    view._endpoint_transfers.register("canvas-a", "canvas")
+    view._endpoint_transfers.register("canvas-b", "canvas")
+    sent = []
+    view.widget.send = lambda message, buffers=None: sent.append(dict(message))
+    view._handle_frontend_event(
+        {"event": "request_interaction_frame", "frame": 99, "request_id": 9, "_query_endpoint_id": "canvas-a"}
+    )
+    assert len(sent) == 1
+    assert sent[0]["op"] == "backend_error_occurred"
+    assert sent[0]["target_endpoint_id"] == "canvas-a"
+    assert sent[0]["request_id"] == 9
+
+
+def test_live_host_open_and_close_own_the_query_endpoint_lifetime(view):
+    view.interactions.add("contacts", tag="hb")
+    view._ready = True
+    view._handle_frontend_event({"event": "popup_endpoint_opened", "mode": "canvas", "popup_endpoint_id": "qt"})
+    sent = []
+    view.widget.send = lambda message, buffers=None: sent.append(dict(message))
+    query = {"event": "request_interaction_frame", "frame": 0, "request_id": 9, "_query_endpoint_id": "qt"}
+    view._handle_frontend_event(query)
+    assert len(sent) == 2
+    assert all(message["target_endpoint_id"] == "qt" for message in sent)
+    view._handle_frontend_event({"event": "popup_endpoint_closed", "popup_endpoint_id": "qt"})
+    sent.clear()
+    view._handle_frontend_event(query)
+    assert not sent
+
+
+@pytest.mark.parametrize("mode", [None, {}, [], "foreign"])
+def test_invalid_host_popup_mode_cannot_register_a_query_owner(view, mode):
+    view._handle_frontend_event({"event": "popup_endpoint_opened", "mode": mode, "popup_endpoint_id": "invalid"})
+    assert view._endpoint_transfers.state("invalid") is None
+
+
 def test_inspector_tracks_query_revision_and_respects_excluded_frames(view):
     obj = view.interactions.add("contacts", tag="hb")
     original = view.interactions.inspect("hb")

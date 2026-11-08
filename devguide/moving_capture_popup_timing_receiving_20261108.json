@@ -1,0 +1,697 @@
+{
+  "schema": "molsysviewer.working_receiving@1",
+  "date": "2026-11-08",
+  "owner_issue": "uibcdf/molsysviewer#319",
+  "parent_plan": "uibcdf/molsysviewer#315",
+  "source_base": "e32edf697e716a50c98e8befdd1d57533467ac53",
+  "provider_source": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+  "status": "Working requester isolation passes protocol checks and actual popup state/session; detached Studio state remains failing and v2 unadvertised",
+  "production_runtime_changed": true,
+  "advertised_capture_versions": [
+    1
+  ],
+  "test_changes": [
+    "Prepare format/path before deliberate source stall",
+    "Arm GUI stall on the actual Save click, preserving actual source comm messages",
+    "Retain two actual owning-canvas frame changes after the real request and zero early replies",
+    "Record native readiness on the host clock, renderer start and real backend ticket remaining time"
+  ],
+  "limits_not_relaxed": [
+    "Studio capture remains ten seconds",
+    "No source playback pause/seek for moving saves",
+    "Same native camera/frame/cell/annotation/distance/shape/interaction/dynamic-region checks and independent file restoration"
+  ],
+  "checks": [
+    {
+      "scope": "Strict observer/UI-helper TypeScript, all E2E builds and affected Python Ruff lint/format",
+      "native_exit": 0,
+      "private_records": "checks-build-01 through checks-build-03"
+    },
+    {
+      "scope": "Ruff check and format, whitespace and generated devguide indexes",
+      "native_exit": 0,
+      "python_files_formatted": 984,
+      "evidence_route": "Observed local command output; separate pytest/JUnit records above retain native test outcomes."
+    }
+  ],
+  "executions": [
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=400%",
+        "-p",
+        "MemoryMax=4G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 1,
+      "seconds": 85.29317660210654,
+      "selected_inputs": 4327,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2786.1,
+      "peak_owned_threads": 144,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-moving-timeout-20261108/endpoint-after-01",
+      "digests": {
+        "invocation.json": "60b23d47ea14f1d58dc4bbe2794d73a03f91f97f6ce9651792a27cf94ac827b5",
+        "inputs-before.json": "b01031eec61e34adda0794bb69cc4c978112e5be65df0025bb2d1d7565ffa4ae",
+        "inputs-after.json": "b01031eec61e34adda0794bb69cc4c978112e5be65df0025bb2d1d7565ffa4ae",
+        "stdout.log": "144693c80451871b6b005aada7b59c8c9b2731093e7889396c50ae3fa67c57fd",
+        "capture-failure.json": "0849660fd103027f8a626fdf6744ecfe1528fffeea2ea5937306e5393af9e043",
+        "capture-popup-state-timing.json": "08a56dedb1030fe53e232b8ba45ef41b281170d6e378beb4cc421938f4f7cade"
+      },
+      "scope": "Form prepared before hold, but CDP click/actionability still delays actual Save by9.5s; source times out."
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=400%",
+        "-p",
+        "MemoryMax=4G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 1,
+      "seconds": 94.25074997497723,
+      "selected_inputs": 4327,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2734.6,
+      "peak_owned_threads": 145,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-moving-timeout-20261108/endpoint-after-02",
+      "digests": {
+        "invocation.json": "38df902f6360ff8620b5355969945a29d214e90487a54d539a87de96b14b76e8",
+        "inputs-before.json": "0ec874425125f6e30c3c034d515dcc912a0d4b57b70d292d78715d2222134fa9",
+        "inputs-after.json": "0ec874425125f6e30c3c034d515dcc912a0d4b57b70d292d78715d2222134fa9",
+        "stdout.log": "1ee2d15a83f86708466683f6f24ea34478058a97320e8069379c74ba44e45269",
+        "capture-failure.json": "ef2393eb3665f350c023e282a668dd735addfb3743f40a6673195163171c0969",
+        "capture-popup-state-timing.json": "37e74d3d3f45602328f2a351547a11b9e74d22d77cb70b17ced0eb42fbe765b7"
+      },
+      "scope": "Hold armed on actual Save click; renderer reports positive v2 frame1 but source expires. Full successful-file/restoration assertions are not reached."
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=400%",
+        "-p",
+        "MemoryMax=4G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 0,
+      "seconds": 95.82226332300343,
+      "selected_inputs": 4327,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2790.8,
+      "peak_owned_threads": 148,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-moving-timeout-20261108/endpoint-after-03",
+      "digests": {
+        "invocation.json": "346144dcd328cc7bb1766cfeb0582dd60e0895e84e9f1e5a202dbcd57fbfcc2c",
+        "inputs-before.json": "c42456de09321f9be5bf872f6e6c23ff31d71d58dd6d9a71b96efd71dfafdf4c",
+        "inputs-after.json": "c42456de09321f9be5bf872f6e6c23ff31d71d58dd6d9a71b96efd71dfafdf4c",
+        "stdout.log": "ecda53004a8c7f17b9b4cc6018463ba0dba9d1ecde01da871523031e16e680ea",
+        "capture-popup-state-timing.json": "552cbc693c740a3587d4a2f7b188b976ad07e0af1fa883ec9a33559272d029ec",
+        "popup-state.json": "c3cc2d0a4a2652cfd90942515e82373aace776195aca04c7ff5fe4f032ad04c2"
+      },
+      "reply_ticket_remaining_ms": 118.75329306349158,
+      "scope": "Actual popup state save passes all moving/dependent-geometry/source-immutability/independent-restoration assertions; one-case diagnostic subset, not full endpoint acceptance."
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--unit=msv-moving-2506353-endpoint-after-04",
+        "--quiet",
+        "-p",
+        "CPUQuota=800%",
+        "-p",
+        "MemoryMax=4G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3,4,5,6,7",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 0,
+      "seconds": 84.30215870006941,
+      "selected_inputs": 4327,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2819.1,
+      "peak_owned_threads": 160,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-moving-timeout-20261108/endpoint-after-04",
+      "digests": {
+        "invocation.json": "d5a6823642548e5bd29d319c8bde661c8c45376d18d3911732637bbc073de105",
+        "inputs-before.json": "7ab617646ab1fe124882416b8ba0d047ebc1a645dad25d05cd5709ffdb7a7a67",
+        "inputs-after.json": "7ab617646ab1fe124882416b8ba0d047ebc1a645dad25d05cd5709ffdb7a7a67",
+        "stdout.log": "d7875cea722b5206e5ed4ffc6222d462064b1cdf0fa39c2e8dc2f183cd578b9b",
+        "capture-popup-state-timing.json": "1b8d78c2f018207ce1f3776e91d57715cdb64ed4b7aa7e4e64e8df1ff688311b",
+        "popup-state.json": "bbd58b719ea269d15ed4c1f43fe6c5cc92976c7998fcc3e16a9649ffead2f087"
+      },
+      "reply_ticket_remaining_ms": 3800.008897902444,
+      "scope": "Actual popup state save passes all moving/dependent-geometry/source-immutability/independent-restoration assertions; one-case diagnostic subset, not full endpoint acceptance.",
+      "owned_cpu_stat_last": {
+        "usage_usec": 383993984,
+        "user_usec": 371058868,
+        "system_usec": 12935116,
+        "nice_usec": 0,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 822,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "minimum_global_available_gib": 8.56
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--unit=msv-moving-2512507-endpoint-after-06",
+        "--quiet",
+        "-p",
+        "CPUQuota=800%",
+        "-p",
+        "MemoryMax=6G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3,4,5,6,7",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 1,
+      "seconds": 62.70069913496263,
+      "selected_inputs": 4327,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2731.1,
+      "peak_owned_threads": 159,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-moving-timeout-20261108/endpoint-after-06",
+      "scope": "The four-role selection fails its first popup-state capture; later cases do not execute. No CPU throttling or resource interruption is observed, so resource expansion alone does not establish stable capture.",
+      "digests": {
+        "invocation.json": "88c820219b5737671ccb3c61a4a86c1222c7aa8829a960d7e8200f0020d47385",
+        "inputs-before.json": "5ae6d978953fcd3ccb19a06a0e3adb0e2281fdc1c4dfcd4bf6339a43fe05bc47",
+        "inputs-after.json": "5ae6d978953fcd3ccb19a06a0e3adb0e2281fdc1c4dfcd4bf6339a43fe05bc47",
+        "stdout.log": "79879e5ccf8083a511e5ab2a9e049911403fc643ffff288c1a16e5416523644e",
+        "capture-failure.json": "556bc6e076f053945cea1054f6d21f157dd2ed127cf269a4ac8b8462fd3f5995"
+      },
+      "owned_cpu_stat_last": {
+        "usage_usec": 307208586,
+        "user_usec": 295734199,
+        "system_usec": 11474386,
+        "nice_usec": 0,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 616,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "minimum_global_available_gib": 13.84
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--unit=msv-moving-2525322-endpoint-after-07",
+        "--quiet",
+        "-p",
+        "CPUQuota=800%",
+        "-p",
+        "MemoryMax=6G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3,4,5,6,7",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 1,
+      "seconds": 109.22831103904173,
+      "selected_inputs": 4327,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2956.4,
+      "peak_owned_threads": 158,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-moving-timeout-20261108/endpoint-after-07",
+      "digests": {
+        "invocation.json": "bc7c70de0fd6f2f82639d91adb2279205147da1d8689482bed8615613243734d",
+        "inputs-before.json": "1eecf2f6fb7f7c60c00c23921bb93f07c8f3bc491ce14500222878cb1341a9c9",
+        "inputs-after.json": "1eecf2f6fb7f7c60c00c23921bb93f07c8f3bc491ce14500222878cb1341a9c9",
+        "stdout.log": "1de67422408bc7b935ce10ec5252e06d307029adfc9aeeec821bfc7d952a1963",
+        "capture-failure.json": "f7aa622f7fbdb50609a167c7c5026e2639516046c1f2ea89ccf04abdb195fd70"
+      },
+      "scope": "After follower refinement, popup-state passes; popup-session times out. Detached state/session do not execute. This is not four-role acceptance.",
+      "completed_roles": [
+        "popup-state"
+      ],
+      "failed_role": "popup-session",
+      "unexecuted_roles": [
+        "detached-state",
+        "detached-session"
+      ],
+      "owned_cpu_stat_last": {
+        "usage_usec": 578360653,
+        "user_usec": 559725062,
+        "system_usec": 18635591,
+        "nice_usec": 0,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 1079,
+        "nr_throttled": 2,
+        "throttled_usec": 4881,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--unit=msv-moving-2543784-endpoint-after-08",
+        "--quiet",
+        "-p",
+        "CPUQuota=800%",
+        "-p",
+        "MemoryMax=6G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3,4,5,6,7",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/moving-endpoints.probe.js"
+      ],
+      "native_exit": 1,
+      "seconds": 180.58894635597244,
+      "selected_inputs": 4329,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3119.5,
+      "peak_owned_threads": 159,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-moving-timeout-20261108/endpoint-after-08",
+      "digests": {
+        "invocation.json": "bbea1e3cb24cd0d4befbf91fc1177d7e4281a8e3d73b1177d11e0ede58728d91",
+        "inputs-before.json": "4cf490489a8a333a5a3222f88ca5270bd55d96882824962b1bea07dd2cb7ea6d",
+        "inputs-after.json": "4cf490489a8a333a5a3222f88ca5270bd55d96882824962b1bea07dd2cb7ea6d",
+        "stdout.log": "aa53a7bdf4ab99d78adcc3d09daf95f6b2d591e592ac227b56dcb6c7fc413f0d",
+        "capture-failure.json": "4a56f2c29d0bd6699bb2186ac3c9b764b519bd04c4018e830c1634d7ef9f41e0",
+        "capture-popup-state-timing.json": "c30751c25d9cc85e5c43f95923733dd175579bae61811b7a8bee511595c98349",
+        "capture-popup-session-timing.json": "ad38279d69fda5f0751a1eb62c426df0e3e1ee7be0e212c266cac199e0a6aad7",
+        "capture-detached-state-timing.json": "4427930dcf775a45881df0a1f1bfee87d1ee54a7ad103ef09112484ad88d136b",
+        "popup-state.json": "cd89191b4b5a0032f4314f0eef2b0f9a9a06b0c1a22cef9eeea780abad458a6f",
+        "popup-session.msv": "85e20cd37576b2ff955a379b71627f72eac6b9d4f0c8d720041b1155c1a8a657"
+      },
+      "scope": "Popup state and session pass full native geometry, source-immutability and independent file-restoration assertions. Detached Studio state fails with request_timeout; detached session does not execute. This is not four-role acceptance.",
+      "completed_roles": [
+        "popup-state",
+        "popup-session"
+      ],
+      "failed_role": "detached-state",
+      "unexecuted_roles": [
+        "detached-session"
+      ],
+      "owned_cpu_stat_last": {
+        "usage_usec": 938482724,
+        "user_usec": 911213245,
+        "system_usec": 27269478,
+        "nice_usec": 0,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 1755,
+        "nr_throttled": 1,
+        "throttled_usec": 168,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "minimum_global_available_gib": 9.62,
+      "real_reply_ticket_remaining_ms": {
+        "popup-state": 2630.4793250747025,
+        "popup-session": 269.1374539863318
+      }
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--unit=msv-moving-2549105-endpoint-after-09",
+        "--quiet",
+        "-p",
+        "CPUQuota=800%",
+        "-p",
+        "MemoryMax=6G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3,4,5,6,7",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/popup-scene-bootstrap.e2e.js"
+      ],
+      "native_exit": 0,
+      "seconds": 46.304298860020936,
+      "selected_inputs": 4329,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2627.8,
+      "peak_owned_threads": 158,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-moving-timeout-20261108/endpoint-after-09",
+      "scope": "Canonical v1 bootstrap/failure/late reply/Retry guard; actual native frame-1 geometry restored. Playback deliberately stopped for its geometry oracle; this does not qualify uninterrupted moving capture.",
+      "minimum_global_available_gib": 12.33,
+      "digests": {
+        "invocation.json": "c3efc98f4c3a85ac187e5f40af9dadb6248db072b9e45c92ff473d710869ecc1",
+        "inputs-before.json": "4cf490489a8a333a5a3222f88ca5270bd55d96882824962b1bea07dd2cb7ea6d",
+        "inputs-after.json": "4cf490489a8a333a5a3222f88ca5270bd55d96882824962b1bea07dd2cb7ea6d",
+        "stdout.log": "41288d7328c0536eb086d89c09bc391ea2e2106cc80b2d7ccda02b4573b9e0e3",
+        "bootstrap-recovery.json": "e2d32bed59651ebeda8290daef9423f9a5a2392f54ae09239e30dfc0c1657b2f"
+      }
+    },
+    {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--unit=msv-moving-2551689-endpoint-after-10",
+        "--quiet",
+        "-p",
+        "CPUQuota=800%",
+        "-p",
+        "MemoryMax=6G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1,2,3,4,5,6,7",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "tests/e2e/popup-scene-bootstrap.e2e.js"
+      ],
+      "native_exit": 0,
+      "seconds": 41.15815512998961,
+      "selected_inputs": 4329,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2522.5,
+      "peak_owned_threads": 157,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_path": ".pytest_cache/robustness-20261106/A5-moving-timeout-20261108/endpoint-after-10",
+      "scope": "Canonical v1 bootstrap/failure/late reply/Retry guard; actual native frame-1 geometry restored. Playback deliberately stopped for its geometry oracle; this does not qualify uninterrupted moving capture.",
+      "minimum_global_available_gib": 14.02,
+      "digests": {
+        "invocation.json": "cb93259ad7e9dfffa458ec8ba2e2bb8a3bfe92455dd7e5c57a774a78c30e1dee",
+        "inputs-before.json": "40639998e037920f58469424976b711c92813be942ed1b5c4f4738f0a5c08ccb",
+        "inputs-after.json": "40639998e037920f58469424976b711c92813be942ed1b5c4f4738f0a5c08ccb",
+        "stdout.log": "41288d7328c0536eb086d89c09bc391ea2e2106cc80b2d7ccda02b4573b9e0e3",
+        "bootstrap-recovery.json": "83fdabe11a708ee8921146d60d57a0e9a5a2c70a8488ce03112842c9f88fdfa8"
+      }
+    }
+  ],
+  "resource_scope": {
+    "ceiling_requested_by_user": {
+      "logical_cpus": 8,
+      "ram_gib": 6
+    },
+    "effective_latest": {
+      "logical_cpus": 8,
+      "affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "ram_gib": 6,
+      "swap_gib": 0,
+      "tasks_max": 256,
+      "minimum_available_reserve_gib": 2
+    },
+    "reserved_or_exclusive_resources_claimed": false,
+    "earlier_six_cpu_attempt": "Automatically rejected before process creation and before its proposed profiler edit. That edit did not run; no throttling profile is claimed for attempt 03.",
+    "lightweight_prior_limit_verification": "A separate own process read cpu.max=400000 100000, affinity0\u20133, memory.max=4294967296 and memory.swap.max=0.",
+    "subsequent_user_direction": "The user proposed eight logical CPU/six GiB and then said continua. The approved subsequent run uses eight CPU/four GiB with per-run reserve checks and monitoring.",
+    "current_user_override": {
+      "minimum_available_reserve_gib": 2,
+      "replaces": "Earlier twenty-percent reserve for subsequent operations in this session",
+      "effective_four_role_run": {
+        "logical_cpus": 8,
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "ram_max_gib": 6,
+        "swap_max_gib": 0,
+        "tasks_max": 256
+      },
+      "fresh_available_gib": 9.82943344116211,
+      "fresh_cpu_percent": 22.5,
+      "fresh_swap_activity_bytes": 0,
+      "fresh_memory_pressure": "zero",
+      "maximum_resident_allocation_is_not_reserved_memory": true
+    },
+    "historical_reason_for_retaining_4gib_before_user_override": "11.608 GiB observed available minus a possible 6-GiB peak leaves 5.608 GiB, below the conservative reserve of 6.134 GiB."
+  },
+  "progress": {
+    "delivered": 8,
+    "original_leaves": 46,
+    "delivered_percent": 17.4,
+    "finally_accepted": 1,
+    "mandatory_movie_issue": "uibcdf/molsysviewer#320"
+  },
+  "remaining": [
+    "Investigate detached Studio state timeout and small popup-session reply margin with unchanged scientific gates and ten-second operation deadline; detached session remains unexecuted",
+    "Retain and explain original timing failures and qualify the applicable consolidated/hosted resource envelope",
+    "Receive hidden/unavailable/closed/disposed endpoints and current actual Jupyter before advertising v2"
+  ],
+  "publication": "Tags, packages and both1.0 publications remain paused.",
+  "not_started_execution": {
+    "private_path": ".pytest_cache/robustness-20261106/A5-moving-timeout-20261108/endpoint-after-05",
+    "reason": "The prior20-percent reserve gate rejects9.845 GiB available minus4 GiB. Browser did not start; this is not a product-test failure."
+  },
+  "active_execution": null,
+  "working_runtime_refinement": {
+    "scope": "Only complete follower projections may bypass unchanged native model/derived work, with pending-update and all-model guards; identical resolved playback metadata suppresses duplicate listener refreshes",
+    "causal_control": {
+      "tests": 12,
+      "before": {
+        "passed": 10,
+        "failed": 2
+      },
+      "after": {
+        "passed": 12,
+        "failed": 0
+      },
+      "scope_limit": "Native molecular geometry is not supplied by this protocol-unit driver. Full browser receiving remains required."
+    },
+    "runtime_and_canonical_node_checks": {
+      "production_typescript": 0,
+      "runtime_build": 0,
+      "harness_build": 0,
+      "canonical_node": {
+        "passed": 420,
+        "failed": 0,
+        "skipped": 0
+      },
+      "all_e2e_build": 0,
+      "private_entry_build": "First command used a relative path and failed; corrected absolute-path command alone passes. Earlier passing gates retained."
+    }
+  },
+  "interaction_query_isolation": {
+    "issue": "uibcdf/molsysviewer#337",
+    "before": {
+      "passed": 0,
+      "failed": 4,
+      "native_exit": 1
+    },
+    "after": {
+      "selection": "tests/test_interactions_scene.py",
+      "passed": 54,
+      "failed": 0,
+      "skipped": 0,
+      "native_exit": 0,
+      "private_record": "query-after-02"
+    },
+    "canonical_javascript": {
+      "passed": 422,
+      "failed": 0,
+      "skipped": 0,
+      "native_exit": 0
+    },
+    "production_typescript": 0,
+    "runtime_build": 0,
+    "harness_build": 0,
+    "e2e_build": 0,
+    "private_entry_build": 0,
+    "private_records": [
+      "query-before-01",
+      "query-after-01",
+      "checks-query-routing-01",
+      "query-after-02"
+    ],
+    "scope_limit": "Protocol isolation and compile/unit results do not establish a stable moving-session save or full Qt/Jupyter qualification.",
+    "boundary_checks": {
+      "native_exit": 0,
+      "passed": 485,
+      "failed": 0,
+      "skipped": 0,
+      "selection": [
+        "tests/test_transport_ownership.py",
+        "tests/test_popup_snapshot.py",
+        "tests/test_qt_transport_contract.py",
+        "tests/test_runtime_router.py",
+        "tests/test_reporting_protocol.py"
+      ],
+      "private_record": "query-boundary-after-02",
+      "retained_operator_error": "query-boundary-after-01 used nonexistent tests/test_runtime_contract.py: pytest exit 4, no tests executed. Corrected selector alone used on retry."
+    },
+    "initial_after": {
+      "selection": "tests/test_interactions_scene.py",
+      "passed": 49,
+      "failed": 0,
+      "native_exit": 0
+    },
+    "last_source_refinement": "After native08/09, the opened-endpoint mode guard uses tuple membership to reject malformed unhashable modes without raising. Added four malformed-mode and one explicit host-alias cases. Canonical bootstrap passes again in 41.158 seconds on these final backend bytes; earlier normal-mode observations remain scoped to their own input manifest."
+  },
+  "runtime_sha256": "5933dc00eb1d804702f43ab48e3aec352f543877cce96b3bdf4ac83a77194c7c",
+  "source_as_tested_before_final_mode_guard": {
+    "private_copy": ".pytest_cache/robustness-20261106/A5-moving-timeout-20261108/core-as-tested-through-native-09.py",
+    "sha256": "2aee68461169174a97c63fd6a54e8721f45573907cbe8a495d8d40e2188351f1",
+    "verified_against": "endpoint-after-08/inputs-before.json"
+  },
+  "last_completed_execution": ".pytest_cache/robustness-20261106/A5-moving-timeout-20261108/endpoint-after-10",
+  "no_active_owned_execution": true,
+  "canonical_bootstrap_final_backend": {
+    "native_exit": 0,
+    "seconds": 41.15815512998961,
+    "selected_inputs": 4329,
+    "inputs_unchanged": true,
+    "owned_processes_closed": 13,
+    "peak_owned_rss_mib": 2522.5,
+    "private_record": "endpoint-after-10"
+  },
+  "evidence_custody": {
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/moving-query-isolation-20261108-1",
+    "custodian": "Diego Prada Gracia",
+    "files": 205,
+    "bytes": 35767084,
+    "manifest_sha256": "9a7f35ddb55be927088998b2259d826ebd82b60d830700615de2842e1eff81bb",
+    "directories_mode": "0700",
+    "files_mode": "0600",
+    "originals_retained": true,
+    "off_host_backup_claimed": false,
+    "scope_limit": "Frozen raw working tree and source-closeout snapshot. Later custody and commit metadata remain in Git/workspace and are not claimed inside this already-frozen manifest."
+  },
+  "hosted_ci": {
+    "state": "not_run_for_this_source_checkpoint",
+    "reason": "Principal maintainer requires batched [skip ci] development checkpoints; full moving capture remains unresolved under #319. No passing exact-source consolidated/full hosted result is claimed.",
+    "owner_issue": "uibcdf/molsysviewer#319",
+    "recovery_route": "Resolve detached moving capture, qualify all seven canonical moving cases plus endpoint availability/cancellation and actual Jupyter/Qt where applicable, then execute and inspect the applicable consolidated exact-source CI checkpoint."
+  },
+  "source_checkpoint": "Pending direct main integration; tested code inputs retain their per-execution manifests."
+}

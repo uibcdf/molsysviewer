@@ -66,13 +66,13 @@ export class InteractionHandlers {
     }) {}
 
     get currentFrame(): number { return this.frame; }
-    setSummaries(items: InteractionSummary[], revision = -1): boolean {
+    setSummaries(items: InteractionSummary[], revision = -1, requestGeometry = true): boolean {
         if (revision < this.latestRevision && revision !== -1) return false;
         this.latestRevision = Math.max(this.latestRevision, revision);
         for (const tag of this.tokens.keys()) if (!items.some(item => item.tag === tag)) this.drop(tag);
         this.summaries = items;
         this.latestRevision = Math.max(this.latestRevision, ...items.map(item => item.projection_revision ?? -1));
-        if (items.some(item => item.frame !== this.frame)) {
+        if (requestGeometry && items.some(item => item.frame !== this.frame)) {
             this.pending = null; this.requestedFrame = -1; this.requestFrame();
         }
         return true;

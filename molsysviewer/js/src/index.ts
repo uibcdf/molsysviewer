@@ -29,6 +29,7 @@ import {
 } from "./messages/array-native-stream";
 import { PopupReplayLog } from "./messages/popup-replay-log";
 import { WidgetEnvelopeAdapter } from "./messages/widget-envelope";
+import { ownInteractionQuery } from "./messages/interaction-query";
 import { ACTION_CATEGORIES, FRONTEND_AUTHORITATIVE } from "./messages/runtime-actions";
 
 export { RemoteInputAdapter } from "./messages/remote-input-adapter";
@@ -236,6 +237,8 @@ export async function bootDocsView(opts: {
 
     const ui = opts.ui || {};
     const hasAuthority = ui.host_event_transport === "url-scheme";
+    const primaryEndpoint = typeof ui.runtime_session_id === "string"
+        ? `widget-host:${ui.runtime_session_id}` : "primary";
     const visualStateCaptures = new VisualStateCaptureRequests();
     const cameraSyncState = new CameraSyncState();
     let docsMessageQueue = Promise.resolve();
@@ -295,6 +298,16 @@ export async function bootDocsView(opts: {
 
     (window as any).__molsysviewerDocsHandleMessage = async (msg: ViewerMessage) => {
         if (docsDisposed) return;
+        // Live Qt uses the same requester-owned query replies as the widget.
+        // A popup reply must neither render nor enter the primary replay log.
+        const targetEndpoint = (msg as any)?.target_endpoint_id;
+        if (typeof targetEndpoint === "string" && targetEndpoint
+            && targetEndpoint !== primaryEndpoint && targetEndpoint !== "primary") {
+            const mode = targetEndpoint === popupMgr.popupEndpointId("canvas") ? "canvas"
+                : targetEndpoint === popupMgr.popupEndpointId("panel") ? "panel" : null;
+            if (mode) popupMgr.sendTo(mode, "molsysviewer-sync-op", msg);
+            return;
+        }
         cameraSyncState.receive(msg);
         const meta = messageMeta(msg);
         const capture = hasAuthority && (msg as any)?.op === "request_visual_state"
@@ -388,7 +401,7 @@ export async function bootDocsView(opts: {
     const missingAuthority = makeMissingAuthorityReporter(hostEl);
     const controllerPromise = MolSysViewerController.create(target, message => {
         if (hasAuthority) {
-            notifyHost(message);
+            notifyHost(ownInteractionQuery(message, primaryEndpoint));
             return;
         }
         const projection = frontendSceneProjection(message);
@@ -416,6 +429,9 @@ export async function bootDocsView(opts: {
         source: runtimeSource,
         viewerId: typeof ui.runtime_viewer_id === "string" ? ui.runtime_viewer_id : undefined,
         sessionId: typeof ui.runtime_session_id === "string" ? ui.runtime_session_id : undefined,
+        onEndpointClosed: (mode, endpointId) => {
+            if (hasAuthority) notifyHost({ event: "popup_endpoint_closed", mode, popup_endpoint_id: endpointId });
+        },
     });
 
     // Without one of the two the popup has no runtime to boot, and a button that
@@ -505,6 +521,11 @@ export async function bootDocsView(opts: {
         try {
             switch (type) {
                 case "molsysviewer-pop-ready":
+                    if (hasAuthority) notifyHost({
+                        event: "popup_endpoint_opened",
+                        mode: popupMessage.channel.mode,
+                        popup_endpoint_id: popupMessage.channel.popupEndpointId,
+                    });
                     popupMgr.isReady = true;
                     popupMgr.send("molsysviewer-initial-sync", {
                         messages: popupReplay.snapshot("canvas"),
@@ -548,7 +569,7 @@ export async function bootDocsView(opts: {
                 case "molsysviewer-popup-interaction":
                     {
                         if (hasAuthority) {
-                            notifyHost(data);
+                            notifyHost(ownInteractionQuery(data, popupMessage.channel.popupEndpointId));
                             break;
                         }
                         const projection = frontendSceneProjection(data);
@@ -927,6 +948,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
         const pendingWorkFileSaves = new Map<string, { requestId: string; owner: string; canvas: string }>();
         const workFileKey = (owner: string, requestId: string) => JSON.stringify([owner, requestId]);
         const sendEndpointAction = (message: Record<string, unknown>, owner: string, canvas: string) => {
+            message = ownInteractionQuery(message, owner);
             const correlated = message.event === "interaction_context_action"
                 && typeof message.request_id === "string" && message.request_id.trim() !== "";
             const owned = correlated ? { ...message, _studio_owner_endpoint_id: owner } : message;

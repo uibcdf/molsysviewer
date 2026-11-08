@@ -99,7 +99,19 @@ def main():
             "trajectory_frame_changed",
             "visual_state_snapshot",
         }:
-            observe(payload["event"], frame=payload.get("frame"), holding=holding)
+            pending = owner._frontend_requests._pending.get(payload.get("request_id"))
+            observe(
+                payload["event"],
+                frame=payload.get("frame"),
+                holding=holding,
+                request_id=payload.get("request_id"),
+                error_type=payload.get("error_type"),
+                ok=payload.get("ok"),
+                ticket_remaining_ms=(pending.deadline - time.monotonic()) * 1000 if pending is not None else None,
+                ticket_pending=pending is not None,
+            )
+        if payload.get("action") == "save_work_file":
+            observe("save_work_file", request_id=payload.get("request_id"), holding=holding)
         if payload.get("event") == "request_dynamic_region_evaluation" and holding:
             held.append(event)
             return {"moving_fixture_held": {"frame": payload.get("frame"), "count": len(held)}}

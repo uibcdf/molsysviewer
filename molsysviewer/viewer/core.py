@@ -638,6 +638,12 @@ class MolSysView(
             request_id = content.get("request_id")
             if isinstance(request_id, str):
                 error_payload["request_id"] = request_id
+        elif event == "request_interaction_frame":
+            target = self._interaction_query_target(content)
+            if target is None:
+                return
+            error_payload["target_endpoint_id"] = target
+            error_payload["request_id"] = content.get("request_id")
         try:
             emit_from_catalog(
                 CATALOG["frontend_action_failed"],
@@ -1644,6 +1650,18 @@ class MolSysView(
                 self._pending_camera_intent = pending
             raise
 
+    def _interaction_query_target(self, content: Mapping[str, Any]) -> str | None:
+        """Resolve a host-stamped query owner without broadcasting local IDs."""
+        host = f"widget-host:{self._binary_session_id}"
+        endpoint = content.get("_query_endpoint_id", "primary")
+        if endpoint in ("primary", host):
+            return host
+        if isinstance(endpoint, str):
+            state = self._endpoint_transfers.state(endpoint)
+            if state is not None and state.mode == "canvas":
+                return endpoint
+        return None
+
     def _is_read_only_addon_request(self, content: Mapping[str, Any]) -> bool:
         """Classify only a currently mounted, endpoint-owned panel action."""
         from ..addons import AddonPanelWidget
@@ -1757,6 +1775,13 @@ class MolSysView(
             self._unmount_addon_panel(endpoint_id=endpoint_id)
             self._frontend_requests.cancel_endpoint(endpoint_id)
             self._endpoint_transfers.close(endpoint_id)
+        elif event == "popup_endpoint_opened":
+            # The live Qt host has already authenticated the popup ready event.
+            # Widgets register through their canonical snapshot request instead.
+            endpoint_id = content.get("popup_endpoint_id")
+            mode = content.get("mode")
+            if isinstance(endpoint_id, str) and endpoint_id and mode in ("canvas", "panel"):
+                self._endpoint_transfers.register(endpoint_id, mode)
         elif event == "request_widget_runtime_source":
             # This is the lazy-load bootstrap handshake: the frontend requests the
             # runtime source BEFORE the real runtime has loaded, so `_ready` is
@@ -2058,6 +2083,9 @@ class MolSysView(
         elif event == "interaction_measurement_created":
             self.measurements._register_interactive_measurement(dict(content))  # noqa: SLF001
         elif event == "request_interaction_frame":
+            target = self._interaction_query_target(content)
+            if target is None:
+                return
             frame = content.get("frame")
             request_id = content.get("request_id")
             try:
@@ -2065,8 +2093,10 @@ class MolSysView(
 
                 _indices(frame, self.molsys.structures.n_structures, "structure_indices")
                 for message in self.interactions._messages(frame):
-                    self._send_runtime_only({**message, "request_id": request_id})
-                self._send_runtime_only({"op": "interaction_frame_complete", "request_id": request_id})
+                    self._send_runtime_only({**message, "request_id": request_id, "target_endpoint_id": target})
+                self._send_runtime_only(
+                    {"op": "interaction_frame_complete", "request_id": request_id, "target_endpoint_id": target}
+                )
             except Exception as exc:
                 self._send_backend_error_ack(content, exc)
         elif event == "trajectory_frame_rendered":

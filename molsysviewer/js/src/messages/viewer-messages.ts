@@ -1,4 +1,6 @@
 import type { InteractionFrame, InteractionSeries, InteractionSummariesMessage, InteractionInspection } from "../managers/handlers/interaction-handlers";
+import type { BoxDisplayProjection } from "./box-display";
+import type { PlaybackSnapshot } from "./visual-state-snapshot";
 // src/messages/viewer-messages.ts
 
 import { PocketSurfaceOptions } from "../shapes/pocket-surface";
@@ -442,6 +444,9 @@ export type SetTrajectoryFrameMessage = {
     op: "set_trajectory_frame";
     index?: number;
     navigation_revision?: number;
+    box_follow?: boolean;
+    box_display?: BoxDisplayProjection;
+    playback_projection?: PlaybackSnapshot;
 };
 
 export type SetTrajectoryPlaybackMessage = {

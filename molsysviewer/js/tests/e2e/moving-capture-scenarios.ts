@@ -59,6 +59,7 @@ export async function checkMovingCapture(page: Page, dir: string,
                     const payload = message.payload ?? message;
                     if (payload.action === "save_work_file") {
                         monitor.intents.push(structuredClone(payload));
+                        if (monitor.activeCapture) monitor.activeCapture.intentAt = performance.now();
                         if (monitor.intents.length > 32) monitor.intents.shift();
                     }
                     if (payload.moving_fixture || ["request_dynamic_region_evaluation", "visual_state_snapshot"].includes(payload.event)) {
@@ -90,10 +91,15 @@ export async function checkMovingCapture(page: Page, dir: string,
                     if (["request_visual_state", "set_dynamic_region_atoms", "cancel_visual_state", "studio_action_result"].includes(payload.op)) {
                         monitor.inbound.push(structuredClone(payload));
                     }
+                    if (payload.op === "request_visual_state" && monitor.activeCapture) {
+                        monitor.activeCapture.sourceRequestAt = performance.now();
+                        monitor.activeCapture.timeoutMs = payload.capture_timeout_ms;
+                    }
                     if (payload.op === "request_visual_state" && payload.capture_version === 2
                         && monitor.activeCapture?.endpointId === "primary" && !payload.target_endpoint_id) {
                         const active = monitor.activeCapture;
                         active.requestSeen = true; active.requestId = payload.request_id;
+                        active.receivedAt = performance.now();
                         active.lastFrame = c.trajectory.getTrajectoryState().currentFrame;
                         releaseHeldWhenObserved();
                     }
@@ -235,6 +241,14 @@ export async function checkMovingCapture(page: Page, dir: string,
                         });
                 }
                 const path = resolve(workspace, `${sample}.${kind === "state" ? "json" : "msv"}`);
+                // UI preparation is outside the deliberate dependency stall.
+                // Retaining scientific replies while opening/filling Studio
+                // can expire unrelated queries before Save is even requested.
+                const work = role === "primary" ? undefined : await openMovingWorkFile(owner);
+                if (work) {
+                    await work.getByLabel("Work file format", { exact: true }).selectOption(kind);
+                    await work.getByLabel("Path in Python session", { exact: true }).fill(path);
+                }
                 const start = await page.evaluate(() => ({ inbound: (window as any).__movingCapture.inbound.length,
                     outbound: (window as any).__movingCapture.outbound.length, frames: (window as any).__movingCapture.frames.length }));
                 await page.evaluate(({ playing, outbound, endpointId }) => {
@@ -242,19 +256,30 @@ export async function checkMovingCapture(page: Page, dir: string,
                     monitor.heldSource = null;
                     monitor.activeCapture = { playing, outboundStart: outbound, requestSeen: false, frameChanges: 0, endpointId };
                 }, { playing, outbound: start.outbound, endpointId });
-                await command("hold");
-                console.log(`[E2E moving capture] ${sample}: hold acknowledged; submitting public async save`);
                 let result: any, completion: any;
                 if (role === "primary") {
+                    await command("hold");
                     await command("save", { path, kind });
                     console.log(`[E2E moving capture] ${sample}: source command acknowledged`);
                     result = await awaitJob(path);
                     completion = result.jobs[path];
                 } else {
-                    const work = await openMovingWorkFile(owner);
-                    await work.getByLabel("Work file format", { exact: true }).selectOption(kind);
-                    await work.getByLabel("Path in Python session", { exact: true }).fill(path);
-                    await work.getByRole("button", { name: "Save file", exact: true }).click();
+                    assert.ok(work);
+                    const save = work.getByRole("button", { name: "Save file", exact: true });
+                    // Arm the deliberate comm stall on the actual click. CDP
+                    // actionability can take several draws on a busy canvas;
+                    // that delay must not starve queries before Save happens.
+                    await save.evaluate(button => {
+                        button.addEventListener("click", () => {
+                            const host = (window as any).__popupWidgetModel ? window : window.opener;
+                            const monitor = host.__movingCapture;
+                            monitor.activeCapture.holdArmedAt = host.performance.now();
+                            void host.__popupWidgetModel.send({ moving_fixture: "hold" }).catch((error: any) => {
+                                monitor.activeCapture.holdError = String(error);
+                            });
+                        }, { capture: true, once: true });
+                    });
+                    await save.click();
                     await page.waitForFunction(start => (window as any).__movingCapture.inbound.slice(start)
                         .some((message: any) => message.op === "studio_action_result" && message.action === "save_work_file"), start.inbound);
                     const verdict = await page.evaluate(start => (window as any).__movingCapture.inbound.slice(start)
@@ -295,6 +320,7 @@ export async function checkMovingCapture(page: Page, dir: string,
                     "two native frame changes must occur after the real capture request, while dependent geometry is held");
                 assert.equal(diagnostic.activeCapture.released.repliesBeforeRelease, 0, "capture cannot precede dependent geometry");
                 assert.equal(diagnostic.activeCapture.releaseError, undefined);
+                assert.equal(diagnostic.activeCapture.holdError, undefined);
                 const sourceRelease = result.timeline.findLast((entry: any) => entry.name === "release");
                 assert.equal(sourceRelease.pending_saves, 1, "source save must still be pending when genuine replies are released");
                 assert.equal(result.same_molsys, true);

@@ -211,6 +211,13 @@ export class TrajectoryHandlers {
         if (!trajRef) return;
         const models = this.getTrajectoryModels(trajRef);
         if (!models.length) return;
+        // A resolved owner projection also carries cell/playback metadata. Its
+        // unchanged molecular index is not another model/shape refresh. Keep
+        // explicit seeks and returns behind in-flight updates on their normal
+        // path, and require every model to agree before skipping native work.
+        if (this.follower && typeof msg !== "number" && msg.playback_projection
+            && this.pendingFrames.size === 0
+            && models.every(model => (model.transform.params as { modelIndex?: number })?.modelIndex === clamped)) return;
         const update = this.plugin.state.data.build();
         for (const m of models) {
             update.to(m).update({ modelIndex: clamped });
@@ -359,6 +366,10 @@ export class TrajectoryHandlers {
             || !Number.isSafeInteger(value.step_size) || value.step_size < 1
             || !["loop", "once", "ping-pong"].includes(value.mode)
             || !["forward", "backward"].includes(value.direction) || typeof value.playing !== "boolean") return;
+        const previous = this.resolvedPlayback;
+        if (this.resolvedPlaybackFrame === frame && this.followerPlaying === value.playing && previous
+            && previous.fps === value.fps && previous.step_size === value.step_size
+            && previous.mode === value.mode && previous.direction === value.direction && previous.playing === value.playing) return;
         this.resolvedPlayback = { ...value };
         this.resolvedPlaybackFrame = frame;
         this.followerPlaying = value.playing;

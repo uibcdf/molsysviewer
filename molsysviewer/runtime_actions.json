@@ -101,6 +101,7 @@
     "selection_query_preview_request": "request",
     "request_popup_scene_snapshot": "request",
     "popup_endpoint_closed": "event",
+    "popup_endpoint_opened": "event",
     "region_ack": "ack",
     "layer_ack": "ack",
     "registry_cleared": "ack",

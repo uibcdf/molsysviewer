@@ -15,6 +15,60 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
+**Requester isolation in receiving — 2026-11-08:** the follower refinement
+passes 420 canonical JavaScript cases and receives popup-state, but the next
+popup-session still times out. Actual independent renderer counters reuse
+request IDs for different frames. The bounded
+[#337 report](interaction_frame_query_crosses_canvas_owners.md) independently
+reproduces broadcast query replies and completion: four directed controls
+fail before correction. The working host/Python correction isolates the
+requester, keeps detached summaries from requesting hidden geometry, and
+passes all 54 affected Python cases plus 422 canonical JavaScript cases.
+The four-role native attempt then receives both popup-state and popup-session
+with unchanged scientific assertions and operation deadlines. Detached Studio
+state still times out; detached session does not run. The session's positive
+source reply has only 269 ms left, so robust full endpoint acceptance remains
+open. The canonical v1 bootstrap/Retry control passes on the final backend
+bytes in 41.16 s, with 4,329 unchanged inputs and thirteen owned processes
+closed; its deliberate stopped-frame oracle is separate from moving saves.
+The current execution ceiling is eight logical CPU/six GiB, swap zero and
+the user's revised minimum of two GiB available for the shared system.
+
+**Popup save timing investigation — 2026-11-08:** production remains the
+delivered #336 runtime at the start of this investigation. The retained moving failure `endpoint-after-04`
+deliberately holds dynamic-region replies before opening Studio and filling
+the format/path. Its hold lasts 25.23 s, while interaction queries and the
+actual Studio capture each have a ten-second bound. Thus the fixture can
+starve scientific queries before the operation it intends to test. This is
+a confirmed ordering property, not yet a complete explanation of the timeout.
+The working receiving change prepares the UI before holding replies, then
+still requires two owning-canvas frame changes **after** the actual request,
+genuine pending Python geometry, zero early replies, unchanged source and
+the original capture deadline. Passive request/start/frame timestamps now
+separate transport, scene-prefix and draw waits. No runtime readiness gate
+or scientific assertion is weakened, and no new passing endpoint result is
+claimed before execution.
+
+The refined guard now arms the deliberate stall on the real Save click. A
+four-CPU attempt passes with only 118.75 ms left on the real source ticket;
+an eight-CPU attempt passes with 3,800 ms left and zero cgroup CPU throttling.
+Both receive the complete native geometry and independent saved-file restore.
+The subsequent four-role selection still fails its first popup state case,
+despite eight CPU, a six-GiB ceiling, zero throttling and no resource
+interruption; later cases are unexecuted. Resource expansion alone therefore
+does not explain or resolve the intermittent failure. See the
+[timing receipt](../moving_capture_popup_timing_receiving_20261108.json).
+
+A directed twelve-case protocol control additionally shows redundant follower
+work: repeated complete owner-frame messages reapply already-current native
+models and refresh derived geometry, while identical playback metadata
+restarts same-frame listeners. Its original result is ten passes/two failures.
+The working refinement passes all twelve and keeps explicit/legacy seeks,
+authority revision validation, multi-model reconciliation and returns behind
+in-flight model changes. Only complete, unchanged follower projections can
+take the fast path. Runtime/canonical checks and native receiving remain
+required; this scoped refinement is not yet a demonstrated full timeout fix.
+
 **Endpoint checkpoint — 2026-11-08:** bounded child
 [#336](../archive/popup_snapshot_expires_during_molecular_load.md) corrects a
 five-second expiry that discarded the complete scene while the popup applied

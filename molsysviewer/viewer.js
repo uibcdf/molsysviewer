@@ -145946,13 +145946,13 @@ var InteractionHandlers = class {
   get currentFrame() {
     return this.frame;
   }
-  setSummaries(items, revision2 = -1) {
+  setSummaries(items, revision2 = -1, requestGeometry = true) {
     if (revision2 < this.latestRevision && revision2 !== -1) return false;
     this.latestRevision = Math.max(this.latestRevision, revision2);
     for (const tag of this.tokens.keys()) if (!items.some((item2) => item2.tag === tag)) this.drop(tag);
     this.summaries = items;
     this.latestRevision = Math.max(this.latestRevision, ...items.map((item2) => item2.projection_revision ?? -1));
-    if (items.some((item2) => item2.frame !== this.frame)) {
+    if (requestGeometry && items.some((item2) => item2.frame !== this.frame)) {
       this.pending = null;
       this.requestedFrame = -1;
       this.requestFrame();
@@ -149720,6 +149720,7 @@ var TrajectoryHandlers = class {
     if (!trajRef) return;
     const models = this.getTrajectoryModels(trajRef);
     if (!models.length) return;
+    if (this.follower && typeof msg !== "number" && msg.playback_projection && this.pendingFrames.size === 0 && models.every((model) => model.transform.params?.modelIndex === clamped)) return;
     const update10 = this.plugin.state.data.build();
     for (const m of models) {
       update10.to(m).update({ modelIndex: clamped });
@@ -149866,6 +149867,8 @@ var TrajectoryHandlers = class {
   /** Apply metadata only; a follower must never start a playback timer. */
   applyPlaybackProjection(value, frame) {
     if (!this.follower || !value || !Number.isSafeInteger(value.fps) || value.fps < 1 || !Number.isSafeInteger(value.step_size) || value.step_size < 1 || !["loop", "once", "ping-pong"].includes(value.mode) || !["forward", "backward"].includes(value.direction) || typeof value.playing !== "boolean") return;
+    const previous = this.resolvedPlayback;
+    if (this.resolvedPlaybackFrame === frame && this.followerPlaying === value.playing && previous && previous.fps === value.fps && previous.step_size === value.step_size && previous.mode === value.mode && previous.direction === value.direction && previous.playing === value.playing) return;
     this.resolvedPlayback = { ...value };
     this.resolvedPlaybackFrame = frame;
     this.followerPlaying = value.playing;
@@ -169419,6 +169422,7 @@ var MolSysViewerController = class _MolSysViewerController {
           await this.shapes.addPharmacophore(msg);
           break;
         case "set_interaction_frame":
+          if (this.isPanelOnly) break;
           this.contextMenu.invalidateInteractionContext();
           await this.interactions.apply(msg);
           break;
@@ -169430,13 +169434,15 @@ var MolSysViewerController = class _MolSysViewerController {
           this.contextMenu.invalidateInteractionContext();
           await this.interactions.setSeries(msg);
           break;
-        case "set_interaction_summaries":
-          if (!this.interactions.setSummaries(msg.interactions, msg.projection_revision)) break;
+        case "set_interaction_summaries": {
+          if (!this.interactions.setSummaries(msg.interactions, msg.projection_revision, !this.isPanelOnly)) break;
           this.contextMenu.invalidateInteractionContext();
           this.interactionSummaries = msg.interactions;
-          this.groupPanel.setInteractions({ ...msg, backend_available: this.initOptions?.hasAuthority === false ? false : msg.backend_available, frame: this.interactions.currentFrame, interactions: msg.interactions.map((item2) => item2.frame === this.interactions.currentFrame ? item2 : { ...item2, frame: this.interactions.currentFrame, status: "pending", n_observations: 0, n_supported: 0, n_skipped: 0 }) });
+          const frame = this.isPanelOnly ? msg.frame : this.interactions.currentFrame;
+          this.groupPanel.setInteractions({ ...msg, backend_available: this.initOptions?.hasAuthority === false ? false : msg.backend_available, frame, interactions: msg.interactions.map((item2) => item2.frame === frame ? item2 : { ...item2, frame, status: "pending", n_observations: 0, n_supported: 0, n_skipped: 0 }) });
           this.refreshAddonsPanel(false);
           break;
+        }
         case "interaction_action_result":
           this.groupPanel.updateInteractionCreation(msg.request_id, msg.ok, msg.analysis_name, msg.error_message);
           break;
@@ -171848,6 +171854,7 @@ var runtime_actions_default = {
     selection_query_preview_request: "request",
     request_popup_scene_snapshot: "request",
     popup_endpoint_closed: "event",
+    popup_endpoint_opened: "event",
     region_ack: "ack",
     layer_ack: "ack",
     registry_cleared: "ack",
@@ -174132,6 +174139,11 @@ var WidgetEnvelopeAdapter = class {
     return { kind: "message", message: payload, envelope: env };
   }
 };
+
+// src/messages/interaction-query.ts
+function ownInteractionQuery(message, endpoint) {
+  return message.event === "request_interaction_frame" ? { ...message, _query_endpoint_id: endpoint } : message;
+}
 
 // ../remote_protocol.json
 var remote_protocol_default = {
@@ -176600,6 +176612,7 @@ async function bootDocsView(opts) {
   };
   const ui = opts.ui || {};
   const hasAuthority = ui.host_event_transport === "url-scheme";
+  const primaryEndpoint = typeof ui.runtime_session_id === "string" ? `widget-host:${ui.runtime_session_id}` : "primary";
   const visualStateCaptures = new VisualStateCaptureRequests();
   const cameraSyncState = new CameraSyncState();
   let docsMessageQueue = Promise.resolve();
@@ -176665,6 +176678,12 @@ async function bootDocsView(opts) {
   };
   window.__molsysviewerDocsHandleMessage = async (msg) => {
     if (docsDisposed) return;
+    const targetEndpoint = msg?.target_endpoint_id;
+    if (typeof targetEndpoint === "string" && targetEndpoint && targetEndpoint !== primaryEndpoint && targetEndpoint !== "primary") {
+      const mode = targetEndpoint === popupMgr.popupEndpointId("canvas") ? "canvas" : targetEndpoint === popupMgr.popupEndpointId("panel") ? "panel" : null;
+      if (mode) popupMgr.sendTo(mode, "molsysviewer-sync-op", msg);
+      return;
+    }
     cameraSyncState.receive(msg);
     const meta = messageMeta(msg);
     const capture = hasAuthority && msg?.op === "request_visual_state" ? visualStateCaptures.reserve(msg) : void 0;
@@ -176757,7 +176776,7 @@ async function bootDocsView(opts) {
   const missingAuthority = makeMissingAuthorityReporter(hostEl);
   const controllerPromise = MolSysViewerController.create(target, (message) => {
     if (hasAuthority) {
-      notifyHost(message);
+      notifyHost(ownInteractionQuery(message, primaryEndpoint));
       return;
     }
     const projection = frontendSceneProjection(message);
@@ -176779,7 +176798,10 @@ async function bootDocsView(opts) {
     moduleUrl: typeof opts.runtimeUrl === "string" ? opts.runtimeUrl : void 0,
     source: runtimeSource,
     viewerId: typeof ui.runtime_viewer_id === "string" ? ui.runtime_viewer_id : void 0,
-    sessionId: typeof ui.runtime_session_id === "string" ? ui.runtime_session_id : void 0
+    sessionId: typeof ui.runtime_session_id === "string" ? ui.runtime_session_id : void 0,
+    onEndpointClosed: (mode, endpointId) => {
+      if (hasAuthority) notifyHost({ event: "popup_endpoint_closed", mode, popup_endpoint_id: endpointId });
+    }
   });
   const enablePopout = !!ui.enable_popout && (!!opts.runtimeUrl || !!runtimeSource);
   controllerPromise.then((c8) => {
@@ -176853,6 +176875,11 @@ async function bootDocsView(opts) {
     try {
       switch (type3) {
         case "molsysviewer-pop-ready":
+          if (hasAuthority) notifyHost({
+            event: "popup_endpoint_opened",
+            mode: popupMessage.channel.mode,
+            popup_endpoint_id: popupMessage.channel.popupEndpointId
+          });
           popupMgr.isReady = true;
           popupMgr.send("molsysviewer-initial-sync", {
             messages: popupReplay.snapshot("canvas"),
@@ -176892,7 +176919,7 @@ async function bootDocsView(opts) {
         case "molsysviewer-popup-interaction":
           {
             if (hasAuthority) {
-              notifyHost(data);
+              notifyHost(ownInteractionQuery(data, popupMessage.channel.popupEndpointId));
               break;
             }
             const projection = frontendSceneProjection(data);
@@ -177135,6 +177162,7 @@ function render({ model, el, runtimeSource }) {
   const pendingWorkFileSaves = /* @__PURE__ */ new Map();
   const workFileKey = (owner, requestId) => JSON.stringify([owner, requestId]);
   const sendEndpointAction = (message, owner, canvas) => {
+    message = ownInteractionQuery(message, owner);
     const correlated = message.event === "interaction_context_action" && typeof message.request_id === "string" && message.request_id.trim() !== "";
     const owned = correlated ? { ...message, _studio_owner_endpoint_id: owner } : message;
     if (message.event !== "interaction_context_action" || message.action !== "save_work_file" && message.action !== "cancel_work_file") {

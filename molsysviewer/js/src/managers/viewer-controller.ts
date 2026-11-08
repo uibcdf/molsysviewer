@@ -2608,6 +2608,7 @@ export class MolSysViewerController {
                 case "add_anisotropy_ellipsoids": await this.shapes.addAnisotropyEllipsoids(msg); break;
                 case "add_pharmacophore_features": await this.shapes.addPharmacophore(msg); break;
                 case "set_interaction_frame":
+                    if (this.isPanelOnly) break;
                     this.contextMenu.invalidateInteractionContext();
                     await this.interactions.apply(msg); break;
                 case "interaction_frame_complete":
@@ -2617,13 +2618,15 @@ export class MolSysViewerController {
                 case "set_interaction_series":
                     this.contextMenu.invalidateInteractionContext();
                     await this.interactions.setSeries(msg); break;
-                case "set_interaction_summaries":
-                    if (!this.interactions.setSummaries(msg.interactions, msg.projection_revision)) break;
+                case "set_interaction_summaries": {
+                    if (!this.interactions.setSummaries(msg.interactions, msg.projection_revision, !this.isPanelOnly)) break;
                     this.contextMenu.invalidateInteractionContext();
                     this.interactionSummaries = msg.interactions;
-                    this.groupPanel.setInteractions({ ...msg, backend_available: this.initOptions?.hasAuthority === false ? false : msg.backend_available, frame: this.interactions.currentFrame, interactions: msg.interactions.map(item => item.frame === this.interactions.currentFrame ? item : { ...item, frame: this.interactions.currentFrame, status: "pending", n_observations: 0, n_supported: 0, n_skipped: 0 }) });
+                    const frame = this.isPanelOnly ? msg.frame : this.interactions.currentFrame;
+                    this.groupPanel.setInteractions({ ...msg, backend_available: this.initOptions?.hasAuthority === false ? false : msg.backend_available, frame, interactions: msg.interactions.map(item => item.frame === frame ? item : { ...item, frame, status: "pending", n_observations: 0, n_supported: 0, n_skipped: 0 }) });
                     this.refreshAddonsPanel(false);
                     break;
+                }
                 case "interaction_action_result": this.groupPanel.updateInteractionCreation(msg.request_id, msg.ok, msg.analysis_name, msg.error_message); break;
                 case "system_load_result": this.groupPanel.updateSystemLoading(msg.request_id, msg.ok, msg.n_atoms, msg.n_structures, msg.n_sources, msg.error_message); break;
                 case "system_file_browse_result": this.groupPanel.updateSystemFiles(msg); break;

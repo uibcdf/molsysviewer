@@ -14,6 +14,19 @@ supersedes: []
 
 # Pre-1.0 robustness audit and action plan — 2026-11-06
 
+**Current A5 investigation — 2026-11-08:** native popup-state and popup-session
+pass after the current refinement; detached Studio state still times out and
+its session case does not execute. Independent
+query-owner collisions are reproduced under
+[#337](../pending_bugs/interaction_frame_query_crosses_canvas_owners.md).
+The source isolation passes 54 affected Python, 485 boundary and 422 canonical
+JavaScript cases. Canonical v1 popup bootstrap/Retry passes on the final backend
+bytes in 41.16 s. Full moving-endpoint acceptance remains open. The
+[timing receipt](../moving_capture_popup_timing_receiving_20261108.json)
+retains failed attempts and the revised eight-CPU/six-GiB ceiling with the
+human-authorized two-GiB minimum available reserve. Delivered progress stays
+8/46 (17.4%); A5 and mandatory Movie #320 are not complete.
+
 **Status: execution authorized; active action plan; implementation incomplete.** This is the
 active audit and execution ledger requested by the principal maintainer. It
 records what must improve, why, who owns it, what is already proved and the next

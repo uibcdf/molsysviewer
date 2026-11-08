@@ -34,6 +34,15 @@ export function observeMovingPopupBootstrap(runtime: any) {
             } catch (error) { sample("failed", error); throw error; }
         };
     }
+    const prepare = runtime.MolSysViewerController.prototype.prepareMovingVisualCapture;
+    runtime.MolSysViewerController.prototype.prepareMovingVisualCapture = function(...args: any[]) {
+        const active = window.opener?.__movingCapture?.activeCapture;
+        if (active?.endpointId === w.molsysviewer_popup_channel?.popupEndpointId) {
+            active.startedAt = window.opener.performance.now();
+            active.startFrame = this.trajectory.getTrajectoryState().currentFrame;
+        }
+        return prepare.apply(this, args);
+    };
 }
 
 export function observeMovingCaptureCanvas() {
@@ -58,6 +67,7 @@ export function observeMovingCaptureCanvas() {
         const active = authority.activeCapture;
         if (!active || active.endpointId !== endpointId) return;
         active.requestSeen = true; active.requestId = message.request_id;
+        active.receivedAt = window.opener.performance.now();
         active.lastFrame = c.trajectory.getTrajectoryState().currentFrame;
         authority.releaseHeldWhenObserved?.();
     };
@@ -73,6 +83,8 @@ export function observeMovingCaptureCanvas() {
         const active = authority.activeCapture;
         if (active?.requestSeen && active.endpointId === monitor.endpointId && active.lastFrame !== state.currentFrame) {
             active.lastFrame = state.currentFrame; active.frameChanges++;
+            active.changes ??= [];
+            active.changes.push({ ms: endpointId === "primary" ? performance.now() : window.opener.performance.now(), frame: state.currentFrame });
             authority.releaseHeldWhenObserved?.();
         }
     });
@@ -91,7 +103,10 @@ export function observeMovingCaptureCanvas() {
             dynamic: !c.state.hasFrameDependentDynamicRegions() || (c.dynamicRegionEvaluationInFlight === null
                 && c.dynamicRegionEvaluationPendingFrame === null && c.dynamicRegionEvaluationAppliedFrame === frame) };
         for (const [name, passed] of Object.entries(gates)) if (!passed) monitor.gates[name] = (monitor.gates[name] ?? 0) + 1;
-        monitor.readiness.push({ ms: performance.now(), frame, gates,
+        const now = endpointId === "primary" ? performance.now() : window.opener.performance.now();
+        const active = authority.activeCapture;
+        if (ready && active?.endpointId === endpointId && active.startedAt !== undefined) active.firstCoherentDrawAt ??= now;
+        monitor.readiness.push({ ms: now, frame, gates,
             dynamic: { applied: c.dynamicRegionEvaluationAppliedFrame, inFlight: c.dynamicRegionEvaluationInFlight,
                 pending: c.dynamicRegionEvaluationPendingFrame },
             interactions: { frame: c.interactions.frame, pending: c.interactions.pending, work: c.interactions.pendingWork,

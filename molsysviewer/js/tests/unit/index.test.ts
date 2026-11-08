@@ -26,6 +26,7 @@ import "./remote-protocol.test";
 import "./remote-input-adapter.test";
 import "./widget-envelope.test";
 import "./widget-envelope-integration.test";
+import "./interaction-query.test";
 import "./array-native-transport.test";
 import "./array-native-stream.test";
 import "./measurement-tools.test";
