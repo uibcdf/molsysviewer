@@ -15,6 +15,16 @@ supersedes: []
 
 # Interaction frame queries cross canvas owners
 
+**Current receiving — 2026-11-08:** the combined browser entry receives
+primary/canvas-popup/detached-Studio state/session saves with actual native
+interaction geometry and independent restoration. The new lifecycle entry
+receives pending-owner closure and transport-loss cleanup. See the
+[host/lifetime receipt](../moving_capture_host_lifetime_receiving_20261108.json).
+Current actual Qt and Jupyter stopped-scene guards pass, but they do not exercise
+the new continuous v2 scientific query path; that native Qt receiving remains
+required before closing this issue. Earlier failed timing attempts below retain
+their own source and scope.
+
 ## What
 
 Native moving capture under #319 shows primary and popup renderers reusing

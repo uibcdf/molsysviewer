@@ -912,32 +912,33 @@ final acceptance is **1/46 (2.2%)**. Neither is total release readiness, and
 Movie #320 remains an additional mandatory stream. E0, A1–A4/A6 and B1/B2 have
 their recorded delivered results; consolidated acceptance remains separate.
 
-The current [dynamic-frame/box receipt](dynamic_region_frame_receiving_20261108.json)
-records 218 affected scientific/projection cases, 493 transport/protocol/reporting
-cases and 428 canonical Node cases passing. Native box receiving and canonical
-v1 popup bootstrap/Retry also pass. Executable source checkpoint is
-`c6e89b39a6fae7eefbc27ff5427bfa44a2a5f1a8` (`[skip ci]`); consolidated hosted
-and installed qualification remain pending. Requester/frame guards and the feedback-echo
-correction are distinct from moving acceptance: the latest bounded two-query
-attempt still times out at popup-state, so the other three moving roles do not
-execute. Keep v2 unadvertised. The next investigation must separate actual native
-scene work, cross-window delivery and coherent completed draws; unit/compile
-passes and resource expansion do not close A5. All raw failures, successful
-controls and source capsules have verified approved private custody. Local
-executions are sequential, at most eight logical CPUs/six GiB, with no swap and
-the maintainer's two-GiB minimum globally available reserve.
+Production executable source remains
+`f5330ac9bdcd2ca520a89cb1b34f7433c1400baf`. Its
+[font/region receipt](moving_capture_font_and_region_receiving_20261108.json)
+receives seven actual moving saves and independent restorations, coherent native
+geometry, both projections, alternate-camera images and GPU selection.
+#339/#340/#341 are closed with bounded guards and archived records. Earlier
+[dynamic-frame/box controls](dynamic_region_frame_receiving_20261108.json)
+retain their source cohorts and failures.
 
-The later [font/lifecycle receiving](moving_capture_font_and_region_receiving_20261108.json)
-now receives the complete native moving entry: all seven actual saves and
-independent restorations pass in 94.72 s, with real coherent scene geometry,
-both projection modes, alternate-camera images and GPU selection. #339/#340/#341
-have bounded fixes and guards; their failed before-controls remain preserved.
-This supersedes the preceding popup timeout as the current browser result.
-Keep A5 partial and v2 unadvertised until the remaining current Qt/query/freeze,
-hidden/lifetime, actual-Jupyter and consolidated qualification scopes are met.
-The executable checkpoint is `f5330ac9bdcd2ca520a89cb1b34f7433c1400baf`
-(`[skip ci]`), recorded in that receipt. Issues #339/#340/#341 are closed with
-their addressable guards and archived records; #319 remains partial.
+The [current host/lifetime receipt](moving_capture_host_lifetime_receiving_20261108.json)
+adds real CSS-hidden/detached refusal, canvas recovery, pending popup/View closure,
+transport-loss expiry and cross-frame static freezing. Current actual Qt and
+Jupyter stopped-scene guards pass four and six independent saves/restorations.
+The host runs use explicitly identified source providers; they do not receive
+continuous v2 capture or a clean installed package. The new test batch also
+retains two fixture failures and the repeated moving entry's read-before-draw
+presentation failure separately from actual product defects. The complete moving
+entry then passes in 98.54 s; final lifecycle receiving passes in 94.58 s,
+including explicit popup error checks. All selected inputs remain unchanged in
+each run and all owned processes close. The 172 original evidence/source files
+have verified approved private custody; no off-host backup is claimed.
+
+Keep A5 partial and v2 unadvertised until actual Qt/Jupyter continuous capture,
+Qt scientific query routing and consolidated/installed scopes are met. Local
+executions stay sequential, at most eight logical CPUs/six GiB, with no swap
+and the maintainer's two-GiB minimum globally available reserve. Human review,
+candidate and publication operations remain paused.
 
 A5/#319 is the active slice. The camera/box corrections and #328's latest-frame
 shape convergence are delivered; the latter is `2bb82bbd`. Native cell
@@ -950,15 +951,15 @@ The
 [backend preparation receipt](moving_capture_backend_preparation_20261107.json)
 records negotiated protocol 2, 395 broader Python passes, the overlapping final
 64-case moving module and full current-browser Studio receiving in 206.24
-seconds. **The frontend still advertises protocol 1 only.** Native moving and
-hidden-endpoint receiving, the earlier unexplained actual-Jupyter restoration
-failure and consolidated acceptance remain required in the
+seconds. **The frontend still advertises protocol 1 only.** Actual-host
+continuous capture and consolidated acceptance remain required; the earlier
+actual-Jupyter failure retains its distinct historical scope in the
 [A5 report](pending_bugs/saved_camera_lags_live_notebook.md). Follow the ledger
 for current owner-PR/C1 inputs; dated receipts below retain their original
 scope rather than superseding this handoff.
 
-Next: complete A5's actual frame-dependent projections and moving/hidden
-receiving, then B3 DataCard lifecycle and isolated MolSysMT owner-PR
+Next: complete A5's actual-host frame-dependent projections and continuous
+capture, then B3 DataCard lifecycle and isolated MolSysMT owner-PR
 reconciliation. All approved addon/task families remain in scope. Advisory
 drafts and original unrestricted evidence stay private under approved custody;
 no off-host backup is claimed. Incremental commits use the maintainer's
@@ -2756,8 +2757,9 @@ chronological status narrative here.
 
 **Current order — 2026-11-08:**
 
-1. **A:** complete A5's moving/hidden capture and resolve the actual-Jupyter
-   uncertainty; preserve the other delivered rejection/cleanup corrections
+1. **A:** receive A5's continuous v2 capture in actual Qt/Jupyter and the Qt
+   scientific query route; preserve the received browser lifetime controls and
+   other delivered rejection/cleanup corrections
    before consolidated acceptance.
 2. **B:** retain delivered B1/B2 authority/precision corrections and finish
    DataCard provenance, lifecycle and accessible popup/result receiving.

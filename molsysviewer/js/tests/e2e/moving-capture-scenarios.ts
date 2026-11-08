@@ -7,11 +7,12 @@ import { captureCanvasPopupControllers, mountCanvasPopupFixture } from "./canvas
 import { fixtureEnvironment, withFixtureWorkspace } from "./fixture-workspace";
 import { checkAnnotationPresentation } from "./annotation-presentation-scenarios";
 import { observeMovingCaptureCanvas, observeMovingPopupBootstrap, releaseMovingCaptureObserver } from "./moving-canvas-observer";
-import { movingEndpointIdentity, openMovingWorkFile } from "./moving-work-file-ui";
+import { armMovingDependencyHold, movingEndpointIdentity, openMovingWorkFile } from "./moving-work-file-ui";
+import { checkCaptureLifetimes, checkDynamicFreeze } from "./moving-capture-lifecycle-scenarios";
 
 /** Exercise the unadvertised v2 receiver against a genuinely moving authority. */
 export async function checkMovingCapture(page: Page, dir: string,
-    phase: "all" | "empty" | "presentation" | "state" | "popup" | "endpoints" | "bootstrap" = "all") {
+    phase: "all" | "empty" | "presentation" | "state" | "popup" | "endpoints" | "bootstrap" | "lifetimes" | "freeze" = "all") {
     await withFixtureWorkspace("moving-capture", async workspace => {
         const bridge = new PythonFixtureBridge(resolve(dir, "moving-capture-bridge.py"), resolve(dir, "../../../.."),
             90000, { env: fixtureEnvironment(workspace), observeTransport: true });
@@ -135,6 +136,12 @@ export async function checkMovingCapture(page: Page, dir: string,
             await page.waitForFunction(() => (window as any).__movingCapture.frames.length >= 3);
             console.log("[E2E moving capture] uninterrupted camera and trajectory observed");
             const oracle = await inspect();
+            if (phase === "lifetimes" || phase === "freeze") {
+                const context = { page, dir, workspace, command, inspect, bridge, oracle };
+                if (phase === "lifetimes") await checkCaptureLifetimes(context);
+                else await checkDynamicFreeze(context);
+                return;
+            }
             const near = (point: number[], expected: number[], label: string) => {
                 assert.equal(point?.length, expected.length, label);
                 point.forEach((value, index) => assert.ok(Math.abs(value - expected[index]) < 2e-4,
@@ -269,16 +276,7 @@ export async function checkMovingCapture(page: Page, dir: string,
                     // Arm the deliberate comm stall on the actual click. CDP
                     // actionability can take several draws on a busy canvas;
                     // that delay must not starve queries before Save happens.
-                    await save.evaluate(button => {
-                        button.addEventListener("click", () => {
-                            const host = (window as any).__popupWidgetModel ? window : window.opener;
-                            const monitor = host.__movingCapture;
-                            monitor.activeCapture.holdArmedAt = host.performance.now();
-                            void host.__popupWidgetModel.send({ moving_fixture: "hold" }).catch((error: any) => {
-                                monitor.activeCapture.holdError = String(error);
-                            });
-                        }, { capture: true, once: true });
-                    });
+                    await armMovingDependencyHold(save);
                     await save.click();
                     await page.waitForFunction(start => (window as any).__movingCapture.inbound.slice(start)
                         .some((message: any) => message.op === "studio_action_result" && message.action === "save_work_file"), start.inbound);

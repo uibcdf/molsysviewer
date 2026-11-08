@@ -51,6 +51,7 @@ WORKSPACE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts"
 STUDIO_LIST_BROWSER_GUARD = "molsysviewer/js/tests/e2e/studio-list-workflows.e2e.ts"
 STUDIO_BROWSER_GUARD = "molsysviewer/js/tests/e2e/studio-usability.e2e.ts"
 MOVING_CAPTURE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/moving-state-capture.e2e.ts"
+CAPTURE_LIFECYCLE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/moving-capture-lifecycle.e2e.ts"
 BOX_TRAJECTORY_BROWSER_GUARD = "molsysviewer/js/tests/e2e/box-trajectory.e2e.ts"
 ANNOTATIONS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/annotations-interaction.e2e.ts"
 REGIONS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/region-hide.e2e.ts"
@@ -103,6 +104,7 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         STUDIO_BROWSER_GUARD,
         STUDIO_LIST_BROWSER_GUARD,
         MOVING_CAPTURE_BROWSER_GUARD,
+        CAPTURE_LIFECYCLE_BROWSER_GUARD,
         BOX_TRAJECTORY_BROWSER_GUARD,
         ANNOTATIONS_BROWSER_GUARD,
         REGIONS_BROWSER_GUARD,
@@ -143,6 +145,17 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             (js_root / "tests/e2e/annotation-presentation-scenarios.ts").is_file(),
             (js_root / "tests/e2e/moving-canvas-observer.ts").is_file(),
             (js_root / "tests/e2e/moving-work-file-ui.ts").is_file(),
+        )
+    elif selector == CAPTURE_LIFECYCLE_BROWSER_GUARD:
+        requirements += (
+            'import { checkMovingCapture } from "./moving-capture-scenarios";' in entry,
+            '"lifetimes");' in entry,
+            '"freeze");' in entry,
+            "run().catch(" in entry,
+            (js_root / "tests/e2e/moving-capture-lifecycle-scenarios.ts").is_file(),
+            (js_root / "tests/e2e/moving-capture-bridge.py").is_file(),
+            (js_root / "tests/e2e/canvas-popup-bridge.py").is_file(),
+            "moving-capture-lifecycle.e2e.js" in scripts.get("test:e2e:capture-lifecycle", ""),
         )
     elif selector == COMPOSITE_LOAD_BROWSER_GUARD:
         requirements += (
@@ -635,6 +648,7 @@ def test_browser_guard_resolves_its_build_entrypoint_and_core_lane() -> None:
     assert validate_guard(ROOT, WORKSPACE_BROWSER_GUARD) == []
     assert validate_guard(ROOT, STUDIO_BROWSER_GUARD) == []
     assert validate_guard(ROOT, MOVING_CAPTURE_BROWSER_GUARD) == []
+    assert validate_guard(ROOT, CAPTURE_LIFECYCLE_BROWSER_GUARD) == []
     assert validate_guard(ROOT, BOX_TRAJECTORY_BROWSER_GUARD) == []
     assert validate_guard(ROOT, ANNOTATIONS_BROWSER_GUARD) == []
     assert validate_guard(ROOT, REGIONS_BROWSER_GUARD) == []
@@ -669,6 +683,8 @@ def test_browser_guard_rejects_missing_or_unadopted_targets(tmp_path: Path) -> N
     assert validate_guard(ROOT, WORKSPACE_BROWSER_GUARD + "::run")
     assert validate_guard(tmp_path, STUDIO_BROWSER_GUARD)
     assert validate_guard(tmp_path, MOVING_CAPTURE_BROWSER_GUARD)
+    assert validate_guard(tmp_path, CAPTURE_LIFECYCLE_BROWSER_GUARD)
+    assert validate_guard(ROOT, CAPTURE_LIFECYCLE_BROWSER_GUARD + "::run")
     assert validate_guard(tmp_path, BOX_TRAJECTORY_BROWSER_GUARD)
     assert validate_guard(tmp_path, ANNOTATIONS_BROWSER_GUARD)
     assert validate_guard(ROOT, ANNOTATIONS_BROWSER_GUARD + "::run")

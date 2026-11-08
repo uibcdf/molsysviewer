@@ -15,7 +15,37 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
-**Current texture/lifecycle receiving — 2026-11-08:** a passive profile
+**Current availability and host receiving — 2026-11-08:** the new canonical
+`moving-capture-lifecycle` entry passes CSS-hidden/display-none/detached state and
+session refusals, restoration of the same canvas, actual canvas/Studio popup
+closure during pending scientific work, autonomous expiry after transport loss,
+cross-frame static freezing and public View closure during a pending draw.
+Existing destinations survive rejection and late replies cannot revive writes.
+The [host/lifetime receipt](../moving_capture_host_lifetime_receiving_20261108.json)
+retains the original fixture failures separately from product observations.
+
+Current actual Qt receiving passes four stopped-scene state/session saves and
+perturbed-camera/fresh-draw restorations on the real Wayland/NVIDIA WebGL2 host.
+Actual Jupyter passes six such saves/restorations through its real kernel and
+anywidget, including Studio canvas-popup saves. Qt also receives cancellation
+before draw; Jupyter receives cancellation and autonomous timeout. These are
+source checks with explicitly recorded providers, not clean installed-package
+or human acceptance. Continuous v2 capture in actual Qt/Jupyter, including the
+Qt scientific query route, and consolidated acceptance remain open. CSS/DOM
+controls do not qualify background-tab or minimized native-window scheduling. The
+frontend advertises only v1; A5 remains partial.
+
+The repeated moving entry completes its seven saves/restorations but initially
+fails the ancillary annotation oracle, which reads a new camera snapshot with
+the preceding rendered transform. Mol* 5.4.1 `Camera.setState` publishes state
+before `Camera.update` constructs the view matrix. The fixture now samples
+camera and geometry together in a real `didDraw`, retaining the same numerical,
+PNG, loci and GPU-marker assertions. The unchanged production runtime then
+passes the complete entry in 98.54 s with 4,332 fixed inputs and thirteen owned
+processes closed. The failed global result is retained; it is not presented as
+a product before-control or a passing full run.
+
+**Earlier texture/lifecycle receiving — 2026-11-08:** a passive profile
 identifies repeated large font-texture uploads as the dominant sampled popup
 cost. [#340](../archive/moving_annotations_reupload_font_textures.md) receives an exact
 native before-control (unchanged 3287 × 3286 atlas dirtied by movement), followed

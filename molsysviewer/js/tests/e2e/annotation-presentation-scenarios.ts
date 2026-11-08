@@ -31,6 +31,43 @@ function coherent(geometry: any[], camera: any) {
     return position;
 }
 
+async function observePresentedCamera(page: Page, mode: string,
+    command: (name: string, details?: Record<string, unknown>) => Promise<void>) {
+    // Mol* setState publishes the snapshot before Camera.update builds its
+    // view matrix. Observe geometry and that camera in the same real didDraw,
+    // rather than combining the next snapshot with the preceding GPU draw.
+    await page.evaluate(() => {
+        const w = window as any, c = w.__mirrorController;
+        w.__annotationPresentationDraw = undefined;
+        let replay = true;
+        w.__annotationPresentationSubscription = c.plugin.canvas3d.didDraw.subscribe(() => {
+            if (replay || !c.annotations.isGeometryCurrent()) return;
+            w.__annotationPresentationDraw = {
+                camera: c.getCameraSnapshot(),
+                geometry: w.Harness.inspectAnnotationPresentation(c, "moving-note"),
+                world: w.Harness.inspectAnnotationPresentation(c, "world-note"),
+                absolute: w.Harness.inspectAnnotationPresentation(c, "absolute-note"),
+            };
+        });
+        replay = false;
+    });
+    try {
+        await command("projection", { mode });
+        await command("camera", { snapshot: { position: [40, 30, 100], target: [0, 0, 0], up: [0, 1, 0] } });
+        const received = await page.waitForFunction(mode => {
+            const sample = (window as any).__annotationPresentationDraw, camera = sample?.camera;
+            return camera?.mode === mode && Math.abs(camera.position[0]-40) < 1e-6 ? sample : false;
+        }, mode);
+        return received.jsonValue();
+    } finally {
+        await page.evaluate(() => {
+            const w = window as any;
+            w.__annotationPresentationSubscription?.unsubscribe();
+            delete w.__annotationPresentationSubscription;
+        });
+    }
+}
+
 export async function checkAnnotationPresentation(page: Page, workspace: string,
     command: (name: string, details?: Record<string, unknown>) => Promise<void>) {
     await page.waitForFunction(() => {
@@ -39,19 +76,7 @@ export async function checkAnnotationPresentation(page: Page, workspace: string,
             && c.annotations.isGeometryCurrent();
     });
     for (const mode of ["perspective", "orthographic"]) {
-        await command("projection", { mode });
-        await command("camera", { snapshot: { position: [40, 30, 100], target: [0, 0, 0], up: [0, 1, 0] } });
-        await page.waitForFunction(mode => {
-            const c = (window as any).__mirrorController;
-            return c.getCameraSnapshot().mode === mode && Math.abs(c.getCameraSnapshot().position[0]-40) < 1e-6
-                && c.annotations.isGeometryCurrent();
-        }, mode);
-        const live = await page.evaluate(() => {
-            const c = (window as any).__mirrorController;
-            return { camera: c.getCameraSnapshot(), geometry: (window as any).Harness.inspectAnnotationPresentation(c, "moving-note"),
-                world: (window as any).Harness.inspectAnnotationPresentation(c, "world-note"),
-                absolute: (window as any).Harness.inspectAnnotationPresentation(c, "absolute-note") };
-        });
+        const live = await observePresentedCamera(page, mode, command);
         const labelPosition = coherent(live.geometry, live.camera);
         const world = live.world.find((item: any) => item.kind === "text");
         near(world.textCenter, world.anchor.map((value: number, index: number) => value + (index === 0 ? 10 : 0)), "world offset");

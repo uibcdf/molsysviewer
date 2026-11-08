@@ -123,6 +123,24 @@ perturbed state-file recovery, retaining explicit units and frame identity.
 `tests/test_reporting_protocol.py` checks the fixed entry, receiving/fixture
 owners, build and core registration; those checks establish addressability.
 
+### Live-capture availability and lifetime browser guard profile
+
+The bounded selector `molsysviewer/js/tests/e2e/moving-capture-lifecycle.e2e.ts`
+is accepted without suffixes, globs or commands. From `molsysviewer/js`, run
+`npm run test:e2e:capture-lifecycle`; it builds through `build:e2e:all` and
+also runs in `test:e2e:core` with the ordinary 180-second suite budget.
+Browser/WebGL errors fail the guard; an explicit skip is not receiving evidence.
+
+The real Python/Mol* fixture hides, removes and restores the actual canvas,
+checks state/session refusal without replacing existing destinations, and
+closes actual canvas/Studio popups during a genuinely pending scientific query.
+Transport loss exercises the authority's autonomous deadline, without polling
+to drive expiry. A separate stopped-frame control freezes real dynamic
+membership at another frame, checks both native renderers and closes the public
+View during a pending draw. This receives lifecycle semantics; it does not
+replace actual Qt/Jupyter moving-capture or human observations. The validator
+checks the exact entry, fixture owners and build/core registration.
+
 ### Empty and shape-only workspace browser guard profile
 
 The bounded selector `molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts`

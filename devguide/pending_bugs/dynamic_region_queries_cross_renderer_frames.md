@@ -15,6 +15,16 @@ supersedes: []
 
 # Dynamic region queries cross renderer frames
 
+**Current receiving — 2026-11-08:** the combined browser entry receives all
+seven actual moving saves and independent restorations, including both popup
+types and their native region memberships. The new lifecycle entry additionally
+receives a real budget freeze at frame 0 while both canvases display frame 1:
+both use the frozen membership with frame-1 coordinates. See the
+[host/lifetime receipt](../moving_capture_host_lifetime_receiving_20261108.json).
+Actual Qt/Jupyter continuous v2 and Qt scientific query routing remain pending;
+the actual-host stopped-scene passes do not close this issue. Earlier failed
+experiments below retain their original inputs and scope.
+
 ## What
 
 Actual moving-save diagnostics under #319 show dynamic replies broadcast to

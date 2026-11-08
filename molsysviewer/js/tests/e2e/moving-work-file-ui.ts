@@ -1,4 +1,21 @@
-import type { Page } from "playwright";
+import type { Locator, Page } from "playwright";
+
+/** Stall genuine scientific replies only on the actual Save click. */
+export async function armMovingDependencyHold(save: Locator) {
+    await save.evaluate(button => {
+        button.addEventListener("click", () => {
+            let host: any = window;
+            for (let depth = 0; depth < 3 && host && !host.__popupWidgetModel; depth++) host = host.opener;
+            if (!host?.__popupWidgetModel) throw new Error("Save has no real widget authority");
+            const monitor = host.__movingCapture;
+            if (monitor.activeCapture) monitor.activeCapture.holdArmedAt = host.performance.now();
+            void host.__popupWidgetModel.send({ moving_fixture: "hold" }).catch((error: any) => {
+                monitor.holdError = String(error);
+                if (monitor.activeCapture) monitor.activeCapture.holdError = String(error);
+            });
+        }, { capture: true, once: true });
+    });
+}
 
 export async function movingEndpointIdentity(page: Page): Promise<string> {
     return page.evaluate(() => (window as any).molsysviewer_popup_channel?.popupEndpointId ?? "primary");

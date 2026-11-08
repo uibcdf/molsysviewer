@@ -83,7 +83,10 @@ def serve(view=None, fixture_event_handler=None, *, async_processing=False):
                         setattr(view.widget, trait, value)
                 else:
                     view._handle_inbound_message(event)
-            state = _to_plain(view.widget.get_state(drop_defaults=False))
+            # A real close disposes the widget comm and its child models. The
+            # fixture authority stays alive to observe cancellation, without
+            # trying to serialize disposed widget references afterward.
+            state = {} if view.closed else _to_plain(view.widget.get_state(drop_defaults=False))
             result = {"messages": list(sent), "traits": state, **extra}
             sent.clear()
             print(json.dumps({"id": request["id"], "result": result}), flush=True)

@@ -72,20 +72,22 @@ def main():
     def observe(name, **details):
         timeline.append({"ms": round((time.monotonic() - started) * 1000, 3), "name": name, **details})
 
-    async def save(path, kind):
+    async def save(path, kind, timeout=12):
         observe("save_started", kind=kind)
         try:
             method = view.save_session_async if kind == "session" else view.save_state_async
-            await method(path, timeout=12)
+            await method(path, timeout=timeout)
             jobs[path] = {"done": True, "ok": True}
             observe("save_complete", kind=kind)
         except Exception as error:
             observe("save_failed", kind=kind, error_type=type(error).__name__)
+            facts = getattr(error, "extra", None)
             jobs[path] = {
                 "done": True,
                 "ok": False,
                 "error_type": type(error).__name__,
-                "reason": getattr(error, "reason", None),
+                "reason": facts.get("reason") if isinstance(facts, dict) else None,
+                "diagnostic_code": getattr(error, "code", None),
                 "message": str(error),
                 "traceback": traceback.format_exc(),
             }
@@ -183,13 +185,30 @@ def main():
         elif command == "save":
             path = event["path"]
             jobs[path] = {"done": False}
-            asyncio.create_task(save(path, event["kind"]))
+            asyncio.create_task(save(path, event["kind"], event.get("timeout", 12)))
+        elif command == "freeze_dynamic":
+            owner._clear_dynamic_region_cache(near.uid)
+            owner._dynamic_region_evaluation_budget_ms = -1
+            owner._handle_dynamic_region_evaluation_request({"frame": 0})
+        elif command == "close_view":
+            owner.close()
         elif command == "inspect":
+            if owner.closed:
+                return {
+                    "jobs": dict(jobs),
+                    "closed": True,
+                    "pending_studio_saves": len(owner._work_file_saves._pending),
+                    "pending_captures": len(owner._frontend_requests._pending),
+                }
             return {
                 "jobs": dict(jobs),
                 "held": len(held),
                 "held_bootstraps": len(held_bootstraps),
                 "pending_studio_saves": len(owner._work_file_saves._pending),
+                "pending_captures": len(owner._frontend_requests._pending),
+                "endpoint_modes": dict(owner._endpoint_transfers.modes),
+                "region_mode": near.mode,
+                "region_atoms": near.atom_indices,
                 "same_molsys": owner.molsys is original,
                 "coordinates_unchanged": bool(
                     np.array_equal(msv.pyunitwizard.get_value(owner.get_coordinates(), to_unit="nm"), coordinates)
