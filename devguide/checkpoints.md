@@ -987,9 +987,16 @@ actual-Jupyter failure retains its distinct historical scope in the
 for current owner-PR/C1 inputs; dated receipts below retain their original
 scope rather than superseding this handoff.
 
+The [background-host controls](background_capture_host_controls_20261108.json)
+retain two incomplete Qt attempts and independent window/browser controls.
+They do not establish reliable native hidden/visible transitions; establish
+that driver/compositor boundary before repeating the background campaign.
+The complete #344 Jupyter/Qt source receiving above remains applicable.
+
 Next: complete A5's background/minimized host receiving and consolidated
-acceptance, then B3 DataCard lifecycle and isolated MolSysMT owner-PR
-reconciliation. All approved addon/task families remain in scope. Advisory
+acceptance; B3 DataCard lifecycle can advance independently while native
+visibility/activation is isolated. Then receive the post-integration MolSysMT
+source pair; do not reopen its owner-merged PR. All approved addon/task families remain in scope. Advisory
 drafts and original unrestricted evidence stay private under approved custody;
 no off-host backup is claimed. Incremental commits use the maintainer's
 explicit `[skip ci]`; no remote run is dispatched for each small change.

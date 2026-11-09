@@ -14,6 +14,14 @@ supersedes: []
 
 # Pre-1.0 robustness audit and action plan — 2026-11-06
 
+**Background-host controls — 2026-11-08:** [bounded probes](../background_capture_host_controls_20261108.json)
+do not yet qualify real background/minimized scheduling. Native Qt restoration
+fails its exposure oracle; the separate pure-QWidget control does not retain
+the requested minimized state. Chrome tab/window controls still report visible,
+so they are not a background pass. Preserve the #344 complete actual-host
+receiving, isolate native visibility/activation before another host run and
+continue independently actionable work. Production and counters are unchanged.
+
 **#344 source resolution — 2026-11-08:** native font-content metadata removes
 unchanged uploads without CPU image copies; six stopped/six moving actual
 Jupyter saves, eight native Qt cases and shared browser regressions pass in the
@@ -303,7 +311,7 @@ packages, promotions and both 1.0 publications remain paused.
 | --- | --- | --- | --- |
 | A — integrity, restoration and cleanup | A1–A4/A6 source-delivered; bounded A5 camera/box corrections delivered in `ebe3d46b` and `42656765`; actual Jupyter/Qt moving capture received; background/minimized and consolidated acceptance remain partial | Viewer; #316/#317/#318/#319 and private handling under #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
 | B — plots and DataCards | B1/#314 and B2/#321 with #322 are delivered; current numerical/state/popup receiving passes. Retain the unexplained earlier zero-reference-bounds guard failure; provenance/card and consolidated follow-up remain | Viewer and scientific producer; #314, #321, #322, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
-| C — contribution and host integration | PR #543 updated to `42f5ed3bc`; complete local addon and seventeen-step Jupyter receiving pass; owner integration and covering hosted exits remain pending | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421/#635 and PR #543 | Reviewed delivery, current controlled pair, relevant full/hosted outcomes and explained failures |
+| C — contribution and host integration | PR #543 is owner-merged as `0ddb99c2b`; its earlier complete addon/seventeen-step Jupyter evidence keeps its original inputs. Post-integration source-pair and covering hosted receiving remain pending | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421/#635 and PR #543 | Reviewed delivery, current controlled pair, relevant full/hosted outcomes and explained failures |
 | D — scientific prerequisites and approved GUI families | Partial implementation; provider corrections and several task families remain | MolSysMT owns science; addon owns tasks; #264/#315 and uibcdf/molsysmt#421 | Received native fixes plus every required family/effect, without hidden preparation or copied algorithms |
 | E — integrated use, scale and human acceptance | E0 custody received; partial headless/Jupyter receiving; complete workflow/prolonged use pending; human review postponed | Viewer/addon; maintainer owns human observations | TcTIM/ensemble save–recover–continue, independent lifetimes and representative measured limits |
 | F — public contract and documentation | Digestion/meta checks pass; compatibility snapshot and documentation reconciliation pending | Viewer; #315 | Named stable/experimental contracts, verified references and one usable current handoff |

@@ -15,6 +15,14 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
+**Background-host controls — 2026-11-08:** [bounded probes](../background_capture_host_controls_20261108.json)
+do not yet qualify real background/minimized scheduling. Native Qt restoration
+fails its exposure oracle; the separate pure-QWidget control does not retain
+the requested minimized state. Chrome tab/window controls still report visible,
+so they are not a background pass. Preserve the #344 complete actual-host
+receiving, isolate native visibility/activation before another host run and
+continue independently actionable work. Production and counters are unchanged.
+
 **Latest #344 source receiving — 2026-11-08:** the bounded native font-content
 adapter avoids unchanged uploads without CPU image copies. The canonical real
 Jupyter entry now receives all six stopped and six moving state/session saves,

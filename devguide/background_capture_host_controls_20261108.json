@@ -1,0 +1,538 @@
+{
+  "schema": "molsysviewer.working_receiving@1",
+  "date": "2026-11-08",
+  "owner_issue": "uibcdf/molsysviewer#319",
+  "plan": "uibcdf/molsysviewer#315 / A5",
+  "status": "Background/minimized receiving remains unqualified; bounded infrastructure controls retained.",
+  "viewer_source": "ae2d774c66183106f12767af05c6695bce02b79e",
+  "provider_source": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+  "production_changed": false,
+  "runtime_sha256": "ff3744469b74cb75bd9faeba4ecc53fe7731648b07c306d0df7671afa9fd90c5",
+  "campaigns": [
+    {
+      "native_exit": 0,
+      "seconds": 8.086834090063348,
+      "selected_inputs": 4847,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1228.4,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "browser-visibility-03",
+      "invocation_sha256": "564b2a164c728c1472b8e234870424d53b3c86a38874adb74d2c808cb665c2b0",
+      "input_manifest_sha256": "7a77b8f49acb4c8d9da174eab92a78f0c8a1d78b85f43d298ca15c84c44a2a8a"
+    },
+    {
+      "native_exit": 0,
+      "seconds": 7.858972541056573,
+      "selected_inputs": 4847,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1231.1,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "browser-visibility-04",
+      "invocation_sha256": "4d360f1ad17d4605b48a3c16f8238e1b194957ac31d6e2dd958fa5385c94012f",
+      "input_manifest_sha256": "43dc793373d3e242d9ef1889ff28552d28bb807beddbdc7b9a9a2927c3455bb9"
+    },
+    {
+      "native_exit": 0,
+      "seconds": 12.668119487119839,
+      "selected_inputs": 4848,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1242.4,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "browser-visibility-06",
+      "invocation_sha256": "df6d0a40136cfe794c66bf32aae00031e738952ade1a498bbb688dbdaa0fcd46",
+      "input_manifest_sha256": "7524956c2af525138f7908403976171120432c72103ba39a56c159e9fe146768"
+    },
+    {
+      "native_exit": 1,
+      "seconds": 82.24038590095006,
+      "selected_inputs": 4846,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1714.0,
+      "cleanup": {
+        "tracked": 4,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "native-background-01",
+      "invocation_sha256": "98598698f93bf47418037a4ce8aa4e89ebbab1dbb3e9b0a2e48b04503052770f",
+      "input_manifest_sha256": "8dd0ddfa23b9de666ba0c316a8c07fc61bc28b04122b9dc578e9afc6bd7560f9"
+    },
+    {
+      "native_exit": 1,
+      "seconds": 84.11189633212052,
+      "selected_inputs": 4846,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1729.3,
+      "cleanup": {
+        "tracked": 4,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "native-background-02",
+      "invocation_sha256": "4abe374331460ecf6a4d6986372a219738bd96569c12f76c2c60fdf9ab5f6feb",
+      "input_manifest_sha256": "daa42608d9c7cefa4a0823c552d5c95149a83c8316a03d71ac700a9bc4bdfa3f"
+    },
+    {
+      "native_exit": 0,
+      "seconds": 5.382982192095369,
+      "selected_inputs": 4848,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 68.7,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "native-window-control-05",
+      "invocation_sha256": "4eae2f5068523d82317b3dc164fe3dfafc676d8ed280b5d8f627a176c80ff43f",
+      "input_manifest_sha256": "bdde6bf409742508686937fd3d1c75e4a05734cf8dcf168d5089388ca93ee7c3"
+    }
+  ],
+  "qt_probes": [
+    {
+      "name": "native-background-01",
+      "cases": [
+        {
+          "native_mode": "minimized",
+          "kind": "state",
+          "outcome": "saved",
+          "reason": null,
+          "seconds": 0.11760816699825227,
+          "before": {
+            "visibility": "visible",
+            "hidden": false,
+            "draws": 947
+          },
+          "unavailable": {
+            "visibility": "hidden",
+            "hidden": true,
+            "draws": 947
+          },
+          "after": {
+            "visibility": "visible",
+            "hidden": false,
+            "draws": 950
+          },
+          "destination_preserved_on_refusal": false,
+          "visible_retry_independently_restored": true
+        },
+        {
+          "native_mode": "minimized",
+          "kind": "session",
+          "outcome": "refused",
+          "reason": "request_timeout",
+          "seconds": 5.0092109211254865,
+          "before": {
+            "visibility": "hidden",
+            "hidden": true,
+            "draws": 954
+          },
+          "unavailable": {
+            "visibility": "hidden",
+            "hidden": true,
+            "draws": 954
+          },
+          "after": {
+            "visibility": "hidden",
+            "hidden": true,
+            "draws": 954
+          },
+          "destination_preserved_on_refusal": true
+        }
+      ],
+      "failure": "Restoration helper waited for document visibility after native showNormal; no complete background entry.",
+      "qualified": false,
+      "report_sha256": "ee735401609c2780cf0dd3b9af8d4c8768ff20eb667e9f5211be393ccc92b7b6"
+    },
+    {
+      "name": "native-background-02",
+      "cases": [
+        {
+          "native_mode": "minimized",
+          "kind": "state",
+          "outcome": "saved",
+          "reason": null,
+          "seconds": 0.10924850287847221,
+          "before": {
+            "visibility": "visible",
+            "hidden": false,
+            "draws": 961
+          },
+          "unavailable": {
+            "visibility": "hidden",
+            "hidden": true,
+            "draws": 962
+          },
+          "after": {
+            "visibility": "visible",
+            "hidden": false,
+            "draws": 965
+          },
+          "native_after": {
+            "visible": true,
+            "minimized": false,
+            "exposed": true,
+            "active": false
+          },
+          "destination_preserved_on_refusal": false,
+          "visible_retry_independently_restored": true
+        },
+        {
+          "native_mode": "minimized",
+          "kind": "session",
+          "outcome": "refused",
+          "reason": "request_timeout",
+          "seconds": 4.9937534769997,
+          "before": {
+            "visibility": "hidden",
+            "hidden": true,
+            "draws": 969
+          },
+          "unavailable": {
+            "visibility": "hidden",
+            "hidden": true,
+            "draws": 969
+          },
+          "after": {
+            "visibility": "hidden",
+            "hidden": true,
+            "draws": 969
+          },
+          "native_after": {
+            "visible": true,
+            "minimized": false,
+            "exposed": false,
+            "active": false
+          },
+          "destination_preserved_on_refusal": true
+        }
+      ],
+      "failure": "Restoration helper also requested activation and checked real native exposure; exposure did not recover. No bridge inflight/control/failed-delivery entry at this final failure.",
+      "qualified": false,
+      "report_sha256": "a08a48791d67c6931d19d59231b2345fe6068102ffd6dcfe381dde988ed7d660"
+    }
+  ],
+  "browser_controls": [
+    {
+      "name": "browser-visibility-03",
+      "observations": [
+        {
+          "headless": true,
+          "initial": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 0
+          },
+          "hidden": false,
+          "background": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 137
+          },
+          "restored": true,
+          "foreground": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 138
+          },
+          "native_version": "157.0.8103.38"
+        },
+        {
+          "headless": false,
+          "initial": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 0
+          },
+          "hidden": false,
+          "background": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 92
+          },
+          "restored": true,
+          "foreground": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 94
+          },
+          "native_version": "157.0.8103.38"
+        }
+      ],
+      "qualified_background": false,
+      "report_sha256": "dfd737f6761268474d970eba175abe672cefa41df1cd562655bbffbcd6c11aed"
+    },
+    {
+      "name": "browser-visibility-04",
+      "observations": [
+        {
+          "headless": true,
+          "initial": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 0
+          },
+          "hidden": false,
+          "background": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 123
+          },
+          "restored": true,
+          "foreground": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 124
+          },
+          "native_version": "157.0.8103.38"
+        },
+        {
+          "headless": false,
+          "initial": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 0
+          },
+          "hidden": false,
+          "background": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 92
+          },
+          "restored": true,
+          "foreground": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 94
+          },
+          "native_version": "157.0.8103.38"
+        }
+      ],
+      "qualified_background": false,
+      "report_sha256": "895caf73d39322b97e27d4cfb6ab2e4119d8cfe4579fa9e29f8810d9056d3f4a"
+    },
+    {
+      "name": "browser-visibility-06",
+      "observations": [
+        {
+          "headless": true,
+          "initial": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 0
+          },
+          "hidden": false,
+          "background": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 122
+          },
+          "restored": true,
+          "foreground": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 262
+          },
+          "native_windows": [
+            {
+              "windowId": 1926682366,
+              "bounds": {
+                "left": 10,
+                "top": 10,
+                "width": 1280,
+                "height": 720,
+                "windowState": "normal"
+              }
+            },
+            {
+              "windowId": 1926682366,
+              "bounds": {
+                "left": 10,
+                "top": 10,
+                "width": 1280,
+                "height": 720,
+                "windowState": "normal"
+              }
+            }
+          ],
+          "minimizedHidden": false,
+          "minimized": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 261
+          },
+          "nativeRestore": true,
+          "native_version": "157.0.8103.38"
+        },
+        {
+          "headless": false,
+          "initial": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 0
+          },
+          "hidden": false,
+          "background": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 92
+          },
+          "restored": true,
+          "foreground": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 244
+          },
+          "native_windows": [
+            {
+              "windowId": 1167084765,
+              "bounds": {
+                "left": 0,
+                "top": 0,
+                "width": 1288,
+                "height": 805,
+                "windowState": "normal"
+              }
+            },
+            {
+              "windowId": 1167084765,
+              "bounds": {
+                "left": 0,
+                "top": 0,
+                "width": 1288,
+                "height": 805,
+                "windowState": "normal"
+              }
+            }
+          ],
+          "minimizedHidden": false,
+          "minimized": {
+            "hidden": false,
+            "visibility": "visible",
+            "changes": [],
+            "draws": 243
+          },
+          "nativeRestore": true,
+          "native_version": "157.0.8103.38"
+        }
+      ],
+      "qualified_background": false,
+      "report_sha256": "317b8fc777b5422793af765194de29f590879db9aa6250ad7fb55f6c910a4f6a"
+    }
+  ],
+  "native_window_only_control": {
+    "observations": {
+      "platform": "wayland",
+      "no_viewer_or_webengine": true,
+      "observations": [
+        {
+          "phase": "initial",
+          "visible": true,
+          "minimized": false,
+          "exposed": true,
+          "active": true
+        },
+        {
+          "phase": "minimized",
+          "visible": true,
+          "minimized": false,
+          "exposed": true,
+          "active": false
+        },
+        {
+          "phase": "show-normal-and-activate",
+          "visible": true,
+          "minimized": false,
+          "exposed": true,
+          "active": false
+        },
+        {
+          "phase": "hide-show-remap",
+          "visible": true,
+          "minimized": false,
+          "exposed": true,
+          "active": true
+        }
+      ]
+    },
+    "report_sha256": "53f5c9db7661e462377a0f1b75fb3389e5ca0adaf42d855738f61c19e399c11b",
+    "no_viewer_or_webengine": true,
+    "qualified_minimization": false
+  },
+  "interpretation": [
+    "The two expanded native Qt attempts retain eight preceding stopped/moving cases but do not receive the complete new background entry. Passing prefixes are not added to #344 acceptance.",
+    "First minimized save has a real new native draw, but document visibility becomes visible during the operation; it is not proof of continuous hidden capture.",
+    "The next attempted session save reaches the original five-second deadline, preserves the caller destination and drains capture registries. Its surface-restoration oracle then fails.",
+    "A no-Viewer/no-WebEngine QWidget control also does not retain the requested minimized state at its observation. This does not establish a Viewer product defect or a universal Qt defect.",
+    "Separate headless and headed Chromium controls keep document.visibilityState visible after switching real tabs, even after requesting focus-emulation disable on auxiliary CDP sessions and removing three default background flags. A later control identifies the same native window for both tabs and also requests native minimization; visibility still stays visible. These driver observations do not qualify true background scheduling.",
+    "Playwright source enables focus emulation on its owning main-frame CDP session. An auxiliary-session disable has not established native visibility behavior; no installed dependency is patched.",
+    "No DOM visibility getter, scientific reply, native glyph result or elapsed deadline is fabricated.",
+    "All six campaigns are bounded, keep fixed selected inputs, retain originals and close every owned process.",
+    "No new product correction or source capability advertisement is selected from these inconclusive host controls."
+  ],
+  "next": [
+    "Use a receiving driver that can demonstrably observe genuine native background/foreground transitions before receiving saves; do not repeat the same unqualified switching recipe.",
+    "Isolate compositor activation/exposure from scene transport; ordinary native restoration and any explicit remapping route keep distinct acceptance.",
+    "Keep the complete #344 actual-host source receiving and proceed with independently actionable robustness work while this host-control boundary is resolved."
+  ],
+  "resource_limits": {
+    "logical_cpus": 8,
+    "ram_gib": 6,
+    "swap_gib": 0,
+    "minimum_globally_available_gib": 2
+  },
+  "limits": [
+    "Automated local source/driver observations, not human or exact installed-package acceptance.",
+    "A5/#319 remains partial and production advertises only capture protocol 1.",
+    "No new issue or provider defect is asserted from these controls; #319 already owns this required receiving boundary.",
+    "Candidate/tag/package/promotions and both 1.0 publications remain paused.",
+    "Audit counters remain 8/46 source-delivered and 1/46 finally accepted."
+  ],
+  "custody": {
+    "schema": "molsysviewer.private_capture_custody_receipt@1",
+    "custodian": "Diego Prada Gracia",
+    "opaque_reference": "robustness-20261106/background-host-controls-20261108-1",
+    "files_verified": 126,
+    "total_bytes": 16904417,
+    "manifest_sha256": "dc6fccfe3dc563f14111f476f00f1ee99065a7d8b04e787da2d9c4ef59a00e7a",
+    "originals_retained": true,
+    "off_host_backup_claimed": false
+  }
+}
