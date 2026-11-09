@@ -15,7 +15,21 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
-**Current Qt continuous receiving — 2026-11-08:** native receiving reproduces
+**Current Jupyter contention receiving — 2026-11-08:**
+[#343](../archive/jupyter_rebuild_waits_for_begin_ack.md) retains transfer replies
+contending with molecular ownership and preserves endpoint-close precedence.
+Public async captures now await brief ownership within their original deadline,
+revalidate before commit and release a reservation on cancellation at grant.
+Deferred input and asynchronous ownership retries retain the originating
+caller's context. The earlier 143-case selection and final 50 overlapping
+capture/concurrency controls pass, alongside 460 separate boundary cases.
+The unchanged six-case actual Jupyter guard and eight native Qt saves pass. The
+[receipt](../jupyter_capture_contention_receiving_20261108.json) preserves all
+failed expanded campaigns. [#344](jupyter_moving_capture_residual_uploads.md)
+owns incomplete actual-Jupyter moving receiving and measured residual uploads;
+v2 remains unadvertised and A5 partial. No failed prefix is a global pass.
+
+**Earlier Qt continuous receiving — 2026-11-08:** native receiving reproduces
 [#342](../archive/qt_shell_runtime_identity.md): the shell carried a temporary
 View's session while Python owned a different session. Correcting that ownership
 receives four stopped and four continuous Studio/Python state/session cases,

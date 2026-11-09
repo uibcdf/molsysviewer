@@ -912,7 +912,18 @@ final acceptance is **1/46 (2.2%)**. Neither is total release readiness, and
 Movie #320 remains an additional mandatory stream. E0, A1–A4/A6 and B1/B2 have
 their recorded delivered results; consolidated acceptance remains separate.
 
-Current [Qt continuous receiving](qt_native_moving_identity_receiving_20261108.json)
+Current [Jupyter contention receiving](jupyter_capture_contention_receiving_20261108.json)
+corrects #343's lost transfer replies and receives public async ownership waits,
+bounded cancellation, originating contexts and close-before-reply ordering.
+The earlier 143-case selection, final 50 overlapping capture/concurrency
+controls and 460 separate boundary cases pass. The unchanged six-case Jupyter
+guard and eight native Qt saves pass; these counts are not additive.
+Expanded actual-Jupyter moving receiving still fails globally; #344 owns the
+residual texture-upload/query/draw investigation. Its private working fixture,
+original failures and profile are retained. A5 remains partial and the public
+runtime still advertises only v1; no hosted/installed or human acceptance follows.
+
+The preceding [Qt continuous receiving](qt_native_moving_identity_receiving_20261108.json)
 corrects #342's shell/live-View identity mismatch and receives eight native
 stopped/moving saves, query ownership, empty/frozen regions and construction-error
 cleanup. The full binary/workbench guard passes after #287's modal-activation

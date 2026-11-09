@@ -6,7 +6,7 @@ import json
 import time
 import zipfile
 from copy import deepcopy
-from threading import Thread
+from threading import Event, Thread
 
 import numpy as np
 import pytest
@@ -49,6 +49,119 @@ async def pending(view, coroutine):
     assert not task.done()
     assert len(view._frontend_requests._pending) == 1
     return task, next(iter(view._frontend_requests._pending.values()))
+
+
+@pytest.mark.parametrize("kind", ["state", "session"])
+def test_async_save_waits_for_transient_foreign_scene_ownership(view, tmp_path, kind):
+    async def exercise():
+        entered, release = Event(), Event()
+
+        def occupy():
+            with view._system_edits._locked():
+                entered.set()
+                assert release.wait(timeout=5)
+
+        worker = Thread(target=occupy)
+        worker.start()
+        assert entered.wait(timeout=2)
+        task = None
+        try:
+            path = tmp_path / ("owned.json" if kind == "state" else "owned.msv")
+            method = view.save_state_async if kind == "state" else view.save_session_async
+            task = asyncio.create_task(method(path))
+            await asyncio.sleep(0)
+            assert not task.done(), "A brief frame callback must not reject the public async save."
+            assert not view._frontend_requests._pending and not path.exists()
+            release.set()
+            worker.join(timeout=2)
+            assert not worker.is_alive()
+            deadline = asyncio.get_running_loop().time() + 2
+            while not view._frontend_requests._pending and asyncio.get_running_loop().time() < deadline:
+                await asyncio.sleep(0.001)
+            ticket = next(iter(view._frontend_requests._pending.values()))
+            view._handle_frontend_event(response(ticket))
+            await task
+            assert path.is_file() and not view._frontend_requests._pending
+        finally:
+            release.set()
+            worker.join(timeout=2)
+            if task is not None:
+                task.cancel()
+                await asyncio.gather(task, return_exceptions=True)
+
+    asyncio.run(exercise())
+
+
+@pytest.mark.parametrize("termination", ["timeout", "cancel"])
+def test_waiting_for_scene_owner_is_bounded_and_cannot_write_later(view, tmp_path, termination):
+    async def exercise():
+        entered, release = Event(), Event()
+
+        def occupy():
+            with view._system_edits._locked():
+                entered.set()
+                assert release.wait(timeout=5)
+
+        worker = Thread(target=occupy)
+        worker.start()
+        assert entered.wait(timeout=2)
+        path = tmp_path / "must-not-exist.json"
+        task = asyncio.create_task(view.save_state_async(path, timeout=0.02 if termination == "timeout" else 5))
+        try:
+            await asyncio.sleep(0)
+            if termination == "cancel":
+                task.cancel()
+                with pytest.raises(asyncio.CancelledError):
+                    await task
+            else:
+                with pytest.raises(FrontendRequestError, match="request_timeout"):
+                    await task
+        finally:
+            release.set()
+            worker.join(timeout=2)
+            task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
+        await asyncio.sleep(0)
+        assert not path.exists() and not view._frontend_requests._pending
+        assert not view._system_edits._unlock_callbacks
+
+    asyncio.run(exercise())
+
+
+def test_cancelling_after_owner_grant_before_consumer_resume_releases_capture(view, tmp_path):
+    async def exercise():
+        entered, release = Event(), Event()
+
+        def occupy():
+            with view._system_edits._locked():
+                entered.set()
+                assert release.wait(timeout=5)
+
+        worker = Thread(target=occupy)
+        worker.start()
+        assert entered.wait(timeout=2)
+        path = tmp_path / "cancel-at-grant.json"
+        task = asyncio.create_task(view.save_state_async(path))
+        try:
+            await asyncio.sleep(0)
+            assert not task.done()
+            release.set()
+            worker.join(timeout=2)
+            assert not worker.is_alive()
+            # The real grant is already queued. Cancel after it creates the
+            # broker request, but before the waiting caller resumes.
+            asyncio.get_running_loop().call_soon(task.cancel)
+            with pytest.raises(asyncio.CancelledError):
+                await task
+            assert not view._frontend_requests._pending
+            assert not path.exists()
+        finally:
+            release.set()
+            worker.join(timeout=2)
+            task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
+
+    asyncio.run(exercise())
 
 
 def test_reply_notification_does_not_retain_the_molecular_lock(view):

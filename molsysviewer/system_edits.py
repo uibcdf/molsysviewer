@@ -70,6 +70,17 @@ def _scene_call_guard(args, kwargs, name, *, function=None):
         if _INTERNAL.get() is manager:
             yield
             return
+        if (getattr(function, "__module__", None), getattr(function, "__qualname__", None)) in {
+            ("molsysviewer.viewer.state", "StateMixin.save_state_async"),
+            ("molsysviewer.viewer.state", "StateMixin.save_session_async"),
+        }:
+            # These two async owners acquire/validate at preparation and commit.
+            # Brief playback callbacks may own the lock on another kernel thread;
+            # the capture service waits within its deadline instead of rejecting.
+            if manager._blocked():
+                raise SystemEditPendingError(manager._reason())
+            yield
+            return
         reader = _PANEL_READER.get()
         action = args[2] if len(args) > 2 else kwargs.get("action_id")
         if (
@@ -216,13 +227,22 @@ class SystemEditsManager:
         self._detail = None
 
     @contextmanager
-    def _locked(self):
-        if not self._lock.acquire(blocking=False):
-            raise SystemEditPendingError("Another operation is updating this view; retry after it completes.")
+    def _locked(self, *, defer=None):
+        # Register ownership and a contended transport continuation atomically:
+        # an unlock cannot pass between the failed acquire and registration.
         with self._notification_lock:
-            self._lock_depth += 1
+            acquired = self._lock.acquire(blocking=False)
+            if acquired:
+                self._lock_depth += 1
+            elif defer is not None:
+                self._unlock_callbacks.append(defer)
+            else:
+                raise SystemEditPendingError("Another operation is updating this view; retry after it completes.")
+        if not acquired:
+            yield False
+            return
         try:
-            yield
+            yield True
         finally:
             with self._notification_lock:
                 self._lock_depth -= 1

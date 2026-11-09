@@ -88,6 +88,27 @@ authority.
   the connector-owned primary default described above. Failed shell construction
   closes its new View/bridge/page/profile without persisting unfinished window
   geometry or closing an existing host.
+- A foreign connector callback must not lose a typed-transfer acknowledgement
+  because a molecular operation owns the scene lock. The existing edit owner
+  registers that continuation atomically with the contended acquire and resumes
+  it on the connector's existing host loop after outer unlock. It re-enters the
+  normal handler and revalidates current transfer/endpoint/generation identity.
+  Stream-expiry mutation shares that guard. Ordinary scene commands retain their
+  nonblocking conflict rejection. Popup closure first retires pending intentions
+  in their own lifetime registries, so a later reply cannot beat a deferred scene
+  cleanup; publication still waits for outer molecular unlock.
+  A deferred input retains the originating connector's `contextvars` context,
+  rather than inheriting the context of the thread releasing scene ownership.
+- The two public asynchronous file captures acquire scene ownership at preparation
+  and commit, rather than rejecting a brief concurrent playback callback at API
+  entry. Their caller loop waits on an unlock notification without polling or a
+  worker, and holds no molecular lock across `await`. One deadline covers those
+  ownership waits and renderer capture; synchronous atomic file I/O is not timed
+  out after commitment. Revalidate the captured recipe/system before writing,
+  retain explicit pending-edit rejection and digestion, and retire a broker
+  reservation even if cancellation wins between grant and consumer resumption.
+  Ownership retries likewise retain the asynchronous caller's context on its
+  existing loop, including when another thread publishes the unlock notification.
 - Qt deliberately does not share the AnyWidget transfer manager. Its ordered
   queue and payload-reference scheme satisfy S8 at a different connector seam.
   Only an exact `cancel_visual_state` and correlated Save/Cancel verdicts use

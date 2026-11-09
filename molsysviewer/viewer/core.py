@@ -9,6 +9,7 @@ import warnings
 import weakref
 from collections import OrderedDict
 from contextlib import contextmanager
+from contextvars import copy_context
 from copy import deepcopy
 from typing import Any, Dict, Mapping, Sequence
 
@@ -1473,10 +1474,6 @@ class MolSysView(
         """
         if self.closed:
             return
-        # Main-thread entry point for anything the frontend sends: a stream whose
-        # acknowledgement never arrived is released here even if the frontend has
-        # moved on to unrelated traffic.
-        self._check_binary_structure_ack_timeout()
         if self._runtime_router is None or not is_envelope(content):
             self._handle_frontend_event(content)
             return
@@ -1680,6 +1677,14 @@ class MolSysView(
         )
 
     def _handle_frontend_event(self, content: Mapping[str, Any]) -> None:
+        if content.get("event") == "popup_endpoint_closed":
+            endpoint = content.get("popup_endpoint_id")
+            if isinstance(endpoint, str) and endpoint:
+                # Retire pending intentions in their own thread-safe registries
+                # before a later reply can win while the scene lock is busy.
+                # Notifications still wait for the outer molecular unlock.
+                self._work_file_saves.cancel_endpoint(endpoint)
+                self._frontend_requests.cancel_endpoint(endpoint)
         if content.get("event") == "visual_state_snapshot":
             # Publish outside the molecular lock: ipykernel can resume the
             # awaiting task before this connector callback returns.
@@ -1689,8 +1694,39 @@ class MolSysView(
                     endpoint = "primary"
                 self._frontend_requests.receive(dict(content), endpoint_id=endpoint)
             return
-        with self._system_edits._locked():
-            self._handle_frontend_event_guarded(content)
+        # These lifecycle/data-plane replies do not carry molecular selections.
+        # A real kernel can deliver them on another registered thread while an
+        # edit owns the View. Preserve them until release, then re-enter through
+        # the connector's host loop; scene commands keep their ordinary rejection.
+        defer = None
+        if content.get("event") in {
+            "ready",
+            "registry_cleared",
+            "popup_endpoint_closed",
+            "structure_data_begin_ack",
+            "structure_data_chunk_ack",
+            "structure_data_complete",
+            "structure_data_error",
+        }:
+            retained = dict(content)
+            retained_context = copy_context()
+
+            def defer():
+                if not self.closed:
+                    try:
+                        self.widget._schedule_callback(
+                            0, lambda: retained_context.run(self._handle_frontend_event, retained)
+                        )
+                    except RuntimeError:
+                        if not self.closed:
+                            raise
+
+        with self._system_edits._locked(defer=defer) as acquired:
+            if acquired:
+                # Expiry can release arrays and deliver fallback, so it shares
+                # the scene owner rather than mutating a concurrent edit.
+                self._check_binary_structure_ack_timeout()
+                self._handle_frontend_event_guarded(content)
 
     def _handle_frontend_event_guarded(self, content: Mapping[str, Any]) -> None:
         if self.closed:

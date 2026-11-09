@@ -1,0 +1,808 @@
+{
+  "schema": "molsysviewer.working_receiving@1",
+  "date": "2026-11-08",
+  "owner_issue": "uibcdf/molsysviewer#343",
+  "related_issues": [
+    "uibcdf/molsysviewer#319",
+    "uibcdf/molsysviewer#344",
+    "uibcdf/molsysviewer#337",
+    "uibcdf/molsysviewer#338"
+  ],
+  "source_base": "52c67a7be183b59c60a7c58d2c0ddcb66deabef4",
+  "provider_source": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+  "status": "Contended transport input and async capture ownership are source-received. Expanded actual-Jupyter moving capture remains unqualified under #344; A5 stays partial.",
+  "runtime_sha256": "337576d70c249194d550b95a187b3a43da7fffef1a83189c818f679979f9230a",
+  "production_changes": {
+    "molsysviewer/system_edits.py": "e87d38d870574add18d768ceb4a6bc338eb606df32727f973518c1bfc5c0a97f",
+    "molsysviewer/viewer/core.py": "0448158a9bc496cb0d74d42bb8c9b9e45f99ffe2bf2bfa01dd29158acfcee1e9",
+    "molsysviewer/viewer/state.py": "2398d7ac4afc2ea268eae0b6427cee03091377cefdd48dc24073d77745f2bcad",
+    "molsysviewer/viewer/visual_capture.py": "5187c464572a13e1f0528891d9f1ea7295cb7b0dda15899975766cbdc14387ff"
+  },
+  "advertised_capture_versions": [
+    1
+  ],
+  "scope": "Explicit Python 3.14/frozen scientific source receiving, actual local Jupyter and native Qt; not clean solver, installed artifact, hosted, human or cross-platform acceptance.",
+  "directed_before": [
+    {
+      "native_exit": 1,
+      "seconds": 5.476125851040706,
+      "peak_owned_rss_mib": 388.0,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/query-contention-before-01",
+      "invocation_sha256": "d75424fa58bfe36eb953e8d25ba59d6fa99c2ab0ef7d6b7dee750177c6ee6c8c",
+      "scope": "Three real-view/threaded ACK controls fail before correction."
+    },
+    {
+      "native_exit": 1,
+      "seconds": 5.131824217038229,
+      "peak_owned_rss_mib": 385.9,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/query-contention-order-before-01",
+      "invocation_sha256": "971e5e9e37edeaa86f4fc871450dd7de09f4c0130a73a8628c78df556b8d972b",
+      "scope": "Close/reply ordering fails with only deferred scene cleanup."
+    },
+    {
+      "native_exit": 1,
+      "seconds": 7.05827161995694,
+      "peak_owned_rss_mib": 435.5,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/query-async-contention-before-01",
+      "invocation_sha256": "251fedee9723f730af687db0d7aa578c6653b092adb5d43639eda66d46536a36",
+      "scope": "Four public async ownership-wait/timeout/cancel controls fail before correction."
+    },
+    {
+      "native_exit": 1,
+      "seconds": 5.808479714905843,
+      "peak_owned_rss_mib": 401.0,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/query-async-grant-before-01",
+      "invocation_sha256": "ac7f80b7222fae3c54c6f4dc859906aeffc8d98f6e627c2182b36a815b536993",
+      "scope": "Cancellation after grant leaves an orphan broker reservation before correction."
+    }
+  ],
+  "intermediate_fixture_failure": {
+    "native_exit": 1,
+    "seconds": 16.145531445974484,
+    "peak_owned_rss_mib": 493.8,
+    "cleanup": {
+      "tracked": 1,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/query-contention-order-after-02",
+    "invocation_sha256": "65dce532adb41e127079a2f53fb298215a407b4b75fda90376b29ca4a95a992a",
+    "scope": "61 passes and one assertion failure: the fixture reads .reason instead of the CatalogException extra[reason]. Corrected to the actual contract; not a production before-control."
+  },
+  "affected_python": {
+    "native_exit": 0,
+    "seconds": 51.938373738201335,
+    "peak_owned_rss_mib": 577.7,
+    "cleanup": {
+      "tracked": 1,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/query-async-final-02",
+    "invocation_sha256": "115af59b69dac79c5cf15e64c178405210c049c7bdb59edca2189b7a1fff82c3",
+    "passed": 143,
+    "warnings": 127,
+    "warning_scope": "LegacyH5MSMWarning from the frozen scientific demo provider; retained.",
+    "scope": "Live and moving capture protocols, typed transfer expiry, managed edits and foreign-thread input. No renderer claim follows from these headless controls. Earlier production cohort, before the explicit context refinement; final overlapping context receiving is separate."
+  },
+  "canonical_jupyter": {
+    "native_exit": 0,
+    "seconds": 81.51675632083789,
+    "selected_inputs": 4588,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 2824.5,
+    "cleanup": {
+      "tracked": 19,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/jupyter-context-final-15",
+    "invocation_sha256": "2692a075594ac6ecb5ee90b951f4b0c1234d51bb1cc89a83f3bb003377d1c861",
+    "capture_restore_cases": 6,
+    "strong_restore_cases": 6,
+    "studio_cases": 4,
+    "no_late_write_after_cancel": true,
+    "no_late_write_after_timeout": true,
+    "scope": "Unchanged canonical v1 guard: six actual Jupyter/anywidget stopped-scene saves, camera perturbation and fresh-draw restoration, source immutability, cancellation and autonomous timeout.",
+    "known_debugger_page_errors": 11,
+    "unexpected_page_errors": 0,
+    "ephemeral_settings_removed": true
+  },
+  "native_qt": {
+    "native_exit": 0,
+    "seconds": 42.822406547144055,
+    "selected_inputs": 4588,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 1947.9,
+    "cleanup": {
+      "tracked": 7,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/qt-context-final-16",
+    "invocation_sha256": "153069ab3930d640f1f67e8d07631bb2ded7f6d72f65df11354859d51241392f",
+    "scope": "Actual native Qt: four stopped and four continuous saves; moving recovery is independent headless file recovery. Native popup and independent-window moving restoration are not claimed.",
+    "stopped_cases": 4,
+    "platform": "wayland",
+    "rendering": {
+      "canvas": true,
+      "webgl2": true,
+      "renderer": "ANGLE (NVIDIA Corporation, Quadro M2000/PCIe/SSE2, OpenGL ES 3.2)",
+      "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+    },
+    "loop": "QAsyncioEventLoop",
+    "moving_cases": [
+      {
+        "source": "studio",
+        "kind": "state",
+        "structure_index": 2,
+        "held_real_queries": 2,
+        "frame_changes_after_request": [
+          1,
+          2
+        ],
+        "expected_frame_occurrences": 20,
+        "independent_file_restore": true,
+        "source_identity_and_coordinates_unchanged": true,
+        "heartbeat_progress": 857
+      },
+      {
+        "source": "python-async",
+        "kind": "state",
+        "structure_index": 2,
+        "held_real_queries": 2,
+        "frame_changes_after_request": [
+          1,
+          2
+        ],
+        "expected_frame_occurrences": 20,
+        "independent_file_restore": true,
+        "source_identity_and_coordinates_unchanged": true,
+        "heartbeat_progress": 1105
+      },
+      {
+        "source": "studio",
+        "kind": "session",
+        "structure_index": 2,
+        "held_real_queries": 2,
+        "frame_changes_after_request": [
+          1,
+          2
+        ],
+        "expected_frame_occurrences": 20,
+        "independent_file_restore": true,
+        "source_identity_and_coordinates_unchanged": true,
+        "heartbeat_progress": 1027
+      },
+      {
+        "source": "python-async",
+        "kind": "session",
+        "structure_index": 2,
+        "held_real_queries": 2,
+        "frame_changes_after_request": [
+          1,
+          2
+        ],
+        "expected_frame_occurrences": 20,
+        "independent_file_restore": true,
+        "source_identity_and_coordinates_unchanged": true,
+        "heartbeat_progress": 1246
+      }
+    ],
+    "native_empty_control": {
+      "structure_index": 1,
+      "region_atoms": 0,
+      "independent_file_restore": true
+    },
+    "native_freeze_control": {
+      "computed_frame": 0,
+      "displayed": {
+        "frame": 1,
+        "atoms": [
+          1
+        ],
+        "position": [
+          1003.791259765625,
+          1011.4249267578125,
+          1003.881591796875
+        ]
+      },
+      "mode": "static"
+    },
+    "constructor_failure": {
+      "native_writer_error": "IsADirectoryError",
+      "new_views_closed_before_global_cleanup": true,
+      "prior_shell_state_unchanged": true,
+      "caller_destination_unchanged": true,
+      "existing_host_preserved": true
+    },
+    "project_configuration": {
+      "viewer_mode": "cinema",
+      "owner_identity_bound": true
+    },
+    "failed_deliveries": 0,
+    "closed": true,
+    "frontend_diagnostics": 0,
+    "native_draw_observations": "Complete measured geometry is retained in the private original native report, with verified custody and input manifests."
+  },
+  "canonical_jupyter_source": {
+    "tests/_jupyter_live_capture.py": "bb01577709b8dc169fb96f945bd8d2e8cf7d8518f69be41f05867e007a8b8540",
+    "tests/_jupyter_live_capture.mjs": "0a513ddba02ce195d032d784cceb91a63dcffc772aa8980c5b83583c3ed5f8d9",
+    "tests/test_jupyter_live_capture.py": "ae8ff30fba327eb2ca0773a8962a43729018657ed49a016dbbcfe2da646051ab"
+  },
+  "unqualified_expanded_campaigns": [
+    {
+      "native_exit": 1,
+      "seconds": 102.9080867508892,
+      "selected_inputs": 4589,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2758.3,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/jupyter-moving-01",
+      "invocation_sha256": "a150557be317cd0f5bf7294b1f7692467cef902ed11b31f3643a10703c2e31b7",
+      "outcome": "failed",
+      "phase": "moving setup",
+      "error_type": "TimeoutError",
+      "stopped_restore_cases": 6,
+      "moving_prefix_cases": 0,
+      "global_acceptance": false
+    },
+    {
+      "native_exit": 1,
+      "seconds": 103.77871017996222,
+      "selected_inputs": 4589,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2759.7,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/jupyter-moving-diagnostic-02",
+      "invocation_sha256": "e0fc32a745dfbaf8211451a7fbd960b2de5fd3be4b69a564686de3a8891eeea9",
+      "outcome": "failed",
+      "phase": "moving setup",
+      "error_type": "TimeoutError",
+      "stopped_restore_cases": 6,
+      "moving_prefix_cases": 0,
+      "global_acceptance": false
+    },
+    {
+      "native_exit": 1,
+      "seconds": 113.55628396919928,
+      "selected_inputs": 4589,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2795.1,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/jupyter-transfer-diagnostic-03",
+      "invocation_sha256": "2fcf07149208a4a53a7a64f992b384376770dc14642d6746ac6302841b795d9a",
+      "outcome": "failed",
+      "phase": "moving setup",
+      "error_type": "TimeoutError",
+      "stopped_restore_cases": 6,
+      "moving_prefix_cases": 0,
+      "global_acceptance": false
+    },
+    {
+      "native_exit": 1,
+      "seconds": 108.19841825403273,
+      "selected_inputs": 4589,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2755.9,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/jupyter-queue-diagnostic-04",
+      "invocation_sha256": "07d38cf13e618eec4ad993f18e41888484b7cd6abf92084f4942d89fff3e6226",
+      "outcome": "failed",
+      "phase": "moving setup",
+      "error_type": "TimeoutError",
+      "stopped_restore_cases": 6,
+      "moving_prefix_cases": 0,
+      "global_acceptance": false
+    },
+    {
+      "native_exit": 1,
+      "seconds": 104.91204425506294,
+      "selected_inputs": 4589,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2755.8,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/jupyter-ack-diagnostic-05",
+      "invocation_sha256": "124638df5ea4282705f0442bb7cce02f15ad58cffc07161602b9fea5a5ee1a87",
+      "outcome": "failed",
+      "phase": "moving setup",
+      "error_type": "TimeoutError",
+      "stopped_restore_cases": 6,
+      "moving_prefix_cases": 0,
+      "global_acceptance": false
+    },
+    {
+      "native_exit": 1,
+      "seconds": 106.14183653495274,
+      "selected_inputs": 4589,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2767.8,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/jupyter-comm-diagnostic-06",
+      "invocation_sha256": "72076f2ce4b0904aafee1b1b97e38873eb9837cb4c2bb4f562f2936b5f564579",
+      "outcome": "failed",
+      "phase": "moving setup",
+      "error_type": "TimeoutError",
+      "stopped_restore_cases": 6,
+      "moving_prefix_cases": 0,
+      "global_acceptance": false
+    },
+    {
+      "native_exit": 1,
+      "seconds": 93.19955452694558,
+      "selected_inputs": 4590,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2800.6,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/jupyter-contention-after-07",
+      "invocation_sha256": "a98203e555cd444ade91d1bd1a2c8dc3139b41242abcc0b1e8a0f368d2e59dc9",
+      "outcome": "failed",
+      "phase": "Moving Python notebook state",
+      "error_type": "Error",
+      "stopped_restore_cases": 6,
+      "moving_prefix_cases": 1,
+      "global_acceptance": false
+    },
+    {
+      "native_exit": 1,
+      "seconds": 157.09385406714864,
+      "selected_inputs": 4590,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3406.3,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/jupyter-readiness-08",
+      "invocation_sha256": "feedcfd4397f81602070c6a4712ad4bd72bb305d1d34789aecb254ea682c0405",
+      "outcome": "failed",
+      "phase": "Moving Studio popup state",
+      "error_type": "TimeoutError",
+      "stopped_restore_cases": 6,
+      "moving_prefix_cases": 4,
+      "global_acceptance": false
+    },
+    {
+      "native_exit": 1,
+      "seconds": 90.8176858748775,
+      "selected_inputs": 4590,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2752.1,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/jupyter-owner-hold-09",
+      "invocation_sha256": "80ae759d6f20f4af7a23fb57ef0ca4b5f29a26b4c3f0ee2ee413f60ac7b02033",
+      "outcome": "failed",
+      "phase": "Moving Python notebook state",
+      "error_type": "TimeoutError",
+      "stopped_restore_cases": 6,
+      "moving_prefix_cases": 1,
+      "global_acceptance": false
+    },
+    {
+      "native_exit": 1,
+      "seconds": 160.36328533501364,
+      "selected_inputs": 4590,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3401.8,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/jupyter-async-owner-after-10",
+      "invocation_sha256": "a0aac3ef14cb7e4f74bfec58a6e934521acb0f47a02180b26bb3dfc985824f67",
+      "outcome": "failed",
+      "phase": "Moving Studio popup state",
+      "error_type": "TimeoutError",
+      "stopped_restore_cases": 6,
+      "moving_prefix_cases": 4,
+      "global_acceptance": false
+    },
+    {
+      "native_exit": 1,
+      "seconds": 92.81870506494306,
+      "selected_inputs": 4590,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2811.7,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/jupyter-event-release-11",
+      "invocation_sha256": "6ed225f5df3ecd62f75910c7006197d722defaa0e62380eedac3fe8f7b702a36",
+      "outcome": "failed",
+      "phase": "Moving Python notebook state",
+      "error_type": "Error",
+      "stopped_restore_cases": 6,
+      "moving_prefix_cases": 1,
+      "global_acceptance": false
+    },
+    {
+      "native_exit": 1,
+      "seconds": 92.89989211922511,
+      "selected_inputs": 4590,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2921.9,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/jupyter-cpu-profile-12",
+      "invocation_sha256": "e1fd12fdb7549dfab6d0248603e84611dfbf4828588c1f8d1fb4c29be33e40ee",
+      "outcome": "failed",
+      "phase": "Moving Studio notebook state",
+      "error_type": "Error",
+      "stopped_restore_cases": 6,
+      "moving_prefix_cases": 0,
+      "global_acceptance": false
+    }
+  ],
+  "diagnostic_profile": {
+    "private_sha256": "618747bf93f712f6d00bb192e34c2c7cfa395d7139b87d0d596499b409522979",
+    "bytes": 866036,
+    "seconds": 20.053166,
+    "samples": 13963,
+    "dominant_texImage2D_exclusive_seconds": 6.367,
+    "other_texImage2D_exclusive_seconds": 0.312,
+    "representation_owner_identified": false,
+    "unchanged_font_texture_bytes_proven": false,
+    "verdict": "Diagnostic failed campaign only; not qualification."
+  },
+  "working_fixture": {
+    "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/expanded-guard-working",
+    "manifest_sha256": "fa0235e1a5cf3313fe3bd10eab8f5f6f6a0b3549aa411d001f48bbe9a1751825",
+    "files": 5,
+    "scope": "Unqualified event-based, owner-limited v2 Jupyter expansion; preserved privately, never part of the canonical v1 gate. Earlier polling/hold failures retained separately."
+  },
+  "resource_policy": {
+    "logical_cpu_ceiling": 8,
+    "memory_ceiling_gib": 6,
+    "swap_limit_gib": 0,
+    "minimum_globally_available_gib": 2,
+    "intensive_concurrency": 1,
+    "limits": "systemd scope, affinity and BLAS/OMP/RAYON=1; own-process cleanup and five-second resource monitor."
+  },
+  "remaining": [
+    "#344: identify residual texture/representation owners and backend/draw timings, then qualify complete actual-Jupyter moving capture.",
+    "#319: background/minimized hosts and consolidated source/hosted/installed acceptance.",
+    "#337/#338 remain active integration work; Qt popout scope stays separate.",
+    "Postponed human observations and mandatory Movie #320 are not completed here.",
+    "All tags, packages, candidates, promotions and both 1.0 publications remain paused."
+  ],
+  "progress": {
+    "delivered_original_leaves": 8,
+    "finally_accepted_original_leaves": 1,
+    "original_denominator": 46,
+    "A5": "partial"
+  },
+  "prior_context_source_receiving": {
+    "production_changes": {
+      "molsysviewer/system_edits.py": "e87d38d870574add18d768ceb4a6bc338eb606df32727f973518c1bfc5c0a97f",
+      "molsysviewer/viewer/core.py": "8f65ba271968c3ed3c0e3d3dc615cd2fda1eaf99c5131c63986c6da413948823",
+      "molsysviewer/viewer/state.py": "2398d7ac4afc2ea268eae0b6427cee03091377cefdd48dc24073d77745f2bcad",
+      "molsysviewer/viewer/visual_capture.py": "4a70aeb89ffabd13089ed320605a3f9f2d64dec22b2f2fe75e89fd8757fedb40"
+    },
+    "canonical_jupyter": {
+      "native_exit": 0,
+      "seconds": 81.87428234191611,
+      "selected_inputs": 4588,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2708.6,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/jupyter-canonical-final-13",
+      "invocation_sha256": "1843e94cad1292cb3be859887a47e4bb00030dafe67cb6d5f5feffeea26697b4",
+      "scope": "Unchanged canonical v1 guard: six actual Jupyter/anywidget stopped-scene saves, camera perturbation and fresh-draw restoration, source immutability, cancellation and autonomous timeout.",
+      "capture_restore_cases": 6,
+      "strong_restore_cases": 6,
+      "studio_cases": 4,
+      "no_late_write_after_cancel": true,
+      "no_late_write_after_timeout": true,
+      "known_debugger_page_errors": 11,
+      "unexpected_page_errors": 0,
+      "ephemeral_settings_removed": true
+    },
+    "native_qt": {
+      "native_exit": 0,
+      "seconds": 48.389058016007766,
+      "selected_inputs": 4588,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1925.7,
+      "cleanup": {
+        "tracked": 7,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/qt-final-14",
+      "invocation_sha256": "25c529a2c7c1dbcab4bb7c1f2faf8980a85ad4df1c03b77ef249269157e83193",
+      "scope": "Actual native Qt: four stopped and four continuous saves; moving recovery is independent headless file recovery. Native popup and independent-window moving restoration are not claimed.",
+      "platform": "wayland",
+      "rendering": {
+        "canvas": true,
+        "webgl2": true,
+        "renderer": "ANGLE (NVIDIA Corporation, Quadro M2000/PCIe/SSE2, OpenGL ES 3.2)",
+        "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+      },
+      "loop": "QAsyncioEventLoop",
+      "stopped_cases": 4,
+      "moving_cases": [
+        {
+          "source": "studio",
+          "kind": "state",
+          "structure_index": 2,
+          "held_real_queries": 2,
+          "frame_changes_after_request": [
+            1,
+            2
+          ],
+          "expected_frame_occurrences": 20,
+          "independent_file_restore": true,
+          "source_identity_and_coordinates_unchanged": true,
+          "heartbeat_progress": 1073
+        },
+        {
+          "source": "python-async",
+          "kind": "state",
+          "structure_index": 2,
+          "held_real_queries": 2,
+          "frame_changes_after_request": [
+            1,
+            2
+          ],
+          "expected_frame_occurrences": 20,
+          "independent_file_restore": true,
+          "source_identity_and_coordinates_unchanged": true,
+          "heartbeat_progress": 1170
+        },
+        {
+          "source": "studio",
+          "kind": "session",
+          "structure_index": 2,
+          "held_real_queries": 2,
+          "frame_changes_after_request": [
+            1,
+            2
+          ],
+          "expected_frame_occurrences": 20,
+          "independent_file_restore": true,
+          "source_identity_and_coordinates_unchanged": true,
+          "heartbeat_progress": 1042
+        },
+        {
+          "source": "python-async",
+          "kind": "session",
+          "structure_index": 2,
+          "held_real_queries": 2,
+          "frame_changes_after_request": [
+            1,
+            2
+          ],
+          "expected_frame_occurrences": 20,
+          "independent_file_restore": true,
+          "source_identity_and_coordinates_unchanged": true,
+          "heartbeat_progress": 985
+        }
+      ],
+      "native_empty_control": {
+        "structure_index": 1,
+        "region_atoms": 0,
+        "independent_file_restore": true
+      },
+      "native_freeze_control": {
+        "computed_frame": 0,
+        "displayed": {
+          "frame": 1,
+          "atoms": [
+            1
+          ],
+          "position": [
+            1003.791259765625,
+            1011.4249267578125,
+            1003.881591796875
+          ]
+        },
+        "mode": "static"
+      },
+      "constructor_failure": {
+        "native_writer_error": "IsADirectoryError",
+        "new_views_closed_before_global_cleanup": true,
+        "prior_shell_state_unchanged": true,
+        "caller_destination_unchanged": true,
+        "existing_host_preserved": true
+      },
+      "project_configuration": {
+        "viewer_mode": "cinema",
+        "owner_identity_bound": true
+      },
+      "failed_deliveries": 0,
+      "frontend_diagnostics": 0,
+      "closed": true
+    }
+  },
+  "regression_sources": {
+    "tests/test_inbound_edit_contention.py": "73e66eddc459e39ac7952a95a637cac90fe9755725900c450df3b685c7dd8467",
+    "tests/test_live_state_capture.py": "6337fc8fe0651f90c7066bc4e9e93142bc8a64a6d769e7c537a513efb040df62"
+  },
+  "context_before": {
+    "native_exit": 1,
+    "seconds": 5.772541984217241,
+    "peak_owned_rss_mib": 388.8,
+    "cleanup": {
+      "tracked": 1,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/query-context-before-01",
+    "invocation_sha256": "c2fbda6eb69f25b5e1b32b7a57b0505ae38c6e4033657b2ba4d887475480c403",
+    "failed": 3,
+    "passed": 2,
+    "warnings": 5,
+    "scope": "Two deferred transfers and one async ownership retry inherit the releasing thread context before correction."
+  },
+  "context_final": {
+    "native_exit": 0,
+    "seconds": 14.849613691912964,
+    "peak_owned_rss_mib": 483.7,
+    "cleanup": {
+      "tracked": 1,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/query-context-final-04",
+    "invocation_sha256": "ee44e4a3d18b0cb68c89651c1606d48628113be7f1590dbc367b6c14be32ef8f",
+    "passed": 50,
+    "warnings": 34,
+    "scope": "Five real-view/threaded concurrency cases plus public capture protocol/lifetime tests. This overlaps the earlier 143-case selection; counts are not additive."
+  },
+  "boundary_python": {
+    "native_exit": 0,
+    "seconds": 16.445068089989945,
+    "peak_owned_rss_mib": 583.1,
+    "cleanup": {
+      "tracked": 1,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "private_record": ".pytest_cache/robustness-20261106/A5-jupyter-moving-20261108/query-final-boundaries-03",
+    "invocation_sha256": "3c1e0f5fd4c460190d80c24f2c2a9ad82361f526a8407a882a045fa8f67c657d",
+    "passed": 460,
+    "deselected": 1,
+    "warnings": 25,
+    "scope": "Reporting/addressability, transport ownership/ordering/typed arrays, public digestion/inventory and offline Jupyter registration. Earlier production cohort; the actual Jupyter runtime is received separately, not counted as a deselection pass."
+  },
+  "format_only_delta": {
+    "scope": "Only Ruff whitespace and ordering of independent stdlib imports changed after the final Jupyter/context receiving; no operation body, assertion or timeout changed.",
+    "files": {
+      "molsysviewer/viewer/core.py": {
+        "before_sha256": "b59be99069fa1080b054c413899bcaa27f71f34b3de4b0e3a4dc2093d0be80b0",
+        "final_sha256": "0448158a9bc496cb0d74d42bb8c9b9e45f99ffe2bf2bfa01dd29158acfcee1e9",
+        "same_ast_after_import_order_normalization": true
+      },
+      "molsysviewer/viewer/visual_capture.py": {
+        "before_sha256": "2500650577fd01848f977cf864f5a5b47ae83079573949fb8047a2dbb6649b5c",
+        "final_sha256": "5187c464572a13e1f0528891d9f1ea7295cb7b0dda15899975766cbdc14387ff",
+        "same_ast_after_import_order_normalization": true
+      },
+      "tests/test_inbound_edit_contention.py": {
+        "before_sha256": "542eda42692f9370b49c8937e675ccf2282914175de9815d59453cfedf799a1e",
+        "final_sha256": "73e66eddc459e39ac7952a95a637cac90fe9755725900c450df3b685c7dd8467",
+        "same_ast_after_import_order_normalization": true
+      }
+    }
+  },
+  "quality": {
+    "ruff_check": "pass, complete repository",
+    "ruff_format_check": "pass, 986 files",
+    "canonical_jupyter_fixture_unchanged": true,
+    "hosted_ci_dispatched": false,
+    "devguide_index_check": "pass",
+    "git_diff_check": "pass"
+  },
+  "private_custody": {
+    "schema": "molsysviewer.private_capture_custody_receipt@1",
+    "custodian": "Diego Prada Gracia",
+    "opaque_reference": "robustness-20261106/jupyter-contention-receiving-20261108-1",
+    "files_verified": 659,
+    "total_bytes": 46183082,
+    "manifest_sha256": "e93f996fd5fe1be74f28d14e723d36e4292ee8d1db3444c458e5a6ca64eef9d2",
+    "originals_retained": true,
+    "off_host_backup_claimed": false
+  },
+  "reporting_final": {
+    "native_exit": 0,
+    "seconds": 4.144454411929473,
+    "peak_owned_rss_mib": 180.2,
+    "cleanup": {
+      "tracked": 2,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "passed": 405,
+    "scope": "Final reporting/index/addressable-guard checks; overlaps the earlier boundary selection.",
+    "invocation_sha256": "a7a1d932d71205fe0d9ef626e2ff6b01d733e838be38a9f8800c8a4f7d0fdfba"
+  }
+}

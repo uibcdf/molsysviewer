@@ -15,6 +15,12 @@ supersedes: []
 
 # Interaction frame queries cross canvas owners
 
+**Integration follow-up — 2026-11-08:** #343 receives the actual contended
+Jupyter transport seam; the unchanged canonical Jupyter and native Qt guards
+pass after its correction. Expanded actual-Jupyter moving receiving still fails
+globally under [#344](jupyter_moving_capture_residual_uploads.md). The present
+query-isolation implementation is not closed by those passing prefixes.
+
 **Current receiving — 2026-11-08:** the combined browser entry receives
 primary/canvas-popup/detached-Studio state/session saves with actual native
 interaction geometry and independent restoration. The new lifecycle entry

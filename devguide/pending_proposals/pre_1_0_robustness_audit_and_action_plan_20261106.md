@@ -14,7 +14,22 @@ supersedes: []
 
 # Pre-1.0 robustness audit and action plan — 2026-11-06
 
-**Current Qt continuous receiving — 2026-11-08:**
+**Current Jupyter contention receiving — 2026-11-08:**
+[#343](../archive/jupyter_rebuild_waits_for_begin_ack.md) corrects lost transfer
+replies during concurrent ownership. Async saves wait without polling, retain
+their original timeout and cannot orphan a request at cancellation/grant.
+Deferred replies and ownership retries also retain their originating context.
+Receiving passes an earlier 143-case selection, final 50 overlapping capture/
+concurrency controls and 460 separate boundary cases; counts are not additive.
+Six unchanged canonical Jupyter roundtrips and eight native Qt saves pass.
+Expanded actual-Jupyter v2 still
+fails globally; [#344](../pending_bugs/jupyter_moving_capture_residual_uploads.md)
+owns the measured residual upload/query/draw investigation. Its failed/profiled
+campaigns remain separate from the passing source receiving in the
+[receipt](../jupyter_capture_contention_receiving_20261108.json). A5 stays partial;
+progress stays 8/46 delivered and 1/46 finally accepted. Publication stays paused.
+
+**Earlier Qt continuous receiving — 2026-11-08:**
 [#342](../archive/qt_shell_runtime_identity.md) corrects shell/live-scene identity.
 Actual Qt passes four stopped and four continuous state/session cases, genuine
 held science, frame-indexed geometry, empty/frozen regions and constructor-error

@@ -364,15 +364,15 @@ class StateMixin:
         """Capture the live primary canvas, then atomically write its scene.
 
         Await this method in Jupyter. ``timeout`` bounds renderer capture in
-        seconds, not filesystem I/O. A missing/refusing renderer, changed scene
+        seconds, including waits for scene ownership, not filesystem I/O.
+        A missing/refusing renderer, changed scene
         or cancellation before writing preserves the destination. File writing
         runs synchronously after capture on the owning thread; no background
         write can continue after a capture timeout/cancellation is reported.
         """
-        from .visual_capture import capture_live_state, write_captured_state
+        from .visual_capture import save_live_file
 
-        captured = await capture_live_state(self, timeout=timeout)
-        write_captured_state(self, captured, path, kind="state")
+        await save_live_file(self, path, kind="state", timeout=timeout)
 
     @signal(tags=["state", "capture"])
     @digest()
@@ -386,12 +386,11 @@ class StateMixin:
         Molecular data are serialized through the same H5MSM/session writer as
         save_session; this method never copies the trajectory to wait for a GUI.
         """
-        from .visual_capture import capture_live_state, write_captured_state
+        from .visual_capture import save_live_file
 
         if self.molsys is None:
             raise ValueError("Load a molecular system before saving a live session.")
-        captured = await capture_live_state(self, timeout=timeout)
-        write_captured_state(self, captured, path, kind="session")
+        await save_live_file(self, path, kind="session", timeout=timeout)
 
     @signal(tags=["state"])
     @digest()

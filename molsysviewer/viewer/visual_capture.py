@@ -5,8 +5,11 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import time
+from contextvars import copy_context
 from copy import deepcopy
 from dataclasses import dataclass
+from numbers import Real
 
 from .frontend_requests import FrontendRequestError
 
@@ -221,12 +224,69 @@ def write_captured_state(view, captured: CapturedState, path, *, kind: str) -> N
             raise ValueError("Unknown work-file kind.")
 
 
-async def capture_live_state(view, *, timeout: float) -> CapturedState:
-    """Await a coherent primary capture without retaining the edit lock."""
+async def _capture_owned_call(view, operation, *, deadline):
+    """Await existing scene ownership on the caller's loop, without polling."""
+    import asyncio
+
+    loop = asyncio.get_running_loop()
+    result = loop.create_future()
+    caller_context = copy_context()
+
+    def retry():
+        if not result.done() and not loop.is_closed():
+            try:
+                loop.call_soon_threadsafe(attempt, context=caller_context)
+            except RuntimeError:
+                if not loop.is_closed():
+                    raise
+
+    def attempt():
+        if result.done():
+            return
+        try:
+            if time.monotonic() >= deadline:
+                raise FrontendRequestError(reason="request_timeout")
+            with view._system_edits._locked(defer=retry) as acquired:
+                if not acquired:
+                    return
+                value = operation()
+            result.set_result(value)
+        except BaseException as error:
+            result.set_exception(error)
+
+    attempt()
+    try:
+        return await asyncio.wait_for(result, max(0.0, deadline - time.monotonic()))
+    except TimeoutError as error:
+        raise FrontendRequestError(reason="request_timeout") from error
+
+
+async def save_live_file(view, path, *, kind: str, timeout: float) -> None:
+    """Acquire, capture and commit without holding ownership across a yield."""
+    if isinstance(timeout, bool) or not isinstance(timeout, Real) or not math.isfinite(timeout) or timeout <= 0:
+        raise ValueError("Capture timeout must be finite and positive.")
+    deadline = time.monotonic() + timeout
     require_host = getattr(view.widget, "_require_async_capture_host", None)
     if callable(require_host):
         require_host()
-    captured, request = prepare_live_capture(view, timeout=timeout)
-    send_live_capture(view, request, protocol_version=captured.protocol_version)
-    reply = await view._frontend_requests.wait(request)
-    return finish_live_capture(view, captured, reply)
+
+    request = None
+
+    def begin():
+        nonlocal request
+        captured, request = prepare_live_capture(view, timeout=max(1e-9, deadline - time.monotonic()))
+        send_live_capture(view, request, protocol_version=captured.protocol_version)
+        return captured, request
+
+    try:
+        captured, request = await _capture_owned_call(view, begin, deadline=deadline)
+        reply = await view._frontend_requests.wait(request)
+
+        def commit():
+            finish_live_capture(view, captured, reply)
+            write_captured_state(view, captured, path, kind=kind)
+
+        await _capture_owned_call(view, commit, deadline=deadline)
+    finally:
+        if request is not None:
+            view._frontend_requests.cancel(request)

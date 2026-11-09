@@ -15,6 +15,13 @@ supersedes: []
 
 # Dynamic region queries cross renderer frames
 
+**Integration follow-up — 2026-11-08:** #343 receives contended Jupyter
+transport ownership; canonical Jupyter and native Qt guards pass. Expanded
+actual-Jupyter moving receiving still fails globally under
+[#344](jupyter_moving_capture_residual_uploads.md), with dynamic/interaction
+readiness behind several native frames. Keep this source correction active
+until integration receiving is complete; failed prefixes are not acceptance.
+
 **Current receiving — 2026-11-08:** the combined browser entry receives all
 seven actual moving saves and independent restorations, including both popup
 types and their native region memberships. The new lifecycle entry additionally
