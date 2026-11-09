@@ -48,6 +48,26 @@ core browser lane. Record the tested version and any required compatibility
 work. A `pull` in the separate Mol* source checkout is an inspection step,
 not a dependency update.
 
+### Follow the first published font-atlas correction
+
+The maintainer requested explicit issue-board follow-up on 2026-11-08; #115
+now includes this acceptance checklist. At dependency/release review checkpoints:
+
+- Identify the first published release that actually contains shared,
+  content-versioned font textures and the applicable upload correction. Do not
+  infer inclusion from the next version number or current upstream master.
+- Record the exact version, tag/source commit and npm artifact identity/integrity,
+  then inspect the published artifact to confirm the relevant implementation.
+- Review its actual package/API migration scope before selecting the dependency.
+- Receive unchanged-text updates, new glyphs and actual GPU pixels,
+  font/style/quality changes, disposal and context restoration, alongside the
+  applicable trajectory, camera, measurement, capture and popup gates.
+- Remove any temporary Viewer compatibility adaptation only after those native
+  controls pass; otherwise record why it still remains necessary.
+
+The migration stays post-1.0. The separate pre-1.0 #344 consumer work remains
+open; this follow-up changes neither the dependency nor the publication scope.
+
 ## Why
 
 MolSysViewer relies on Mol* APIs beyond its top-level viewer facade. Upstream
