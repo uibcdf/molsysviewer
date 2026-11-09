@@ -14,6 +14,19 @@ supersedes: []
 
 # Pre-1.0 robustness audit and action plan — 2026-11-06
 
+**DataCard source closeout — 2026-11-08 (#345):** B3.1–B3.5 now have
+causal browser controls and scoped passing receiving: popup blocking/bootstrap
+recovery, current literal titles, host/fullscreen bounds, native keyboard
+selection and owned-resource disposal. The real Python/Mol* trajectory guard
+receives duplicate/reversed x positions, source/canvas-popup agreement, exact
+callbacks and molecular coordinates; its existing precision/state cases remain.
+The [receipt](../datacard_lifecycle_receiving_20261108.json) preserves original
+failures and the correction to the resource-ownership oracle. Delivered/local
+progress becomes **13/46 (28.3%)**, counting the five original B3 leaves once;
+final applicable acceptance remains **1/46 (2.2%)**. B3.6/B4 remain unadopted
+design decisions; A5 and Movie #320 remain incomplete. No hosted CI, installed
+artifact, human host acceptance or publication is claimed by this source batch.
+
 **Requester/frame source closeout — 2026-11-08:** #337/#338 now receive
 142 affected Python cases plus the complete unchanged-input native browser,
 actual Jupyter and Qt integration from #344. Their
@@ -307,8 +320,8 @@ source pair next; no MolSysMT main integration is performed from this session.
 C2/task and hosted acceptance remain pending; C1 below holds the exact evidence.
 
 **Next actions:** complete A5's background/minimized host receiving and
-consolidated acceptance, preserving the complete actual Jupyter/Qt moving cases. Continue B3's
-DataCard lifecycle and current owner-pair receiving after integration. The remaining
+consolidated acceptance, preserving the complete actual Jupyter/Qt moving cases. Receive the current owner pair after integration; B3's locally verified lifecycle
+correction now needs its later consolidated acceptance. The remaining
 approved addon families and Movie #320 remain in scope. Incremental commits
 use `[skip ci]` at the principal maintainer's explicit instruction; no remote
 run is dispatched for each small change. Human review, candidates, tags,
@@ -317,7 +330,7 @@ packages, promotions and both 1.0 publications remain paused.
 | Block | Current status | Owner and tracking | Exit evidence |
 | --- | --- | --- | --- |
 | A — integrity, restoration and cleanup | A1–A4/A6 source-delivered; bounded A5 camera/box corrections delivered in `ebe3d46b` and `42656765`; actual Jupyter/Qt moving capture received; background/minimized and consolidated acceptance remain partial | Viewer; #316/#317/#318/#319 and private handling under #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
-| B — plots and DataCards | B1/#314 and B2/#321 with #322 are delivered; current numerical/state/popup receiving passes. Retain the unexplained earlier zero-reference-bounds guard failure; provenance/card and consolidated follow-up remain | Viewer and scientific producer; #314, #321, #322, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
+| B — plots and DataCards | B1/#314, B2/#321 with #322 and B3.1–B3.5/#345 are source-delivered; numerical/state/popup and DataCard receiving pass. Retain the unexplained earlier zero-reference-bounds guard failure; consolidated acceptance remains. B3.6/B4 need scope decisions | Viewer and scientific producer; #314, #321, #322, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
 | C — contribution and host integration | PR #543 is owner-merged as `0ddb99c2b`; its earlier complete addon/seventeen-step Jupyter evidence keeps its original inputs. Post-integration source-pair and covering hosted receiving remain pending | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421/#635 and PR #543 | Reviewed delivery, current controlled pair, relevant full/hosted outcomes and explained failures |
 | D — scientific prerequisites and approved GUI families | Partial implementation; provider corrections and several task families remain | MolSysMT owns science; addon owns tasks; #264/#315 and uibcdf/molsysmt#421 | Received native fixes plus every required family/effect, without hidden preparation or copied algorithms |
 | E — integrated use, scale and human acceptance | E0 custody received; partial headless/Jupyter receiving; complete workflow/prolonged use pending; human review postponed | Viewer/addon; maintainer owns human observations | TcTIM/ensemble save–recover–continue, independent lifetimes and representative measured limits |
@@ -384,8 +397,8 @@ history:
 
 | Stage | Completed / original 46 | IDs and evidence meaning |
 | --- | --- | --- |
-| Consumer result complete and locally verified | **8/46 — 17.4%** | E0, A1, A2, A3, A4, A6, B1, B2. E0 is a custody result; the other seven are corrected source with scoped executed guards. B2 is delivered in `ebe3d46b`. |
-| Consumer result delivered | **8/46 — 17.4%** | E0 plus A1, A2, A3, A4, A6, B1 and B2. Viewer corrections are integrated/pushed; E0's approved custody transfer is verified. Delivery does not satisfy later consolidated acceptance. |
+| Consumer result complete and locally verified | **13/46 — 28.3%** | E0, A1, A2, A3, A4, A6, B1, B2 and B3.1–B3.5. E0 is a custody result; the other twelve have scoped executed source guards. See the #345 receipt for the five original DataCard outcomes. |
+| Consumer result delivered | **13/46 — 28.3%** | E0 plus A1, A2, A3, A4, A6, B1, B2 and B3.1–B3.5. Source corrections and guards are delivered with their receipts; E0 custody is verified. Delivery does not satisfy later consolidated acceptance. |
 | Final applicable acceptance recorded | **1/46 — 2.2%** | E0 only. Preserve the remaining acceptance obligations rather than silently promoting source delivery. |
 
 These stages are not additive, equally weighted effort estimates, time
@@ -430,8 +443,9 @@ version-2 popup/detached routing, hidden/unavailable/disposed endpoint semantics
 and current actual-Jupyter/consolidated evidence before advertising version 2.
 Earlier controls receiving keeps its earlier source scope; final Studio checks
 the changed physical camera/popup boundaries. Source delivery does not qualify
-packages, hosted CI or human review. The original count remains 8/46 delivered,
-1/46 finally accepted, with Movie #320 mandatory and publication paused.
+packages, hosted CI or human review. At that earlier checkpoint the count was 8/46 delivered,
+1/46 finally accepted; the current table above includes B3.1–B3.5. Movie #320
+remains mandatory and publication stays paused.
 
 **Next execution checkpoint:** receive the delivered bounded batch through the
 applicable consolidated hosted checks at one substantive checkpoint, following
@@ -463,8 +477,8 @@ its separate authorization boundary.
 | G | G1–G2 | 0 / 2 |
 
 A4 has a causal six-case failure followed by 19 factory and 73 related passing
-checks (overlapping scopes). It remains outside the completed numerator until
-its recorded delivery/closure conditions are satisfied; see the
+checks (overlapping scopes). It remains outside the final-acceptance numerator until
+its recorded consolidated conditions are satisfied; see the
 [receiving receipt](../factory_lifecycle_receiving_20261106.json).
 
 Current receiving checkpoint, observed 2026-11-07 UTC; inspect linked runs for
@@ -517,7 +531,7 @@ values to the reporting protocol.
 | A4 | P2 lifecycle; affected covering artifact and 1.0 | Viewer; #316, delivered/source-verified | Six real failure cases first reproduced the leak; 19 factory and 73 related checks pass. Applicable hosted receiving remains |
 | A5–A6 | P2; A5/#319 partial implementation, A6 source-verified | Viewer; #319/#318 | A5's coherent capture/save direction is approved and its first Python/Jupyter paths are exercised; retain later diagnostic failures and remaining GUI/native receiving. A6 is delivered in `1ea6b26e`; consolidated hosted acceptance remains |
 | B1–B2 | P1 scientific reading/navigation; affected covering artifact and 1.0 | Viewer; #314 and a scoped precision report | Correlated Python/render acceptance and numerical-label truth; retain original failed runs |
-| B3.1–B3.5 | P2 robustness; applicable candidate/1.0 scope | Viewer; split by mechanism under #315 | Reproduce each inspected path, then receive its window/title/layout/keyboard/cleanup outcome |
+| B3.1–B3.5 | P2 robustness; applicable candidate/1.0 scope | Viewer; #345 under #315 | Source correction and native guards delivered; retain later consolidated/installed/human scope |
 | B3.6, B4, E3, F1 | Scope/design decision; not an automatic release gate | Principal maintainer decides scope; relevant owner implements | Record accept/reject/defer and contract before implementation; accepted work gains its explicit milestone and guard |
 | C1–C3, C5 | P1 integration of selected source pair | Viewer host and MolSysMT owner; #264 and uibcdf/molsysmt#421 / PR #543 | B1 for the new host pin; publish reviewed sources, receive relevant full/hosted results and owner acceptance |
 | C4 | P1 qualification disposition | Viewer; #305 | Explain the original failure or a bounded evidenced disposition; a later isolated pass is not closure |
@@ -596,7 +610,7 @@ issue is not a declaration that any of them is fixed.
 | --- | --- | --- |
 | **B1 — source-verified, #314** | Finish plot-origin navigation through the existing authority route. The broad guard calls a queue drain before a popup's asynchronous `postMessage` is necessarily received; this is a plausible guard race, not a proven exclusive explanation of the failure. | One actual click must have correlated Python acceptance, one appropriate public callback and correct coordinates in both renderers. Exercise repeated selection, reverse Python navigation, retained plots, independent exported HTML and a single playback clock. Preserve the original causal red and broad failure; diagnose before rerunning. |
 | **B2 — corrected in `ebe3d46b`, hosted checkpoint pending, #321** | [Actual browser controls](../pending_bugs/trajectory_plot_numeric_precision.md) show the original nonzero/equal-limit/narrow-offset defects; their source corrections and fifteen Decimal controls are delivered. Raw records survive state round trips. | Current source/popup/state receiving passes. Retain the unexplained earlier zero-reference-bounds guard failure and its atomic diagnostic; complete applicable hosted acceptance and normal closeout. |
-| **B3 — mixed inspection/reproduction, open** | Complete the DataCard lifecycle around A3: visible errors/retry for blocked or failed windows, current titles after update, usable bounds on small/resized hosts, keyboard/value access, and disposal during drag/resize. Global listener cleanup is incomplete in source; a universal retained-memory leak has not been measured. | Exercise ordinary popup gestures, failure acknowledgement, resize/fullscreen, rename/restore, active-gesture disposal and source independence. Apply the same semantics across hosts. Evaluate blur/opacity consistency as polish, not as a violation of Studio's specific accepted settings. |
+| **B3.1–B3.5 — source-corrected/received, #345; consolidated acceptance pending** | Complete the DataCard lifecycle around A3: visible errors/retry for blocked or failed windows, current titles after update, usable bounds on small/resized hosts, keyboard/value access, and disposal during drag/resize. Original active-listener and bounds failures are reproduced and corrected, including omitted controller cleanup; no universal retained-memory leak is claimed. | Exercise ordinary popup gestures, failure acknowledgement, resize/fullscreen, rename/restore, active-gesture disposal and source independence. Apply the same semantics across hosts. Evaluate blur/opacity consistency as polish, not as a violation of Studio's specific accepted settings. |
 | **B4 — inspected, new recommendation; scope/design decision pending** | Retained conformational plots store values/title/axes but not the exact calculation recipe from the private mounted report. After Clear, different references/populations can become indistinguishable. | Proposed direction: producer-supplied, versioned observation metadata that core preserves without interpreting science. If adopted, persist method/software, parameters, exact ordered populations/reference, weights and mass source, native/display units, structure coverage and source/revision linkage. Keep historical observations distinct from current applicability and never recalculate implicitly. |
 
 B4 needs a reusable figure-level contract, with detached metadata and explicit
@@ -611,11 +625,11 @@ reproduced title defect. A3 remains the owner of literal-text safety.
 
 | Child / current class | Required outcome and next guard |
 | --- | --- |
-| **B3.1 — inspected** | Blocked/failed window creation has an observable error and qualified retry/close behavior, preserving the source View; reproduce the distinct blocked and bootstrap-failure paths |
-| **B3.2 — partly source-received with A3** | Current-title updates, reopened popups and Python-restored literal titles pass in `38eb8785`; retain the broader DataCard campaign, including an explicit rename before the first popout and consolidated hosted acceptance |
-| **B3.3 — inspected** | Cards remain reachable and usable at small host sizes and after resize/fullscreen; define host bounds and receive actual layouts |
-| **B3.4 — inspected** | Values and sample navigation have keyboard/accessible equivalents with correct labels; qualify focus, selection and actual current-sample reading |
-| **B3.5 — inspected** | Disposing during drag/resize detaches active global listeners and owned windows/observers; qualify repeated gestures/disposal without claiming a universal leak from inspection |
+| **B3.1 — source-received, #345** | Blocked/failed window creation has an observable error and qualified retry/close behavior, preserving the source View; real sandbox and post-initialization Trusted Types controls receive these distinct failures |
+| **B3.2 — source-received, #345/A3** | Current-title updates, reopened popups and Python-restored literal titles pass in `38eb8785`; the DataCard campaign also receives explicit rename before the first popout and updates while detached; consolidated hosted acceptance remains |
+| **B3.3 — source-received, #345** | Cards remain reachable and usable at small host sizes and after resize/fullscreen; positive host bounds, native source/popup resize, fullscreen and contraction/re-expansion pass |
+| **B3.4 — source-received, #345** | Values and sample navigation have keyboard/accessible equivalents with correct labels; native range/focus/current raw values pass, including actual Python and molecular-coordinate agreement |
+| **B3.5 — source-received, #345** | Disposing during drag/resize detaches active global listeners and owned windows/observers; repeated real gestures, popup hide/clear and controller disposal pass with positive owner registration and release assertions |
 | **B3.6 — optional recommendation, decision pending** | Evaluate visual consistency with the accepted workbench design. Studio's opacity decision alone creates no DataCard styling requirement |
 
 ## C — deliver and receive the actual integration

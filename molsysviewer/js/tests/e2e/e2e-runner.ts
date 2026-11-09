@@ -37,6 +37,7 @@ const SUITES = [
     "history-coalescing",
     "measurements-interaction",
     "font-atlas-uploads",
+    "datacard-lifecycle",
     "measures-subpanel",
     "interactions-subpanel",
     "interactions-geometry",

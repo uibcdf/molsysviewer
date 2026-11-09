@@ -1,0 +1,778 @@
+{
+  "schema": "molsysviewer.working_receiving@1",
+  "date": "2026-11-08",
+  "owner_issue": "uibcdf/molsysviewer#345",
+  "parent_issue": "uibcdf/molsysviewer#315",
+  "status": "B3.1\u2013B3.5 corrected and locally source-verified; later consolidated acceptance remains distinct.",
+  "source_base": "14ca8c83117f6e6b918371d3bddfaf9022c3f370",
+  "scientific_provider": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+  "input_identity": "The integration commit containing this receipt owns delivery; exact executable hashes and campaign manifests identify the measured working inputs.",
+  "source_sha256": {
+    "molsysviewer/js/src/ui/floating-data-card.ts": "e58c02135ab3d58123892234a1b52f24cab424ddcfb394d23eb91c7449d9ee38",
+    "molsysviewer/js/src/ui/trajectory-plot-overlay.ts": "eeb942d8e5854d7bcf269775fc2e00bf6b48fe74019443fe33ffd9831d48ca89",
+    "molsysviewer/js/src/managers/viewer-controller.ts": "e39139245c97ff153ab785773b7d4f3116b53d37622bcf8345c46b3bf89b50e1",
+    "molsysviewer/js/tests/e2e/datacard-lifecycle.e2e.ts": "a5ed9aec0a11d04c67558a18ffcf22368c0db7788667a5b757dbb415cb0e9a95",
+    "molsysviewer/js/tests/e2e/datacard-title-fixture.py": "c7603c78d5e14ac1f446c8f7bc8f7c7f6010fa857c31fc557ea1e002d1d05149",
+    "molsysviewer/js/tests/e2e/trajectory-plot-authority-scenarios.ts": "1bf2a3550a77e8c23b7ecb071a2fb7e895f5267185cc0472a31f6ac7719dd0bc",
+    "molsysviewer/js/tests/e2e/trajectory-plot-bridge.py": "b6ad2e30fdbc1015dc1d9d41d35be6f6278edba302d0b8615069b111b80b2668",
+    "molsysviewer/js/tests/e2e/e2e-runner.ts": "1e5e750348d843d60fe59ec626d819140442865b530b41b3de7398e0154417e5",
+    "molsysviewer/js/package.json": "2191ce0348b006fbb6f94dbfe388dcf976608f7d4691c30886b38ec0b46053c8",
+    "tests/test_e2e_reliability.py": "b15750cd23990b1dc652161ec53564a913a858a03ef355649ea3120ec9edb0d0",
+    "tests/test_reporting_protocol.py": "cb0c5c1c30c3ca0dc3972f4e477785c151b6f6b79ff5b08bc4332ed8b93820c0"
+  },
+  "runtime_sha256": "67929ee09262b57cfab1a3e09372986c681da34bbde0d88449c961160f5317ee",
+  "runtime_map_sha256": "87b702ffc91c320b53c625918931abb9ca50f007ae45460f9deea5419c96eaf2",
+  "original_controls": {
+    "before-01": "Expected exit 1 on original main/harness: real active drag/resize listeners remain, card exceeds small host, keyboard navigation absent, actual sandbox popup blocking is silent.",
+    "bootstrap-before-03": "Expected exit 1: real post-initialization Trusted Types policy rejects native Document.write; blank child remains and no notice. Executes original compiled harness while TypeScript was already being edited; not a clean original-source campaign. Exact artifact hash is in its manifest."
+  },
+  "intermediate_failures": {
+    "datacard-06": "Total observer count mismatch without sufficient owner trace. Retained as unexplained; no universal leak attribution.",
+    "datacard-diagnostic-08": "Total timer count mismatch before final observer diagnostic.",
+    "datacard-owners-10": "The retained timer is a real unrelated 127 ms RxJS AsyncAction/emitWhenIdle owner. Retained hidden cards legitimately keep their observer. Zero total resources is an invalid oracle for a live canvas. Final guard positively observes card ownership before requiring release; unrelated input survives.",
+    "datacard-final-14": "Real popup close timeout at controller disposal. Root cause: controller omitted trajectoryPlotOverlay.dispose(); corrected and received by datacard-receiving-17."
+  },
+  "receiving": {
+    "datacard": {
+      "campaign": "small-policy-25",
+      "guard": "molsysviewer/js/tests/e2e/datacard-lifecycle.e2e.ts",
+      "scope": [
+        "real active drag/resize clear and unrelated input",
+        "keyboard resize",
+        "positive host bounds through shrink/re-expansion/fullscreen",
+        "current literal titles before first popup and while detached",
+        "popup resize/return/closed-owner replacement",
+        "minimize and popout",
+        "hide/clear/controller disposal and owned observer/poll release",
+        "real sandbox blocking and post-initialization Trusted Types bootstrap rejection; retry/dismiss and retained graph",
+        "Retry and Dismiss remain accessible after active-error host contraction to 180\u00d7120 for both real policies."
+      ]
+    },
+    "trajectory": {
+      "campaign": "plot-authority-20",
+      "guard": "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts",
+      "scope": "Existing native numerical/state/title entry plus real Python-authority keyboard End/ArrowLeft/Home from source and canvas popup; callbacks, exact molecular coordinates, raw values/units and repeated/reversed x. Independent static HTML remains independent. Fifteen Decimal/binary64 controls retained."
+    },
+    "javascript": {
+      "campaign": "build-unit-18",
+      "passed": 428,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Canonical npm run test:js; native Node case counts."
+    },
+    "python": {
+      "campaign": "python-21",
+      "passed": 503,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "warnings": 41,
+      "warning_class": "Native LegacyH5MSMWarning for retained 0.4 fixtures.",
+      "selection": [
+        "tests/test_reporting_protocol.py",
+        "tests/test_e2e_reliability.py",
+        "tests/test_source_workflow_coverage.py",
+        "tests/test_trajectory_plot.py",
+        "tests/test_trajectory_plot_lifecycle.py",
+        "tests/test_trajectory_plot_series.py"
+      ],
+      "junit_sha256": "88857028f352f977f56711708a39361e9bbcf136084839c49befff083baf88e6",
+      "receptor_events_sha256": "586c4c3ea174aa22da7aafc752be5ec9d490a0797a341ab1a745c8ad31a6b88e"
+    },
+    "visual": {
+      "campaign": "visual-22",
+      "scope": "Supplemental native Chromium screenshot inspection of normal/small/popup graph layout. Synthetic observations; no human host acceptance."
+    },
+    "reporting_closeout": {
+      "campaign": "reporting-receiving-27",
+      "passed": 455,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "Final reporting/routing selection after archival and small-policy guard extension; overlaps the earlier 503 cases.",
+      "junit_sha256": "9f682def3ea8e1e18ef81ebb28cfa7529e95ea3014fcafca21fdc3028c2fc866",
+      "receptor_events_sha256": "859f120931294bf2269de5f3a9a844ea47ae7f30b34ae95c4b3b4cefc0d9f3d9"
+    }
+  },
+  "campaigns": [
+    {
+      "name": "before-01",
+      "native_exit": 1,
+      "seconds": 16.145309570012614,
+      "selected_inputs": 4845,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1471.0,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        ".pytest_cache/robustness-20261106/B3-datacards-20261108/before.mjs",
+        "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/B3-datacards-20261108/before-01"
+      ],
+      "input_manifest_sha256": "4ff6fb25ca9d9d2ec0062eb2f882a88d31d9e35fe6fd3cd8c592147c2d6f2e36",
+      "invocation_sha256": "eb79b4a68a6d82afc551b81ba9612c55d552b3dd213513e31cbb69a05fca5119",
+      "stdout_sha256": "cfc8466c970b064745aeed85cf3b639c72e668be1f37bc9d9d5ae1884185547d"
+    },
+    {
+      "name": "bootstrap-before-03",
+      "native_exit": 1,
+      "seconds": 13.902810079976916,
+      "selected_inputs": 4846,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1426.9,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        ".pytest_cache/robustness-20261106/B3-datacards-20261108/csp-before.mjs",
+        "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/B3-datacards-20261108/bootstrap-before-03"
+      ],
+      "input_manifest_sha256": "b4d52d8ec8cf583b47a17551920dcffeca5b3068ad680367e30e4102424bb7dd",
+      "invocation_sha256": "e1dbca6f9c8433d03a5c5c7d8d97551a710083c231eb219a9dfa99d116b0fdd6",
+      "stdout_sha256": "71bb82b057b369533fe970fe8b2235bb27083dca3dc59d3c04ec07dea640ed16"
+    },
+    {
+      "name": "build-controller-16",
+      "native_exit": 0,
+      "seconds": 3.8324934400152415,
+      "selected_inputs": 4842,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 437.4,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/npm",
+        "--prefix",
+        "molsysviewer/js",
+        "run",
+        "build:harness"
+      ],
+      "input_manifest_sha256": "b79a43ef6c966cffb842c618b484986acb86b31989feb86c2b304204d736b92f",
+      "invocation_sha256": "471c2fa30dbb869fa88b0f91cfee733fdd262a95b56c146b91a12586ef20e9e8",
+      "stdout_sha256": "a1090c00ef8ec1a4b9736bf1ce1994aa1e39c68bf2e6d5664ed922349d420bec"
+    },
+    {
+      "name": "build-diagnostic-07",
+      "native_exit": 0,
+      "seconds": 1.6347865068819374,
+      "selected_inputs": 4842,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 214.6,
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/npm",
+        "--prefix",
+        "molsysviewer/js",
+        "run",
+        "build:e2e:all"
+      ],
+      "input_manifest_sha256": "a84f75cdb48fdb0041cbba70e551646aa2a9bc88af2f34551a58528a388dd22f",
+      "invocation_sha256": "a4c4e0ffc8e4c21fb3e9ef39c5f9b620bacd7f892d0baadc5224b8ef3629f6ef",
+      "stdout_sha256": "a63a72b94f37586947107004b2dcd85ff57a98cf5d2bdc39dd88564dd9e2591f"
+    },
+    {
+      "name": "build-diagnostic-09",
+      "native_exit": 0,
+      "seconds": 1.4978395318612456,
+      "selected_inputs": 4842,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 217.4,
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/npm",
+        "--prefix",
+        "molsysviewer/js",
+        "run",
+        "build:e2e:all"
+      ],
+      "input_manifest_sha256": "0a91893a69356e5de4bf5dfe643aa2f54cdd857b40711d46f06aa33a3f1e5fb3",
+      "invocation_sha256": "0dbd74f9d657b5083fae8c2a028d024985684eb5d785073d5e9a35cc2d289123",
+      "stdout_sha256": "5b7b0d31801c0ecc0114606f017350ac50897bc7af91b95f3f3c7a6ab3eb7841"
+    },
+    {
+      "name": "build-final-05",
+      "native_exit": 0,
+      "seconds": 2.753416136140004,
+      "selected_inputs": 4842,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 383.9,
+      "cleanup": {
+        "tracked": 11,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/bin/bash",
+        "-c",
+        "npm --prefix molsysviewer/js run build:harness && npm --prefix molsysviewer/js run build:e2e:all"
+      ],
+      "input_manifest_sha256": "2bb39470a576ba17909edabe566056e9e00948b179a785bb3f26e37e5765bdc4",
+      "invocation_sha256": "b1bf1592282e13dcb35a2c5c461aee4f858c5a5605e418f1cf49003ce6712a6b",
+      "stdout_sha256": "969b0d42f04bc1609e7a059e5d892af3dbf8b6bb510cf0d79921668b68f73b89"
+    },
+    {
+      "name": "build-final-11",
+      "native_exit": 0,
+      "seconds": 2.949494562111795,
+      "selected_inputs": 4842,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 446.1,
+      "cleanup": {
+        "tracked": 11,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/bin/bash",
+        "-c",
+        "npm --prefix molsysviewer/js run build:harness && npm --prefix molsysviewer/js run build:e2e:all"
+      ],
+      "input_manifest_sha256": "94a91f98acd5b3df781103359eb72e9c8933f0a6b5bc145a0a3b48c94b557b5b",
+      "invocation_sha256": "e2c3b87b670bafbfd03817b549ef6dc93db62517f9752e596db6fa44e95e98f7",
+      "stdout_sha256": "1c4ac083f1857ce3c8cabede76d10eb9adcdba71353507258b2eb2f10924bdf4"
+    },
+    {
+      "name": "build-final-13",
+      "native_exit": 0,
+      "seconds": 7.617610582150519,
+      "selected_inputs": 4842,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 469.1,
+      "cleanup": {
+        "tracked": 12,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/bin/bash",
+        "-c",
+        "npm --prefix molsysviewer/js run build:harness && npm --prefix molsysviewer/js run build:e2e:all"
+      ],
+      "input_manifest_sha256": "5f94eab1eaac47dcf14a8072703d386a802aa257f62dbf05b19a7d12fdc330a7",
+      "invocation_sha256": "4000f9aff3354673fb0315e83ffb2b28ba39474a91fa35fbcc6cb55795e356cf",
+      "stdout_sha256": "e107f033a8da48cdc3c73768f852012504aa2c32b5d56f79f04ec87ee5fc5294"
+    },
+    {
+      "name": "build-guard-04",
+      "native_exit": 0,
+      "seconds": 4.9462414279114455,
+      "selected_inputs": 4842,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 420.9,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/npm",
+        "--prefix",
+        "molsysviewer/js",
+        "run",
+        "build:harness"
+      ],
+      "input_manifest_sha256": "f35fa446ba0a23bc868d4e1bc86161507c8d33139d010038e57a4ef9761fa326",
+      "invocation_sha256": "ea10e8bb1233fcf6ae1a7eab8113150a5696b159c24a49d886ce6d76a06ba4cb",
+      "stdout_sha256": "7c4d05ca13fa4f288ba77bff54a77aa47066f149b3f98879e01cb98acdddebe9"
+    },
+    {
+      "name": "build-receiving-12",
+      "native_exit": 0,
+      "seconds": 2.8224102158565074,
+      "selected_inputs": 4842,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 482.1,
+      "cleanup": {
+        "tracked": 12,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/bin/bash",
+        "-c",
+        "npm --prefix molsysviewer/js run build:harness && npm --prefix molsysviewer/js run build:e2e:all"
+      ],
+      "input_manifest_sha256": "2db304b661fb08fa943c21f33d1fb7844d6c818efd6f193c609033543a7b82bc",
+      "invocation_sha256": "0d21a99ee6d16099d9dd95fce39eb84fb1ef2c173c77396aee110e4ffee0bd1b",
+      "stdout_sha256": "3f63c927820ebfa24af20fcc44bdd9a46fd4f8abb3d0ff894836f00da9453d74"
+    },
+    {
+      "name": "build-runtime-19",
+      "native_exit": 0,
+      "seconds": 2.2316832109354436,
+      "selected_inputs": 4842,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 421.7,
+      "cleanup": {
+        "tracked": 4,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/npm",
+        "--prefix",
+        "molsysviewer/js",
+        "run",
+        "build:runtime"
+      ],
+      "input_manifest_sha256": "b79a43ef6c966cffb842c618b484986acb86b31989feb86c2b304204d736b92f",
+      "invocation_sha256": "52e58ca4aac111979da877c59c8ea33ecea76840d0bfcc99670cc6f4ef67680c",
+      "stdout_sha256": "ac6249ede4118293b0df44109e13061b28941fc3585b59ebf828f89c72b6f571"
+    },
+    {
+      "name": "build-unit-18",
+      "native_exit": 0,
+      "seconds": 12.799541076878086,
+      "selected_inputs": 4842,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 561.8,
+      "cleanup": {
+        "tracked": 10,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/npm",
+        "--prefix",
+        "molsysviewer/js",
+        "run",
+        "test:js"
+      ],
+      "input_manifest_sha256": "b79a43ef6c966cffb842c618b484986acb86b31989feb86c2b304204d736b92f",
+      "invocation_sha256": "f5a319beba5532f4be17b002fa9f9b3d964a2f8ab9b8ff9d69c746a2cfd93845",
+      "stdout_sha256": "b041c8a365ecd298b3b631265fe578335779826a286dff9136a2b487de720720"
+    },
+    {
+      "name": "datacard-06",
+      "native_exit": 1,
+      "seconds": 16.38535595103167,
+      "selected_inputs": 4847,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1514.5,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "molsysviewer/js/tests/e2e/datacard-lifecycle.e2e.js"
+      ],
+      "input_manifest_sha256": "9cda708cecf2ca6cc0e658c4c7f0d136e8045306daad288df06d2e7382a7f109",
+      "invocation_sha256": "e9520e557923a9656a106b156c8389dd901288376cbbb4490c65c0dc5d3e90e8",
+      "stdout_sha256": "7d257d8293255a78a1156877a0d1a1211e917ab4042d9a9a80b1427266242ca3"
+    },
+    {
+      "name": "datacard-diagnostic-08",
+      "native_exit": 1,
+      "seconds": 16.717530408874154,
+      "selected_inputs": 4847,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1508.2,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "molsysviewer/js/tests/e2e/datacard-lifecycle.e2e.js"
+      ],
+      "input_manifest_sha256": "92a5ff5d0a673d723f22fe027f20aa35de10b3ed67bb060cbdbcdb8a695dcd35",
+      "invocation_sha256": "8140c1591cf99b2ddd773c738c042827b09e2855ffaec11edcb89d4df349894b",
+      "stdout_sha256": "3d02a41d836eafe38e28a795702d1847a7e04464e2e3ace5109eb82dfea559a5"
+    },
+    {
+      "name": "datacard-final-14",
+      "native_exit": 1,
+      "seconds": 46.167361384956166,
+      "selected_inputs": 4847,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1521.2,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "molsysviewer/js/tests/e2e/datacard-lifecycle.e2e.js"
+      ],
+      "input_manifest_sha256": "e1a311fa4d92b11ce35353af001ce018d9f3d1f415565ea24e46f996f6bc2bf1",
+      "invocation_sha256": "2ac3b39947a78fa16d76bf803aea270d08e3bc7bd365739cb027ebbe0360d138",
+      "stdout_sha256": "7a340f1245a5d09525e73016cbe8ae2c02ae5fdc46d5327e5e5447ea61aeb947"
+    },
+    {
+      "name": "datacard-owners-10",
+      "native_exit": 1,
+      "seconds": 15.986894433153793,
+      "selected_inputs": 4847,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1509.3,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "molsysviewer/js/tests/e2e/datacard-lifecycle.e2e.js"
+      ],
+      "input_manifest_sha256": "1b1b9705e41efcc1dc540b4cfbb5d419651b1257985b7a2f23ced3dc04f83326",
+      "invocation_sha256": "c577d6bc370f0a910ae6cf95efc0b19939fa82b0e0ba0870886d6a7743bffe35",
+      "stdout_sha256": "dea6ea31111f8c4aa002e3ebc7d5c7bd04a4a8c9c6a690efecdaa63a2b882320"
+    },
+    {
+      "name": "datacard-receiving-17",
+      "native_exit": 0,
+      "seconds": 27.942159940022975,
+      "selected_inputs": 4847,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1568.3,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "molsysviewer/js/tests/e2e/datacard-lifecycle.e2e.js"
+      ],
+      "input_manifest_sha256": "d0680f65c753b032267e15ed0231ecab65dc073a8738577726b787047a621330",
+      "invocation_sha256": "2dc44ed023ed127ab3f8dddbcdad2f88b02d8e232a42253186b58da0d0bd5e84",
+      "stdout_sha256": "57d5ce7f0031e3401a74a0cea8e25ee5bdc55923bb6e17f1b5160cb4aa1017cf"
+    },
+    {
+      "name": "plot-authority-20",
+      "native_exit": 0,
+      "seconds": 73.1906384199392,
+      "selected_inputs": 4847,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3026.6,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "molsysviewer/js/tests/e2e/trajectory-plot.e2e.js"
+      ],
+      "input_manifest_sha256": "5f6ae34c65736106f062bd9d41c35ee84f5860c6ed90d123004e94f4611d5ffc",
+      "invocation_sha256": "f85a8037878dfcc2dcb0ef4f62f7e5b5d99b39d6d4a081e74b2d12bfb7ca2752",
+      "stdout_sha256": "c76de8f3e04c7c8c0cf97363b2104e5ec3d2e8c4e4066eb9e4738585ccdfb78e"
+    },
+    {
+      "name": "python-21",
+      "native_exit": 0,
+      "seconds": 20.934568322030827,
+      "selected_inputs": 4847,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 495.5,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "-m",
+        "pytest",
+        "--receptor=llm",
+        "--receptor-events=.pytest_cache/robustness-20261106/B3-datacards-20261108/python-21/events.jsonl",
+        "--junitxml=.pytest_cache/robustness-20261106/B3-datacards-20261108/python-21/junit.xml",
+        "tests/test_reporting_protocol.py",
+        "tests/test_e2e_reliability.py",
+        "tests/test_source_workflow_coverage.py",
+        "tests/test_trajectory_plot.py",
+        "tests/test_trajectory_plot_lifecycle.py",
+        "tests/test_trajectory_plot_series.py"
+      ],
+      "input_manifest_sha256": "5f6ae34c65736106f062bd9d41c35ee84f5860c6ed90d123004e94f4611d5ffc",
+      "invocation_sha256": "7e105f83a6b477827f33674daca81381952efe7ee8562fdb7c35e30a8105f89e",
+      "stdout_sha256": "a568c5d28ed9e6737b826a6baf08a6d1c9edd4a1e803bbab462ed73b9a51d359"
+    },
+    {
+      "name": "typecheck-02",
+      "native_exit": 0,
+      "seconds": 7.5179682220332325,
+      "selected_inputs": 4845,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 551.8,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "molsysviewer/js/node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "molsysviewer/js/tsconfig.json"
+      ],
+      "input_manifest_sha256": "6d4c7f6bf7bb3ae3a04351955f4f0ddd8d9032121ce3238bc868a9d8b9a00cf8",
+      "invocation_sha256": "b1e1aef775595c39938229e0559319dca6ee38a919cc257b2fb5403fe8e2603b",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "typecheck-15",
+      "native_exit": 0,
+      "seconds": 10.798862641910091,
+      "selected_inputs": 4847,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 545.5,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "molsysviewer/js/node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "molsysviewer/js/tsconfig.json"
+      ],
+      "input_manifest_sha256": "d93d14912b765fe91287fd0fe0b78d407141bbb7542e0d59129e3be91db840a1",
+      "invocation_sha256": "76952fbb1085e381e20957b3072455bce3f7afb09bfb21e45092eb73ef6d3cbb",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "visual-22",
+      "native_exit": 0,
+      "seconds": 12.655312882037833,
+      "selected_inputs": 4848,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1413.5,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        ".pytest_cache/robustness-20261106/B3-datacards-20261108/visual.mjs",
+        ".pytest_cache/robustness-20261106/B3-datacards-20261108/visual-22"
+      ],
+      "input_manifest_sha256": "d14ade3aef26a335374ee7ffa604fa120044f4b0d45ed247a22c23ee61a91ea8",
+      "invocation_sha256": "7fdf9cb09d968825f06b7e52827dadb55c41da6d965541f221b5810c4ca5fb7a",
+      "stdout_sha256": "e353f7c06cea86dec55a45916fcd6b7a28415957f89ebd8a37d96a666ecb7634"
+    },
+    {
+      "name": "build-small-policy-24",
+      "native_exit": 0,
+      "seconds": 1.6403258990030736,
+      "selected_inputs": 4843,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 214.5,
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/npm",
+        "--prefix",
+        "molsysviewer/js",
+        "run",
+        "build:e2e:all"
+      ],
+      "input_manifest_sha256": "ff2a1a88e58f9d157987ab3d9ae4404f5a41c3d4b3aa45d0c0a216b1229787ec",
+      "invocation_sha256": "9594528d32bec2710e00b2e41fc5d323a219caede33e2bb7ba84e64931847931",
+      "stdout_sha256": "30453ec3fb51407a7e6be1a1003544a986133cee1f76ab9837f2f9d22f38dde0"
+    },
+    {
+      "name": "reporting-final-23",
+      "native_exit": 0,
+      "seconds": 5.62186757219024,
+      "selected_inputs": 4848,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 180.4,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "-m",
+        "pytest",
+        "--receptor=llm",
+        "--receptor-events=.pytest_cache/robustness-20261106/B3-datacards-20261108/reporting-final-23/events.jsonl",
+        "--junitxml=.pytest_cache/robustness-20261106/B3-datacards-20261108/reporting-final-23/junit.xml",
+        "tests/test_reporting_protocol.py",
+        "tests/test_e2e_reliability.py",
+        "tests/test_source_workflow_coverage.py"
+      ],
+      "input_manifest_sha256": "d14ade3aef26a335374ee7ffa604fa120044f4b0d45ed247a22c23ee61a91ea8",
+      "invocation_sha256": "06bc879989555c43ab21ec3af2dcdd022d52c0610eecb7b7c932a9f6922e3cf2",
+      "stdout_sha256": "4472769fb005d214aee958d78991bbaa6de5e90a02f7fe1d28e287a0d366de20"
+    },
+    {
+      "name": "small-policy-25",
+      "native_exit": 0,
+      "seconds": 26.364525181939825,
+      "selected_inputs": 4848,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1550.1,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/node",
+        "molsysviewer/js/tests/e2e/datacard-lifecycle.e2e.js"
+      ],
+      "input_manifest_sha256": "0ae3db3d1d71a5d706421b3f606de91ef645680f5e76cafadcbe7f184ea60e78",
+      "invocation_sha256": "6cdc6753b9ae869dc103b607f3660dadf572a319275686e23dd8766dcd986692",
+      "stdout_sha256": "57d5ce7f0031e3401a74a0cea8e25ee5bdc55923bb6e17f1b5160cb4aa1017cf"
+    },
+    {
+      "name": "structural-26",
+      "native_exit": 0,
+      "seconds": 0.971599203068763,
+      "selected_inputs": 4848,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 25.7,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "-c",
+        "import subprocess,sys; commands=[[sys.executable,\"-m\",\"ruff\",\"check\",\".\"],[sys.executable,\"-m\",\"ruff\",\"format\",\"--check\",\".\"],[sys.executable,\"devtools/devguide_index.py\",\"--check\"],[\"git\",\"diff\",\"--check\"]]; [subprocess.run(command,check=True) for command in commands]"
+      ],
+      "input_manifest_sha256": "0ae3db3d1d71a5d706421b3f606de91ef645680f5e76cafadcbe7f184ea60e78",
+      "invocation_sha256": "fd3da48329614987be87d5a48d5df303497d9d4890f4b89647249112245dffb2",
+      "stdout_sha256": "ff3ecd8bc6c16cd99baf1278e5f0a503b58fc1de50a4fdc4e4efb75ac5cc6af7"
+    },
+    {
+      "name": "reporting-receiving-27",
+      "native_exit": 0,
+      "seconds": 5.608689088840038,
+      "selected_inputs": 4848,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 176.6,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "command": [
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "-m",
+        "pytest",
+        "--receptor=llm",
+        "--receptor-events=.pytest_cache/robustness-20261106/B3-datacards-20261108/reporting-receiving-27/events.jsonl",
+        "--junitxml=.pytest_cache/robustness-20261106/B3-datacards-20261108/reporting-receiving-27/junit.xml",
+        "tests/test_reporting_protocol.py",
+        "tests/test_e2e_reliability.py",
+        "tests/test_source_workflow_coverage.py"
+      ],
+      "input_manifest_sha256": "0ae3db3d1d71a5d706421b3f606de91ef645680f5e76cafadcbe7f184ea60e78",
+      "invocation_sha256": "4d00d3b57ab6d856320f56a26bc24fda5b7be8a5fb6ded2b6474b569bf558336",
+      "stdout_sha256": "6a6cef12434fe7b28b398ee32304c625a4f7c72da5a07e4ec016f3cbeb1e3f16"
+    }
+  ],
+  "resource_policy": {
+    "logical_cpus": 8,
+    "ram_gib": 6,
+    "swap_gib": 0,
+    "minimum_globally_available_gib": 2,
+    "concurrency": "One intensive owned operation at a time; monitored cgroup/affinity and owned-process cleanup."
+  },
+  "counter_effect": {
+    "original_denominator": 46,
+    "new_delivered_ids": [
+      "B3.1",
+      "B3.2",
+      "B3.3",
+      "B3.4",
+      "B3.5"
+    ],
+    "locally_verified_and_delivered": 13,
+    "final_applicable_acceptance": 1,
+    "new_denominator_items": 0
+  },
+  "limits": [
+    "No whole-core run, exact-head hosted matrix, actual Jupyter/Qt trial, clean installed artifact or human acceptance is claimed by this source batch.",
+    "Post-initialization Trusted Types tests popup failure handling, not full application CSP compatibility.",
+    "Small-host/minimum plot scrolling is qualified; no claim that arbitrary browser or externally navigated-window policies are fully supported.",
+    "B3.6 appearance and B4 provenance remain design decisions outside the original denominator; opacity/gray/blur styles and all scientific observations/units are unchanged.",
+    "A5 remains partial for real background/minimized behavior and consolidated acceptance; production still advertises capture protocol 1.",
+    "Movie #320 remains mandatory. Tags, candidate/package builds, public releases, promotions and both 1.0 publications remain paused.",
+    "Failed campaigns and original evidence are retained; test totals from different scopes are not additive."
+  ],
+  "custody": {
+    "schema": "molsysviewer.private_capture_custody_receipt@1",
+    "custodian": "Diego Prada Gracia",
+    "opaque_reference": "robustness-20261106/datacard-lifecycle-receiving-20261108-1",
+    "files_verified": 182,
+    "total_bytes": 80633312,
+    "manifest_sha256": "621bdc5c59d5985c80be692de0d121d939476cd8c3d97ca2b7b3163f0ffe813f",
+    "originals_retained": true,
+    "off_host_backup_claimed": false,
+    "scope": "Original B3 scripts/logs/manifests and final source/generated-artifact capsule. The pre-build bootstrap control retains its original harness hash, not the overwritten original harness bytes."
+  },
+  "structural_checks": {
+    "campaign": "structural-26",
+    "ruff_check": "passed",
+    "ruff_format": "988 files already formatted",
+    "devguide_index": "current",
+    "git_diff_whitespace": "passed"
+  },
+  "human_work": {
+    "files": 7,
+    "baseline_sha256": "500cde7873be71ae8c85245fca3351ebcf8917dbed527b64d46ea0b8b85c3040",
+    "all_hashes_unchanged": true,
+    "staged": false
+  }
+}

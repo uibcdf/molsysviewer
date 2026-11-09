@@ -2623,6 +2623,33 @@ data and are not recalculated after coordinate edits.
 Guards: `tests/test_trajectory_plot_lifecycle.py`; real Mol* card lifecycle:
 `js/tests/e2e/trajectory-plot.e2e.ts`.
 
+**DataCard presentation and lifetime — 2026-11-08 (#345).** A blocked popup
+or failed window bootstrap leaves the graph in its source card and reports
+the failure there with explicit retry/dismiss controls. Partial windows close;
+detached ownership is published only after preparation succeeds. Closing the
+popup returns its body to the source. Hiding closes the owned popup and retains
+the hidden card; clearing or disposing the View also disconnects its observers,
+close fallback and active drag/resize listeners. Cleanup must preserve unrelated
+canvas input and resources. Titles remain literal and current before opening,
+while detached, on reopening and after Python restoration.
+
+Cards fit the actual positive host bounds after resize/fullscreen. Transient
+contraction preserves the requested dimensions for later expansion; content
+smaller than the plot's readable minimum scrolls. Window/card dimensions are
+local presentation, not new persisted scientific state. The resize handle has
+keyboard arrow controls. A native structure slider supports arrows/Home/End
+through the same trajectory authority as plot clicks; repeated or reversed x
+values do not replace molecular structure indices. Its visible ordinal is
+one-based, while accessible text also names the zero-based local index, complete
+raw current values and supplied labels/units. Numeric labels remain focusable
+and selectable without seeking the trajectory. This changes neither supplied
+observations nor the accepted DataCard opacity/blur styles.
+
+Guard: `molsysviewer/js/tests/e2e/datacard-lifecycle.e2e.ts`; Python authority,
+native molecular coordinates, canvas-popup agreement and retained numeric
+precision: `molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts`. These source/browser
+guards do not substitute for installed-package or human host acceptance.
+
 
 ## Final design-review amendments — 2026-09-30
 

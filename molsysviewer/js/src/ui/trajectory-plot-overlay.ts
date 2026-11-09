@@ -84,6 +84,8 @@ interface PlotCardEntry {
     svg?: SVGSVGElement;
     playhead?: SVGLineElement;
     readoutText?: SVGTextElement;
+    frameInput?: HTMLInputElement;
+    frameOutput?: HTMLOutputElement;
     nFrames: number;
     width: number;
     height: number;
@@ -209,6 +211,8 @@ export class TrajectoryPlotOverlay {
         for (const entry of this.entries.values()) {
             if (!entry.playhead || entry.nFrames <= 0) continue;
             const clamped = Math.max(0, Math.min(entry.nFrames - 1, frame));
+            if (entry.frameInput) entry.frameInput.value = String(clamped);
+            if (entry.frameOutput) entry.frameOutput.textContent = `${clamped + 1} / ${entry.nFrames}`;
             const x = this.frameToX(clamped, entry);
             entry.playhead.setAttribute("x1", String(x));
             entry.playhead.setAttribute("x2", String(x));
@@ -235,6 +239,7 @@ export class TrajectoryPlotOverlay {
                     raw = `${xRaw} · ${opts.series.map(s => `${s.label}: ${s.values[clamped] !== undefined ? rawValue(s.values[clamped]) : "—"}`).join(" · ")}`;
                 }
                 this.setNumericText(entry.readoutText, display, raw);
+                entry.frameInput?.setAttribute("aria-valuetext", `Structure ${clamped + 1} of ${entry.nFrames}; index ${clamped}; ${raw}${opts.y_label ? `; ${opts.y_label}` : ""}`);
             }
         }
     }
@@ -242,7 +247,7 @@ export class TrajectoryPlotOverlay {
     private frameToX(frame: number, entry: PlotCardEntry): number {
         const leftMargin = 40;
         const rightMargin = 14;
-        const plotW = Math.max(10, entry.width - leftMargin - rightMargin);
+        const plotW = Math.max(200, entry.width) - leftMargin - rightMargin;
         const clamped = Math.max(0, Math.min(entry.nFrames - 1, frame));
         const [min, max] = this.xRange(entry);
         const value = entry.options.x?.[clamped] ?? clamped;
@@ -281,9 +286,32 @@ export class TrajectoryPlotOverlay {
         entry.xBounds = this.xRange(entry);
         const body = entry.card.body;
         body.replaceChildren();
+        Object.assign(body.style, { display: entry.card.minimized ? "none" : "flex", flexDirection: "column", overflow: "auto" });
+
+        const controls = document.createElement("label");
+        controls.setAttribute("data-molsysviewer-plot-navigation", entry.tag);
+        Object.assign(controls.style, { display: "flex", alignItems: "center", gap: "6px", minWidth: "200px",
+            height: "28px", flex: "0 0 28px", boxSizing: "border-box", padding: "2px 8px" });
+        const caption = document.createElement("span");
+        caption.textContent = "Structure";
+        const input = document.createElement("input");
+        input.type = "range"; input.min = "0"; input.max = String(Math.max(0, entry.nFrames - 1)); input.step = "1";
+        input.disabled = entry.nFrames < 2;
+        input.setAttribute("aria-label", `${opts.title || opts.y_label || "Trajectory plot"}: structure index`);
+        Object.assign(input.style, { minWidth: "0", flex: "1 1 auto" });
+        input.addEventListener("input", () => {
+            const frame = Number(input.value);
+            if (this.entries.get(entry.tag) === entry && Number.isInteger(frame) && frame >= 0 && frame < entry.nFrames) this.onSeek(frame);
+        });
+        const output = document.createElement("output");
+        output.setAttribute("aria-label", "Selected structure");
+        output.setAttribute("aria-live", "off");
+        output.style.whiteSpace = "nowrap";
+        controls.appendChild(caption); controls.appendChild(input); controls.appendChild(output);
+        entry.frameInput = input; entry.frameOutput = output;
 
         const width = Math.max(200, entry.width || body.clientWidth || 440);
-        const height = Math.max(120, entry.height || body.clientHeight || 168);
+        const height = Math.max(120, (entry.height || body.clientHeight || 168) - 28);
 
         const M = { top: 24, right: 14, bottom: opts.x_label ? 28 : 20, left: 40 };
         const plotHeight = Math.max(10, height - M.top - M.bottom);
@@ -293,6 +321,7 @@ export class TrajectoryPlotOverlay {
         svg.setAttribute("height", "100%");
         svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
         Object.assign(svg.style, { display: "block", cursor: "pointer", userSelect: "none" });
+        Object.assign(svg.style, { width: `${width}px`, minWidth: "200px", minHeight: "120px", flex: "1 0 120px" });
         entry.svg = svg;
 
         // Min & Max range
@@ -404,6 +433,7 @@ export class TrajectoryPlotOverlay {
         });
 
         body.appendChild(svg);
+        body.appendChild(controls);
         this.setFrame(this.currentFrame);
     }
 
@@ -427,6 +457,9 @@ export class TrajectoryPlotOverlay {
         text.replaceChildren(value, title);
         text.setAttribute("aria-label", raw);
         text.setAttribute("tabindex", "0");
+        text.style.userSelect = "text";
+        text.style.cursor = "text";
+        text.onclick = event => event.stopPropagation();
     }
 
     dispose(): void {

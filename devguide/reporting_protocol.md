@@ -617,3 +617,22 @@ fallback and resource disposal. Its real-pentalanine fixture checks repeated
 coordinate updates and native measurement endpoints. The validator verifies
 that exact entry, receiving/fixture owners and mandatory build/core routes;
 this proves addressability, not live Jupyter or native Qt acceptance.
+
+### DataCard lifecycle browser guard profile
+
+The bounded selector is exactly
+`molsysviewer/js/tests/e2e/datacard-lifecycle.e2e.ts`, without suffixes,
+globs or commands. From `molsysviewer/js`, build with `npm run build:harness`
+and `npm run build:e2e:all`, then run `node tests/e2e/datacard-lifecycle.e2e.js`.
+The entry also belongs to the mandatory `test:e2e:core` lane. Browser/WebGL
+failure fails the guard; an explicit infrastructure opt-out is not receiving.
+
+The real pentalanine/plot fixture exercises active gesture disposal, unrelated
+input preservation, host/fullscreen bounds, native keyboard controls, updated
+titles, popup resize/return/hide/clear and observer/timer ownership. Separate
+actual sandbox and Trusted Types policies receive blocked/open-but-failed
+window creation, retry/dismiss and preserved source data, without fake windows.
+The existing trajectory-plot guard additionally checks real keyboard intents,
+Python callbacks, complete raw values and native molecular coordinates in both
+canvases for repeated/reversed x positions. The validator checks the fixed
+entry, fixture and build/core registration; that proves addressability only.

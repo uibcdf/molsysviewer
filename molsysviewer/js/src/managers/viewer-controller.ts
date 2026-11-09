@@ -1914,6 +1914,7 @@ export class MolSysViewerController {
         this.measurementTools.dispose();
         this.toolStatusOverlay.dispose();
         this.legendOverlay.dispose();
+        this.trajectoryPlotOverlay.dispose();
         this.webglStatusOverlay.dispose();
         this.systemSyncOverlay.dispose();
         this.groupPanel.dispose();

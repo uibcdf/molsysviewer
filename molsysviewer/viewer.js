@@ -152142,12 +152142,16 @@ var FloatingDataCard = class {
     this.host = host;
     this.options = options;
     this.minimized = false;
-    this.isDragging = false;
-    this.isResizing = false;
-    this.storedHeight = "";
     this.popoutWindow = null;
+    this.disposed = false;
+    this.visible = true;
+    this.bodyDisplay = "";
+    this.measuredSize = { width: 0, height: 0 };
+    this.desiredSize = { width: Math.max(240, options.width ?? 450), height: Math.max(42, options.height ?? 210) };
     this.card = document.createElement("div");
     this.card.setAttribute("data-molsysviewer-datacard", options.tag);
+    this.card.setAttribute("role", "region");
+    this.card.setAttribute("aria-label", options.title);
     this.card.style.opacity = "0.90";
     Object.assign(this.card.style, {
       position: "absolute",
@@ -152226,6 +152230,7 @@ var FloatingDataCard = class {
     const styleHeaderButton = (btn, title, iconSvg) => {
       btn.type = "button";
       btn.title = title;
+      btn.setAttribute("aria-label", title);
       btn.innerHTML = iconSvg;
       Object.assign(btn.style, {
         background: "transparent",
@@ -152318,6 +152323,10 @@ var FloatingDataCard = class {
     });
     buttonGroup.appendChild(this.closeButton);
     this.header.appendChild(buttonGroup);
+    this.status = document.createElement("div");
+    this.status.setAttribute("data-molsysviewer-datacard-status", options.tag);
+    this.status.setAttribute("role", "alert");
+    Object.assign(this.status.style, { display: "none", padding: "6px 10px", flexShrink: "0", overflowWrap: "anywhere" });
     this.body = document.createElement("div");
     this.body.setAttribute("data-molsysviewer-datacard-body", options.tag);
     Object.assign(this.body.style, {
@@ -152332,6 +152341,9 @@ var FloatingDataCard = class {
     this.resizeHandle = document.createElement("div");
     this.resizeHandle.setAttribute("data-molsysviewer-datacard-resize", options.tag);
     this.resizeHandle.title = "Resize card";
+    this.resizeHandle.tabIndex = 0;
+    this.resizeHandle.setAttribute("role", "group");
+    this.resizeHandle.setAttribute("aria-label", "Resize card with arrow keys");
     this.resizeHandle.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M8 2L2 8M8 5L5 8M8 8L8 8" stroke="rgba(255,255,255,0.4)" stroke-width="1.2" stroke-linecap="round"/></svg>`;
     Object.assign(this.resizeHandle.style, {
       position: "absolute",
@@ -152353,122 +152365,162 @@ var FloatingDataCard = class {
       this.resizeHandle.style.opacity = "0.6";
     });
     this.card.appendChild(this.header);
+    this.card.appendChild(this.status);
     this.card.appendChild(this.body);
     this.card.appendChild(this.resizeHandle);
     this.setupDragging();
     this.setupResizing();
     this.setupResizeObserver();
     this.host.appendChild(this.card);
+    this.fitToHost();
+  }
+  /** One active gesture owns exactly one pair of temporary window listeners. */
+  startGesture(move, finish) {
+    this.releaseGesture?.();
+    const end4 = () => {
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("mouseup", end4);
+      window.removeEventListener("blur", end4);
+      this.releaseGesture = void 0;
+      finish();
+    };
+    this.releaseGesture = end4;
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", end4);
+    window.addEventListener("blur", end4);
   }
   setupDragging() {
-    let startX = 0;
-    let startY = 0;
-    let startLeft = 0;
-    let startTop = 0;
-    const onStart = (clientX, clientY) => {
-      this.isDragging = true;
+    this.header.addEventListener("mousedown", (event) => {
+      if (this.disposed || event.button !== 0 || event.target.closest("button, input, select")) return;
+      event.preventDefault();
+      this.releaseGesture?.();
+      this.fitToHost();
+      const left = this.card.offsetLeft, top = this.card.offsetTop;
+      const x = event.clientX, y = event.clientY;
       this.header.style.cursor = "grabbing";
-      if (this.card.style.transform.includes("translateX")) {
-        const rect = this.card.getBoundingClientRect();
-        const hostRect = this.host.getBoundingClientRect();
-        const currentLeft = rect.left - hostRect.left;
-        const currentTop = rect.top - hostRect.top;
-        this.card.style.bottom = "auto";
-        this.card.style.transform = "none";
-        this.card.style.left = `${currentLeft}px`;
-        this.card.style.top = `${currentTop}px`;
-      }
-      startLeft = this.card.offsetLeft;
-      startTop = this.card.offsetTop;
-      startX = clientX;
-      startY = clientY;
       this.card.style.zIndex = "25";
-    };
-    const onMove = (clientX, clientY) => {
-      if (!this.isDragging) return;
-      const deltaX = clientX - startX;
-      const deltaY = clientY - startY;
-      const hostW = this.host.clientWidth || 800;
-      const hostH = this.host.clientHeight || 600;
-      const cardW = this.card.offsetWidth;
-      const cardH = this.card.offsetHeight;
-      const left = Math.max(4, Math.min(startLeft + deltaX, hostW - cardW - 4));
-      const top = Math.max(4, Math.min(startTop + deltaY, hostH - cardH - 4));
-      this.card.style.left = `${left}px`;
-      this.card.style.top = `${top}px`;
-    };
-    const onEnd = () => {
-      if (!this.isDragging) return;
-      this.isDragging = false;
-      this.header.style.cursor = "grab";
-      this.card.style.zIndex = "15";
-    };
-    this.header.addEventListener("mousedown", (e) => {
-      if (e.target.closest("button, input, select")) return;
-      e.preventDefault();
-      onStart(e.clientX, e.clientY);
-      const mouseMove = (me) => onMove(me.clientX, me.clientY);
-      const mouseUp = () => {
-        onEnd();
-        window.removeEventListener("mousemove", mouseMove);
-        window.removeEventListener("mouseup", mouseUp);
-      };
-      window.addEventListener("mousemove", mouseMove);
-      window.addEventListener("mouseup", mouseUp);
+      this.startGesture((move) => {
+        this.card.style.left = `${left + move.clientX - x}px`;
+        this.card.style.top = `${top + move.clientY - y}px`;
+        this.fitToHost();
+      }, () => {
+        this.header.style.cursor = "grab";
+        this.card.style.zIndex = "15";
+      });
     });
   }
+  resizeTo(width, height) {
+    this.desiredSize.width = Math.max(240, width);
+    this.desiredSize.height = Math.max(140, height);
+    this.fitToHost();
+  }
   setupResizing() {
-    let startX = 0;
-    let startY = 0;
-    let startWidth = 0;
-    let startHeight = 0;
-    const onStart = (clientX, clientY) => {
-      this.isResizing = true;
-      startWidth = this.card.offsetWidth;
-      startHeight = this.card.offsetHeight;
-      startX = clientX;
-      startY = clientY;
-    };
-    const onMove = (clientX, clientY) => {
-      if (!this.isResizing || this.minimized) return;
-      const deltaX = clientX - startX;
-      const deltaY = clientY - startY;
-      const newW = Math.max(240, startWidth + deltaX);
-      const newH = Math.max(140, startHeight + deltaY);
-      this.card.style.width = `${newW}px`;
-      this.card.style.height = `${newH}px`;
-    };
-    const onEnd = () => {
-      this.isResizing = false;
-    };
-    this.resizeHandle.addEventListener("mousedown", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      onStart(e.clientX, e.clientY);
-      const mouseMove = (me) => onMove(me.clientX, me.clientY);
-      const mouseUp = () => {
-        onEnd();
-        window.removeEventListener("mousemove", mouseMove);
-        window.removeEventListener("mouseup", mouseUp);
-      };
-      window.addEventListener("mousemove", mouseMove);
-      window.addEventListener("mouseup", mouseUp);
+    this.resizeHandle.addEventListener("mousedown", (event) => {
+      if (this.disposed || this.minimized || event.button !== 0) return;
+      event.preventDefault();
+      event.stopPropagation();
+      this.releaseGesture?.();
+      const width = this.card.offsetWidth, height = this.card.offsetHeight;
+      const x = event.clientX, y = event.clientY;
+      this.startGesture(
+        (move) => this.resizeTo(width + move.clientX - x, height + move.clientY - y),
+        () => {
+        }
+      );
     });
+    this.resizeHandle.addEventListener("keydown", (event) => {
+      if (this.disposed || this.minimized) return;
+      const deltas = { ArrowLeft: [-20, 0], ArrowRight: [20, 0], ArrowUp: [0, -20], ArrowDown: [0, 20] };
+      const delta2 = deltas[event.key];
+      if (!delta2 || event.ctrlKey || event.metaKey || event.altKey) return;
+      event.preventDefault();
+      event.stopPropagation();
+      this.resizeTo(this.card.offsetWidth + delta2[0], this.card.offsetHeight + delta2[1]);
+    });
+  }
+  fitToHost() {
+    const width = this.host.clientWidth, height = this.host.clientHeight;
+    if (this.disposed || !width || !height) return;
+    const margin = Math.min(4, width / 4, height / 4);
+    let left = parseFloat(this.card.style.left) || 0, top = parseFloat(this.card.style.top) || 0;
+    if (this.card.style.transform?.includes("translateX") || !this.card.style.top) {
+      const rect = this.card.getBoundingClientRect(), host = this.host.getBoundingClientRect();
+      left = rect.left - host.left;
+      top = rect.top - host.top;
+      this.card.style.transform = "none";
+      this.card.style.bottom = "auto";
+    }
+    const w = Math.min(this.desiredSize.width, width - 2 * margin);
+    const h = Math.min(this.desiredSize.height, height - 2 * margin);
+    this.card.style.minWidth = `${Math.min(240, w)}px`;
+    this.card.style.minHeight = `${Math.min(42, h)}px`;
+    this.card.style.width = `${w}px`;
+    this.card.style.height = this.minimized ? "auto" : `${h}px`;
+    const visibleHeight = this.minimized ? this.card.offsetHeight : h;
+    this.card.style.left = `${Math.max(margin, Math.min(left, width - w - margin))}px`;
+    this.card.style.top = `${Math.max(margin, Math.min(top, height - visibleHeight - margin))}px`;
+  }
+  measureBody() {
+    if (this.disposed || this.minimized && !this.popoutWindow) return;
+    const width = this.body.clientWidth, height = this.body.clientHeight;
+    if (width > 0 && height > 0 && (width !== this.measuredSize.width || height !== this.measuredSize.height)) {
+      this.measuredSize = { width, height };
+      this.options.onResize?.(width, height);
+    }
   }
   setupResizeObserver() {
     if (typeof ResizeObserver === "undefined") return;
     this.resizeObserver = new ResizeObserver(() => {
-      if (this.minimized) return;
-      const w = this.body.clientWidth;
-      const h = this.body.clientHeight;
-      if (w > 0 && h > 0) {
-        this.options.onResize?.(w, h);
-      }
+      this.fitToHost();
+      this.measureBody();
     });
+    this.resizeObserver.observe(this.host);
     this.resizeObserver.observe(this.card);
+    this.resizeObserver.observe(this.body);
+  }
+  showPopupError(blocked) {
+    this.status.setAttribute("data-molsysviewer-datacard-error", blocked ? "popup_blocked" : "popup_bootstrap_failed");
+    this.status.replaceChildren();
+    const text = document.createElement("div");
+    text.textContent = blocked ? "The browser blocked this window. Allow popups for this page, then try again." : "The card window could not be prepared. Your data is still here. Try again or continue in this card.";
+    this.status.appendChild(text);
+    for (const [label2, action] of [
+      ["Try again", () => this.openPopoutWindow()],
+      ["Dismiss", () => {
+        this.status.style.display = "none";
+      }]
+    ]) {
+      const button2 = document.createElement("button");
+      button2.type = "button";
+      button2.textContent = label2;
+      button2.addEventListener("click", action);
+      this.status.appendChild(button2);
+    }
+    this.status.style.display = "block";
+    this.popoutButton.focus();
+  }
+  returnFromPopout(win) {
+    if (this.popoutWindow !== win) return;
+    this.releasePopout?.();
+    this.releasePopout = void 0;
+    this.popoutWindow = null;
+    this.card.appendChild(this.body);
+    if (this.disposed) return;
+    this.card.style.display = this.visible ? "flex" : "none";
+    this.fitToHost();
+    this.measureBody();
+    if (this.visible) this.popoutButton.focus();
+  }
+  closePopout() {
+    const win = this.popoutWindow;
+    if (!win) return;
+    this.returnFromPopout(win);
+    if (!win.closed) win.close();
   }
   setTitle(title) {
+    if (this.disposed) return;
     this.options.title = title;
+    this.card.setAttribute("aria-label", title);
     this.titleElement.textContent = title;
     if (this.popoutWindow && !this.popoutWindow.closed) {
       const doc = this.popoutWindow.document;
@@ -152478,86 +152530,133 @@ var FloatingDataCard = class {
     }
   }
   openPopoutWindow() {
+    if (this.disposed || !this.visible) return;
+    this.releaseGesture?.();
     if (this.popoutWindow && !this.popoutWindow.closed) {
       this.setTitle(this.options.title);
       this.popoutWindow.focus();
       return;
     }
-    const win = window.open("", "_blank", "width=520,height=280");
-    if (!win) return;
-    this.popoutWindow = win;
-    const doc = win.document;
-    doc.open();
-    doc.write(`
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>MolSysViewer Data Card</title>
-  <style>
-    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #121216; color: #f4f4f5; font-family: "IBM Plex Sans", system-ui, sans-serif; }
-    #card-pop-host { width: 100%; height: 100%; display: flex; flex-direction: column; }
-    #card-pop-header { padding: 8px 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.08); color: rgba(244,244,245,0.9); }
-    #card-pop-body { flex: 1 1 auto; position: relative; width: 100%; height: 100%; overflow: hidden; }
-  </style>
-</head>
-<body>
-  <div id="card-pop-host">
-    <div id="card-pop-header"></div>
-    <div id="card-pop-body"></div>
-  </div>
-</body>
-</html>
-        `);
-    doc.close();
-    this.setTitle(this.options.title);
-    const popBody = doc.getElementById("card-pop-body");
-    if (popBody) {
-      popBody.appendChild(this.body);
-    }
-    this.card.style.display = "none";
-    const interval = window.setInterval(() => {
-      if (!this.popoutWindow || this.popoutWindow.closed) {
-        window.clearInterval(interval);
-        this.popoutWindow = null;
-        this.card.appendChild(this.body);
-        this.card.style.display = "flex";
-        const w = this.body.clientWidth;
-        const h = this.body.clientHeight;
-        if (w > 0 && h > 0) this.options.onResize?.(w, h);
+    if (this.popoutWindow) this.returnFromPopout(this.popoutWindow);
+    let win = null;
+    try {
+      if (this.minimized) this.toggleMinimize();
+      win = window.open("", "_blank", "width=520,height=280");
+      if (!win) {
+        this.showPopupError(true);
+        return;
       }
-    }, 800);
+      const doc = win.document;
+      doc.open();
+      doc.write(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <title>MolSysViewer Data Card</title>
+      <style>
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #121216; color: #f4f4f5; font-family: "IBM Plex Sans", system-ui, sans-serif; }
+        #card-pop-host { width: 100%; height: 100%; display: flex; flex-direction: column; }
+        #card-pop-header { padding: 8px 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.08); color: rgba(244,244,245,0.9); }
+        #card-pop-body { flex: 1 1 auto; position: relative; width: 100%; height: 100%; min-height: 0; overflow: auto; }
+      </style>
+    </head>
+    <body>
+      <div id="card-pop-host">
+        <div id="card-pop-header"></div>
+        <div id="card-pop-body"></div>
+      </div>
+    </body>
+    </html>
+            `);
+      doc.close();
+      const popBody = doc.getElementById("card-pop-body");
+      const header2 = doc.getElementById("card-pop-header");
+      if (!popBody || !header2) throw new Error("The card window has no content host.");
+      doc.title = this.options.title || "MolSysViewer Data Card";
+      header2.textContent = this.options.title;
+      popBody.appendChild(this.body);
+      this.popoutWindow = win;
+      const popup = win;
+      const returned = () => this.returnFromPopout(popup);
+      const resized = () => this.measureBody();
+      const interval = window.setInterval(() => {
+        if (popup.closed) returned();
+      }, 800);
+      popup.addEventListener("beforeunload", returned);
+      popup.addEventListener("resize", resized);
+      this.releasePopout = () => {
+        window.clearInterval(interval);
+        try {
+          popup.removeEventListener("beforeunload", returned);
+          popup.removeEventListener("resize", resized);
+        } catch {
+        }
+      };
+      this.status.style.display = "none";
+      this.card.style.display = "none";
+      this.measureBody();
+    } catch {
+      if (win) {
+        this.returnFromPopout(win);
+        if (this.body.parentElement !== this.card) this.card.appendChild(this.body);
+        if (!win.closed) win.close();
+      }
+      this.card.style.display = "flex";
+      this.showPopupError(false);
+    }
   }
   toggleMinimize() {
+    if (this.disposed) return;
+    this.releaseGesture?.();
     this.minimized = !this.minimized;
     if (this.minimized) {
-      this.storedHeight = this.card.style.height;
-      this.card.style.height = "auto";
+      this.bodyDisplay = this.body.style.display;
       this.body.style.display = "none";
-      this.resizeHandle.style.display = "none";
-      this.minimizeButton.title = "Restore";
-      this.minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="10" height="10" rx="1"/></svg>`;
-    } else {
-      this.card.style.height = this.storedHeight || `${this.options.height ?? 210}px`;
-      this.body.style.display = "block";
-      this.resizeHandle.style.display = "flex";
-      this.minimizeButton.title = "Minimize";
-      this.minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
-    }
+    } else this.body.style.display = this.bodyDisplay;
+    this.resizeHandle.style.display = this.minimized ? "none" : "flex";
+    const title = this.minimized ? "Restore" : "Minimize";
+    this.minimizeButton.title = title;
+    this.minimizeButton.setAttribute("aria-label", title);
+    const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    for (const [name, value] of Object.entries({
+      width: "13",
+      height: "13",
+      viewBox: "0 0 16 16",
+      fill: "none",
+      stroke: "currentColor",
+      "stroke-width": "2",
+      "stroke-linecap": "round"
+    })) icon.setAttribute(name, value);
+    const mark = document.createElementNS("http://www.w3.org/2000/svg", this.minimized ? "rect" : "line");
+    const attributes2 = this.minimized ? { x: "3", y: "3", width: "10", height: "10", rx: "1" } : { x1: "3", y1: "8", x2: "13", y2: "8" };
+    for (const [name, value] of Object.entries(attributes2)) mark.setAttribute(name, value);
+    icon.appendChild(mark);
+    this.minimizeButton.replaceChildren(icon);
+    this.fitToHost();
+    if (!this.minimized) this.measureBody();
   }
   show() {
-    this.card.style.display = "flex";
+    if (this.disposed) return;
+    if (this.popoutWindow?.closed) this.returnFromPopout(this.popoutWindow);
+    this.visible = true;
+    this.card.style.display = this.popoutWindow && !this.popoutWindow.closed ? "none" : "flex";
+    this.fitToHost();
+    this.measureBody();
   }
   hide() {
+    if (this.disposed) return;
+    this.visible = false;
+    this.releaseGesture?.();
+    this.closePopout();
     this.card.style.display = "none";
   }
   dispose() {
-    if (this.popoutWindow && !this.popoutWindow.closed) {
-      this.popoutWindow.close();
-    }
-    if (this.resizeObserver) {
-      this.resizeObserver.disconnect();
-    }
+    if (this.disposed) return;
+    this.disposed = true;
+    this.releaseGesture?.();
+    this.closePopout();
+    this.resizeObserver?.disconnect();
     this.card.remove();
   }
 };
@@ -152700,6 +152799,8 @@ var TrajectoryPlotOverlay = class {
     for (const entry of this.entries.values()) {
       if (!entry.playhead || entry.nFrames <= 0) continue;
       const clamped = Math.max(0, Math.min(entry.nFrames - 1, frame));
+      if (entry.frameInput) entry.frameInput.value = String(clamped);
+      if (entry.frameOutput) entry.frameOutput.textContent = `${clamped + 1} / ${entry.nFrames}`;
       const x = this.frameToX(clamped, entry);
       entry.playhead.setAttribute("x1", String(x));
       entry.playhead.setAttribute("x2", String(x));
@@ -152721,13 +152822,14 @@ var TrajectoryPlotOverlay = class {
           raw2 = `${xRaw} \xB7 ${opts.series.map((s) => `${s.label}: ${s.values[clamped] !== void 0 ? rawValue(s.values[clamped]) : "\u2014"}`).join(" \xB7 ")}`;
         }
         this.setNumericText(entry.readoutText, display, raw2);
+        entry.frameInput?.setAttribute("aria-valuetext", `Structure ${clamped + 1} of ${entry.nFrames}; index ${clamped}; ${raw2}${opts.y_label ? `; ${opts.y_label}` : ""}`);
       }
     }
   }
   frameToX(frame, entry) {
     const leftMargin = 40;
     const rightMargin = 14;
-    const plotW = Math.max(10, entry.width - leftMargin - rightMargin);
+    const plotW = Math.max(200, entry.width) - leftMargin - rightMargin;
     const clamped = Math.max(0, Math.min(entry.nFrames - 1, frame));
     const [min5, max5] = this.xRange(entry);
     const value = entry.options.x?.[clamped] ?? clamped;
@@ -152762,8 +152864,44 @@ var TrajectoryPlotOverlay = class {
     entry.xBounds = this.xRange(entry);
     const body = entry.card.body;
     body.replaceChildren();
+    Object.assign(body.style, { display: entry.card.minimized ? "none" : "flex", flexDirection: "column", overflow: "auto" });
+    const controls = document.createElement("label");
+    controls.setAttribute("data-molsysviewer-plot-navigation", entry.tag);
+    Object.assign(controls.style, {
+      display: "flex",
+      alignItems: "center",
+      gap: "6px",
+      minWidth: "200px",
+      height: "28px",
+      flex: "0 0 28px",
+      boxSizing: "border-box",
+      padding: "2px 8px"
+    });
+    const caption = document.createElement("span");
+    caption.textContent = "Structure";
+    const input = document.createElement("input");
+    input.type = "range";
+    input.min = "0";
+    input.max = String(Math.max(0, entry.nFrames - 1));
+    input.step = "1";
+    input.disabled = entry.nFrames < 2;
+    input.setAttribute("aria-label", `${opts.title || opts.y_label || "Trajectory plot"}: structure index`);
+    Object.assign(input.style, { minWidth: "0", flex: "1 1 auto" });
+    input.addEventListener("input", () => {
+      const frame = Number(input.value);
+      if (this.entries.get(entry.tag) === entry && Number.isInteger(frame) && frame >= 0 && frame < entry.nFrames) this.onSeek(frame);
+    });
+    const output = document.createElement("output");
+    output.setAttribute("aria-label", "Selected structure");
+    output.setAttribute("aria-live", "off");
+    output.style.whiteSpace = "nowrap";
+    controls.appendChild(caption);
+    controls.appendChild(input);
+    controls.appendChild(output);
+    entry.frameInput = input;
+    entry.frameOutput = output;
     const width = Math.max(200, entry.width || body.clientWidth || 440);
-    const height = Math.max(120, entry.height || body.clientHeight || 168);
+    const height = Math.max(120, (entry.height || body.clientHeight || 168) - 28);
     const M5 = { top: 24, right: 14, bottom: opts.x_label ? 28 : 20, left: 40 };
     const plotHeight = Math.max(10, height - M5.top - M5.bottom);
     const svg = document.createElementNS(SVG_NS, "svg");
@@ -152771,6 +152909,7 @@ var TrajectoryPlotOverlay = class {
     svg.setAttribute("height", "100%");
     svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
     Object.assign(svg.style, { display: "block", cursor: "pointer", userSelect: "none" });
+    Object.assign(svg.style, { width: `${width}px`, minWidth: "200px", minHeight: "120px", flex: "1 0 120px" });
     entry.svg = svg;
     let min5 = Infinity;
     let max5 = -Infinity;
@@ -152864,6 +153003,7 @@ var TrajectoryPlotOverlay = class {
       this.onSeek(this.xToFrame(px, entry));
     });
     body.appendChild(svg);
+    body.appendChild(controls);
     this.setFrame(this.currentFrame);
   }
   text(x, y, content, anchor, fill, size4) {
@@ -152885,6 +153025,9 @@ var TrajectoryPlotOverlay = class {
     text.replaceChildren(value, title);
     text.setAttribute("aria-label", raw2);
     text.setAttribute("tabindex", "0");
+    text.style.userSelect = "text";
+    text.style.cursor = "text";
+    text.onclick = (event) => event.stopPropagation();
   }
   dispose() {
     this.clear();
@@ -168924,6 +169067,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.measurementTools.dispose();
     this.toolStatusOverlay.dispose();
     this.legendOverlay.dispose();
+    this.trajectoryPlotOverlay.dispose();
     this.webglStatusOverlay.dispose();
     this.systemSyncOverlay.dispose();
     this.groupPanel.dispose();

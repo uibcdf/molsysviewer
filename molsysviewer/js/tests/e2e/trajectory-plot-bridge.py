@@ -101,6 +101,7 @@ def serve(static_path=None, state_path=None):
                     "callbacks": list(callbacks),
                     "coordinates": coordinates.tolist(),
                     "plot_count": len(authority.trajectory_plot.records()),
+                    "plot_records": authority.trajectory_plot.records(),
                     "static_path": None if static_path is None else str(static_path),
                     "current_distance": float(
                         puw.get_value(authority.measurements.series("plot-distance"), to_unit="angstrom")[
@@ -122,6 +123,16 @@ def serve(static_path=None, state_path=None):
             return True
         if action == "go":
             authority.player.go_to_structure(event["index"])
+            return True
+        if action == "keyboard":
+            authority.trajectory_plot.show(
+                {"Geometric spread control": values},
+                x=[4, 4, 0],
+                x_label="Sample coordinate",
+                y_label="Spread (Å)",
+                title="Native trajectory control",
+                tag="authority-plot",
+            )
             return True
         if action == "snapshot":
             authority.widget.send(

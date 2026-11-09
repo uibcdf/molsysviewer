@@ -94,7 +94,8 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
     # 48-51: native box geometry, moving capture, capture lifetime and popup
     # scene bootstrap; each retains its own mandatory scientific entry.
     # 52: native font-atlas uploads, glyph pixels and GPU resource lifetime.
-    assert len(expected) == 52
+    # 53: DataCard native window policies, bounds and owned gesture lifetime.
+    assert len(expected) == 53
     assert declared == expected
     build_command = package["scripts"]["build:e2e:all"]
     compiled = set(re.findall(r"tests/e2e/([^ ]+)\.e2e\.ts", build_command))

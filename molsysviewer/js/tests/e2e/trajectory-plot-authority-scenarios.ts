@@ -124,6 +124,32 @@ export async function checkTrajectoryPlotAuthority(context: BrowserContext, dir:
             for (const endpoint of [source, popup]) await rendered(endpoint, 0, state.coordinates);
             assert.equal(state.plot_count, 1);
             assert.equal(state.is_playing, false);
+            // Repeated and reversed x positions still represent three distinct
+            // molecular structures. Native keyboard input selects by index.
+            await plotFixtureAction(source, { plot_fixture: "keyboard" });
+            const expectedCallbacks = [1, 2, 0];
+            for (const endpoint of [source, popup]) {
+                const slider = endpoint.locator('[data-molsysviewer-plot-navigation="authority-plot"] input');
+                for (const [key, frame] of [["End", 2], ["ArrowLeft", 1], ["Home", 0]] as const) {
+                    const mark = await source.evaluate(() => (window as any).__plotAuthorityIntents.length);
+                    await slider.focus(); await slider.press(key);
+                    await source.waitForFunction(({ mark, frame }) => (window as any).__plotAuthorityIntents
+                        .slice(mark).some((event: any) => event.index === frame), { mark, frame });
+                    await source.evaluate(() => (window as any).__popupFixtureDrain());
+                    state = await inspect(bridge); expectedCallbacks.push(frame);
+                    assert.equal(state.index, frame);
+                    assert.deepEqual(state.callbacks.map((event: any) => event.frame), expectedCallbacks);
+                    assert.deepEqual(state.plot_records[0].x, [4, 4, 0]);
+                    for (const target of [source, popup]) {
+                        await rendered(target, frame, state.coordinates);
+                        assert.equal(await target.locator('[data-molsysviewer-plot-navigation="authority-plot"] input').inputValue(), String(frame));
+                    }
+                    const readout = await slider.getAttribute("aria-valuetext");
+                    assert.ok(readout?.includes(`Structure ${frame + 1} of 3; index ${frame}; x: ${state.plot_records[0].x[frame]}`));
+                    assert.ok(readout?.includes(String(state.plot_records[0].series[0].values[frame])));
+                    assert.ok(readout?.includes("Å"));
+                }
+            }
             const staticPage = await context.newPage();
             staticPage.on("pageerror", error => errors.push(String(error)));
             try {
@@ -137,7 +163,7 @@ export async function checkTrajectoryPlotAuthority(context: BrowserContext, dir:
                 // retained notebook authority, including its public callbacks.
                 state = await inspect(bridge);
                 assert.equal(state.index, 0);
-                assert.deepEqual(state.callbacks.map((event: any) => event.frame), [1, 2, 0]);
+                assert.deepEqual(state.callbacks.map((event: any) => event.frame), expectedCallbacks);
             } finally { await staticPage.close(); }
             assert.deepEqual(await source.evaluate(() => (window as any).__popupFixtureErrors), []);
             assert.deepEqual(errors, []);
