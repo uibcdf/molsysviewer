@@ -326,7 +326,9 @@ class LoadMixin:
                 skip_digestion=True,
             )
             records = self.load_blocks
-            self.apply_system_edit(candidate)
+            # Native append validates atom identity and preserves the existing
+            # geometry/analysis prefix; only the new structures are unevaluated.
+            self.apply_system_edit(candidate, interactions_policy="preserve")
             # Native append keeps the existing frame prefix. New frames do not
             # acquire fabricated original-frame correspondence for old sources.
             self._replace_load_records(records)

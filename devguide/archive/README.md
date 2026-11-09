@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [#346: Native-validated structure append preserves interaction coverage and identities through recovered sessions; arbitrary edits still invalidate.](append_structures_interaction_coverage.md)
+
 - [#337: Interaction query answers and failures belong only to their requesting canvas; complete native integration is received.](interaction_frame_query_crosses_canvas_owners.md)
 - [#338: Dynamic queries return complete frame-scoped memberships, preserving empty/frozen geometry across canvases.](dynamic_region_queries_cross_renderer_frames.md)
 
