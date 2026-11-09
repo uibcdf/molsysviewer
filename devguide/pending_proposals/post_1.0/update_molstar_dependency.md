@@ -20,6 +20,17 @@ slice in `uibcdf/molsysviewer#114`.
 **Status:** Post-1.0 proposal. No target release has been selected or
 installed by this report.
 
+**Inspected 2026-11-08:** #344's font-upload investigation receives an
+independent real-WebGL probe of current upstream master
+`6682cc94a230c851e13dbbc6f35fc9d486c0bbdb`. Its v6 source already supplies
+shared versioned atlases and dirty-row uploads, unlike the installed 5.4.1
+route. The current v5 branch was inspected separately, not executed as a new
+dependency. This finding neither selects v6 for Viewer nor changes the
+post-1.0 migration decision. Follow the
+[owning investigation](../../pending_bugs/jupyter_moving_capture_residual_uploads.md)
+for the bounded probe, the withdrawn new-bug draft and distinct integration
+failures; a source mechanism is not installed Viewer compatibility.
+
 ## What
 
 Update the npm Mol* dependency to a published, tested release after 1.0.

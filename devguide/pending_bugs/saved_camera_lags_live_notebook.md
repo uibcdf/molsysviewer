@@ -15,6 +15,15 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
+**Latest #344 isolation — 2026-11-08:** independent native probes receive
+upstream's existing v6 font-cache solution; no duplicate external bug is
+published. A private exact-byte experiment passes six stopped and six moving
+Jupyter cases, while the corrected-oracle control without optimization still
+times out. This is evidence for the next bounded consumer fix, not production
+acceptance or a dependency upgrade. The
+[review receipt](../molstar_font_upload_upstream_review_20261108.json) retains
+the distinct oracle race and actual capture failures. A5 stays partial.
+
 **Current Jupyter contention receiving — 2026-11-08:**
 [#343](../archive/jupyter_rebuild_waits_for_begin_ack.md) retains transfer replies
 contending with molecular ownership and preserves endpoint-close precedence.

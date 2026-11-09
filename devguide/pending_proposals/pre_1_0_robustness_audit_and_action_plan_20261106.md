@@ -14,6 +14,16 @@ supersedes: []
 
 # Pre-1.0 robustness audit and action plan — 2026-11-06
 
+**Latest #344 isolation — 2026-11-08:** the
+[upstream/native review](../molstar_font_upload_upstream_review_20261108.json)
+identifies the repeated native font-atlas cost and receives Mol* v6's existing
+solution independently. No duplicate upstream issue is published. A corrected
+scientific oracle separates its own ownership race from real capture timeouts.
+The private both-canvas experiment passes all twelve stopped/moving cases; its
+no-cache control still times out. Select and qualify a supported consumer fix
+before integrating it. No production runtime changes, #115 scope change or
+additional completed original leaf follows; A5 stays partial, 8/46 delivered.
+
 **Current Jupyter contention receiving — 2026-11-08:**
 [#343](../archive/jupyter_rebuild_waits_for_begin_ack.md) corrects lost transfer
 replies during concurrent ownership. Async saves wait without polling, retain

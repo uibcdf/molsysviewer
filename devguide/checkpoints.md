@@ -912,6 +912,14 @@ final acceptance is **1/46 (2.2%)**. Neither is total release readiness, and
 Movie #320 remains an additional mandatory stream. E0, A1–A4/A6 and B1/B2 have
 their recorded delivered results; consolidated acceptance remains separate.
 
+The latest [#344 upstream/native review](molstar_font_upload_upstream_review_20261108.json)
+receives Mol* v6's existing shared-font solution and withdraws the duplicate
+new-bug draft. Its private both-canvas experiment passes six stopped and six
+moving Jupyter cases; the corrected-oracle control without optimization still
+times out. The next task is a supported bounded consumer fix and canonical
+receiving, without the experimental CPU image copies. Production stays unchanged,
+#115 stays post-1.0 and A5 remains partial.
+
 Current [Jupyter contention receiving](jupyter_capture_contention_receiving_20261108.json)
 corrects #343's lost transfer replies and receives public async ownership waits,
 bounded cancellation, originating contexts and close-before-reply ordering.

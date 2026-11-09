@@ -1,0 +1,425 @@
+{
+  "schema": "molsysviewer.working_receiving@1",
+  "date": "2026-11-08",
+  "owner_issue": "uibcdf/molsysviewer#344",
+  "related_issues": [
+    "uibcdf/molsysviewer#319",
+    "uibcdf/molsysviewer#115"
+  ],
+  "viewer_source": "60518ebffa91463d0b95472592f946eaf98591d5",
+  "jupyter_scientific_provider": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+  "runtime_sha256": "337576d70c249194d550b95a187b3a43da7fffef1a83189c818f679979f9230a",
+  "production_runtime_changed": false,
+  "upstream_review": {
+    "master": "6682cc94a230c851e13dbbc6f35fc9d486c0bbdb",
+    "checkout_updated_by_fast_forward": 4,
+    "checkout_clean": true,
+    "line": "v6 development source, not an installed or selected Viewer dependency",
+    "v5_source_only": "a4e9cc79415213263090ee47bf380d2a33e0118e",
+    "new_external_issue_published": false,
+    "disposition": "Withdraw the new-defect draft: current upstream implements shared content-versioned font atlases and dirty-row uploads. No backport or dependency migration is implied.",
+    "documentation": ".v6/plans/gl/shared-textures.md",
+    "source_guards_inspected": [
+      "packages/graphics/src/gl/_test/shared-texture.test.ts",
+      "packages/graphics/src/geo/geometry/text/_test/font-atlas.test.ts",
+      "packages/plugin/headless/src/_test/webgpu-shared-textures.test.ts"
+    ],
+    "native_probe_scope": "Real WebGL2/SwiftShader; no Viewer or Jupyter import. Lower-quality small atlases isolate correctness. Version-specific atlas dimensions are not a memory/speed comparison.",
+    "current_probe_initial_calls": "Includes the backend initial 1x1 definition; it is not a count of full-atlas uploads alone.",
+    "probe_inputs": {
+      "current.ts": "d973d06038ebc3b4617f9c39d1030a30f8c3b30f92702e5cb3fb56a5e07fae53",
+      "installed.ts": "b0971617c930e29d592c6f8224b889a5f0f283792cc19f2d65873c1e430604b6",
+      "run.mjs": "e9604779dd88f052af6cd862ea2f72ece0fbd9edaa21c695c72c6bec1e1e5f30"
+    },
+    "probe_bundles": {
+      "current.bundle.js": "b20d3bc3681097a889694040ef443fef8701668d24ca4d8d3048242408e2bf1f",
+      "installed.bundle.js": "69e5a7a7d9d5faa65c11b99b503215c39d9e9edd65a43e39c5c2cf59dc033ae7"
+    }
+  },
+  "passive_measurement": {
+    "consumer_family": "Native Mol* distance text; an array can have multiple measurement consumers.",
+    "width": 3287,
+    "height": 3286,
+    "bytes": 10801082,
+    "calls": 38,
+    "ms": 6355.10000038147,
+    "maximumMs": 502.5,
+    "query_handler_ms": {
+      "minimum": 0.17243693582713604,
+      "maximum": 27.642014203593135
+    },
+    "timing_excludes": "Transport/queue latency; GL samples retain bounded byte-comparison instrumentation overhead.",
+    "sampled_repeated_atlas_bytes_equal": true,
+    "all_timeout_causes_proven": false
+  },
+  "campaigns": [
+    {
+      "name": "texture-owner-01",
+      "native_exit": 1,
+      "seconds": 96.38583651185036,
+      "selected_inputs": 4594,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2874.4,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-residual-20261108/texture-owner-01",
+      "invocation_sha256": "d5f4aa3413a8c2669ec29ced5a8b572c04989e745b8b5cb8722a7292f303618a",
+      "input_manifest_sha256": "253b862a10919e1ba642c472359764d874fdb8acc84d60a6d9784c0867a03218",
+      "outcome": "failed",
+      "phase": "Moving Python notebook state",
+      "stopped_roundtrips": 6,
+      "moving_cases": 1,
+      "observations_sha256": "ce80697bf1ee9f8b771cd5ea5faeedb895807b89f1285e7f5873a4de4abef25d",
+      "scope": "Private diagnostic/experimental fixture, not canonical production qualification.",
+      "production_acceptance": false,
+      "kernel_failure": "SystemEditPendingError",
+      "failure_scope": "Scientific oracle after a successful save; public View reader contends with playback."
+    },
+    {
+      "name": "native-subimage-02",
+      "native_exit": 1,
+      "seconds": 103.91785585298203,
+      "selected_inputs": 4595,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2800.1,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-residual-20261108/native-subimage-02",
+      "invocation_sha256": "722b919a67d4b8dd288c41d819b68ffe5d121e753b285e765d5a57c74372998d",
+      "input_manifest_sha256": "d89d6e557bc8cdbb7028e00a15b2f656c7c81a3fc0ad0e6b68e11e5be2381474",
+      "outcome": "failed",
+      "phase": "Moving Python notebook state",
+      "stopped_roundtrips": 6,
+      "moving_cases": 1,
+      "observations_sha256": "3156626179dd3ebff2d649582f2c42ff96e5dbf4fe9f1e26f34557b61271b52a",
+      "scope": "Private diagnostic/experimental fixture, not canonical production qualification.",
+      "production_acceptance": false,
+      "primary_experiment": {
+        "scope": "Private native full-area subimage experiment; every pixel is forwarded.",
+        "eligible": 318,
+        "reusedStorage": 566,
+        "fullDefinitions": 146
+      },
+      "kernel_failure": "FrontendRequestError",
+      "failure_scope": "Actual async capture exceeds the unchanged public five-second deadline."
+    },
+    {
+      "name": "exact-upload-03",
+      "native_exit": 1,
+      "seconds": 129.0589662201237,
+      "selected_inputs": 4595,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3210.7,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-residual-20261108/exact-upload-03",
+      "invocation_sha256": "6d6a1be247520e650ff6dff314ac88d2df1e75d8c4337181a6b9692697b486c8",
+      "input_manifest_sha256": "69adda3e5212d446943e3fb3e0e0c042bec40607d55bdec7f915ea7029a5c941",
+      "outcome": "failed",
+      "phase": "Moving Studio popup state",
+      "stopped_roundtrips": 6,
+      "moving_cases": 4,
+      "observations_sha256": "8b66bf3e16c0611affd42dfc26a660d460052a58c4a9a731be323229ed15448c",
+      "scope": "Private diagnostic/experimental fixture, not canonical production qualification.",
+      "production_acceptance": false,
+      "primary_experiment": {
+        "scope": "Diagnostic exact-byte upload elision, not production.",
+        "comparisons": 155,
+        "skips": 148,
+        "forwarded": 1358,
+        "copiedBytes": 43204328
+      }
+    },
+    {
+      "name": "native-current-04",
+      "native_exit": 0,
+      "seconds": 6.249231081921607,
+      "selected_inputs": 5652,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1225.9,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-residual-20261108/native-current-04",
+      "invocation_sha256": "ff295647e01d28acf2bc07ac2734dc00e3b237359a4526759ab19501954611bd",
+      "input_manifest_sha256": "1d4dac538e9dcadcce1c39784256a31ee7c5a65d4dd844f158415fda01daa7ec",
+      "outcome": "passed",
+      "scope": "Independent native Mol* browser probe, not Viewer receiving.",
+      "native_cases": [
+        {
+          "name": "installed",
+          "source": "Installed Mol* 5.4.1 native TextBuilder/Scene; no Viewer or Jupyter imports.",
+          "fontQuality": 0,
+          "imageDimensions": [
+            824,
+            824
+          ],
+          "bytes": 678976,
+          "initialUploads": 1,
+          "positionOnlyFullUploads": 1,
+          "unchangedBytes": true,
+          "geometryCellAdvanced": true
+        },
+        {
+          "name": "current",
+          "source": "Current native Mol* graphics; no Viewer or Jupyter imports.",
+          "fontQuality": 0,
+          "imageDimensions": [
+            1640,
+            1639
+          ],
+          "bytes": 2687960,
+          "initialUploads": 2,
+          "positionOnlyUploads": 0,
+          "unchangedBytes": true,
+          "geometryCellAdvanced": true,
+          "glyphUploads": [
+            {
+              "method": "texSubImage2D",
+              "width": 1640,
+              "height": 101
+            }
+          ],
+          "fullGpuPixelComparison": true,
+          "sharedHolderRelease": true
+        }
+      ],
+      "observations_sha256": "76b8aaf41e708fc19a67d9f0994f247dd0bd6f0a932e305c9ab459e59605a70f"
+    },
+    {
+      "name": "exact-both-05",
+      "native_exit": 0,
+      "seconds": 132.56496963906102,
+      "selected_inputs": 4595,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3359.6,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-residual-20261108/exact-both-05",
+      "invocation_sha256": "d4c6ffcf825b2ac88c09bde08b84e7bec6e931d3ded788268bf432c8d7213927",
+      "input_manifest_sha256": "0063b14e09a83ed6d896c65a6b76411b4b10777516219c4cc4128364d8f88daa",
+      "outcome": "passed",
+      "phase": "complete",
+      "stopped_roundtrips": 6,
+      "moving_cases": 6,
+      "observations_sha256": "83f943a766a6991730abbd1f6ebb54a7a0f43a2f06d777855a9ebcbff85ebe26",
+      "scope": "Private diagnostic/experimental fixture, not canonical production qualification.",
+      "production_acceptance": false,
+      "primary_experiment": {
+        "scope": "Diagnostic exact-byte upload elision, not production.",
+        "comparisons": 206,
+        "skips": 199,
+        "forwarded": 1659,
+        "copiedBytes": 43204328
+      },
+      "popup_experiment": {
+        "scope": "Diagnostic exact-byte upload elision, not production.",
+        "comparisons": 114,
+        "skips": 108,
+        "forwarded": 861,
+        "copiedBytes": 43204328
+      },
+      "moving_results": [
+        {
+          "origin": "notebook",
+          "method": "Studio",
+          "kind": "state",
+          "structure_index": 2,
+          "held_real_queries": 2,
+          "frame_changes_after_request": [
+            0,
+            1
+          ],
+          "independent_file_restore": true,
+          "source_identity_and_coordinates_unchanged": true,
+          "pending_saves": 0,
+          "pending_captures": 0
+        },
+        {
+          "origin": "notebook",
+          "method": "Python",
+          "kind": "state",
+          "structure_index": 1,
+          "held_real_queries": 2,
+          "frame_changes_after_request": [
+            2,
+            1
+          ],
+          "independent_file_restore": true,
+          "source_identity_and_coordinates_unchanged": true,
+          "pending_saves": 0,
+          "pending_captures": 0
+        },
+        {
+          "origin": "notebook",
+          "method": "Studio",
+          "kind": "session",
+          "structure_index": 1,
+          "held_real_queries": 2,
+          "frame_changes_after_request": [
+            2,
+            1
+          ],
+          "independent_file_restore": true,
+          "source_identity_and_coordinates_unchanged": true,
+          "pending_saves": 0,
+          "pending_captures": 0
+        },
+        {
+          "origin": "notebook",
+          "method": "Python",
+          "kind": "session",
+          "structure_index": 0,
+          "held_real_queries": 2,
+          "frame_changes_after_request": [
+            1,
+            0
+          ],
+          "independent_file_restore": true,
+          "source_identity_and_coordinates_unchanged": true,
+          "pending_saves": 0,
+          "pending_captures": 0
+        },
+        {
+          "origin": "popup",
+          "method": "Studio",
+          "kind": "state",
+          "structure_index": 2,
+          "held_real_queries": 2,
+          "frame_changes_after_request": [
+            1,
+            0
+          ],
+          "independent_file_restore": true,
+          "source_identity_and_coordinates_unchanged": true,
+          "pending_saves": 0,
+          "pending_captures": 0
+        },
+        {
+          "origin": "popup",
+          "method": "Studio",
+          "kind": "session",
+          "structure_index": 0,
+          "held_real_queries": 2,
+          "frame_changes_after_request": [
+            1,
+            0
+          ],
+          "independent_file_restore": true,
+          "source_identity_and_coordinates_unchanged": true,
+          "pending_saves": 0,
+          "pending_captures": 0
+        }
+      ]
+    },
+    {
+      "name": "oracle-control-06",
+      "native_exit": 1,
+      "seconds": 104.62307132501155,
+      "selected_inputs": 4594,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2795.2,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_record": ".pytest_cache/robustness-20261106/A5-residual-20261108/oracle-control-06",
+      "invocation_sha256": "18d22ad5292353063fe14334e2015f8140439382f4b311af10a040bac28361e6",
+      "input_manifest_sha256": "50e8221c40e7bf28c777c09f740fcbf08381c7d09730774d4dc958d33515d27c",
+      "outcome": "failed",
+      "phase": "Moving Python notebook session",
+      "stopped_roundtrips": 6,
+      "moving_cases": 3,
+      "observations_sha256": "2e2a7c86631530558a06540d8e76996827000ff574ae3f77dde16738abe34c9c",
+      "scope": "Private diagnostic/experimental fixture, not canonical production qualification.",
+      "production_acceptance": false,
+      "kernel_failure": "FrontendRequestError",
+      "failure_scope": "Actual async capture exceeds the unchanged public five-second deadline."
+    }
+  ],
+  "interpretation": [
+    "Installed 5.4.1 reproduces unchanged full-atlas upload independently of Viewer.",
+    "Current upstream native cache avoids that upload and passes complete GPU read-back after a real glyph update.",
+    "Subimage forwarding alone fails the full integration guard and is not integrated.",
+    "An oracle race also explains the first new passive failure and earlier B6 profiled campaign 12; it is not a rejected save.",
+    "With the same corrected oracle, the no-cache control fails a real Python session timeout after three moving cases; the exact-byte experiment on both renderers passes all six.",
+    "The comparison supports atlas cost as a material contributor, not a universal single-cause or timing guarantee.",
+    "The diagnostic cache copies 43,204,328 CPU bytes per canvas; it is not the selected production infrastructure."
+  ],
+  "next": [
+    "Select a supported bounded 5.4.1 consumer solution, preferring native atlas writer metadata to per-frame full-image copies; retain a safe native fallback.",
+    "Receive glyph additions, styles/quality, resize, shared data, disposal and context restoration before integrating any compatibility adapter.",
+    "Qualify the complete canonical Jupyter moving guard without diagnostic overrides, plus shared browser and applicable native-host regressions.",
+    "Keep #115 dependency migration post-1.0 unless its product scope is explicitly reopened; do not publish a duplicate upstream bug."
+  ],
+  "resource_policy": {
+    "logical_cpu_ceiling": 8,
+    "memory_ceiling_gib": 6,
+    "swap_limit_gib": 0,
+    "minimum_globally_available_gib": 2,
+    "intensive_concurrency": 1
+  },
+  "progress": {
+    "delivered_original_leaves": 8,
+    "finally_accepted_original_leaves": 1,
+    "original_denominator": 46,
+    "A5": "partial"
+  },
+  "publication": "No tags, packages, promotions, releases or either 1.0 publication.",
+  "private_custody": {
+    "schema": "molsysviewer.private_capture_custody_receipt@1",
+    "custodian": "Diego Prada Gracia",
+    "opaque_reference": "robustness-20261106/jupyter-texture-upstream-review-20261108-1",
+    "files_verified": 235,
+    "total_bytes": 23859115,
+    "manifest_sha256": "d1b34702d6415a86d8e655a0eb13bd01a110389061ea01982fb804087ce455fd",
+    "originals_retained": true,
+    "off_host_backup_claimed": false
+  },
+  "upstream_source_archive": {
+    "commit": "6682cc94a230c851e13dbbc6f35fc9d486c0bbdb",
+    "sha256": "5fbb034a7e91845888d30601a94378939459a7af50a5e6d8292342b663a5f744",
+    "bytes": 174080,
+    "scope": "Ten exact Git source/plan/test paths appended create-only to the same approved private custody; original manifest remains unchanged."
+  },
+  "reporting_check": {
+    "native_exit": 0,
+    "seconds": 3.5112426918931305,
+    "cleanup": {
+      "tracked": 2,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "passed": 405,
+    "invocation_sha256": "de839ae19887d96f6c23772bcb23092d589cc4a7cd170e93b419ee8ba891ae52"
+  },
+  "quality": {
+    "ruff_check": "pass",
+    "ruff_format_check": "pass, 986 files",
+    "devguide_index_check": "pass",
+    "diff_check": "pass",
+    "hosted_ci_dispatched": false
+  }
+}
