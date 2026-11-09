@@ -1,6 +1,21 @@
 # MolSysMT tools add-on — implementation plan
 
-**Current continuation — 2026-11-07:** the MolSysMT team merged PR #543,
+**Current continuation — 2026-11-09:** the
+[scientific receiving record](molsysmt_scientific_receiving_20261109.json)
+receives public owner runtime `9be08134`, contribution `89a649c1d` in
+[PR #668](https://github.com/uibcdf/molsysmt/pull/668), and Viewer `346c3319`.
+Ten additional original #315 source outcomes are delivered; its ledger now
+records 25/46, with final acceptance unchanged at 1/46. The received Geometry
+profiles are rotation, orientation/references and periodic coordinates/cells,
+with native/expert effect controls, eleven actual-Jupyter scenarios and twenty
+representative native-Qt checks. Experimental descriptor dispositions retain
+their owner limitations; no scientific algorithm or detector is added here.
+The PR also receives current Viewer pins and #669's clean-source CI correction.
+Owner integration, corrected hosted gates and final installed/human acceptance
+remain separate. D5.2/D5.4 and every remaining accepted task family are still
+required; publication and human review stay postponed.
+
+**Earlier continuation — 2026-11-07:** the MolSysMT team merged PR #543,
 head `42f5ed3bc`, as `0ddb99c2b`; its observed main `3b16f23c5` contains that
 merge. Another rebase of the merged contribution is unnecessary. The
 [integration receipt](molsysmt_pr543_reconciliation_receiving_20261107.json)

@@ -611,6 +611,17 @@ shapes and explicit existing-structure filters retain their meaning. Source
 analyses, evaluated universes and newly unevaluated structures remain the
 scientific owner's responsibility. The host neither merges nor recalculates them.
 
+The core `View.load(..., mode="append_structures")` route likewise delegates
+ordered inventory matching, named-analysis extension and unevaluated new
+structures to native MolSysMT. After that validated append, its existing
+`interactions_policy="preserve"` edit contract retains unchanged-prefix coverage
+and sparse occurrence identities, including after session recovery. It retains
+known source records without inventing incoming frame provenance. Analysed
+incoming sources still require an explicit native analysis merge. This narrow
+declaration does not relax the default conservative policy for arbitrary
+`apply_system_edit` calls or affected-frame invalidation after coordinate edits.
+The guard is `tests/test_recovered_interaction_append.py` (Viewer #346).
+
 Live adoption checks coordinate presence with one atom/structure query before
 creating a lazy projection, without scanning a complete edited trajectory. A
 valid native coordinate-free result remains available independently; an in-place

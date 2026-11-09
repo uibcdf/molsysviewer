@@ -14,7 +14,49 @@ supersedes: []
 
 # Pre-1.0 robustness audit and action plan — 2026-11-06
 
-**Post-integration pair receiving — 2026-11-09:** the selected public owner
+**Current scientific receiving — 2026-11-09, later checkpoint:**
+[the ten-outcome receipt](../molsysmt_scientific_receiving_20261109.json)
+advances locally verified and source-delivered progress to **25/46 (54.3%)**.
+The new original leaves are D2, D3, D4, D5.1, D5.3, D5.5, D5.6 and D6.1–D6.3;
+no new bug, test or subtask adds a denominator item. Final applicable acceptance
+remains **1/46 (2.2%)**, E0 only. This is not total 1.0 readiness.
+
+Viewer `346c331901c418fddb6b45a31da4690eee794129` corrects #346: recovered
+structure append retains unchanged interaction coverage and occurrences while
+new structures remain unevaluated. Its two real causal regressions and covering
+559-case load/interactions/edit/provenance collection pass. Arbitrary edits
+still invalidate conservatively. Native prerequisite receiving passes 1,515
+cases on its recorded earlier Viewer source; the final selected Geometry,
+reference, effects and integration collection passes 395. These scopes overlap
+and are not added into a full-suite result.
+
+The selected public owner runtime is `9be08134`; contribution
+`89a649c1dc2464322311f4fefc3968a93e32cff3` in
+[PR #668](https://github.com/uibcdf/molsysmt/pull/668) adds consumer guards and
+updates six controlled routes to Viewer `346c3319`. Its exact clean certificate
+passes 107/107 scientific cases, 68 registered nodes, zero omissions and true
+source correspondence. Eleven frozen-input actual-Jupyter scenarios pass 85
+checks; native Wayland Qt passes 20 representative shared-Geometry and independent
+window checks. The qualified native backend and generated Viewer bundle are
+unchanged. Source receiving does not certify GPU-device numerics, a clean solver
+installation, human observations or a full candidate/platform matrix.
+
+PR #668 also fixes uibcdf/molsysmt#669's controlled wheel placement outside the
+scientific checkout. Preserve the original source-ineligible certificates and
+the unexecuted cancelled macOS cell; no cleanliness rule is relaxed. Corrected
+hosted performance passes. Four original Linux certificates are independently
+downloaded/hash-verified, each 107/107 and source-clean; their synthetic merge
+identity is retained separately from the local contribution. Complete full/smoke gates and owner
+integration remain pending. One earlier
+periodic Jupyter pass failed its fixed-input envelope because six CI pins were
+edited during execution; the accepted repeat has all 10,674 inputs unchanged.
+The original failed probes, scope-bus refusal and corrected order assumption
+remain in the receipt and private evidence. Human work is unchanged. D5.5/D5.6
+receive explicitly experimental dispositions, leaving owner #473/#475 open.
+All candidate/package/tag/release actions and both 1.0 publications remain paused.
+Mandatory Movie #320 and the remaining original work are not dropped.
+
+**Earlier public-pair receiving — 2026-11-09:** the selected public owner
 baseline is now `efbe67e1c6042078144bce1db24aa80bb565dbd2`, paired with Viewer
 `ce9163dff8d82b870e6ef599ef57f7416f596a5b`. The owner main's four local API
 documents and the seven Viewer human files are preserved; receiving uses a
@@ -44,7 +86,7 @@ separate from current-pair qualification. Do not reopen or reimplement these
 resolved owner handoffs; current-source receiving remains below. No additional
 original leaf or acceptance counter is promoted by issue closure alone.
 
-**C5 and D1 source outcomes received — 2026-11-09:** the
+**Earlier C5 and D1 source outcomes received — 2026-11-09:** the
 [current receipt](../molsysmt_public_pair_receiving_20261109.json) receives the
 seven settled owner handoffs through their current guards and records 59 native
 axis-angle/facade controls plus seven real-Jupyter rotation checks. The latter
@@ -230,12 +272,13 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
-**Latest receiving, 2026-11-09:** C is active on the public post-#665 owner
-checkpoint and current Viewer; its directed and actual-Jupyter results are
-summarized above. Local current-pair receiving is complete; PR #668's owner and
-hosted acceptance remains pending. Delivered progress is **15/46 (32.6%)**, final
-applicable acceptance **1/46 (2.2%)**. B3.1–B3.5 are delivered in source;
-A5's remaining host conditions and mandatory Movie #320 remain open.
+**Latest receiving, 2026-11-09:** the
+[scientific receipt](../molsysmt_scientific_receiving_20261109.json) receives ten
+additional original source outcomes, including the recovered-append correction
+in #346. Delivered/local progress is **25/46 (54.3%)**; final applicable
+acceptance remains **1/46 (2.2%)**. PR #668's corrected hosted gates and owner
+integration remain separate. A5, C's remaining exits, D5.2/D5.4, D6.4–D6.10,
+E/F/G and mandatory Movie #320 remain required; B3.6/B4 need recorded decisions.
 
 **Earlier capture receiving, 2026-11-08:** canonical actual Jupyter receives six stopped
 and six moving independent saves on the production font-metadata adapter;
@@ -448,8 +491,8 @@ history:
 
 | Stage | Completed / original 46 | IDs and evidence meaning |
 | --- | --- | --- |
-| Consumer result complete and locally verified | **15/46 — 32.6%** | E0, A1, A2, A3, A4, A6, B1, B2, B3.1–B3.5, C5 and D1. E0 is a custody result; the other fourteen have scoped executed source guards. The current public-pair receipt receives the two new outcomes without adding original leaves. |
-| Consumer result delivered | **15/46 — 32.6%** | E0 plus A1, A2, A3, A4, A6, B1, B2, B3.1–B3.5, C5 and D1. Source corrections and guards are delivered with their receipts; E0 custody is verified. PR #668's CI-only adoption and later consolidated acceptance remain separate. |
+| Consumer result complete and locally verified | **25/46 — 54.3%** | Earlier fifteen plus D2, D3, D4, D5.1, D5.3, D5.5, D5.6 and D6.1–D6.3. The scientific receipt maps each original leaf to native, expert, GUI/host and effect evidence; experimental dispositions retain their limits. |
+| Consumer result delivered | **25/46 — 54.3%** | E0, A1–A4/A6, B1/B2/B3.1–B3.5, C5, D1–D4, D5.1/D5.3/D5.5/D5.6 and D6.1–D6.3. Viewer #346 is on main; the owner runtime is public and new consumer guards/CI correction are delivered in PR #668, awaiting its owner. Final acceptance is separate. |
 | Final applicable acceptance recorded | **1/46 — 2.2%** | E0 only. Preserve the remaining acceptance obligations rather than silently promoting source delivery. |
 
 These stages are not additive, equally weighted effort estimates, time
@@ -457,8 +500,9 @@ estimates or percentages of total 1.0 readiness. They measure outcomes from
 this audit; #320's mandatory movie stream remains separately visible. A5 is
 partial and contributes to none of these completed-stage numerators. Source
 support and upstream issue closure do not by themselves complete a consumer
-result. D2/D3/D4 have new owner fixes awaiting consumer receiving, as recorded
-below; do not describe them as waiting for an unimplemented owner fix.
+result. D2/D3/D4 now have current consumer receiving; D5.2/D5.4 and D6.4–D6.10
+retain their distinct remaining contracts and evidence. No original leaf is
+removed or split to obtain the new counter.
 
 A5's bounded child [#329](../archive/box_display_lags_native_trajectory.md)
 corrects native cell lag without a kernel. Its
@@ -498,9 +542,10 @@ packages, hosted CI or human review. At that earlier checkpoint the count was 8/
 1/46 finally accepted; the current table above includes B3.1–B3.5. Movie #320
 remains mandatory and publication stays paused.
 
-**Next execution checkpoint:** inspect PR #668's applicable hosted outcomes and
-leave review/integration to its owner; complete C's remaining host/qualification
-exits and D's next independent scientific prerequisites. Receive the delivered bounded batch through the
+**Next execution checkpoint:** inspect the corrected PR #668 hosted outcomes
+and leave review/integration to its owner. Complete C's remaining exits,
+D5.2/D5.4's dispositions and D6.4–D6.10's approved task families, while retaining
+A5 and Movie. Receive the delivered bounded batch through the
 applicable consolidated hosted checks at one substantive checkpoint, following
 the maintainer's `[skip ci]` and batched-CI instruction. Its reviewed integration
 is complete; retain original failures and distinguish source delivery from
@@ -772,15 +817,16 @@ signatures to the fields needed by one form.
 | ID / current disposition | Scientific owner requirement and consumer acceptance |
 | --- | --- |
 | **D1 — source-received; consolidated acceptance pending** | Closed uibcdf/molsysmt#602's public constructor passes 59 native/facade controls and seven current real-Jupyter checks. Signed rotation, units, invalid inputs, per-structure centers/fixed points, selections/structure effects and actual Mol* vertices are received without a copied kernel. See the current public-pair receipt; native-Qt/human/hosted acceptance remains separate. |
-| **D2 — owner fixes published; consumer receiving pending** | uibcdf/molsysmt#605, uibcdf/molsysmt#606, uibcdf/molsysmt#607 and uibcdf/molsysmt#608 cover invalid cells, changing-cell unwrap, oriented wrapping and unit-dependent origins. The 2026-11-07 board review finds all four closed with correction `3eb7204`; this is upstream implementation evidence, not a received new consumer pair. Retain the declared temporary admission profile and its review/removal condition. Receive independent lattice truth and in-place atomicity before declaring general periodic/cell tasks complete. |
-| **D3 — owner fix published; consumer receiving pending** | uibcdf/molsysmt#613: overlapping global configuration contexts can leak/restore the wrong execution policy. The owner issue is closed with correction `f60e25b`. Per-View locks do not isolate separate Views. Receive simultaneous/nested/exception cases through the supported native solution; this is not proof of wrong GPU numerics. |
-| **D4 — owner fix published; consumer receiving pending** | uibcdf/molsysmt#616: compatible structure append fails after canonical H5MSM string restoration. The owner issue is closed with correction `19d6d55`. Receive save/recover/continue with preserved scientific alignment. Do not rewrite chemistry tables or weaken identity checks downstream. |
+| **D2 — source received; final acceptance pending** | Receive owner #605–#608 / `3eb7204` through independent lattice/physical-cell/atomicity controls and five current actual-Jupyter periodic scenarios. General rows, changing transition cells and explicit small origins across units pass; preserve the owner profile and its 2026-11-13-or-earlier full-family/human/installed review checkpoint. |
+| **D3 — source received; final acceptance pending** | Owner #613 / `f60e25b` passes competing/nested/exception context controls and numerical reads on two real independent Views. Configuration remains process-global with serialized writers; per-View locks do not imply isolation and GPU numerics are not qualified. |
+| **D4 — source received; final acceptance pending** | Owner #616 / `19d6d55` and [Viewer #346](../archive/append_structures_interaction_coverage.md) / `346c3319` receive canonical recovery followed by append with retained inventory, occurrence identities, old coverage and visual/source bindings. Added structures are unevaluated; arbitrary edits still invalidate. |
 | **D5 — dispositions still required** | Keep D5.1–D5.6 separate, with the qualified provider references below. Preserve scientific limitations or receive the owning definition before presenting provisional properties as verified physical areas/charges; interpretation questions are not demonstrated numerical errors. Test/CI/tool follow-ups retain their own issues. |
 
 **D6 — partial, all previously approved families remain required:** use the
 owner GUI task-family ledger under uibcdf/molsysmt#421 as the detailed scientific
-acceptance specification. Continue Geometry rotation, principal-axis orientation,
-sequence/reference correspondence and general cell work; Chemistry qualified
+acceptance specification. D6.1–D6.3's Geometry profiles have current native,
+expert, Jupyter/popup and representative native-Qt source receiving; their final
+candidate/installed/human acceptance remains separate. Continue Chemistry qualified
 repairs, typing/charge assignments, construction/assemblies, solvent/ions and
 coordinate refinement; Analysis further geometric observables, angles/torsions,
 PCA, properties, sequence/connectivity, interactions and mechanical quantities.
@@ -796,18 +842,18 @@ do not silently omit an existing accepted family.
 
 | D5 child / owner record | Current class and next receiving condition |
 | --- | --- |
-| **D5.1 — uibcdf/molsysmt#549** | Native naming disposition; receive supported label semantics and consumer consequences |
+| **D5.1 — source received, uibcdf/molsysmt#549** | Scheme-aware group labels, legacy/Amber/CCD distinctions and native builder/sequence/file consequences pass; no implicit chemical renaming |
 | **D5.2 — uibcdf/molsysmt#582** | Native effective-mechanics contract; receive declared recipes/unsupported controls without inventing parameterization |
-| **D5.3 — uibcdf/molsysmt#612** | Alternate-location/stable-ID admission; distinguish intentional whole-request rejection from a data-fidelity defect |
+| **D5.3 — source received, uibcdf/molsysmt#612** | Stable-ID alternate-site admission, whole-request atomic refusal and explicit observation/PDB-fidelity controls pass |
 | **D5.4 — uibcdf/molsysmt#615** | Unexplained initialization observation; receive a causal diagnosis or bounded evidenced disposition, retaining the original timeout |
-| **D5.5 — uibcdf/molsysmt#473** | Provisional ISA units/normalization; receive the owner's scientific definition or preserve its explicit limitation |
-| **D5.6 — uibcdf/molsysmt#475** | ECI dimensional/charge/aggregation interpretation; receive the owner's scientific definition or preserve its explicit limitation |
+| **D5.5 — bounded source disposition received, uibcdf/molsysmt#473** | Provisional ISA area units and unverified original normalization remain explicit under ordinary/nondefault policies; owner #473 stays open |
+| **D5.6 — bounded source disposition received, uibcdf/molsysmt#475** | Legacy ECI wrapper/aggregation remains experimental and distinct from physical charge; original dimension/additivity is unverified and owner #475 stays open |
 
 | D6 child / accepted family | Current scope and next receiving condition |
 | --- | --- |
-| **D6.1 — rotation** | Graphical rotation exists and its current Jupyter slice receives review/cancel, signed updates, independent results and both popup types. D1's prerequisite is source-received; complete the accepted operation/effect and native-Qt/host matrix explicitly before accepting the whole family. |
-| **D6.2 — orientation and references** | Pending principal-axis orientation and remaining sequence/reference correspondence workflows; native matching/degeneracy semantics and explicit correspondence |
-| **D6.3 — periodic coordinates and cells** | Bounded tools exist; D2's received science and the qualified edit/cell effect are needed for general-family acceptance |
+| **D6.1 — rotation, source received** | Native/expert operation/effect controls, seven real-Jupyter checks and representative native Qt receive signed angles, centers/units, selected structures, no-op/rejection, projection retry, source/result ownership and actual Mol* coordinates; final acceptance remains |
+| **D6.2 — orientation and references, source received** | Native principal-axis/matching/degeneracy/effect controls plus actual Jupyter principal axes, superposition, external reference and nm/pm sequence alignment pass; representative native Qt receives axes/fitting and independent windows; final acceptance remains |
+| **D6.3 — periodic coordinates and cells, source received** | D2 science, complete selected edit/cell-effect controls, five real-Jupyter scenarios and native Qt wrapping/cell/result-window receiving pass for the declared profile; final acceptance and bounded temporal/conditioning limits remain |
 | **D6.4 — chemical repair and assignments** | Inspection and heavy/H preparation have source receiving; remaining supported repairs, typing and charge assignments need explicit methods/states, maps or independent ownership |
 | **D6.5 — construction and solvent** | Pending accepted construction/assembly, solvent and ion tasks; explicit native inputs/model/seed/charge/cell requirements and result adoption |
 | **D6.6 — coordinate refinement** | Pending graphical refinement over the received native minimization; explicit model/engine, supported structure scope and current/independent effect |

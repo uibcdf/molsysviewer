@@ -1,0 +1,856 @@
+{
+  "schema": "molsysviewer.working_receiving@1",
+  "date": "2026-11-09",
+  "parent_issue": "uibcdf/molsysviewer#315",
+  "consumer_issue": "uibcdf/molsysviewer#264",
+  "status": "Ten additional original source outcomes received; consolidated/installed/human acceptance remains separate.",
+  "viewer_source": "346c331901c418fddb6b45a31da4690eee794129",
+  "owner_public_runtime_source": "9be08134fe304fcc2d88935b919bcca2c8930479",
+  "owner_contribution_source": "89a649c1dc2464322311f4fefc3968a93e32cff3",
+  "owner_pr": "https://github.com/uibcdf/molsysmt/pull/668",
+  "owner_integration_claimed": false,
+  "native_backend_sha256": "2f1f69f6e0539bd31ee419ec3b7a4deaab20f09045ce3e6504369c9130438525",
+  "native_rebuilt": false,
+  "native_reuse_condition": "Complete rust/setup diff from qualified 42f5ed3bc to contribution 89a649c1d is empty; exact binary hash retained.",
+  "viewer_runtime_bundle_sha256": "67929ee09262b57cfab1a3e09372986c681da34bbde0d88449c961160f5317ee",
+  "runtime_bundle_changed": false,
+  "support_route": "Recorded byte-verified cached public support overlay: SMonitor 0.21.0, ArgDigest 0.15.0, DepDigest 0.15.1, PyUnitWizard 0.28.1, pytest-receptor 1.2.1, Ackredit 0.9.0; qualified Python 3.14.7 source environment. Exact source/input/binary hashes, not ambient development-version labels, identify receiving. Not a clean solver installation.",
+  "progress": {
+    "denominator": 46,
+    "previous_source_delivered": 15,
+    "new_source_delivery_ids": [
+      "D2",
+      "D3",
+      "D4",
+      "D5.1",
+      "D5.3",
+      "D5.5",
+      "D5.6",
+      "D6.1",
+      "D6.2",
+      "D6.3"
+    ],
+    "locally_verified": 25,
+    "source_delivered": 25,
+    "source_delivered_ids": [
+      "E0",
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A6",
+      "B1",
+      "B2",
+      "B3.1",
+      "B3.2",
+      "B3.3",
+      "B3.4",
+      "B3.5",
+      "C5",
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "D5.1",
+      "D5.3",
+      "D5.5",
+      "D5.6",
+      "D6.1",
+      "D6.2",
+      "D6.3"
+    ],
+    "final_accepted": 1,
+    "final_accepted_ids": [
+      "E0"
+    ],
+    "no_extra_leaf_for_new_bugs": true,
+    "movie_320_separately_required": true
+  },
+  "receiving": {
+    "native_prerequisites": {
+      "native_exit": 0,
+      "seconds": 210.3579679809045,
+      "selected_inputs": 10670,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 988.0,
+      "cleanup": {
+        "tracked": 4,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "source_base": "6ab82333cf70d02b24f61c881c3856720defb605",
+      "provider_source": "529bc8c522c21355e54ba6443b3dac9e842c196f",
+      "scope": "Native and bound periodic/naming/alternate-site/canonical-session prerequisites on the earlier Viewer code. Not a new full addon collection; original input identity retained.",
+      "campaign": "scientific-native-08",
+      "input_manifest_sha256": "c04d5bbff1bab6285178c414f99027504d880d0e1bab4de47a286f8c8a0e4f74",
+      "invocation_sha256": "aeda20144b8faf0076f239476a061975f975c942373176ef466821e821ed9753",
+      "minimum_globally_available_gib": 13.11,
+      "junit": {
+        "tests": 1515,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "dd54c842f71070e97080d92c2c4cd1b926bdc1640f88a8633a7025a3a4e88ef0",
+      "receptor_events_sha256": "31f44039d633a4ff9fdb8689923df290ab4bb1107ddad68b9e4c8f84886d08be"
+    },
+    "configuration_two_views": {
+      "native_exit": 0,
+      "seconds": 8.722745592007414,
+      "selected_inputs": 10669,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 420.8,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "source_base": "6ab82333cf70d02b24f61c881c3856720defb605",
+      "provider_source": "529bc8c522c21355e54ba6443b3dac9e842c196f",
+      "scope": "Twenty native context controls and one actual two-View serialized-writer/explicit-CPU numerical guard. Not thread-local configuration or GPU numerical qualification.",
+      "campaign": "contexts-05",
+      "input_manifest_sha256": "e6d0cd12a71dcaab861d9a0dbb943029017283dcf075738e251b5e6c04b1528a",
+      "invocation_sha256": "2bb2be11b5e335251565bc5676cb15167919567b995be417f0254f8a26b5a3cf",
+      "minimum_globally_available_gib": 13.61,
+      "junit": {
+        "tests": 21,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "7fa86ab2456ec966ce41c7bfeeb989a45a6149468d2714c011c2bd47ca5d1599",
+      "receptor_events_sha256": "5a3338f23ae7ebff2997dfa088f8d99ef9a7cfe9ffce8278ef0d4c893bb507c4"
+    },
+    "descriptor_dispositions": {
+      "native_exit": 0,
+      "seconds": 12.990175409941003,
+      "selected_inputs": 10670,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 520.1,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "source_base": "6ab82333cf70d02b24f61c881c3856720defb605",
+      "provider_source": "529bc8c522c21355e54ba6443b3dac9e842c196f",
+      "scope": "Native reference and bound experimental ISA/legacy ECI dispositions under ordinary/nondefault units and synchronized/pending projection. Not primary-source physical-definition certification.",
+      "campaign": "descriptors-06",
+      "input_manifest_sha256": "c04d5bbff1bab6285178c414f99027504d880d0e1bab4de47a286f8c8a0e4f74",
+      "invocation_sha256": "fa95c23d5d0600ca1c4349b1bb1527b3179bd1988873369e3376bb7678d63c05",
+      "minimum_globally_available_gib": 13.57,
+      "junit": {
+        "tests": 43,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "a1ea19f19c227a26ac4d42bd6ca99ca4f603711d74f62b83da92f68eb1e7f363",
+      "receptor_events_sha256": "3b44d50b7462d6ffe942972ab660899f667387686059a454666939409b807429"
+    },
+    "viewer_append": {
+      "native_exit": 0,
+      "seconds": 62.045713600935414,
+      "selected_inputs": 10672,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 632.7,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "source_base": "6ab82333cf70d02b24f61c881c3856720defb605",
+      "provider_source": "529bc8c522c21355e54ba6443b3dac9e842c196f",
+      "scope": "Causal append correction and covering Viewer loading/interactions/provenance/edit/reporting tests. Working source is published in 346c3319; no TypeScript/runtime-bundle change.",
+      "campaign": "viewer-append-covering-16",
+      "input_manifest_sha256": "f8a5185bfc98fba334f1c6c0ad62ffecb01c18f82c94f346c20ac758b9eff08b",
+      "invocation_sha256": "f5bd476ea8895e596626790a8d4b0068c273b6f91cdd4850ae73c336e9e5aa26",
+      "minimum_globally_available_gib": 13.43,
+      "junit": {
+        "tests": 559,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "940bff6fe3ee101f09be6cd2e3b999fddc460a7e57a619bffca82478ecdabffd",
+      "receptor_events_sha256": "8ddc5dc942f08179588e0a4e12773ccb8701d3074f903848cb1ccc0c4f9676bd"
+    },
+    "geometry_native": {
+      "native_exit": 0,
+      "seconds": 117.9552051781211,
+      "selected_inputs": 10674,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 970.4,
+      "cleanup": {
+        "tracked": 26,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "source_base": "346c331901c418fddb6b45a31da4690eee794129",
+      "provider_source": "529bc8c522c21355e54ba6443b3dac9e842c196f",
+      "scope": "Complete selected Geometry/sequence/fitting operation/effect modules and context/descriptor/certificate/preflight modules. Prepared bytes committed unchanged as 89a649c1d; overlapping scopes are not summed.",
+      "campaign": "geometry-native-19",
+      "input_manifest_sha256": "3e0f697bb01f9e0ca355db041bba07f78575f73ee10a2c252b5ed3ace2806ba9",
+      "invocation_sha256": "4dd6db8cbe3245f94754019075c59eb7e79da862a0297d644631a897410fe25a",
+      "minimum_globally_available_gib": 13.02,
+      "junit": {
+        "tests": 395,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "cbe232b678ac086ef915ec43d54535b46c811b0fce3046a386b545a0a261d680",
+      "receptor_events_sha256": "0cffc892f88afef9d7fb86177dec6dbc7c426544a47adabb8de0e8779015137c"
+    },
+    "qt": {
+      "native_exit": 0,
+      "seconds": 40.55284711997956,
+      "selected_inputs": 10674,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2402.5,
+      "cleanup": {
+        "tracked": 10,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "source_base": "346c331901c418fddb6b45a31da4690eee794129",
+      "provider_source": "529bc8c522c21355e54ba6443b3dac9e842c196f",
+      "scope": "Representative actual native Qt shared Geometry UI and Mol* model transport, review/Back, five updates and five independent result windows with close/ownership. Automated source receiving, not human/GPU-device/installed acceptance.",
+      "campaign": "geometry-qt-final-21",
+      "input_manifest_sha256": "3e0f697bb01f9e0ca355db041bba07f78575f73ee10a2c252b5ed3ace2806ba9",
+      "invocation_sha256": "39a56c7dd4e682c1f7607f6666f5558064f5286718bff73654e126816f5ece64",
+      "minimum_globally_available_gib": 12.25,
+      "junit": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "f0e62a2610a3e6722adc586b6f54ff7288b5a2a3385e75d695022098baa8f036",
+      "receptor_events_sha256": "40cb4545b3aa5b2aadf4d5907729bfec1529ac5670040a6c18e484ec0d59023e",
+      "checks": [
+        "rotate: review and Back leave science and rendered model unchanged",
+        "rotate: native reviewed edit reaches real Mol* coordinates",
+        "rotate: independent native result owns a real rendered window and preserves source",
+        "rotate: result close releases ownership without closing source",
+        "axes: review and Back leave science and rendered model unchanged",
+        "axes: native reviewed edit reaches real Mol* coordinates",
+        "axes: independent native result owns a real rendered window and preserves source",
+        "axes: result close releases ownership without closing source",
+        "fit: review and Back leave science and rendered model unchanged",
+        "fit: native reviewed edit reaches real Mol* coordinates",
+        "fit: independent native result owns a real rendered window and preserves source",
+        "fit: result close releases ownership without closing source",
+        "wrap: review and Back leave science and rendered model unchanged",
+        "wrap: native reviewed edit reaches real Mol* coordinates",
+        "wrap: independent native result owns a real rendered window and preserves source",
+        "wrap: result close releases ownership without closing source",
+        "cell: review and Back leave science and rendered model unchanged",
+        "cell: native reviewed edit reaches real Mol* coordinates",
+        "cell: independent native result owns a real rendered window and preserves source",
+        "cell: result close releases ownership without closing source"
+      ],
+      "qt_platform": "wayland",
+      "report_sha256": "549eeaff7de03588864390c1141b5816bfec35e84653e62af64c38267cb2bbfc"
+    },
+    "scientific_certificate": {
+      "native_exit": 0,
+      "seconds": 19.628501215949655,
+      "selected_inputs": 10674,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 587.3,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "source_base": "346c331901c418fddb6b45a31da4690eee794129",
+      "provider_source": "89a649c1dc2464322311f4fefc3968a93e32cff3",
+      "scope": "Exact clean contribution scientific registry execution with strict source correspondence; not a release approval.",
+      "campaign": "clean-certificate-22",
+      "input_manifest_sha256": "3e0f697bb01f9e0ca355db041bba07f78575f73ee10a2c252b5ed3ace2806ba9",
+      "invocation_sha256": "f69ca9344d51a69415856beb366b8db0d0ed98cb58ec31253665cc6e186afb1e",
+      "minimum_globally_available_gib": 13.55,
+      "certificate_sha256": "3ac6b2c10252f6e7808862bd37917d208f392bcc6903d550b21ea30d5c87cf83",
+      "registered_nodes": 68,
+      "passed": 107,
+      "source_correspondence": true,
+      "tracked_source_dirty": false,
+      "release_eligible_field_scope": "Native single-certificate field only; no Viewer/pair release authorization or complete release qualification."
+    },
+    "periodic_jupyter": {
+      "native_exit": 0,
+      "seconds": 242.63803619309328,
+      "selected_inputs": 10674,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3112.1,
+      "cleanup": {
+        "tracked": 122,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "source_base": "346c331901c418fddb6b45a31da4690eee794129",
+      "provider_source": "89a649c1dc2464322311f4fefc3968a93e32cff3",
+      "scope": "Five real JupyterLab/ipykernel/AnyWidget/Mol* periodic/cell/general-cell/small-origin scenarios, nondefault units and both popup types, frozen inputs.",
+      "campaign": "periodic-jupyter-final-23",
+      "input_manifest_sha256": "3e0f697bb01f9e0ca355db041bba07f78575f73ee10a2c252b5ed3ace2806ba9",
+      "invocation_sha256": "48fd3885cb36c1b507a7dea39e1b1e1f061371616479030b08c8fe299a623dd4",
+      "minimum_globally_available_gib": 11.94,
+      "junit": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "2707d633376147d99e416e1ad16565cf4c4df40b8d835248bbfb7e92c12fe198",
+      "receptor_events_sha256": "9e7610cccfcb798dae52150757bb48551cc937a6d2f0c95b6fcb1b027b8aa0be",
+      "scenarios": [
+        {
+          "scenario": "jupyter-periodic-general",
+          "checks": [
+            "Render the source through the real notebook presentation surface",
+            "Review compact centered-box wrapping and Back without changing Mol* positions",
+            "Apply native compact wrapping and verify its actual centered image",
+            "Choose nearest images around an explicit point and verify lattice-enumerated positions",
+            "Review per-atom temporal unwrapping and create an independent whole-system result",
+            "The periodic result keeps its View while moving between notebook and window",
+            "Temporal order and support limits remain explicit in canvas and detached Studio popups",
+            "Python verifies all native arrays and drives a second structure of the rendered result"
+          ],
+          "sha256": "ce4073fa132f761357ae43361fc1f811a9d1d06a3c96c8f215fe17c2d1e0cfdb",
+          "page_error_count": 2,
+          "baseline_page_error_count": 1
+        },
+        {
+          "scenario": "jupyter-cell",
+          "checks": [
+            "Render the real source without a box and expose structure-level cell controls",
+            "Reject partial initialization and nonphysical lengths before a review or write",
+            "Review physical lengths and angles then Back without initializing boxes",
+            "Initialize all periodic cells through real comms without moving atoms",
+            "Create an independent triclinic result and preserve its actual Cartesian positions",
+            "Move the cell result between notebook and window after exact acknowledgement",
+            "Assign a selected structure through canvas and detached Studio authority",
+            "Python verifies boxes coordinates chemical state independent ownership and exactly two edits"
+          ],
+          "sha256": "89d710c2ab70c81f15777e0d905c10ccda994cd9832eed03f6551ca8f2e7b57d",
+          "page_error_count": 4,
+          "baseline_page_error_count": 1
+        },
+        {
+          "scenario": "jupyter-periodic",
+          "checks": [
+            "Render the source through the real notebook presentation surface",
+            "Review compact centered-box wrapping and Back without changing Mol* positions",
+            "Apply native compact wrapping and verify its actual centered image",
+            "Choose nearest images around an explicit point and verify lattice-enumerated positions",
+            "Review per-atom temporal unwrapping and create an independent whole-system result",
+            "The periodic result keeps its View while moving between notebook and window",
+            "Temporal order and support limits remain explicit in canvas and detached Studio popups",
+            "Python verifies all native arrays and drives a second structure of the rendered result"
+          ],
+          "sha256": "737f4840ccdeaea3d6aa739d751c5d143f8b49819cec92f6940159a4bff23779",
+          "page_error_count": 2,
+          "baseline_page_error_count": 1
+        },
+        {
+          "scenario": "jupyter-origins-nm",
+          "checks": [
+            "Render a boundary-sensitive source under the declared application unit policy",
+            "Review a small positive origin and Back without changing rendered coordinates",
+            "Apply the small positive angstrom input and verify the nonzero-origin image",
+            "Compute the negative-origin independent result without altering the source",
+            "Preserve the same negative-origin result across acknowledged window ownership",
+            "Apply the same physical negative origin in nm through detached Studio",
+            "Verify every native structure source effect box chemistry coverage and unchanged unit policy"
+          ],
+          "sha256": "49415ed4ccebf567b9f4059b43d9029adb62a6141572383b9d8b24ede59b6e6b",
+          "page_error_count": 3,
+          "baseline_page_error_count": 1
+        },
+        {
+          "scenario": "jupyter-origins-pm",
+          "checks": [
+            "Render a boundary-sensitive source under the declared application unit policy",
+            "Review a small positive origin and Back without changing rendered coordinates",
+            "Apply the small positive angstrom input and verify the nonzero-origin image",
+            "Compute the negative-origin independent result without altering the source",
+            "Preserve the same negative-origin result across acknowledged window ownership",
+            "Apply the same physical negative origin in nm through detached Studio",
+            "Verify every native structure source effect box chemistry coverage and unchanged unit policy"
+          ],
+          "sha256": "6c52ab86c282c5813a795a8e17a7038655712dac39836568e6cffa6a1a7c08f7",
+          "page_error_count": 3,
+          "baseline_page_error_count": 1
+        }
+      ],
+      "browser_check_count": 38
+    },
+    "geometry_jupyter": {
+      "native_exit": 0,
+      "seconds": 303.6974906309042,
+      "selected_inputs": 10674,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3265.6,
+      "cleanup": {
+        "tracked": 150,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "source_base": "346c331901c418fddb6b45a31da4690eee794129",
+      "provider_source": "89a649c1dc2464322311f4fefc3968a93e32cff3",
+      "scope": "Six real Jupyter rotation/principal-axis/superposition/external-reference/sequence scenarios, nm/pm policies, independent results and both popup types, frozen inputs.",
+      "campaign": "geometry-jupyter-final-24",
+      "input_manifest_sha256": "3e0f697bb01f9e0ca355db041bba07f78575f73ee10a2c252b5ed3ace2806ba9",
+      "invocation_sha256": "edcd08d5182530cb962b4fc8d94d4d1c76eb59b4408b25f1f8e0ecba5b72a54b",
+      "minimum_globally_available_gib": 11.89,
+      "junit": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "400203eb66f0923da0abc499ee9e9d29b37e8868c7639fc3982be55e7502de7a",
+      "receptor_events_sha256": "58b38a03a8b46bfbbdcc9ab3db33c469e3eacd0a5c256621a8767b36a8dcda07",
+      "scenarios": [
+        {
+          "scenario": "jupyter-fit-external",
+          "checks": [
+            "Render the source through the real notebook presentation surface",
+            "Reject a missing external reference without changing rendered coordinates",
+            "Review ordered pairs against seven external structures and cancel without writes",
+            "Apply the external fit and verify actual Mol* positions against the analytical transform",
+            "Create an independent result using another structure of the same external file",
+            "The external result retains its identity between notebook and independent window",
+            "External file and ordered-pair controls survive canvas and detached Studio popups",
+            "Python verifies all structures atoms units boxes coverage and the untouched reference file"
+          ],
+          "sha256": "f809fd86bc8be2a3861959bb74b4f88973b9855b004feb0c9f107409488a0f78",
+          "page_error_count": 2,
+          "baseline_page_error_count": 1
+        },
+        {
+          "scenario": "jupyter-axes",
+          "checks": [
+            "Render the source through the real notebook presentation surface",
+            "Review principal-axis options and cancel without copying or moving the system",
+            "Apply inertia alignment and compare actual Mol* vertices with independent tensor invariants",
+            "Capture the unchanged source reference for a distinct mass-weighted result",
+            "Create a centered covariance result in explicit row axes and inspect its actual geometry",
+            "The principal-axis result keeps its identity across window and notebook destinations",
+            "Principal-axis definitions weights and target rows survive both popup boundaries",
+            "Python verifies every selected and unselected atom and structure"
+          ],
+          "sha256": "0cadbb34614f4267fda1054f5fd67e0d60538537782dcea9e4e997ef8ae263cb",
+          "page_error_count": 3,
+          "baseline_page_error_count": 1
+        },
+        {
+          "scenario": "jupyter-rotate",
+          "checks": [
+            "Render the source through the real notebook presentation surface",
+            "Review a molecular-axis rotation and cancel without changing Mol* vertices",
+            "Apply a signed quarter turn about each structure centroid and inspect actual vertices",
+            "Create an independent negative-radian rotation about a unit-bearing fixed point",
+            "The rotated result keeps its identity across window and notebook destinations",
+            "Rotation axis angle and fixed point survive canvas and Studio popups",
+            "Python verifies every selected and unselected atom and structure"
+          ],
+          "sha256": "872bac8c187f5622f14c027046424af1441f668f81af6e75f169cbc05cd5e8db",
+          "page_error_count": 2,
+          "baseline_page_error_count": 1
+        },
+        {
+          "scenario": "jupyter-fit",
+          "checks": [
+            "Render the source through the real notebook presentation surface",
+            "Review explicit fitting atoms and cancel without changing rendered coordinates",
+            "Apply rigid superposition and compare actual Mol* positions with the independent SVD oracle",
+            "Create a separate result fitted to another explicit reference structure",
+            "The superposed result preserves its identity across window and notebook destinations",
+            "Fitting references remain explicit in canvas and detached Studio popups",
+            "Python verifies every selected/unselected atom and structure against the independent oracle",
+            "Independent notebook Views bind saved-choice inputs to their own datalist"
+          ],
+          "sha256": "ba3bdb941a2f6d24956419ec8ae0e65921ffd163c173aa3e740ad054b5cef523",
+          "page_error_count": 2,
+          "baseline_page_error_count": 1
+        },
+        {
+          "scenario": "jupyter-sequence",
+          "checks": [
+            "Render the source through the real notebook presentation surface",
+            "Reject a missing external reference without changing rendered coordinates",
+            "Review unequal anchor populations and complete components then cancel without writes",
+            "Apply sequence and atom-name matching and verify actual Mol* coordinates",
+            "Create an independent result using another structure of the same external file",
+            "The external result retains its identity between notebook and independent window",
+            "Sequence population controls survive canvas and detached Studio popups",
+            "Python verifies all structures atoms units boxes coverage and the untouched reference file"
+          ],
+          "sha256": "14dc253126ff1155f415c6897d1c7798deb94df5d787d9eb5b4a1991a1e464bf",
+          "page_error_count": 2,
+          "baseline_page_error_count": 1
+        },
+        {
+          "scenario": "jupyter-sequence",
+          "checks": [
+            "Render the source through the real notebook presentation surface",
+            "Reject a missing external reference without changing rendered coordinates",
+            "Review unequal anchor populations and complete components then cancel without writes",
+            "Apply sequence and atom-name matching and verify actual Mol* coordinates",
+            "Create an independent result using another structure of the same external file",
+            "The external result retains its identity between notebook and independent window",
+            "Sequence population controls survive canvas and detached Studio popups",
+            "Python verifies all structures atoms units boxes coverage and the untouched reference file"
+          ],
+          "sha256": "39e90e713bba631d9a37aa6ba67ec01e13d5b62b1d4590caaa25e2613d9cc684",
+          "page_error_count": 2,
+          "baseline_page_error_count": 1
+        }
+      ],
+      "browser_check_count": 47
+    }
+  },
+  "outcomes": {
+    "D2": {
+      "owner_issues": [
+        605,
+        606,
+        607,
+        608
+      ],
+      "owner_fix": "3eb720444b97f77f9325acf52f55114ece0b5f9e",
+      "guards": [
+        "native_prerequisites",
+        "periodic_jupyter",
+        "scientific_certificate"
+      ],
+      "result": "Receive finite/nonsingular general row cells, previous-selected-cell temporal unwrap, native physical cell factories and explicit small origins across unit policies. Retain the 2026-11-13-or-earlier periodic full-family/human/installed review checkpoint.",
+      "stage": "source implemented, consumer locally verified and delivered; final applicable acceptance pending",
+      "owner": "MolSysMT science/addon; Viewer orchestration and consumer receiving",
+      "next_gate": "Owner review/current hosted receiving; applicable consolidated/installed/platform/human acceptance. No promotion from source receiving alone."
+    },
+    "D3": {
+      "owner_issues": [
+        613
+      ],
+      "owner_fix": "f60e25b7edad28f035429563fd8b46f4d93395f2",
+      "guards": [
+        "configuration_two_views",
+        "geometry_native"
+      ],
+      "result": "Receive competing/nested/exception-restored process-global writers and independent View reads. Explicit per-call CPU arguments are retained; observers outside contexts do not gain isolation.",
+      "stage": "source implemented, consumer locally verified and delivered; final applicable acceptance pending",
+      "owner": "MolSysMT science/addon; Viewer orchestration and consumer receiving",
+      "next_gate": "Owner review/current hosted receiving; applicable consolidated/installed/platform/human acceptance. No promotion from source receiving alone."
+    },
+    "D4": {
+      "owner_issues": [
+        616
+      ],
+      "owner_fix": "19d6d55c1663bf3c6c7adfb9433fc775326292b5",
+      "viewer_issue": 346,
+      "viewer_fix": "346c331901c418fddb6b45a31da4690eee794129",
+      "guards": [
+        "native_prerequisites",
+        "viewer_append"
+      ],
+      "result": "Canonical session recovery followed by explicit/automatic structure append preserves native inventory, occurrence identity, old coverage, visual handles and source records; new structures stay unevaluated. Analysed inputs remain an explicit-merge refusal; arbitrary edits still invalidate.",
+      "stage": "source implemented, consumer locally verified and delivered; final applicable acceptance pending",
+      "owner": "MolSysMT science/addon; Viewer orchestration and consumer receiving",
+      "next_gate": "Owner review/current hosted receiving; applicable consolidated/installed/platform/human acceptance. No promotion from source receiving alone."
+    },
+    "D5.1": {
+      "owner_issues": [
+        549
+      ],
+      "guards": [
+        "native_prerequisites"
+      ],
+      "result": "Receive scheme-aware group-level naming, legacy/Amber/CCD distinctions and builder/sequence/file consequences; no automatic chemical renaming or retired amino-acid scalar alias.",
+      "stage": "source implemented, consumer locally verified and delivered; final applicable acceptance pending",
+      "owner": "MolSysMT science/addon; Viewer orchestration and consumer receiving",
+      "next_gate": "Owner review/current hosted receiving; applicable consolidated/installed/platform/human acceptance. No promotion from source receiving alone."
+    },
+    "D5.3": {
+      "owner_issues": [
+        612
+      ],
+      "guards": [
+        "native_prerequisites"
+      ],
+      "result": "Receive stable-ID alternate-location admission, whole-request atomic rejection and explicit selected observations with literal PDB fidelity.",
+      "stage": "source implemented, consumer locally verified and delivered; final applicable acceptance pending",
+      "owner": "MolSysMT science/addon; Viewer orchestration and consumer receiving",
+      "next_gate": "Owner review/current hosted receiving; applicable consolidated/installed/platform/human acceptance. No promotion from source receiving alone."
+    },
+    "D5.5": {
+      "owner_issues": [
+        473
+      ],
+      "owner_fix": "fbafc69a52d9e8912d7f6a4e4c5a22ce64d3f08e",
+      "guards": [
+        "descriptor_dispositions",
+        "geometry_native"
+      ],
+      "result": "Receive the accepted bounded experimental disposition: ISA units provisionally angstrom squared, ALA 62.9 A^2=0.629 nm^2; original units/normalization remain unverified. Owner #473 remains open.",
+      "stage": "source implemented, consumer locally verified and delivered; final applicable acceptance pending",
+      "owner": "MolSysMT science/addon; Viewer orchestration and consumer receiving",
+      "next_gate": "Owner review/current hosted receiving; applicable consolidated/installed/platform/human acceptance. No promotion from source receiving alone."
+    },
+    "D5.6": {
+      "owner_issues": [
+        475
+      ],
+      "owner_fix": "fbafc69a52d9e8912d7f6a4e4c5a22ce64d3f08e",
+      "guards": [
+        "descriptor_dispositions",
+        "geometry_native"
+      ],
+      "result": "Receive the accepted experimental legacy ECI quantity wrapper and aggregation contract; this is not physical pH-dependent/formal charge or certification of the original dimension/additivity. Owner #475 remains open.",
+      "stage": "source implemented, consumer locally verified and delivered; final applicable acceptance pending",
+      "owner": "MolSysMT science/addon; Viewer orchestration and consumer receiving",
+      "next_gate": "Owner review/current hosted receiving; applicable consolidated/installed/platform/human acceptance. No promotion from source receiving alone."
+    },
+    "D6.1": {
+      "owner_issues": [
+        421
+      ],
+      "guards": [
+        "geometry_native",
+        "geometry_jupyter",
+        "qt",
+        "scientific_certificate"
+      ],
+      "result": "Receive the approved rotation source task profile: signed explicit angles/axes, per-structure centers or fixed points, selected/nonconsecutive structures, independent and current effects, stale review/Back, no-op/small edits and synchronization-only retry; actual source/result Mol* geometry and windows.",
+      "stage": "source implemented, consumer locally verified and delivered; final applicable acceptance pending",
+      "owner": "MolSysMT science/addon; Viewer orchestration and consumer receiving",
+      "next_gate": "Owner review/current hosted receiving; applicable consolidated/installed/platform/human acceptance. No promotion from source receiving alone."
+    },
+    "D6.2": {
+      "owner_issues": [
+        421
+      ],
+      "guards": [
+        "geometry_native",
+        "geometry_jupyter",
+        "qt",
+        "scientific_certificate"
+      ],
+      "result": "Receive principal-axis orientation and explicit same-system/external-file/sequence-derived reference correspondence, native geometry/degeneracy admission, units/weights, current/independent effects, ordered structures and source/result ownership. No inferred chemical correspondence outside the explicit native matching contract.",
+      "stage": "source implemented, consumer locally verified and delivered; final applicable acceptance pending",
+      "owner": "MolSysMT science/addon; Viewer orchestration and consumer receiving",
+      "next_gate": "Owner review/current hosted receiving; applicable consolidated/installed/platform/human acceptance. No promotion from source receiving alone."
+    },
+    "D6.3": {
+      "owner_issues": [
+        421
+      ],
+      "guards": [
+        "native_prerequisites",
+        "periodic_jupyter",
+        "qt",
+        "scientific_certificate"
+      ],
+      "result": "Receive the declared general-cell periodic GUI source profile, explicit grouping/structure order/origins, native wrap/unwrap and cell assignment, independent/current effects, rejection, review expiry and projection-only retry. Cartesian coordinates are not rescaled by cell assignment; arbitrary oriented row input remains an expert setter route.",
+      "stage": "source implemented, consumer locally verified and delivered; final applicable acceptance pending",
+      "owner": "MolSysMT science/addon; Viewer orchestration and consumer receiving",
+      "next_gate": "Owner review/current hosted receiving; applicable consolidated/installed/platform/human acceptance. No promotion from source receiving alone."
+    }
+  },
+  "operation_effect_matrix": {
+    "native_and_expert": "Selected full modules receive independent/immediate/deferred projection, sync-failure retry, changed-source rejection and true no-op where supported, explicit units/populations/structures, degenerate inputs and unchanged source/unselected data. Native tests own scientific oracles; parity is not substituted for scientific truth.",
+    "jupyter": "All eleven selected scenarios exercise actual comms/AnyWidget/Mol*, explicit result presentation and applicable canvas/detached Studio routing. Page errors are compared to the independent plain-Jupyter debugger baseline, not claimed absent.",
+    "qt": "Twenty representative native host checks across five operations; reviewed direct edits and separate result-window ownership. Not a Cartesian repetition of every native argument on every host. Actual native Wayland/WebEngine is distinct from human visual or GPU-device certification.",
+    "persistence": "Native recovered-inventory/session guards plus the causal public recovered-append regression; old evaluated coverage and occurrences survive, added structures are unevaluated.",
+    "read_only_dispositions": "Naming/property readers have no in-place projection or sync-retry effect; unsupported physical interpretations remain explicitly unqualified.",
+    "final_acceptance": "Consolidated exact-head hosted, installed/platform and postponed human observations remain pending. Experimental native Qt and scientific families retain their owning stability classifications."
+  },
+  "original_observations_retained": [
+    "Seven original CI certificates pass 107 scientific cases but correctly refuse an untracked controlled wheel inside source; original archive and raw evidence retained. The cancelled macOS 3.14 cell had no runner/steps, not a measured test timeout. #669/PR668 owns the prepared placement fix.",
+    "CI guard first reproduces placement failure; intermediate quoting yields nine failures/151 passes and is fixed without relaxing the route audit or cleanliness requirement.",
+    "Private D4 first probe correctly refuses analysed incoming source; the diagnostic then corrects a sorted-order test assumption and isolates the actual Viewer coverage loss. Public regression is causal red/green.",
+    "One sandboxed runner cannot access the user scope bus and starts no pytest; controlled escalation uses the already-authorized resource scope.",
+    "The first five-case periodic Jupyter run passes natively but fails the frozen-input envelope after six CI-only pins were edited. Its exact differences are retained. The final frozen-input repeat is the accepted receiving run."
+  ],
+  "ci": {
+    "full": 42689572908,
+    "smoke": 42689572464,
+    "performance": 42689572350,
+    "status": "Performance terminal success. Full matrix and smoke still pending in retained official snapshot. Four original Linux certificates are hash-verified 107/107 each and source-clean for their actual synthetic merge, not a complete job/matrix or local-contribution qualification.",
+    "performance_conclusion": "success",
+    "performance_metadata_manifest_sha256": "6c2e01ca5578fef83b6a6f1d49a0d6fa658f3d812d21e8ac96ddbf68d652d53c",
+    "full_conclusion": null,
+    "smoke_conclusion": null,
+    "linux_scientific_certificates": {
+      "run": 42689572908,
+      "head_source": "89a649c1dc2464322311f4fefc3968a93e32cff3",
+      "scope": "Four original Linux scientific certificates downloaded via the GitHub connector, bytes verified against official artifact SHA-256. Certificate success is not whole-job/matrix success, installed qualification or publication authorization. The certificate release_eligible field applies only to this registered source gate.",
+      "certificates": [
+        {
+          "artifact_id": 13706507550,
+          "name": "scientific-evidence-ubuntu-latest-py3.14",
+          "zip_sha256": "458707c485fb48872584ea9a798f0dd50de096178d2067f474ef6213ee358a43",
+          "bytes": 2242,
+          "python": "3.14.10",
+          "certificate_commit": "00911e8dda9afa6a41266ad6736c2ce9989b43e3",
+          "registered_nodes": 68,
+          "passed": 107,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "source_correspondence": true,
+          "tracked_source_dirty": false
+        },
+        {
+          "artifact_id": 13706902051,
+          "name": "scientific-evidence-ubuntu-latest-py3.11",
+          "zip_sha256": "159b987abdae7cec4c3b26c2be8583d9373944c597ca2354f008bdc8a2d7e7e0",
+          "bytes": 2244,
+          "python": "3.11.18",
+          "certificate_commit": "00911e8dda9afa6a41266ad6736c2ce9989b43e3",
+          "registered_nodes": 68,
+          "passed": 107,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "source_correspondence": true,
+          "tracked_source_dirty": false
+        },
+        {
+          "artifact_id": 13705154912,
+          "name": "scientific-evidence-ubuntu-latest-py3.12",
+          "zip_sha256": "45627481c96e2ef603b069883a8edae893a9467e593a1ae1ce0fe85dabed1b9e",
+          "bytes": 2243,
+          "python": "3.12.16",
+          "certificate_commit": "00911e8dda9afa6a41266ad6736c2ce9989b43e3",
+          "registered_nodes": 68,
+          "passed": 107,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "source_correspondence": true,
+          "tracked_source_dirty": false
+        },
+        {
+          "artifact_id": 13706233051,
+          "name": "scientific-evidence-ubuntu-latest-py3.13",
+          "zip_sha256": "dfd763bdd2bd590581230609d863fe511c1e119e038b8f43f02eb8a8b5296943",
+          "bytes": 2242,
+          "python": "3.13.18",
+          "certificate_commit": "00911e8dda9afa6a41266ad6736c2ce9989b43e3",
+          "registered_nodes": 68,
+          "passed": 107,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "source_correspondence": true,
+          "tracked_source_dirty": false
+        }
+      ]
+    },
+    "synthetic_merge": {
+      "merge_commit": "00911e8dda9afa6a41266ad6736c2ce9989b43e3",
+      "parents": [
+        "ecf9a70e649123f764505dcea33debaa2e4a9946",
+        "89a649c1dc2464322311f4fefc3968a93e32cff3"
+      ],
+      "contribution_tree": "36f4a95300d24a1ac57df11b2e853e1dd2f53eec",
+      "merge_tree": "94a531a4e535c12a879b74b8f62c51352c10f674",
+      "same_tree_as_contribution": false,
+      "additional_paths": [
+        ".github/workflows/ci-smoke.yaml",
+        "devguide/molsysviewer_tools_gui_design.md",
+        "devguide/pending_proposals/h5msm_0_6_molecular_mechanics_persistence.md",
+        "devguide/pending_proposals/molsysviewer_tools_addon.md",
+        "devguide/pre_1_0_robustness_audit_20261106.md",
+        "devguide/release_1_0_status.md",
+        "devtools/data/docking_h5msm06_client_receiving_256_20261109.json",
+        "devtools/data/molsysviewer_chemistry_assessment_receiving_421_20261109.json",
+        "devtools/data/pre_1_0_progress_scorecard_20261107.json",
+        "docs/content/course/Common_Core/12_Building_Repairing_and_Auditing_Systems.AGENTS.md",
+        "docs/content/course/Common_Core/12_Building_Repairing_and_Auditing_Systems.ipynb",
+        "docs/content/user/tools/molsysviewer_tools.md",
+        "docs/content/user/tools/molsysviewer_tools.md.AGENTS.md",
+        "docs/docs_manifest.yml",
+        "molsysviewer_molsysmt/_chemistry_panel.py",
+        "molsysviewer_molsysmt/_chemistry_panel_frontend.py",
+        "tests/molsysviewer_molsysmt/chemistry_panel_jupyter.mjs",
+        "tests/molsysviewer_molsysmt/jupyter_receiving_guard.py",
+        "tests/molsysviewer_molsysmt/system_panel_jupyter.py",
+        "tests/molsysviewer_molsysmt/test_chemistry_assessments_panel.py"
+      ],
+      "native_core_rust_setup_diff": [],
+      "disposition": "CI tests a synthetic merge containing later owner Chemistry GUI/docs additions from ecf9a70, not the local contribution tree. Preserve both identities; the four source-clean native certificates qualify their actual merge only. They do not receive the new Chemistry GUI or replace full matrix/owner acceptance."
+    }
+  },
+  "remaining_scope": [
+    "A5 background/minimized and consolidated acceptance",
+    "C1-C4 owner/hosted/compatibility and unexplained Viewer #305",
+    "D5.2 owner #582 effective mechanics recipe",
+    "D5.4 owner #615 causal initialization disposition",
+    "D6.4-D6.10 all previously approved remaining task families",
+    "B3.6/B4 require recorded scope decisions",
+    "E1 one continuous scientific session; E2 agreed prolonged-use/scale; E4 postponed human review",
+    "F documentation/compatibility closeout and G separately authorized exact-candidate/installed qualification",
+    "Mandatory Movie #320 remains outside the original 46-leaf counter"
+  ],
+  "resource_policy": {
+    "logical_cpu_cap": 8,
+    "memory_cap_gib": 6,
+    "swap_cap_gib": 0,
+    "minimum_globally_available_gib": 2,
+    "one_own_intensive_operation_at_a_time": true,
+    "native_subprocess_threads": 1,
+    "scheduler": "No applicable Slurm allocation/tool found; user systemd cgroup plus CPU affinity and pressure/reserve monitor. Free capacity is not a reservation."
+  },
+  "publication": {
+    "candidate_frozen": false,
+    "tags_packages_releases_promotions_authorized": false,
+    "either_1_0_publication_authorized": false,
+    "ephemeral_ci_dependency_wheel_scope": "Controlled test acquisition only; not a distributed release artifact."
+  },
+  "custody": {
+    "schema": "molsysviewer.private_receiving_custody@1",
+    "opaque_reference": "robustness-20261106/scientific-receiving-20261109-1",
+    "custodian": "Diego Prada Gracia",
+    "files_verified": 1298,
+    "total_bytes": 314958457,
+    "selected_inputs": 10674,
+    "unique_input_blobs": 10089,
+    "literal_symlinks_recorded": 48,
+    "manifest_sha256": "27f62bdb51d04fb1bd316af334d73647606246fed33bf990e2ada075fb64e618",
+    "originals_retained": true,
+    "off_host_backup_claimed": false
+  },
+  "human_preservation": {
+    "viewer_files": 7,
+    "owner_local_documents": 4,
+    "all_byte_identical": true
+  },
+  "minimum_provider_contract_inspection": {
+    "source": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+    "scope": "Inspected only: 0.23.0 already declares native _extend_interaction_structures preserving observations and unevaluated new structures, and refuses analysed incoming source. This is not an executed 0.23.0 qualification of #346."
+  },
+  "governance_receiving": {
+    "campaign": "viewer-reporting-final-26",
+    "passed": 407,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "inputs_unchanged": true,
+    "whole_tree_ruff_check": true,
+    "whole_tree_ruff_format_check": true,
+    "generated_indexes_current": true
+  }
+}
