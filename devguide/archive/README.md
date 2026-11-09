@@ -1,5 +1,8 @@
 # Archived implementation plans
 
+- [#337: Interaction query answers and failures belong only to their requesting canvas; complete native integration is received.](interaction_frame_query_crosses_canvas_owners.md)
+- [#338: Dynamic queries return complete frame-scoped memberships, preserving empty/frozen geometry across canvases.](dynamic_region_queries_cross_renderer_frames.md)
+
 - [#344: Weak native font-content metadata avoids repeated atlas uploads and receives all twelve actual Jupyter stopped/moving captures.](jupyter_moving_capture_residual_uploads.md)
 
 - [#343: Contended transfer replies survive molecular ownership, with close-before-reply ordering and canonical Jupyter/native Qt receiving.](jupyter_rebuild_waits_for_begin_ack.md)

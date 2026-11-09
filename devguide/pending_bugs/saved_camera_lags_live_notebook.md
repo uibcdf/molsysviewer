@@ -15,6 +15,13 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
+**Requester/frame source closeout — 2026-11-08:** #337/#338 now receive
+142 affected Python cases plus the complete unchanged-input native browser,
+actual Jupyter and Qt integration from #344. Their
+[closeout receipt](../frame_query_integration_closeout_20261108.json) separates
+bounded query correctness from unqualified background-host behavior. A5 remains
+partial; no original-plan leaf or public capability is added by these closures.
+
 **Background-host controls — 2026-11-08:** [bounded probes](../background_capture_host_controls_20261108.json)
 do not yet qualify real background/minimized scheduling. Native Qt restoration
 fails its exposure oracle; the separate pure-QWidget control does not retain
@@ -176,7 +183,7 @@ JavaScript cases. No prototype pass is presented as current acceptance.
 
 **Dynamic query isolation in receiving — 2026-11-08:** the preceding detached
 failure leads to independently reproduced
-[#338](dynamic_region_queries_cross_renderer_frames.md): dynamic replies are
+[#338](../archive/dynamic_region_queries_cross_renderer_frames.md): dynamic replies are
 broadcast across native frames and omit unchanged memberships needed by another
 renderer. The source correction retains native scientific evaluation/cache and
 adds complete requester-owned replies, monotonic request identity and
@@ -189,7 +196,7 @@ Neither the previous popup passes nor this new protocol result closes A5.
 passes 420 canonical JavaScript cases and receives popup-state, but the next
 popup-session still times out. Actual independent renderer counters reuse
 request IDs for different frames. The bounded
-[#337 report](interaction_frame_query_crosses_canvas_owners.md) independently
+[#337 report](../archive/interaction_frame_query_crosses_canvas_owners.md) independently
 reproduces broadcast query replies and completion: four directed controls
 fail before correction. The working host/Python correction isolates the
 requester, keeps detached summaries from requesting hidden geometry, and

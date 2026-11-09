@@ -1,13 +1,13 @@
 ---
 summary: Interaction frame query replies reach unrelated renderer-local request IDs.
 issue: uibcdf/molsysviewer#337
-status: active
+status: resolved
 opened: 2026-11-08
-closed:
+closed: 2026-11-08
 severity: medium
 verification: reproduced
 area: [interactions, popup, transport]
-guard:
+guard: tests/test_interactions_scene.py
 normative:
 blocked_by: []
 supersedes: []
@@ -15,7 +15,21 @@ supersedes: []
 
 # Interaction frame queries cross canvas owners
 
-**Integration follow-up — 2026-11-08:** #344's bounded native font-content
+**Resolved in source — 2026-11-08:** the requester/frame correction now has
+complete local integration receiving after #344's bounded font-upload fix.
+The final affected Python selection passes 142 cases without omissions;
+canonical moving/lifetime browser and actual Jupyter/Qt receiving retain exact
+unchanged input hashes in the
+[closeout receipt](../frame_query_integration_closeout_20261108.json).
+The guard `tests/test_interactions_scene.py` protects actual
+request ownership, complete native results and failure/lifetime semantics.
+Earlier failed campaigns below retain their original source and scope.
+
+This closes bounded #337; A5/#319 stays partial for background/minimized
+and consolidated/installed acceptance. V2 remains unadvertised. Native Qt
+popouts, human review and releases retain their separate scope.
+
+**Earlier integration follow-up — 2026-11-08:** #344's bounded native font-content
 adapter receives the complete actual-Jupyter stopped/moving entry, alongside
 native Qt and shared browser moving/lifetime guards. The
 [receipt](../jupyter_font_metadata_receiving_20261108.json) retains independent
@@ -83,7 +97,7 @@ throttling or resource interruption. The follower no-op refinement subsequently
 receives popup-state, but popup-session still times out in `endpoint-after-07`.
 This report does not assert that query isolation alone explains every timeout.
 
-## Remaining receiving
+## Earlier nonclosing receiving
 
 The source correction passes 54 affected Python cases, 485 transport/router/
 Qt/reporting controls and 422 canonical JavaScript cases. Strict production

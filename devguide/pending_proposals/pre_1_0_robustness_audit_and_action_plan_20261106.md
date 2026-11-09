@@ -14,6 +14,13 @@ supersedes: []
 
 # Pre-1.0 robustness audit and action plan — 2026-11-06
 
+**Requester/frame source closeout — 2026-11-08:** #337/#338 now receive
+142 affected Python cases plus the complete unchanged-input native browser,
+actual Jupyter and Qt integration from #344. Their
+[closeout receipt](../frame_query_integration_closeout_20261108.json) separates
+bounded query correctness from unqualified background-host behavior. A5 remains
+partial; no original-plan leaf or public capability is added by these closures.
+
 **Background-host controls — 2026-11-08:** [bounded probes](../background_capture_host_controls_20261108.json)
 do not yet qualify real background/minimized scheduling. Native Qt restoration
 fails its exposure oracle; the separate pure-QWidget control does not retain
@@ -84,7 +91,7 @@ A5 remains partial for current host/hidden/lifetime and consolidated acceptance;
 v2 and publication stay unadvertised/paused. Progress remains 8/46 (17.4%).
 
 **Earlier selected receiving — 2026-11-08:**
-[#338](../pending_bugs/dynamic_region_queries_cross_renderer_frames.md) isolates
+[#338](../archive/dynamic_region_queries_cross_renderer_frames.md) isolates
 complete dynamic-region replies; [#339](../archive/applied_box_feedback_reprojects_geometry.md)
 stops confirmed native-cell feedback from reissuing scene geometry. The selected
 source passes 218 affected Python and 428 canonical JavaScript cases. Failed
@@ -104,7 +111,7 @@ source cohort. A5 remains open and progress stays 8/46 (17.4%).
 pass after the current refinement; detached Studio state still times out and
 its session case does not execute. Independent
 query-owner collisions are reproduced under
-[#337](../pending_bugs/interaction_frame_query_crosses_canvas_owners.md).
+[#337](../archive/interaction_frame_query_crosses_canvas_owners.md).
 The source isolation passes 54 affected Python, 485 boundary and 422 canonical
 JavaScript cases. Canonical v1 popup bootstrap/Retry passes on the final backend
 bytes in 41.16 s. Full moving-endpoint acceptance remains open. The

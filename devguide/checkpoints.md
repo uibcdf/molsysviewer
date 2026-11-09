@@ -912,6 +912,11 @@ final acceptance is **1/46 (2.2%)**. Neither is total release readiness, and
 Movie #320 remains an additional mandatory stream. E0, A1–A4/A6 and B1/B2 have
 their recorded delivered results; consolidated acceptance remains separate.
 
+The [requester/frame closeout](frame_query_integration_closeout_20261108.json)
+receives #337/#338 with 142 affected Python cases and unchanged-input native
+browser/Jupyter/Qt integration from #344. Both bounded query defects are
+resolved in source; A5 stays partial and the progress counters are unchanged.
+
 The latest [#344 source receiving](jupyter_font_metadata_receiving_20261108.json)
 receives unchanged native-font upload reuse without CPU image copies. The
 canonical actual-Jupyter entry passes six stopped and six moving independent

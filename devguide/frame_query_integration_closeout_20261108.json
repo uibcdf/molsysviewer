@@ -1,0 +1,100 @@
+{
+  "schema": "molsysviewer.working_receiving@1",
+  "date": "2026-11-08",
+  "owner_issues": [
+    "uibcdf/molsysviewer#337",
+    "uibcdf/molsysviewer#338"
+  ],
+  "parent_issue": "uibcdf/molsysviewer#319",
+  "status": "Bounded requester/frame corrections received in source; broader A5 remains partial.",
+  "source_base": "354040a6dbe65011ad7c6bf73320aa00c368d47e",
+  "scientific_provider": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+  "runtime_sha256": "ff3744469b74cb75bd9faeba4ecc53fe7731648b07c306d0df7671afa9fd90c5",
+  "production_source_changed": false,
+  "affected_python": {
+    "native_exit": 0,
+    "seconds": 55.122482375008985,
+    "selected_inputs": 4846,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 594.1,
+    "cleanup": {
+      "tracked": 1,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null
+  },
+  "pytest": {
+    "passed": 142,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "warnings": 142,
+    "warning_class": "Native LegacyH5MSMWarning from retained 0.4 fixtures."
+  },
+  "selection": [
+    "tests/test_interactions_scene.py",
+    "tests/test_moving_state_capture.py",
+    "tests/test_array_native_transport.py",
+    "tests/test_transport_ownership.py"
+  ],
+  "input_manifest_sha256": "ffb8666ccd9763781aed86fc5a85324eadd8b124ebd06bf077909b80420c8b90",
+  "invocation_sha256": "af807f790fef5e2928f634311fff0c5badee184fb636e7c028463fe52608163d",
+  "junit_sha256": "2b9c69a1c1ed8f7286dd5d8f9fa58c562b479222597307976ea271ad1a4d4c06",
+  "canonical_frontend_and_hosts": {
+    "receipt": "devguide/jupyter_font_metadata_receiving_20261108.json",
+    "applicability": "Every recorded production/test/runtime input hash is unchanged. Source pair/provider is frozen as recorded there. Results retain their original scope and are not rerun or summed.",
+    "native_moving_browser": "seven independent saves/restorations, including primary/canvas popup/detached Studio and empty frame; native interactions/regions checked against the actual completed molecular frame.",
+    "native_lifecycle_browser": "pending owner/View close, transport-loss expiry and other-frame static membership freezing.",
+    "actual_jupyter": "six stopped and six moving state/session saves, requester-owned genuine held science and exact completed draws.",
+    "native_qt": "four stopped and four moving primary-host saves, scientific query owners, empty/frozen region controls. Native Qt popouts retain #51 scope.",
+    "javascript_cases": 428
+  },
+  "guards": {
+    "uibcdf/molsysviewer#337": "tests/test_interactions_scene.py",
+    "uibcdf/molsysviewer#338": "tests/test_moving_state_capture.py"
+  },
+  "why_guards_protect": {
+    "337": "Real pentalanine and sparse native interactions require exact requester-only answers/failures, no legacy-primary fanout, rejection of panel/unknown owners, and live-host endpoint lifetime. Native browser/host receiving independently checks geometry/occurrences at the sampled frame.",
+    "338": "Real dynamic recipes require complete requester-owned membership on every query, including unchanged/empty observations; reject non-canvas owners and preserve failure ownership. Freeze, independent persistence/recovery and advancing-frame cases retain frame context. Native browser receiving additionally checks stale-frame/query rejection and empty/frozen geometry."
+  },
+  "limits": [
+    "This is affected-source consolidation, not a single full core run, exact-head hosted matrix, clean installed package or human acceptance.",
+    "Initial before-controls, failed queue/pacing/coalescing prototypes and later font-atlas/oracle failures retain their distinct dated source receipts.",
+    "#344 receives the final complete source integration; closing these two query defects does not establish that query isolation alone cured every earlier timeout.",
+    "A5/#319 remains partial for genuine background/minimized scheduling and consolidated/installed acceptance; production advertises only capture protocol 1.",
+    "The native/background driver controls in devguide/background_capture_host_controls_20261108.json remain unqualified.",
+    "Original plan counters stay 8/46 delivered and 1/46 finally accepted; Movie #320 remains mandatory.",
+    "No source capability, dependency, candidate/tag/package or publication change."
+  ],
+  "custody": {
+    "schema": "molsysviewer.private_capture_custody_receipt@1",
+    "custodian": "Diego Prada Gracia",
+    "opaque_reference": "robustness-20261106/frame-query-closeout-20261108-1",
+    "files_verified": 73,
+    "total_bytes": 6649485,
+    "manifest_sha256": "d2da294ceed033cc1d8e4e1c544d05d4ba35a2ff6814988cdc0dc6218c55c1e9",
+    "originals_retained": true,
+    "off_host_backup_claimed": false
+  },
+  "reporting_closeout": {
+    "native_exit": 0,
+    "seconds": 4.047889969078824,
+    "selected_inputs": 4846,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 179.3,
+    "cleanup": {
+      "tracked": 2,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "passed": 396
+  },
+  "structural_checks": [
+    "Ruff check passes",
+    "Ruff format check passes: 988 files already formatted",
+    "devguide index is current",
+    "git diff whitespace check passes"
+  ]
+}
