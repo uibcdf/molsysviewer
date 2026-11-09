@@ -15,14 +15,15 @@ supersedes: []
 
 # Dynamic region queries cross renderer frames
 
-**Integration follow-up — 2026-11-08:** #343 receives contended Jupyter
-transport ownership; canonical Jupyter and native Qt guards pass. Expanded
-actual-Jupyter moving receiving still fails globally under
-[#344](jupyter_moving_capture_residual_uploads.md), with dynamic/interaction
-readiness behind several native frames. Keep this source correction active
-until integration receiving is complete; failed prefixes are not acceptance.
+**Integration follow-up — 2026-11-08:** #344's bounded native font-content
+adapter receives the complete actual-Jupyter stopped/moving entry, alongside
+native Qt and shared browser moving/lifetime guards. The
+[receipt](../jupyter_font_metadata_receiving_20261108.json) retains independent
+scientific checks, exact inputs and original failures. This query-isolation
+item stays active for consolidated acceptance; A5 remains partial and v2
+unadvertised. Earlier failed prefixes retain their original scopes.
 
-**Current receiving — 2026-11-08:** the combined browser entry receives all
+**Earlier receiving — 2026-11-08:** the combined browser entry receives all
 seven actual moving saves and independent restorations, including both popup
 types and their native region memberships. The new lifecycle entry additionally
 receives a real budget freeze at frame 0 while both canvases display frame 1:

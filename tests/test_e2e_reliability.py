@@ -91,7 +91,10 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
     # 45: native Studio usability and real browser PNG/HTML downloads.
     # 46: saved-list filtering, atomic marked batches and secondary drafts.
     # 47: initial molecular Welcome suppression through the real ready handshake.
-    assert len(expected) == 47
+    # 48-51: native box geometry, moving capture, capture lifetime and popup
+    # scene bootstrap; each retains its own mandatory scientific entry.
+    # 52: native font-atlas uploads, glyph pixels and GPU resource lifetime.
+    assert len(expected) == 52
     assert declared == expected
     build_command = package["scripts"]["build:e2e:all"]
     compiled = set(re.findall(r"tests/e2e/([^ ]+)\.e2e\.ts", build_command))

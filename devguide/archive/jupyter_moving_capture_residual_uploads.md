@@ -1,13 +1,13 @@
 ---
 summary: Investigate residual texture uploads and incomplete moving capture in Jupyter.
 issue: uibcdf/molsysviewer#344
-status: active
+status: resolved
 opened: 2026-11-08
-closed:
+closed: 2026-11-08
 severity: medium
 verification: measured
 area: [notebook, capture, performance, rendering]
-guard:
+guard: molsysviewer/js/tests/e2e/font-atlas-uploads.e2e.ts
 normative: devguide/transport_state_ownership.md
 blocked_by: []
 supersedes: []
@@ -15,12 +15,33 @@ supersedes: []
 
 # Residual moving-capture receiving in Jupyter
 
-**Open:** the expanded actual-Jupyter v2 entry is not qualified on production. Its
-private working source and original failures are retained. The existing
-canonical v1 guard remains unchanged; exclusion of the unqualified expansion
-is not a passing moving result. A5/#319 stays partial.
+**Resolved in source:** a bounded compatibility adapter for installed Mol* 5.4.1
+reuses unchanged native font uploads without copying or hashing CPU images.
+Native glyph writes invalidate weak content tokens; resource/context resets,
+style/dimension changes, explicit subimage writes and unknown images retain
+native upload semantics. Mol* continues to own pixel layout and GPU lifetime.
+The new real-WebGL guard checks every alpha pixel after new glyphs and actual
+context restoration, plus two consumers, reset, resize and native disposal.
+Its negative control fails the unchanged-upload assertion without the adapter.
 
-## Current upstream review and isolated receiving
+The regenerated production runtime receives the complete canonical actual
+Jupyter entry: six stopped and six moving state/session saves, independent
+restoration, genuine held science, unchanged source data, cancellation and
+no late write after autonomous timeout. Native Wayland/NVIDIA Qt receives four
+stopped and four moving saves. Shared moving/lifetime/annotation browser guards
+and 428 canonical JavaScript cases pass. The corrected scientific oracle and
+moving fixtures are now durable tests rather than a private cache experiment.
+The [source receiving receipt](../jupyter_font_metadata_receiving_20261108.json)
+retains exact inputs, original failures and private custody.
+
+This closes bounded #344. It does not close A5/#319, advertise capture protocol
+2, qualify installed artifacts or receive background/minimized host scheduling.
+The post-1.0 dependency migration and compatibility-adapter retirement remain
+under #115; the maintainer reviews the adapter by 2026-12-08. No node_modules,
+dependency, public API, quality setting, scientific reply or capture deadline
+is changed. The earlier measurements below retain their original runtime scope.
+
+## Earlier upstream review and isolated receiving
 
 The maintainer requested verification against updated upstream before any
 external report. The clean `~/repos@others/molstar` checkout was fetched and
@@ -107,7 +128,7 @@ The exact scientific provider is `42f5ed3bc8f02c979b3351212554e588243de0a5`.
 Receiving uses real Jupyter/anywidget/Mol*/SwiftShader, with eight logical CPUs,
 six GiB and a two-GiB shared-available reserve; no resource stop occurs.
 
-## Next bounded investigation
+## Earlier investigation boundary
 
 Separate the corrected oracle-only control from the private content-cache
 experiment. Select a bounded supported consumer route, preserving current

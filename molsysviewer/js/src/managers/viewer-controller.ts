@@ -22,6 +22,7 @@ import { VARELA_ROUND_WOFF2_DATA_URL } from "../assets/varela-round/font-data";
 import { disposeControls } from "../ui/controls";
 import { ViewerMessage, KnownViewerMessage, type SystemSyncStateMessage } from "../messages/viewer-messages";
 import { LoadedStructure } from "../plugin/structure";
+import { installFontAtlasUploads } from "../plugin/font-atlas-uploads";
 import { LoaderHandlers } from "./handlers/loader-handlers";
 import { AnnotationHandlers } from "./handlers/annotation-handlers";
 import { MeasurementHandlers } from "./handlers/measurement-handlers";
@@ -613,6 +614,7 @@ export class MolSysViewerController {
     private cameraNavigationFactory?: () => CameraIntentApplication | undefined;
     public readonly canvasHost: HTMLDivElement;
     private readonly isPanelOnly: boolean;
+    private readonly releaseFontAtlasUploads?: () => void;
     private canvasInsetAnimFrame: ReturnType<typeof requestAnimationFrame> | null = null;
     private canvasInsetFrom = { left: 0, right: 0 };
     private canvasInsetTo = { left: 0, right: 0 };
@@ -1063,6 +1065,7 @@ export class MolSysViewerController {
     }
 
     private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void, canvasHost?: HTMLDivElement, private readonly initOptions?: { panelModeStyle?: string, viewerMode?: string, controlsMode?: string, isAmbient?: boolean, isSplit?: boolean, model?: any, isPanelOnly?: boolean, onPanelPopClick?: () => void, hasInitialStructures?: boolean, hasAuthority?: boolean }) {
+        if (plugin.canvas3d) this.releaseFontAtlasUploads = installFontAtlasUploads(plugin.canvas3d.webgl);
         this.model = initOptions?.model;
         this.isPanelOnly = !!initOptions?.isPanelOnly;
         // Initial scene replay starts after controller/panel setup. Its molecular
@@ -1920,6 +1923,7 @@ export class MolSysViewerController {
         this.contextMenu.dispose();
         this.releaseContextMenuSuppression?.();
         this.releaseGlobalEscapeHandler?.();
+        this.releaseFontAtlasUploads?.();
         this.plugin.dispose();
     }
 

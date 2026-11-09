@@ -141603,6 +141603,81 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
   return overlay;
 };
 
+// src/plugin/font-atlas-uploads.ts
+var fontContent = /* @__PURE__ */ new WeakMap();
+var getGlyph = FontAtlas.prototype.get;
+FontAtlas.prototype.get = function(char) {
+  const previous = this.mapped[char];
+  try {
+    const glyph = getGlyph.call(this, char);
+    if (this.mapped[char] && this.mapped[char] !== previous) fontContent.set(this.texture, {});
+    return glyph;
+  } catch (error2) {
+    fontContent.delete(this.texture);
+    throw error2;
+  }
+};
+function installFontAtlasUploads(context2) {
+  const resources = context2.resources, create3 = resources.texture, reset = resources.reset;
+  let epoch = 0, disposed = false;
+  const invalidate = () => {
+    epoch++;
+  };
+  const restored = context2.contextRestored.subscribe(invalidate);
+  const resetResources = () => {
+    invalidate();
+    return reset.call(resources);
+  };
+  const createTexture2 = (...args) => {
+    const texture = create3.apply(resources, args);
+    if (args[0] !== "image-uint8" || args[1] !== "alpha" || args[2] !== "ubyte") return texture;
+    let retired = false;
+    let uploaded;
+    return {
+      ...texture,
+      load(image, sub = false) {
+        const content = fontContent.get(image);
+        const array2 = "array" in image ? image.array : void 0;
+        if (!disposed && !retired && !context2.isContextLost && !sub && content && array2 && uploaded?.image === image && uploaded.array === array2 && uploaded.content === content && uploaded.epoch === epoch && uploaded.width === image.width && uploaded.height === image.height && uploaded.filter === ("filter" in image ? image.filter : void 0) && uploaded.flipY === ("flipY" in image ? image.flipY : void 0) && texture.getWidth() === image.width && texture.getHeight() === image.height) return;
+        uploaded = void 0;
+        texture.load(image, sub);
+        if (!disposed && !retired && !context2.isContextLost && !sub && content && array2) uploaded = {
+          image,
+          array: array2,
+          content,
+          epoch,
+          width: image.width,
+          height: image.height,
+          filter: "filter" in image ? image.filter : void 0,
+          flipY: "flipY" in image ? image.flipY : void 0
+        };
+      },
+      define(...dimensions) {
+        uploaded = void 0;
+        texture.define(...dimensions);
+      },
+      reset() {
+        uploaded = void 0;
+        texture.reset();
+      },
+      destroy() {
+        uploaded = void 0;
+        retired = true;
+        texture.destroy();
+      }
+    };
+  };
+  resources.texture = createTexture2;
+  resources.reset = resetResources;
+  return () => {
+    if (disposed) return;
+    disposed = true;
+    restored.unsubscribe();
+    if (resources.texture === createTexture2) resources.texture = create3;
+    if (resources.reset === resetResources) resources.reset = reset;
+  };
+}
+
 // src/plugin/box-vectors.ts
 function copyJsonBoxVectors(structures) {
   if (!structures.some((frame) => frame.box !== void 0)) return void 0;
@@ -167698,6 +167773,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.panelOpenState = false;
     /** Serialises framing so a newer load cannot be overtaken by an older one. */
     this.frameRequestToken = 0;
+    if (plugin.canvas3d) this.releaseFontAtlasUploads = installFontAtlasUploads(plugin.canvas3d.webgl);
     this.model = initOptions?.model;
     this.isPanelOnly = !!initOptions?.isPanelOnly;
     this.structureLoadPending = !!initOptions?.hasInitialStructures;
@@ -168857,6 +168933,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.contextMenu.dispose();
     this.releaseContextMenuSuppression?.();
     this.releaseGlobalEscapeHandler?.();
+    this.releaseFontAtlasUploads?.();
     this.plugin.dispose();
   }
   startMeasurementTool(action, endpointPolicy) {

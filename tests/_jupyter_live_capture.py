@@ -38,18 +38,29 @@ def _safe_browser_summary(path: Path) -> dict:
         return {"status": "unavailable", "reason": "invalid"}
     summary = {"status": "available", "outcome": report["outcome"]}
     if report["outcome"] == "failed":
-        phases = {
-            "bootstrap",
-            "plain-kernel baseline",
-            "canvas popup",
-            "cancel late reply",
-            "autonomous capture deadline",
-        } | {
-            f"{api} {origin} {kind}"
-            for api in ("Python", "Studio")
-            for origin in ("notebook", "popup")
-            for kind in ("state", "session")
-        }
+        phases = (
+            {
+                "bootstrap",
+                "plain-kernel baseline",
+                "canvas popup",
+                "cancel late reply",
+                "autonomous capture deadline",
+                "moving setup",
+                "moving popup",
+            }
+            | {
+                f"{api} {origin} {kind}"
+                for api in ("Python", "Studio")
+                for origin in ("notebook", "popup")
+                for kind in ("state", "session")
+            }
+            | {
+                f"Moving {api} {origin} {kind}"
+                for api in ("Python", "Studio")
+                for origin in ("notebook", "popup")
+                for kind in ("state", "session")
+            }
+        )
         error_types = {
             "Error",
             "AssertionError",
@@ -62,7 +73,7 @@ def _safe_browser_summary(path: Path) -> dict:
         for source, target, allowed in (("stage", "phase", phases), ("error_type", "error_type", error_types)):
             value = report.get(source)
             summary[target] = value if isinstance(value, str) and value in allowed else "unclassified"
-    for key in ("capture_restore_cases", "strong_restore_cases", "studio_cases"):
+    for key in ("capture_restore_cases", "strong_restore_cases", "studio_cases", "moving_capture_cases"):
         value = report.get(key)
         if type(value) is int and 0 <= value <= 100:
             summary[key] = value

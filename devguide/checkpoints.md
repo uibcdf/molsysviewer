@@ -912,15 +912,17 @@ final acceptance is **1/46 (2.2%)**. Neither is total release readiness, and
 Movie #320 remains an additional mandatory stream. E0, A1–A4/A6 and B1/B2 have
 their recorded delivered results; consolidated acceptance remains separate.
 
-The latest [#344 upstream/native review](molstar_font_upload_upstream_review_20261108.json)
-receives Mol* v6's existing shared-font solution and withdraws the duplicate
-new-bug draft. Its private both-canvas experiment passes six stopped and six
-moving Jupyter cases; the corrected-oracle control without optimization still
-times out. The next task is a supported bounded consumer fix and canonical
-receiving, without the experimental CPU image copies. Production stays unchanged,
-#115 stays post-1.0 and A5 remains partial.
+The latest [#344 source receiving](jupyter_font_metadata_receiving_20261108.json)
+receives unchanged native-font upload reuse without CPU image copies. The
+canonical actual-Jupyter entry passes six stopped and six moving independent
+save/recovery cases on the regenerated runtime; native Qt passes four stopped
+and four moving cases. Real GPU glyph/context-lifetime, shared moving/lifecycle/
+annotation guards and 428 JavaScript cases pass. #344 is resolved in source;
+#115 owns the post-1.0 dependency migration and adapter retirement. A5 stays
+partial for background/minimized and consolidated/installed acceptance.
+The earlier upstream review retains the withdrawn duplicate bug draft.
 
-Current [Jupyter contention receiving](jupyter_capture_contention_receiving_20261108.json)
+Earlier [Jupyter contention receiving](jupyter_capture_contention_receiving_20261108.json)
 corrects #343's lost transfer replies and receives public async ownership waits,
 bounded cancellation, originating contexts and close-before-reply ordering.
 The earlier 143-case selection, final 50 overlapping capture/concurrency
@@ -961,8 +963,8 @@ including explicit popup error checks. All selected inputs remain unchanged in
 each run and all owned processes close. The 172 original evidence/source files
 have verified approved private custody; no off-host backup is claimed.
 
-Keep A5 partial and v2 unadvertised until actual Jupyter continuous capture,
-background/minimized host behavior and consolidated/installed scopes are met. Local
+Keep A5 partial and v2 unadvertised until background/minimized host behavior
+and consolidated/installed scopes are met. Local
 executions stay sequential, at most eight logical CPUs/six GiB, with no swap
 and the maintainer's two-GiB minimum globally available reserve. Human review,
 candidate and publication operations remain paused.
@@ -985,7 +987,7 @@ actual-Jupyter failure retains its distinct historical scope in the
 for current owner-PR/C1 inputs; dated receipts below retain their original
 scope rather than superseding this handoff.
 
-Next: complete A5's actual Jupyter continuous capture and remaining host
+Next: complete A5's background/minimized host receiving and consolidated
 acceptance, then B3 DataCard lifecycle and isolated MolSysMT owner-PR
 reconciliation. All approved addon/task families remain in scope. Advisory
 drafts and original unrestricted evidence stay private under approved custody;
@@ -2784,8 +2786,8 @@ chronological status narrative here.
 
 **Current order — 2026-11-08:**
 
-1. **A:** receive A5's continuous v2 capture in actual Jupyter and remaining
-   host behavior; preserve the received Qt/query/freeze and browser lifetime controls and
+1. **A:** receive A5's background/minimized host behavior and retain complete
+   actual Jupyter/Qt moving capture, query/freeze and browser lifetime controls and
    other delivered rejection/cleanup corrections
    before consolidated acceptance.
 2. **B:** retain delivered B1/B2 authority/precision corrections and finish

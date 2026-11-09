@@ -111,6 +111,44 @@ def test_safe_browser_summary_accepts_completed_receiving_without_a_failure_phas
     }
 
 
+def test_safe_browser_summary_retains_moving_scope_without_raw_transport(tmp_path):
+    owner = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))
+    report = tmp_path / "observations.json"
+    private = "private-moving-transport-sentinel"
+    report.write_text(
+        json.dumps(
+            {
+                "outcome": "failed",
+                "stage": "Moving Studio popup session",
+                "error_type": "AssertionError",
+                "moving_capture_cases": 5,
+                "moving_transport": {"private": private},
+                "error": private,
+            }
+        )
+    )
+    summary = owner["_safe_browser_summary"](report)
+    assert summary == {
+        "status": "available",
+        "outcome": "failed",
+        "phase": "Moving Studio popup session",
+        "error_type": "AssertionError",
+        "moving_capture_cases": 5,
+    }
+    assert private not in json.dumps(summary)
+
+
+def test_moving_kernel_helper_collects_without_optional_runtime_dependencies():
+    child = Path(__file__).with_name("_jupyter_moving_capture.py")
+    received = subprocess.run(
+        [sys.executable, "-I", "-S", "-c", "import runpy,sys;runpy.run_path(sys.argv[1])", str(child)],
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    assert received.returncode == 0, received.stderr
+
+
 def test_guard_process_cleanup_retains_reparented_children_and_preserves_unrelated_process(tmp_path):
     """Real child processes only; no Jupyter server or browser is launched."""
     psutil = pytest.importorskip("psutil")
@@ -175,5 +213,19 @@ def test_live_jupyter_work_files(tmp_path):
     assert observed["strong_restore_cases"] == observed["capture_restore_cases"]
     assert observed["no_late_write_after_cancel"] is True
     assert observed["no_late_write_after_timeout"] is True
+    assert observed["moving_capture_cases"] == 6
+    assert {(case["origin"], case["method"], case["kind"]) for case in observed["moving_cases"]} == {
+        (origin, method, kind)
+        for origin, methods in (("notebook", ("Python", "Studio")), ("popup", ("Studio",)))
+        for method in methods
+        for kind in ("state", "session")
+    }
+    assert all(
+        case["held_real_queries"] > 0
+        and len(case["frame_changes_after_request"]) >= 2
+        and case["independent_file_restore"]
+        and case["source_identity_and_coordinates_unchanged"]
+        for case in observed["moving_cases"]
+    )
     assert not (output / "settings.json").exists()
     assert not (output / "config/jupyter_server_config.py").exists()

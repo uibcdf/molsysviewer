@@ -54,6 +54,7 @@ MOVING_CAPTURE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/moving-state-capture.e
 CAPTURE_LIFECYCLE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/moving-capture-lifecycle.e2e.ts"
 BOX_TRAJECTORY_BROWSER_GUARD = "molsysviewer/js/tests/e2e/box-trajectory.e2e.ts"
 ANNOTATIONS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/annotations-interaction.e2e.ts"
+FONT_ATLAS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/font-atlas-uploads.e2e.ts"
 REGIONS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/region-hide.e2e.ts"
 POPUP_BOOTSTRAP_BROWSER_GUARD = "molsysviewer/js/tests/e2e/popup-scene-bootstrap.e2e.ts"
 GROUP_PANEL_UNIT_GUARD = "molsysviewer/js/tests/unit/group-panel.test.ts"
@@ -107,6 +108,7 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         CAPTURE_LIFECYCLE_BROWSER_GUARD,
         BOX_TRAJECTORY_BROWSER_GUARD,
         ANNOTATIONS_BROWSER_GUARD,
+        FONT_ATLAS_BROWSER_GUARD,
         REGIONS_BROWSER_GUARD,
         POPUP_BOOTSTRAP_BROWSER_GUARD,
     ):
@@ -226,6 +228,20 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             (js_root / "tests/e2e/box-trajectory-scenarios.ts").is_file(),
             (js_root / "tests/e2e/box-trajectory-bridge.py").is_file(),
             (js_root / "tests/e2e/canvas-popup-fixture.ts").is_file(),
+        )
+    elif selector == FONT_ATLAS_BROWSER_GUARD:
+        try:
+            browser = (js_root / "tests/e2e/font-atlas-browser.ts").read_text(encoding="utf-8")
+        except OSError as error:
+            return [f"guard {selector!r} cannot be indexed: {error}"]
+        requirements += (
+            "Harness.checkFontAtlasResourceLifecycle()" in entry,
+            "font-atlas-bridge.py" in entry,
+            "observed.uploads, 0" in entry,
+            "readAlphaTexture(context, texture)" in browser,
+            "WEBGL_lose_context" in browser,
+            "context.handleContextRestored()" in browser,
+            (js_root / "tests/e2e/font-atlas-bridge.py").is_file(),
         )
     elif selector == ANNOTATIONS_BROWSER_GUARD:
         requirements += (
@@ -651,6 +667,7 @@ def test_browser_guard_resolves_its_build_entrypoint_and_core_lane() -> None:
     assert validate_guard(ROOT, CAPTURE_LIFECYCLE_BROWSER_GUARD) == []
     assert validate_guard(ROOT, BOX_TRAJECTORY_BROWSER_GUARD) == []
     assert validate_guard(ROOT, ANNOTATIONS_BROWSER_GUARD) == []
+    assert validate_guard(ROOT, FONT_ATLAS_BROWSER_GUARD) == []
     assert validate_guard(ROOT, REGIONS_BROWSER_GUARD) == []
     assert validate_guard(ROOT, POPUP_BOOTSTRAP_BROWSER_GUARD) == []
 
@@ -687,6 +704,8 @@ def test_browser_guard_rejects_missing_or_unadopted_targets(tmp_path: Path) -> N
     assert validate_guard(ROOT, CAPTURE_LIFECYCLE_BROWSER_GUARD + "::run")
     assert validate_guard(tmp_path, BOX_TRAJECTORY_BROWSER_GUARD)
     assert validate_guard(tmp_path, ANNOTATIONS_BROWSER_GUARD)
+    assert validate_guard(tmp_path, FONT_ATLAS_BROWSER_GUARD)
+    assert validate_guard(ROOT, FONT_ATLAS_BROWSER_GUARD + "::run")
     assert validate_guard(ROOT, ANNOTATIONS_BROWSER_GUARD + "::run")
     assert validate_guard(tmp_path, REGIONS_BROWSER_GUARD)
     assert validate_guard(ROOT, REGIONS_BROWSER_GUARD + "::run")

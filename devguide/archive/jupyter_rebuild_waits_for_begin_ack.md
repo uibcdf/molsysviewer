@@ -93,7 +93,7 @@ artifact or human acceptance. The explicit frozen scientific provider is
 The actual wire/receiver observations and independent threaded regression
 establish the dropped-acknowledgement mechanism. This report closes that bounded
 defect. The full actual-Jupyter moving file guard remains unqualified under
-[#344](../pending_bugs/jupyter_moving_capture_residual_uploads.md); its failed
+[#344](../archive/jupyter_moving_capture_residual_uploads.md); its failed
 campaigns are retained rather than combined into a passing result.
 
 The complete board inventory has 100/100/100/41 records and 313 actual issues,

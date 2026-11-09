@@ -15,13 +15,15 @@ supersedes: []
 
 # Interaction frame queries cross canvas owners
 
-**Integration follow-up — 2026-11-08:** #343 receives the actual contended
-Jupyter transport seam; the unchanged canonical Jupyter and native Qt guards
-pass after its correction. Expanded actual-Jupyter moving receiving still fails
-globally under [#344](jupyter_moving_capture_residual_uploads.md). The present
-query-isolation implementation is not closed by those passing prefixes.
+**Integration follow-up — 2026-11-08:** #344's bounded native font-content
+adapter receives the complete actual-Jupyter stopped/moving entry, alongside
+native Qt and shared browser moving/lifetime guards. The
+[receipt](../jupyter_font_metadata_receiving_20261108.json) retains independent
+scientific checks, exact inputs and original failures. This query-isolation
+item stays active for consolidated acceptance; A5 remains partial and v2
+unadvertised. Earlier failed prefixes retain their original scopes.
 
-**Current receiving — 2026-11-08:** the combined browser entry receives
+**Earlier receiving — 2026-11-08:** the combined browser entry receives
 primary/canvas-popup/detached-Studio state/session saves with actual native
 interaction geometry and independent restoration. The new lifecycle entry
 receives pending-owner closure and transport-loss cleanup. See the

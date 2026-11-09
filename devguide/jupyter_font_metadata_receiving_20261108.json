@@ -1,0 +1,546 @@
+{
+  "schema": "molsysviewer.working_receiving@1",
+  "date": "2026-11-08",
+  "owner_issue": "uibcdf/molsysviewer#344",
+  "related_issues": [
+    "uibcdf/molsysviewer#319",
+    "uibcdf/molsysviewer#115",
+    "uibcdf/molsysviewer#337",
+    "uibcdf/molsysviewer#338"
+  ],
+  "status": "Bounded source correction and canonical actual-host receiving verified; A5 remains partial.",
+  "source_base": "09e5011768290316f84f4696de1b260cf9ba5088",
+  "provider_source": "42f5ed3bc8f02c979b3351212554e588243de0a5",
+  "installed_molstar": "5.4.1",
+  "dependency_changed": false,
+  "implementation": {
+    "owner": "molsysviewer/js/src/plugin/font-atlas-uploads.ts",
+    "content_authority": "Native FontAtlas.get glyph writer; weak opaque revision tokens, no pixel copies or hashes.",
+    "gpu_authority": "Native WebGL resource owner; per-texture image/array/configuration/dimensions/context epoch validity.",
+    "fallback": "Unknown images, explicit sub-image writes and invalidated/retired resources retain native operations.",
+    "extra_cpu_bitmap_bytes": 0,
+    "new_render_clock": false,
+    "quality_or_deadlines_changed": false,
+    "public_python_api_changed": false,
+    "temporary_owner": "uibcdf/molsysviewer#344; retirement tracked by #115",
+    "review_by": "2026-12-08"
+  },
+  "guard": "molsysviewer/js/tests/e2e/font-atlas-uploads.e2e.ts",
+  "gpu_receiving": [
+    "unchanged atlas skipped",
+    "native new glyph and complete alpha-pixel equality",
+    "two native textures sharing one atlas remain coherent",
+    "font/quality change",
+    "explicit resize and native resource/context reset",
+    "unknown/explicit-subimage fallback",
+    "physical WEBGL_lose_context and restored GPU pixels",
+    "native allocation release and idempotent adapter disposal",
+    "real public pentalanine distance/angle/dihedral trajectory; zero warmed atlas uploads and native distance endpoints checked"
+  ],
+  "jupyter": {
+    "outcome": "passed",
+    "capture_restore_cases": 6,
+    "strong_restore_cases": 6,
+    "studio_cases": 4,
+    "moving_capture_cases": 6,
+    "no_late_write_after_cancel": true,
+    "no_late_write_after_timeout": true
+  },
+  "jupyter_moving_cases": [
+    {
+      "origin": "notebook",
+      "method": "Studio",
+      "kind": "state",
+      "structure_index": 0,
+      "independent_file_restore": true,
+      "source_identity_and_coordinates_unchanged": true,
+      "held_real_queries": 2,
+      "frame_changes_after_request": [
+        1,
+        0
+      ]
+    },
+    {
+      "origin": "notebook",
+      "method": "Python",
+      "kind": "state",
+      "structure_index": 1,
+      "independent_file_restore": true,
+      "source_identity_and_coordinates_unchanged": true,
+      "held_real_queries": 2,
+      "frame_changes_after_request": [
+        1,
+        2
+      ]
+    },
+    {
+      "origin": "notebook",
+      "method": "Studio",
+      "kind": "session",
+      "structure_index": 1,
+      "independent_file_restore": true,
+      "source_identity_and_coordinates_unchanged": true,
+      "held_real_queries": 2,
+      "frame_changes_after_request": [
+        1,
+        0
+      ]
+    },
+    {
+      "origin": "notebook",
+      "method": "Python",
+      "kind": "session",
+      "structure_index": 0,
+      "independent_file_restore": true,
+      "source_identity_and_coordinates_unchanged": true,
+      "held_real_queries": 2,
+      "frame_changes_after_request": [
+        1,
+        0
+      ]
+    },
+    {
+      "origin": "popup",
+      "method": "Studio",
+      "kind": "state",
+      "structure_index": 0,
+      "independent_file_restore": true,
+      "source_identity_and_coordinates_unchanged": true,
+      "held_real_queries": 2,
+      "frame_changes_after_request": [
+        1,
+        0
+      ]
+    },
+    {
+      "origin": "popup",
+      "method": "Studio",
+      "kind": "session",
+      "structure_index": 1,
+      "independent_file_restore": true,
+      "source_identity_and_coordinates_unchanged": true,
+      "held_real_queries": 2,
+      "frame_changes_after_request": [
+        1,
+        2
+      ]
+    }
+  ],
+  "qt": {
+    "stopped_cases": 4,
+    "moving_cases": [
+      {
+        "source": "studio",
+        "kind": "state",
+        "structure_index": 2,
+        "independent_file_restore": true,
+        "source_identity_and_coordinates_unchanged": true,
+        "held_real_queries": 2,
+        "frame_changes_after_request": [
+          1,
+          2
+        ]
+      },
+      {
+        "source": "python-async",
+        "kind": "state",
+        "structure_index": 2,
+        "independent_file_restore": true,
+        "source_identity_and_coordinates_unchanged": true,
+        "held_real_queries": 2,
+        "frame_changes_after_request": [
+          1,
+          2
+        ]
+      },
+      {
+        "source": "studio",
+        "kind": "session",
+        "structure_index": 2,
+        "independent_file_restore": true,
+        "source_identity_and_coordinates_unchanged": true,
+        "held_real_queries": 2,
+        "frame_changes_after_request": [
+          1,
+          2
+        ]
+      },
+      {
+        "source": "python-async",
+        "kind": "session",
+        "structure_index": 2,
+        "independent_file_restore": true,
+        "source_identity_and_coordinates_unchanged": true,
+        "held_real_queries": 2,
+        "frame_changes_after_request": [
+          1,
+          2
+        ]
+      }
+    ],
+    "platform": "wayland",
+    "rendering": {
+      "canvas": true,
+      "webgl2": true,
+      "renderer": "ANGLE (NVIDIA Corporation, Quadro M2000/PCIe/SSE2, OpenGL ES 3.2)",
+      "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+    },
+    "closed": true
+  },
+  "campaigns": [
+    {
+      "native_exit": 0,
+      "seconds": 13.178628160851076,
+      "peak_owned_rss_mib": 1814.3,
+      "selected_inputs": 4846,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "annotations-final-10",
+      "invocation_sha256": "a600bb5f22bdce72f87294318bf9754d79db888644fa22907872a374b71bb681",
+      "input_manifest_sha256": "3bd50ce77c8c5d4c7f0d88700661532b973306d2676bd4a31fa13ed4634e062e",
+      "scope": "Source receiving; not clean installed artifact or human acceptance."
+    },
+    {
+      "native_exit": 0,
+      "seconds": 8.984749167924747,
+      "peak_owned_rss_mib": 514.5,
+      "selected_inputs": 4839,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "build-guard-01",
+      "invocation_sha256": "26f27dffbd64739132271b6b56a016ca5441890cb1a640afb5978bf02b534fc9",
+      "input_manifest_sha256": "093f0588ac87434b072c48fcb6fe66fdbc9d949e52c62802a6be76e9bc849fca",
+      "scope": "Source receiving; not clean installed artifact or human acceptance."
+    },
+    {
+      "native_exit": 0,
+      "seconds": 2.679971717996523,
+      "peak_owned_rss_mib": 382.9,
+      "selected_inputs": 4841,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "build-runtime-04",
+      "invocation_sha256": "fc14bdb500fba095c8824ab566fd4baacaa30d04112c67f9c95a2b88378cbd6d",
+      "input_manifest_sha256": "fa0d0ab90ccb961c2d23ff0057c746c00c9932e87dd3a18e0fe1cbcebaf91bd0",
+      "scope": "Source receiving; not clean installed artifact or human acceptance."
+    },
+    {
+      "native_exit": 0,
+      "seconds": 16.816226369002834,
+      "peak_owned_rss_mib": 671.9,
+      "selected_inputs": 4841,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 10,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "build-unit-final-11",
+      "invocation_sha256": "fd226b31488ff6f5979cdfdc6ca4200c42b79cc009f10e427e9bfc759fb49766",
+      "input_manifest_sha256": "cbae094e7bc9e891e9fe2b55b9ac8a1cde5f8aff9d95dc94ebdb27100195e32d",
+      "scope": "Source receiving; not clean installed artifact or human acceptance."
+    },
+    {
+      "native_exit": 0,
+      "seconds": 15.039087428012863,
+      "peak_owned_rss_mib": 1638.7,
+      "selected_inputs": 4844,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "font-guard-03",
+      "invocation_sha256": "fd4d294a025ee8600242417f7bda78430ce961f17f587f24ce2174ff964cb6b3",
+      "input_manifest_sha256": "4436ae62b781b34df1622fbc10978564770d943c0f0e1cf7ac3dee28ba56309c",
+      "scope": "Source receiving; not clean installed artifact or human acceptance."
+    },
+    {
+      "native_exit": 0,
+      "seconds": 2.9678866751492023,
+      "peak_owned_rss_mib": 161.6,
+      "selected_inputs": 4846,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "inventory-final-13",
+      "invocation_sha256": "14ead039b1ddb02a2e9a9ecc8964b0060a28a9e57e0d8f8c74ef82df193747b6",
+      "input_manifest_sha256": "ffb8666ccd9763781aed86fc5a85324eadd8b124ebd06bf077909b80420c8b90",
+      "pytest": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "scope": "Source receiving; not clean installed artifact or human acceptance."
+    },
+    {
+      "native_exit": 0,
+      "seconds": 129.53058491111733,
+      "peak_owned_rss_mib": 3417.3,
+      "selected_inputs": 4846,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "jupyter-final-05",
+      "invocation_sha256": "a9c1e984e2d9c2e491309fb094a4976b4b46b6ca1fdca89283439205ea399d5d",
+      "input_manifest_sha256": "54a095c8585d452f6c6c9afa3031d31e1c7c21dd93836bc22ee5adb01a4944d5",
+      "pytest": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "scope": "Source receiving; not clean installed artifact or human acceptance."
+    },
+    {
+      "native_exit": 0,
+      "seconds": 87.42260499717668,
+      "peak_owned_rss_mib": 2849.2,
+      "selected_inputs": 4846,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "lifecycle-final-09",
+      "invocation_sha256": "1878d3824595649d05c9951ff4bd4d6e7500998b5d397ddee63317c77e1d2fb1",
+      "input_manifest_sha256": "3bd50ce77c8c5d4c7f0d88700661532b973306d2676bd4a31fa13ed4634e062e",
+      "scope": "Source receiving; not clean installed artifact or human acceptance."
+    },
+    {
+      "native_exit": 0,
+      "seconds": 69.19567605596967,
+      "peak_owned_rss_mib": 2903.3,
+      "selected_inputs": 4846,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "moving-final-08",
+      "invocation_sha256": "ca5b7510945c2c00049c5f9f5f6c270b3efa58d8c2f9a44d9fe6ee0b6d6bcab3",
+      "input_manifest_sha256": "b9375d0b2bf22595d8f4b096c2deda595104363bb27787ed09f19419c2e1618d",
+      "scope": "Source receiving; not clean installed artifact or human acceptance."
+    },
+    {
+      "native_exit": 1,
+      "seconds": 3.600014517083764,
+      "peak_owned_rss_mib": 1265.3,
+      "selected_inputs": 4844,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 12,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "no-adapter-02",
+      "invocation_sha256": "2287fe67fd087358c0f182be748b09d45c3be9289b43ef2239da2b6e66955533",
+      "input_manifest_sha256": "4436ae62b781b34df1622fbc10978564770d943c0f0e1cf7ac3dee28ba56309c",
+      "scope": "Expected failing real-GL negative control: native writer hook present, context upload adapter deliberately not installed."
+    },
+    {
+      "native_exit": 1,
+      "seconds": 9.902713112998754,
+      "peak_owned_rss_mib": 402.7,
+      "selected_inputs": 4846,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "python-final-12",
+      "invocation_sha256": "c167a23644f545a1940e0313505f7a33e5c0bee8b008b35dccee211c2f5a215e",
+      "input_manifest_sha256": "3bd50ce77c8c5d4c7f0d88700661532b973306d2676bd4a31fa13ed4634e062e",
+      "pytest": {
+        "tests": 483,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "scope": "Source receiving; not clean installed artifact or human acceptance."
+    },
+    {
+      "native_exit": 0,
+      "seconds": 9.161922553088516,
+      "peak_owned_rss_mib": 402.2,
+      "selected_inputs": 4846,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "python-final-14",
+      "invocation_sha256": "63947ea55f11c67008e43d554bf867ac2f4eb19b3bf9568fe48be57a73e86355",
+      "input_manifest_sha256": "ffb8666ccd9763781aed86fc5a85324eadd8b124ebd06bf077909b80420c8b90",
+      "pytest": {
+        "tests": 480,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "scope": "Source receiving; not clean installed artifact or human acceptance."
+    },
+    {
+      "native_exit": 1,
+      "seconds": 0.7042119139805436,
+      "peak_owned_rss_mib": 1.7,
+      "selected_inputs": 4846,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "qt-final-06",
+      "invocation_sha256": "8e81e72e6b09041834cd3dea2f8fe7ef9c3bf6364f6d0ab4d4acc00d07047487",
+      "input_manifest_sha256": "54a095c8585d452f6c6c9afa3031d31e1c7c21dd93836bc22ee5adb01a4944d5",
+      "scope": "Sandbox prevented systemd/user-session access before pytest; not a product-test result."
+    },
+    {
+      "native_exit": 0,
+      "seconds": 48.44236239604652,
+      "peak_owned_rss_mib": 1895.7,
+      "selected_inputs": 4846,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "qt-final-07",
+      "invocation_sha256": "8db3f2c9d9f1b5831ffc027a56de2a566ae1cb2d5580c54d6a796fd2aab1e335",
+      "input_manifest_sha256": "54a095c8585d452f6c6c9afa3031d31e1c7c21dd93836bc22ee5adb01a4944d5",
+      "pytest": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "scope": "Source receiving; not clean installed artifact or human acceptance."
+    },
+    {
+      "native_exit": 0,
+      "seconds": 7.620713218813762,
+      "peak_owned_rss_mib": 547.3,
+      "selected_inputs": 4842,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "name": "typecheck-01",
+      "invocation_sha256": "e58c77a228a5ce31998a7f3da6b917b59cf9dc3c83223a8ed284a7283d1e5eaa",
+      "input_manifest_sha256": "d81c4fae805965c54dd30bfff41aa49a4c91403d7e856349ee20d686234f1a40",
+      "scope": "Source receiving; not clean installed artifact or human acceptance."
+    }
+  ],
+  "final_input_sha256": {
+    "molsysviewer/js/src/plugin/font-atlas-uploads.ts": "d9583a35f07bd90027d71370d15059884e16a10c38e03d15aa6db110d3829a1f",
+    "molsysviewer/js/src/managers/viewer-controller.ts": "e8afbb1e5f87c45c6a05c2d20c44a29ce843ef511ca7ee20e9a661094f15abf0",
+    "molsysviewer/js/package.json": "ce3ba55412fbb30a0a5724147ff2de8b4827960b34ceda00f6767e5e06720fce",
+    "molsysviewer/js/package-lock.json": "d20e7b34bbc9901925e8a2c7d4109794c21ec4ee911245d402dcbe36a5c0a3fd",
+    "molsysviewer/js/tests/e2e/harness.ts": "66db4952177a363ba4f37d28a2650266259910797a233195190f3e46f2865c35",
+    "molsysviewer/js/tests/e2e/e2e-runner.ts": "2ef32374058b4b807e6da56087b9296d0382b7f0756cdc9e6be65530b1c50bbe",
+    "molsysviewer/js/tests/e2e/font-atlas-browser.ts": "946bd787438ff2d6c387aa38daf7ec884f8099a8109f85d24a64f8443104fd07",
+    "molsysviewer/js/tests/e2e/font-atlas-bridge.py": "c24484bfa9cdb25b8571d8621bee2a10ebe5e39b4def0ba88374768536fc1822",
+    "molsysviewer/js/tests/e2e/font-atlas-uploads.e2e.ts": "64ff3e32d310571dcbbce4dc908a09c0fc5dbfbdc81e3f34142ca2f05d2bc4f2",
+    "tests/_jupyter_live_capture.py": "2dd9bd91d43033bb8b422680c640ad4655a60bab7b62bb1632adb227fcafa053",
+    "tests/_jupyter_live_capture.mjs": "338f99e80392c9f46d95ca07d2602791da4896d2339e031fb7921d21763d43ba",
+    "tests/_jupyter_moving_capture.py": "319cd449421c79f225dff0e6ec7a0fcf9f8ce2a4fadeb0dd458faaf801c93dad",
+    "tests/_jupyter_moving_capture.mjs": "8a59f26eb60baaf6bbcfcc4d97fe443f2272ab42279ea8fe17c61132d461d5ac",
+    "tests/test_jupyter_live_capture.py": "5bd2d59672d7c92b170c56d8633978f715d6f1980fcdda16e63896a2257928d8",
+    "tests/test_reporting_protocol.py": "12e4fb2034eba199d8302b0ccb3d69a39e4c01f2f0411d93c76e4e44e2bfe5c2",
+    "tests/test_e2e_reliability.py": "6e2c722508d138ef69d2b41378d7f7b78beba0890839cdfa3de1ab32499003c0",
+    "molsysviewer/viewer.js": "ff3744469b74cb75bd9faeba4ecc53fe7731648b07c306d0df7671afa9fd90c5"
+  },
+  "test_maintenance": "Initial offline selection has 482 passes/one failure: fixed inventory expected 48 rather than the actual 52 suites. All 52 source/build/core registrations agree. The preceding four capture/box/bootstrap additions and this font entry are now explicit; original failure is preserved.",
+  "resource_limits": {
+    "logical_cpus": 8,
+    "ram_gib": 6,
+    "swap_gib": 0,
+    "minimum_globally_available_gib": 2,
+    "one_intensive_campaign_at_a_time": true
+  },
+  "limits": [
+    "All campaigns are automated source receiving with frozen scientific/support providers.",
+    "No clean solver/installed qualification, exact-head hosted matrix, other host or human acceptance is claimed.",
+    "Capture protocol 2 remains fixture-negotiated; production advertises only version 1.",
+    "Background/minimized host scheduling and consolidated A5 acceptance remain pending.",
+    "Adapter is not upstream v6 GPU sharing or dirty-row upload; dependency migration remains post-1.0 #115.",
+    "Raw font-array writes outside the native writer are not automatically observed.",
+    "Earlier B7 failure and CPU-copy experiments remain separate; no pixel-cache experiment is shipped.",
+    "No external upstream issue, node_modules patch, candidate, tag, package or publication.",
+    "Original audit progress stays 8/46 delivered and 1/46 finally accepted; Movie #320 remains mandatory."
+  ],
+  "checks": {
+    "ruff_check": "pass",
+    "ruff_format_check": "pass, 988 files already formatted",
+    "git_diff_check": "pass",
+    "devguide_index_check": "pass",
+    "canonical_node_cases": {
+      "tests": 428,
+      "passed": 428,
+      "failed": 0,
+      "skipped": 0
+    },
+    "final_python_selection": {
+      "passed": 480,
+      "failed": 0,
+      "deselected": 1,
+      "warnings": 2,
+      "scope": "reporting protocol, offline Jupyter helper/process cleanup, E2E reliability, source-workflow coverage and transport ownership. Actual Jupyter runtime was separately passed."
+    },
+    "warnings": "Two native LegacyH5MSMWarning occurrences retained. No legacy fixture migration is performed in this correction."
+  },
+  "delivery": "Reviewed direct-main commit identity is recorded in the owning issue closure; source base and exact final source/runtime hashes are retained below.",
+  "custody": {
+    "schema": "molsysviewer.private_capture_custody_receipt@1",
+    "custodian": "Diego Prada Gracia",
+    "opaque_reference": "robustness-20261106/jupyter-font-metadata-receiving-20261108-1",
+    "files_verified": 213,
+    "total_bytes": 33592355,
+    "manifest_sha256": "3dbc0a7d2706113ea037ece157df8bd4da754ce15bec7deba02a67247b46143f",
+    "originals_retained": true,
+    "off_host_backup_claimed": false
+  }
+}

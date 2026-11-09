@@ -26,6 +26,8 @@ authority.
 | Capture deadline scheduling and callback lifetime | existing widget host loop or Qt GUI channel | `WorkFileSaves` | fired/cancelled callback or connector close; no timer worker thread |
 | Qt ordered message queue, in-flight entry and payload references | `QtMessageBridge` | `QtViewChannel` | Qt bridge generation / window close |
 | Local Qt scene/runtime identity | the persistent `MolSysView` | immutable `QtViewChannel` binding and the HTML shell borrowed from that same View | owning View/channel close |
+| Font atlas pixels and glyph layout | native Mol* `FontAtlas` | weak content tokens emitted at its public glyph writer; per-texture upload validity | native atlas/image lifetime; no retained pixel copies |
+| Native font upload validity for a graphics context | `font-atlas-uploads.ts` compatibility seam | native texture/resource owners; controller installs/releases the context seam | texture reset/resize/destroy, context reset/restoration and controller disposal |
 
 ## Consequences
 
@@ -135,6 +137,33 @@ authority.
 - `ManagedRenderWorker` is the sole owner of its child process and temporary
   browser profile. DevTools is bound to loopback and is only a private health
   channel; it never becomes a client protocol or another scene authority.
+
+## Mol* 5.4.1 font-upload compatibility
+
+The native writer remains authoritative for glyph rasterization and layout.
+Its public `FontAtlas.get` adds a weak content token only when it maps a new
+glyph; a failed writer invalidates that knowledge. Native geometry-cell changes
+alone do not establish changed pixels. The owning runtime bundle installs that
+writer seam before controllers create their fonts; its weak registry retains
+no View, scene, trajectory, pixel snapshot, worker or render clock.
+
+Each native texture keeps only the image/array identities, content token,
+dimensions, filter/flip flags and context generation of its last completed
+load. Unknown images and explicit sub-image writes keep native semantics.
+Reset, resize, destruction, lost/restored contexts and controller disposal
+invalidate reuse; native factories still own GPU allocation and release.
+Arbitrary writes into native font/GL internals are not an observed writer.
+This is content-upload reuse, not v6's shared GPU storage or row-upload design.
+
+This bounded compatibility measure is owned by #344, with migration/removal
+under #115. Current upstream `6682cc94a` already implements native versioned
+atlases; no duplicate new-defect report is published there. The Viewer
+maintainer owns review by **2026-12-08**. Remove the seam after a published
+native replacement passes its exact dependency, glyph/pixel, lifecycle and
+capture gates; until then preserve native fallbacks and the explicit 5.4.1
+scope. The actual native browser guard is
+`molsysviewer/js/tests/e2e/font-atlas-uploads.e2e.ts`; real host qualification
+retains its independent scope.
 
 ## Structural guards
 

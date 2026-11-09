@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readFile, writeFile} from 'node:fs/promises';
+import {receiveJupyterMoving} from './_jupyter_moving_capture.mjs';
 
 const config=JSON.parse(await readFile(process.env.MOLSYSVIEWER_JUPYTER_CAPTURE_SETTINGS,'utf8'));
 const {chromium}=createRequire(config.viewer_root+'/molsysviewer/js/package.json')('playwright');
-const report={scope:'Actual kernel, anywidget, Mol* and normal browser input; no installed/native-host qualification.',capture_restore_cases:0,strong_restore_cases:0,studio_cases:0,records:[],page_errors:[]};
+const report={scope:'Actual kernel, anywidget, Mol* and normal browser input; no installed/native-host qualification.',capture_restore_cases:0,strong_restore_cases:0,studio_cases:0,records:[],page_errors:[],runtime_console:[]};
 let browser,page,stage='bootstrap';
 const distance=(a,b)=>Math.max(...['position','target','up'].flatMap(key=>a[key].map((value,i)=>Math.abs(value-b[key][i]))));
 const camera=target=>target.evaluate(()=>window.__captureControllers[0].getCameraSnapshot());
@@ -46,11 +47,23 @@ async function observeControllers(target){
   let runtime;window.__captureControllers=[];
   Object.defineProperty(window,'__molsysviewer_anywidget_runtime__',{configurable:true,get:()=>runtime,set(value){
    runtime=value;const C=value?.module?.MolSysViewerController;if(!C)return;
-   const create=C.create;C.create=async function(...args){const c=await create.apply(this,args);window.__captureControllers.push(c);return c;};
+   const create=C.create;C.create=async function(...args){
+    const c=await create.apply(this,args);window.__captureControllers.push(c);
+    const trace=window.__captureOperationTrace=[];
+    const handle=c.handleMessage;
+    c.handleMessage=function(message,...rest){
+     const item={op:message?.op,started:performance.now()};trace.push(item);if(trace.length>256)trace.shift();
+     const finish=error=>{item.finished=performance.now();if(error)item.error=error.name;};
+     try{const result=handle.call(this,message,...rest);if(result?.then)result.then(()=>finish(),finish);else finish();return result;}
+     catch(error){finish(error);throw error;}
+    };
+    return c;
+   };
   }});
-  const open=window.open.bind(window);
+  const open=window.open.bind(window);window.__capturePopups=[];
   window.open=(...args)=>{
    const popup=open(...args);if(!popup)return popup;
+   window.__capturePopups.push(popup);
    const append=popup.Node.prototype.appendChild;
    popup.Node.prototype.appendChild=function(node){
     if(node.tagName==='SCRIPT'&&node.textContent.includes('await boot(module)'))node.textContent=node.textContent.replace('await boot(module)',`const create=module.MolSysViewerController.create;module.MolSysViewerController.create=async function(...args){const c=await create.apply(this,args);window.__captureControllers=[...(window.__captureControllers||[]),c];return c;};await boot(module)`);
@@ -95,6 +108,17 @@ async function openWork(target){
  // all file actions below use real visible controls and authenticated transport.
  await target.evaluate(()=>{const c=window.__captureControllers[0];c.setPanelMode('navigate',true);c.groupPanel.setExpanded(true);c.groupPanel.openSection('export');});
  const work=target.locator('[data-molsysviewer-work-files="true"]');await work.waitFor({state:'visible'});return work;
+}
+
+async function openCanvas(){
+ await page.evaluate(()=>window.__captureControllers[0].groupPanel.setExpanded(false));
+ const source=page.locator('[data-molsysviewer-canvas-output]').first();
+ await source.getByRole('button',{name:'Show canvas controls',exact:true}).focus();await page.keyboard.press('Enter');
+ const opened=page.waitForEvent('popup');await source.getByTitle('Open popup',{exact:true}).click();const popup=await opened;
+ popup.on('pageerror',error=>report.page_errors.push({stage,message:error.message,stack:error.stack}));
+ await popup.locator('#molsysviewer-loading').waitFor({state:'hidden'});
+ await popup.waitForFunction(()=>window.__captureControllers?.[0]?.getStructureData()?.elementCount===62);
+ return popup;
 }
 
 async function repliesSince(mark){
@@ -204,6 +228,7 @@ try{
  if(process.env.PW_CHROMIUM_BIN)options.executablePath=process.env.PW_CHROMIUM_BIN;
  browser=await chromium.launch(options);
  page=await browser.newPage({viewport:{width:1440,height:1100}});page.setDefaultTimeout(30000);
+ page.on('console',message=>{if(['error','warning'].includes(message.type())&&report.runtime_console.length<64)report.runtime_console.push({stage,type:message.type(),text:message.text().slice(0,2048)});});
  page.on('pageerror',error=>report.page_errors.push({stage,message:error.message,stack:error.stack}));await observeControllers(page);
  await page.goto(`http://127.0.0.1:${config.port}/lab/workspaces/capture-${Date.now()}/tree/capture.ipynb?token=${config.token}`,{waitUntil:'domcontentloaded'});
  const cell=page.locator('.jp-NotebookPanel:visible .jp-Cell').first();await cell.locator('.cm-content').waitFor();
@@ -215,21 +240,23 @@ try{
  await page.waitForFunction(()=>window.__captureControllers?.[0]?.getStructureData()?.elementCount===62);
  await observeDraws(page);
  await page.evaluate(()=>{
-  window.__captureTraffic=[];
+  window.__captureTraffic=[];window.__captureProtocolTraffic=[];window.__captureKernelErrors=[];
   const kernel=window.jupyterapp.shell.currentWidget.sessionContext.session.kernel;
-  kernel.anyMessage.connect((_sender,args)=>{const content=args.msg?.content?.data?.content;const data=content?.payload??content;if(data?.event==='visual_state_snapshot')window.__captureTraffic.push(JSON.parse(JSON.stringify(data)));});
+  kernel.anyMessage.connect((_sender,args)=>{
+   const content=args.msg?.content?.data?.content,data=content?.payload??content;
+   if(args.msg?.header?.msg_type==='error'&&window.__captureKernelErrors.length<12)window.__captureKernelErrors.push({ename:args.msg.content.ename,evalue:args.msg.content.evalue});
+   if(data?.event==='visual_state_snapshot')window.__captureTraffic.push(JSON.parse(JSON.stringify(data)));
+   if(data?.event||data?.op){window.__captureProtocolTraffic.push({direction:args.direction,event:data.event,op:data.op,generation:data.generation,
+    target:data.target_endpoint_id,viewer:data.viewer_id,session:data.session_id,stream:data.stream_id});if(window.__captureProtocolTraffic.length>512)window.__captureProtocolTraffic.shift();}
+  });
  });
  await receivePython(page,'state','notebook');await receivePython(page,'session','notebook');
  await receiveStudio(page,'state','notebook');await receiveStudio(page,'session','notebook');
- stage='canvas popup';await page.evaluate(()=>window.__captureControllers[0].groupPanel.setExpanded(false));
- const source=page.locator('[data-molsysviewer-canvas-output]').first();
- await source.getByRole('button',{name:'Show canvas controls',exact:true}).focus();await page.keyboard.press('Enter');
- const opened=page.waitForEvent('popup');await source.getByTitle('Open popup',{exact:true}).click();const popup=await opened;
- popup.on('pageerror',error=>report.page_errors.push({stage,message:error.message,stack:error.stack}));
- await popup.locator('#molsysviewer-loading').waitFor({state:'hidden'});
- await popup.waitForFunction(()=>window.__captureControllers?.[0]?.getStructureData()?.elementCount===62);
+ stage='canvas popup';const popup=await openCanvas();
  await observeDraws(popup);
  await receiveStudio(popup,'state','popup');await receiveStudio(popup,'session','popup');await popup.close();
+ await page.bringToFront();
+ await receiveJupyterMoving({page,kernel,config,report,openWork,openCanvas,setStage:value=>{stage=value;}});
  // Delay actual rendered replies, never supply fake camera/scientific data.
  await page.bringToFront();const work=await openWork(page);
  await delayedReply(work,'cancel');await delayedReply(work,'timeout');

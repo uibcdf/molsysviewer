@@ -30,6 +30,7 @@ import { Loci } from "molstar/lib/mol-model/loci";
 import { HelpOverlay } from "../../src/ui/help-overlay";
 
 export { RemoteInputAdapter };
+export { checkFontAtlasResourceLifecycle } from "./font-atlas-browser";
 
 /** Screen coordinates for real pointer tests (Mol* projection is bottom-up). */
 export function projectScenePosition(controller: MolSysViewerController, position: [number, number, number]) {

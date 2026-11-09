@@ -601,3 +601,19 @@ and no recreation after deletion. Direct frame projections declare their
 actual current frame. `tests/test_reporting_protocol.py::validate_guard`
 checks the exact entry, assertion owners, fixture and build/core routes.
 This does not substitute for actual popup bootstrap or moving-save receiving.
+
+### Native font-atlas upload browser guard profile
+
+The bounded selector is exactly
+`molsysviewer/js/tests/e2e/font-atlas-uploads.e2e.ts`, without suffixes,
+globs or commands. From `molsysviewer/js`, build with `npm run build:harness`
+and `npm run build:e2e:all`, then run `node tests/e2e/font-atlas-uploads.e2e.js`.
+It also belongs to `test:e2e:core`; browser/WebGL failure fails the guard.
+
+The native lifecycle owner checks unchanged-image reuse, actual glyph writes
+and every GPU alpha pixel, independent consumers, font/style/quality changes,
+resize, native and physical context restoration, explicit/unknown-image
+fallback and resource disposal. Its real-pentalanine fixture checks repeated
+coordinate updates and native measurement endpoints. The validator verifies
+that exact entry, receiving/fixture owners and mandatory build/core routes;
+this proves addressability, not live Jupyter or native Qt acceptance.

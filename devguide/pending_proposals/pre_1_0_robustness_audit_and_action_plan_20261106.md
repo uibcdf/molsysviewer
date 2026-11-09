@@ -14,17 +14,14 @@ supersedes: []
 
 # Pre-1.0 robustness audit and action plan — 2026-11-06
 
-**Latest #344 isolation — 2026-11-08:** the
-[upstream/native review](../molstar_font_upload_upstream_review_20261108.json)
-identifies the repeated native font-atlas cost and receives Mol* v6's existing
-solution independently. No duplicate upstream issue is published. A corrected
-scientific oracle separates its own ownership race from real capture timeouts.
-The private both-canvas experiment passes all twelve stopped/moving cases; its
-no-cache control still times out. Select and qualify a supported consumer fix
-before integrating it. No production runtime changes, #115 scope change or
-additional completed original leaf follows; A5 stays partial, 8/46 delivered.
+**#344 source resolution — 2026-11-08:** native font-content metadata removes
+unchanged uploads without CPU image copies; six stopped/six moving actual
+Jupyter saves, eight native Qt cases and shared browser regressions pass in the
+[receiving record](../jupyter_font_metadata_receiving_20261108.json).
+A5 remains partial for background/minimized and consolidated acceptance;
+progress stays 8/46 delivered and 1/46 finally accepted. #115 stays post-1.0.
 
-**Current Jupyter contention receiving — 2026-11-08:**
+**Earlier Jupyter contention receiving — 2026-11-08:**
 [#343](../archive/jupyter_rebuild_waits_for_begin_ack.md) corrects lost transfer
 replies during concurrent ownership. Async saves wait without polling, retain
 their original timeout and cannot orphan a request at cancellation/grant.
@@ -33,7 +30,7 @@ Receiving passes an earlier 143-case selection, final 50 overlapping capture/
 concurrency controls and 460 separate boundary cases; counts are not additive.
 Six unchanged canonical Jupyter roundtrips and eight native Qt saves pass.
 Expanded actual-Jupyter v2 still
-fails globally; [#344](../pending_bugs/jupyter_moving_capture_residual_uploads.md)
+fails globally; [#344](../archive/jupyter_moving_capture_residual_uploads.md)
 owns the measured residual upload/query/draw investigation. Its failed/profiled
 campaigns remain separate from the passing source receiving in the
 [receipt](../jupyter_capture_contention_receiving_20261108.json). A5 stays partial;
@@ -161,12 +158,14 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
-**Latest receiving, 2026-11-08:** browser moving/lifetime and actual Qt
-continuous capture have their separate evidence in the
-[current Qt receipt](../qt_native_moving_identity_receiving_20261108.json).
-Actual Jupyter continuous v2 and consolidated/installed gates
-remain open; source capability advertisement and publication remain paused.
-Progress is 8/46 delivered (17.4%), 1/46 finally accepted (2.2%).
+**Latest receiving, 2026-11-08:** canonical actual Jupyter receives six stopped
+and six moving independent saves on the production font-metadata adapter;
+native Qt receives four stopped and four moving cases. Shared browser capture,
+lifetime and annotation guards pass. See the
+[current receipt](../jupyter_font_metadata_receiving_20261108.json).
+Background/minimized host behavior and consolidated/installed gates remain;
+A5 stays partial, v2 unadvertised and publication paused. Progress stays
+8/46 delivered (17.4%), 1/46 finally accepted (2.2%).
 
 **Earlier bounded endpoint correction, 2026-11-08:**
 [#336](../archive/popup_snapshot_expires_during_molecular_load.md) fixes lost
@@ -292,8 +291,8 @@ again. Inspect current owner dispositions and receive the post-integration
 source pair next; no MolSysMT main integration is performed from this session.
 C2/task and hosted acceptance remain pending; C1 below holds the exact evidence.
 
-**Next actions:** resolve the remaining Jupyter uncertainty and complete A5's
-continuous-playback and hidden-endpoint cases. Continue B3's
+**Next actions:** complete A5's background/minimized host receiving and
+consolidated acceptance, preserving the complete actual Jupyter/Qt moving cases. Continue B3's
 DataCard lifecycle and current owner-pair receiving after integration. The remaining
 approved addon families and Movie #320 remain in scope. Incremental commits
 use `[skip ci]` at the principal maintainer's explicit instruction; no remote
@@ -302,7 +301,7 @@ packages, promotions and both 1.0 publications remain paused.
 
 | Block | Current status | Owner and tracking | Exit evidence |
 | --- | --- | --- | --- |
-| A — integrity, restoration and cleanup | A1–A4/A6 source-delivered; bounded A5 camera/box corrections delivered in `ebe3d46b` and `42656765`; Jupyter uncertainty, continuous playback, hidden endpoints and consolidated acceptance remain partial | Viewer; #316/#317/#318/#319 and private handling under #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
+| A — integrity, restoration and cleanup | A1–A4/A6 source-delivered; bounded A5 camera/box corrections delivered in `ebe3d46b` and `42656765`; actual Jupyter/Qt moving capture received; background/minimized and consolidated acceptance remain partial | Viewer; #316/#317/#318/#319 and private handling under #315 | Rejection preserves existing work; owned resources close on failure; actual public-API/browser regressions |
 | B — plots and DataCards | B1/#314 and B2/#321 with #322 are delivered; current numerical/state/popup receiving passes. Retain the unexplained earlier zero-reference-bounds guard failure; provenance/card and consolidated follow-up remain | Viewer and scientific producer; #314, #321, #322, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
 | C — contribution and host integration | PR #543 updated to `42f5ed3bc`; complete local addon and seventeen-step Jupyter receiving pass; owner integration and covering hosted exits remain pending | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421/#635 and PR #543 | Reviewed delivery, current controlled pair, relevant full/hosted outcomes and explained failures |
 | D — scientific prerequisites and approved GUI families | Partial implementation; provider corrections and several task families remain | MolSysMT owns science; addon owns tasks; #264/#315 and uibcdf/molsysmt#421 | Received native fixes plus every required family/effect, without hidden preparation or copied algorithms |
@@ -569,7 +568,7 @@ original producers and scopes.
 | **A2 — corrected in `ef7b1348`, hosted checkpoint pending** | A rejected `import_state` clears an existing region before discovering an invalid section normal; molecular coordinates remain intact, but the scene changes after failure. Source: [state owner](../../molsysviewer/viewer/state.py), `import_state` / `_restore_sections`. | Complete validation before publishing, or provide a qualified restoration transaction. Test direct import and `load_state`, clear/merge/conflict modes, invalid later objects, history and handle validity. Preserve the semantic scene and relevant resources while retaining monotonic UID/tag/order high-water marks; rejection must not make identities reusable. Closed #127 protects `load_session`'s candidate route, not this direct-state path. |
 | **A3 — corrected in `38eb8785`, hosted checkpoint pending** | A real DataCard popup parses an inert title marker as markup, while the original card shows literal text. Source: [DataCard](../../molsysviewer/js/src/ui/floating-data-card.ts), `openPopoutWindow`. Executable injection scope was not tested. | Use literal title/header handling consistently; review disclosure privately. Guard initial/restored/updated titles, special characters, ordinary popup input and original/popup parity without executable test payloads. |
 | **A4 — corrected in `611c1574`, hosted checkpoint pending** | `new_view` with a failing selection leaves one unreturned open View and two registered widgets. Source: [factory](../../molsysviewer/new_view.py). Repeated ordinary errors can retain resources. | Close the factory-owned View on initialization failure, preserving the original error. Never close a caller-supplied View. Guard invalid selection, conversion/load rejection, repeated failures and restored widget/resource ownership with real demos. |
-| **A5 — reproduced, partial, #319** | Browser moving/lifetime and actual Qt continuous capture/query/empty/freeze/error-cleanup controls pass. Actual Jupyter stopped-scene receiving passes; earlier failures retain their source and scope. | [Capture contract and remaining work](../pending_bugs/saved_camera_lags_live_notebook.md): receive actual Jupyter continuous v2, background/minimized host behavior and consolidated/installed acceptance; retain synchronous/headless saving. A5 is not closed or counted received. |
+| **A5 — reproduced, partial, #319** | Browser moving/lifetime and actual Qt continuous capture/query/empty/freeze/error-cleanup controls pass. Actual Jupyter receives all twelve stopped/moving cases; earlier failures retain their source and scope. | [Capture contract and remaining work](../pending_bugs/saved_camera_lags_live_notebook.md): receive background/minimized host behavior and consolidated/installed acceptance; retain synchronous/headless saving. A5 is not closed or counted received. |
 | **A6 — corrected in `1ea6b26e`, #318** | An actual provider panel close error leaves six owned widgets/layouts registered, another panel mounted and both View links retained; retry returns early. Ordinary successful closes are not claimed to fail. | [Independent cleanup and retry receiving](../pending_bugs/view_close_failure_blocks_cleanup.md), including actual provider/transport failures, unrelated View preservation and observable diagnostics. |
 
 Register scoped reports after duplicate review, including related closed #127

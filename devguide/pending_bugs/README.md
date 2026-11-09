@@ -19,11 +19,10 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (4)
+### Being worked on (3)
 
 - [`dynamic_region_queries_cross_renderer_frames.md`](dynamic_region_queries_cross_renderer_frames.md) — [#338](https://github.com/uibcdf/molsysviewer/issues/338) — Dynamic-region query replies cross renderer frames and omit unchanged memberships. *(medium, reproduced)*
 - [`interaction_frame_query_crosses_canvas_owners.md`](interaction_frame_query_crosses_canvas_owners.md) — [#337](https://github.com/uibcdf/molsysviewer/issues/337) — Interaction frame query replies reach unrelated renderer-local request IDs. *(medium, reproduced)*
-- [`jupyter_moving_capture_residual_uploads.md`](jupyter_moving_capture_residual_uploads.md) — [#344](https://github.com/uibcdf/molsysviewer/issues/344) — Investigate residual texture uploads and incomplete moving capture in Jupyter. *(medium, measured)*
 - [`updated_annotation_pick_receiving_timeout.md`](updated_annotation_pick_receiving_timeout.md) — [#325](https://github.com/uibcdf/molsysviewer/issues/325) — Updated annotation GPU pick times out in hosted canvas-popup receiving. *(medium, measured)*
 
 ### Partially done (10)

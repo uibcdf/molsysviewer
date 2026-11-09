@@ -27,7 +27,7 @@ shared versioned atlases and dirty-row uploads, unlike the installed 5.4.1
 route. The current v5 branch was inspected separately, not executed as a new
 dependency. This finding neither selects v6 for Viewer nor changes the
 post-1.0 migration decision. Follow the
-[owning investigation](../../pending_bugs/jupyter_moving_capture_residual_uploads.md)
+[owning investigation](../../archive/jupyter_moving_capture_residual_uploads.md)
 for the bounded probe, the withdrawn new-bug draft and distinct integration
 failures; a source mechanism is not installed Viewer compatibility.
 
@@ -65,8 +65,10 @@ now includes this acceptance checklist. At dependency/release review checkpoints
 - Remove any temporary Viewer compatibility adaptation only after those native
   controls pass; otherwise record why it still remains necessary.
 
-The migration stays post-1.0. The separate pre-1.0 #344 consumer work remains
-open; this follow-up changes neither the dependency nor the publication scope.
+The migration stays post-1.0. The separate pre-1.0 #344 consumer adapter is
+received in source, with its bounded review/retirement contract in
+`devguide/transport_state_ownership.md`. This follow-up changes neither the
+dependency nor the publication scope.
 
 ## Why
 

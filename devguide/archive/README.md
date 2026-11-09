@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [#344: Weak native font-content metadata avoids repeated atlas uploads and receives all twelve actual Jupyter stopped/moving captures.](jupyter_moving_capture_residual_uploads.md)
+
 - [#343: Contended transfer replies survive molecular ownership, with close-before-reply ordering and canonical Jupyter/native Qt receiving.](jupyter_rebuild_waits_for_begin_ack.md)
 
 - [#342: Qt shell and channel share their persistent scene identity, with native continuous capture, empty/frozen regions and constructor-failure cleanup received.](qt_shell_runtime_identity.md)
