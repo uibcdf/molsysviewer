@@ -24,8 +24,9 @@ def test_qt_capture_child_collects_without_optional_dependencies():
             "-c",
             "import importlib.util,runpy,sys; "
             "assert importlib.util.find_spec('PySide6') is None; "
-            "runpy.run_path(sys.argv[1],run_name='collection_guard')",
+            "[runpy.run_path(path,run_name='collection_guard') for path in sys.argv[1:]]",
             str(child),
+            str(child.with_name("_qt_moving_capture.py")),
         ],
         text=True,
         capture_output=True,
@@ -121,6 +122,35 @@ def test_qt_live_capture_full_render_gpu(tmp_path):
     assert observed["cancel_before_draw"]["draws"] == 0
     assert observed["cancel_before_draw"]["no_file"] and observed["cancel_before_draw"]["exact_abort"]
     assert observed["cancel_before_draw"]["late_resume_no_revive"]
+    assert {(case["source"], case["kind"]) for case in observed["moving_cases"]} == {
+        (source, kind) for source in ("studio", "python-async") for kind in ("state", "session")
+    }
+    assert all(
+        case["held_real_queries"] > 0
+        and len(case["frame_changes_after_request"]) >= 2
+        and case["independent_file_restore"]
+        and case["source_identity_and_coordinates_unchanged"]
+        and case["heartbeat_progress"] > 0
+        for case in observed["moving_cases"]
+    )
+    assert observed["native_empty_control"] == {
+        "structure_index": 1,
+        "region_atoms": 0,
+        "independent_file_restore": True,
+    }
+    assert observed["native_freeze_control"]["computed_frame"] == 0
+    assert observed["native_freeze_control"]["displayed"]["frame"] == 1
+    assert observed["native_freeze_control"]["mode"] == "static"
+    assert all(
+        observed["constructor_failure"][key]
+        for key in (
+            "new_views_closed_before_global_cleanup",
+            "prior_shell_state_unchanged",
+            "caller_destination_unchanged",
+            "existing_host_preserved",
+        )
+    )
+    assert observed["project_configuration"] == {"viewer_mode": "cinema", "owner_identity_bound": True}
     assert not observed["failed_deliveries"] and not observed["frontend_diagnostics"]
     assert observed["heartbeat_count"] > 0 and observed["closed"]
     assert observed["rendering"]["webgl2"]

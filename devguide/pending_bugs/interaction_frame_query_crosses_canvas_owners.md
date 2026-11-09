@@ -20,10 +20,12 @@ primary/canvas-popup/detached-Studio state/session saves with actual native
 interaction geometry and independent restoration. The new lifecycle entry
 receives pending-owner closure and transport-loss cleanup. See the
 [host/lifetime receipt](../moving_capture_host_lifetime_receiving_20261108.json).
-Current actual Qt and Jupyter stopped-scene guards pass, but they do not exercise
-the new continuous v2 scientific query path; that native Qt receiving remains
-required before closing this issue. Earlier failed timing attempts below retain
-their own source and scope.
+The later [Qt identity receipt](../qt_native_moving_identity_receiving_20261108.json)
+receives the actual primary scientific query path and four continuous captures
+after #342 fixes a separate shell/live-owner session mismatch. Native interaction
+presence is checked against real frame-query occurrences. Actual Jupyter
+continuous v2 and consolidated acceptance remain separate, and native Qt
+popout parity stays under #51. Earlier failures retain their source and scope.
 
 ## What
 

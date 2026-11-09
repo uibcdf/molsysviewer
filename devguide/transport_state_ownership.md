@@ -25,6 +25,7 @@ authority.
 | Pending Studio work-file intentions and bounded completed IDs | one `WorkFileSaves` per View | authenticated Studio requester / existing atomic writers | capture verdict or writer completion; View close cancels captures |
 | Capture deadline scheduling and callback lifetime | existing widget host loop or Qt GUI channel | `WorkFileSaves` | fired/cancelled callback or connector close; no timer worker thread |
 | Qt ordered message queue, in-flight entry and payload references | `QtMessageBridge` | `QtViewChannel` | Qt bridge generation / window close |
+| Local Qt scene/runtime identity | the persistent `MolSysView` | immutable `QtViewChannel` binding and the HTML shell borrowed from that same View | owning View/channel close |
 
 ## Consequences
 
@@ -76,6 +77,17 @@ authority.
   completion still requires that subsequent `didDraw`. New physical input or deliberate local navigation can supersede
   queued older intent. Peer application suppresses echoes; a missing echo is
   not evidence that a correctly rendered peer projection failed.
+- A local Qt shell is generated from its persistent View, rather than an empty
+  temporary export owner. Channel identity binds atomically and idempotently;
+  project configuration and add-on preparation precede that View's construction,
+  and the borrowed-owner HTML route does not prepare them a second time.
+  Reassigning it or binding after close is rejected. The frame-query primary
+  alias (`widget-host:<runtime_session_id>`) derives from that same View on both
+  sides of the local bridge. This private query alias is not an AnyWidget router,
+  an additional transfer destination or a remote endpoint. Add-on delivery keeps
+  the connector-owned primary default described above. Failed shell construction
+  closes its new View/bridge/page/profile without persisting unfinished window
+  geometry or closing an existing host.
 - Qt deliberately does not share the AnyWidget transfer manager. Its ordered
   queue and payload-reference scheme satisfy S8 at a different connector seam.
   Only an exact `cancel_visual_state` and correlated Save/Cancel verdicts use

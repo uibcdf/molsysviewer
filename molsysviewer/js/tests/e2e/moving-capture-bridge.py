@@ -20,9 +20,8 @@ sys.path.insert(0, str(ROOT))
 import molsysviewer as msv
 
 
-def main():
-    with msv.demo["pentalanine"] as source:
-        view = source.extract(structure_indices=[0, 8, 3])
+def configure_moving_scene(view):
+    """Use the same real science and sparse scene in browser/native host guards."""
     coordinates = msv.pyunitwizard.get_value(view.get_coordinates(), to_unit="nm").copy()
     coordinates[1, 1] += [100, 100, 100]
     cells = np.array(
@@ -59,6 +58,13 @@ def main():
     near = view.regions.add(selection="atom_index==1 within 1 nm without pbc of atom_index==0", tag="moving-near")
     near.mode = "dynamic"
     near.set_representation("ball-and-stick")
+    return coordinates, cells, near
+
+
+def main():
+    with msv.demo["pentalanine"] as source:
+        view = source.extract(structure_indices=[0, 8, 3])
+    coordinates, cells, near = configure_moving_scene(view)
     original = view.molsys
     jobs = {}
     held = []

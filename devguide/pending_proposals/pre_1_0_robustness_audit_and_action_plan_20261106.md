@@ -14,7 +14,18 @@ supersedes: []
 
 # Pre-1.0 robustness audit and action plan — 2026-11-06
 
-**Current host/lifetime receiving — 2026-11-08:** the real-renderer lifecycle
+**Current Qt continuous receiving — 2026-11-08:**
+[#342](../archive/qt_shell_runtime_identity.md) corrects shell/live-scene identity.
+Actual Qt passes four stopped and four continuous state/session cases, genuine
+held science, frame-indexed geometry, empty/frozen regions and constructor-error
+cleanup. The full native binary/workbench guard also passes after #287's fixture
+activation correction; its exact-source hosted qualification remains pending.
+The [Qt receipt](../qt_native_moving_identity_receiving_20261108.json) retains
+before-controls, the interrupted resource attempt and shared browser regressions.
+Actual Jupyter continuous v2 and consolidated/installed acceptance remain open.
+A5 stays partial, v2 unadvertised and delivered progress 8/46 (17.4%).
+
+**Earlier host/lifetime receiving — 2026-11-08:** the real-renderer lifecycle
 guard passes CSS-hidden/detached refusal, recovery, pending popup/View closure,
 transport-loss expiry and cross-frame static freezing without late writes or
 destination replacement. Current actual Qt and Jupyter stopped-scene guards
@@ -125,10 +136,10 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
-**Latest receiving, 2026-11-08:** browser moving/lifetime controls and current
-actual Qt/Jupyter stopped-scene receiving have their separate evidence in the
-[current receipt](../moving_capture_host_lifetime_receiving_20261108.json).
-Continuous v2 capture in those actual hosts and consolidated/installed gates
+**Latest receiving, 2026-11-08:** browser moving/lifetime and actual Qt
+continuous capture have their separate evidence in the
+[current Qt receipt](../qt_native_moving_identity_receiving_20261108.json).
+Actual Jupyter continuous v2 and consolidated/installed gates
 remain open; source capability advertisement and publication remain paused.
 Progress is 8/46 delivered (17.4%), 1/46 finally accepted (2.2%).
 
@@ -533,7 +544,7 @@ original producers and scopes.
 | **A2 — corrected in `ef7b1348`, hosted checkpoint pending** | A rejected `import_state` clears an existing region before discovering an invalid section normal; molecular coordinates remain intact, but the scene changes after failure. Source: [state owner](../../molsysviewer/viewer/state.py), `import_state` / `_restore_sections`. | Complete validation before publishing, or provide a qualified restoration transaction. Test direct import and `load_state`, clear/merge/conflict modes, invalid later objects, history and handle validity. Preserve the semantic scene and relevant resources while retaining monotonic UID/tag/order high-water marks; rejection must not make identities reusable. Closed #127 protects `load_session`'s candidate route, not this direct-state path. |
 | **A3 — corrected in `38eb8785`, hosted checkpoint pending** | A real DataCard popup parses an inert title marker as markup, while the original card shows literal text. Source: [DataCard](../../molsysviewer/js/src/ui/floating-data-card.ts), `openPopoutWindow`. Executable injection scope was not tested. | Use literal title/header handling consistently; review disclosure privately. Guard initial/restored/updated titles, special characters, ordinary popup input and original/popup parity without executable test payloads. |
 | **A4 — corrected in `611c1574`, hosted checkpoint pending** | `new_view` with a failing selection leaves one unreturned open View and two registered widgets. Source: [factory](../../molsysviewer/new_view.py). Repeated ordinary errors can retain resources. | Close the factory-owned View on initialization failure, preserving the original error. Never close a caller-supplied View. Guard invalid selection, conversion/load rejection, repeated failures and restored widget/resource ownership with real demos. |
-| **A5 — reproduced, partial, #319** | Coherent awaitable saves and automatic Studio capture are implemented. Browser moving/hidden/closed-lifetime receiving passes; current actual Qt/Jupyter stopped-scene saves and independent restorations pass. Earlier failures retain their distinct source and diagnostic scope. | [Capture contract and remaining work](../pending_bugs/saved_camera_lags_live_notebook.md): receive continuous v2 capture and scientific query routing in the actual hosts, then consolidated/installed acceptance; retain synchronous/headless saving. A5 is not closed or counted received. |
+| **A5 — reproduced, partial, #319** | Browser moving/lifetime and actual Qt continuous capture/query/empty/freeze/error-cleanup controls pass. Actual Jupyter stopped-scene receiving passes; earlier failures retain their source and scope. | [Capture contract and remaining work](../pending_bugs/saved_camera_lags_live_notebook.md): receive actual Jupyter continuous v2, background/minimized host behavior and consolidated/installed acceptance; retain synchronous/headless saving. A5 is not closed or counted received. |
 | **A6 — corrected in `1ea6b26e`, #318** | An actual provider panel close error leaves six owned widgets/layouts registered, another panel mounted and both View links retained; retry returns early. Ordinary successful closes are not claimed to fail. | [Independent cleanup and retry receiving](../pending_bugs/view_close_failure_blocks_cleanup.md), including actual provider/transport failures, unrelated View preservation and observable diagnostics. |
 
 Register scoped reports after duplicate review, including related closed #127

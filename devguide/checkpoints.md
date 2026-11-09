@@ -912,7 +912,15 @@ final acceptance is **1/46 (2.2%)**. Neither is total release readiness, and
 Movie #320 remains an additional mandatory stream. E0, A1–A4/A6 and B1/B2 have
 their recorded delivered results; consolidated acceptance remains separate.
 
-Production executable source remains
+Current [Qt continuous receiving](qt_native_moving_identity_receiving_20261108.json)
+corrects #342's shell/live-View identity mismatch and receives eight native
+stopped/moving saves, query ownership, empty/frozen regions and construction-error
+cleanup. The full binary/workbench guard passes after #287's modal-activation
+fixture correction; exact-source hosted qualification for that reopened issue is
+pending a consolidated checkpoint. Shared browser moving/lifetime guards pass.
+Actual Jupyter continuous v2 is next; no installed or human acceptance is implied.
+
+The preceding frontend production checkpoint is
 `f5330ac9bdcd2ca520a89cb1b34f7433c1400baf`. Its
 [font/region receipt](moving_capture_font_and_region_receiving_20261108.json)
 receives seven actual moving saves and independent restorations, coherent native
@@ -934,8 +942,8 @@ including explicit popup error checks. All selected inputs remain unchanged in
 each run and all owned processes close. The 172 original evidence/source files
 have verified approved private custody; no off-host backup is claimed.
 
-Keep A5 partial and v2 unadvertised until actual Qt/Jupyter continuous capture,
-Qt scientific query routing and consolidated/installed scopes are met. Local
+Keep A5 partial and v2 unadvertised until actual Jupyter continuous capture,
+background/minimized host behavior and consolidated/installed scopes are met. Local
 executions stay sequential, at most eight logical CPUs/six GiB, with no swap
 and the maintainer's two-GiB minimum globally available reserve. Human review,
 candidate and publication operations remain paused.
@@ -958,8 +966,8 @@ actual-Jupyter failure retains its distinct historical scope in the
 for current owner-PR/C1 inputs; dated receipts below retain their original
 scope rather than superseding this handoff.
 
-Next: complete A5's actual-host frame-dependent projections and continuous
-capture, then B3 DataCard lifecycle and isolated MolSysMT owner-PR
+Next: complete A5's actual Jupyter continuous capture and remaining host
+acceptance, then B3 DataCard lifecycle and isolated MolSysMT owner-PR
 reconciliation. All approved addon/task families remain in scope. Advisory
 drafts and original unrestricted evidence stay private under approved custody;
 no off-host backup is claimed. Incremental commits use the maintainer's
@@ -2757,8 +2765,8 @@ chronological status narrative here.
 
 **Current order — 2026-11-08:**
 
-1. **A:** receive A5's continuous v2 capture in actual Qt/Jupyter and the Qt
-   scientific query route; preserve the received browser lifetime controls and
+1. **A:** receive A5's continuous v2 capture in actual Jupyter and remaining
+   host behavior; preserve the received Qt/query/freeze and browser lifetime controls and
    other delivered rejection/cleanup corrections
    before consolidated acceptance.
 2. **B:** retain delivered B1/B2 authority/precision corrections and finish

@@ -15,7 +15,19 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
-**Current availability and host receiving — 2026-11-08:** the new canonical
+**Current Qt continuous receiving — 2026-11-08:** native receiving reproduces
+[#342](../archive/qt_shell_runtime_identity.md): the shell carried a temporary
+View's session while Python owned a different session. Correcting that ownership
+receives four stopped and four continuous Studio/Python state/session cases,
+actual scientific query targets, empty/frozen regions and writer-failure cleanup.
+The complete guard passes in 43.25 s on actual Wayland/NVIDIA WebGL2. The
+[Qt receipt](../qt_native_moving_identity_receiving_20261108.json) separates the
+488 headless cases, full binary/workbench receiving and the reopened #287 input
+fixture correction. Shared moving and lifecycle entries pass in 92.13/92.29 s.
+Actual Jupyter continuous v2, background/minimized host behavior and consolidated
+hosted/installed acceptance remain open. V2 is unadvertised; A5 stays partial.
+
+**Earlier availability and host receiving — 2026-11-08:** the new canonical
 `moving-capture-lifecycle` entry passes CSS-hidden/display-none/detached state and
 session refusals, restoration of the same canvas, actual canvas/Studio popup
 closure during pending scientific work, autonomous expiry after transport loss,
@@ -30,8 +42,8 @@ Actual Jupyter passes six such saves/restorations through its real kernel and
 anywidget, including Studio canvas-popup saves. Qt also receives cancellation
 before draw; Jupyter receives cancellation and autonomous timeout. These are
 source checks with explicitly recorded providers, not clean installed-package
-or human acceptance. Continuous v2 capture in actual Qt/Jupyter, including the
-Qt scientific query route, and consolidated acceptance remain open. CSS/DOM
+or human acceptance. At that checkpoint, continuous v2 capture in actual
+Qt/Jupyter and consolidated acceptance remained due. CSS/DOM
 controls do not qualify background-tab or minimized native-window scheduling. The
 frontend advertises only v1; A5 remains partial.
 

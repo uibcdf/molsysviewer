@@ -422,6 +422,81 @@ def main(output: Path) -> None:
                 for e in events[start_events:]
             )
             report["cancel_before_draw"]["late_resume_no_revive"] = True
+            from tests._qt_moving_capture import exercise_qt_moving_capture
+
+            await exercise_qt_moving_capture(
+                view=view,
+                bridge=bridge,
+                js=js,
+                wait=wait,
+                wait_js=wait_js,
+                open_work=open_work,
+                click=click,
+                saved_state=saved_state,
+                report=report,
+                out=out,
+                beats=beats,
+            )
+            phases.append("constructor-write-failure")
+            print("PHASE " + phases[-1], flush=True)
+            import gc
+
+            existing = {id(item) for item in gc.get_objects() if isinstance(item, msv.MolSysView)}
+            shell_state = out / "shell-state.json"
+            original_state = shell_state.read_bytes() if shell_state.exists() else None
+            blocked = out / "caller-owned-directory.html"
+            blocked.mkdir()
+            marker = blocked / "keep.txt"
+            marker.write_bytes(b"caller-owned destination")
+            try:
+                qt.create_standalone_qt0_window(None, output_filename=str(blocked), apply_project_config=False)
+            except IsADirectoryError:
+                pass
+            else:
+                raise AssertionError("A directory must not be overwritten as a Qt shell.")
+            # Observe before GC/global cleanup: failed construction owns only its
+            # new View and must leave the running host and prior state alone.
+            failed_views = [
+                item for item in gc.get_objects() if isinstance(item, msv.MolSysView) and id(item) not in existing
+            ]
+            assert all(item.closed and item.widget._bridge._closed for item in failed_views)
+            assert (shell_state.read_bytes() if shell_state.exists() else None) == original_state
+            assert marker.read_bytes() == b"caller-owned destination"
+            assert not view.closed and window.isVisible()
+            report["constructor_failure"] = {
+                "native_writer_error": "IsADirectoryError",
+                "new_views_closed_before_global_cleanup": True,
+                "prior_shell_state_unchanged": True,
+                "caller_destination_unchanged": True,
+                "existing_host_preserved": True,
+            }
+            phases.append("project-configuration-before-owner")
+            print("PHASE " + phases[-1], flush=True)
+            import os
+
+            from molsysviewer import config
+
+            configured = out / "configured-project"
+            configured.mkdir()
+            (configured / "_molsysviewer.py").write_text(
+                "from molsysviewer import config\nconfig.viewer_mode = 'cinema'\n"
+            )
+            prior_directory, prior_mode = Path.cwd(), config.viewer_mode
+            child_runtime = None
+            try:
+                os.chdir(configured)
+                child_runtime = qt.create_standalone_qt0_window(
+                    None, output_filename=str(configured / "shell.html"), apply_project_config=True
+                )
+                configured_view = child_runtime["webview"]._molsysviewer_view
+                assert configured_view.widget.viewer_mode == "cinema"
+                assert configured_view.widget.runtime_session_id == configured_view._binary_session_id
+                report["project_configuration"] = {"viewer_mode": "cinema", "owner_identity_bound": True}
+            finally:
+                os.chdir(prior_directory)
+                config.viewer_mode = prior_mode
+                if child_runtime is not None:
+                    child_runtime["window"].close()
             report["loop"] = type(asyncio.get_running_loop()).__name__
             report["heartbeat_count"] = len(beats)
             report["failed_deliveries"] = bridge.failed_deliveries

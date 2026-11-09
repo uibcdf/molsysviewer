@@ -37,6 +37,36 @@ def test_ui_preferences_use_the_same_validators_and_reject_partial_updates():
             channel._dispatch_event({"event": "qt_ui_state", "values": {"runtime_session_id": "other"}})
 
 
+def test_qt_channel_binds_the_actual_scene_owner_identity():
+    bridge = QtMessageBridge(None, None)
+    channel = QtViewChannel(bridge)
+    with msv.demo["dialanine"] as source, msv.MolSysView(transport=channel) as view:
+        msv.new_view(source.molsys, view=view)
+        assert channel.runtime_viewer_id == view._binary_viewer_id
+        assert channel.runtime_session_id == view._binary_session_id
+        identities = [entry["message"]["values"] for entry in bridge.queue if entry["message"]["op"] == "set_host_ui"]
+        assert identities
+        assert all(
+            (item["runtime_viewer_id"], item["runtime_session_id"]) == (view._binary_viewer_id, view._binary_session_id)
+            for item in identities
+        )
+
+
+def test_qt_channel_identity_is_idempotent_immutable_and_closed_with_its_owner():
+    bridge = QtMessageBridge(None, None)
+    channel = QtViewChannel(bridge)
+    with msv.demo["dialanine"] as other, msv.MolSysView(transport=channel) as view:
+        identity = view._binary_viewer_id, view._binary_session_id
+        count = len(bridge.queue)
+        channel.bind_runtime_identity(*identity)
+        assert len(bridge.queue) == count
+        with pytest.raises(RuntimeError, match="immutable"):
+            channel.bind_runtime_identity(other._binary_viewer_id, other._binary_session_id)
+        assert (channel.runtime_viewer_id, channel.runtime_session_id) == identity
+    with pytest.raises(RuntimeError, match="closed"):
+        channel.bind_runtime_identity(*identity)
+
+
 @pytest.mark.qt_runtime
 def test_qt_live_workbench_full_render_gpu(tmp_path):
     """Run actual UI actions and ten replacements in an isolated native window."""

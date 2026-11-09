@@ -11,7 +11,7 @@ from urllib.parse import urlsplit
 from smonitor import signal
 
 from .._private.argdigest import digest
-from ..standalone import build_standalone0_html
+from ..standalone import _prepare_addons, build_standalone0_html
 from .actions import _install_host_actions
 from .chrome import _install_window_chrome
 from .geometry import _restore_geometry
@@ -294,25 +294,17 @@ def create_standalone_qt0_window(
         html_owner = tempfile.TemporaryDirectory(prefix="molsysviewer-qt0-")
         output_filename = str(Path(html_owner.name) / "shell.html")
     try:
-        html_path = build_standalone0_html(
-            None,
-            output_filename,
-            title=title,
-            include_controls=include_controls,
-            include_popout=include_popout,
+        # Configuration and explicit addon modules must precede the persistent
+        # View's preference resolution and addon activation, as in the old host.
+        _prepare_addons(
             discover_addons=discover_addons,
             addon_modules=addon_modules,
             apply_project_config=apply_project_config,
-            debug_js=debug_js,
-            runtime_urls=_get_helper("_qt_runtime_urls")(),
-            host_event_transport="url-scheme",
-            show_empty_host_overlay=False,
         )
     except BaseException:
         if html_owner is not None:
             html_owner.cleanup()
         raise
-
     current_state = {"molecular_system": molecular_system, "base_title": title, "loaded_label": None}
     current_state.update(_get_helper("_load_qt_shell_state")())
 
@@ -391,10 +383,13 @@ def create_standalone_qt0_window(
         # Chromium may still read the shell until the page has been disposed.
         page.destroyed.connect(lambda *_: html_owner.cleanup())
 
+    geometry_restored = False
+
     def close_host() -> None:
         from .utils import _persist_shell_state
 
-        _persist_shell_state(current_state, window=window)
+        if geometry_restored:
+            _persist_shell_state(current_state, window=window)
         for download in list(window._molsysviewer_downloads):
             if not download.isFinished():
                 download.cancel()
@@ -408,12 +403,37 @@ def create_standalone_qt0_window(
 
     window._molsysviewer_cleanup = close_host
 
+    try:
+        # The shell and live connector must share the same scene identity.
+        # Borrow this persistent View; an empty temporary View has another ID.
+        html_path = build_standalone0_html(
+            view,
+            output_filename,
+            title=title,
+            include_controls=include_controls,
+            include_popout=include_popout,
+            discover_addons=discover_addons,
+            addon_modules=addon_modules,
+            apply_project_config=apply_project_config,
+            debug_js=debug_js,
+            prepare_addons=False,
+            runtime_urls=_get_helper("_qt_runtime_urls")(),
+            host_event_transport="url-scheme",
+            show_empty_host_overlay=False,
+        )
+    except BaseException:
+        window.close()
+        if html_owner is not None:
+            html_owner.cleanup()
+        raise
+
     webview.setUrl(QUrl.fromLocalFile(html_path))
     _install_host_actions(
         window=window, webview=webview, qt=qt, html_path=html_path, current_title=title, current_state=current_state
     )
     _install_window_chrome(window=window, webview=webview, qt=qt)
     _restore_geometry(window, app, qt, current_state, width=width, height=height)
+    geometry_restored = True
     try:
         if molecular_system is None:
             _get_helper("_show_startup_status")(window, current_state)

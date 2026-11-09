@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [#342: Qt shell and channel share their persistent scene identity, with native continuous capture, empty/frozen regions and constructor-failure cleanup received.](qt_shell_runtime_identity.md)
+
 - [#339: Applied native-cell feedback records the canonical box without reissuing scene geometry.](applied_box_feedback_reprojects_geometry.md)
 - [#340: Coordinate-only callouts retain their font texture while glyph centres, bounds, images and picking stay coherent.](moving_annotations_reupload_font_textures.md)
 - [#341: Initially empty regions retain identity and latent style, then materialize through repeated memberships.](initially_empty_region_loses_definition.md)

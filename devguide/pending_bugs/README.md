@@ -25,11 +25,12 @@ list.
 - [`interaction_frame_query_crosses_canvas_owners.md`](interaction_frame_query_crosses_canvas_owners.md) — [#337](https://github.com/uibcdf/molsysviewer/issues/337) — Interaction frame query replies reach unrelated renderer-local request IDs. *(medium, reproduced)*
 - [`updated_annotation_pick_receiving_timeout.md`](updated_annotation_pick_receiving_timeout.md) — [#325](https://github.com/uibcdf/molsysviewer/issues/325) — Updated annotation GPU pick times out in hosted canvas-popup receiving. *(medium, measured)*
 
-### Partially done (9)
+### Partially done (10)
 
 - [`direct_state_rejection_erases_scene.md`](direct_state_rejection_erases_scene.md) — [#317](https://github.com/uibcdf/molsysviewer/issues/317) — Rejected direct state imports erase existing scene objects before validation finishes. *(high, reproduced)*
 - [`empty_whole_summary_queries_none.md`](empty_whole_summary_queries_none.md) — [#323](https://github.com/uibcdf/molsysviewer/issues/323) — Empty Whole summaries query MolSysMT with None and emit eight startup errors. *(low, reproduced)*
 - [`failed_factory_retains_owned_view.md`](failed_factory_retains_owned_view.md) — [#316](https://github.com/uibcdf/molsysviewer/issues/316) — Failed new_view initialization retains its unreturned View and widgets. *(medium, reproduced)*
+- [`qt_file_dialog_absolute_path_typing.md`](qt_file_dialog_absolute_path_typing.md) — [#287](https://github.com/uibcdf/molsysviewer/issues/287) — Native Qt file-dialog guard types while its modal window is inactive. *(medium, reproduced)*
 - [`saved_camera_lags_live_notebook.md`](saved_camera_lags_live_notebook.md) — [#319](https://github.com/uibcdf/molsysviewer/issues/319) — Immediate notebook and popup saves can preserve an older cached camera. *(medium, reproduced)*
 - [`standalone_html_retains_owned_view.md`](standalone_html_retains_owned_view.md) — [#324](https://github.com/uibcdf/molsysviewer/issues/324) — Standalone HTML construction retains internally created Views and widget registrations. *(medium, reproduced)*
 - [`trajectory_plot_numeric_precision.md`](trajectory_plot_numeric_precision.md) — [#321](https://github.com/uibcdf/molsysviewer/issues/321) — Trajectory labels hide nonzero values and narrow-offset axes lose numerical precision. *(medium, reproduced)*

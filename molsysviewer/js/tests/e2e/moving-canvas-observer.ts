@@ -179,31 +179,7 @@ export function observeMovingCaptureCanvas() {
             }
         }
         if (!ready) return;
-        const shapes = (kind: string, tag: string) => {
-            const refs = c.state.tagIndex.get(`${kind}\u0000${tag}`) ?? new Set();
-            return [...refs].flatMap((ref: any) => c.plugin.state.data.cells.get(ref)?.obj?.data?.repr?.getAllLoci?.()
-                .filter((loci: any) => loci.shape).map((loci: any) => loci.shape) ?? []);
-        };
-        const sphere = shapes("shape", "moving-marker").find((shape: any) => shape.geometry.kind === "mesh");
-        let center;
-        if (sphere) {
-            const geometry = sphere.geometry, low = [Infinity, Infinity, Infinity], high = [-Infinity, -Infinity, -Infinity];
-            for (let vertex = 0; vertex < geometry.vertexCount; vertex++) for (let axis = 0; axis < 3; axis++) {
-                const value = geometry.vertexBuffer.ref.value[3 * vertex + axis];
-                low[axis] = Math.min(low[axis], value); high[axis] = Math.max(high[axis], value);
-            }
-            center = low.map((value, axis) => (value + high[axis]) / 2);
-        }
-        const box = shapes("shape", "__msv_box").find((shape: any) => shape.geometry.kind === "mesh");
-        const annotation = shapes("annotation", "moving-note")[0];
-        const interactions = shapes("interaction", "moving-hbonds").map((shape: any) => shape.sourceData.interaction?.frame);
-        const region = c.state.regionIndex.get("moving-near");
-        const componentRef = typeof region?.component === "string" ? region.component : region?.component?.ref;
-        const regionAtoms = componentRef ? c.plugin.state.data.cells.get(componentRef)?.obj?.data?.elementCount ?? 0 : 0;
-        monitor.draws.push({ ...ready, center, boxEnd: box?.sourceData.links[0].end,
-            annotation: annotation ? { anchor: [...annotation.sourceData.anchor], position: [...annotation.sourceData.position] } : null,
-            annotationPresentation: w.Harness.inspectAnnotationPresentation(c, "moving-note"),
-            measurement: w.Harness.inspectMeasurementGeometry(c, "moving-distance"), regionAtoms, interactions });
+        monitor.draws.push(w.Harness.inspectMovingCaptureDraw(c));
         if (monitor.draws.length > 512) monitor.draws.shift();
     });
     replay = false;

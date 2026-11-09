@@ -22,9 +22,11 @@ from importlib import import_module
 from threading import RLock, get_ident
 from typing import Any, Callable
 
+from smonitor import signal
 from smonitor.integrations import context_extra, emit_from_catalog
 from traitlets import HasTraits
 
+from .._private.argdigest import digest
 from .._private.smonitor import CATALOG, META, PACKAGE_ROOT
 from ..widget import MolSysViewerWidget, _callback_delay, _ScheduledCallback
 from .status import _HOST_SHORTCUTS
@@ -92,6 +94,21 @@ class QtViewChannel(HasTraits):
         self._event_sink = self._dispatch_event
         bridge.event_sink = self._event_sink
         self.observe(self._send_ui_state, names=list(self._SYNC_TRAITS))
+
+    @signal()
+    @digest()
+    def bind_runtime_identity(self, viewer_id: str, session_id: str, *, skip_digestion: bool = False) -> None:
+        """Bind this local channel once to its persistent scene owner."""
+        if self._channel_closed:
+            raise RuntimeError("The Qt channel is closed.")
+        current = self.runtime_viewer_id, self.runtime_session_id
+        if current == (viewer_id, session_id):
+            return
+        if current != ("", ""):
+            raise RuntimeError("Qt channel runtime identity is immutable.")
+        with self.hold_trait_notifications():
+            self.runtime_viewer_id = viewer_id
+            self.runtime_session_id = session_id
 
     def _send_ui_state(self, change=None) -> None:
         if not self._receiving_ui:

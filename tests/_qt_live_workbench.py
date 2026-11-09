@@ -400,6 +400,7 @@ def main():
                         detail["selected"] = dialog.selectedFiles()
                         detail["directory"] = dialog.directory().absolutePath()
                         detail["filename"] = dialog.findChild(QLineEdit, "fileNameEdit").text()
+                        detail["filename_focused"] = dialog.findChild(QLineEdit, "fileNameEdit").hasFocus()
                         detail["expected"] = source_path
                         detail["source_exists"] = Path(source_path).is_file()
                     record("timeout", **detail)
@@ -429,16 +430,30 @@ def main():
                     if accept and not state["typed"] and exposed:
                         filename = dialog.findChild(QLineEdit, "fileNameEdit")
                         if filename.isVisible() and filename.isEnabled() and not filename.rect().isEmpty():
-                            state["typed"] = True
+                            # Synthetic widget input does not activate the modal
+                            # window as a real desktop click does. Bind keyboard
+                            # focus before Ctrl+A can reach the file-list selection.
+                            dialog.activateWindow()
+                            QApplication.setActiveWindow(dialog)
                             QTest.mouseClick(
                                 filename,
                                 Qt.MouseButton.LeftButton,
                                 Qt.KeyboardModifier.NoModifier,
                                 filename.rect().center(),
                             )
+                            filename.setFocus(Qt.FocusReason.OtherFocusReason)
+                            if not filename.hasFocus():
+                                QTimer.singleShot(30, answer)
+                                return
+                            state["typed"] = True
                             QTest.keyClick(filename, Qt.Key.Key_A, Qt.KeyboardModifier.ControlModifier)
                             QTest.keyClicks(filename, source_path)
-                            record("typed", filename=filename.text(), selected=dialog.selectedFiles())
+                            record(
+                                "typed",
+                                filename=filename.text(),
+                                selected=dialog.selectedFiles(),
+                                focused=filename.hasFocus(),
+                            )
                             QTimer.singleShot(30, answer)
                             return
                     selected = dialog.selectedFiles()

@@ -21,9 +21,11 @@ types and their native region memberships. The new lifecycle entry additionally
 receives a real budget freeze at frame 0 while both canvases display frame 1:
 both use the frozen membership with frame-1 coordinates. See the
 [host/lifetime receipt](../moving_capture_host_lifetime_receiving_20261108.json).
-Actual Qt/Jupyter continuous v2 and Qt scientific query routing remain pending;
-the actual-host stopped-scene passes do not close this issue. Earlier failed
-experiments below retain their original inputs and scope.
+The later [Qt identity receipt](../qt_native_moving_identity_receiving_20261108.json)
+additionally receives actual Qt continuous primary queries, the empty frame and
+the other-frame budget freeze after #342 corrects shell ownership. Actual
+Jupyter continuous v2 and consolidated acceptance remain separate. Native Qt
+popout parity stays under #51. Earlier failed experiments retain their inputs.
 
 ## What
 
