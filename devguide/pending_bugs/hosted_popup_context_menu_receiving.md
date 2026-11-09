@@ -52,3 +52,16 @@ The next hosted core E2E, 42210858347 on docs checkpoint 6e23f37f (unchanged
 pre-reader JS runtime), passes. This confirms non-reproduction in that run,
 not a cause or a product correction. Keep the observation open pending an
 explained disposition; neither the new reader nor a test retry repairs it.
+
+## Original hosted evidence rechecked — 2026-11-09
+
+Published GH Run Receptor 1.1.1 reacquires the original run and complete native
+logs: Core E2E failed, the skipped-commit backlog check was skipped, and no
+artifact exists.
+The native log records 64 resolutions to the hidden menu during the unchanged
+30-second wait. It does not record the event target, pointer sequence or drawn
+layout, so it still cannot distinguish failure to open from a subsequent close.
+The capture is retained with the current source-pair receiving packet. Its
+separate passing Jupyter addon scenarios do not close this controls-visibility
+observation. Keep #305 open and receive targeted diagnostics on the next
+applicable hosted core checkpoint; do not infer a cause from non-reproduction.

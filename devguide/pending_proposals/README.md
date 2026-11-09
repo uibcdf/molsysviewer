@@ -34,7 +34,7 @@ archived documents link there; its location does not reopen its release scope.
 
 - [`conditional_result_replacement.md`](conditional_result_replacement.md) — [#306](https://github.com/uibcdf/molsysviewer/issues/306) — Condition replacement on the reviewed molecular target and revision. *(inspected)*
 - [`independent_result_view_presentation.md`](independent_result_view_presentation.md) — [#301](https://github.com/uibcdf/molsysviewer/issues/301) — Present independent addon result Views in Jupyter and Qt. *(reproduced)*
-- [`molsysmt_tools_addon_receiving.md`](molsysmt_tools_addon_receiving.md) — [#264](https://github.com/uibcdf/molsysviewer/issues/264) — Qualify the redesigned MolSysMT addon host and molecular-edit reconciliation. *(inspected)*
+- [`molsysmt_tools_addon_receiving.md`](molsysmt_tools_addon_receiving.md) — [#264](https://github.com/uibcdf/molsysviewer/issues/264) — Qualify the redesigned MolSysMT addon host and molecular-edit reconciliation. *(measured)*
 - [`public_artifact_current_scene_contracts.md`](public_artifact_current_scene_contracts.md) — [#294](https://github.com/uibcdf/molsysviewer/issues/294) — Deliver a public artifact covering current scene handles and frame notifications. *(upstream)*
 - [`read_only_addon_panel_actions.md`](read_only_addon_panel_actions.md) — [#304](https://github.com/uibcdf/molsysviewer/issues/304) — Admit declared read-only actions from mounted addon panels during pending scene synchronization. *(reproduced)*
 

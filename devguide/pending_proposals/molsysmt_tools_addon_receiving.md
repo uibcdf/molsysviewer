@@ -4,15 +4,41 @@ issue: uibcdf/molsysviewer#264
 status: partial
 opened: 2026-10-22
 closed:
-verification: inspected
+verification: measured
 area: [addons, editing, api]
 guard:
 normative:
-blocked_by: [uibcdf/molsysmt#602, uibcdf/molsysmt#605, uibcdf/molsysmt#606, uibcdf/molsysmt#607, uibcdf/molsysmt#608, uibcdf/molsysviewer#304]
+blocked_by: [uibcdf/molsysviewer#304]
 supersedes: []
 ---
 
 # Receiving the redesigned MolSysMT tools addon
+
+## Public post-integration receiving — 2026-11-09
+
+The current pair is public MolSysMT `efbe67e1c6042078144bce1db24aa80bb565dbd2`
+and Viewer `ce9163dff8d82b870e6ef599ef57f7416f596a5b`. PR #543 is already merged;
+the owner also delivered and closed #665. Keep the superseded local wrapper
+proposal separate. Four newly exposed expert tools and explicit H5MSM writer
+options pass 132 current directed controls. Actual Jupyter passes four scenarios
+and 35 checks covering native Analysis, reviewed removal, independent result
+views, diagnostics and both popup types. The complete current-addon collection
+plus required preflights passes 5,603 cases with zero omissions and fixed inputs;
+35 inherited native examples pass. The
+[current receipt](../molsysmt_public_pair_receiving_20261109.json) additionally
+receives D1 through 59 native/facade controls and seven actual-Jupyter rotation
+checks. PR #668 changes only the six controlled-source pin files; 160 post-change
+route controls pass, with owner review and hosted acceptance pending. These
+automated Linux source results are not installed-package,
+hosted-matrix or postponed human acceptance.
+
+Closed owner #602 and #605–#608 no longer represent undelivered external
+dependencies. Their current consumer acceptance remains explicit in the
+[active action ledger](pre_1_0_robustness_audit_and_action_plan_20261106.md),
+along with C's remaining host/qualification exits and every accepted task family.
+Owner #666 / uibcdf/pyunitwizard#143 retain the unresolved physical/numerical
+contact-cutoff contract; no downstream widening or graphical acceptance follows
+from expert exposure. Earlier receipts below keep their original source scopes.
 
 ## Full collection recovery and conformation prerequisite — 2026-11-06
 

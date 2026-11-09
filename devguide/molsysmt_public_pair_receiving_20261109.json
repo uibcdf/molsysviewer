@@ -1,0 +1,434 @@
+{
+  "schema": "molsysviewer.working_receiving@1",
+  "date": "2026-11-09",
+  "parent_issue": "uibcdf/molsysviewer#315",
+  "consumer_issue": "uibcdf/molsysviewer#264",
+  "owner_fix": "uibcdf/molsysmt#665",
+  "status": "Current public-pair local source receiving complete; C5 and D1 delivered in source. Consolidated/installed/human acceptance remains separate.",
+  "viewer_source": "ce9163dff8d82b870e6ef599ef57f7416f596a5b",
+  "owner_public_source": "efbe67e1c6042078144bce1db24aa80bb565dbd2",
+  "native_backend_sha256": "2f1f69f6e0539bd31ee419ec3b7a4deaab20f09045ce3e6504369c9130438525",
+  "native_backend_rebuilt": false,
+  "native_reuse_condition": "Rust/setup sources unchanged from the qualified backend; selected binary hash held through receiving.",
+  "viewer_runtime_bundle_sha256": "67929ee09262b57cfab1a3e09372986c681da34bbde0d88449c961160f5317ee",
+  "runtime_labels": {
+    "molsysviewer": "0.24.0+97.gdf4bf477.dirty",
+    "molsysmt": "0+unknown",
+    "molsysmt._rust": null,
+    "molsysviewer_molsysmt": null,
+    "smonitor": "0.21.0",
+    "argdigest": "0.15.0",
+    "depdigest": "0.15.1",
+    "pyunitwizard": "0.28.1",
+    "pytest_receptor": "1.2.1",
+    "ackredit": "0.9.0"
+  },
+  "runtime_label_limits": "Unbuilt MolSysMT reports 0+unknown; Viewer retains ambient development-distribution metadata. These labels are not tested package identities. Exact source commits and selected-input hashes identify this source receiving.",
+  "support_route": "Byte-verified copies of public support payloads in an explicit isolated overlay, with recorded actual imports. Not a clean solver installation or a qualification of the newer ambient editable support libraries.",
+  "receiving": {
+    "directed": {
+      "campaign": "public-directed-15",
+      "scope": "Current public native/facade controls plus independent consumer analytical tests and complete pagination guard. Overlaps the full addon collection.",
+      "source": "efbe67e1c6042078144bce1db24aa80bb565dbd2",
+      "native_exit": 0,
+      "seconds": 28.57,
+      "selected_inputs": 10665,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 523.4,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "input_manifest_sha256": "fd1113fb41332a76878120c6e149a060f94a8b4eaf917ae817fd4571613fc49f",
+      "invocation_sha256": "d9630458b212623c75c1ed79e6247f63876e78028ec9c4df2e0533547d64100a",
+      "junit": {
+        "tests": 132,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "ec21839a9d6fe4372bc6595e559a1e47e2266e3b600e6ab6677827ae6dadf3ac",
+      "receptor_events_sha256": "7419dafa41fe13c5d566915696c9695328ceec622680bcba961034ad5f28d85f"
+    },
+    "jupyter": {
+      "campaign": "public-jupyter-16",
+      "scope": "Four real local JupyterLab/ipykernel/AnyWidget/Mol* scenarios: Analysis, reviewed removal, independent Views and diagnostics; 35 checks, canvas and detached Studio popups. Not visible Qt or human acceptance.",
+      "source": "efbe67e1c6042078144bce1db24aa80bb565dbd2",
+      "native_exit": 0,
+      "seconds": 229.51,
+      "selected_inputs": 10665,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3483.1,
+      "cleanup": {
+        "tracked": 97,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "input_manifest_sha256": "fd1113fb41332a76878120c6e149a060f94a8b4eaf917ae817fd4571613fc49f",
+      "invocation_sha256": "b45505338b777705f2ce55007ab51db0a5350f4d7578b590c96c67ec90f22980",
+      "junit": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "d82f55847f90c15fa66040f3d57647e3298590a43477da910789b420321636b0",
+      "receptor_events_sha256": "55667bc5efbc4d64e8d0049eac556edcafa233bfe6aeb0d321a244b3513b2d5f",
+      "baseline_observation": "The original result retains No active debugger session page errors also present in the independent plain-Jupyter control. This is not a claim of an error-free browser console or a causal diagnosis of owner #615."
+    },
+    "full_addon": {
+      "campaign": "full-addon-public-17",
+      "scope": "One complete default addon collection plus all three mandatory preflights on the public owner checkpoint with current Viewer. Zero omissions; no case-universe reconstruction.",
+      "source": "efbe67e1c6042078144bce1db24aa80bb565dbd2",
+      "native_exit": 0,
+      "seconds": 1509.96,
+      "selected_inputs": 10665,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2917.7,
+      "cleanup": {
+        "tracked": 21,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "input_manifest_sha256": "fd1113fb41332a76878120c6e149a060f94a8b4eaf917ae817fd4571613fc49f",
+      "invocation_sha256": "523f8c5ace6cbd31777afdec166af8cad18be5b364f6cbbc29fa028726d66227",
+      "junit": {
+        "tests": 5603,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "c5d626354d4e40bffc604134064e6562d427dddfdff441538b551019028e5513",
+      "receptor_events_sha256": "8729144a4bcec420e6b669b2a65994872edf1ca09b830fdd93af8d1994d3c15a"
+    },
+    "native_help": {
+      "campaign": "public-help-18",
+      "scope": "35 inherited native examples from six expert methods, with actual import origins. All examples pass.",
+      "source": "efbe67e1c6042078144bce1db24aa80bb565dbd2",
+      "native_exit": 0,
+      "seconds": 6.42,
+      "selected_inputs": 10667,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 364.1,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "input_manifest_sha256": "4b2806c9ca97674537275743aba8ffe6fb2ed99210a709d8a526babd35f2d9f2",
+      "invocation_sha256": "8d39ae67c33165f2f380aeed3cb1c422dcfc5b753217b4eb3676b38419eec71a"
+    },
+    "route_change": {
+      "campaign": "owner-routes-19",
+      "scope": "After the six CI/configuration pin changes: 160 public route/metadata/workflow/preflight controls plus read-only structural checks. Scientific and Viewer runtime bytes unchanged.",
+      "source": "efbe67e1c6042078144bce1db24aa80bb565dbd2",
+      "native_exit": 0,
+      "seconds": 41.58,
+      "selected_inputs": 10668,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 414.2,
+      "cleanup": {
+        "tracked": 9,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "input_manifest_sha256": "008e9a2f1067b79b7893f3b7d86bfbe512d7a6104565fa934236794e83d41117",
+      "invocation_sha256": "7545216846292329465e7f6e3a2fa091f34fe98319f1b01a3483a39eef87ff65",
+      "junit": {
+        "tests": 160,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "a4c135a5b710ec968459b9e0d0542f9aa956a78cd6d24b285ddcf7ff2cc0dec8",
+      "receptor_events_sha256": "6c3f891f4e7a64482cf9cc85123fc7d5842ff4deab01b32db015d5fdbf87268b"
+    },
+    "rotation_gui": {
+      "campaign": "public-rotation-20",
+      "scope": "D1: seven real-Jupyter rotation checks, signed quarter turns, per-structure centroids/fixed points, selected/unselected coordinates, actual Mol* vertices and independent result destinations. Exact source is the CI-pin-only contribution head.",
+      "source": "32fdbbab6278690045eccade17bdb2960c73c539",
+      "native_exit": 0,
+      "seconds": 52.72,
+      "selected_inputs": 10668,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3208.3,
+      "cleanup": {
+        "tracked": 27,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "input_manifest_sha256": "4994cd871498571f1a9bd74fb4ee15ed9c0ec29c311f75644b26ed7b080a16eb",
+      "invocation_sha256": "a846027ee7f152805741b51ad67d5b08a4ca9a0020664b91a0547cd7c997da1e",
+      "junit": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "ba76efdd6967f7dba0314c5a82323b66f6b41788ef7b7582b5e1da492bbec9fc",
+      "receptor_events_sha256": "de062c34e7e5916fd230e4f6b12884b05f127412a40873a5e4cc188d92937368"
+    },
+    "rotation_native": {
+      "campaign": "public-rotation-native-21",
+      "scope": "D1: 59 native constructor and facade guards for axes, units, invalid inputs and ownership; overlaps nine cases in the complete addon collection.",
+      "source": "32fdbbab6278690045eccade17bdb2960c73c539",
+      "native_exit": 0,
+      "seconds": 8.41,
+      "selected_inputs": 10668,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 424.4,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "input_manifest_sha256": "4994cd871498571f1a9bd74fb4ee15ed9c0ec29c311f75644b26ed7b080a16eb",
+      "invocation_sha256": "561ecd9b1c2996dcedbb7e8baad248bd64ff23d3c8e21cf196f03a3c1c3ed9a8",
+      "junit": {
+        "tests": 59,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "ffba3fbd7f2c5f4d96026a5906b3bceb1dad083966d5846cb25f494c44700cd5",
+      "receptor_events_sha256": "6006236d6713f9f41b8018e29f28978467b472f7ebb9b096853680e22017631b"
+    }
+  },
+  "counts_are_not_additive": true,
+  "structural_checks": [
+    {
+      "name": "ruff",
+      "exit_code": 0,
+      "seconds": 1.6030814971309155
+    },
+    {
+      "name": "format",
+      "exit_code": 0,
+      "seconds": 1.851590383099392
+    },
+    {
+      "name": "dependency-contract",
+      "exit_code": 0,
+      "seconds": 0.36379633587785065
+    },
+    {
+      "name": "devguide-index",
+      "exit_code": 0,
+      "seconds": 0.10817949008196592
+    },
+    {
+      "name": "devguide",
+      "exit_code": 0,
+      "seconds": 1.4293372719548643
+    },
+    {
+      "name": "course",
+      "exit_code": 0,
+      "seconds": 0.14119455683976412
+    },
+    {
+      "name": "diff",
+      "exit_code": 0,
+      "seconds": 0.05182968685403466
+    },
+    {
+      "name": "pytest",
+      "exit_code": 0,
+      "seconds": 32.975867957109585
+    }
+  ],
+  "warnings": {
+    "full_addon": 3409,
+    "groups": 12,
+    "scope": "Original native warnings retained. Four MemoryPressureWarnings intentionally exercise a tiny 4096-byte application budget; the monitored shared host did not hit its pressure stop. Legacy/schema, attribute-drop, provider-deprecation and explicit negative-input warnings remain visible. Route tests separately retain 504 Sphinx deprecations."
+  },
+  "c5_handoffs": [
+    {
+      "issue": 587,
+      "owner_state": "closed",
+      "closing_comment": "https://github.com/uibcdf/molsysmt/issues/587#issuecomment-6714376713",
+      "correction_commit": "96191e07e6c0ba755b53e14c785ad953e7aa55f3",
+      "ancestor_of_selected_owner": true,
+      "guard_or_rule": "devtools/tests/test_devguide_issue_pagination.py::test_remote_state_keeps_old_issues_beyond_five_pages_and_filters_prs",
+      "guard_or_rule_sha256": "8355a8c293e57411fa64b97a2284d0fa10b4f750485e677e66a5a62e282c2999",
+      "current_guard_or_rule_sha256": "8355a8c293e57411fa64b97a2284d0fa10b4f750485e677e66a5a62e282c2999"
+    },
+    {
+      "issue": 590,
+      "owner_state": "closed",
+      "closing_comment": "https://github.com/uibcdf/molsysmt/issues/590#issuecomment-6720565594",
+      "correction_commit": "4c681998c9236f701521a892705548ca0ea80597",
+      "ancestor_of_selected_owner": true,
+      "guard_or_rule": "tests/molsysviewer_molsysmt/test_system_panel.py::test_completed_removal_survives_context_refresh_without_replaying_science",
+      "guard_or_rule_sha256": "7ade164263b9d1e3bafc8b38855e482bcc82ae8c17006a3b9102c7f5ac9bc6e4",
+      "current_guard_or_rule_sha256": "7ade164263b9d1e3bafc8b38855e482bcc82ae8c17006a3b9102c7f5ac9bc6e4"
+    },
+    {
+      "issue": 591,
+      "owner_state": "closed",
+      "closing_comment": "https://github.com/uibcdf/molsysmt/issues/591#issuecomment-6720566053",
+      "correction_commit": "4c681998c9236f701521a892705548ca0ea80597",
+      "ancestor_of_selected_owner": true,
+      "guard_or_rule": "tests/molsysviewer_molsysmt/jupyter_receiving_guard.py::test_actual_jupyter_review_and_independent_popups",
+      "guard_or_rule_sha256": "adcf6db63cf432e09350d7bf8bf62ab6615a7a24954baed06d7aff34f5dc9600",
+      "current_guard_or_rule_sha256": "adcf6db63cf432e09350d7bf8bf62ab6615a7a24954baed06d7aff34f5dc9600"
+    },
+    {
+      "issue": 603,
+      "owner_state": "closed",
+      "closing_comment": "https://github.com/uibcdf/molsysmt/issues/603#issuecomment-6712183491",
+      "correction_commit": "96b73b3f3d00a0df8eb2f6535cbbc86f27503da4",
+      "ancestor_of_selected_owner": true,
+      "guard_or_rule": "tests/molsysviewer_molsysmt/test_geometry_panel.py::test_missing_mass_unit_policy_rejects_before_write_and_can_be_retried",
+      "guard_or_rule_sha256": "b56f5722663319a236d39f8cad2eacebc90901bdea407aa273817a59258c6428",
+      "current_guard_or_rule_sha256": "b56f5722663319a236d39f8cad2eacebc90901bdea407aa273817a59258c6428"
+    },
+    {
+      "issue": 609,
+      "owner_state": "closed",
+      "closing_comment": "https://github.com/uibcdf/molsysmt/issues/609#issuecomment-6720566502",
+      "correction_commit": "dd34c371cbe78ba2ddd884266c0915d0783fb831",
+      "ancestor_of_selected_owner": true,
+      "guard_or_rule": "tests/molsysviewer_molsysmt/jupyter_receiving_guard.py",
+      "guard_or_rule_sha256": "adcf6db63cf432e09350d7bf8bf62ab6615a7a24954baed06d7aff34f5dc9600",
+      "current_guard_or_rule_sha256": "adcf6db63cf432e09350d7bf8bf62ab6615a7a24954baed06d7aff34f5dc9600"
+    },
+    {
+      "issue": 611,
+      "owner_state": "closed",
+      "closing_comment": "https://github.com/uibcdf/molsysmt/issues/611#issuecomment-6719854782",
+      "correction_commit": "699fc69be57ac0e89f9bced3fd4f39139ccabf38",
+      "ancestor_of_selected_owner": true,
+      "guard_or_rule": "devguide/molsysviewer_addon.md",
+      "guard_or_rule_sha256": "4dc13c3afdc298c7da44a34ffed5dff4ede7a7d21243e66af631bccd22f1c0f3",
+      "current_guard_or_rule_sha256": "4dc13c3afdc298c7da44a34ffed5dff4ede7a7d21243e66af631bccd22f1c0f3"
+    },
+    {
+      "issue": 614,
+      "owner_state": "closed",
+      "closing_comment": "https://github.com/uibcdf/molsysmt/issues/614#issuecomment-6720566929",
+      "correction_commit": "68323539ee6b6473d453f6fbe61f5dc5ae826630",
+      "ancestor_of_selected_owner": true,
+      "guard_or_rule": "tests/molsysviewer_molsysmt/jupyter_receiving_guard.py",
+      "guard_or_rule_sha256": "adcf6db63cf432e09350d7bf8bf62ab6615a7a24954baed06d7aff34f5dc9600",
+      "current_guard_or_rule_sha256": "adcf6db63cf432e09350d7bf8bf62ab6615a7a24954baed06d7aff34f5dc9600"
+    }
+  ],
+  "c5_limits": "Owner closures, ancestry and applicable current native/Jupyter guards are received. Original smoke-budget run 42215709274 is independently confirmed successful via published GH Run Receptor; its historical metadata is not a current-source CI or installed-pair pass. Visible Qt and consolidated host acceptance remain separate.",
+  "owner_pin_pr": {
+    "url": "https://github.com/uibcdf/molsysmt/pull/668",
+    "head": "32fdbbab6278690045eccade17bdb2960c73c539",
+    "base": "efbe67e1c6042078144bce1db24aa80bb565dbd2",
+    "changed_files": 6,
+    "scope": "Five routine controlled-source workflows and their contract inventory; seven literal source-pin replacements. No native/host runtime, public API, dependency-floor or package change. Owner review/integration required; no merge from this session."
+  },
+  "hosted_pr_snapshot": {
+    "scope": "Latest authoritative discovery after published GH Run Receptor inspection: performance, policy, dependency and publication-governance workflows succeed; smoke/full remain pending. This does not qualify the full matrix. No manual dispatch or duplicate run.",
+    "runs": [
+      {
+        "id": 42659644084,
+        "name": "Conda publication governance",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 42659643113,
+        "name": "CI full",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 42659643066,
+        "name": "CI smoke",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 42659643172,
+        "name": "Dependency contract",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 42659643661,
+        "name": "MolSysSuite policy",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 42659643061,
+        "name": "Performance Regression Audit",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "observed_utc": "2026-11-09T17:09:19.215089+00:00"
+  },
+  "prior_attempts": {
+    "preflight-01": "One failure/44 passes identify the real facade gap, reported as owner #665.",
+    "growth-04": "Superseded private proposal: six failures/100 passes; four overly strict unit-roundtrip expectations, one missing writer keyword-only option and one incorrect native path-type expectation. That initial manifest omitted the then-untracked new test; do not use it for current public qualification.",
+    "format-03_and_structural-09": "Preparation mutations returned native zero while changing selected source/index inputs; not immutable passing guards.",
+    "full-addon-06": "Explicitly interrupted incomplete proposal run after strict namespace mismatches were found. Native -15 and original partial results retained.",
+    "namespaces-before-07": "Old explicit expected namespace sets/count fail; corrected without weakening strict equality.",
+    "full-addon-final-11": "5,584-case complete pass on the superseded private implementation, not the owner correction. Its exact staged regression and runner are recoverable from preserved patches/backups. No duplicate implementation PR was submitted.",
+    "jupyter-analysis-13": "Fixture setup selected the MolSysMT checkout as --provider-root, which actually names the public PyUnitWizard overlay. Origin assertion failed before View creation. Original failure retained; no product/timeout/assertion relaxation.",
+    "jupyter-analysis-14": "Corrected overlay passes on the earlier private proposal; public-jupyter-16 independently receives the actual public owner implementation."
+  },
+  "private_custody": {
+    "schema": "molsysviewer.private_capture_custody_receipt@1",
+    "custodian": "Diego Prada Gracia",
+    "opaque_reference": "robustness-20261106/source-pair-post665-20261109-1",
+    "files_verified": 1326,
+    "total_bytes": 350710886,
+    "manifest_sha256": "eb00adc9af845ce1d54542f19ef8cedc4900cbbabdf9bca4b8d67e33e7d907d5",
+    "originals_retained": true,
+    "permissions": "directories 0700; files 0600",
+    "off_host_backup_claimed": false,
+    "source_inputs_preserved": 10665,
+    "scope": "Current public source inputs and original private attempts, including superseded consumer patches. Later CI-pin contribution and final administrative checks are recorded separately."
+  },
+  "human_work_preserved": {
+    "viewer_human_files": 7,
+    "owner_human_files": 4,
+    "all_preserved": true,
+    "changed": []
+  },
+  "resources": {
+    "logical_cpu_ceiling": 8,
+    "ram_gib_ceiling": 6,
+    "owned_swap_gib": 0,
+    "minimum_globally_available_gib": 2,
+    "pytest_workers": 1,
+    "scheduler": "No Slurm tools/allocation; bounded user systemd scopes and CPU affinity with pressure/available-memory monitoring. Custody uses a smaller one-CPU/one-GiB scope."
+  },
+  "progress": {
+    "previous_source_delivered": 13,
+    "source_delivered": 15,
+    "fixed_denominator": 46,
+    "new_source_outcomes": [
+      "C5",
+      "D1"
+    ],
+    "source_delivered_percent": 32.6,
+    "final_accepted": 1,
+    "final_accepted_percent": 2.2,
+    "interpretation": "Audit-outcome counters, not effort, time or total release readiness. D6.1 and the broader task-family matrix do not automatically inherit D1 completion. Movie #320 remains mandatory outside the original denominator."
+  },
+  "remaining": [
+    "PR #668 owner review and actual hosted results; current covering Viewer/consolidated qualification",
+    "C1/C2/C3 and #264/#301/#304/#306 acceptance; #305 unexplained hosted menu timeout",
+    "Native #666 / PyUnitWizard #143 contact-cutoff review; no downstream criterion widening",
+    "D2/D3/D4 and every remaining accepted Geometry/Chemistry/Analysis family",
+    "A5 background/minimized and consolidated capture acceptance; v2 remains unadvertised",
+    "Movie #320, prolonged-use/scale, installed/downstream and postponed human checks"
+  ],
+  "publication": "Candidates/tags, distributable staging/public package production/promotions and Releases, including both 1.0 publications, remain paused. Ephemeral CI dependency wheels follow the ordinary test lane."
+}

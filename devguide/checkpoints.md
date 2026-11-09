@@ -905,12 +905,27 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**Current priority — robustness audit and action ledger, 2026-11-08:**
+**Current priority — robustness audit and action ledger, 2026-11-09:**
 [The active #315 plan](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md)
-owns the full work order and stable IDs. Delivered progress is **8/46 (17.4%)**;
+owns the full work order and stable IDs. Delivered progress is **15/46 (32.6%)**;
 final acceptance is **1/46 (2.2%)**. Neither is total release readiness, and
 Movie #320 remains an additional mandatory stream. E0, A1–A4/A6 and B1/B2 have
-their recorded delivered results; consolidated acceptance remains separate.
+their recorded delivered results, including B3.1–B3.5's
+[DataCard lifecycle closeout](datacard_lifecycle_receiving_20261108.json);
+consolidated acceptance remains separate.
+
+The [current public-pair receipt](molsysmt_public_pair_receiving_20261109.json)
+receives MolSysMT `efbe67e1c` with Viewer `ce9163df` after the owner closed #665:
+5,603 complete addon/preflight cases, 132 overlapping directed controls, four
+actual-Jupyter scenarios and 35 native-help examples pass. C5's owner handoffs
+and D1's constructor/rotation bridge are delivered in source; 59 native/facade
+and seven actual-Jupyter rotation checks retain their distinct scopes.
+[PR #668](https://github.com/uibcdf/molsysmt/pull/668) updates only six source-pin
+files after 160 route controls; its owner review and full/smoke/performance
+hosted outcomes remain pending. Do not submit
+the superseded local wrapper proposal or repeat PR #543's completed merge.
+The active ledger retains C5's owner dispositions, separate source scopes and
+the unresolved native contact-unit review in uibcdf/molsysmt#666.
 
 The [requester/frame closeout](frame_query_integration_closeout_20261108.json)
 receives #337/#338 with 142 affected Python cases and unchanged-input native
@@ -2796,18 +2811,21 @@ Resume toward **1.0** through the
 Its dashboard owns progress; use its stable IDs rather than adding another
 chronological status narrative here.
 
-**Current order — 2026-11-08:**
+**Current order — 2026-11-09:**
 
-1. **A:** receive A5's background/minimized host behavior and retain complete
+1. **C:** inspect PR #668's current hosted outcomes and leave review/integration
+   to the MolSysMT owner. Preserve the completed local public-pair/C5 receiving.
+   Complete #264/#301/#304/#306's separate exits
+   while retaining #305's unexplained failure.
+2. **A:** receive A5's background/minimized host behavior and retain complete
    actual Jupyter/Qt moving capture, query/freeze and browser lifetime controls and
    other delivered rejection/cleanup corrections
    before consolidated acceptance.
-2. **B:** retain delivered B1/B2 authority/precision corrections and finish
-   DataCard provenance, lifecycle and accessible popup/result receiving.
-3. **C:** receive owner-integrated PR #543 against the current native baseline
-   and host; do not reopen or rebase the already merged contribution,
-   completing #264/#301/#304/#306 while retaining #305's unexplained failure.
-4. **D:** receive owner scientific corrections and every previously approved
+3. **B:** retain delivered B1/B2 and B3.1–B3.5 authority, precision and DataCard
+   lifecycle/accessibility corrections. Resolve the separate provenance and
+   visual-design decisions before adopting new contracts.
+4. **D:** continue after D1's current constructor/Jupyter source receiving;
+   receive the remaining owner scientific corrections and every previously approved
    Geometry/Chemistry/Analysis task family. New recommendations need their
    recorded design decisions; existing required families are not dropped.
 5. **E:** complete the TcTIM/ensemble save–recover–continue workflow and
