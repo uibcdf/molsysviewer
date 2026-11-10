@@ -41,23 +41,59 @@ molecular inventory. Viewer reads covalent connectivity from the explicit
 reference chemical state for both JSON and array-native projections. A declared
 nonzero reference works and an ambiguous reference is rejected. Absent states,
 unknown connectivity and known-empty connectivity retain their native meaning.
-Operations that require chemistry pass the domain explicitly. The provider
-owns atom/structure remapping and associations, and Viewer applies the declared
-maps to its scene. The current viewer renders a static reference-state graph.
+Viewer reads bonds through `molsys.chemical_states.get_bonds(chemical_state="reference")`.
+It requests component indices and names via public `molsysmt.get` on MolSys,
+which resolves the ChemicalStates-owned component data. Active selection omits
+component membership when there is no chemical state. Operations that require
+chemistry pass the domain explicitly. The provider owns atom/structure remapping
+and associations, and Viewer applies the declared maps to its scene. The current
+viewer renders a static reference-state graph.
 We found no new incompatibility in the exercised source paths. The original
 hosted campaign and its separate Linux recovery are recorded in
 [ChemicalStates receiving](chemical_domain_receiving.md).
 
-For #256 we support the first stable H5MSM 1.0 boundary once the public reader,
-writer and migration routes pass on the intended pair. Our bounded receiving
-should include a complete system with reference chemistry and a named periodic
-analysis projected onto nonconsecutive structures, followed by session reopen
-and an edit that invalidates only its declared coverage. A partial-file case
-should preserve domain absence and maps, and exercise explicit correspondence
-when attaching an independent analysis. Reuse the 0.5 and explicit 0.6 evidence
-under their original versions. Keep the producer identity and measure units on
-recovery. The Viewer projection does not require new mechanics visualization or
-a promotion of the experimental scientific profiles.
+## H5MSM version and session assumptions
+
+Viewer delegates molecular file loading to the public MolSysMT form APIs. A
+Viewer session ZIP has its own manifest version and embeds `structure.h5msm`.
+The current writer calls `msm.h5msm.write` without a `format_version` override.
+On reopen, sessions with named-analysis signatures use `msm.h5msm.read`.
+Other sessions use `msm.convert` to MolSys. The interaction-only routes use
+public `read_layers` and `write_layers`, also without a writer override.
+Thus the bundled file version follows the provider's default and the input
+file's schema is not carried forward as a setting of the View. The legacy
+session writer fallback remains relevant only when the public writer is absent.
+[Session implementation](../molsysviewer/session.py) and
+[interaction file implementation](../molsysviewer/interactions.py).
+
+Viewer's restore checks depend on the ordered molecular binding, the precise
+coordinate and reference-state data used by the scene, and the names and
+signatures of its analyses. Those signatures require roles, observations,
+coverage, units, producer data, maps and periodic images to survive the round
+trip. A partial file contributes only a named analysis to an existing View
+with `assume_aligned=True` and optional explicit axis remapping. The target
+coordinates and system identity are retained. Writer refusal protects a session
+when the default schema cannot represent the supplied domains.
+
+The bounded source probe `279` on Viewer `4f05a6c6ea3f7ca78929e9f2592360f0e6ae38fa`
+and the MolSysMT review head `66273e4d3ad722726336055b4bf38dc76761e35e`
+checks 62 atoms over reordered structures `[4999, 0, 73]`, 36 periodic Buch
+occurrences and an empty disulfide analysis with its own evaluated coverage.
+Both full 0.5 and explicit experimental 0.6 inputs open. Each saves a session
+whose embedded structure has H5MSM version 0.5 and reopens with exact
+coordinates, reference bonds, components and both scientific analyses. Each
+format's interactions-only input attaches to the existing system and preserves
+its coordinates. This fixture carries no mechanics layer. The probe exits
+zero in 7.74 s at 1 CPU, with 10,905 unchanged selected inputs.
+
+For #256 we support a first stable H5MSM 1.0 boundary. Repeat those two routes
+with the actual stable reader and writer, verify the embedded version, retain
+old-session read coverage and add a scoped edit to verify selective analysis
+invalidation. Verify declared correspondence, domain absence, units and
+producer identity after reopening. If stable 1.0 also carries mechanics, check
+that save/reopen preserves those stored data even where Viewer does not draw
+them. Keep the prior formats and experimental scientific profiles within
+their established scopes.
 
 ## Versions for installed qualification
 
@@ -115,3 +151,17 @@ requests. Preserve the existing deadline, assertions, cold imports and kernel
 lifecycle. Viewer owns the mount/scene/draw observations. MolSysMT owns the
 Analysis runner and the kernel/server observations. A causal repair or an
 evidenced environment-specific disposition is still required to close #615.
+
+## MolSysMT #705 server preparation
+
+[Draft PR #706](https://github.com/uibcdf/molsysmt/pull/706) at
+`66273e4d3ad722726336055b4bf38dc76761e35e` retains the 20-second default and
+accepts a finite explicit `--server-ready-timeout` greater than zero and at
+most 300 seconds. The 25 CLI/runtime-file tests in probe `256` pass, with the
+readiness implementation retained at the stated PR head. The actual
+same-kernel campaign `265` reaches authenticated server readiness in 9.56 s
+with a 90-second configured budget. The earlier `248` timeout at 20.04 s
+and all scope distinctions are in the
+[receiving receipt](prolonged_scientific_session_receiving_20261110.json).
+The 30-second first-canvas wait under #615 and the scientific deadlines retain
+their own contracts. PR review belongs to MolSysMT.

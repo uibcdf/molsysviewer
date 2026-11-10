@@ -558,6 +558,11 @@ C2/task and hosted acceptance remain pending; C1 below holds the exact evidence.
 
 ### Current next actions
 
+The [MolSysMT coordination response](../molsysmt_pre_1_0_handoff_20261110.md)
+records Viewer acceptance of #250/#254 within the received source scope,
+the intended 0.25.0 host and exact artifact work under #524, the H5MSM version
+and session assumptions, and the #615 capture plan plus #705 evidence.
+
 1. Retain the owner-integrated D5.2/D6.5 contributions (#696/#699) and
    owner-closed #695/#697 and owner-merged producer PR #702. Resolve the contact
    boundary #666 / PyUnitWizard #143 before their broader acceptance. #690 is source-closed
