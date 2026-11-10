@@ -1,0 +1,257 @@
+{
+  "schema": "molsysviewer.continuous_scientific_session_receiving@1",
+  "date": "2026-11-10",
+  "consumer_issue": "uibcdf/molsysviewer#315",
+  "owner_issue": "uibcdf/molsysmt#421",
+  "status": "E1 source-delivered and locally received; owner/hosted/installed/human acceptance separate",
+  "viewer_source": "8d628224d8f7e22ff87c714d262d080fc7420d9b",
+  "viewer_runtime_source": "b9f3be0127b1fd48220cf400471044bd0b65dbe3",
+  "owner_source": "0fb92602ab3f9122372ce3f9900fbaf55437c507",
+  "owner_parent": "f35112090b37975a1d417602c3c1a6beed16d5f6",
+  "owner_pr": "https://github.com/uibcdf/molsysmt/pull/691",
+  "owner_parent_pr": "https://github.com/uibcdf/molsysmt/pull/687",
+  "scientific_runtime_base": "df654b087e0256587bc5239181b271c0227a3da6",
+  "native_backend_sha256": "2f1f69f6e0539bd31ee419ec3b7a4deaab20f09045ce3e6504369c9130438525",
+  "native_backend_rebuilt": false,
+  "native_scientific_algorithms_authored_here": false,
+  "source_sha256": {
+    ".github/workflows/ci-smoke.yaml": "729d0ec93b4bd26820e5949c3ea84704329cc228fcdb15204efa5ae710cf36a6",
+    "devguide/molsysviewer_addon.md": "4cf84f3f2830d775bbcad27934db8f0ed80aabdeb17a6a6b6505e4ea8778d742",
+    "devguide/pending_bugs/jupyter_receiving_launcher_leaves_runtime_settings_after_fixture_preparation_fails.md": "203aca5350256e19b6e720b1a35cb93aa3520aea4eeae7b52184fcae963909e2",
+    "devtools/data/native_small_cutoff_allocation_receiving_690_20261110.json": "e82b9dbe775ce5142a2842a4ba343033cef48069de3609ea04047176853be5a7",
+    "tests/molsysviewer_molsysmt/continuous_session_fixture.py": "fa20a7fe98e921a9b74b6f53bdf9330c846d308486784e4bd6bfe4d1ad50524f",
+    "tests/molsysviewer_molsysmt/continuous_session_jupyter.mjs": "5c514d9686f6e09de2825e10e4b7b15f313815c467bea5b82ecc92c51ba572d7",
+    "tests/molsysviewer_molsysmt/jupyter_receiving_guard.py": "77944bd4986fbbb0cb722722d98da110030af89590d5d78111690d8dbba3e789",
+    "tests/molsysviewer_molsysmt/system_panel_jupyter.py": "7782d614c2b389f6814701e70593165d6dc3b34ca76817d0ccbe840e03fd7752",
+    "tests/molsysviewer_molsysmt/test_continuous_session.py": "968faa4619411aa74dcf8cd4458931d0ec6590382efa6959e0db52d94ff452dd"
+  },
+  "capabilities": [
+    "One actual Jupyter/kernel working session with bundled TcTIM, caffeine, peptide, batch/progressive/complementary composition and explicit ordered structure pairing.",
+    "Reviewed GUI removal/cancellation, exact source maps, independent ordered subset/copy and deliberate independent preparation.",
+    "Deferred projection/synchronization, explicit reference fit and nonconsecutive ensemble geometry/properties with independent numeric/unit controls.",
+    "Genuine empty original [0,8,3] conformations saved before explicit same-View Replace with [0,8,2] for positive default-criterion Buch observations; no cutoff widening.",
+    "Evaluated-empty/unevaluated distinction, named science independent of visual hide/show/deletion, aligned independent import and separate scientific deletion.",
+    "Actual canvas and Studio popups; native H5MSM plus fresh-camera Viewer session save, close, recovery and further append/selective coverage invalidation with exact molecular/scene/analysis/source-map comparisons.",
+    "Public new_view(1TCD) acquisition received separately in binary/JSON widget routes; no fresh-download/no-cache claim.",
+    "Owner #688 stronger runtime-file context reused; original reporter remnants hash-retired after owned-process cleanup, with restrictive create-only and foreign-file protection."
+  ],
+  "receiving": {
+    "143-reconciled-quality": {
+      "native_exit": 0,
+      "seconds": 27.956359676085413,
+      "selected_inputs": 10804,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 457.2,
+      "cleanup": {
+        "tracked": 9,
+        "survivors": [],
+        "errors": []
+      },
+      "source_base": "8d628224d8f7e22ff87c714d262d080fc7420d9b",
+      "provider_source": "81b9640f29de568ceea6f666a15568e1b784f8d6",
+      "provider_public_runtime_base": "df654b087e0256587bc5239181b271c0227a3da6"
+    },
+    "145-reconciled-inventory": {
+      "native_exit": 0,
+      "seconds": 7.033035418950021,
+      "selected_inputs": 10804,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 344.2,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "source_base": "8d628224d8f7e22ff87c714d262d080fc7420d9b",
+      "provider_source": "0fb92602ab3f9122372ce3f9900fbaf55437c507",
+      "provider_public_runtime_base": "df654b087e0256587bc5239181b271c0227a3da6"
+    },
+    "146-reconciled-live": {
+      "native_exit": 0,
+      "seconds": 206.1218645509798,
+      "selected_inputs": 10804,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3671.2,
+      "cleanup": {
+        "tracked": 55,
+        "survivors": [],
+        "errors": []
+      },
+      "source_base": "8d628224d8f7e22ff87c714d262d080fc7420d9b",
+      "provider_source": "0fb92602ab3f9122372ce3f9900fbaf55437c507",
+      "provider_public_runtime_base": "df654b087e0256587bc5239181b271c0227a3da6"
+    },
+    "147-reconciled-pdb-id": {
+      "native_exit": 0,
+      "seconds": 36.59505949006416,
+      "selected_inputs": 10804,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2114.4,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "source_base": "8d628224d8f7e22ff87c714d262d080fc7420d9b",
+      "provider_source": "0fb92602ab3f9122372ce3f9900fbaf55437c507",
+      "provider_public_runtime_base": "df654b087e0256587bc5239181b271c0227a3da6"
+    },
+    "148-final-owner-quality": {
+      "native_exit": 0,
+      "seconds": 4.850769344018772,
+      "selected_inputs": 10804,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 36.4,
+      "cleanup": {
+        "tracked": 7,
+        "survivors": [],
+        "errors": []
+      },
+      "source_base": "8d628224d8f7e22ff87c714d262d080fc7420d9b",
+      "provider_source": "0fb92602ab3f9122372ce3f9900fbaf55437c507",
+      "provider_public_runtime_base": "df654b087e0256587bc5239181b271c0227a3da6"
+    },
+    "149-delivery-records": {
+      "native_exit": 0,
+      "seconds": 12.860534196021035,
+      "selected_inputs": 10804,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 408.6,
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "source_base": "8d628224d8f7e22ff87c714d262d080fc7420d9b",
+      "provider_source": "0fb92602ab3f9122372ce3f9900fbaf55437c507",
+      "provider_public_runtime_base": "df654b087e0256587bc5239181b271c0227a3da6"
+    }
+  },
+  "covering_native_scope": {
+    "original_aggregate": {
+      "native_exit": 1,
+      "seconds": 209.32120676105842,
+      "selected_inputs": 10804,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1023.7,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "source_base": "8d628224d8f7e22ff87c714d262d080fc7420d9b",
+      "provider_source": "81b9640f29de568ceea6f666a15568e1b784f8d6",
+      "provider_public_runtime_base": "df654b087e0256587bc5239181b271c0227a3da6"
+    },
+    "outcome": "714 passed, one outdated inventory assertion failed; the corrected one-case inventory passes separately, covering all 715 cases without claiming a green original aggregate.",
+    "correction": "get_model_recipe is explicitly asserted as a primary-bound exposed seventh mechanics route. Only the test expectation and explanatory documentation changed; the 714 scientific/runtime passes remain applicable."
+  },
+  "workflow_checks": 7,
+  "scientific_ledger_phases": 9,
+  "failures_preserved": [
+    "127 preparation namespace collision before server startup; unused credentials hash-retired under #688.",
+    "129 invalid test assumption of positive Buch results for genuinely empty selected conformations; genuine empty output retained.",
+    "130/134 cgroup OOM while native tiny-cutoff neighbor grids allocate uncontrolled intermediate storage; #690 owns the scientific fix.",
+    "135 safe independent native reproduction: two atoms request an 8,000,000,000-byte cell grid, bounded child abort -6 under 2 GiB address-space limit; diagnostic success is not a passing product test.",
+    "136 monitor stopped the execution for shared memory pressure; child exit zero does not establish a passing gate.",
+    "137/138/139 new-driver navigation assumptions corrected to the actual visible Studio header and compact navigation; no forced clicks or deadline increases.",
+    "144 original full covering aggregate retains its failed inventory assertion."
+  ],
+  "limits": [
+    "E1 is automated representative source receiving, not complete Qt continuous-session, human, installed artifact, GPU-device or release qualification.",
+    "MolSysMT #690 remains a critical pre-1.0 native resource defect, including contacts and legacy H-bond consumers; no native fix, cutoff workaround or universal RAM guarantee is claimed.",
+    "Owner #582 is source-closed with experimental get_model_recipe; current graphical review still displays requested/default inputs. Consumer receipt/adoption of the compiled physical recipe remains original D5.2 work.",
+    "The native #666 cutoff/unit issue, #615 initialization diagnosis and Viewer #305 retain their own unresolved evidence.",
+    "Interactions and detectors remain experimental. Pages bound copies after query construction, not universal computation or query memory.",
+    "The 714-case scope plus the corrected inventory is covering receiving, not one green full-suite run; other inherited full-core failures keep their own receipts.",
+    "Runtime-file finally cleanup cannot cover abrupt whole-scope termination; external execution ownership retired only its own dead credentials."
+  ],
+  "resources": {
+    "logical_cpus": 8,
+    "ram_gib": 6,
+    "swap_gib": 0,
+    "minimum_globally_available_gib": 2,
+    "own_intensive_jobs": 1,
+    "peak_metric": "Sum of owned-process RSS may count shared pages repeatedly; distinct from actual cgroup memory.",
+    "native_diagnostic_limit": {
+      "cgroup_gib": 4,
+      "address_space_gib": 2,
+      "core_dump": false
+    }
+  },
+  "human_files_preserved": 11,
+  "progress": {
+    "denominator": 46,
+    "previous_source_delivered": 34,
+    "new_source_delivery_ids": [
+      "E1"
+    ],
+    "locally_verified": 35,
+    "source_delivered": 35,
+    "source_delivered_ids": [
+      "E0",
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A6",
+      "B1",
+      "B2",
+      "B3.1",
+      "B3.2",
+      "B3.3",
+      "B3.4",
+      "B3.5",
+      "C5",
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "D5.1",
+      "D5.3",
+      "D5.5",
+      "D5.6",
+      "D6.1",
+      "D6.2",
+      "D6.3",
+      "C1",
+      "C2",
+      "D6.6",
+      "F3",
+      "D6.4",
+      "A5",
+      "D6.8",
+      "D6.10",
+      "D6.9",
+      "E1"
+    ],
+    "final_accepted": 1,
+    "final_accepted_ids": [
+      "E0"
+    ],
+    "movie_320_separately_required": true
+  },
+  "remaining_source_ids": [
+    "C3",
+    "C4",
+    "D5.2",
+    "D5.4",
+    "D6.5",
+    "D6.7",
+    "E2",
+    "E4",
+    "F2",
+    "G1",
+    "G2"
+  ],
+  "custody_checkpoint": {
+    "number": 7,
+    "files_verified": 451,
+    "bytes_verified": 100654051,
+    "manifest_sha256": "64c8696219c28bfea6c3e278856d703b16d647b57d150d0f4da25ec1d8a5c9b6",
+    "original_diagnostics_retained": true,
+    "unused_owned_credentials_hash_retired": true,
+    "off_host_backup_claimed": false
+  },
+  "publication_authorized": false
+}

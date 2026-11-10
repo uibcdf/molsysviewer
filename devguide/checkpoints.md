@@ -907,15 +907,18 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-The [2026-11-10 interaction/mechanics receipt](molsysmt_interaction_mechanics_receiving_20261110.json)
-records source outcome D6.9 in draft MolSysMT PR #687 on current owner base
-`b110ad6d`, with Viewer `b9f3be01`. Native/route 487 + 99 controls and actual
-Jupyter/both-popup/native Qt receiving pass. The owner merged the preceding
-four contributions. Viewer #347/#348 close source identity and a stale browser
-expectation; the original full-core aggregate remains failed, with its corrected
-six-entry continuation received separately. Current progress is **34/46 source**,
-**1/46 final**; continue E1's actual continuous scientific session. No package,
-tag, candidate freeze or publication is authorized.
+The [2026-11-10 continuous-session receipt](continuous_scientific_session_receiving_20261110.json)
+records original E1 in draft MolSysMT PR #691, stacked on reconciled #687.
+Owner baseline `df654b087` and the unchanged Viewer runtime `b9f3be01` receive
+one actual Jupyter session through composition/edit/preparation/analysis,
+both popups, H5MSM/session save, close, recovery and further edits. Independent
+native Qt and PDB-ID acquisition keep their distinct scope. Current progress
+is **35/46 source**, **1/46 final**. Native #690 remains critical pre-1.0 work;
+owner #582 is source-closed with experimental `get_model_recipe`, whose GUI
+compiled-physics adoption remains D5.2. Prior parent contributions are merged;
+#687 and #691 retain owner review/integration and consolidated acceptance.
+Original failures remain preserved. No package, tag, candidate freeze or
+publication is authorized.
 
 
 The [active #315 dashboard](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-dashboard) owns the
