@@ -30,10 +30,9 @@ archived documents link there; its location does not reopen its release scope.
 - [`migrate_standalone_qt_to_canonical_pyside6_6_11_2.md`](migrate_standalone_qt_to_canonical_pyside6_6_11_2.md) — [#109](https://github.com/uibcdf/molsysviewer/issues/109) — Migrate the optional standalone Qt host to canonical PySide6 6.11.2. *(measured)*
 - [`pre_1_0_robustness_audit_and_action_plan_20261106.md`](pre_1_0_robustness_audit_and_action_plan_20261106.md) — [#315](https://github.com/uibcdf/molsysviewer/issues/315) — Track the November robustness audit and pre-1.0 action plan. *(measured)*
 
-### Partially done (6)
+### Partially done (5)
 
 - [`conditional_result_replacement.md`](conditional_result_replacement.md) — [#306](https://github.com/uibcdf/molsysviewer/issues/306) — Condition replacement on the reviewed molecular target and revision. *(inspected)*
-- [`figure_observation_provenance_pre_1_0.md`](figure_observation_provenance_pre_1_0.md) — [#349](https://github.com/uibcdf/molsysviewer/issues/349) — Preserve detached producer-owned reproducibility context in retained scientific figures. *(measured)*
 - [`independent_result_view_presentation.md`](independent_result_view_presentation.md) — [#301](https://github.com/uibcdf/molsysviewer/issues/301) — Present independent addon result Views in Jupyter and Qt. *(reproduced)*
 - [`molsysmt_tools_addon_receiving.md`](molsysmt_tools_addon_receiving.md) — [#264](https://github.com/uibcdf/molsysviewer/issues/264) — Qualify the redesigned MolSysMT addon host and molecular-edit reconciliation. *(measured)*
 - [`public_artifact_current_scene_contracts.md`](public_artifact_current_scene_contracts.md) — [#294](https://github.com/uibcdf/molsysviewer/issues/294) — Deliver a public artifact covering current scene handles and frame notifications. *(upstream)*

@@ -7,7 +7,7 @@ closed: 2026-11-10
 severity: low
 verification: reproduced
 area: [public-api, compatibility, tooling]
-guard: tests/test_public_api_contract.py::test_inserted_optional_keyword_preserves_existing_bindings
+guard: tests/test_public_api_contract.py
 normative: docs/content/developer/public_api.md
 blocked_by: []
 supersedes: []
@@ -42,9 +42,17 @@ changes remain incompatible. Other unsupported change patterns stay
 conservative; this is not a scientific semantic-compatibility solver.
 
 Private 214 preserves the failing real Python binding control before the fix.
-The complete contract/digestion selection then passes 32 cases in 215, including
+The complete API-contract/inventory selection then passes 32 cases in 215, including
 independent positional, variadic, required-keyword and keyword-only ordering
 controls. The reviewed 954-declaration baseline is unchanged by this fix.
 B4's independently reviewed optional keyword remains its own intended API
 addition; its [receipt](../figure_observation_receiving_20261110.json) preserves
 the initial diagnostic and this follow-up. Publication remains paused.
+
+The final review also exposes a second variadic case in 227: a newly named
+keyword consumes a value previously bound inside existing `**kwargs`. The
+comparison now rejects those additions conservatively. An independent positive
+control preserves positional-only additions whose same-name keyword still
+belongs to `**kwargs`. The final 25-case contract/digester-caller selection
+passes in 229; 228 preserves a usage error from a mistyped test path with no
+execution. No API baseline changes accompany this diagnostic correction.

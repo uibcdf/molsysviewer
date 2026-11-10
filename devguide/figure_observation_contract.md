@@ -20,6 +20,8 @@ An observation is a detached UTF-8 JSON object, limited to 4 MiB, depth 24 and
 with binary64 consumers. Producers explicitly encode larger integers and exact
 binary values where needed. Cycles, unsupported Python objects, invalid keys,
 and oversized records are rejected before attachment, without truncation.
+Encoding enforces the byte budget incrementally, before assembling an oversized
+full JSON expansion; shared Python values do not bypass that rejection budget.
 The MolSysMT producer uses the registered PyUnitWizard QuantityRecord
 contract, including explicit units and reader handshakes; core preserves those
 envelopes as opaque JSON and does not authenticate their scientific source.

@@ -1,0 +1,1012 @@
+{
+  "schema": "molsysviewer.robustness_scale_receiving@1",
+  "date": "2026-11-10",
+  "issue": "uibcdf/molsysviewer#315",
+  "outcome": "E2",
+  "status": "Partial: Python scale/history anchors received; residency/detector/browser and same-kernel prolonged receiving remain pending",
+  "source_base": "46f7d11ac77d9b241668cae6e9f9aa8a7d0609ec",
+  "owner_source": "b49937c1b3547bfe02c5680893f94e29d9fca941",
+  "owner_public_base": "5f241cfa77f0091dc7a54c0be1bdd2951efdefed",
+  "native_backend_sha256": "58653b1d477be36017d2bc721dafe6e85a508e2325fa3226ccf26c61d449d6e5",
+  "resource_profile": {
+    "child_logical_cpus": 2,
+    "child_ram_gib": 4,
+    "swap_gib": 0,
+    "minimum_available_gib": 2,
+    "monitoring": "Shared available RAM, memory-pressure and swap activity; descendant ownership/cleanup. Supervisor overhead is separate from child cgroup limits."
+  },
+  "entrypoints": {
+    "scale": "devtools/benchmarks/representative_scale_gate.py",
+    "history": "devtools/benchmarks/scene_history_memory.py"
+  },
+  "entrypoint_sha256": {
+    "devtools/benchmarks/representative_scale_gate.py": "7a1df628ceb508a41f31603051ddcc49dda22d4ad072652378a5f115218a95b3",
+    "devtools/benchmarks/scene_history_memory.py": "be8a983edf50036cc94f9601c1c988a63607c10fd5e2b90b3167a08125400bb3"
+  },
+  "receiving": {
+    "native_exit": 0,
+    "seconds": 318.9206210151315,
+    "selected_inputs": 10877,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 661.4,
+    "cleanup": {
+      "tracked": 24,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null
+  },
+  "measurements": {
+    "scope": "E2 Python atom/structure and history anchors; three fresh workers per anchor, not cold filesystem caches or browser/device receiving",
+    "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+    "page_bytes": 4096,
+    "anchors": {
+      "small-1": [
+        {
+          "atoms": 2882,
+          "bytes": {
+            "binary": 34620,
+            "metadata_json": 297549
+          },
+          "case": "small",
+          "repeats": 3,
+          "rss_mib": {
+            "after_fixture": {
+              "mad": 0.0078125,
+              "max": 305.82421875,
+              "median": 305.81640625,
+              "min": 305.7109375
+            },
+            "after_fixture_release": {
+              "mad": 0.03125,
+              "max": 373.47265625,
+              "median": 373.44140625,
+              "min": 373.390625
+            },
+            "after_payload_release_with_fixture": {
+              "mad": 0.03125,
+              "max": 373.47265625,
+              "median": 373.44140625,
+              "min": 373.390625
+            },
+            "after_serialization": {
+              "mad": 0.01171875,
+              "max": 306.21875,
+              "median": 306.20703125,
+              "min": 306.10546875
+            },
+            "after_view_close_with_fixture_and_payload": {
+              "mad": 0.03125,
+              "max": 373.47265625,
+              "median": 373.44140625,
+              "min": 373.390625
+            },
+            "peak": {
+              "mad": 0.03125,
+              "max": 373.47265625,
+              "median": 373.44140625,
+              "min": 373.390625
+            },
+            "post_fixture_release_delta_from_start": {
+              "mad": 0.02734375,
+              "max": 227.31640625,
+              "median": 227.2890625,
+              "min": 227.16796875
+            },
+            "post_payload_release_delta_from_fixture": {
+              "mad": 0.0234375,
+              "max": 67.6796875,
+              "median": 67.65625,
+              "min": 67.6171875
+            },
+            "start": {
+              "mad": 0.00390625,
+              "max": 146.22265625,
+              "median": 146.15625,
+              "min": 146.15234375
+            },
+            "view_cycle_delta_with_fixture_and_payload": {
+              "mad": 0.01953125,
+              "max": 67.28515625,
+              "median": 67.25390625,
+              "min": 67.234375
+            }
+          },
+          "samples": [
+            {
+              "atoms": 2882,
+              "bytes": {
+                "binary": 34620,
+                "metadata_json": 297549
+              },
+              "case": "small",
+              "rss_mib": {
+                "after_fixture": 305.81640625,
+                "after_fixture_release": 373.47265625,
+                "after_payload_release_with_fixture": 373.47265625,
+                "after_serialization": 306.21875,
+                "after_view_close_with_fixture_and_payload": 373.47265625,
+                "peak": 373.47265625,
+                "post_fixture_release_delta_from_start": 227.31640625,
+                "post_payload_release_delta_from_fixture": 67.65625,
+                "start": 146.15625,
+                "view_cycle_delta_with_fixture_and_payload": 67.25390625
+              },
+              "schema_version": 1,
+              "structures": 1,
+              "timings_ms": {
+                "molsysmt_fixture_build": 1849.0940150804818,
+                "molsysviewer_array_native_serialization": 71.51830196380615,
+                "molsysviewer_load_registration": 27.16015698388219
+              }
+            },
+            {
+              "atoms": 2882,
+              "bytes": {
+                "binary": 34620,
+                "metadata_json": 297549
+              },
+              "case": "small",
+              "rss_mib": {
+                "after_fixture": 305.82421875,
+                "after_fixture_release": 373.44140625,
+                "after_payload_release_with_fixture": 373.44140625,
+                "after_serialization": 306.20703125,
+                "after_view_close_with_fixture_and_payload": 373.44140625,
+                "peak": 373.44140625,
+                "post_fixture_release_delta_from_start": 227.2890625,
+                "post_payload_release_delta_from_fixture": 67.6171875,
+                "start": 146.15234375,
+                "view_cycle_delta_with_fixture_and_payload": 67.234375
+              },
+              "schema_version": 1,
+              "structures": 1,
+              "timings_ms": {
+                "molsysmt_fixture_build": 1561.6128400433809,
+                "molsysviewer_array_native_serialization": 68.69764998555183,
+                "molsysviewer_load_registration": 27.119295904412866
+              }
+            },
+            {
+              "atoms": 2882,
+              "bytes": {
+                "binary": 34620,
+                "metadata_json": 297549
+              },
+              "case": "small",
+              "rss_mib": {
+                "after_fixture": 305.7109375,
+                "after_fixture_release": 373.390625,
+                "after_payload_release_with_fixture": 373.390625,
+                "after_serialization": 306.10546875,
+                "after_view_close_with_fixture_and_payload": 373.390625,
+                "peak": 373.390625,
+                "post_fixture_release_delta_from_start": 227.16796875,
+                "post_payload_release_delta_from_fixture": 67.6796875,
+                "start": 146.22265625,
+                "view_cycle_delta_with_fixture_and_payload": 67.28515625
+              },
+              "schema_version": 1,
+              "structures": 1,
+              "timings_ms": {
+                "molsysmt_fixture_build": 1566.0342629998922,
+                "molsysviewer_array_native_serialization": 93.18850398994982,
+                "molsysviewer_load_registration": 29.22658808529377
+              }
+            }
+          ],
+          "schema_version": 1,
+          "structures": 1,
+          "timings_ms": {
+            "molsysmt_fixture_build": {
+              "mad": 4.421422956511378,
+              "max": 1849.0940150804818,
+              "median": 1566.0342629998922,
+              "min": 1561.6128400433809
+            },
+            "molsysviewer_array_native_serialization": {
+              "mad": 2.8206519782543182,
+              "max": 93.18850398994982,
+              "median": 71.51830196380615,
+              "min": 68.69764998555183
+            },
+            "molsysviewer_load_registration": {
+              "mad": 0.04086107946932316,
+              "max": 29.22658808529377,
+              "median": 27.16015698388219,
+              "min": 27.119295904412866
+            }
+          }
+        }
+      ],
+      "small-100": [
+        {
+          "atoms": 2882,
+          "bytes": {
+            "binary": 3462000,
+            "metadata_json": 297559
+          },
+          "case": "small",
+          "repeats": 3,
+          "rss_mib": {
+            "after_fixture": {
+              "mad": 0.30859375,
+              "max": 342.04296875,
+              "median": 341.734375,
+              "min": 340.45703125
+            },
+            "after_fixture_release": {
+              "mad": 0.12890625,
+              "max": 402.3046875,
+              "median": 402.17578125,
+              "min": 401.984375
+            },
+            "after_payload_release_with_fixture": {
+              "mad": 0.12890625,
+              "max": 402.3046875,
+              "median": 402.17578125,
+              "min": 401.984375
+            },
+            "after_serialization": {
+              "mad": 0.3125,
+              "max": 342.125,
+              "median": 341.8125,
+              "min": 340.546875
+            },
+            "after_view_close_with_fixture_and_payload": {
+              "mad": 0.12890625,
+              "max": 402.3046875,
+              "median": 402.17578125,
+              "min": 401.984375
+            },
+            "peak": {
+              "mad": 0.12890625,
+              "max": 402.3046875,
+              "median": 402.17578125,
+              "min": 401.984375
+            },
+            "post_fixture_release_delta_from_start": {
+              "mad": 0.078125,
+              "max": 256.15625,
+              "median": 255.98828125,
+              "min": 255.91015625
+            },
+            "post_payload_release_delta_from_fixture": {
+              "mad": 0.5,
+              "max": 61.84765625,
+              "median": 60.44140625,
+              "min": 59.94140625
+            },
+            "start": {
+              "mad": 0.0390625,
+              "max": 146.1875,
+              "median": 146.1484375,
+              "min": 146.07421875
+            },
+            "view_cycle_delta_with_fixture_and_payload": {
+              "mad": 0.50390625,
+              "max": 61.7578125,
+              "median": 60.36328125,
+              "min": 59.859375
+            }
+          },
+          "samples": [
+            {
+              "atoms": 2882,
+              "bytes": {
+                "binary": 3462000,
+                "metadata_json": 297559
+              },
+              "case": "small",
+              "rss_mib": {
+                "after_fixture": 341.734375,
+                "after_fixture_release": 402.17578125,
+                "after_payload_release_with_fixture": 402.17578125,
+                "after_serialization": 341.8125,
+                "after_view_close_with_fixture_and_payload": 402.17578125,
+                "peak": 402.17578125,
+                "post_fixture_release_delta_from_start": 255.98828125,
+                "post_payload_release_delta_from_fixture": 60.44140625,
+                "start": 146.1875,
+                "view_cycle_delta_with_fixture_and_payload": 60.36328125
+              },
+              "schema_version": 1,
+              "structures": 100,
+              "timings_ms": {
+                "molsysmt_fixture_build": 3996.48291291669,
+                "molsysviewer_array_native_serialization": 76.92549587227404,
+                "molsysviewer_load_registration": 126.44255696795881
+              }
+            },
+            {
+              "atoms": 2882,
+              "bytes": {
+                "binary": 3462000,
+                "metadata_json": 297559
+              },
+              "case": "small",
+              "rss_mib": {
+                "after_fixture": 342.04296875,
+                "after_fixture_release": 401.984375,
+                "after_payload_release_with_fixture": 401.984375,
+                "after_serialization": 342.125,
+                "after_view_close_with_fixture_and_payload": 401.984375,
+                "peak": 401.984375,
+                "post_fixture_release_delta_from_start": 255.91015625,
+                "post_payload_release_delta_from_fixture": 59.94140625,
+                "start": 146.07421875,
+                "view_cycle_delta_with_fixture_and_payload": 59.859375
+              },
+              "schema_version": 1,
+              "structures": 100,
+              "timings_ms": {
+                "molsysmt_fixture_build": 3939.496416132897,
+                "molsysviewer_array_native_serialization": 76.95359014905989,
+                "molsysviewer_load_registration": 37.50388603657484
+              }
+            },
+            {
+              "atoms": 2882,
+              "bytes": {
+                "binary": 3462000,
+                "metadata_json": 297559
+              },
+              "case": "small",
+              "rss_mib": {
+                "after_fixture": 340.45703125,
+                "after_fixture_release": 402.3046875,
+                "after_payload_release_with_fixture": 402.3046875,
+                "after_serialization": 340.546875,
+                "after_view_close_with_fixture_and_payload": 402.3046875,
+                "peak": 402.3046875,
+                "post_fixture_release_delta_from_start": 256.15625,
+                "post_payload_release_delta_from_fixture": 61.84765625,
+                "start": 146.1484375,
+                "view_cycle_delta_with_fixture_and_payload": 61.7578125
+              },
+              "schema_version": 1,
+              "structures": 100,
+              "timings_ms": {
+                "molsysmt_fixture_build": 3975.4263111390173,
+                "molsysviewer_array_native_serialization": 77.46558007784188,
+                "molsysviewer_load_registration": 40.30827805399895
+              }
+            }
+          ],
+          "schema_version": 1,
+          "structures": 100,
+          "timings_ms": {
+            "molsysmt_fixture_build": {
+              "mad": 21.056601777672768,
+              "max": 3996.48291291669,
+              "median": 3975.4263111390173,
+              "min": 3939.496416132897
+            },
+            "molsysviewer_array_native_serialization": {
+              "mad": 0.028094276785850525,
+              "max": 77.46558007784188,
+              "median": 76.95359014905989,
+              "min": 76.92549587227404
+            },
+            "molsysviewer_load_registration": {
+              "mad": 2.8043920174241066,
+              "max": 126.44255696795881,
+              "median": 40.30827805399895,
+              "min": 37.50388603657484
+            }
+          }
+        }
+      ],
+      "medium-1": [
+        {
+          "atoms": 26214,
+          "bytes": {
+            "binary": 314604,
+            "metadata_json": 2254929
+          },
+          "case": "medium",
+          "repeats": 3,
+          "rss_mib": {
+            "after_fixture": {
+              "mad": 0.0703125,
+              "max": 331.109375,
+              "median": 330.93359375,
+              "min": 330.86328125
+            },
+            "after_fixture_release": {
+              "mad": 0.28515625,
+              "max": 399.73828125,
+              "median": 399.30859375,
+              "min": 399.0234375
+            },
+            "after_payload_release_with_fixture": {
+              "mad": 0.28515625,
+              "max": 399.73828125,
+              "median": 399.30859375,
+              "min": 399.0234375
+            },
+            "after_serialization": {
+              "mad": 0.05859375,
+              "max": 331.1875,
+              "median": 331.015625,
+              "min": 330.95703125
+            },
+            "after_view_close_with_fixture_and_payload": {
+              "mad": 0.28515625,
+              "max": 399.73828125,
+              "median": 399.30859375,
+              "min": 399.0234375
+            },
+            "peak": {
+              "mad": 0.0,
+              "max": 402.734375,
+              "median": 402.40625,
+              "min": 402.40625
+            },
+            "post_fixture_release_delta_from_start": {
+              "mad": 0.25390625,
+              "max": 253.65234375,
+              "median": 253.24609375,
+              "min": 252.9921875
+            },
+            "post_payload_release_delta_from_fixture": {
+              "mad": 0.0390625,
+              "max": 68.8046875,
+              "median": 68.19921875,
+              "min": 68.16015625
+            },
+            "start": {
+              "mad": 0.0234375,
+              "max": 146.0859375,
+              "median": 146.0625,
+              "min": 146.03125
+            },
+            "view_cycle_delta_with_fixture_and_payload": {
+              "mad": 0.0546875,
+              "max": 68.72265625,
+              "median": 68.12109375,
+              "min": 68.06640625
+            }
+          },
+          "samples": [
+            {
+              "atoms": 26214,
+              "bytes": {
+                "binary": 314604,
+                "metadata_json": 2254929
+              },
+              "case": "medium",
+              "rss_mib": {
+                "after_fixture": 330.93359375,
+                "after_fixture_release": 399.73828125,
+                "after_payload_release_with_fixture": 399.73828125,
+                "after_serialization": 331.015625,
+                "after_view_close_with_fixture_and_payload": 399.73828125,
+                "peak": 402.734375,
+                "post_fixture_release_delta_from_start": 253.65234375,
+                "post_payload_release_delta_from_fixture": 68.8046875,
+                "start": 146.0859375,
+                "view_cycle_delta_with_fixture_and_payload": 68.72265625
+              },
+              "schema_version": 1,
+              "structures": 1,
+              "timings_ms": {
+                "molsysmt_fixture_build": 2792.991657042876,
+                "molsysviewer_array_native_serialization": 384.30977798998356,
+                "molsysviewer_load_registration": 173.81093790754676
+              }
+            },
+            {
+              "atoms": 26214,
+              "bytes": {
+                "binary": 314604,
+                "metadata_json": 2254929
+              },
+              "case": "medium",
+              "rss_mib": {
+                "after_fixture": 330.86328125,
+                "after_fixture_release": 399.0234375,
+                "after_payload_release_with_fixture": 399.0234375,
+                "after_serialization": 330.95703125,
+                "after_view_close_with_fixture_and_payload": 399.0234375,
+                "peak": 402.40625,
+                "post_fixture_release_delta_from_start": 252.9921875,
+                "post_payload_release_delta_from_fixture": 68.16015625,
+                "start": 146.03125,
+                "view_cycle_delta_with_fixture_and_payload": 68.06640625
+              },
+              "schema_version": 1,
+              "structures": 1,
+              "timings_ms": {
+                "molsysmt_fixture_build": 2783.2890290301293,
+                "molsysviewer_array_native_serialization": 396.28823194652796,
+                "molsysviewer_load_registration": 173.57292119413614
+              }
+            },
+            {
+              "atoms": 26214,
+              "bytes": {
+                "binary": 314604,
+                "metadata_json": 2254929
+              },
+              "case": "medium",
+              "rss_mib": {
+                "after_fixture": 331.109375,
+                "after_fixture_release": 399.30859375,
+                "after_payload_release_with_fixture": 399.30859375,
+                "after_serialization": 331.1875,
+                "after_view_close_with_fixture_and_payload": 399.30859375,
+                "peak": 402.40625,
+                "post_fixture_release_delta_from_start": 253.24609375,
+                "post_payload_release_delta_from_fixture": 68.19921875,
+                "start": 146.0625,
+                "view_cycle_delta_with_fixture_and_payload": 68.12109375
+              },
+              "schema_version": 1,
+              "structures": 1,
+              "timings_ms": {
+                "molsysmt_fixture_build": 3247.2705650143325,
+                "molsysviewer_array_native_serialization": 413.28614205121994,
+                "molsysviewer_load_registration": 177.57033184170723
+              }
+            }
+          ],
+          "schema_version": 1,
+          "structures": 1,
+          "timings_ms": {
+            "molsysmt_fixture_build": {
+              "mad": 9.702628012746572,
+              "max": 3247.2705650143325,
+              "median": 2792.991657042876,
+              "min": 2783.2890290301293
+            },
+            "molsysviewer_array_native_serialization": {
+              "mad": 11.9784539565444,
+              "max": 413.28614205121994,
+              "median": 396.28823194652796,
+              "min": 384.30977798998356
+            },
+            "molsysviewer_load_registration": {
+              "mad": 0.23801671341061592,
+              "max": 177.57033184170723,
+              "median": 173.81093790754676,
+              "min": 173.57292119413614
+            }
+          }
+        }
+      ],
+      "large-1": [
+        {
+          "atoms": 104856,
+          "bytes": {
+            "binary": 1258308,
+            "metadata_json": 9606375
+          },
+          "case": "large",
+          "repeats": 3,
+          "rss_mib": {
+            "after_fixture": {
+              "mad": 0.83203125,
+              "max": 403.32421875,
+              "median": 402.4921875,
+              "min": 401.2109375
+            },
+            "after_fixture_release": {
+              "mad": 1.9765625,
+              "max": 464.203125,
+              "median": 462.2265625,
+              "min": 439.1015625
+            },
+            "after_payload_release_with_fixture": {
+              "mad": 0.0078125,
+              "max": 467.15625,
+              "median": 467.1484375,
+              "min": 441.0703125
+            },
+            "after_serialization": {
+              "mad": 0.71875,
+              "max": 412.9296875,
+              "median": 412.1171875,
+              "min": 411.3984375
+            },
+            "after_view_close_with_fixture_and_payload": {
+              "mad": 0.0078125,
+              "max": 478.3203125,
+              "median": 476.015625,
+              "min": 476.0078125
+            },
+            "peak": {
+              "mad": 0.421875,
+              "max": 497.92578125,
+              "median": 495.6796875,
+              "min": 495.2578125
+            },
+            "post_fixture_release_delta_from_start": {
+              "mad": 1.9609375,
+              "max": 318.00390625,
+              "median": 316.04296875,
+              "min": 293.03125
+            },
+            "post_payload_release_delta_from_fixture": {
+              "mad": 1.2890625,
+              "max": 65.9453125,
+              "median": 64.65625,
+              "min": 37.74609375
+            },
+            "start": {
+              "mad": 0.015625,
+              "max": 146.19921875,
+              "median": 146.18359375,
+              "min": 146.0703125
+            },
+            "view_cycle_delta_with_fixture_and_payload": {
+              "mad": 0.7265625,
+              "max": 65.390625,
+              "median": 64.6171875,
+              "min": 63.890625
+            }
+          },
+          "samples": [
+            {
+              "atoms": 104856,
+              "bytes": {
+                "binary": 1258308,
+                "metadata_json": 9606375
+              },
+              "case": "large",
+              "rss_mib": {
+                "after_fixture": 402.4921875,
+                "after_fixture_release": 462.2265625,
+                "after_payload_release_with_fixture": 467.1484375,
+                "after_serialization": 412.1171875,
+                "after_view_close_with_fixture_and_payload": 476.0078125,
+                "peak": 495.6796875,
+                "post_fixture_release_delta_from_start": 316.04296875,
+                "post_payload_release_delta_from_fixture": 64.65625,
+                "start": 146.18359375,
+                "view_cycle_delta_with_fixture_and_payload": 63.890625
+              },
+              "schema_version": 1,
+              "structures": 1,
+              "timings_ms": {
+                "molsysmt_fixture_build": 26088.644527830184,
+                "molsysviewer_array_native_serialization": 1496.3747810106725,
+                "molsysviewer_load_registration": 663.1895080208778
+              }
+            },
+            {
+              "atoms": 104856,
+              "bytes": {
+                "binary": 1258308,
+                "metadata_json": 9606375
+              },
+              "case": "large",
+              "rss_mib": {
+                "after_fixture": 401.2109375,
+                "after_fixture_release": 464.203125,
+                "after_payload_release_with_fixture": 467.15625,
+                "after_serialization": 411.3984375,
+                "after_view_close_with_fixture_and_payload": 476.015625,
+                "peak": 495.2578125,
+                "post_fixture_release_delta_from_start": 318.00390625,
+                "post_payload_release_delta_from_fixture": 65.9453125,
+                "start": 146.19921875,
+                "view_cycle_delta_with_fixture_and_payload": 64.6171875
+              },
+              "schema_version": 1,
+              "structures": 1,
+              "timings_ms": {
+                "molsysmt_fixture_build": 28155.091156018898,
+                "molsysviewer_array_native_serialization": 1529.8279928974807,
+                "molsysviewer_load_registration": 702.9012490529567
+              }
+            },
+            {
+              "atoms": 104856,
+              "bytes": {
+                "binary": 1258308,
+                "metadata_json": 9606375
+              },
+              "case": "large",
+              "rss_mib": {
+                "after_fixture": 403.32421875,
+                "after_fixture_release": 439.1015625,
+                "after_payload_release_with_fixture": 441.0703125,
+                "after_serialization": 412.9296875,
+                "after_view_close_with_fixture_and_payload": 478.3203125,
+                "peak": 497.92578125,
+                "post_fixture_release_delta_from_start": 293.03125,
+                "post_payload_release_delta_from_fixture": 37.74609375,
+                "start": 146.0703125,
+                "view_cycle_delta_with_fixture_and_payload": 65.390625
+              },
+              "schema_version": 1,
+              "structures": 1,
+              "timings_ms": {
+                "molsysmt_fixture_build": 26568.689967971295,
+                "molsysviewer_array_native_serialization": 1478.785082930699,
+                "molsysviewer_load_registration": 688.9569091144949
+              }
+            }
+          ],
+          "schema_version": 1,
+          "structures": 1,
+          "timings_ms": {
+            "molsysmt_fixture_build": {
+              "mad": 480.0454401411116,
+              "max": 28155.091156018898,
+              "median": 26568.689967971295,
+              "min": 26088.644527830184
+            },
+            "molsysviewer_array_native_serialization": {
+              "mad": 17.58969807997346,
+              "max": 1529.8279928974807,
+              "median": 1496.3747810106725,
+              "min": 1478.785082930699
+            },
+            "molsysviewer_load_registration": {
+              "mad": 13.94433993846178,
+              "max": 702.9012490529567,
+              "median": 688.9569091144949,
+              "min": 663.1895080208778
+            }
+          }
+        }
+      ],
+      "history": [
+        {
+          "atoms": 2882,
+          "case": "ordinary",
+          "repeats": 3,
+          "rss_mib": {
+            "after_clear": {
+              "mad": 0.0625,
+              "max": 372.1640625,
+              "median": 371.9453125,
+              "min": 371.8828125
+            },
+            "before": {
+              "mad": 0.046875,
+              "max": 370.93359375,
+              "median": 370.69921875,
+              "min": 370.65234375
+            },
+            "peak": {
+              "mad": 0.0625,
+              "max": 372.16015625,
+              "median": 371.94140625,
+              "min": 371.87890625
+            },
+            "released_after_clear": {
+              "mad": 0.0,
+              "max": -0.00390625,
+              "median": -0.00390625,
+              "min": -0.00390625
+            },
+            "retained_growth": {
+              "mad": 0.0,
+              "max": 1.2421875,
+              "median": 1.2265625,
+              "min": 1.2265625
+            },
+            "with_history": {
+              "mad": 0.0625,
+              "max": 372.16015625,
+              "median": 371.94140625,
+              "min": 371.87890625
+            }
+          },
+          "samples": [
+            {
+              "atoms": 2882,
+              "case": "ordinary",
+              "history_depth": 25,
+              "history_depth_after_clear": 0,
+              "rss_mib": {
+                "after_clear": 372.1640625,
+                "before": 370.93359375,
+                "peak": 372.16015625,
+                "released_after_clear": -0.00390625,
+                "retained_growth": 1.2265625,
+                "with_history": 372.16015625
+              },
+              "schema_version": 1,
+              "snapshot_bytes": 29763,
+              "snapshots": 25,
+              "timings_ms": {
+                "record_25": 222.73355000652373
+              }
+            },
+            {
+              "atoms": 2882,
+              "case": "ordinary",
+              "history_depth": 25,
+              "history_depth_after_clear": 0,
+              "rss_mib": {
+                "after_clear": 371.8828125,
+                "before": 370.65234375,
+                "peak": 371.87890625,
+                "released_after_clear": -0.00390625,
+                "retained_growth": 1.2265625,
+                "with_history": 371.87890625
+              },
+              "schema_version": 1,
+              "snapshot_bytes": 29763,
+              "snapshots": 25,
+              "timings_ms": {
+                "record_25": 208.91623105853796
+              }
+            },
+            {
+              "atoms": 2882,
+              "case": "ordinary",
+              "history_depth": 25,
+              "history_depth_after_clear": 0,
+              "rss_mib": {
+                "after_clear": 371.9453125,
+                "before": 370.69921875,
+                "peak": 371.94140625,
+                "released_after_clear": -0.00390625,
+                "retained_growth": 1.2421875,
+                "with_history": 371.94140625
+              },
+              "schema_version": 1,
+              "snapshot_bytes": 29763,
+              "snapshots": 25,
+              "timings_ms": {
+                "record_25": 224.04582984745502
+              }
+            }
+          ],
+          "schema_version": 1,
+          "snapshot_bytes": 29763,
+          "snapshots": 25,
+          "timings_ms": {
+            "record_25": {
+              "mad": 1.3122798409312963,
+              "max": 224.04582984745502,
+              "median": 222.73355000652373,
+              "min": 208.91623105853796
+            }
+          }
+        },
+        {
+          "atoms": 104856,
+          "case": "literal-overlay",
+          "repeats": 3,
+          "rss_mib": {
+            "after_clear": {
+              "mad": 0.28515625,
+              "max": 472.5703125,
+              "median": 472.28515625,
+              "min": 470.05859375
+            },
+            "before": {
+              "mad": 0.25,
+              "max": 439.3671875,
+              "median": 437.90234375,
+              "min": 437.65234375
+            },
+            "peak": {
+              "mad": 0.015625,
+              "max": 501.8203125,
+              "median": 501.38671875,
+              "min": 501.37109375
+            },
+            "released_after_clear": {
+              "mad": 0.5078125,
+              "max": 28.08203125,
+              "median": 27.57421875,
+              "min": 26.86328125
+            },
+            "retained_growth": {
+              "mad": 0.53125,
+              "max": 61.53125,
+              "median": 61.0,
+              "min": 59.98046875
+            },
+            "with_history": {
+              "mad": 0.93359375,
+              "max": 500.3671875,
+              "median": 499.43359375,
+              "min": 497.6328125
+            }
+          },
+          "samples": [
+            {
+              "atoms": 104856,
+              "case": "literal-overlay",
+              "history_depth": 25,
+              "history_depth_after_clear": 0,
+              "rss_mib": {
+                "after_clear": 470.05859375,
+                "before": 437.65234375,
+                "peak": 501.8203125,
+                "released_after_clear": 27.57421875,
+                "retained_growth": 59.98046875,
+                "with_history": 497.6328125
+              },
+              "schema_version": 1,
+              "snapshot_bytes": 42700088,
+              "snapshots": 25,
+              "timings_ms": {
+                "record_25": 11835.916469804943
+              }
+            },
+            {
+              "atoms": 104856,
+              "case": "literal-overlay",
+              "history_depth": 25,
+              "history_depth_after_clear": 0,
+              "rss_mib": {
+                "after_clear": 472.28515625,
+                "before": 439.3671875,
+                "peak": 501.38671875,
+                "released_after_clear": 28.08203125,
+                "retained_growth": 61.0,
+                "with_history": 500.3671875
+              },
+              "schema_version": 1,
+              "snapshot_bytes": 42700088,
+              "snapshots": 25,
+              "timings_ms": {
+                "record_25": 11946.5251439251
+              }
+            },
+            {
+              "atoms": 104856,
+              "case": "literal-overlay",
+              "history_depth": 25,
+              "history_depth_after_clear": 0,
+              "rss_mib": {
+                "after_clear": 472.5703125,
+                "before": 437.90234375,
+                "peak": 501.37109375,
+                "released_after_clear": 26.86328125,
+                "retained_growth": 61.53125,
+                "with_history": 499.43359375
+              },
+              "schema_version": 1,
+              "snapshot_bytes": 42700088,
+              "snapshots": 25,
+              "timings_ms": {
+                "record_25": 11966.571555938572
+              }
+            }
+          ],
+          "schema_version": 1,
+          "snapshot_bytes": 42700088,
+          "snapshots": 25,
+          "timings_ms": {
+            "record_25": {
+              "mad": 20.046412013471127,
+              "max": 11966.571555938572,
+              "median": 11946.5251439251,
+              "min": 11835.916469804943
+            }
+          }
+        }
+      ]
+    }
+  },
+  "scope_limits": [
+    "Constructed molecular supercells and rigid-drift structures, not an observed MD trajectory.",
+    "Three fresh Python workers per anchor; filesystem/JIT caches are not claimed cold.",
+    "Worker RSS includes native fixture assembly and Python dependencies; it is not Viewer-only memory, browser RSS or hardware VRAM.",
+    "History captures 25 production state checkpoints, then verifies empty history after clear; peak RSS and allocator retention do not independently prove a leak.",
+    "Historical August baseline uses Python 3.13 and different software/resources. No comparable-condition regression/pass threshold is inferred from direct cross-date ratios.",
+    "Source measurements only; no clean installed package, other OS, human acceptance or publication is claimed."
+  ],
+  "original_outcome_delivered": false,
+  "publications_paused": true,
+  "private_custody": {
+    "number": 12,
+    "files_verified": 4088,
+    "bytes_verified": 64683737,
+    "manifest_sha256": "6cfae7c3dac46eb21e5d8587360f386c0ab3f7ce9bfca3511235130025b9949f",
+    "original_diagnostics_retained": true,
+    "unused_owned_credentials_hash_retired": true,
+    "off_host_backup_claimed": false
+  }
+}

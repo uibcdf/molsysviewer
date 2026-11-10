@@ -24,7 +24,7 @@ Jupyter workflows including both popups, and six native Qt checks with complete
 retirement. Viewer #351 is corrected in `b010ab76`; F1 is also source-received
 as additional adopted work. Failures remain preserved. Owner review, changed
 combined-head/hosted/installed and postponed human acceptance are separate.
-Final applicable acceptance stays **1/46**. B4, E2 and Movie #320 remain work;
+Final applicable acceptance stays **1/46**. B4 and F1 are additional source-delivered work; E2 and Movie #320 remain;
 publication and E4 human observations remain paused.
 
 
@@ -36,7 +36,7 @@ outside the original 46-outcome denominator; the current counter is above.
 The [native Qt disposal correction](../qt_independent_disposal_receiving_20261110.json)
 also receives complete independent-window retirement, including failed
 initialization. D6.5 now has successful source checks, actual Jupyter/native Qt
-receiving and a published contribution for owner review. B4 and the adopted E2 campaign remain pending. Human acceptance and
+receiving and a published contribution for owner review. B4 is additionally source-received through PR #702; the adopted E2 campaign remains pending. Human acceptance and
 publication actions remain paused; no final acceptance is inferred.
 
 
@@ -395,8 +395,13 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 **Scope decisions — 2026-11-10:** the maintainer explicitly adopts E2's
 documented scale matrix and 30 active cycles in one kernel, plus B4's
-producer-owned reproducibility metadata ([#349](https://github.com/uibcdf/molsysviewer/issues/349), [plan](figure_observation_provenance_pre_1_0.md)) and F1's reviewed public-contract
-snapshot ([#350](https://github.com/uibcdf/molsysviewer/issues/350), [plan](../archive/public_api_contract_snapshot_pre_1_0.md)). F1 is source-delivered. B4 core and producer pass scoped receiving; producer publication for owner review remains pending. E2 execution remains pending. Coordination for B4 is uibcdf/molsyssuite#179. The original
+producer-owned reproducibility metadata ([#349](https://github.com/uibcdf/molsysviewer/issues/349), [plan](../archive/figure_observation_provenance_pre_1_0.md)) and F1's reviewed public-contract
+snapshot ([#350](https://github.com/uibcdf/molsysviewer/issues/350), [plan](../archive/public_api_contract_snapshot_pre_1_0.md)).
+F1 and B4 are source-delivered; B4 producer PR #702 awaits owner review. E2 is
+executing its adopted scale protocol; the [Python scale/history anchors](../robustness_scale_receiving_20261110.json)
+pass in three fresh workers each. Residency/detector/browser and the same-kernel
+prolonged check remain pending. Coordination for B4 is
+uibcdf/molsyssuite#179. The original
 46-item denominator and separately required Movie #320 remain unchanged;
 B4/F1 are now additional adopted work, not silently credited original outcomes.
 B3.6/E3 remain separate recommendations, with their decisions still visible.
@@ -404,13 +409,14 @@ B3.6/E3 remain separate recommendations, with their decisions still visible.
 
 **Latest source delivery, 2026-11-10:**
 [The construction receipt](../molsysmt_construction_receiving_20261110.json)
-receives D6.5 through draft owner PR #699 and records **37/46 (80.4%)
+receives D6.5 through owner-integrated PR #699 and records **37/46 (80.4%)
 source-delivered**, with final acceptance **1/46 (2.2%)**. The additional F1
 snapshot is delivered; [B4's receipt](../figure_observation_receiving_20261110.json)
 receives the optional core contract and native producer, including final
-QuantityRecord, Jupyter and native Qt controls. Its owner contribution still
-needs publication for review. Native #695 box alignment and #666 / PyUnitWizard
-#143 remain explicit owner work. Original C3/C4, D5.4, D6.7, E2/E4, F2 and
+QuantityRecord, Jupyter and native Qt controls. Its owner contribution is
+published as draft PR #702. Native #695 is now
+owner-closed; the new source pair has scoped receiving. The contact boundary
+#666 / PyUnitWizard #143 remains explicit owner work. Original C3/C4, D5.4, D6.7, E2/E4, F2 and
 G1/G2 remain. B3.6/E3 retain separate decisions; Movie #320 remains mandatory
 outside the unchanged denominator. Human observations and publication remain paused.
 
@@ -551,17 +557,17 @@ C2/task and hosted acceptance remain pending; C1 below holds the exact evidence.
 
 ### Current next actions
 
-1. Receive owner review/integration of D6.5 construction/assembly/solvent/ion tasks and receive
-   the owner resolutions for #695 box alignment and #666 / PyUnitWizard #143
-   exact-cutoff semantics before their broader acceptance. #690 is source-closed
+1. Retain the owner-integrated D5.2/D6.5 contributions (#696/#699) and
+   owner-closed #695/#697. Receive producer PR #702 and the unresolved contact
+   boundary #666 / PyUnitWizard #143 before their broader acceptance. #690 is source-closed
    and its canonical corrected backend is received; do not repeat its dangerous
    original allocation outside the preserved protected control.
-2. Implement adopted B4 figure provenance; retain F1’s received public-contract snapshot and review new APIs against it.
+2. Retain source-delivered B4 figure provenance and F1’s reviewed public-contract snapshot; receive owner review of producer PR #702.
    Continue C3's remaining integration exits, D5.4/#615 initialization and
    C4/Viewer #305 with causal or bounded evidenced dispositions, retaining
    original failed runs and unchanged deadlines.
-3. Leave #696 review/integration to MolSysMT; #687/#691 are already integrated
-   by ancestry. Receive changed combined-head gates in one agreed batch,
+3. Leave PR #702 review/integration to MolSysMT; #696/#699 are verified
+   ancestors of public owner main `5f241cfa7`. Receive changed combined-head gates in one agreed batch,
    without a new hosted matrix or CI run for every incremental commit.
 4. Execute the adopted E2 scale matrix and thirty active cycles in one kernel,
    with sequential controlled resources and honest observed duration. Retain
@@ -579,8 +585,8 @@ their own inputs and do not supersede this order.
 | Block | Current status | Owner and tracking | Exit evidence |
 | --- | --- | --- | --- |
 | A — integrity, restoration and cleanup | A1–A6 source-delivered; #319 closes coherent live capture with negotiated v2, v1 compatibility, actual Jupyter/Qt moving/background and combined browser receiving; final platform/installed/human acceptance remains separate | Viewer; #316/#317/#318/#319 and private handling under #315 | Rejection preserves work; ownership/deadline cleanup and real API/render/file regressions |
-| B — plots and DataCards | B1/#314, B2/#321 with #322 and B3.1–B3.5/#345 are source-delivered; numerical/state/popup and DataCard receiving pass. Retain the unexplained earlier zero-reference-bounds guard failure; consolidated acceptance remains. B4 is adopted and pending implementation; B3.6 needs a scope decision | Viewer and scientific producer; #314, #321, #322, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
-| C — contribution and host integration | C1/C2 source-delivered: owner-merged PR #668 and adopted controlled Viewer pin, received on the reconciled source pair. PR #678’s full matrix retains its exact execution/head scope; #678/#681/#682/#683 are owner-merged. Owner main contains #687/#691 by verified ancestry; draft #696 retains owner review/integration and changed combined-head gates. Preserve #668's seven original test failures and #671 provisioning failure; #670 is owner-resolved. C3/C4 remain partial/open | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421 and PR #696 | Exact source delivery/adoption is received; covering hosted/installed and remaining host exits are separate |
+| B — plots and DataCards | B1/#314, B2/#321 with #322 and B3.1–B3.5/#345 are source-delivered; numerical/state/popup and DataCard receiving pass. Retain the unexplained earlier zero-reference-bounds guard failure; consolidated acceptance remains. B4 is source-delivered through core and producer PR #702; B3.6 needs a scope decision | Viewer and scientific producer; #314, #321, #322, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
+| C — contribution and host integration | C1/C2 source-delivered: owner-merged PR #668 and adopted controlled Viewer pin, received on the reconciled source pair. PR #678’s full matrix retains its exact execution/head scope; #678/#681/#682/#683 are owner-merged. Owner main contains #687/#691/#696/#699 by verified ancestry; draft #702 retains owner review/integration and changed combined-head gates. Preserve #668's seven original test failures and #671 provisioning failure; #670 is owner-resolved. C3/C4 remain partial/open | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421 and PR #702 | Exact source delivery/adoption is received; covering hosted/installed and remaining host exits are separate |
 | D — scientific prerequisites and approved GUI families | Partial implementation; provider corrections and several task families remain | MolSysMT owns science; addon owns tasks; #264/#315 and uibcdf/molsysmt#421 | Received native fixes plus every required family/effect, without hidden preparation or copied algorithms |
 | E — integrated use, scale and human acceptance | E0 custody received; E1 continuous actual-Jupyter workflow source-delivered with separate native Qt evidence; E2 bounded-scale acceptance pending and E4 human review postponed | Viewer/addon; maintainer owns human observations | TcTIM/ensemble save–recover–continue, independent lifetimes and representative measured limits |
 | F — public contract and documentation | F3 current handoff source-delivered; F2 broad documentation remains pending; the additional F1 compatibility snapshot is source-received | Viewer; #315 | Named stable/experimental contracts, verified references and one usable current handoff |
@@ -782,7 +788,7 @@ values to the reporting protocol.
 | B1–B2 | P1 scientific reading/navigation; affected covering artifact and 1.0 | Viewer; #314 and a scoped precision report | Correlated Python/render acceptance and numerical-label truth; retain original failed runs |
 | B3.1–B3.5 | P2 robustness; applicable candidate/1.0 scope | Viewer; #345 under #315 | Source correction and native guards delivered; retain later consolidated/installed/human scope |
 | B3.6, E3 | Scope/design decision; not an automatic release gate | Principal maintainer decides scope; relevant owner implements | Record accept/reject/defer and contract before implementation |
-| B4, F1 | Adopted 2026-11-10; B4 pending, F1 source-received | Viewer and scientific producer; #315 | Preserve figure provenance and review public-contract signatures; maintain explicit guards and separate completion outside the original denominator |
+| B4, F1 | Adopted 2026-11-10; B4/F1 source-delivered | Viewer and scientific producer; #315 | Preserve figure provenance and review public-contract signatures; maintain explicit guards and separate completion outside the original denominator |
 | C1–C3, C5 | P1 integration of selected source pair | Viewer host and MolSysMT owner; #264 and uibcdf/molsysmt#421 / PR #543 | B1 for the new host pin; publish reviewed sources, receive relevant full/hosted results and owner acceptance |
 | C4 | P1 qualification disposition | Viewer; #305 | Explain the original failure or a bounded evidenced disposition; a later isolated pass is not closure |
 | D1–D5 | P1 for claimed scientific modes; owner handoffs now | MolSysMT owns fixes/definitions; Viewer receives them through uibcdf/molsysmt#421 | Supported owner correction/contract followed by exact consumer evidence; unavailable modes remain explicitly unqualified |
@@ -861,7 +867,7 @@ issue is not a declaration that any of them is fixed.
 | **B1 — source-verified, #314** | Finish plot-origin navigation through the existing authority route. The broad guard calls a queue drain before a popup's asynchronous `postMessage` is necessarily received; this is a plausible guard race, not a proven exclusive explanation of the failure. | One actual click must have correlated Python acceptance, one appropriate public callback and correct coordinates in both renderers. Exercise repeated selection, reverse Python navigation, retained plots, independent exported HTML and a single playback clock. Preserve the original causal red and broad failure; diagnose before rerunning. |
 | **B2 — corrected in `ebe3d46b`, hosted checkpoint pending, #321** | [Actual browser controls](../pending_bugs/trajectory_plot_numeric_precision.md) show the original nonzero/equal-limit/narrow-offset defects; their source corrections and fifteen Decimal controls are delivered. Raw records survive state round trips. | Current source/popup/state receiving passes. Retain the unexplained earlier zero-reference-bounds guard failure and its atomic diagnostic; complete applicable hosted acceptance and normal closeout. |
 | **B3.1–B3.5 — source-corrected/received, #345; consolidated acceptance pending** | Complete the DataCard lifecycle around A3: visible errors/retry for blocked or failed windows, current titles after update, usable bounds on small/resized hosts, keyboard/value access, and disposal during drag/resize. Original active-listener and bounds failures are reproduced and corrected, including omitted controller cleanup; no universal retained-memory leak is claimed. | Exercise ordinary popup gestures, failure acknowledgement, resize/fullscreen, rename/restore, active-gesture disposal and source independence. Apply the same semantics across hosts. Evaluate blur/opacity consistency as polish, not as a violation of Studio's specific accepted settings. |
-| **B4 — adopted by the maintainer 2026-11-10; implementation pending** | Retained conformational plots store values/title/axes but not the exact calculation recipe from the private mounted report. After Clear, different references/populations can become indistinguishable. | Implement producer-supplied, versioned observation metadata that core preserves without interpreting science. Persist method/software, parameters, exact ordered populations/reference, weights and mass source, native/display units, structure coverage and source/revision linkage. Keep historical observations distinct from current applicability and never recalculate implicitly. |
+| **B4 — source-delivered 2026-11-10; owner review separate** | Retained conformational plots store values/title/axes but not the exact calculation recipe from the private mounted report. After Clear, different references/populations can become indistinguishable. | Implement producer-supplied, versioned observation metadata that core preserves without interpreting science. Persist method/software, parameters, exact ordered populations/reference, weights and mass source, native/display units, structure coverage and source/revision linkage. Keep historical observations distinct from current applicability and never recalculate implicitly. |
 
 B4 needs a reusable figure-level contract, with detached metadata and explicit
 size/copy/remapping rules. A compact UI summary can accompany the complete
@@ -1259,7 +1265,7 @@ The block letters group work; they are not a mandatory serial schedule.
 | Provider work | D1–D5 handoffs, contract decisions and native review do not wait for all Viewer/UI work | Supported owner revision/contract plus the relevant consumer guard; a provider issue closing is not consumer acceptance |
 | Integration and accepted tasks | Review current contributed slices, prepare C1/C5 and unblocked D6 children | C2's new host pin follows B1; each task receives only its actual prerequisites and operation/effect cells |
 | Sessions and evidence | Prepare E1 inputs/matrix and E2 protocol; receive implemented slices without declaring the entire session complete | Required operations, scientific prerequisites and identified combined sources for the claimed workflow |
-| Decisions and documentation | Resolve B3.6/E3 scope, implement adopted B4/F1 and maintain scoped API/help with every change | Broad final documentation follows the agreed functionality; relevant minimal artifact documentation is required before its publication |
+| Decisions and documentation | Resolve B3.6/E3 scope, retain source-delivered B4/F1 and maintain scoped API/help with every change | Broad final documentation follows the agreed functionality; relevant minimal artifact documentation is required before its publication |
 
 A5/A6 can close through reproduction and correction or a documented, tested
 disposition. Unconfirmed investigations must not indefinitely serialize unrelated
@@ -1292,7 +1298,7 @@ dispatches, rebuild already qualified bytes or move published tags.
 | Scope accepted | Maintainer approves a proposal's scope/contract; only the decision is complete. Its implementation and receiving stay open, with an explicit milestone and owning tasks |
 | Approved disposition | Maintainer records rejection/deferral of a new recommendation or an evidenced bounded non-defect/limitation, with date, rationale, scope and review condition where applicable. This does not certify an unimplemented accepted proposal |
 
-B3.6/E3 still need explicit scope decisions. B4 is adopted and needs implementation; F1 is source-received and needs
+B3.6/E3 still need explicit scope decisions. B4 and F1 are source-delivered; producer PR #702 and the reviewed API snapshot need
 implementation and receiving. A rejected or
 deferred new recommendation can receive that recorded disposition without
 becoming a new publication gate. Previously accepted families cannot be dropped

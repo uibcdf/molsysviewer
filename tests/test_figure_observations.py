@@ -1,11 +1,14 @@
 """Historical figure context survives actual scene ownership boundaries."""
 
+import json
+import subprocess
+import sys
 from copy import deepcopy
 
 import numpy as np
 import pytest
 from molsysviewer._private.exceptions import ArgumentError
-from molsysviewer._private.figure_observation import MAX_OBSERVATION_BYTES
+from molsysviewer._private.figure_observation import MAX_OBSERVATION_BYTES, normalize_observation
 
 import molsysviewer as msv
 
@@ -179,3 +182,33 @@ def test_native_independent_reference_inputs_and_nondefault_units_can_be_reprodu
         np.testing.assert_allclose(
             puw.get_value(reproduced, to_unit="angstrom"), retained["values"], rtol=2e-12, atol=1e-12
         )
+
+
+def test_oversized_shared_context_is_rejected_before_allocating_the_full_json():
+    # A fresh real interpreter isolates Python allocation accounting from other
+    # test activity. Shared input strings are cheap; eager encoding is not.
+    code = """
+import json, runpy, sys, tracemalloc
+normalize = runpy.run_path(sys.argv[1])["normalize_observation"]
+part = "x" * (1024 * 1024)
+value = {"schema": "example.shared@1", "parts": [part] * 64}
+tracemalloc.start()
+try:
+    normalize(value)
+except ValueError:
+    pass
+else:
+    raise AssertionError("Oversized metadata was attached")
+print(json.dumps({"peak_python_bytes": tracemalloc.get_traced_memory()[1]}))
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", code, normalize_observation.__code__.co_filename],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+    peak = json.loads(result.stdout)["peak_python_bytes"]
+    # Generous headroom for the bounded record/encoder, far below the logical
+    # 64-MiB JSON expansion. This is Python allocation evidence, not total RSS.
+    assert peak < 8 * MAX_OBSERVATION_BYTES, peak

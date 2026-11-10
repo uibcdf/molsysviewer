@@ -909,14 +909,15 @@ previous qualification records retain their original candidate and environment.
 
 The [physical-model receipt](molsysmt_physical_recipe_receiving_20261110.json)
 and [construction receipt](molsysmt_construction_receiving_20261110.json)
-record D5.2 / D6.5 in owner-reviewed contributions #696 / #699. Viewer
+record D5.2 / D6.5 in owner-integrated contributions #696 / #699. Viewer
 `b010ab76` receives native result-window disposal (#351) and the additional
 reviewed public API snapshot F1 (#350). The active #315 dashboard owns the
 current original-outcome counter and separates source delivery from final
 acceptance. Owner `6bd879bda` contains #687/#691 and the received #690 backend;
-#688 is closed. Native #695 box alignment and #666 exact-cutoff semantics
-remain owner work. B4 figure context is adopted and undergoing source/runtime
-receiving; E2's agreed scale matrix and 30 active cycles remain pending.
+#688 is closed. Native #695/#697 are owner-closed; #666 exact-cutoff semantics
+remain owner work. B4 figure context is delivered in core
+`46f7d11a` and producer PR #702. E2's agreed scale campaign has started;
+30 active cycles remain pending.
 Continue these, the remaining integration/diagnostic exits, documentation and
 mandatory Movie #320. Human checks and candidate/publication actions stay paused.
 
@@ -2865,15 +2866,15 @@ chronological status narrative here.
 **Current order — 2026-11-10:**
 
 1. **C:** retain owner-integrated C1/C2 and receive owner review of new
-   contributions #696/#699 and their changed combined source. Complete the
+   producer PR #702 and its changed combined source. Complete the
    remaining #264/#301/#304/#306 exits and the evidenced disposition of #305.
 2. **A:** retain delivered integrity, coherent live capture and actual
    Jupyter/native Qt lifecycle corrections through applicable combined gates.
-3. **B/F:** complete adopted B4 provenance; retain F1's reviewed signatures and
+3. **B/F:** retain delivered B4 provenance and receive producer PR #702; retain F1's reviewed signatures and
    review each intended new API. B3.6 alone remains a separate visual-design
    recommendation. Broad documentation follows settled functionality.
 4. **D:** retain received D5.2 and D6.4–D6.6/D6.8–D6.10. Resolve D5.4/#615's
-   uncertain initialization observation, native #695 and D6.7's contact-unit
+   uncertain initialization observation and D6.7's contact-unit
    boundary (#666 / PyUnitWizard #143), without consumer scientific workarounds.
 5. **E:** execute the adopted representative scale and same-kernel prolonged-use
    protocol after its required operations are ready. E1's continuous workflow

@@ -186,6 +186,12 @@ def _compatible_parameter_extension(params, revised):
         old_positional
     ):
         return False
+    # Named additions can consume a keyword previously belonging to **kwargs.
+    # A positional-only addition cannot consume its same-name keyword.
+    if any(parameter["kind"] == "VAR_KEYWORD" for parameter in params) and any(
+        parameter["kind"] in {"POSITIONAL_OR_KEYWORD", "KEYWORD_ONLY"} for parameter in extra
+    ):
+        return False
     return True
 
 

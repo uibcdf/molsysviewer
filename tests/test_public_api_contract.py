@@ -180,6 +180,36 @@ def test_keyword_only_reordering_is_visible_without_inventing_a_binding_break():
     assert compare_contracts(document(original), document(reordered))[0]["compatibility"] == "compatible_reordering"
 
 
+def test_new_keyword_consumer_cannot_take_an_existing_variadic_keyword():
+    def original(first, **options):
+        pass
+
+    def keyword(first, *, added=None, **options):
+        pass
+
+    def positional_or_keyword(first, added=None, **options):
+        pass
+
+    def positional_only(first, added=None, /, **options):
+        pass
+
+    old = inspect.signature(original).bind(1, added="user-value")
+    for revised in (keyword, positional_or_keyword):
+        assert old.arguments != inspect.signature(revised).bind(1, added="user-value").arguments
+        assert compare_contracts(document(original), document(revised))[0]["compatibility"] == "breaking"
+    # A positional-only addition leaves the same-name keyword in **options.
+    assert old.arguments == inspect.signature(positional_only).bind(1, added="user-value").arguments
+
+    # Keep the old first parameter positional-only in the independent positive control.
+    def old_positional_only(first, /, **options):
+        pass
+
+    assert (
+        compare_contracts(document(old_positional_only), document(positional_only))[0]["compatibility"]
+        == "compatible_extension"
+    )
+
+
 def test_classification_change_cannot_hide_a_breaking_change():
     def original(first, *, enabled=False):
         pass

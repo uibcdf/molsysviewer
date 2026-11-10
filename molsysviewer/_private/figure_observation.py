@@ -61,10 +61,17 @@ def normalize_observation(value):
 
     visit(value, 0)
     try:
-        encoded = json.dumps(value, ensure_ascii=False, allow_nan=False, separators=(",", ":"))
-        size = len(encoded.encode("utf-8"))
+        encoder = json.JSONEncoder(ensure_ascii=False, allow_nan=False, separators=(",", ":"))
+        pieces, size = [], 0
+        for piece in encoder.iterencode(value):
+            # A shared Python value can expand many times in JSON. Stop before
+            # building that rejected full expansion or its UTF-8 copy.
+            if len(piece) > MAX_OBSERVATION_BYTES - size:
+                raise ValueError("Figure observation context exceeds 4 MiB; no provenance was shortened or attached.")
+            size += len(piece.encode("utf-8"))
+            if size > MAX_OBSERVATION_BYTES:
+                raise ValueError("Figure observation context exceeds 4 MiB; no provenance was shortened or attached.")
+            pieces.append(piece)
     except (UnicodeError, ValueError) as error:
-        raise ValueError("Figure observation context must be valid UTF-8 JSON.") from error
-    if size > MAX_OBSERVATION_BYTES:
-        raise ValueError("Figure observation context exceeds 4 MiB; no provenance was shortened or attached.")
-    return json.loads(encoded)
+        raise ValueError("Figure observation context must be valid UTF-8 JSON within 4 MiB.") from error
+    return json.loads("".join(pieces))

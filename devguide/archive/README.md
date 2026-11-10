@@ -511,3 +511,5 @@ Completed work, kept for the reasoning:
 - [DataCard lifecycle and keyboard access](datacard_lifecycle_bounds_and_keyboard.md) — #345 receives popup recovery, literal titles, host bounds, native structure navigation and owned-resource disposal.
 
 - [saved_camera_lags_live_notebook.md](saved_camera_lags_live_notebook.md) — #319 delivers negotiated coherent live scene capture, guarded moving/background refusal/recovery and compatible synchronous saving; final installed/human gates remain separate.
+
+- [`figure_observation_provenance_pre_1_0.md`](figure_observation_provenance_pre_1_0.md) — Delivers B4 historical figure context in core and producer PR #702 with guarded persistence, units and real-host receiving.
