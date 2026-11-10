@@ -929,6 +929,9 @@ retaining path is yet established. Retain the separate recovered-frame observati
 receiver PR #706 and the explicit Jupyter server-preparation limit under
 MolSysMT #705. This does not resolve
 #615's different molecular-cell initialization observation.
+The [MolSysMT handoff](molsysmt_pre_1_0_handoff_20261110.md) records Viewer feedback
+on #250/#254, intended Viewer 0.25.0 installed receiving under #524, H5MSM 1.0
+consumer cases and the proposed pre-timeout #615 capture.
 Continue these, the remaining integration/diagnostic exits, documentation and
 mandatory Movie #320. Human checks and candidate/publication actions stay paused.
 
