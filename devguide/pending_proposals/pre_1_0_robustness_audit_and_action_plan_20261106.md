@@ -559,9 +559,10 @@ C2/task and hosted acceptance remain pending; C1 below holds the exact evidence.
 ### Current next actions
 
 The [MolSysMT coordination response](../molsysmt_pre_1_0_handoff_20261110.md)
-records Viewer acceptance of #250/#254 within the received source scope,
-the intended 0.25.0 host and exact artifact work under #524, the H5MSM version
-and session assumptions, and the #615 capture plan plus #705 evidence.
+records MolSysViewer acceptance of #250/#254 within the received source scope,
+the coordinated MolSysMT 1.0.0 and MolSysViewer 1.0.0 release and installed
+qualification under #524, the H5MSM session assumptions, and the #615 capture
+plan plus #705 evidence.
 
 1. Retain the owner-integrated D5.2/D6.5 contributions (#696/#699) and
    owner-closed #695/#697 and owner-merged producer PR #702. Resolve the contact
@@ -1230,7 +1231,9 @@ normative contracts, publication gates, human observations or scientific scope.
 
 **G1 — pending, actions paused:** #294 requires a public artifact covering the
 delivered scene-handle/player contracts and a disposition for the downstream
-initialization case. The intended Viewer successor remains **0.25.0, unfrozen**.
+initialization case. MolSysViewer **0.25.0** remains an unfrozen proposal for
+that pre-1.0 milestone. The final release pairs MolSysViewer **1.0.0** with
+MolSysMT **1.0.0**.
 After the required code/docs gates and maintainer decision, fix a clean producer,
 source counterpart, build coordinates and original file hashes. Preserve all
 existing public tags/packages/DOIs. Addon completeness and the covering-artifact
