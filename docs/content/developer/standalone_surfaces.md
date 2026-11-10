@@ -136,6 +136,17 @@ Jupyter. Synchronous Python waiting cooperatively pumps the Qt event loop;
 missing replies still terminate with a timeout. Movie export waits for each
 requested camera state to be drawn before capturing its image.
 
+Native close first retires the logical View and its transport. The Qt event
+loop then destroys the page, destroys its owning profile, and finally closes
+the window, in that order. The render surface stays alive until WebEngine
+cleanup finishes. Independent result disposal also deletes its window after
+that sequence; a rejected result initializer uses the same disposal path.
+QApplication retains closing hosts until completion, including a runtime whose
+factory caller has already released it. Embedded hosts must keep processing
+the ordinary Qt event loop through this asynchronous native retirement; no
+nested shutdown loop or global graphics-context reset is used. A logical
+`view.closed` alone is not evidence that the native GPU owners have retired.
+
 The local window has no File/View/Export/Help menu or replacement application
 menu. Visible scene workflows belong to the shared canvas. A thin native header
 owns window movement, minimize/maximize/close and transient status. The bottom

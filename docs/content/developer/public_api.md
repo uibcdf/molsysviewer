@@ -64,6 +64,34 @@ handles, respectively. `Layer` groups these and other scene members.
 InteractionSet `filter` and `style` return detached copies. Edit the live set
 through `set_filter()`, `set_color()`, `set_alpha()` and `set_radius()`.
 
+### Reviewed public call-shape contract
+
+The separate `devtools/public_api_contract.py` guard records public callables,
+constructors and owned properties, including ordered parameters, parameter
+kinds, typed defaults, async calls and getter/setter availability. It reuses the
+real roots of the digestion inventory and closes its temporary Views.
+Inherited builtin constructors are named explicitly when Python exposes no
+inspectable signature; the guard does not invent one.
+
+`devtools/public_api_stability.json` records the reviewed classification rules
+for this pre-1.0 snapshot: established public factories/tools/configuration,
+the explicitly growing object API, and experimental scientific/session/native/
+remote boundaries. A snapshot does not publish 1.0 or promote experimental
+scientific contracts. All declaration drift requires review, including compatible
+additions; the report distinguishes additions/extensions from breaking call
+changes and classification review. A classification edit cannot conceal a
+breaking signature change.
+
+Run `python devtools/public_api_contract.py` to check drift. After reviewing an
+intentional change, `--write-baseline` records it in
+`devtools/public_api_contract_baseline.json`; regeneration itself is not approval.
+`tests/test_public_api_contract.py` also receives the real current surface and
+independent Python binding controls. ArgDigest coverage remains its separate
+gate. Annotation spelling and private implementation names are excluded;
+scientific behavior, units, return semantics and persistence retain their
+own behavioral tests. Reconcile adopted figure/Movie additions before a future
+candidate freeze.
+
 ### `config.set_structure_scale_budget(budget_bytes)`
 
 MolSysViewer materializes **every** selected structure: `view.molsys` is the

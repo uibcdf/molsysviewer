@@ -1,0 +1,99 @@
+{
+  "schema": "molsysviewer.qt_independent_disposal_receiving@1",
+  "date": "2026-11-10",
+  "issue": "uibcdf/molsysviewer#351",
+  "status": "Source correction and native receiving; no installed or human qualification",
+  "viewer_base": "6c2b69ba5e1ca843ffa7e8ee1fe14a69df1cafc4",
+  "runtime_source": "b9f3be0127b1fd48220cf400471044bd0b65dbe3",
+  "source_sha256": {
+    "molsysviewer/standalone_qt/application.py": "1b6d803bd2773e395e54242d1cea68d93fa07b0ad105c446ba23632cd42df1d0",
+    "molsysviewer/presentations.py": "84c7ade8b3c7d9907ba52bebd9be992d67b4427ad61eb5d4e047e42a2b17cc25",
+    "tests/_qt_presentations_rendered.py": "9d10df057874a0fe87c182671bf2ed7730f499189f164e785e278d936b10e84c",
+    "tests/test_qt_presentations.py": "4292e4003145ac78c66a969ab5dfae066f1e23be412678e538c2120a5150798a"
+  },
+  "receiving": {
+    "188-qt-disposal-final": {
+      "native_exit": 0,
+      "seconds": 60.09452283009887,
+      "selected_inputs": 10840,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2240.2,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    "189-api-qt-headless-final": {
+      "native_exit": 0,
+      "seconds": 60.46466481289826,
+      "selected_inputs": 10840,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 734.5,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    "190-qt-independent-ownership": {
+      "native_exit": 0,
+      "seconds": 10.827401911839843,
+      "selected_inputs": 10840,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1017.1,
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    }
+  },
+  "native_checks": {
+    "root_guard": "tests/test_qt_presentations.py::test_rendered_independent_result_window_disposal",
+    "root_assertions": 4,
+    "root_native_owner_pairs_destroyed": 6,
+    "root_result_windows_destroyed": 5,
+    "addon_guard": "tests/molsysviewer_molsysmt/qt_receiving_guard.py::test_actual_qt_independent_construction_and_window",
+    "addon_assertions": 6,
+    "addon_native_owner_pairs_destroyed": 6,
+    "addon_result_windows_destroyed": 5,
+    "actual_molecular_coordinates_received": true,
+    "fatal_or_resource_leak_messages_allowed": false
+  },
+  "headless_cases": 101,
+  "headless_qt_runtime_deselected": 4,
+  "scopes_overlap_do_not_sum": true,
+  "failures_preserved": [
+    "164/166 native process aborts with Failed to restore OpenGL context after clean-up; 166 completes functional assertions before failing.",
+    "171 shared-context attribute and 172 last-window hook do not repair the abort.",
+    "173 diagnostic stopped for shared-memory pressure; not a passing receive.",
+    "175 diagnostic context unbinding returns zero but leaks native graphics resources; not accepted.",
+    "179 current original strict guard against unchanged baseline production fails on GPU resource-leak messages despite native zero exit.",
+    "177 collection mixed two repositories tests packages; no product cases executed."
+  ],
+  "fix": "Retain the render surface through actual page then profile destruction, queue final window close after the child destructor, and retain closing hosts on QApplication. Both registered and failed independent results use private ordered disposal.",
+  "limitations": [
+    "Linux native display, canonical Qt/WebEngine 6.11.2 and the recorded source/provider route only.",
+    "A logical closed View is not synchronous native object destruction; embedding hosts must keep the Qt event loop alive.",
+    "No GPU disabling, software substitute, global context reset or nested close loop.",
+    "No new Windows/macOS, hosted, clean installed or human acceptance; no external upstream report or publication."
+  ],
+  "publication_authorized": false,
+  "non_gpu_ownership_cases": 1,
+  "governance_receiving": {
+    "initial": {
+      "passed": 412,
+      "failed": 1,
+      "cause": "New linked documents were not yet staged, so the clean-checkout guard correctly rejected their availability."
+    },
+    "recovery": {
+      "passed": 1,
+      "scope": "Unchanged clean-checkout link guard after staging all referenced authored files."
+    },
+    "original_failure_retained": true
+  }
+}

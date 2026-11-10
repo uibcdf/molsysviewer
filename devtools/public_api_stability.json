@@ -1,0 +1,102 @@
+{
+  "schema": "molsysviewer.public_api_stability@1",
+  "scope": "Reviewed pre-1.0 call-shape contract; does not declare a 1.0 release or scientific stability.",
+  "rules": [
+    {
+      "route": "molsysviewer",
+      "priority": 0,
+      "stability": "growing",
+      "reason": "Pre-1.0 surface outside explicitly established or experimental boundaries; public_api.md"
+    },
+    {
+      "route": "view",
+      "priority": 0,
+      "stability": "growing",
+      "reason": "Explicitly growing object API; public_api.md"
+    },
+    {
+      "route": "molsysviewer.new_view",
+      "priority": 10,
+      "stability": "stable",
+      "reason": "Established public factory; public_api.md"
+    },
+    {
+      "route": "molsysviewer.load",
+      "priority": 10,
+      "stability": "stable",
+      "reason": "Established public loading convenience; public_api.md"
+    },
+    {
+      "route": "molsysviewer.config",
+      "priority": 10,
+      "stability": "stable",
+      "reason": "Established public configuration; public_api.md"
+    },
+    {
+      "route": "molsysviewer.tools",
+      "priority": 10,
+      "stability": "stable",
+      "reason": "Established public user tools; public_api.md"
+    },
+    {
+      "route": "molsysviewer.styles",
+      "priority": 10,
+      "stability": "stable",
+      "reason": "Established public style recipes; public_api.md"
+    },
+    {
+      "module": "molsysviewer.remote",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Unsupported post-1.0 remote preview; public_api.md"
+    },
+    {
+      "module": "molsysviewer.standalone_qt",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental native host; public_api.md"
+    },
+    {
+      "module": "molsysviewer.session",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental session container; public_api.md"
+    },
+    {
+      "module": "molsysviewer.interactions",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental scientific interaction integration; public_api.md"
+    },
+    {
+      "module": "molsysviewer.presentations",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental independent-view integration; public_api.md"
+    },
+    {
+      "route": "view.save_session",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental session container; public_api.md"
+    },
+    {
+      "route": "view.save_session_async",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental session container; public_api.md"
+    },
+    {
+      "route": "molsysviewer.MolSysView.save_session",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental session container; public_api.md"
+    },
+    {
+      "route": "molsysviewer.MolSysView.save_session_async",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental session container; public_api.md"
+    }
+  ]
+}

@@ -14,6 +14,19 @@ supersedes: []
 
 # Pre-1.0 robustness audit and action plan — 2026-11-06
 
+**Additional adopted contract received — 2026-11-10:** F1 now guards 954 public
+callables, properties and constructors with explicit signatures and stability;
+[its receipt](../public_api_contract_receiving_20261110.json) preserves the
+mutation controls and 101 affected headless passes. This additional result is
+outside the original denominator, which stays **36/46 source-delivered**.
+The [native Qt disposal correction](../qt_independent_disposal_receiving_20261110.json)
+also receives complete independent-window retirement, including failed
+initialization. D6.5 has successful source checks and actual Jupyter/native Qt
+receiving but is not credited until its contribution is published for owner
+review. B4 and the adopted E2 campaign remain pending. Human acceptance and
+publication actions remain paused; no final acceptance is inferred.
+
+
 **Current source delivery — 2026-11-10, physical-model inspection:**
 [The physical-recipe receipt](../molsysmt_physical_recipe_receiving_20261110.json)
 records **36/46 (78.3%) source-delivered**, adding original D5.2 through
@@ -369,8 +382,8 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 **Scope decisions — 2026-11-10:** the maintainer explicitly adopts E2's
 documented scale matrix and 30 active cycles in one kernel, plus B4's
-producer-owned reproducibility metadata and F1's reviewed public-contract
-snapshot. Execution/implementation and their guards remain pending. The original
+producer-owned reproducibility metadata ([#349](https://github.com/uibcdf/molsysviewer/issues/349), [plan](figure_observation_provenance_pre_1_0.md)) and F1's reviewed public-contract
+snapshot ([#350](https://github.com/uibcdf/molsysviewer/issues/350), [plan](../archive/public_api_contract_snapshot_pre_1_0.md)). Execution/implementation and their guards remain pending. Coordination for B4 is uibcdf/molsyssuite#179. The original
 46-item denominator and separately required Movie #320 remain unchanged;
 B4/F1 are now additional adopted work, not silently credited original outcomes.
 B3.6/E3 remain separate recommendations, with their decisions still visible.
@@ -556,7 +569,7 @@ their own inputs and do not supersede this order.
 | C — contribution and host integration | C1/C2 source-delivered: owner-merged PR #668 and adopted controlled Viewer pin, received on the reconciled source pair. PR #678’s full matrix retains its exact execution/head scope; #678/#681/#682/#683 are owner-merged. Owner main contains #687/#691 by verified ancestry; draft #696 retains owner review/integration and changed combined-head gates. Preserve #668's seven original test failures and #671 provisioning failure; #670 is owner-resolved. C3/C4 remain partial/open | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421 and PR #696 | Exact source delivery/adoption is received; covering hosted/installed and remaining host exits are separate |
 | D — scientific prerequisites and approved GUI families | Partial implementation; provider corrections and several task families remain | MolSysMT owns science; addon owns tasks; #264/#315 and uibcdf/molsysmt#421 | Received native fixes plus every required family/effect, without hidden preparation or copied algorithms |
 | E — integrated use, scale and human acceptance | E0 custody received; E1 continuous actual-Jupyter workflow source-delivered with separate native Qt evidence; E2 bounded-scale acceptance pending and E4 human review postponed | Viewer/addon; maintainer owns human observations | TcTIM/ensemble save–recover–continue, independent lifetimes and representative measured limits |
-| F — public contract and documentation | F3 current handoff source-delivered; F2 broad documentation remains pending and adopted F1 compatibility snapshot remains to be implemented | Viewer; #315 | Named stable/experimental contracts, verified references and one usable current handoff |
+| F — public contract and documentation | F3 current handoff source-delivered; F2 broad documentation remains pending; the additional F1 compatibility snapshot is source-received | Viewer; #315 | Named stable/experimental contracts, verified references and one usable current handoff |
 | G — covering artifact and installed qualification | Pending; candidate/publication actions paused | Viewer #294; coordinated provider/downstream receiving | Authorized exact producer/files, clean installed checks and required distribution evidence |
 
 ### Execution progress
@@ -755,7 +768,7 @@ values to the reporting protocol.
 | B1–B2 | P1 scientific reading/navigation; affected covering artifact and 1.0 | Viewer; #314 and a scoped precision report | Correlated Python/render acceptance and numerical-label truth; retain original failed runs |
 | B3.1–B3.5 | P2 robustness; applicable candidate/1.0 scope | Viewer; #345 under #315 | Source correction and native guards delivered; retain later consolidated/installed/human scope |
 | B3.6, E3 | Scope/design decision; not an automatic release gate | Principal maintainer decides scope; relevant owner implements | Record accept/reject/defer and contract before implementation |
-| B4, F1 | Adopted 2026-11-10; implementation and receiving pending | Viewer and scientific producer; #315 | Preserve figure provenance and review public-contract signatures; maintain explicit guards and separate completion outside the original denominator |
+| B4, F1 | Adopted 2026-11-10; B4 pending, F1 source-received | Viewer and scientific producer; #315 | Preserve figure provenance and review public-contract signatures; maintain explicit guards and separate completion outside the original denominator |
 | C1–C3, C5 | P1 integration of selected source pair | Viewer host and MolSysMT owner; #264 and uibcdf/molsysmt#421 / PR #543 | B1 for the new host pin; publish reviewed sources, receive relevant full/hosted results and owner acceptance |
 | C4 | P1 qualification disposition | Viewer; #305 | Explain the original failure or a bounded evidenced disposition; a later isolated pass is not closure |
 | D1–D5 | P1 for claimed scientific modes; owner handoffs now | MolSysMT owns fixes/definitions; Viewer receives them through uibcdf/molsysmt#421 | Supported owner correction/contract followed by exact consumer evidence; unavailable modes remain explicitly unqualified |
@@ -1152,8 +1165,8 @@ its own qualification; this plan adds no universal desktop-platform release gate
 
 ## F — stable public contract and usable documentation
 
-**F1 — compatibility hardening adopted by the maintainer 2026-11-10; implementation pending:** supplement
-the digestion inventory with a reviewed snapshot
+**F1 — additional adopted source result implemented and received, 2026-11-10:** the [F1 receipt](../public_api_contract_receiving_20261110.json) receives a reviewed snapshot supplementing
+the digestion inventory
 of public routes, signatures, defaults and stable/experimental classification
 for the intended 1.0 contract. The existing inventory intentionally checks
 digestion/totals, not every compatible API change. Preserve its guard and add
@@ -1265,7 +1278,7 @@ dispatches, rebuild already qualified bytes or move published tags.
 | Scope accepted | Maintainer approves a proposal's scope/contract; only the decision is complete. Its implementation and receiving stay open, with an explicit milestone and owning tasks |
 | Approved disposition | Maintainer records rejection/deferral of a new recommendation or an evidenced bounded non-defect/limitation, with date, rationale, scope and review condition where applicable. This does not certify an unimplemented accepted proposal |
 
-B3.6/E3 still need explicit scope decisions. B4/F1 are adopted and need
+B3.6/E3 still need explicit scope decisions. B4 is adopted and needs implementation; F1 is source-received and needs
 implementation and receiving. A rejected or
 deferred new recommendation can receive that recorded disposition without
 becoming a new publication gate. Previously accepted families cannot be dropped

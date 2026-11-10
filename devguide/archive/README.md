@@ -1,5 +1,8 @@
 # Archived implementation plans
 
+- [#351: Ordered native page/profile/window retirement preserves graphics cleanup, including failed independent result initialization.](qt_independent_window_teardown_abort.md)
+- [#350: A reviewed snapshot guards 954 public callables, properties and constructors with explicit stability and signature-change review.](public_api_contract_snapshot_pre_1_0.md)
+
 - [#348: The scene-contracts guard navigates real native structures and rejects stale memberships.](scene_contract_test_uses_foreign_frame.md)
 
 - [#347: Source atom positions survive Molstar sorting across picking, geometry, colors and recovered scenes.](source_atom_indices_after_molstar_sort.md)

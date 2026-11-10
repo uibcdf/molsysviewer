@@ -1,0 +1,81 @@
+{
+  "schema": "molsysviewer.public_api_contract_receiving@1",
+  "date": "2026-11-10",
+  "issue": "uibcdf/molsysviewer#350",
+  "parent_issue": "uibcdf/molsysviewer#315",
+  "status": "Additional adopted F1 source implemented; future candidate review remains separate",
+  "source_sha256": {
+    "devtools/public_api_contract.py": "61b07a6d1a6530ed33292da47cd14e032960b3cfc75d0cf90ab7da1a0f188a73",
+    "devtools/public_api_contract_baseline.json": "85f2c43fe8c07ee2f4c0e69420c2733d15a9535ff9dd4fad64813af5dbee9a48",
+    "devtools/public_api_stability.json": "d4ce0df43431998ccd344e0332a366ec79b35b3e76b8c6a16dd8a29c1ef1cad3",
+    "devtools/public_api_inventory.py": "3d1559e03d45cd00fc11e51b9925ec02be583c2b0896b14a3455ed33fb3f23cc",
+    "tests/test_public_api_contract.py": "99a68aa224e155a8c7166b67cd70c5d56aa1aeaeb0741abba79dedd7a40fb507",
+    "tests/conftest.py": "50fac6008ebb698d928feb884f1f1a2560e92e9d46074adde6851ba27a5db879"
+  },
+  "declarations": {
+    "total": 954,
+    "callables": 741,
+    "properties": 175,
+    "constructors": 38
+  },
+  "receiving": {
+    "186-api-contract-focused": {
+      "native_exit": 0,
+      "seconds": 9.139709144830704,
+      "selected_inputs": 10836,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 411.4,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    "189-api-qt-headless-final": {
+      "native_exit": 0,
+      "seconds": 60.46466481289826,
+      "selected_inputs": 10840,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 734.5,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    }
+  },
+  "focused_contract_and_digestion_cases": 28,
+  "affected_headless_cases": 101,
+  "mutation_controls": [
+    "Removed routes, keywords and changed parameter kinds/defaults.",
+    "Read-only property/setter and callable/property changes.",
+    "Optional compatible additions still require visible review.",
+    "Classification changes cannot hide binding incompatibility.",
+    "Typed boolean/integer/float/NumPy defaults, explicit inherited builtin constructors and unknown-default refusal.",
+    "Repeated real public-root snapshots remain deterministic and fixtures close."
+  ],
+  "failure_preserved": "182 passes 100 cases and fails one determinism test: existing per-test constructor instrumentation loses the original signature. functools.wraps preserves the actual constructor metadata; 186 and 189 then pass unchanged assertions. No baseline relaxation.",
+  "scope": [
+    "Same real public manager and indexed-handle roots as the independent digestion inventory.",
+    "Explicit stable/growing/experimental declarations follow the maintained public contract; no scientific stability promotion.",
+    "Every changed declaration fails the ordinary guard until reviewed; baseline writing is an explicit development operation.",
+    "Return science, units, serialization and owner-provider APIs retain their own semantic guards.",
+    "B4 and Movie #320 additions require later deliberate signature review before candidate freeze."
+  ],
+  "additional_to_original_46": true,
+  "publication_authorized": false,
+  "governance_receiving": {
+    "initial": {
+      "passed": 412,
+      "failed": 1,
+      "cause": "New linked documents were not yet staged, so the clean-checkout guard correctly rejected their availability."
+    },
+    "recovery": {
+      "passed": 1,
+      "scope": "Unchanged clean-checkout link guard after staging all referenced authored files."
+    },
+    "original_failure_retained": true
+  }
+}

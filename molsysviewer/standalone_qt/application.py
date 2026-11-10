@@ -312,19 +312,41 @@ def create_standalone_qt0_window(
 
     class StandaloneWindow(QMainWindow):
         _molsysviewer_cleanup = None
+        _molsysviewer_cleanup_pending = False
+        _molsysviewer_dispose_requested = False
 
         def closeEvent(self, event):  # noqa: N802
+            # Keep the native render surface alive until its page and profile
+            # have actually retired. Nested result callbacks may request close
+            # again while the same View is already being retired.
+            if self._molsysviewer_cleanup_pending:
+                event.ignore()
+                return
             cleanup = self._molsysviewer_cleanup
             if cleanup is not None:
                 self._molsysviewer_cleanup = None
+                self._molsysviewer_cleanup_pending = True
+                # A failed factory may drop its last Python runtime reference.
+                # QApplication retains the native owner through queued disposal.
+                closing = getattr(app, "_molsysviewer_closing_hosts", None)
+                if closing is None:
+                    closing = app._molsysviewer_closing_hosts = {}
+                closing[id(self)] = self
                 try:
                     cleanup()
                 except Exception:
+                    self._molsysviewer_cleanup_pending = False
                     self._molsysviewer_cleanup = cleanup
                     logger.exception("Could not close the local Qt host cleanly")
-                    event.ignore()
-                    return
+                event.ignore()
+                return
             super().closeEvent(event)
+            if event.isAccepted() and self._molsysviewer_dispose_requested:
+                self.deleteLater()
+
+        def _molsysviewer_dispose(self):
+            self._molsysviewer_dispose_requested = True
+            self.close()
 
     window = StandaloneWindow()
     window.setWindowTitle(title)
@@ -398,8 +420,25 @@ def create_standalone_qt0_window(
         view.close()
         bridge._close()
         webview.stop()
+        # A queued deletion alone does not order its parent's destruction:
+        # a result callback can also queue the containing window for deletion.
+        # Complete each native owner before retiring the next one, while its
+        # render surface is still present. Do not spin a nested GUI event loop.
+        page.destroyed.connect(profile.deleteLater)
+
+        def finish_close():
+            window._molsysviewer_cleanup_pending = False
+            try:
+                window.close()
+            finally:
+                app._molsysviewer_closing_hosts.pop(id(window), None)
+
+        def engine_retired(*_):
+            # Leave the child destructor before hiding/deleting its parent.
+            QTimer.singleShot(0, finish_close)
+
+        profile.destroyed.connect(engine_retired)
         page.deleteLater()
-        profile.deleteLater()  # Queued after its page, as Qt requires.
 
     window._molsysviewer_cleanup = close_host
 

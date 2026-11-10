@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import sys
 import sysconfig
+from functools import wraps
 from pathlib import Path
 
 import pytest
@@ -117,6 +118,7 @@ def _capture_domain_protocol_for_tests(monkeypatch):
     original_send = HistoryMixin._send
     original_send_replay = HistoryMixin._send_replay
 
+    @wraps(original_init)
     def instrumented_init(self, *args, **kwargs):
         self._test_message_log = []
         original_init(self, *args, **kwargs)

@@ -34,6 +34,7 @@ from __future__ import annotations
 import argparse
 import inspect
 import json
+from contextlib import contextmanager
 from pathlib import Path
 from types import ModuleType
 from typing import Any, Iterator, NamedTuple
@@ -245,47 +246,59 @@ def walk_public_surface(roots: dict[str, Any]) -> Iterator[PublicCallable]:
                 queue.append((child_path, value, depth + 1))
 
 
-def build_inventory() -> dict[str, Any]:
+@contextmanager
+def public_roots():
+    """Yield the reviewed real manager/handle roots, with explicit fixture cleanup."""
     view = demo["dialanine"]
-    view.widget.send = lambda _message: None  # type: ignore[attr-defined]
+    try:
+        view.widget.send = lambda _message: None  # type: ignore[attr-defined]
 
-    # A `Region` and a `Selection` are public objects a user holds, but they are reached
-    # by indexing a manager rather than by attribute access, so the walk cannot find them
-    # on its own. Creating one of each puts their methods in the inventory; without this
-    # the whole `view.regions[tag].*` surface is invisible.
-    view.regions.add(selection="atom_index==[0,1]", tag="_inventory_probe")
-    view.selections.add("_inventory_probe", atom_indices=[0, 1])
+        # A `Region` and a `Selection` are public objects a user holds, but they are reached
+        # by indexing a manager rather than by attribute access, so the walk cannot find them
+        # on its own. Creating one of each puts their methods in the inventory; without this
+        # the whole `view.regions[tag].*` surface is invisible.
+        view.regions.add(selection="atom_index==[0,1]", tag="_inventory_probe")
+        view.selections.add("_inventory_probe", atom_indices=[0, 1])
 
-    # `molsysviewer.remote` is a root rather than something the walk finds, because
-    # importing the package does not import it: it is a submodule a user reaches
-    # deliberately, or through the `molsysviewer-server` console script. Without this the
-    # whole remote-session surface is invisible to the inventory, and therefore to the
-    # capability audit that reads it -- which is how a feature can ship in a release the
-    # project's own inventory does not know exists.
-    import molsysviewer.remote as molsysviewer_remote
-    from molsysviewer.interactions import InteractionSet
+        # `molsysviewer.remote` is a root rather than something the walk finds, because
+        # importing the package does not import it: it is a submodule a user reaches
+        # deliberately, or through the `molsysviewer-server` console script. Without this the
+        # whole remote-session surface is invisible to the inventory, and therefore to the
+        # capability audit that reads it -- which is how a feature can ship in a release the
+        # project's own inventory does not know exists.
+        import molsysviewer.remote as molsysviewer_remote
+        from molsysviewer.interactions import InteractionSet
 
-    shape_probe = view.shapes.add_sphere(tag="_shape_inventory")
-    annotation_probe = view.annotations.add("probe", atom_indices=[0], tag="_annotation_inventory")
-    measurement_probe = view.measurements.add_distance(selection_a=[0], selection_b=[1], tag="_measurement_inventory")
-    layer_probe = view.layers.add("_layer_inventory")
-    section_probe = view.scene.add_section(point=[0, 0, 0], normal=[1, 0, 0], tag="_section_inventory")
-    interaction_probe = InteractionSet(view, "_inventory_probe", analysis_name="_inventory_probe", filter={})
+        shape_probe = view.shapes.add_sphere(tag="_shape_inventory")
+        annotation_probe = view.annotations.add("probe", atom_indices=[0], tag="_annotation_inventory")
+        measurement_probe = view.measurements.add_distance(
+            selection_a=[0], selection_b=[1], tag="_measurement_inventory"
+        )
+        layer_probe = view.layers.add("_layer_inventory")
+        section_probe = view.scene.add_section(point=[0, 0, 0], normal=[1, 0, 0], tag="_section_inventory")
+        interaction_probe = InteractionSet(view, "_inventory_probe", analysis_name="_inventory_probe", filter={})
 
-    roots = {
-        "molsysviewer": molsysviewer,
-        "molsysviewer.remote": molsysviewer_remote,
-        "view": view,
-        "view.regions[…]": view.regions["_inventory_probe"],
-        "view.selections[…]": view.selections["_inventory_probe"],
-        "view.interactions[…]": interaction_probe,
-        "view.shapes[…]": shape_probe,
-        "view.annotations[…]": annotation_probe,
-        "view.measurements[…]": measurement_probe,
-        "view.layers[…]": layer_probe,
-        "view.sections[…]": section_probe,
-    }
-    callables = sorted(set(walk_public_surface(roots)), key=lambda item: item.path)
+        roots = {
+            "molsysviewer": molsysviewer,
+            "molsysviewer.remote": molsysviewer_remote,
+            "view": view,
+            "view.regions[…]": view.regions["_inventory_probe"],
+            "view.selections[…]": view.selections["_inventory_probe"],
+            "view.interactions[…]": interaction_probe,
+            "view.shapes[…]": shape_probe,
+            "view.annotations[…]": annotation_probe,
+            "view.measurements[…]": measurement_probe,
+            "view.layers[…]": layer_probe,
+            "view.sections[…]": section_probe,
+        }
+        yield roots
+    finally:
+        view.close()
+
+
+def build_inventory() -> dict[str, Any]:
+    with public_roots() as roots:
+        callables = sorted(set(walk_public_surface(roots)), key=lambda item: item.path)
 
     digesters = declared_digesters()
     exempt = [item for item in callables if item.path in DELIBERATELY_NOT_DIGESTED]

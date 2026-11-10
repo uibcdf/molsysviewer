@@ -25,8 +25,9 @@ archived documents link there; its location does not reopen its release scope.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (2)
+### Being worked on (3)
 
+- [`figure_observation_provenance_pre_1_0.md`](figure_observation_provenance_pre_1_0.md) — [#349](https://github.com/uibcdf/molsysviewer/issues/349) — Preserve detached producer-owned reproducibility context in retained scientific figures. *(inspected)*
 - [`migrate_standalone_qt_to_canonical_pyside6_6_11_2.md`](migrate_standalone_qt_to_canonical_pyside6_6_11_2.md) — [#109](https://github.com/uibcdf/molsysviewer/issues/109) — Migrate the optional standalone Qt host to canonical PySide6 6.11.2. *(measured)*
 - [`pre_1_0_robustness_audit_and_action_plan_20261106.md`](pre_1_0_robustness_audit_and_action_plan_20261106.md) — [#315](https://github.com/uibcdf/molsysviewer/issues/315) — Track the November robustness audit and pre-1.0 action plan. *(measured)*
 

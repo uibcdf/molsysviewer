@@ -130,7 +130,11 @@ class ViewPresentations:
         except BaseException:
             child.close()
             if runtime is not None:
-                runtime["window"].close()
+                dispose = getattr(runtime["window"], "_molsysviewer_dispose", None)
+                if callable(dispose):
+                    dispose()
+                else:
+                    runtime["window"].close()
             raise
         handle = token_urlsafe(24)
         record = {
@@ -237,8 +241,12 @@ class ViewPresentations:
         _OPEN_PRESENTATIONS.pop(handle, None)
         if record is not None and record["runtime"] is not None:
             window = record["runtime"]["window"]
-            window.close()
-            window.deleteLater()
+            dispose = getattr(window, "_molsysviewer_dispose", None)
+            if callable(dispose):
+                dispose()
+            else:
+                window.close()
+                window.deleteLater()
         self._publish()
         source = self._source()
         if source is not None and not source.closed:
