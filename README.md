@@ -256,6 +256,8 @@ npm --prefix molsysviewer/js run test:js   # JS unit tests
 
 Developer guide: https://www.uibcdf.org/molsysviewer/content/developer/
 
+Current development work and acceptance: [pre-1.0 action ledger](devguide/pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-dashboard).
+
 ---
 
 ## Ecosystem

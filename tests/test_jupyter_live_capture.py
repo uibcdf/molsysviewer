@@ -193,6 +193,39 @@ def test_guard_process_cleanup_retains_reparented_children_and_preserves_unrelat
 
 
 @pytest.mark.jupyter_runtime
+def test_live_background_jupyter_work_files(tmp_path):
+    if os.environ.get("MOLSYSVIEWER_JUPYTER_TEST") != "1":
+        pytest.skip("Select MOLSYSVIEWER_JUPYTER_TEST=1 with JupyterLab, ipykernel and native Chromium available.")
+    script = Path(__file__).with_name("_jupyter_live_capture.py")
+    output = tmp_path / "jupyter-background"
+    exit_code = runpy.run_path(str(script))["run"](output, profile="background")
+    receipt = json.loads((output / "command-result.json").read_text())
+    assert exit_code == 0, f"Background receiving failed ({receipt}); private diagnostics: {output}"
+    assert receipt["browser_summary"]["outcome"] == "passed"
+    observed = json.loads((output / "observations.json").read_text())
+    assert observed["outcome"] == "passed" and observed["capture_restore_cases"] == 2
+    assert {(case["kind"], case["phase"]) for case in observed["cases"]} == {
+        (kind, phase) for kind in ("state", "session") for phase in ("hidden", "visible retry")
+    }
+    for case in observed["cases"]:
+        if case["phase"] == "hidden":
+            assert case["hidden"]["hidden"] and case["after"]["hidden"]
+            assert all(change["hidden"] for change in case["after"]["changes"][len(case["hidden"]["changes"]) :])
+            result = case["result"]
+            assert result["pending_requests"] == 0 and result["source_and_coordinates_preserved"]
+            assert result["heartbeat_progress"] > 0
+            if result["outcome"] == "refused":
+                assert result["reason"] in {"request_timeout", "renderer_refused"}
+                assert result["destination_preserved_on_refusal"]
+            else:
+                assert result["outcome"] == "saved" and case["after"]["draws"] > case["hidden"]["draws"]
+        else:
+            assert case["fresh_draw"] and case["independent_restore"] and case["pending_requests"] == 0
+    assert not (output / "settings.json").exists()
+    assert not (output / "config/jupyter_server_config.py").exists()
+
+
+@pytest.mark.jupyter_runtime
 def test_live_jupyter_work_files(tmp_path):
     if os.environ.get("MOLSYSVIEWER_JUPYTER_TEST") != "1":
         pytest.skip("Select MOLSYSVIEWER_JUPYTER_TEST=1 with JupyterLab, ipykernel and Playwright available.")

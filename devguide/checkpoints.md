@@ -3,6 +3,8 @@
 Use [the current handoff](#resume-in-one-page) and [next actions](#what-is-next);
 the dated evidence below retains its original source scope.
 
+## Historical receiving notes
+
 **Actual Jupyter and mechanics repair receiving — 2026-11-05:**
 [MolSysMT PR #543](https://github.com/uibcdf/molsysmt/pull/543) is reconciled at
 `1c88e785b` with native `e614ba367` and received Viewer `36ab93b7`.
@@ -905,7 +907,22 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**Current priority — robustness audit and action ledger, 2026-11-09:**
+The [active #315 dashboard](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-dashboard) owns the
+current counters and work-item states. Its [queue](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-next-actions)
+owns the next actions; this handoff does not maintain another completion count.
+
+- Runtime, scientific and host claims use the exact sources in their linked receipts.
+- MolSysMT contributions remain owner-reviewed PRs; source delivery is separate from owner integration and installed acceptance.
+- Preserve A5's background/minimized limits, the unresolved scientific/task families, mandatory Movie #320 and postponed human checks.
+- Candidate, tag, package, promotion and both 1.0 publications remain paused.
+
+## Dated source checkpoints
+
+These are retained observations, including failures and earlier next actions.
+A later passing scope does not erase a failure or qualify different bytes.
+
+
+**Recorded delivery checkpoint — 2026-11-09:**
 [The active #315 plan](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md)
 owns the full work order and stable IDs. Delivered progress is **25/46 (54.3%)**;
 final acceptance is **1/46 (2.2%)**. Neither is total release readiness, and
@@ -2805,6 +2822,17 @@ Main findings:
    about 212 MiB to 52.66 MiB retained RSS. The byte guard is mutation-verified.
 
 ## What is next
+
+Follow the [current dashboard](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-dashboard),
+[activation card](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#activation-card-and-priorities) and
+[work-item queue](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-next-actions).
+Unresolved scope decisions and release/manual boundaries stay explicit there.
+
+## Dated action orders
+
+The orders below preserve their dated source context. They are not a second
+current backlog.
+
 
 **Read [`capability_audit.md`](capability_audit.md) before writing any claim about what
 MolSysViewer does.** It is generated; regenerate with

@@ -15,6 +15,26 @@ supersedes: []
 
 # Camera capture when saving notebook work
 
+**Background-host source receiving — 2026-11-09:** the durable
+Jupyter guard now uses native Chromium DevTools sessions without focus emulation
+and proves an actual hidden-tab interval. The native Qt guard observes actual
+Wayland exposure/document visibility after minimize/hide requests. Both formats
+honestly time out at the public five-second default, preserve existing files,
+retain host heartbeats and release pending requests. Visible retries restore
+independently; resuming the renderer never revives expired writes. The
+[integration receipt](../molsysmt_pca_refinement_receiving_20261109.json) retains
+all earlier failed probes and exact source/host scopes.
+
+The earlier Qt oracle required a reliable minimized-state query and ordinary
+programmatic unminimization. The primary
+[xdg-shell protocol](https://raw.githubusercontent.com/wayland-mirror/wayland-protocols/main/stable/xdg-shell/xdg-shell.xml)
+offers neither guarantee. The revised test records `isMinimized` as an
+observation and uses explicit hide/show remapping for recovery; it does not
+claim a desktop restore-button observation. The unchanged production runtime
+passes 17 host/helper controls, including all four native background cases.
+A5 remains partial and v2 unadvertised; these new guards do not claim complete
+hosted, installed or human acceptance.
+
 **Requester/frame source closeout — 2026-11-08:** #337/#338 now receive
 142 affected Python cases plus the complete unchanged-input native browser,
 actual Jupyter and Qt integration from #344. Their

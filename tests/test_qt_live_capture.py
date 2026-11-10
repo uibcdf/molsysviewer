@@ -27,6 +27,7 @@ def test_qt_capture_child_collects_without_optional_dependencies():
             "[runpy.run_path(path,run_name='collection_guard') for path in sys.argv[1:]]",
             str(child),
             str(child.with_name("_qt_moving_capture.py")),
+            str(child.with_name("_qt_background_capture.py")),
         ],
         text=True,
         capture_output=True,
@@ -133,6 +134,19 @@ def test_qt_live_capture_full_render_gpu(tmp_path):
         and case["heartbeat_progress"] > 0
         for case in observed["moving_cases"]
     )
+    assert {(case["native_mode"], case["kind"]) for case in observed["native_background_cases"]} == {
+        (mode, kind) for mode in ("minimized", "hidden") for kind in ("state", "session")
+    }
+    for case in observed["native_background_cases"]:
+        assert case["unavailable"]["hidden"] and case["after"]["hidden"]
+        assert not case["native_after"]["exposed"]
+        assert case["heartbeat_progress"] > 0 and case["source_identity_preserved"]
+        assert case["visible_retry_independently_restored"]
+        if case["outcome"] == "refused":
+            assert case["reason"] in {"request_timeout", "renderer_refused"}
+            assert case["destination_preserved_on_refusal"] and case["late_resume_preserves_destination"]
+        else:
+            assert case["outcome"] == "saved" and case["after"]["draws"] > case["unavailable"]["draws"]
     assert observed["native_empty_control"] == {
         "structure_index": 1,
         "region_atoms": 0,

@@ -1,6 +1,12 @@
 # Development roadmap
 
-**Current priority — 2026-10-22:** apply the approved
+**Current execution:** use the [active #315 dashboard](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-dashboard)
+and its [executable queue](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-next-actions).
+It owns work order, delivered/final counters and outstanding acceptance. The
+dated roadmap below retains its historical inputs; it does not override that
+ledger or authorize a candidate, package, tag or either 1.0 publication.
+
+**Recorded product decision — 2026-10-22:** apply the approved
 [core/add-on boundary](core_and_addon_boundary.md). Core provides visualization
 and exploration, including qualified calculations for visual content. General
 molecular preparation/editing/analysis belongs to tools/add-on interfaces.
@@ -24,7 +30,7 @@ pre-existing box-test setup failure. Keep user documentation explicit about
 current versus proposed tools. No new runtime/artifact qualification, candidate
 freeze or publication is claimed; both 1.0 publications remain paused.
 
-**Current receiving review — 2026-10-13:** the scientific
+**Historical receiving checkpoint — 2026-10-13:** the scientific
 [canvas mirror](canvas_popup_contract.md) implements #234–#238/#241/#243
 with native object picks, frame-specific geometry and one motion/playback clock.
 Its full controls guard passes; all 43 core suites are verified across retained
@@ -79,9 +85,9 @@ freeze and exact artifact/gates containing the source-only #149/#177 fixes.
 Experimental Qt defects and post-1.0 growth are not a core release clearance.
 
 
-**Updated:** 2026-10-09
+**Historical roadmap baseline:** 2026-10-09
 
-This roadmap states current priorities. Release gating lives in
+Use the current execution ledger above for priorities. Release gating lives in
 [`path_to_1_0.md`](path_to_1_0.md), normative behavior in
 [`scene_contracts.md`](scene_contracts.md), and concrete open designs in
 [`pending_proposals/`](pending_proposals/).

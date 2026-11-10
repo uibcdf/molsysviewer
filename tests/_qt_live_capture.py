@@ -437,6 +437,23 @@ def main(output: Path) -> None:
                 out=out,
                 beats=beats,
             )
+            from tests._qt_background_capture import exercise_qt_background_capture
+
+            await exercise_qt_background_capture(
+                view=view,
+                window=window,
+                web=web,
+                js=js,
+                idle=idle,
+                wait=wait,
+                wait_js=wait_js,
+                saved_state=saved_state,
+                report=report,
+                out=out,
+                events=events,
+                inbound=inbound,
+                beats=beats,
+            )
             phases.append("constructor-write-failure")
             print("PHASE " + phases[-1], flush=True)
             import gc

@@ -1,0 +1,248 @@
+{
+  "schema": "molsysviewer.working_receiving@1",
+  "date": "2026-11-09",
+  "parent_issue": "uibcdf/molsysviewer#315",
+  "consumer_issue": "uibcdf/molsysviewer#264",
+  "status": "Four additional original source outcomes delivered; final covering/installed/human acceptance remains separate.",
+  "viewer_runtime_source": "d612c4fad2b49cb3648d5515f40b901eb8cc32a1",
+  "owner_public_runtime_base": "ca76d93b420435243f68167521ccb503ec8b2728",
+  "owner_clean_certified_source": "1e3bbb59d69e63202e333968c41d386d6a9a3bef",
+  "owner_delivered_source": "08f0afdb87f787eb1f0b6626f6763c2d9703e0d8",
+  "owner_pr": "https://github.com/uibcdf/molsysmt/pull/678",
+  "owner_previous_pr_668_merge": "3dfe27ab6ba86512fdff53015ae60821ed803ed0",
+  "owner_new_pr_integrated": false,
+  "native_backend_sha256": "2f1f69f6e0539bd31ee419ec3b7a4deaab20f09045ce3e6504369c9130438525",
+  "native_rebuilt": false,
+  "runtime_bundle_sha256": "67929ee09262b57cfab1a3e09372986c681da34bbde0d88449c961160f5317ee",
+  "runtime_bundle_changed": false,
+  "support_route": "Recorded byte-verified cached public support overlay: SMonitor 0.21.0, ArgDigest 0.15.0, DepDigest 0.15.1, PyUnitWizard 0.28.1, pytest-receptor 1.2.1, Ackredit 0.9.0; qualified Python 3.14.7 source environment. Exact source/input/binary hashes, not ambient development-version labels, identify receiving. Not a clean solver installation.",
+  "progress": {
+    "denominator": 46,
+    "previous_source_delivered": 25,
+    "new_source_delivery_ids": [
+      "C1",
+      "C2",
+      "D6.6",
+      "F3"
+    ],
+    "locally_verified": 29,
+    "source_delivered": 29,
+    "source_delivered_ids": [
+      "E0",
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A6",
+      "B1",
+      "B2",
+      "B3.1",
+      "B3.2",
+      "B3.3",
+      "B3.4",
+      "B3.5",
+      "C5",
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "D5.1",
+      "D5.3",
+      "D5.5",
+      "D5.6",
+      "D6.1",
+      "D6.2",
+      "D6.3",
+      "C1",
+      "C2",
+      "D6.6",
+      "F3"
+    ],
+    "final_accepted": 1,
+    "final_accepted_ids": [
+      "E0"
+    ],
+    "no_extra_leaf_for_new_guards": true,
+    "movie_320_separately_required": true
+  },
+  "original_outcome_receiving": {
+    "C1": "Owner merged PR #668; received current integrated source with strict-clean 107/107 scientific certificate, 608 covering controls and four actual host scenarios. No owner-main push or merge by this session. New PR #678 awaits owner review; full hosted acceptance remains separate.",
+    "C2": "Owner adopted all five controlled source routes plus dependency inventory at Viewer 346c331901c418fddb6b45a31da4690eee794129. Current runtime pair and unchanged native backend are received locally. Clean solver/installed and eventual exact-candidate qualification remain pending.",
+    "D6.6": "Geometry minimization: explicit model review, native single-structure CPU/Reference, managed current edit or independent view; native/independent OpenMM, unit-policy, stale/error, Jupyter and native Qt controls. No hidden parameterization; broader #582 is not closed.",
+    "F3": "One current dashboard/counter/action order, linked by roadmap/checkpoints/release plan; dated evidence is historical and original failures preserved. Broad user documentation F2 remains pending."
+  },
+  "receiving": {
+    "owner-reconciled-covering-26": {
+      "native_exit": 0,
+      "seconds": 164.00360541185364,
+      "selected_inputs": 10692,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 915.5,
+      "cleanup": {
+        "tracked": 28,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "6d94868034b695682f51ed884d225dd924b340eb1e079fe09c1a1ffbeee4a26d"
+    },
+    "clean-owner-certificate-27": {
+      "native_exit": 0,
+      "seconds": 17.68825266114436,
+      "selected_inputs": 10692,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 781.7,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "b4bd75eec1d654fc6c42cbc7a10211880c173af4560abae24e9758c17e26b3b1"
+    },
+    "reconciled-hosts-29": {
+      "native_exit": 0,
+      "seconds": 229.45796985691413,
+      "selected_inputs": 10694,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3906.7,
+      "cleanup": {
+        "tracked": 63,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "1ebe3fbe635a79ef06797723c15adad9f604cecde444f7ae36fdca0595f58269"
+    },
+    "final-owner-quality-30": {
+      "native_exit": 0,
+      "seconds": 4.535256406990811,
+      "selected_inputs": 10694,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 37.3,
+      "cleanup": {
+        "tracked": 7,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "43faf4d8116e559c1350516a150f38da71accf3ccefd10c029206ee472423f9a"
+    },
+    "public-background-jupyter-32": {
+      "native_exit": 0,
+      "seconds": 35.452558379853144,
+      "selected_inputs": 10698,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3019.0,
+      "cleanup": {
+        "tracked": 29,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "2c7c4a55c767d7022ef585b3e16f547592df4ccc758f07af39ee1701180325da"
+    },
+    "native-background-exposure-33": {
+      "native_exit": 0,
+      "seconds": 72.04570771404542,
+      "selected_inputs": 10700,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1730.3,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "cd14166f90a0f4dca1f4755220ab742569b8a9571eb22ccb764f2241165404a8"
+    },
+    "public-host-guards-34": {
+      "native_exit": 0,
+      "seconds": 73.14896227000281,
+      "selected_inputs": 10701,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1865.5,
+      "cleanup": {
+        "tracked": 9,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "42be4317822c3ab79d5aa0bd99459bf8ecd943dd485bbfab3f959ffc47948def"
+    }
+  },
+  "scientific_certificate": {
+    "cases": 107,
+    "registered_nodes": 68,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "strict_clean": true,
+    "source_correspondence": true
+  },
+  "host_scenarios": {
+    "actual_jupyter_analysis_pca_checks": 22,
+    "actual_jupyter_refinement_checks": 4,
+    "native_qt_geometry_pca_checks": 24,
+    "native_qt_refinement_checks": 6,
+    "source_outcomes": 4,
+    "not_human_or_installed_acceptance": true
+  },
+  "a5_background": {
+    "source_result_counted": false,
+    "capture_v2_advertised": false,
+    "jupyter_background_guard": "tests/test_jupyter_live_capture.py::test_live_background_jupyter_work_files",
+    "qt_background_guard": "tests/test_qt_live_capture.py::test_qt_live_capture_full_render_gpu",
+    "jupyter_cases": 4,
+    "native_qt_background_cases": 4,
+    "default_timeout_seconds": 5,
+    "original_destination_preserved": true,
+    "heartbeat_progress": true,
+    "pending_registries_cleared": true,
+    "visible_retry_independently_restored": true,
+    "wayland_limit": "Minimization requested; actual native exposure and document visibility are observed. isMinimized is not a reliable Wayland oracle. Recovery uses explicit hide/show remap, not a claimed protocol unminimize operation.",
+    "primary_protocol_source": "https://raw.githubusercontent.com/wayland-mirror/wayland-protocols/main/stable/xdg-shell/xdg-shell.xml",
+    "original_probes_preserved": true,
+    "remaining": "V2 stays unadvertised. Consolidated source/hosted/installed acceptance remains separate; the new guards do not by themselves close #319."
+  },
+  "original_failures": {
+    "pr668_full_run": 42689572908,
+    "verdict": "failure",
+    "executed_cells": 7,
+    "common_failure": "Strict-schema fixture fixed independently by owner under #670; all seven original native logs preserve the same failure.",
+    "unexecuted_cell": "macOS Python 3.12 provisioning under #671, still open",
+    "original_linux314_junit_zip_sha256": "75da1eff153420ea884131a22cfaaa2037840b2acdab327f11bb7d999967eb25",
+    "current_pr678_full_run": 42736085897,
+    "current_pr678_full_status": "in_progress at checkpoint",
+    "prior_scope_not_reassigned": true,
+    "new_feature_and_probe_iterations_preserved": true,
+    "jupyter32_config_observation": "Explicit pyproject configuration omitted pytest.ini marker declarations and reported two unknown-mark warnings. Native result remains passing; subsequent scoped guards use pytest.ini.",
+    "qt_helper_static_check": "New helper had one unused diagnostic binding; removed without changing behavior after its passing native run."
+  },
+  "private_preservation": {
+    "custodian": "Diego Prada Gracia",
+    "additive_private_copy_verified_files": 1543,
+    "manifest_sha256": "d99191fb6eb7bcabc450ebfa279bd3bc2129df859d2060823a6b436293214b8b",
+    "originals_retained": true,
+    "off_host_backup_claimed": false,
+    "human_viewer_files_preserved": 7,
+    "human_owner_files_preserved": 4
+  },
+  "remaining": {
+    "D6.7": "PCA is implemented but contacts #666 / PyUnitWizard #143 remains required; no full-family credit.",
+    "D5.2": "Only bounded legacy constraint translation repair is received; broader #582 remains partial.",
+    "D5.4": "Original #615 initialization timeout remains unexplained; later pass is not causal closure.",
+    "C3_C4": "Remaining host acceptance and original #305 context-menu timeout retain their owning criteria.",
+    "human": "Explicitly postponed by maintainer.",
+    "publication": "No candidate freeze, tag, package, Release, promotion or either 1.0 publication."
+  },
+  "handoff_validation": {
+    "python_scoped_guards": 407,
+    "failures": 0,
+    "ruff_check": "pass",
+    "ruff_format_check": "990 files formatted",
+    "index_check": "pass",
+    "diff_check": "pass",
+    "first_attempt": "406 passed, one clean-checkout link failure because the new receipt was not yet tracked. Staging that file resolves the addressability cause; no assertion changed."
+  }
+}

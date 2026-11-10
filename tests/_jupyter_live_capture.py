@@ -47,6 +47,10 @@ def _safe_browser_summary(path: Path) -> dict:
                 "autonomous capture deadline",
                 "moving setup",
                 "moving popup",
+                "background state",
+                "background session",
+                "visible retry state",
+                "visible retry session",
             }
             | {
                 f"{api} {origin} {kind}"
@@ -142,7 +146,9 @@ def _stop_owned_processes(owned):
     return {"tracked": len(owned), "survivors": [process.pid for process in pending if live(process)], "errors": errors}
 
 
-def run(output: Path) -> int:
+def run(output: Path, *, profile: str = "full") -> int:
+    if profile not in {"full", "background"}:
+        raise ValueError("Select the full or background receiving profile.")
     for name in ("jupyterlab", "ipykernel", "anywidget", "psutil"):
         if importlib.util.find_spec(name) is None:
             raise RuntimeError(f"The live Jupyter guard requires {name}.")
@@ -313,9 +319,12 @@ def run(output: Path) -> int:
             raise TimeoutError("The isolated Jupyter server did not become ready.")
         with (output / "browser.log").open("w") as log:
             (output / "browser.log").chmod(0o600)
-            browser = subprocess.Popen(
-                [str(node), str(Path(__file__).with_suffix(".mjs"))], env=env, stdout=log, stderr=log
+            entry = (
+                Path(__file__).with_name("_jupyter_background_capture.mjs")
+                if profile == "background"
+                else Path(__file__).with_suffix(".mjs")
             )
+            browser = subprocess.Popen([str(node), str(entry)], env=env, stdout=log, stderr=log)
             process = psutil.Process(browser.pid)
             owned[(process.pid, process.create_time())] = process
             deadline = time.monotonic() + 240
@@ -388,11 +397,13 @@ def run(output: Path) -> int:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path)
-    selected = parser.parse_args().output
+    parser.add_argument("--profile", choices=("full", "background"), default="full")
+    arguments = parser.parse_args()
+    selected = arguments.output
     if selected is None:
         parent = Path(__file__).resolve().parents[1] / ".pytest_cache" / "live-jupyter"
         parent.mkdir(mode=0o700, parents=True, exist_ok=True)
         # run() creates this unique directory atomically with exist_ok=False.
         # Neither a previous receiving result nor caller output is reused.
         selected = parent / f"capture-{secrets.token_hex(12)}"
-    raise SystemExit(run(selected.resolve()))
+    raise SystemExit(run(selected.resolve(), profile=arguments.profile))

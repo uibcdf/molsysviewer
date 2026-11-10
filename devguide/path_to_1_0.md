@@ -8,14 +8,12 @@ Use its dashboard and stable IDs for progress. The dated checkpoints below
 retain their original scopes; none supersedes that current work order or
 authorizes a candidate or either 1.0 publication.
 
-The [scientific receiving checkpoint](molsysmt_scientific_receiving_20261109.json)
-records **25/46 source-delivered outcomes (54.3%)**, with final acceptance still
-**1/46 (2.2%)**. Viewer #346 is corrected; periodic/configuration/recovery,
-bounded naming/descriptor dispositions and three Geometry task profiles have
-scoped native, expert and GUI receiving. Owner PR #668, corrected hosted gates,
-remaining scientific/task families, complete sessions/scale, postponed human
-review, documentation and separately authorized installed/candidate acceptance
-remain. Mandatory Movie #320 is not included in that denominator or dropped.
+The [2026-11-09 integration/refinement checkpoint](molsysmt_pca_refinement_receiving_20261109.json)
+retains its exact source and outcome scope. Current progress and remaining
+work live only in the dashboard linked above. Mandatory Movie #320 remains
+additional to its fixed denominator; delivered source, final acceptance and
+release readiness are separate. Historical receipts are not updated to qualify
+later code or artifacts.
 
 **Chemical-domain receiving complete — 2026-11-03:** #269 combines the verified
 original Windows/macOS cells with corrected Linux source recovery 41714550124,
