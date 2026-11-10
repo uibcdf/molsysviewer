@@ -44,9 +44,32 @@ on two separate tasks. Both 62-atom retired controllers remained observable
 in both samples, alongside the connected 1TCD witness. Releasing those handles
 alone is insufficient. Neither diagnostic explains the earlier shared pressure.
 
+The reduced Jupyter workflow in `274` reproduces without edits, popups,
+playback or a retained element handle. Closing and dropping the 62-atom View,
+then replacing its notebook output, still leaves its detached controller
+observable after collection. The 22-atom witness remains connected. The
+victim is the bundled pentalanine trajectory (5,000 structures), despite the
+probe's original scope label; its witness is the one-structure dialanine.
+The continued presence of the removed output element is not a necessary
+condition. This does not rule out notebook/widget runtime retention after
+removal or a dependence on trajectory size.
+
+`276` selects only pentalanine structure 0 and asserts that each View has one
+structure before display. The same retired 62-atom controller remains after
+closing and replacing its output; the independent 22-atom witness survives.
+The full trajectory is therefore not necessary to reproduce the observation.
+The probe exits normally in 48.00 s at 2 CPUs / 4 GiB without swap or resource
+stop; all 20 owned processes retire and 10,904 selected inputs stay unchanged.
+
+The bounded heap capture `275` loses the browser target in the same workflow.
+Its private partial stream reaches the 128 MiB recording cap; it is not
+a valid heap snapshot and proves no retaining path. The supervisor retires all
+owned processes. Avoid further full heap snapshots on this shared host.
+
 Distinguish notebook output history from Viewer-owned strong references and
-identify the retainer before changing the runtime. Prefer small actual-host
-lifetime controls over another full heap snapshot on the scale fixture. If
+identify the retainer before changing the runtime. Compare owned global
+subscriptions and cleanup across the reduced Jupyter case and the direct
+host, using weak observation and no full heap capture. If
 Viewer owns the lifetime, release the retained payload and verify
 the cause and actual release, including the still-open witness and popup
 independence. A disposed flag or an accessor that stops exposing data is not a

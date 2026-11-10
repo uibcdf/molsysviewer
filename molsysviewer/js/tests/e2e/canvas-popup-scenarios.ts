@@ -44,6 +44,72 @@ async function checkStudioFullscreen(panel: Page, otherWindows: Page[]) {
     assert.equal(await button.getAttribute("aria-pressed"), "false");
 }
 
+async function openPopupContextMenu(popup: Page, x: number, y: number) {
+    const selector = '[data-molsysviewer-context-menu="true"]';
+    const trace = await popup.evaluateHandle(({ x, y, selector }) => {
+        const describe = (target: EventTarget | null) => target instanceof Element ? {
+            tag: target.tagName, id: target.id, role: target.getAttribute("role"),
+            title: target.getAttribute("title"),
+        } : null;
+        const menu = document.querySelector<HTMLElement>(selector);
+        const readMenu = () => {
+            const current = document.querySelector<HTMLElement>(selector);
+            if (!current) return null;
+            const { display, visibility, opacity } = getComputedStyle(current);
+            return { display, visibility, opacity, bounds: current.getBoundingClientRect().toJSON() };
+        };
+        const initial = {
+            point: { x, y }, hit: describe(document.elementFromPoint(x, y)),
+            canvas: document.querySelector("canvas")?.getBoundingClientRect().toJSON(),
+            viewport: { width: innerWidth, height: innerHeight }, fullscreen: describe(document.fullscreenElement),
+            menu: readMenu(),
+        };
+        const events: object[] = [], menuChanges: object[] = [];
+        const input = (event: MouseEvent) => {
+            if (events.length >= 24) return;
+            events.push({
+                type: event.type, phase: event.eventPhase, at: performance.now(),
+                button: event.button, x: event.clientX, y: event.clientY,
+                target: describe(event.target), prevented: event.defaultPrevented,
+            });
+        };
+        const types = ["pointerdown", "pointerup", "contextmenu"] as const;
+        for (const type of types) {
+            document.addEventListener(type, input, true);
+            document.addEventListener(type, input);
+        }
+        const observer = new MutationObserver(rows => {
+            for (const row of rows.slice(0, 24 - menuChanges.length)) {
+                menuChanges.push({ at: performance.now(), attribute: row.attributeName, previous: row.oldValue });
+            }
+        });
+        if (menu) observer.observe(menu, { attributes: true, attributeOldValue: true, attributeFilter: ["style", "hidden", "class"] });
+        return {
+            report: () => ({ initial, events, menuChanges, final: readMenu() }),
+            release: () => {
+                observer.disconnect();
+                for (const type of types) {
+                    document.removeEventListener(type, input, true);
+                    document.removeEventListener(type, input);
+                }
+            },
+        };
+    }, { x, y, selector });
+    const menu = popup.locator(selector);
+    try {
+        await popup.mouse.click(x, y, { button: "right" });
+        await menu.waitFor({ state: "visible" });
+    } catch (error) {
+        const details = await trace.evaluate(value => value.report()).catch(() => null);
+        console.error("[canvas popup context-menu timeout evidence]", JSON.stringify(details));
+        throw error;
+    } finally {
+        await trace.evaluate(value => value.release()).catch(() => {});
+        await trace.dispose().catch(() => {});
+    }
+    return menu;
+}
+
 /** Actual Python widget bootstrap, runtime-source handshake and popup snapshot. */
 export async function checkNotebookCanvasPopup(page: Page, dir: string) {
     const bridge = new PythonFixtureBridge(resolve(dir, "canvas-popup-bridge.py"), resolve(dir, "../../../.."));
@@ -222,13 +288,7 @@ export async function checkNotebookCanvasPopup(page: Page, dir: string) {
         await checkProportionalStudio(popup);
         const canvas = await popup.locator("canvas").boundingBox();
         assert.ok(canvas);
-        console.log("[canvas popup context target]", await popup.evaluate(({x,y}) => {
-            const hit = document.elementFromPoint(x,y);
-            return {tag: hit?.tagName, title: hit?.getAttribute("title"), html: hit?.outerHTML.slice(0,300)};
-        }, {x:canvas.x+30,y:canvas.y+canvas.height-30}));
-        await popup.mouse.click(canvas.x + 30, canvas.y + canvas.height - 30, { button: "right" });
-        const menu = popup.locator('[data-molsysviewer-context-menu="true"]');
-        await menu.waitFor({ state: "visible" });
+        const menu = await openPopupContextMenu(popup, canvas.x + 30, canvas.y + canvas.height - 30);
         await menu.locator('[data-molsysviewer-context-submenu="View"]').click();
         await menu.getByText("Cinema", { exact: true }).click();
         await page.waitForFunction(() => (window as any).__popupWidgetModel.get("controls_mode") === "cinema");

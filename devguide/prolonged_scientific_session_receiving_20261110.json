@@ -1131,6 +1131,135 @@
         "handles": 4,
         "scope": "Same actual browser workload, dispose only notebook DOM handles, no full heap snapshot."
       }
+    },
+    "274": {
+      "native_exit": 0,
+      "seconds": 36.40782319707796,
+      "selected_inputs": 10900,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2378.0,
+      "cleanup": {
+        "tracked": 34,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_profile": "probe-274-small-causal-controls",
+      "observation": "Reduced workflow reproduces retention after replacing the closed widget output; no edits, popups or playback.",
+      "accepted_as_30_cycle_receiving": false,
+      "diagnostic_sha256": "8ce88cd2e34b5aedd322f6b254a18d144d268472aa166657b7fdd28551e439ec",
+      "diagnostic": {
+        "scope": "Actual Jupyter with bundled single-structure dialanine witness and bundled 5000-structure pentalanine victim; no retained element handle.",
+        "before": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 22
+          },
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 62
+          }
+        ],
+        "closed": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 22
+          },
+          {
+            "disposed": true,
+            "connected": false,
+            "atoms": 62
+          }
+        ],
+        "after": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 22
+          },
+          {
+            "disposed": true,
+            "connected": false,
+            "atoms": 62
+          }
+        ]
+      },
+      "scope_correction": "The original diagnostic mislabeled both fixtures as single-structure. The private bytes and their hash are retained; H5MSM coordinate axes confirm (1,22,3) and (5000,62,3)."
+    },
+    "275": {
+      "native_exit": -15,
+      "seconds": 45.38906305702403,
+      "selected_inputs": 10902,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 7164.9,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_profile": "diagnostic-275-small-heap-path",
+      "observation": "The same two-view workflow loses the browser target during heap capture; the private stream reaches the 128 MiB cap. No valid heap snapshot or retaining path.",
+      "accepted_as_30_cycle_receiving": false
+    },
+    "276": {
+      "native_exit": 0,
+      "seconds": 48.00051675387658,
+      "selected_inputs": 10904,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2337.8,
+      "cleanup": {
+        "tracked": 20,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_profile": "probe-276-retention-one-frame",
+      "observation": "Two real bundled systems with an asserted single structure per view; retired pentalanine controller survives output removal, witness remains connected.",
+      "accepted_as_30_cycle_receiving": false,
+      "diagnostic_sha256": "8ce88cd2e34b5aedd322f6b254a18d144d268472aa166657b7fdd28551e439ec",
+      "diagnostic": {
+        "scope": "Two small bundled single-structure views in actual Jupyter; no popups, no playback, no retained DOM handle",
+        "before": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 22
+          },
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 62
+          }
+        ],
+        "closed": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 22
+          },
+          {
+            "disposed": true,
+            "connected": false,
+            "atoms": 62
+          }
+        ],
+        "after": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 22
+          },
+          {
+            "disposed": true,
+            "connected": false,
+            "atoms": 62
+          }
+        ]
+      }
     }
   },
   "private_custody_checkpoint_after_diagnostics": {
@@ -1138,6 +1267,15 @@
     "files_verified": 172,
     "bytes_verified": 109985487,
     "manifest_sha256": "3151d7d019cdfa3c5f9ef6727b782888230b96f9d3ebd8577773499c9a7a6fde",
+    "original_diagnostics_retained": true,
+    "unused_owned_credentials_hash_retired": true,
+    "off_host_backup_claimed": false
+  },
+  "private_custody_checkpoint_reduced_diagnostics": {
+    "number": 16,
+    "files_verified": 90,
+    "bytes_verified": 153446088,
+    "manifest_sha256": "8d5c0913c36c33d2917ea38cbace01fd8aea175b017d8b7b15dc30de2ae14f47",
     "original_diagnostics_retained": true,
     "unused_owned_credentials_hash_retired": true,
     "off_host_backup_claimed": false

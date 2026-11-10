@@ -65,3 +65,26 @@ The capture is retained with the current source-pair receiving packet. Its
 separate passing Jupyter addon scenarios do not close this controls-visibility
 observation. Keep #305 open and receive targeted diagnostics on the next
 applicable hosted core checkpoint; do not infer a cause from non-reproduction.
+
+## Failure evidence armed — 2026-11-10
+
+The existing [canvas popup scenario](../../molsysviewer/js/tests/e2e/canvas-popup-scenarios.ts)
+now records the hit target, viewport/canvas bounds, capture and bubble pointer
+sequence, and changes to the menu's visibility attributes around the same
+right-click. On failure, the bounded trace is written to the native test log;
+the original wait failure propagates. The original click and success criterion
+are unchanged. The observer and its browser handle are released in either case.
+
+`build-273-c4-controls` passes the complete local `controls-visibility` entry,
+including the actual Python notebook popup bootstrap, context menu, and native
+scientific mirror. It ran in 362.42 s with 2 logical CPUs, a 6 GiB cgroup cap,
+zero swap, and 2479.9 MiB peak summed owned RSS. All 24 owned processes retire;
+10,895 inputs and the production runtime bundle remain unchanged. This is
+new local evidence, not a hosted reproduction or a root-cause disposition.
+
+The separate Chromium control in `probe-274-small-causal-controls` deliberately
+opens and immediately closes a menu at the tested canvas point. It verifies
+that the original visibility failure still propagates and the trace records
+the canvas hit, delivered context-menu event, intermediate open style and
+final hidden state. This is a control of the evidence collector, not a
+reproduction of the hosted failure. Keep the issue open.

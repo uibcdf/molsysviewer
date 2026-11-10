@@ -910,7 +910,8 @@ previous qualification records retain their original candidate and environment.
 The [physical-model receipt](molsysmt_physical_recipe_receiving_20261110.json)
 and [construction receipt](molsysmt_construction_receiving_20261110.json)
 record D5.2 / D6.5 in owner-integrated contributions #696 / #699. Viewer
-`cb326235` retains native result-window disposal (#351), the additional
+`677f2330` integrates C3 host receiving and the version-1 Movie value fix (#355),
+and retains native result-window disposal (#351), the additional
 reviewed public API snapshot F1 (#350), B4's figure context and corrected
 benchmark statistics (#353). The active #315 dashboard owns the
 current original-outcome counter and separates source delivery from final
@@ -922,7 +923,8 @@ separates its core/producer and live-host scopes, with producer PR #702 owner-in
 [scale anchors pass](performance/robustness_scale_receiving_20261110.md);
 Fifteen active cycles pass before a shared-pressure stop; the thirty-cycle
 gate remains open. Diagnose [retained logical data #356](pending_bugs/retired_notebook_molecular_data.md)
-with a small controlled probe. Retain the separate recovered-frame observation
+with the reduced single-structure reproducer and ownership controls; no
+retaining path is yet established. Retain the separate recovered-frame observation
 [#354](pending_bugs/recovered_canvas_initial_structure_observation.md),
 receiver PR #706 and the explicit Jupyter server-preparation limit under
 MolSysMT #705. This does not resolve
@@ -2877,7 +2879,8 @@ chronological status narrative here.
 1. **C:** retain owner-integrated C1/C2 and producer PR #702; receive owner review
    of the new prolonged-session receiver PR #706 and changed combined sources. Retain delivered
    C3 host services (#301/#304/#306); #264's broader acceptance and #305's
-   evidenced disposition remain separate.
+   evidenced disposition remain separate. The next hosted core checkpoint has
+   targeted context-menu failure diagnostics.
 2. **A:** retain delivered integrity, coherent live capture and actual
    Jupyter/native Qt lifecycle corrections through applicable combined gates.
 3. **B/F:** retain delivered B4 provenance and owner-integrated producer PR #702; retain F1's reviewed signatures and

@@ -925,8 +925,10 @@ archived in the [host integration receipt](../host_integration_closeout_20261110
 
 **C4 — open:** #305's hosted context-menu timeout still needs an explained
 disposition. Later non-reproduction is useful evidence, not a causal repair.
-Capture the hit target, layout, pointer routing and menu state if it recurs;
-preserve assertions and the original failed run. See
+The existing test now collects bounded hit, layout, pointer routing and menu
+state evidence if it recurs. The full local browser entry and the deliberate
+trace-control failure are checked; the original assertion and failed hosted
+run are preserved. See
 [the report](../pending_bugs/hosted_popup_context_menu_receiving.md).
 
 **C5 — source-received; consolidated acceptance remains separate:**
