@@ -14,7 +14,21 @@ supersedes: []
 
 # Pre-1.0 robustness audit and action plan — 2026-11-06
 
-**Current source delivery — 2026-11-09, qualified visual adoption:**
+**Current source delivery — 2026-11-10, interactions and mechanics:**
+[The receiving receipt](../molsysmt_interaction_mechanics_receiving_20261110.json)
+records **34/46 (73.9%) source-delivered**, adding original D6.9 through
+MolSysMT draft PR #687 at `a1539e351`. It targets owner main after its team
+merged #678/#681/#682/#683. Nine sparse detector tasks and four reviewed
+mechanical reports retain native prerequisites, units, axes and separate
+scientific/visual ownership. Current native/route checks pass 487 + 99 cases;
+actual Jupyter/both-popup and native Qt receiving pass. Viewer #347 fixes source
+atom identity; #348 corrects an outdated foreign-frame test. All 51 core entries
+are received across the unchanged first 45 and corrected final six; the original
+failed aggregate stays failed. Consolidated hosted, installed, owner and human
+acceptance remain separate; final acceptance stays **1/46 (2.2%)**. E1's
+continuous session is next, and Movie #320 remains separately required.
+
+**Earlier source delivery — 2026-11-09, qualified visual adoption:**
 [The visual-adoption receipt](../molsysmt_visual_adoption_receiving_20261109.json)
 records **33/46 (71.7%) source-delivered**, adding original D6.10 through
 stacked MolSysMT draft PR #683 at `5a397a00e`. Compatible scalar colors and
@@ -322,16 +336,16 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
-**Latest source delivery, 2026-11-09:** the
-[visual-adoption receipt](../molsysmt_visual_adoption_receiving_20261109.json)
-receives D6.10 and records **33/46 (71.7%) delivered/local**, with final
-applicable acceptance still **1/46 (2.2%)**. PR #683 delivers compatible scalar
-colors and additional native structure series; PR #682 retains D6.8's nine
-property/report tasks and PR #681 retains D6.4. A5/#319 is source-closed.
-PR #678 full CI remains verified 8/8 for its exact earlier execution/head tree.
-C3/C4, D5.2/D5.4, D6.5/D6.7/D6.9, remaining E, F2, G and mandatory Movie #320
-remain. B3.6/B4/F1 need scope decisions. Source delivery, hosted trees,
-installed packages and human observations remain separate.
+**Latest source delivery, 2026-11-10:** the
+[interactions/mechanics receipt](../molsysmt_interaction_mechanics_receiving_20261110.json)
+receives D6.9 and records **34/46 (73.9%) delivered/local**, with final
+acceptance **1/46 (2.2%)**. Draft PR #687 proposes the new tasks and corrected
+Viewer source pin; the owner's team has merged #678/#681/#682/#683. Viewer
+#347/#348 are source-closed with actual scientific/rendering guards. The 51
+core entries are covered in two receiving portions; no single green complete
+aggregate or later installed artifact is claimed. C3/C4, D5.2/D5.4,
+D6.5/D6.7, E1/E2/E4, F2 and G1/G2 remain. B3.6/B4/F1 need scope decisions;
+Movie #320 is separately mandatory. Publication remains paused.
 
 ### Dated receiving history
 
@@ -560,8 +574,8 @@ history:
 
 | Stage | Completed / original 46 | IDs and evidence meaning |
 | --- | --- | --- |
-| Consumer result complete and locally verified | **33/46 — 71.7%** | Earlier twenty-five plus owner-integrated source/pin receiving C1/C2, coordinate refinement D6.6, chemical repair/assignments D6.4, coherent capture A5, property/report tasks D6.8, qualified visual adoption D6.10 and consolidated handoff F3. See the new receipt for each original outcome and its unaccepted exits. |
-| Consumer result delivered | **33/46 — 71.7%** | E0, A1–A6, B1/B2/B3.1–B3.5, C1/C2/C5, D1–D4, D5.1/D5.3/D5.5/D5.6, D6.1–D6.4/D6.6/D6.8/D6.10 and F3. PR #668 is owner-merged; #678 delivers refinement/PCA and stacked #681 chemical repairs / #682 property reports / #683 visual adoption, without claiming owner acceptance. |
+| Consumer result complete and locally verified | **34/46 — 73.9%** | Earlier twenty-five plus owner-integrated source/pin receiving C1/C2, coordinate refinement D6.6, chemical repair/assignments D6.4, coherent capture A5, property/report tasks D6.8, qualified visual adoption D6.10, interactions/mechanics D6.9 and consolidated handoff F3. See the new receipt for each original outcome and its unaccepted exits. |
+| Consumer result delivered | **34/46 — 73.9%** | E0, A1–A6, B1/B2/B3.1–B3.5, C1/C2/C5, D1–D4, D5.1/D5.3/D5.5/D5.6, D6.1–D6.4/D6.6/D6.8–D6.10 and F3. PR #668 and #678/#681/#682/#683 are owner-merged; draft #687 delivers D6.9 without claiming owner acceptance. |
 | Final applicable acceptance recorded | **1/46 — 2.2%** | E0 only. Preserve the remaining acceptance obligations rather than silently promoting source delivery. |
 
 These stages are not additive, equally weighted effort estimates, time
@@ -570,7 +584,7 @@ this audit; #320's mandatory movie stream remains separately visible. A5 is now 
 not to final acceptance. Source
 support and upstream issue closure do not by themselves complete a consumer
 result. D2/D3/D4 and D6.6 now have current consumer source receiving; D5.2/D5.4,
-D6.5/D6.7/D6.9 retain their distinct remaining contracts and evidence. No original leaf is
+D6.5/D6.7 retain their distinct remaining contracts and evidence; D6.9 is source-delivered with final acceptance separate. No original leaf is
 removed or split to obtain the new counter.
 
 A5's bounded child [#329](../archive/box_display_lags_native_trajectory.md)
@@ -908,7 +922,7 @@ do not silently omit an existing accepted family.
 | **D6.6 — coordinate refinement** | Source-delivered in PR #678: explicit reviewed model, native CPU/Reference single-structure minimization, current or independent effect; native/analytical, Jupyter and Qt receiving pass. Broader effective-model #582 and final acceptance retain their own scope |
 | **D6.7 — structural observables** | Distances, neighborhoods, conformations, angles/torsions and PCA have bounded numerical/axis/ownership receiving. Contacts #666 / PyUnitWizard #143 and full-family acceptance remain; PCA alone does not complete this outcome |
 | **D6.8 — properties and molecular reports, source received** | Nine native property/sequence/connectivity tasks in stacked draft PR #682; source maps, definitions, explicit units/scope, missing-chemistry refusal and complete participant actions pass native, actual Jupyter/both-popup and representative Qt receiving. Owner, combined-head and final acceptance remain separate |
-| **D6.9 — interactions and mechanics** | Expert routes exist; complete the accepted additional task/result integration with native prerequisites, units and separate scientific/visual ownership |
+| **D6.9 — interactions and mechanics, source received** | Draft PR #687 delivers nine sparse native detector tasks and four explicitly reviewed mechanical reports; native/unit/axis, actual Jupyter/both-popup and native Qt guards pass. Storage and visual adoption remain separate; #582 effective recipes and final acceptance remain |
 | **D6.10 — qualified visual adoption, source received** | Existing Measures/conformation plots plus explicit scalar-property/RMSF colors and compatible pair/extreme/vector-component/tuple/SASA structure series in stacked draft PR #683. Native/unit/axis/refusal/history/state and actual Jupyter/both-popup/native Qt receiving pass. No new renderer or B3.6/B4 metadata contract; owner, combined-head and final acceptance remain separate |
 
 Implementation and evidence are tracked independently per child in its owning

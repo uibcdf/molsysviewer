@@ -907,6 +907,17 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+The [2026-11-10 interaction/mechanics receipt](molsysmt_interaction_mechanics_receiving_20261110.json)
+records source outcome D6.9 in draft MolSysMT PR #687 on current owner base
+`b110ad6d`, with Viewer `b9f3be01`. Native/route 487 + 99 controls and actual
+Jupyter/both-popup/native Qt receiving pass. The owner merged the preceding
+four contributions. Viewer #347/#348 close source identity and a stale browser
+expectation; the original full-core aggregate remains failed, with its corrected
+six-entry continuation received separately. Current progress is **34/46 source**,
+**1/46 final**; continue E1's actual continuous scientific session. No package,
+tag, candidate freeze or publication is authorized.
+
+
 The [active #315 dashboard](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-dashboard) owns the
 current counters and work-item states. Its [queue](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-next-actions)
 owns the next actions; this handoff does not maintain another completion count.

@@ -1,0 +1,329 @@
+{
+  "schema": "molsysviewer.interaction_mechanics_receiving@1",
+  "date": "2026-11-10",
+  "owner_issue": "uibcdf/molsysmt#421",
+  "consumer_issue": "uibcdf/molsysviewer#315",
+  "status": "Source delivered and locally received; owner/combined hosted/installed/human acceptance pending",
+  "viewer_source": "b9f3be0127b1fd48220cf400471044bd0b65dbe3",
+  "owner_source": "a1539e351b91b3ffb9ed4837583ac8b402e0102b",
+  "owner_base": "b2e0b73d75e6efae0790083e36e1776500388f0c",
+  "scientific_runtime_base": "b110ad6dda72b43ed6987fd439108341029fd11b",
+  "owner_pr": "https://github.com/uibcdf/molsysmt/pull/687",
+  "previous_owner_prs_merged": [
+    678,
+    681,
+    682,
+    683
+  ],
+  "owner_pr_base": "main",
+  "isolated_feature_commit": "76e598f0c4965ed01c0f86979edbb2409d3c9c77",
+  "source_sha256": {
+    ".github/workflows/benchmarks.yml": "adf330852b0c138058c139628c7c44800bd949e0815fa0c9f042973ceb5fa743",
+    ".github/workflows/ci-full.yaml": "818e9af2bb74d96a0e1904e04e2e03938a4dcf3fe1ee644b55d4d465e15ae72a",
+    ".github/workflows/ci-smoke.yaml": "976a700a5c13ae56e7fd8d10af13a63313c29571822cb560666baaf18f07fed6",
+    ".github/workflows/ci-weekly.yaml": "43679728bad720621324cc6d9f80ed83b849ec8a8ddacd63faba627508b84f0c",
+    ".github/workflows/sphinx_docs_to_gh_pages.yaml": "3114f34bd90156e1bdce6d341803796c7295e0dc880fbacf7a020047bc72efa9",
+    "devguide/molsysviewer_tools_gui_design.md": "f36449c82844952010c122960d039df9e0cdfdfe368a2ac25e7d23473f2fb431",
+    "devtools/dependency_contract.toml": "26650984f75d3cf6b12aff267a213bd747f318469852973986de2284cfbbf517",
+    "devtools/scripts/viewer_tools_contract.py": "80111738fe2578842cb8d538dcc225eb307f2740d937f2f62820411d7f1519f2",
+    "docs/content/user/tools/molsysviewer_tools.md": "ea7f506865079113839b474b7e9c2761081f632e49d978dc1f52f08af0101542",
+    "docs/docs_manifest.yml": "13ea7fff300039cf7735d35d1702bc095896e53a53d6d40d3b58961905a37c3e",
+    "molsysviewer_molsysmt/_analysis_interactions.py": "5f1325f02f6eeb03bdfdfc722bd31e0c7857fbbe48b82d161004795034bad859",
+    "molsysviewer_molsysmt/_analysis_mechanics.py": "ee81dac146218567acd8b3db6e3f77ec52471b7d653e56063cf6e3c76a989ed7",
+    "molsysviewer_molsysmt/_analysis_panel.py": "83c23912a7e638ff60efa6f28f1fefe4fcefcb42d20bc237526cd600fb6fe188",
+    "molsysviewer_molsysmt/_analysis_panel_frontend.py": "d1085e7c7398fff14f562ac50808c0e21bee831c63ecefe53a0623fd44af1084",
+    "molsysviewer_molsysmt/_geometry_panel.py": "873e8a33f7cc00284934e4ac32018862423b85843f9de0cfb1c9b8d91dc70b08",
+    "molsysviewer_molsysmt/_mechanical_review.py": "3185da5d0586c18fc7ba196e00ed4e5c5b35c257e817ef935381407113ed6121",
+    "tests/molsysviewer_molsysmt/interaction_mechanics_fixture.py": "0c7414f99f518221a039d49270fff8362368f23ee40b8e2706033f417d85eee8",
+    "tests/molsysviewer_molsysmt/interaction_mechanics_jupyter.mjs": "b980e207acaf4a74ce80e2a6d1693ef6fcf46743b656646c1983ba1d5939b582",
+    "tests/molsysviewer_molsysmt/interaction_mechanics_qt.py": "3166017c9725a4598ecd0d07f6ccb98c0260c98d5a580f7b249d6bbda294e2cf",
+    "tests/molsysviewer_molsysmt/jupyter_receiving_guard.py": "f5a9d2a894763e96e634f8d370f08af6f4611b5c066fe73a20a7891707d71957",
+    "tests/molsysviewer_molsysmt/native_panel_host.py": "b75321bea7db4f2c14ead711d77916f958447d78f4dee82fdc010164494e2a09",
+    "tests/molsysviewer_molsysmt/qt_receiving_guard.py": "c7cdb371a295ae74e31dd2b07a82c857bb4fbd624f1cf46473d7c505fad115ed",
+    "tests/molsysviewer_molsysmt/system_panel_jupyter.py": "ad8cef4bef5bec112e1cfa34b3176256a4de087a9564b886b5c41f57881a8ab2",
+    "tests/molsysviewer_molsysmt/test_interaction_analysis_panel.py": "3302ee1f4bd6d3bfce31022a1610a1fd69072fca40d9971361b31074a62018eb",
+    "tests/molsysviewer_molsysmt/test_mechanical_analysis_panel.py": "44b082ea3d953420d866acb439cf15cd88d23ddead05276ac5a5ce18f26618eb"
+  },
+  "native_backend_rebuilt": false,
+  "native_backend_sha256": "2f1f69f6e0539bd31ee419ec3b7a4deaab20f09045ce3e6504369c9130438525",
+  "scientific_algorithms_unchanged": true,
+  "expert_api_unchanged": true,
+  "capabilities": [
+    "Nine explicit experimental sparse-detector task families with native state/selection/structure/criteria/PBC prerequisites",
+    "Bounded public pages, roles/compound participants, occurrence indices, native units/evidence/images and evaluated-empty/unevaluated coverage",
+    "Independent calculation, deliberate named storage and separate core visual adoption with source/revision/name-conflict guards",
+    "Potential energy, native force-class terms, atomic force components and mechanical degrees of freedom after single-use explicit model review",
+    "Explicit Reference/CPU selection where supported, unsupported stored-control refusal, no hidden preparation or energy trajectory loop",
+    "Correct source/model atom identity in the host under Viewer #347"
+  ],
+  "receiving": [
+    {
+      "campaign": "121-owner-current-integration",
+      "scope": "487 affected Analysis/model/minimization/package/terminal-axis and audit cases on current owner source",
+      "native_exit": 0,
+      "seconds": 117.30736778490245,
+      "selected_inputs": 10768,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 746.8,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "db74f66c463e586549be47273a6f9cac227484181c593d915e7f3dc0e10a112d"
+    },
+    {
+      "campaign": "122-current-owner-live",
+      "scope": "Two live-host guards on the current source pair; actual Jupyter/both popups and native Qt",
+      "native_exit": 0,
+      "seconds": 90.23059706902131,
+      "selected_inputs": 10768,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3165.8,
+      "cleanup": {
+        "tracked": 28,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "af3d23072788a8c9231b5972c7035db441d3fba9240d90aeded6f69aff91eefc"
+    },
+    {
+      "campaign": "124-current-owner-quality",
+      "scope": "Final owner Ruff lint/format, dependency routes, devguide/index/course and diff",
+      "native_exit": 0,
+      "seconds": 21.590104213915765,
+      "selected_inputs": 10769,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 189.1,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "9381b6b626b63f292ba43f05ec44b5080899ec7da998b246d13a4e8741639a72"
+    },
+    {
+      "campaign": "120-rendering-final",
+      "scope": "408 root contract/record/docs cases, lint/index and final explicit native scene-contract browser guard",
+      "native_exit": 0,
+      "seconds": 24.891801910940558,
+      "selected_inputs": 10758,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1631.9,
+      "cleanup": {
+        "tracked": 20,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "9c2081803e83ec41619c535f57fccd12a9d99e2628e10370c4b609bcbaa2f650"
+    },
+    {
+      "campaign": "107-analysis-integration",
+      "scope": "399 covering Analysis/model/minimization/package-inventory tests; native/OpenMM references, units, ordered/repeated axes and source lifetime",
+      "native_exit": 0,
+      "seconds": 97.79117241711356,
+      "selected_inputs": 10756,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 823.0,
+      "cleanup": {
+        "tracked": 7,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "5e0fdedd6aa46e7fc946346ea276448444ed82ec5b32cf10417e20e5dca796dd"
+    },
+    {
+      "campaign": "108-interaction-live-final",
+      "scope": "Two explicit guards: actual Jupyter six workflows including both popups, and native Qt four workflows; all nine detectors, reviewed mechanical values and native source atom identity",
+      "native_exit": 0,
+      "seconds": 93.01419205218554,
+      "selected_inputs": 10756,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3222.5,
+      "cleanup": {
+        "tracked": 30,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "ad8c9cca4f3224dac1738a698fa45f34c4699ffd2bc9b4d9a13352f97afb4138"
+    },
+    {
+      "campaign": "110-owner-quality",
+      "scope": "Owner Ruff lint/format, dependency inventory, devguide/index/course and diff",
+      "native_exit": 0,
+      "seconds": 4.583846891997382,
+      "selected_inputs": 10756,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 37.3,
+      "cleanup": {
+        "tracked": 7,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "9f07cf999f6e836964a5fd587fd1f288656db78e101dc456fbb670f23bc8cba0"
+    },
+    {
+      "campaign": "113-viewer-quality",
+      "scope": "Viewer Ruff lint/format/index and 410 contract/documentation/reporting tests",
+      "native_exit": 0,
+      "seconds": 9.737382617080584,
+      "selected_inputs": 10756,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 408.2,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "a2a5e63193e8339ed62b12831221255bab51c8ce7b00cdd50b4a1814b5f4dbe2"
+    },
+    {
+      "campaign": "117-core-tail",
+      "scope": "Six final real Molstar/Chromium core suites after correcting outdated test #348; the unchanged first 45 passed in original failed aggregate 114",
+      "native_exit": 0,
+      "seconds": 131.5127754220739,
+      "selected_inputs": 10757,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3123.1,
+      "cleanup": {
+        "tracked": 44,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "1a91fe7cd7fe9a4d3b343bddd8e9120f3cd66dc6cf4dc9eba53bcf9d6e5589ee"
+    }
+  ],
+  "covering_core_scope": {
+    "first_45_campaign": "full-core-114-source-indices",
+    "original_aggregate_exit": 1,
+    "failure": "Outdated foreign-frame test expectation, separately fixed under #348",
+    "remaining_six_campaign": "117-core-tail",
+    "all_51_entries_received_across_campaigns": true,
+    "single_complete_green_run_claimed": false,
+    "consolidated_hosted_checkpoint": "pending"
+  },
+  "failures_preserved": [
+    {
+      "campaigns": [
+        "80",
+        "82",
+        "84"
+      ],
+      "disposition": "Fixture/oracle assumptions corrected against native explicit-frame, cutoff, first-seen coverage and page contracts; originals retained."
+    },
+    {
+      "campaign": "83",
+      "disposition": "Stopped conservatively on observed shared swap activity; not passing evidence."
+    },
+    {
+      "campaigns": [
+        "86",
+        "87",
+        "88"
+      ],
+      "disposition": "Driver hidden-field/coordinate-observer assumptions separated from the confirmed source selection defect #347; the strict failing identity assertion is retained."
+    },
+    {
+      "campaign": "106",
+      "disposition": "Driver read hidden provenance using innerText; it now opens the real details disclosure. Product behavior unchanged."
+    },
+    {
+      "campaign": "full-core-114-source-indices",
+      "disposition": "45 suites passed; stale single-structure test failed at suite 46. Original aggregate remains failed. The exact native/scientific frame test is corrected in #348; unchanged prefix and final six are received separately."
+    },
+    {
+      "campaigns": [
+        "111",
+        "112"
+      ],
+      "disposition": "Initial sandbox user-bus refusal and new untracked report absent from clean-checkout link inventory; no passing root quality claim until 113."
+    },
+    {
+      "campaign": "123-current-owner-quality",
+      "disposition": "The dependency audit correctly rejected caller pins while their routine source inventory still named the previous source. Inventory and callers now agree; the final 124 route audit and 99 guards pass."
+    }
+  ],
+  "limits": [
+    "Interactions/detectors remain experimental. Public to_page bounds copies after query construction; it is not out-of-core or a universal RAM bound.",
+    "Model review identifies stored/native-default inputs; it is not the future engine-neutral effective recipe (#582).",
+    "Owner #679/#680 corrections are received on b110ad6d; native terminal-axis/audit controls pass within the current 487-case campaign.",
+    "No new scientific store, rendering schema or automatic observation of raw molecular-array edits.",
+    "The full-core runner mode named qt only supplies the shared environment selector; its actual command is Node/Chromium, not a native Qt result."
+  ],
+  "resources": {
+    "logical_cpus": 8,
+    "ram_gib": 6,
+    "swap_gib": 0,
+    "minimum_globally_available_gib": 2,
+    "own_intensive_jobs": 1
+  },
+  "human_files_preserved": 11,
+  "progress": {
+    "denominator": 46,
+    "previous_source_delivered": 33,
+    "new_source_delivery_ids": [
+      "D6.9"
+    ],
+    "locally_verified": 34,
+    "source_delivered": 34,
+    "source_delivered_ids": [
+      "E0",
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A6",
+      "B1",
+      "B2",
+      "B3.1",
+      "B3.2",
+      "B3.3",
+      "B3.4",
+      "B3.5",
+      "C5",
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "D5.1",
+      "D5.3",
+      "D5.5",
+      "D5.6",
+      "D6.1",
+      "D6.2",
+      "D6.3",
+      "C1",
+      "C2",
+      "D6.6",
+      "F3",
+      "D6.4",
+      "A5",
+      "D6.8",
+      "D6.10",
+      "D6.9"
+    ],
+    "final_accepted": 1,
+    "final_accepted_ids": [
+      "E0"
+    ],
+    "movie_320_separately_required": true
+  },
+  "publication_authorized": false,
+  "custody_checkpoint": {
+    "number": 6,
+    "files_verified": 401,
+    "bytes_verified": 174474365,
+    "manifest_sha256": "b70bb7ba6c71963de1395a1a2880b7bbba0543b292d2187447fd98b59ce976f2",
+    "originals_retained": true,
+    "off_host_backup_claimed": false
+  }
+}

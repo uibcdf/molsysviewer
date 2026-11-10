@@ -1,6 +1,6 @@
 # Path to 1.0.0 (Unified Release Plan)
 
-**Current action ledger — 2026-11-09:** the
+**Current action ledger — 2026-11-10:** the
 [robustness audit and plan under #315](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md)
 records the new integrity/lifecycle findings, plot and scientific-figure work,
 pending contribution/native receiving and full-session/installed acceptance.
