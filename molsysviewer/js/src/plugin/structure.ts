@@ -217,6 +217,8 @@ export async function loadStructureFromMolSysPayload(
             data: {
                 ...(payload.meta ?? {}),
                 unassigned_scope_atoms: payload.atoms.unassigned_scope_atoms,
+                has_source_group_indices: payload.atoms.residue_index !== undefined,
+                has_source_chain_indices: payload.atoms.chain_index !== undefined,
                 molecule_id: payload.atoms.molecule_id,
                 molecule_name: payload.atoms.molecule_name,
                 component_id: payload.atoms.component_id,
@@ -302,6 +304,8 @@ export async function loadStructureFromArrayNativeMolSys(
             data: {
                 ...(payload.meta ?? {}),
                 unassigned_scope_atoms: payload.atoms.unassigned_scope_atoms,
+                has_source_group_indices: payload.atoms.residue_index !== undefined,
+                has_source_chain_indices: payload.atoms.chain_index !== undefined,
                 molecule_id: payload.atoms.molecule_id,
                 molecule_name: payload.atoms.molecule_name,
                 component_id: payload.atoms.component_id,

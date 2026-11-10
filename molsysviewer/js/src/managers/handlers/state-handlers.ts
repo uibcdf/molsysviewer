@@ -1,3 +1,4 @@
+import { sourceAtomIndex } from "../../plugin/atom-indices";
 import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
 import { StateObjectRef, StateObjectSelector, StateSelection, StateTransform } from "molstar/lib/mol-state";
@@ -2091,7 +2092,7 @@ export class StateHandlers {
             const matched: number[] = [];
             for (let ordinal = 0; ordinal < elementCount; ordinal++) {
                 const elementIndex = OrderedSet.getAt(elements, ordinal);
-                if (set.has(elementIndex)) matched.push(elementIndex);
+                if (set.has(sourceAtomIndex(unit.model, elementIndex))) matched.push(elementIndex);
             }
             if (matched.length === 0) continue;
             added = true;

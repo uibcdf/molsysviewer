@@ -19,6 +19,7 @@ const SUITES = [
     "annotations-interaction",
     "annotations-subpanel",
     "array-native-load",
+    "source-atom-indices",
     "coordinate-edits",
     "composite-load",
     "popup-channel",

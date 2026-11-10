@@ -1,5 +1,9 @@
 # Archived implementation plans
 
+- [#348: The scene-contracts guard navigates real native structures and rejects stale memberships.](scene_contract_test_uses_foreign_frame.md)
+
+- [#347: Source atom positions survive Molstar sorting across picking, geometry, colors and recovered scenes.](source_atom_indices_after_molstar_sort.md)
+
 - [#346: Native-validated structure append preserves interaction coverage and identities through recovered sessions; arbitrary edits still invalidate.](append_structures_interaction_coverage.md)
 
 - [#337: Interaction query answers and failures belong only to their requesting canvas; complete native integration is received.](interaction_frame_query_crosses_canvas_owners.md)

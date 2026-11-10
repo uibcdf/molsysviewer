@@ -1,3 +1,4 @@
+import { sourceAtomIndex } from "../plugin/atom-indices";
 // src/shapes/pocket-surface.ts
 import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
@@ -116,7 +117,7 @@ function createSubsetFromAtomIndices(structure: Structure, atomIndices: number[]
         const count = OrderedSet.size(elements);
         for (let i = 0; i < count; i++) {
             const element = OrderedSet.getAt(elements, i);
-            if (wanted.has(element)) match.push(i);
+            if (wanted.has(sourceAtomIndex(unit.model, element))) match.push(i);
         }
         if (match.length) {
             lociElements.push({ unit, indices: SortedArray.ofSortedArray(match) as StructureElement.Loci["elements"][0]["indices"] });

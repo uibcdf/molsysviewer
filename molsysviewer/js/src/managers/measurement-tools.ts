@@ -1,3 +1,4 @@
+import { sourceAtomIndex } from "../plugin/atom-indices";
 import { Loci } from "molstar/lib/mol-model/loci";
 import { StructureElement } from "molstar/lib/mol-model/structure";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
@@ -51,7 +52,7 @@ function lociToAtomIndices(loci: StructureElement.Loci): number[] {
         const size = OrderedSet.size(element.indices);
         for (let i = 0; i < size; i++) {
             const unitIndex = OrderedSet.getAt(element.indices, i);
-            const atomIndex = element.unit.elements[unitIndex];
+            const atomIndex = sourceAtomIndex(element.unit.model, element.unit.elements[unitIndex]);
             if (!seen.has(atomIndex)) {
                 seen.add(atomIndex);
                 atomIndices.push(atomIndex);

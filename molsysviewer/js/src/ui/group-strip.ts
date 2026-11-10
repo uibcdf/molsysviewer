@@ -1,3 +1,4 @@
+import { sourceAtomIndex } from "../plugin/atom-indices";
 import { StructureElement, Structure, Unit } from "molstar/lib/mol-model/structure";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
@@ -36,7 +37,7 @@ function makeLociForItem(structure: Structure, item: ActiveSelectionItem): Struc
         const count = OrderedSet.size(elements);
         const matched: number[] = [];
         for (let i = 0; i < count; i++) {
-            if (target.has(OrderedSet.getAt(elements, i))) matched.push(i);
+            if (target.has(sourceAtomIndex(unit.model, OrderedSet.getAt(elements, i)))) matched.push(i);
         }
         if (matched.length > 0) {
             lociElements.push({ unit, indices: SortedArray.ofSortedArray(matched) });

@@ -1478,6 +1478,36 @@ var require_dist = __commonJS({
   }
 });
 
+// src/plugin/atom-indices.ts
+var inverses = /* @__PURE__ */ new WeakMap();
+var native = (model) => model?.sourceData?.kind === "mol-viewer:molsysmt";
+function sourceAtomIndex(model, elementIndex) {
+  const source = native(model) ? model.atomicHierarchy?.atomSourceIndex : void 0;
+  return source ? source.value(elementIndex) : elementIndex;
+}
+function modelAtomIndex(model, sourceIndex) {
+  const hierarchy = native(model) ? model.atomicHierarchy : void 0;
+  const source = hierarchy?.atomSourceIndex;
+  if (!hierarchy || !source) return sourceIndex;
+  if (!Number.isInteger(sourceIndex) || sourceIndex < 0 || sourceIndex >= source.rowCount) return void 0;
+  if (source.value(sourceIndex) === sourceIndex) return sourceIndex;
+  let inverse = inverses.get(hierarchy);
+  if (!inverse) {
+    inverse = new Int32Array(source.rowCount);
+    inverse.fill(-1);
+    for (let i = 0; i < source.rowCount; i++) inverse[source.value(i)] = i;
+    inverses.set(hierarchy, inverse);
+  }
+  const index = inverse[sourceIndex];
+  return index < 0 ? void 0 : index;
+}
+function sourceGroupIndex(model, groupIndex) {
+  return native(model) && model.sourceData.data?.has_source_group_indices ? model.atomicHierarchy.residues.label_seq_id.value(groupIndex) : groupIndex;
+}
+function sourceChainIndex(model, chainIndex2) {
+  return native(model) && model.sourceData.data?.has_source_chain_indices ? Number(model.atomicHierarchy.chains.label_asym_id.value(chainIndex2)) : chainIndex2;
+}
+
 // src/ui/floating-panel-layout.ts
 function getFloatingPanelSize(hostWidth, hostHeight, fullscreen = false) {
   return {
@@ -141783,6 +141813,8 @@ async function loadStructureFromMolSysPayload(plugin, payload, label2, options) 
       data: {
         ...payload.meta ?? {},
         unassigned_scope_atoms: payload.atoms.unassigned_scope_atoms,
+        has_source_group_indices: payload.atoms.residue_index !== void 0,
+        has_source_chain_indices: payload.atoms.chain_index !== void 0,
         molecule_id: payload.atoms.molecule_id,
         molecule_name: payload.atoms.molecule_name,
         component_id: payload.atoms.component_id,
@@ -141848,6 +141880,8 @@ async function loadStructureFromArrayNativeMolSys(plugin, payload, label2, optio
       data: {
         ...payload.meta ?? {},
         unassigned_scope_atoms: payload.atoms.unassigned_scope_atoms,
+        has_source_group_indices: payload.atoms.residue_index !== void 0,
+        has_source_chain_indices: payload.atoms.chain_index !== void 0,
         molecule_id: payload.atoms.molecule_id,
         molecule_name: payload.atoms.molecule_name,
         component_id: payload.atoms.component_id,
@@ -142790,7 +142824,7 @@ var AnnotationHandlers = class {
         if (!Unit.isAtomic(unit2)) continue;
         for (let ordinal = 0; ordinal < OrderedSet2.size(unit2.elements); ordinal++) {
           const atom2 = OrderedSet2.getAt(unit2.elements, ordinal);
-          if (!wanted.has(atom2)) continue;
+          if (!wanted.has(sourceAtomIndex(unit2.model, atom2))) continue;
           unit2.conformation.position(atom2, point);
           Vec3.add(center2, center2, point);
           count3++;
@@ -142935,7 +142969,7 @@ var AnnotationHandlers = class {
       const matched = [];
       for (let ordinal = 0; ordinal < elementCount; ordinal++) {
         const elementIndex = OrderedSet2.getAt(elements, ordinal);
-        if (set4.has(elementIndex)) matched.push(elementIndex);
+        if (set4.has(sourceAtomIndex(unit2.model, elementIndex))) matched.push(elementIndex);
       }
       if (matched.length === 0) continue;
       added = true;
@@ -142995,9 +143029,14 @@ function measurementCentroid(structure, indices3) {
   if (!structure || indices3.length === 0) return void 0;
   const sum = Vec3.zero(), position = Vec3.zero();
   for (const index of indices3) {
-    const unit2 = structure.units.find((unit3) => Unit.isAtomic(unit3) && OrderedSet2.has(unit3.elements, index));
+    const unit2 = structure.units.find((unit3) => {
+      if (!Unit.isAtomic(unit3)) return false;
+      const element2 = modelAtomIndex(unit3.model, index);
+      return element2 !== void 0 && OrderedSet2.has(unit3.elements, element2);
+    });
     if (!unit2) return void 0;
-    unit2.conformation.position(index, position);
+    const element = modelAtomIndex(unit2.model, index);
+    unit2.conformation.position(element, position);
     Vec3.add(sum, sum, position);
   }
   return Vec3.scale(sum, sum, 1 / indices3.length);
@@ -143425,14 +143464,16 @@ var MeasurementHandlers = class {
   }
   atomNameForIndex(structure, atomIndex) {
     const model = this.modelForAtomIndex(structure, atomIndex);
-    const value = model?.atomicHierarchy?.atoms?.label_atom_id?.value?.(atomIndex);
+    const element = model ? modelAtomIndex(model, atomIndex) : void 0;
+    const value = element === void 0 ? void 0 : model.atomicHierarchy.atoms.label_atom_id.value(element);
     if (typeof value === "string" && value.trim()) return value.trim();
     return void 0;
   }
   groupTypeForIndex(structure, atomIndex) {
     const model = this.modelForAtomIndex(structure, atomIndex);
     const atoms2 = model?.atomicHierarchy?.atoms;
-    const value = atoms2?.molsys_group_type?.value?.(atomIndex);
+    const element = model ? modelAtomIndex(model, atomIndex) : void 0;
+    const value = element === void 0 ? void 0 : atoms2?.molsys_group_type?.value?.(element);
     if (typeof value === "string" && value.trim()) return value.trim();
     return void 0;
   }
@@ -143440,7 +143481,8 @@ var MeasurementHandlers = class {
     if (!structure) return void 0;
     for (const unit2 of structure.units) {
       if (!Unit.isAtomic(unit2)) continue;
-      if (unit2.elements.indexOf?.(atomIndex) >= 0) {
+      const element = modelAtomIndex(unit2.model, atomIndex);
+      if (element !== void 0 && OrderedSet2.has(unit2.elements, element)) {
         return unit2.model;
       }
     }
@@ -143460,7 +143502,7 @@ var MeasurementHandlers = class {
       const matched = [];
       for (let ordinal = 0; ordinal < elementCount; ordinal++) {
         const elementIndex = OrderedSet2.getAt(elements, ordinal);
-        if (set4.has(elementIndex)) matched.push(elementIndex);
+        if (set4.has(sourceAtomIndex(unit2.model, elementIndex))) matched.push(elementIndex);
       }
       if (matched.length === 0) continue;
       added = true;
@@ -144830,7 +144872,7 @@ function buildUnitLookup(structure) {
     const count3 = OrderedSet2.size(elements);
     for (let i = 0; i < count3; i++) {
       const element = OrderedSet2.getAt(elements, i);
-      map4.set(element, { unit: unit2, elementIndex: element });
+      map4.set(sourceAtomIndex(unit2.model, element), { unit: unit2, elementIndex: element });
     }
   }
   return map4;
@@ -146256,7 +146298,7 @@ function createSubsetFromAtomIndices(structure, atomIndices) {
     const count3 = OrderedSet2.size(elements);
     for (let i = 0; i < count3; i++) {
       const element = OrderedSet2.getAt(elements, i);
-      if (wanted.has(element)) match.push(i);
+      if (wanted.has(sourceAtomIndex(unit2.model, element))) match.push(i);
     }
     if (match.length) {
       lociElements.push({ unit: unit2, indices: SortedArray.ofSortedArray(match) });
@@ -147291,10 +147333,10 @@ function factory2(ctx, props) {
     granularity: "groupInstance",
     color: (location2) => {
       if (element_exports.Location.is(location2)) {
-        return colorFor(location2.element, location2);
+        return colorFor(sourceAtomIndex(location2.unit.model, location2.element), location2);
       }
       if (Bond.isLocation(location2)) {
-        return colorFor(location2.aUnit.elements[location2.aIndex], location2);
+        return colorFor(sourceAtomIndex(location2.aUnit.model, location2.aUnit.elements[location2.aIndex]), location2);
       }
       return baseColor(baseTheme, location2, false);
     },
@@ -149592,7 +149634,7 @@ var StateHandlers = class {
       const matched = [];
       for (let ordinal = 0; ordinal < elementCount; ordinal++) {
         const elementIndex = OrderedSet2.getAt(elements, ordinal);
-        if (set4.has(elementIndex)) matched.push(elementIndex);
+        if (set4.has(sourceAtomIndex(unit2.model, elementIndex))) matched.push(elementIndex);
       }
       if (matched.length === 0) continue;
       added = true;
@@ -151830,7 +151872,7 @@ function lociToAtomIndices(loci) {
     const size4 = OrderedSet2.size(element.indices);
     for (let i = 0; i < size4; i++) {
       const unitIndex = OrderedSet2.getAt(element.indices, i);
-      const atomIndex = element.unit.elements[unitIndex];
+      const atomIndex = sourceAtomIndex(element.unit.model, element.unit.elements[unitIndex]);
       if (!seen.has(atomIndex)) {
         seen.add(atomIndex);
         atomIndices.push(atomIndex);
@@ -153321,7 +153363,7 @@ function buildGroupItemsFromStructure(structure) {
     if (!presentAtoms.has(start4)) continue;
     const atomIndices = [];
     for (let atomIndex = start4; atomIndex < end4; atomIndex++) {
-      atomIndices.push(atomIndex);
+      atomIndices.push(sourceAtomIndex(model, atomIndex));
     }
     const chainIndex2 = chainIndexByAtom[start4];
     const entityIndex2 = modelIndex.getEntityFromChain(chainIndex2);
@@ -153334,16 +153376,16 @@ function buildGroupItemsFromStructure(structure) {
       if (typeof col.value === "function") return col.value(idx);
       return col[idx];
     };
-    const molId = getValue(molIdCol, start4);
-    const molName = getValue(molNameCol, start4);
-    const compIndex = getValue(compIdCol, start4);
-    const compName = getValue(compNameCol, start4);
+    const molId = getValue(molIdCol, sourceAtomIndex(model, start4));
+    const molName = getValue(molNameCol, sourceAtomIndex(model, start4));
+    const compIndex = getValue(compIdCol, sourceAtomIndex(model, start4));
+    const compName = getValue(compNameCol, sourceAtomIndex(model, start4));
     const item2 = {
       source_kind: "element",
       element_level: "group",
       atom_indices: atomIndices,
-      group_indices: [groupIndex],
-      chain_indices: [chainIndex2],
+      group_indices: [sourceGroupIndex(model, groupIndex)],
+      chain_indices: [sourceChainIndex(model, chainIndex2)],
       entity_indices: [entityIndex2],
       group_name: `${compId3} ${authSeqId}`,
       group_id: authSeqId,
@@ -153406,8 +153448,9 @@ function lociToGroupItems(rawLoci, restrictToAtomIndices) {
       seen.add(key2);
       const atomIndices = [];
       for (let j = residueOffsets[groupIndex], jl = residueOffsets[groupIndex + 1]; j < jl; j++) {
-        if (!restrictToAtomIndices || restrictToAtomIndices.has(j)) {
-          atomIndices.push(j);
+        const source = sourceAtomIndex(model, j);
+        if (!restrictToAtomIndices || restrictToAtomIndices.has(source)) {
+          atomIndices.push(source);
         }
       }
       const firstAtom = residueOffsets[groupIndex];
@@ -153421,16 +153464,16 @@ function lociToGroupItems(rawLoci, restrictToAtomIndices) {
         if (typeof col.value === "function") return col.value(idx);
         return col[idx];
       };
-      const molId = getValue(molIdCol, atomIndex);
-      const molName = getValue(molNameCol, atomIndex);
-      const compIndex = getValue(compIdCol, atomIndex);
-      const compName = getValue(compNameCol, atomIndex);
+      const molId = getValue(molIdCol, sourceAtomIndex(model, atomIndex));
+      const molName = getValue(molNameCol, sourceAtomIndex(model, atomIndex));
+      const compIndex = getValue(compIdCol, sourceAtomIndex(model, atomIndex));
+      const compName = getValue(compNameCol, sourceAtomIndex(model, atomIndex));
       const item2 = {
         source_kind: "element",
         element_level: "group",
         atom_indices: atomIndices,
-        group_indices: [groupIndex],
-        chain_indices: [chainIndex2],
+        group_indices: [sourceGroupIndex(model, groupIndex)],
+        chain_indices: [sourceChainIndex(model, chainIndex2)],
         entity_indices: [entityIndex2],
         group_name: groupName,
         group_id: authSeqId,
@@ -153715,7 +153758,7 @@ var ActiveSelectionController = class {
       const elements = unit2.elements;
       const count3 = OrderedSet2.size(elements);
       for (let i = 0; i < count3; i++) {
-        if (target.has(OrderedSet2.getAt(elements, i))) matched.push(i);
+        if (target.has(sourceAtomIndex(unit2.model, OrderedSet2.getAt(elements, i)))) matched.push(i);
       }
       if (matched.length > 0) {
         lociElements.push({ unit: unit2, indices: SortedArray.ofSortedArray(matched) });
@@ -158238,7 +158281,7 @@ function makeLociForItem(structure, item2) {
     const count3 = OrderedSet2.size(elements);
     const matched = [];
     for (let i = 0; i < count3; i++) {
-      if (target.has(OrderedSet2.getAt(elements, i))) matched.push(i);
+      if (target.has(sourceAtomIndex(unit2.model, OrderedSet2.getAt(elements, i)))) matched.push(i);
     }
     if (matched.length > 0) {
       lociElements.push({ unit: unit2, indices: SortedArray.ofSortedArray(matched) });
@@ -167552,7 +167595,7 @@ function lociToAtomIndices2(loci) {
     const size4 = OrderedSet2.size(element.indices);
     for (let i = 0; i < size4; i++) {
       const unitIndex = OrderedSet2.getAt(element.indices, i);
-      const atomIndex = element.unit.elements[unitIndex];
+      const atomIndex = sourceAtomIndex(element.unit.model, element.unit.elements[unitIndex]);
       if (!seen.has(atomIndex)) {
         seen.add(atomIndex);
         atomIndices.push(atomIndex);
@@ -167638,13 +167681,13 @@ function extractAtomMetadata(loci) {
   const elementSymbol = atoms2.type_symbol.value(atomIndex);
   const atomId2 = model.atomicConformation.atomId.value(atomIndex).toString();
   return {
-    atom_index: atomIndex,
+    atom_index: sourceAtomIndex(model, atomIndex),
     atom_id: atomId2,
     metadata: {
       chain_id: chainId,
       group_name: compId3,
       group_id: authSeqId.toString(),
-      group_index: groupIndex,
+      group_index: sourceGroupIndex(model, groupIndex),
       atom_name: atomName,
       element: elementSymbol
     }
@@ -169570,7 +169613,7 @@ var MolSysViewerController = class _MolSysViewerController {
       const count3 = OrderedSet2.size(elements);
       const matched = [];
       for (let i = 0; i < count3; i++) {
-        if (target.has(OrderedSet2.getAt(elements, i))) matched.push(i);
+        if (target.has(sourceAtomIndex(unit2.model, OrderedSet2.getAt(elements, i)))) matched.push(i);
       }
       if (matched.length > 0) {
         lociElements.push({ unit: unit2, indices: SortedArray.ofSortedArray(matched) });

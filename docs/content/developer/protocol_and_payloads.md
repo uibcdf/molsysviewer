@@ -3,6 +3,30 @@
 Use this page as the source of truth for the Python ↔ TypeScript boundary.
 These contracts are stability-critical.
 
+## Source and rendering indices
+
+Atom indices in Python and molecular/scene messages are positions in the current
+MolSys source axis. IDs remain labels. Mol* can sort atomic rows into its own
+group and chain hierarchy, so a model element index is not necessarily that
+source position. Noncontiguous group membership and declared atom permutations
+are valid inputs; do not silently sort the molecular system to avoid a map.
+
+Use `js/src/plugin/atom-indices.ts` at rendering boundaries. Map source atom
+references into model locations for selection, regions, measures, annotations
+and atom-based shapes; map picked locations back to source positions before
+emitting events or indexing source metadata/colors. Explicit native group/chain
+index columns retain their positional meaning. Legacy inputs without those
+columns keep their established rendering-hierarchy behavior; author labels do
+not become native indices.
+
+The lazy inverse belongs to the shared atomic hierarchy and does not copy a
+trajectory or allocate a map per structure. Mol* already maps coordinates and
+stored index-pair bonds, and the partial-coordinate handler already applies its
+inverse. Do not apply those permutations twice. The core source-atom-indices
+browser scenario checks real contiguous/permuted pentalanine, three structures
+and recovered sessions. Its explicit pytest receiving guard is
+`tests/test_source_atom_indices.py`.
+
 ## Renderer-owned frame queries
 
 `request_interaction_frame` uses a renderer-local integer `request_id`. The

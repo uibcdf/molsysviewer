@@ -1,3 +1,4 @@
+import { sourceAtomIndex } from "../../plugin/atom-indices";
 import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
 import { StateObjectRef, StateTransform } from "molstar/lib/mol-state";
@@ -362,7 +363,7 @@ export class AnnotationHandlers {
                 if (!Unit.isAtomic(unit)) continue;
                 for (let ordinal = 0; ordinal < OrderedSet.size(unit.elements); ordinal++) {
                     const atom = OrderedSet.getAt(unit.elements, ordinal);
-                    if (!wanted.has(atom)) continue;
+                    if (!wanted.has(sourceAtomIndex(unit.model, atom))) continue;
                     unit.conformation.position(atom, point);
                     Vec3.add(center, center, point);
                     count++;
@@ -497,7 +498,7 @@ export class AnnotationHandlers {
             const matched: number[] = [];
             for (let ordinal = 0; ordinal < elementCount; ordinal++) {
                 const elementIndex = OrderedSet.getAt(elements, ordinal);
-                if (set.has(elementIndex)) matched.push(elementIndex);
+                if (set.has(sourceAtomIndex(unit.model, elementIndex))) matched.push(elementIndex);
             }
             if (matched.length === 0) continue;
             added = true;

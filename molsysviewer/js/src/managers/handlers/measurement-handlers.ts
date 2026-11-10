@@ -1,3 +1,4 @@
+import { sourceAtomIndex, modelAtomIndex } from "../../plugin/atom-indices";
 import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
 import { StateObjectRef, StateTransform } from "molstar/lib/mol-state";
@@ -429,7 +430,8 @@ export class MeasurementHandlers {
 
     private atomNameForIndex(structure: Structure | undefined, atomIndex: number): string | undefined {
         const model = this.modelForAtomIndex(structure, atomIndex);
-        const value = model?.atomicHierarchy?.atoms?.label_atom_id?.value?.(atomIndex);
+        const element = model ? modelAtomIndex(model, atomIndex) : undefined;
+        const value = element === undefined ? undefined : model.atomicHierarchy.atoms.label_atom_id.value(element);
         if (typeof value === "string" && value.trim()) return value.trim();
         return undefined;
     }
@@ -437,7 +439,8 @@ export class MeasurementHandlers {
     private groupTypeForIndex(structure: Structure | undefined, atomIndex: number): string | undefined {
         const model = this.modelForAtomIndex(structure, atomIndex);
         const atoms: any = model?.atomicHierarchy?.atoms;
-        const value = atoms?.molsys_group_type?.value?.(atomIndex);
+        const element = model ? modelAtomIndex(model, atomIndex) : undefined;
+        const value = element === undefined ? undefined : atoms?.molsys_group_type?.value?.(element);
         if (typeof value === "string" && value.trim()) return value.trim();
         return undefined;
     }
@@ -446,7 +449,8 @@ export class MeasurementHandlers {
         if (!structure) return undefined;
         for (const unit of structure.units) {
             if (!Unit.isAtomic(unit)) continue;
-            if ((unit.elements as any).indexOf?.(atomIndex) >= 0) {
+            const element = modelAtomIndex(unit.model, atomIndex);
+            if (element !== undefined && OrderedSet.has(unit.elements, element as any)) {
                 return unit.model;
             }
         }
@@ -471,7 +475,7 @@ export class MeasurementHandlers {
             const matched: number[] = [];
             for (let ordinal = 0; ordinal < elementCount; ordinal++) {
                 const elementIndex = OrderedSet.getAt(elements, ordinal);
-                if (set.has(elementIndex)) matched.push(elementIndex);
+                if (set.has(sourceAtomIndex(unit.model, elementIndex))) matched.push(elementIndex);
             }
             if (matched.length === 0) continue;
             added = true;

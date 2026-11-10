@@ -1,3 +1,4 @@
+import { sourceAtomIndex, sourceGroupIndex } from "../plugin/atom-indices";
 import { getFloatingPanelSize } from "../ui/floating-panel-layout";
 import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { createSecureRuntimeId } from "../messages/popup-channel";
@@ -253,7 +254,7 @@ function lociToAtomIndices(loci: any): number[] {
         const size = OrderedSet.size(element.indices);
         for (let i = 0; i < size; i++) {
             const unitIndex = OrderedSet.getAt(element.indices, i);
-            const atomIndex = element.unit.elements[unitIndex];
+            const atomIndex = sourceAtomIndex(element.unit.model, element.unit.elements[unitIndex]);
             if (!seen.has(atomIndex)) {
                 seen.add(atomIndex);
                 atomIndices.push(atomIndex);
@@ -345,13 +346,13 @@ function extractAtomMetadata(loci: any) {
     const atomId = model.atomicConformation.atomId.value(atomIndex).toString();
     
     return {
-        atom_index: atomIndex,
+        atom_index: sourceAtomIndex(model, atomIndex),
         atom_id: atomId,
         metadata: {
             chain_id: chainId,
             group_name: compId,
             group_id: authSeqId.toString(),
-            group_index: groupIndex,
+            group_index: sourceGroupIndex(model, groupIndex),
             atom_name: atomName,
             element: elementSymbol,
         }
@@ -2476,7 +2477,7 @@ export class MolSysViewerController {
             const count = OrderedSet.size(elements);
             const matched: number[] = [];
             for (let i = 0; i < count; i++) {
-                if (target.has(OrderedSet.getAt(elements, i))) matched.push(i);
+                if (target.has(sourceAtomIndex(unit.model, OrderedSet.getAt(elements, i)))) matched.push(i);
             }
             if (matched.length > 0) {
                 lociElements.push({ unit, indices: SortedArray.ofSortedArray(matched) });

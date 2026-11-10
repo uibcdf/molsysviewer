@@ -1,3 +1,4 @@
+import { modelAtomIndex } from "../plugin/atom-indices";
 import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
 import { PluginStateObject as SO } from "molstar/lib/mol-plugin-state/objects";
@@ -25,9 +26,14 @@ export function measurementCentroid(structure: Structure | undefined, indices: n
     if (!structure || indices.length === 0) return undefined;
     const sum = Vec3.zero(), position = Vec3.zero();
     for (const index of indices) {
-        const unit = structure.units.find(unit => Unit.isAtomic(unit) && OrderedSet.has(unit.elements, index as any));
+        const unit = structure.units.find(unit => {
+            if (!Unit.isAtomic(unit)) return false;
+            const element = modelAtomIndex(unit.model, index);
+            return element !== undefined && OrderedSet.has(unit.elements, element as any);
+        });
         if (!unit) return undefined;
-        unit.conformation.position(index as any, position);
+        const element = modelAtomIndex(unit.model, index)!;
+        unit.conformation.position(element as any, position);
         Vec3.add(sum, sum, position);
     }
     return Vec3.scale(sum, sum, 1 / indices.length);

@@ -30,6 +30,38 @@ import { Loci } from "molstar/lib/mol-model/loci";
 import { HelpOverlay } from "../../src/ui/help-overlay";
 
 export { RemoteInputAdapter };
+
+/** Read production source/model correspondence without replacing a scientific result. */
+export function inspectSourceAtomCorrespondence(controller: MolSysViewerController, indices: number[]) {
+    const c = controller as any, structure = c.getStructureData();
+    const loci = c.atomIndicesToLoci(indices);
+    const source = (unit: any, atom: number) => unit.model.atomicHierarchy.atomSourceIndex.value(atom);
+    const selected = loci?.elements.flatMap((e: any) => Array.from(e.indices, (i: any) => source(e.unit, e.unit.elements[i]))) ?? [];
+    const context = normalizeContextInteractionEvent({ current: { loci } });
+    const region = c.state.regionIndex.get("mapped"), regionData = region?.component
+        ? c.plugin.state.data.cells.get(region.component)?.obj?.data : undefined;
+    const regionAtoms = regionData?.units.flatMap((u: any) => Array.from(u.elements, (a: any) => source(u,a))) ?? [];
+    const positions: number[][] = [], colors: number[] = [], permutation: number[] = [];
+    const refs = Array.from(c.state.globalReprs as Set<string>);
+    const repr = refs.map((ref: any) => c.plugin.state.data.cells.get(ref)?.obj?.data?.repr).find((r: any) => r?.theme?.color?.color);
+    for (const unit of structure.units) for (const atom of unit.elements) {
+        const index=source(unit,atom);permutation[atom]=index;
+        positions[index]=Array.from(unit.conformation.position(atom,[0,0,0]));
+        colors[index]=Number(repr.theme.color.color({kind:"element-location",structure,unit,element:atom},false));
+    }
+    const spheresFor=(tag: string)=>[...(c.state.tagIndex.get("shape\u0000"+tag)??new Set())].flatMap((ref: any)=>c.plugin.state.data.cells.get(ref)?.obj?.data?.repr?.getAllLoci?.().flatMap((l: any)=>l.shape?.sourceData?.spheres??[])??[]);
+    const spheres=spheresFor("mapped-sphere"),staticSpheres=spheresFor("mapped-static-sphere");
+    const labelRefs=c.state.tagIndex.get("annotation\u0000mapped-label") ?? new Set();
+    const labels=[...labelRefs].flatMap((ref: any)=>c.plugin.state.data.cells.get(ref)?.obj?.data?.repr?.getAllLoci?.().filter((l: any)=>l.shape).map((l: any)=>l.shape)??[]);
+    const labelAtoms=labels.flatMap((s: any)=>s.sourceData.infos.flatMap((i: any)=>i.loci.elements.flatMap((e: any)=>Array.from({length:OrderedSet.size(e.indices)},(_,j)=>source(e.unit,e.unit.elements[OrderedSet.getAt(e.indices,j)])))));
+    return {selected,context,regionAtoms,positions,colors,permutation,sphereCenters:spheres.map((s: any)=>s.center),staticSphereCenters:staticSpheres.map((s: any)=>s.center),labelAtoms,
+        labelCenters:labels.map((s: any)=>Array.from(s.geometry.centerBuffer.ref.value.slice(0,3))),
+        labelTrace:[...labelRefs].map((ref: any)=>{const cell=c.plugin.state.data.cells.get(ref),repr=cell?.obj?.data?.repr;return {ref,exists:!!cell,label:cell?.obj?.label,loci:repr?.getAllLoci?.().map((l: any)=>({kind:l.kind,shape:!!l.shape,keys:l.shape?Object.keys(l.shape.sourceData):[]}))};}),
+        labelBounds:labels.flatMap((s: any)=>s.sourceData.infos.map((i: any)=>Array.from(Loci.getBoundingSphere(i.loci)!.center))),
+        measurement:inspectMeasurementGeometry(controller,"mapped-distance"),
+        annotations:inspectAnnotationPresentation(controller,"mapped-callout")};
+}
+
 export { checkFontAtlasResourceLifecycle } from "./font-atlas-browser";
 
 /** Screen coordinates for real pointer tests (Mol* projection is bottom-up). */
@@ -230,6 +262,7 @@ declare global {
     // eslint-disable-next-line no-var
     var Harness: {
         createController: typeof createController;
+        inspectSourceAtomCorrespondence: typeof inspectSourceAtomCorrespondence;
         profileExclusiveOwnership: typeof profileExclusiveOwnership;
         profileExclusiveOwnershipMask: typeof profileExclusiveOwnershipMask;
         profileRegionVisibilityControl: typeof profileRegionVisibilityControl;
@@ -2039,6 +2072,7 @@ export async function probeRegionOrderOwnership(
 if (typeof window !== "undefined") {
     (window as any).Harness = {
         createController,
+        inspectSourceAtomCorrespondence,
         profileExclusiveOwnership,
         profileExclusiveOwnershipMask,
         profileRegionVisibilityControl,

@@ -348,34 +348,43 @@ async function run() {
     // =========================================================================
     console.log("[E2E scene-contracts] Scenario: a dynamic region tracks the trajectory");
     {
-        const frames = await page.evaluate(async () => {
+        const frames = await page.evaluate(async fixture => {
             const w = window as BrowserWindow;
-            await w.__controller.handleMessage({
-                op: "create_region", tag: "dyn", atom_indices: [0, 1], representation: "ball-and-stick",
-            });
-            const f0 = w.Harness!.inspectScene(w.__controller).regions.dyn.atomCount;
-            // What Python sends once per frame after re-evaluating the recipe.
-            await w.__controller.handleMessage({
-                op: "set_dynamic_region_atoms", frame: 1,
-                regions: [{ tag: "dyn", atom_indices: [4, 5, 6, 7] }],
-            });
-            const f1 = w.Harness!.inspectScene(w.__controller);
-            await w.__controller.handleMessage({
-                op: "set_dynamic_region_atoms", frame: 2,
-                regions: [{ tag: "dyn", atom_indices: [8, 9] }],
-            });
-            const f2 = w.Harness!.inspectScene(w.__controller);
-            return { f0, f1: f1.regions.dyn, f2: f2.regions.dyn };
-        });
-
-        assert.strictEqual(frames.f0, 2, "the dynamic region did not start with its seed atoms");
-        assert.strictEqual(frames.f1.atomCount, 4, "the dynamic region did not follow frame 1");
-        assert.strictEqual(frames.f2.atomCount, 2, "the dynamic region did not follow frame 2");
-        // Following the trajectory must not cost it its representation.
-        assert.ok(frames.f1.reprs.length > 0 && frames.f2.reprs.length > 0,
-            "the dynamic region lost its representation while tracking the trajectory");
-        assert.strictEqual(frames.f2.reprs[0].name, "ball-and-stick");
-        console.log(`[E2E scene-contracts]   atoms per frame: ${frames.f0} -> ${frames.f1.atomCount} -> ${frames.f2.atomCount}, representation kept`);
+            const controller = w.__controller;
+            await controller.handleMessage({ op: "clear_all" });
+            for (const message of fixture.messages) await controller.handleMessage(message);
+            const observe = () => {
+                const region = controller.state.regionIndex.get("dyn");
+                const ref = typeof region.component === "string" ? region.component : region.component?.ref;
+                return {
+                    ...w.Harness!.inspectScene(controller).regions.dyn,
+                    atoms: [...region.atomIndices],
+                    renderedAtoms: controller.plugin.state.data.cells.get(ref)?.obj?.data?.elementCount,
+                };
+            };
+            const result: Array<ReturnType<typeof observe> & { stale?: number[]; before?: number[] }> = [observe()];
+            for (const frame of [1, 2]) {
+                await controller.trajectory.setTrajectoryFrame(frame);
+                const before = observe();
+                // A late old-frame packet must not overwrite the current scene.
+                await controller.handleMessage({ op: "set_dynamic_region_atoms", frame: frame - 1,
+                    regions: [{ tag: "dyn", atom_indices: [20, 21, 22, 23] }] });
+                const stale = observe();
+                await controller.handleMessage({ op: "set_dynamic_region_atoms", frame,
+                    regions: [{ tag: "dyn", atom_indices: fixture.memberships[frame] }] });
+                result.push({ ...observe(), stale: stale.atoms, before: before.atoms });
+            }
+            return result;
+        }, sectionFixture.dynamic);
+        for (const [frame, actual] of frames.entries()) {
+            assert.deepStrictEqual(actual.atoms, sectionFixture.dynamic.memberships[frame]);
+            assert.strictEqual(actual.atomCount, sectionFixture.dynamic.memberships[frame].length);
+            assert.strictEqual(actual.renderedAtoms, actual.atomCount, "native component lost its exact population");
+            assert.ok(actual.reprs.length > 0, "the dynamic region lost its representation");
+            assert.strictEqual(actual.reprs[0].name, "ball-and-stick");
+            if (frame > 0) assert.deepStrictEqual(actual.stale, actual.before, "old-frame atoms overwrote the displayed structure");
+        }
+        console.log(`[E2E scene-contracts]   native three-structure memberships ${frames.map(f => f.atomCount).join(" -> ")}, style retained and stale packets refused`);
     }
 
     assert.deepStrictEqual(errors, [], `console/page errors during the run:\n${errors.join("\n")}`);

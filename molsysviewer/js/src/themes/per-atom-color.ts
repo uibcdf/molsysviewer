@@ -1,3 +1,4 @@
+import { sourceAtomIndex } from "../plugin/atom-indices";
 // src/themes/per-atom-color.ts
 //
 // A Mol* ColorTheme that paints each atom with a colour looked up from a
@@ -14,7 +15,7 @@ import { MsvPhysicochemicalColorThemeName, MsvPhysicochemicalColorThemeProvider 
 
 // ── Shared mutable state ──────────────────────────────────────────────────────
 
-/** atomIndex (model-level, 0-based) → 0xRRGGBB color integer */
+/** Source atom position (0-based) → 0xRRGGBB color integer. */
 const _perAtomColorMap = new Map<number, number>();
 
 const DEFAULT_BASE_THEME = { name: "element-symbol", params: {} };
@@ -56,10 +57,8 @@ function baseColor(baseTheme: any, location: Location, isSecondary: boolean): Co
 function factory(ctx: ThemeDataContext, props: PD.Values<MsvPerAtomColorThemeParams>): ColorTheme<MsvPerAtomColorThemeParams, "groupInstance"> {
     const baseTheme = createBaseTheme(ctx, props.base);
 
-    // `location.element` is already a model-level ElementIndex, so it is used
-    // directly. For bonds, the element index is looked up positionally in the
-    // unit's element array via `aIndex` (same convention as the sibling
-    // physicochemical theme).
+    // Theme locations use model indices; the received color map uses the
+    // MolSys source axis. Bonds resolve their unit ordinal before that mapping.
     const colorFor = (atomIndex: number, location: Location): Color => {
         const c = _perAtomColorMap.get(atomIndex);
         return c !== undefined ? Color(c) : baseColor(baseTheme, location, false);
@@ -70,14 +69,14 @@ function factory(ctx: ThemeDataContext, props: PD.Values<MsvPerAtomColorThemePar
         granularity: "groupInstance",
         color: (location: Location): Color => {
             if (StructureElement.Location.is(location)) {
-                return colorFor(location.element, location);
+                return colorFor(sourceAtomIndex(location.unit.model, location.element), location);
             }
             // Bond visuals (ball-and-stick, line, …) are colored from their
             // first atom; without this branch every bond fell back to the base
             // theme, which made per-atom colors invisible on those
             // representations.
             if (Bond.isLocation(location)) {
-                return colorFor(location.aUnit.elements[location.aIndex], location);
+                return colorFor(sourceAtomIndex(location.aUnit.model, location.aUnit.elements[location.aIndex]), location);
             }
             return baseColor(baseTheme, location, false);
         },

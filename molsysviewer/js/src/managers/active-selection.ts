@@ -1,3 +1,4 @@
+import { sourceAtomIndex, sourceGroupIndex, sourceChainIndex } from "../plugin/atom-indices";
 import { Structure } from "molstar/lib/mol-model/structure";
 import { StructureElement } from "molstar/lib/mol-model/structure";
 import { Loci } from "molstar/lib/mol-model/loci";
@@ -155,7 +156,7 @@ export function buildGroupItemsFromStructure(structure: Structure): GroupSelecti
 
         const atomIndices: number[] = [];
         for (let atomIndex = start; atomIndex < end; atomIndex++) {
-            atomIndices.push(atomIndex);
+            atomIndices.push(sourceAtomIndex(model, atomIndex));
         }
         const chainIndex = chainIndexByAtom[start];
         const entityIndex = modelIndex.getEntityFromChain(chainIndex);
@@ -170,17 +171,17 @@ export function buildGroupItemsFromStructure(structure: Structure): GroupSelecti
             return col[idx];
         };
 
-        const molId = getValue(molIdCol, start);
-        const molName = getValue(molNameCol, start);
-        const compIndex = getValue(compIdCol, start);
-        const compName = getValue(compNameCol, start);
+        const molId = getValue(molIdCol, sourceAtomIndex(model, start));
+        const molName = getValue(molNameCol, sourceAtomIndex(model, start));
+        const compIndex = getValue(compIdCol, sourceAtomIndex(model, start));
+        const compName = getValue(compNameCol, sourceAtomIndex(model, start));
 
         const item: GroupSelectionItem = {
             source_kind: "element",
             element_level: "group",
             atom_indices: atomIndices,
-            group_indices: [groupIndex],
-            chain_indices: [chainIndex],
+            group_indices: [sourceGroupIndex(model, groupIndex)],
+            chain_indices: [sourceChainIndex(model, chainIndex)],
             entity_indices: [entityIndex],
             group_name: `${compId} ${authSeqId}`,
             group_id: authSeqId,
@@ -255,8 +256,9 @@ export function lociToGroupItems(rawLoci: any, restrictToAtomIndices?: Set<numbe
 
             const atomIndices: number[] = [];
             for (let j = residueOffsets[groupIndex], jl = residueOffsets[groupIndex + 1]; j < jl; j++) {
-                if (!restrictToAtomIndices || restrictToAtomIndices.has(j)) {
-                    atomIndices.push(j);
+                const source = sourceAtomIndex(model, j);
+                if (!restrictToAtomIndices || restrictToAtomIndices.has(source)) {
+                    atomIndices.push(source);
                 }
             }
 
@@ -273,17 +275,17 @@ export function lociToGroupItems(rawLoci: any, restrictToAtomIndices?: Set<numbe
                 return col[idx];
             };
 
-            const molId = getValue(molIdCol, atomIndex);
-            const molName = getValue(molNameCol, atomIndex);
-            const compIndex = getValue(compIdCol, atomIndex);
-            const compName = getValue(compNameCol, atomIndex);
+            const molId = getValue(molIdCol, sourceAtomIndex(model, atomIndex));
+            const molName = getValue(molNameCol, sourceAtomIndex(model, atomIndex));
+            const compIndex = getValue(compIdCol, sourceAtomIndex(model, atomIndex));
+            const compName = getValue(compNameCol, sourceAtomIndex(model, atomIndex));
 
             const item: GroupSelectionItem = {
                 source_kind: "element",
                 element_level: "group",
                 atom_indices: atomIndices,
-                group_indices: [groupIndex],
-                chain_indices: [chainIndex],
+                group_indices: [sourceGroupIndex(model, groupIndex)],
+                chain_indices: [sourceChainIndex(model, chainIndex)],
                 entity_indices: [entityIndex],
                 group_name: groupName,
                 group_id: authSeqId,
@@ -619,7 +621,7 @@ export class ActiveSelectionController {
             const elements = unit.elements;
             const count = OrderedSet.size(elements);
             for (let i = 0; i < count; i++) {
-                if (target.has(OrderedSet.getAt(elements, i))) matched.push(i);
+                if (target.has(sourceAtomIndex(unit.model, OrderedSet.getAt(elements, i)))) matched.push(i);
             }
             if (matched.length > 0) {
                 lociElements.push({ unit, indices: SortedArray.ofSortedArray(matched) });

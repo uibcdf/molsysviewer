@@ -1,3 +1,4 @@
+import { sourceAtomIndex } from "../plugin/atom-indices";
 // src/shapes/index.ts
 
 import { PluginContext } from "molstar/lib/mol-plugin/context";
@@ -2040,7 +2041,7 @@ function buildUnitLookup(structure: Structure) {
         const count = OrderedSet.size(elements);
         for (let i = 0; i < count; i++) {
             const element = OrderedSet.getAt(elements, i) as ElementIndex;
-            map.set(element, { unit, elementIndex: element });
+            map.set(sourceAtomIndex(unit.model, element) as ElementIndex, { unit, elementIndex: element });
         }
     }
     return map;
