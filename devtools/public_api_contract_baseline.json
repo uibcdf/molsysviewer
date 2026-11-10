@@ -30587,6 +30587,15 @@
         {
           "default": {
             "kind": "literal",
+            "type": "NoneType",
+            "value": null
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "observations"
+        },
+        {
+          "default": {
+            "kind": "literal",
             "type": "bool",
             "value": false
           },
@@ -30690,6 +30699,15 @@
           },
           "kind": "KEYWORD_ONLY",
           "name": "height"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "NoneType",
+            "value": null
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "observations"
         },
         {
           "default": {

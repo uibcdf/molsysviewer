@@ -119,6 +119,67 @@ def test_optional_keyword_extension_is_visible_but_old_calls_still_bind():
     assert changes == [{"route": "example.operation", "change": "changed", "compatibility": "compatible_extension"}]
 
 
+def test_inserted_optional_keyword_preserves_existing_bindings():
+    def original(value, *, skip_digestion=False):
+        pass
+
+    def extended(value, *, observations=None, skip_digestion=False):
+        pass
+
+    old = inspect.signature(original).bind(1, skip_digestion=True)
+    new = inspect.signature(extended).bind(1, skip_digestion=True)
+    assert old.arguments == new.arguments
+    assert compare_contracts(document(original), document(extended))[0]["compatibility"] == "compatible_extension"
+
+
+def test_optional_keyword_with_variadic_arguments_keeps_their_meaning():
+    def original(value, *tail, skip_digestion=False):
+        pass
+
+    def extended(value, *tail, observations=None, skip_digestion=False):
+        pass
+
+    def consumes_tail(value, observations=None, *tail, skip_digestion=False):
+        pass
+
+    old = inspect.signature(original).bind(1, 2, 3, skip_digestion=True)
+    assert old.arguments == inspect.signature(extended).bind(1, 2, 3, skip_digestion=True).arguments
+    assert old.arguments != inspect.signature(consumes_tail).bind(1, 2, 3, skip_digestion=True).arguments
+    assert compare_contracts(document(original), document(extended))[0]["compatibility"] == "compatible_extension"
+    assert compare_contracts(document(original), document(consumes_tail))[0]["compatibility"] == "breaking"
+
+
+def test_positional_insertion_and_required_keyword_are_not_compatible_extensions():
+    def original(first, second=2):
+        pass
+
+    def shifted(first, added=None, second=2):
+        pass
+
+    def required(first, second=2, *, added):
+        pass
+
+    assert inspect.signature(original).bind(1, 3).arguments != inspect.signature(shifted).bind(1, 3).arguments
+    with pytest.raises(TypeError):
+        inspect.signature(required).bind(1, 3)
+    for changed in (shifted, required):
+        assert compare_contracts(document(original), document(changed))[0]["compatibility"] == "breaking"
+
+
+def test_keyword_only_reordering_is_visible_without_inventing_a_binding_break():
+    def original(value, *, first=1, second=2):
+        pass
+
+    def reordered(value, *, second=2, first=1):
+        pass
+
+    assert (
+        inspect.signature(original).bind(0, first=4, second=3).arguments
+        == inspect.signature(reordered).bind(0, first=4, second=3).arguments
+    )
+    assert compare_contracts(document(original), document(reordered))[0]["compatibility"] == "compatible_reordering"
+
+
 def test_classification_change_cannot_hide_a_breaking_change():
     def original(first, *, enabled=False):
         pass

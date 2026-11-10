@@ -23,13 +23,48 @@ from molsysviewer import demo
 view = demo["pentalanine"]      # 5000 structures
 
 xyz = np.asarray(puw.get_value(
-    msm.get(view.molsys, element="atom", structure_indices="all", coordinates=True)
+    msm.get(view.molsys, element="atom", structure_indices="all", coordinates=True),
+    to_unit="nm",
 ))
 end_to_end = np.linalg.norm(xyz[:, 0, :] - xyz[:, -1, :], axis=1)
 
 view.trajectory_plot.show(end_to_end, y_label="end-to-end (nm)", title="Pentalanine")
 view
 ```
+
+## Keeping calculation details
+
+This optional field is available in development source; the public 0.24.0 API
+does not include it. A matching package still needs its own qualification.
+
+Pass `observations` to retain a producer's calculation context with each series.
+For the end-to-end example above:
+
+```python
+context = {
+    "schema": "example.end_to_end@1",
+    "method": "numpy.linalg.norm",
+    "software": {"numpy": np.__version__, "molsysmt": msm.__version__},
+    "parameters": {"first_atom": 0, "last_atom": xyz.shape[1] - 1, "pbc": False},
+    "structure_indices": {"start": 0, "step": 1, "count": len(end_to_end)},
+    "units": {"coordinates": "nm", "displayed": "nm"},
+    "source": "Declared loaded pentalanine; preserve the original molecular input",
+}
+view.trajectory_plot.show(
+    end_to_end, y_label="end-to-end (nm)", observations=[context],
+)
+```
+
+Open **Calculation details** in the card to read the retained context. It stays
+with the figure after saving, recovery and structure extraction. Each extracted
+point also retains its original observation row. Context is historical: it does
+not verify that a later molecular edit still matches. Preserve independent
+reference inputs and the calculation environment when they are required.
+
+Use one object or `None` per series. The producer owns its `schema` and scientific
+meaning. Context must be finite JSON and fit the record limits; unsupported or
+oversized records are refused without shortening them. Replacing series without
+`observations` removes their previous details; `show(tag=...)` retains them.
 
 Play the trajectory and the playhead follows along:
 
@@ -43,10 +78,10 @@ Pass a mapping to label each series, or a 2D array for unlabelled ones:
 
 ```python
 centroid = xyz.mean(axis=1, keepdims=True)
-radius_of_gyration = np.sqrt(((xyz - centroid) ** 2).sum(axis=2).mean(axis=1))
+geometric_spread = np.sqrt(((xyz - centroid) ** 2).sum(axis=2).mean(axis=1))
 
 view.trajectory_plot.show(
-    {"end-to-end": end_to_end, "Rg": radius_of_gyration},
+    {"end-to-end": end_to_end, "geometric spread": geometric_spread},
     colors="okabe_ito",     # colour-vision-deficiency safe palette
     y_label="nm",
 )

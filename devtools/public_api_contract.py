@@ -163,6 +163,32 @@ def build_contract(rules=None):
     return {"schema": "molsysviewer.public_api_contract@1", "declarations": dict(sorted(declarations.items()))}
 
 
+def _compatible_parameter_extension(params, revised):
+    """Prove unchanged old bindings for optional insertions, not full semantics."""
+    old = {parameter["name"]: parameter for parameter in params}
+    new = {parameter["name"]: parameter for parameter in revised}
+    if any(new.get(name) != parameter for name, parameter in old.items()):
+        return False
+    extra = [parameter for parameter in revised if parameter["name"] not in old]
+    positional = {"POSITIONAL_ONLY", "POSITIONAL_OR_KEYWORD"}
+    if any(
+        parameter["default"]["kind"] == "required" or parameter["kind"] not in positional | {"KEYWORD_ONLY"}
+        for parameter in extra
+    ):
+        return False
+    old_positional = [parameter["name"] for parameter in params if parameter["kind"] in positional]
+    new_positional = [parameter["name"] for parameter in revised if parameter["kind"] in positional]
+    if new_positional[: len(old_positional)] != old_positional:
+        return False
+    # A new positional parameter before *args would consume an old variadic
+    # argument even though Signature.bind still accepts the call.
+    if any(parameter["kind"] == "VAR_POSITIONAL" for parameter in params) and len(new_positional) != len(
+        old_positional
+    ):
+        return False
+    return True
+
+
 def compare_contracts(before, after):
     """Describe reviewed changes; compatibility is call-shape-only, not science."""
     old, new = before["declarations"], after["declarations"]
@@ -184,21 +210,18 @@ def compare_contracts(before, after):
             compatible = compatible and headers_a == headers_b
             params = a.get("parameters", [])
             revised = b.get("parameters", [])
-            compatible = (
-                compatible
-                and revised[: len(params)] == params
-                and all(
-                    p["default"]["kind"] != "required" and p["kind"] in {"KEYWORD_ONLY", "POSITIONAL_OR_KEYWORD"}
-                    for p in revised[len(params) :]
-                )
-            )
+            compatible = compatible and _compatible_parameter_extension(params, revised)
             classification_changed = (a["stability"], a["reason"]) != (b["stability"], b["reason"])
             shape_a = {key: value for key, value in a.items() if key not in {"stability", "reason"}}
             shape_b = {key: value for key, value in b.items() if key not in {"stability", "reason"}}
             if shape_a == shape_b and classification_changed:
                 compatibility = "classification_review"
             else:
-                compatibility = "compatible_extension" if compatible else "breaking"
+                compatibility = (
+                    ("compatible_extension" if len(revised) > len(params) else "compatible_reordering")
+                    if compatible
+                    else "breaking"
+                )
             changes.append(
                 {
                     "route": route,

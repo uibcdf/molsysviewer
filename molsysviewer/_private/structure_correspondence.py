@@ -57,6 +57,8 @@ def remap_trajectory_cards(cards, frames):
     for card in result:
         for series in card["series"]:
             series["values"] = [series["values"][index] for index in frames]
+            if "observation_rows" in series:
+                series["observation_rows"] = [series["observation_rows"][index] for index in frames]
         if "x" in card:
             card["x"] = [card["x"][index] for index in frames]
         card["events"] = [

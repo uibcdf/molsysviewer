@@ -69,6 +69,18 @@ async function rendered(page: Page, index: number, coordinates: number[][][]) {
     }, { index, coordinates });
 }
 
+async function calculationDetails(page: Page, expected: any) {
+    const details = page.locator('[data-molsysviewer-plot-context="authority-plot"]');
+    await details.waitFor({ state: "visible" });
+    if (!await details.evaluate(element => (element as HTMLDetailsElement).open)) await details.locator("summary").click();
+    const raw = details.locator('[data-molsysviewer-series-observation="0"]');
+    await raw.waitFor({ state: "visible" });
+    assert.deepEqual(JSON.parse(await raw.innerText()), { context: expected,
+        original_observation_rows: [0, 1, 2], original_observation_count: 3 });
+    assert.equal(await details.locator("b[data-observation-marker]").count(), 0, "Producer context must remain literal text");
+    await details.locator("summary").click();
+}
+
 /** A real click must reach the retained Python owner, not just a local playhead. */
 export async function checkTrajectoryPlotAuthority(context: BrowserContext, dir: string) {
     await withFixtureWorkspace("plot-authority", async workspace => {
@@ -87,6 +99,17 @@ export async function checkTrajectoryPlotAuthority(context: BrowserContext, dir:
             assert.equal(state.index, 2);
             assert.deepEqual(state.callbacks, []);
             await rendered(source, 2, state.coordinates);
+            const observation = state.plot_records[0].series[0].observation;
+            assert.equal(observation.schema, "molsysviewer.test_observation@1");
+            await calculationDetails(source, observation);
+            const cardOpened = source.waitForEvent("popup");
+            await source.locator('[data-molsysviewer-datacard="authority-plot"]')
+                .getByTitle("Popout card to external window", { exact: true }).click();
+            const cardPopup = await cardOpened;
+            cardPopup.on("pageerror", error => errors.push(String(error)));
+            try { await calculationDetails(cardPopup, observation); }
+            finally { await cardPopup.close(); }
+            await calculationDetails(source, observation);
 
             await clickAndReceive(source, source, 1);
             state = await inspect(bridge);
@@ -108,6 +131,7 @@ export async function checkTrajectoryPlotAuthority(context: BrowserContext, dir:
             await popup.waitForFunction(() => !!(window as any).__mirrorController);
             await popup.locator("#molsysviewer-loading").waitFor({ state: "hidden" });
             await rendered(popup, 1, state.coordinates);
+            await calculationDetails(popup, observation);
             await clickAndReceive(popup, source, 2);
             state = await inspect(bridge);
             assert.equal(state.index, 2);
@@ -157,6 +181,7 @@ export async function checkTrajectoryPlotAuthority(context: BrowserContext, dir:
                 await staticPage.waitForFunction(() => !!(window as any).__molsysviewerDocsController);
                 await captureCanvasPopupControllers(staticPage);
                 await rendered(staticPage, 2, state.coordinates);
+                await calculationDetails(staticPage, observation);
                 await clickSample(staticPage, 1);
                 await rendered(staticPage, 1, state.coordinates);
                 // The exported file is self-contained and independent of the

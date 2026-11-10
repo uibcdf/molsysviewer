@@ -396,22 +396,23 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 **Scope decisions — 2026-11-10:** the maintainer explicitly adopts E2's
 documented scale matrix and 30 active cycles in one kernel, plus B4's
 producer-owned reproducibility metadata ([#349](https://github.com/uibcdf/molsysviewer/issues/349), [plan](figure_observation_provenance_pre_1_0.md)) and F1's reviewed public-contract
-snapshot ([#350](https://github.com/uibcdf/molsysviewer/issues/350), [plan](../archive/public_api_contract_snapshot_pre_1_0.md)). Execution/implementation and their guards remain pending. Coordination for B4 is uibcdf/molsyssuite#179. The original
+snapshot ([#350](https://github.com/uibcdf/molsysviewer/issues/350), [plan](../archive/public_api_contract_snapshot_pre_1_0.md)). F1 is source-delivered. B4 core and producer pass scoped receiving; producer publication for owner review remains pending. E2 execution remains pending. Coordination for B4 is uibcdf/molsyssuite#179. The original
 46-item denominator and separately required Movie #320 remain unchanged;
 B4/F1 are now additional adopted work, not silently credited original outcomes.
 B3.6/E3 remain separate recommendations, with their decisions still visible.
 
 
 **Latest source delivery, 2026-11-10:**
-[The physical-recipe receipt](../molsysmt_physical_recipe_receiving_20261110.json)
-receives D5.2 and records **36/46 (78.3%) delivered/local**, with final
-acceptance **1/46 (2.2%)**. #696 delivers the GUI native physical inspection;
-owner main `6bd879bda` contains the earlier #687/#691 sources and the received
-#690 native correction. #688 closes with the actual-entrypoint lifecycle guard.
-C3/C4, D5.4, D6.5/D6.7, E2/E4, F2 and G1/G2 remain. Native #695 box alignment
-and #666 / PyUnitWizard #143 remain explicit owner work. B4/F1 and E2 are now
-adopted, not still undecided; B3.6/E3 retain separate decisions. Movie #320 is
-mandatory outside the unchanged denominator. Publication remains paused.
+[The construction receipt](../molsysmt_construction_receiving_20261110.json)
+receives D6.5 through draft owner PR #699 and records **37/46 (80.4%)
+source-delivered**, with final acceptance **1/46 (2.2%)**. The additional F1
+snapshot is delivered; [B4's receipt](../figure_observation_receiving_20261110.json)
+receives the optional core contract and native producer, including final
+QuantityRecord, Jupyter and native Qt controls. Its owner contribution still
+needs publication for review. Native #695 box alignment and #666 / PyUnitWizard
+#143 remain explicit owner work. Original C3/C4, D5.4, D6.7, E2/E4, F2 and
+G1/G2 remain. B3.6/E3 retain separate decisions; Movie #320 remains mandatory
+outside the unchanged denominator. Human observations and publication remain paused.
 
 ### Dated receiving history
 

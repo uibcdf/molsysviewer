@@ -70,6 +70,14 @@ def serve(static_path=None, state_path=None):
     coordinates = puw.get_value(view.get_coordinates(), to_unit="angstrom").copy()
     centered = coordinates - coordinates.mean(axis=1)[:, None]
     values = np.sqrt(np.mean(np.sum(centered**2, axis=2), axis=1))
+    observation = {
+        "schema": "molsysviewer.test_observation@1",
+        "method": "NumPy geometric spread control",
+        "parameters": {"center": "geometric", "weights": "uniform"},
+        "source": {"bundled_demo": "pentalanine", "structure_indices": [0, 8, 3]},
+        "units": {"native": "angstrom", "displayed": "angstrom"},
+        "literal": "<b data-observation-marker>literal</b>",
+    }
     view.trajectory_plot.show(
         {"Geometric spread control": values},
         x=[0, 4, 10],
@@ -77,6 +85,7 @@ def serve(static_path=None, state_path=None):
         y_label="Spread (Å)",
         title="Native trajectory control",
         tag="authority-plot",
+        observations=[observation],
     )
     view.measurements.add_distance([0], [5], tag="plot-distance")
     view.player.go_to_structure(2)
@@ -132,6 +141,7 @@ def serve(static_path=None, state_path=None):
                 y_label="Spread (Å)",
                 title="Native trajectory control",
                 tag="authority-plot",
+                observations=[observation],
             )
             return True
         if action == "snapshot":

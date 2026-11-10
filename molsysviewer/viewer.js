@@ -153046,6 +153046,43 @@ var TrajectoryPlotOverlay = class {
     });
     body.appendChild(svg);
     body.appendChild(controls);
+    if (opts.series?.some((series) => series.observation)) {
+      const details = document.createElement("details");
+      details.setAttribute("data-molsysviewer-plot-context", entry.tag);
+      details.open = !!entry.contextOpen;
+      Object.assign(details.style, { flex: "0 0 auto", padding: "6px 8px", fontSize: "12px", userSelect: "text" });
+      const summary = document.createElement("summary");
+      summary.textContent = "Calculation details";
+      summary.style.cursor = "pointer";
+      details.appendChild(summary);
+      let populated = false;
+      const populate = () => {
+        entry.contextOpen = details.open;
+        if (!details.open || populated) return;
+        populated = true;
+        const notice = document.createElement("p");
+        notice.textContent = "Stored historical context. Source correspondence is declared; these details do not verify that the current molecular system still matches. Preserve the source and reference inputs for reproduction.";
+        details.appendChild(notice);
+        opts.series?.forEach((series, index) => {
+          if (!series.observation) return;
+          const label2 = document.createElement("strong");
+          label2.textContent = series.label;
+          details.appendChild(label2);
+          const raw2 = document.createElement("pre");
+          raw2.setAttribute("data-molsysviewer-series-observation", String(index));
+          raw2.textContent = JSON.stringify({
+            context: series.observation,
+            original_observation_rows: series.observation_rows,
+            original_observation_count: series.observation_count
+          }, null, 2);
+          Object.assign(raw2.style, { maxHeight: "200px", overflow: "auto", whiteSpace: "pre-wrap", overflowWrap: "anywhere", fontSize: "11px" });
+          details.appendChild(raw2);
+        });
+      };
+      details.addEventListener("toggle", populate);
+      populate();
+      body.appendChild(details);
+    }
     this.setFrame(this.currentFrame);
   }
   text(x, y, content, anchor, fill, size4) {

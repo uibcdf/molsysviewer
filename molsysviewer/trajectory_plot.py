@@ -12,6 +12,7 @@ from molsysviewer.colors import normalize_color
 
 from ._private.argdigest import digest
 from ._private.exceptions import ArgumentError
+from ._private.figure_observation import normalize_observation
 
 
 def _is_sequence(value: Any) -> bool:
@@ -43,6 +44,13 @@ class TrajectoryPlotManager:
     def _validate_cards(self, cards):
         if not isinstance(cards, list):
             raise ArgumentError("series", value=cards)
+        # Inspect producer data before deepcopy: cyclic/deep/unbounded input
+        # must not acquire a scene/history copy before it is rejected.
+        for card in cards:
+            if isinstance(card, dict) and isinstance(card.get("series"), list):
+                for item in card["series"]:
+                    if isinstance(item, dict) and "observation" in item:
+                        normalize_observation(item["observation"])
         tags = set()
         normalized = deepcopy(cards)
         for card in normalized:
@@ -61,6 +69,19 @@ class TrajectoryPlotManager:
                 if not _is_sequence(values) or not len(values):
                     raise ArgumentError("series", value=values)
                 item["values"] = self._finite_values(values, "series")
+                if "observation" in item:
+                    rows = item.get("observation_rows")
+                    count = item.get("observation_count")
+                    if (
+                        type(count) is not int
+                        or not 0 < count <= 2**53 - 1
+                        or not isinstance(rows, list)
+                        or len(rows) != len(values)
+                        or any(type(row) is not int or not 0 <= row < count for row in rows)
+                    ):
+                        raise ValueError("A retained observation needs one valid original row per plotted value.")
+                elif "observation_rows" in item or "observation_count" in item:
+                    raise ValueError("Original observation rows require their producer context.")
                 if length is not None and len(values) != length:
                     raise ArgumentError("series", value=series)
                 length = len(values)
@@ -219,6 +240,7 @@ class TrajectoryPlotManager:
         tag: str = "default",
         width: int | None = None,
         height: int | None = None,
+        observations: Sequence[dict[str, Any] | None] | None = None,
         skip_digestion: bool = False,
     ) -> None:
         """Show (or replace) a synchronized 2D trajectory plot card.
@@ -245,11 +267,18 @@ class TrajectoryPlotManager:
             Multiple plot cards can be open simultaneously under different tags.
         width, height
             Optional initial width and height in pixels.
+        observations
+            Optional producer-owned JSON context, one object or ``None`` per
+            series in display order. Each object declares its own ``schema``.
+            Context is historical and detached, not authentication of the
+            current molecular system or a promise of automatic recalculation.
         """
         if not isinstance(tag, str) or not tag.strip():
             raise ArgumentError("tag", value=tag)
         cards = self._cards()
         if series is None:
+            if observations is not None:
+                raise ValueError("Pass series when replacing a figure's calculation context.")
             card = next((item for item in cards if item["tag"] == tag), None)
             if card is None:
                 raise KeyError(tag)
@@ -259,6 +288,14 @@ class TrajectoryPlotManager:
         normalized = self._normalize_series(series)
         n_frames = len(normalized[0]["values"])
         self._resolve_series_colors(normalized, colors)
+        if observations is not None:
+            if not isinstance(observations, (list, tuple)) or len(observations) != len(normalized):
+                raise ValueError("Provide one optional observation record per plot series.")
+            for item, observation in zip(normalized, observations, strict=True):
+                if observation is not None:
+                    item["observation"] = normalize_observation(observation)
+                    item["observation_rows"] = list(range(n_frames))
+                    item["observation_count"] = n_frames
 
         x_values: list[float] | None = None
         if x is not None:

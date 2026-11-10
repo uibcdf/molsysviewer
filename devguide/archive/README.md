@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [#352: Optional keyword changes preserve positional/variadic binding checks while every signature drift still requires review.](public_api_optional_keyword_classification.md)
+
 - [#351: Ordered native page/profile/window retirement preserves graphics cleanup, including failed independent result initialization.](qt_independent_window_teardown_abort.md)
 - [#350: A reviewed snapshot guards 954 public callables, properties and constructors with explicit stability and signature-change review.](public_api_contract_snapshot_pre_1_0.md)
 

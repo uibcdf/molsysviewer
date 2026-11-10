@@ -92,6 +92,14 @@ scientific behavior, units, return semantics and persistence retain their
 own behavioral tests. Reconcile adopted figure/Movie additions before a future
 candidate freeze.
 
+`view.trajectory_plot.show(..., observations=[...])` and its `update` alias
+retain optional detached producer JSON, one object or `None` per series.
+Historical observation rows survive extraction and persistence. Unknown schemas
+remain literal data, outside core scientific interpretation or current-source
+authentication. See the [figure observation contract](https://github.com/uibcdf/molsysviewer/blob/main/devguide/figure_observation_contract.md)
+for limits, producer ownership and exact-input preservation. This additive
+source field does not promote a producer's experimental scientific schema.
+
 ### `config.set_structure_scale_budget(budget_bytes)`
 
 MolSysViewer materializes **every** selected structure: `view.molsys` is the
