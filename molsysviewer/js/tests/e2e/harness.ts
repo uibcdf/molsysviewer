@@ -679,10 +679,53 @@ export async function profileRepresentativeArrayNativeLoad(
         }
         throw new Error(`representative scale benchmark timed out waiting for ${description}`);
     };
-    const presentCanvasFrame = async () => {
-        canvas3d?.requestDraw();
-        await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
-        await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    const probes = [...new Set([0, Math.floor(metadata.n_atoms / 2), metadata.n_atoms - 1])];
+    const drawWitnesses: Array<{
+        phase: string; structureIndex: number; atoms: number;
+        probes: Array<{ atomIndex: number; expected: number[]; observed: number[] }>;
+    }> = [];
+    const locations = new WeakMap<Structure, Array<{ atomIndex: number; unit: Unit.Atomic; element: number }>>();
+    const frameWitness = (index: number) => {
+        const structure = controller.getStructureData();
+        if (!structure || structure.elementCount !== metadata.n_atoms
+            || controller.trajectory.getTrajectoryState()?.currentFrame !== index) return undefined;
+        let sample = locations.get(structure);
+        if (!sample) {
+            sample = [];
+            for (const unit of structure.units) {
+                if (!Unit.isAtomic(unit)) continue;
+                for (const element of unit.elements) {
+                    const atomIndex = unit.model.atomicHierarchy.atomSourceIndex.value(element);
+                    if (probes.includes(atomIndex)) sample.push({ atomIndex, unit, element });
+                }
+            }
+            locations.set(structure, sample);
+        }
+        if (sample.length !== probes.length || new Set(sample.map(item => item.atomIndex)).size !== probes.length) {
+            throw new Error("Representative fixture lost unique source-atom correspondence");
+        }
+        const positions = sample.map(({ atomIndex, unit, element }) => ({
+            atomIndex,
+            expected: [0, 1, 2].map(axis => decoded.coordinates[(index * 3 + axis) * metadata.n_atoms + atomIndex]),
+            observed: Array.from(unit.conformation.position(element, Vec3())),
+        }));
+        // This fixture has identity Mol* operators and source float32 planes.
+        // Require exact readback; no scientific cutoff/tolerance is widened.
+        if (positions.some(item => item.observed.some((value, axis) => value !== item.expected[axis]))) return undefined;
+        return { structureIndex: index, atoms: structure.elementCount, probes: positions };
+    };
+    const observeDraw = (phase: string, index: number, ready = () => true) => {
+        let at: number | undefined;
+        let failure: unknown;
+        const subscription = canvas3d!.didDraw.subscribe(() => {
+            try {
+                if (at !== undefined || failure || !ready()) return;
+                const now = performance.now();
+                const witness = frameWitness(index);
+                if (witness) { at = now; drawWitnesses.push({ phase, ...witness }); }
+            } catch (error) { failure = error; }
+        });
+        return { time: () => { if (failure) throw failure; return at; }, dispose: () => subscription.unsubscribe() };
     };
 
     const loadStarted = performance.now();
@@ -691,6 +734,7 @@ export async function profileRepresentativeArrayNativeLoad(
         loadPeakHeap = Math.max(loadPeakHeap, memory());
     }, 5);
     let loadCommitMs: number;
+    const firstDraw = observeDraw("load", 0, sceneHasContent);
     try {
         await controller.loadArrayNativeMolSysPayload({
             atoms: metadata.atoms,
@@ -701,11 +745,12 @@ export async function profileRepresentativeArrayNativeLoad(
             ...decoded,
         }, "representative-scale");
         loadCommitMs = performance.now() - loadStarted;
-        await waitFor(sceneHasContent, "the first visible molecular geometry");
+        await waitFor(() => firstDraw.time() !== undefined, "the first molecular draw with matching coordinates");
     } finally {
         window.clearInterval(heapSampler);
+        firstDraw.dispose();
     }
-    const firstVisibleMs = performance.now() - loadStarted;
+    const firstVisibleMs = firstDraw.time()! - loadStarted;
     const afterLoadHeap = memory();
 
     const frameCommitSamples: number[] = [];
@@ -726,10 +771,13 @@ export async function profileRepresentativeArrayNativeLoad(
             frameFirstVisits.push(!visited.has(index));
             visited.add(index);
             const started = performance.now();
-            await controller.handleMessage({ op: "set_trajectory_frame", index });
-            frameCommitSamples.push(performance.now() - started);
-            await presentCanvasFrame();
-            frameVisibleSamples.push(performance.now() - started);
+            const draw = observeDraw("navigation", index, sceneHasContent);
+            try {
+                await controller.handleMessage({ op: "set_trajectory_frame", index });
+                frameCommitSamples.push(performance.now() - started);
+                await waitFor(() => draw.time() !== undefined, "the requested structure's molecular draw");
+                frameVisibleSamples.push(draw.time()! - started);
+            } finally { draw.dispose(); }
         }
     }
 
@@ -739,6 +787,8 @@ export async function profileRepresentativeArrayNativeLoad(
     }, 5);
     const representationStarted = performance.now();
     let representationCommitMs: number;
+    const representationDraw = observeDraw("representation", frameIndices.at(-1) ?? 0,
+        () => sceneHasContent() && representationHasRenderObjects("spacefill"));
     try {
         await controller.handleMessage({
             op: "set_whole_representation",
@@ -747,19 +797,17 @@ export async function profileRepresentativeArrayNativeLoad(
             params: { quality: "medium" },
         });
         representationCommitMs = performance.now() - representationStarted;
-        await waitFor(
-            () => sceneHasContent() && representationHasRenderObjects("spacefill"),
-            "the replacement representation to become renderable",
-        );
-        await presentCanvasFrame();
+        await waitFor(() => representationDraw.time() !== undefined, "the replacement representation's molecular draw");
     } finally {
         window.clearInterval(representationSampler);
+        representationDraw.dispose();
     }
-    const representationVisibleMs = performance.now() - representationStarted;
+    const representationVisibleMs = representationDraw.time()! - representationStarted;
 
     return {
         atoms: metadata.n_atoms,
         structures: metadata.n_structures,
+        drawWitnesses,
         timingsMs: {
             fetch: fetchMs,
             decode: decodeMs,

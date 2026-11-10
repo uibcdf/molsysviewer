@@ -1,11 +1,13 @@
+import { medianOrNull as median } from "./summary-statistics.js";
 import { spawnSync } from "node:child_process";
-import { createReadStream, readFileSync, rmSync, statSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { createReadStream, readFileSync, statSync } from "node:fs";
 import { createServer } from "node:http";
-import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { chromium } from "playwright";
+import { fixtureEnvironment, withFixtureWorkspace } from "../e2e/fixture-workspace.js";
 
 type RepresentativeHarness = Pick<
     typeof import("../e2e/harness"),
@@ -29,11 +31,7 @@ const MATRIX = (process.env.MOLSYSVIEWER_SCALE_MATRIX ?? `${CASE}:${STRUCTURES}`
         return { caseName, structures };
     });
 
-function median(values: number[]): number | null {
-    if (!values.length) return null;
-    const ordered = [...values].sort((a, b) => a - b);
-    return ordered[Math.floor(ordered.length / 2)];
-}
+
 
 type ProcessMemory = { totalMb: number; gpuMb: number; rendererMb: number };
 
@@ -69,20 +67,25 @@ async function runCase(
     browserPid: number,
     caseName: string,
     structures: number,
+    fixtureDir: string,
 ) {
-    const fixtureDir = join(tmpdir(), `molsysviewer-scale-${process.pid}-${caseName}-${structures}`);
     const emitted = spawnSync(PYTHON, [
         EMITTER,
         "--case", caseName,
         "--structures", String(structures),
         "--emit-directory", fixtureDir,
-    ], { encoding: "utf8" });
+    ], { encoding: "utf8", env: fixtureEnvironment(fixtureDir) });
     if (emitted.status !== 0) {
         throw new Error(`representative fixture generation failed:\n${emitted.stderr || emitted.stdout}`);
     }
     const pythonPreparation = JSON.parse(emitted.stdout.split("\n").filter(Boolean).at(-1)!);
     const manifest = JSON.parse(readFileSync(join(fixtureDir, "manifest.json"), "utf8"));
     const files = [manifest.metadata, ...manifest.arrays];
+    const fixtureFiles = files.map((name: string) => ({
+        name,
+        bytes: statSync(join(fixtureDir, name)).size,
+        sha256: createHash("sha256").update(readFileSync(join(fixtureDir, name))).digest("hex"),
+    }));
     const server = createServer((request, response) => {
         const filename = request.url?.slice(1) ?? "";
         if (!files.includes(filename)) {
@@ -129,12 +132,24 @@ async function runCase(
             const measured = await harness.profileRepresentativeArrayNativeLoad(
                 controller, metadataUrl, arrayUrls,
             );
+            const gl = (controller as any).plugin.canvas3d?.webgl.gl as WebGLRenderingContext | undefined;
+            if (!gl) throw new Error("Measured Mol* canvas has no WebGL context");
+            const debug = gl.getExtension("WEBGL_debug_renderer_info");
+            const rendering = {
+                userAgent: navigator.userAgent,
+                devicePixelRatio,
+                renderer: gl.getParameter(debug ? debug.UNMASKED_RENDERER_WEBGL : gl.RENDERER),
+                vendor: gl.getParameter(debug ? debug.UNMASKED_VENDOR_WEBGL : gl.VENDOR),
+                webglVersion: gl.getParameter(gl.VERSION),
+                shadingLanguageVersion: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
+                identification: debug ? "unmasked" : "standard masked parameters; driver identity unavailable",
+            };
             controller.dispose();
             const runtime = globalThis as typeof globalThis & { gc?: () => void };
             runtime.gc?.();
             await new Promise(resolve => setTimeout(resolve, 100));
             const afterDispose = (performance as any).memory?.usedJSHeapSize ?? 0;
-            return { ...measured, jsHeapMb: { ...measured.jsHeapMb, afterDispose: afterDispose / 1024 / 1024 } };
+            return { ...measured, rendering, jsHeapMb: { ...measured.jsHeapMb, afterDispose: afterDispose / 1024 / 1024 } };
         }, {
             metadataUrl: `${base}/${manifest.metadata}`,
             arrayUrls: manifest.arrays.map((name: string) => `${base}/${name}`),
@@ -167,6 +182,7 @@ async function runCase(
             case: caseName,
             structures,
             pythonPreparation,
+            fixtureFiles,
             browser: report,
             limitations: [
                 "JS heap excludes Mol* native, WebGL and GPU allocations; process-tree RSS is reported separately.",
@@ -178,7 +194,6 @@ async function runCase(
         await page.close();
         clearInterval(memorySampler);
         await new Promise<void>(resolveClosed => server.close(() => resolveClosed()));
-        rmSync(fixtureDir, { recursive: true, force: true });
     }
     if (!output) throw new Error("representative scale case produced no report");
     output.browserProcessRssMb = {
@@ -202,7 +217,8 @@ async function run() {
     const browser = await chromium.connect(browserServer.wsEndpoint());
     try {
         for (const { caseName, structures } of MATRIX) {
-            await runCase(browser, browserServer.process().pid, caseName, structures);
+            await withFixtureWorkspace("representative-scale", directory =>
+                runCase(browser, browserServer.process().pid, caseName, structures, directory));
         }
     } finally {
         await browser.close();

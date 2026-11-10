@@ -1,3 +1,4 @@
+import { median } from "./summary-statistics.js";
 import assert from "node:assert";
 import { chromium } from "playwright";
 import { fileURLToPath } from "node:url";
@@ -110,10 +111,7 @@ function makePdb(atoms: number): string {
     return lines.join("\n");
 }
 
-function median(values: number[]): number {
-    const sorted = [...values].sort((left, right) => left - right);
-    return sorted[Math.floor(sorted.length / 2)];
-}
+
 
 function summarize(
     type: ScenarioSummary["type"],

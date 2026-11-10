@@ -513,3 +513,5 @@ Completed work, kept for the reasoning:
 - [saved_camera_lags_live_notebook.md](saved_camera_lags_live_notebook.md) — #319 delivers negotiated coherent live scene capture, guarded moving/background refusal/recovery and compatible synchronous saving; final installed/human gates remain separate.
 
 - [`figure_observation_provenance_pre_1_0.md`](figure_observation_provenance_pre_1_0.md) — Delivers B4 historical figure context in core and producer PR #702 with guarded persistence, units and real-host receiving.
+
+- [`browser_benchmark_even_medians.md`](browser_benchmark_even_medians.md) — Corrects four benchmark median helpers and guards them against independent exact-rational references; original timings stay preserved.

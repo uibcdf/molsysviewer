@@ -1,3 +1,4 @@
+import { median } from "./summary-statistics.js";
 import assert from "node:assert";
 import { spawnSync } from "node:child_process";
 import { createReadStream, readFileSync, rmSync, statSync } from "node:fs";
@@ -33,10 +34,7 @@ async function heapSnapshot(page: Page): Promise<HeapSnapshot> {
     });
 }
 
-function median(values: number[]): number {
-    const ordered = [...values].sort((left, right) => left - right);
-    return ordered[Math.floor(ordered.length / 2)];
-}
+
 
 async function run(): Promise<void> {
     if (!EXTERNAL_PAYLOAD_PATH) {

@@ -398,9 +398,8 @@ documented scale matrix and 30 active cycles in one kernel, plus B4's
 producer-owned reproducibility metadata ([#349](https://github.com/uibcdf/molsysviewer/issues/349), [plan](../archive/figure_observation_provenance_pre_1_0.md)) and F1's reviewed public-contract
 snapshot ([#350](https://github.com/uibcdf/molsysviewer/issues/350), [plan](../archive/public_api_contract_snapshot_pre_1_0.md)).
 F1 and B4 are source-delivered; B4 producer PR #702 awaits owner review. E2 is
-executing its adopted scale protocol; the [Python scale/history anchors](../robustness_scale_receiving_20261110.json)
-pass in three fresh workers each. Residency/detector/browser and the same-kernel
-prolonged check remain pending. Coordination for B4 is
+executing its adopted scale protocol; the [scale/history, sparse-residency, real-detector and browser anchors](../performance/robustness_scale_receiving_20261110.md)
+pass in three fresh workers per anchor. The same-kernel prolonged check remains pending. Coordination for B4 is
 uibcdf/molsyssuite#179. The original
 46-item denominator and separately required Movie #320 remain unchanged;
 B4/F1 are now additional adopted work, not silently credited original outcomes.

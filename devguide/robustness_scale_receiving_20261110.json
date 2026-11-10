@@ -3,7 +3,7 @@
   "date": "2026-11-10",
   "issue": "uibcdf/molsysviewer#315",
   "outcome": "E2",
-  "status": "Partial: Python scale/history anchors received; residency/detector/browser and same-kernel prolonged receiving remain pending",
+  "status": "Partial: adopted Python/history, sparse-residency, real-detector and browser scale anchors received; thirty active cycles in one kernel remain pending",
   "source_base": "46f7d11ac77d9b241668cae6e9f9aa8a7d0609ec",
   "owner_source": "b49937c1b3547bfe02c5680893f94e29d9fca941",
   "owner_public_base": "5f241cfa77f0091dc7a54c0be1bdd2951efdefed",
@@ -996,7 +996,11 @@
     "Worker RSS includes native fixture assembly and Python dependencies; it is not Viewer-only memory, browser RSS or hardware VRAM.",
     "History captures 25 production state checkpoints, then verifies empty history after clear; peak RSS and allocator retention do not independently prove a leak.",
     "Historical August baseline uses Python 3.13 and different software/resources. No comparable-condition regression/pass threshold is inferred from direct cross-date ratios.",
-    "Source measurements only; no clean installed package, other OS, human acceptance or publication is claimed."
+    "Source measurements only; no clean installed package, other OS, human acceptance or publication is claimed.",
+    "Synthetic rings are peptide atom groups used to measure sparse participant/centroid costs, not detected aromatic chemistry. H5MSM interaction-layer reads materialize the selected analysis and are warm-process measurements.",
+    "Browser firstVisible now means an actual Mol* didDraw with matching model atom count and three exact float32 source-coordinate probes, not simply renderable bounding geometry or two animation frames. It is not an every-pixel proof.",
+    "Rendering uses actual ANGLE/Vulkan SwiftShader. Browser process-tree RSS sums shared pages and is not cgroup physical consumption or hardware VRAM. Missing /proc samples remain unavailable, never zero; reactivation needs a successful qualified process sample. Hardware VRAM requires a qualified hardware-GPU profile.",
+    "Benchmark-only provenance/invariant/statistic instrumentation follows the production source base. Exact measured source hashes are retained; this is not a new full platform or installed qualification."
   ],
   "original_outcome_delivered": false,
   "publications_paused": true,
@@ -1008,5 +1012,5828 @@
     "original_diagnostics_retained": true,
     "unused_owned_credentials_hash_retired": true,
     "off_host_backup_claimed": false
+  },
+  "additional_receiving": {
+    "probe-237-e2-residency-detector": {
+      "source_base": "5164f13bb503625dbe65f3b657ab5260feadcb65",
+      "provider_source": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "provider_public_runtime_base": "5f241cfa77f0091dc7a54c0be1bdd2951efdefed",
+      "native_exit": 0,
+      "seconds": 210.93939208309166,
+      "selected_inputs": 10878,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1158.0,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    "build-238-e2-renderer-probe": {
+      "source_base": "5164f13bb503625dbe65f3b657ab5260feadcb65",
+      "provider_source": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "provider_public_runtime_base": "5f241cfa77f0091dc7a54c0be1bdd2951efdefed",
+      "native_exit": 0,
+      "seconds": 23.055290787946433,
+      "selected_inputs": 10878,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 570.1,
+      "cleanup": {
+        "tracked": 11,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    "build-239-e2-draw-witnesses": {
+      "source_base": "5164f13bb503625dbe65f3b657ab5260feadcb65",
+      "provider_source": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "provider_public_runtime_base": "5f241cfa77f0091dc7a54c0be1bdd2951efdefed",
+      "native_exit": 0,
+      "seconds": 11.304104409180582,
+      "selected_inputs": 10878,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 563.7,
+      "cleanup": {
+        "tracked": 10,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    "probe-240-e2-browser-matrix": {
+      "source_base": "5164f13bb503625dbe65f3b657ab5260feadcb65",
+      "provider_source": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "provider_public_runtime_base": "5f241cfa77f0091dc7a54c0be1bdd2951efdefed",
+      "native_exit": 1,
+      "seconds": 8.34797564195469,
+      "selected_inputs": 10880,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 341.9,
+      "cleanup": {
+        "tracked": 7,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    "probe-241-e2-browser-pilot": {
+      "source_base": "5164f13bb503625dbe65f3b657ab5260feadcb65",
+      "provider_source": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "provider_public_runtime_base": "5f241cfa77f0091dc7a54c0be1bdd2951efdefed",
+      "native_exit": 0,
+      "seconds": 21.13414727221243,
+      "selected_inputs": 10880,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1605.6,
+      "cleanup": {
+        "tracked": 14,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    "probe-242-e2-browser-matrix": {
+      "source_base": "5164f13bb503625dbe65f3b657ab5260feadcb65",
+      "provider_source": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "provider_public_runtime_base": "5f241cfa77f0091dc7a54c0be1bdd2951efdefed",
+      "native_exit": 0,
+      "seconds": 580.0937152320985,
+      "selected_inputs": 10880,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3398.8,
+      "cleanup": {
+        "tracked": 196,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    "probe-243-even-median-before": {
+      "source_base": "5164f13bb503625dbe65f3b657ab5260feadcb65",
+      "provider_source": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "provider_public_runtime_base": "5f241cfa77f0091dc7a54c0be1bdd2951efdefed",
+      "native_exit": 1,
+      "seconds": 3.873133120825514,
+      "selected_inputs": 10881,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 64.1,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    "probe-244-even-median-recovery": {
+      "source_base": "5164f13bb503625dbe65f3b657ab5260feadcb65",
+      "provider_source": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "provider_public_runtime_base": "5f241cfa77f0091dc7a54c0be1bdd2951efdefed",
+      "native_exit": 0,
+      "seconds": 5.924009707989171,
+      "selected_inputs": 10882,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 223.8,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    "probe-245-e2-identity": {
+      "source_base": "5164f13bb503625dbe65f3b657ab5260feadcb65",
+      "provider_source": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "provider_public_runtime_base": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "native_exit": 0,
+      "seconds": 5.037461285945028,
+      "selected_inputs": 10883,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 258.8,
+      "cleanup": {
+        "tracked": 4,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    "build-246-benchmark-statistics": {
+      "source_base": "5164f13bb503625dbe65f3b657ab5260feadcb65",
+      "provider_source": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "provider_public_runtime_base": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "native_exit": 0,
+      "seconds": 6.2346178709995,
+      "selected_inputs": 10882,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 242.4,
+      "cleanup": {
+        "tracked": 10,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    }
+  },
+  "identity": {
+    "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+    "numpy": "2.4.6",
+    "molsysmt": "0.23.0+757.g08f0afdb8.dirty",
+    "molsysviewer_observed_development_version": "0.24.0+97.gdf4bf477.dirty",
+    "pyunitwizard": "0.28.1",
+    "unit_policy_after_native_read": {
+      "default_form": "pint",
+      "default_parser": "pint",
+      "standard_units": [
+        "nm",
+        "ps",
+        "K",
+        "mole",
+        "dalton",
+        "e",
+        "kJ/mol",
+        "kJ/(mol*nm)",
+        "kJ/(mol*nm**2)",
+        "radians"
+      ],
+      "provenance": "molsysmt",
+      "loaded_libraries": [
+        "pint"
+      ],
+      "loaded_parsers": [
+        "pint"
+      ],
+      "fast_tracks": [
+        "kelvin",
+        "nanometers",
+        "picoseconds"
+      ]
+    },
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+    "architecture": "x86_64",
+    "page_bytes": 4096,
+    "cpu_affinity": [
+      0,
+      1
+    ],
+    "logical_cpu_count": 20,
+    "actual_child_cgroup_limits": {
+      "cpu.max": "200000 100000",
+      "memory.max": "4294967296",
+      "memory.swap.max": "0",
+      "pids.max": "256"
+    },
+    "node": "v24.21.0",
+    "chrome": "Google Chrome 157.0.8103.38",
+    "resources": [
+      {
+        "system": "T4 lysozyme L99A",
+        "resource": "181l.bcif.gz",
+        "bytes_verified": true,
+        "sha256": "d6390fe642fa865bb627635b5da136dacccc1b7ba85a331674d8ed86712344fc",
+        "bytes": 36696
+      },
+      {
+        "system": "chicken villin HP35",
+        "resource": "traj_chicken_villin_HP35_solvated.h5msm",
+        "bytes_verified": true,
+        "sha256": "696349ed5ee495160c04be05c24a476296d86acb469996ff5f7b92678c185c31",
+        "bytes": 825053
+      },
+      {
+        "system": "pentalanine",
+        "resource": "traj_pentalanine.h5msm",
+        "bytes_verified": true,
+        "sha256": "d882572a520fe0cb7dbd4c3254e8f38171d4c788d739ab81ee387acd495433b6",
+        "bytes": 3494262
+      }
+    ],
+    "scope": "Source exercise, not an installed package or cross-platform qualification. Resource limits describe this child scope; supervisor overhead is separate.",
+    "molstar_version": "5.4.1"
+  },
+  "interaction_anchors": {
+    "small-reuse": {
+      "fresh_processes": 3,
+      "atoms": 62,
+      "structures": 5000,
+      "metrics": {
+        "coordinate_mib": {
+          "n": 3,
+          "median": 7.0953369140625,
+          "mad": 0.0,
+          "min": 7.0953369140625,
+          "max": 7.0953369140625
+        },
+        "analysis_numeric_mib": {
+          "n": 3,
+          "median": 1.0606117248535156,
+          "mad": 0.0,
+          "min": 1.0606117248535156,
+          "max": 1.0606117248535156
+        },
+        "fixture_ms": {
+          "n": 3,
+          "median": 900.4827558528632,
+          "mad": 10.684686247259378,
+          "min": 882.9437068197876,
+          "max": 911.1674421001226
+        },
+        "construction_ms": {
+          "n": 3,
+          "median": 8.213348919525743,
+          "mad": 0.15395507216453552,
+          "min": 7.936232956126332,
+          "max": 8.367303991690278
+        },
+        "view_ms": {
+          "n": 3,
+          "median": 1412.5670487992465,
+          "mad": 7.752999663352966,
+          "min": 1404.8140491358936,
+          "max": 5384.060041978955
+        },
+        "attach_ms": {
+          "n": 3,
+          "median": 0.4727358464151621,
+          "mad": 0.03590085543692112,
+          "min": 0.43683499097824097,
+          "max": 0.6867330521345139
+        },
+        "rss_loaded_mib": {
+          "n": 3,
+          "median": 401.4921875,
+          "mad": 0.00390625,
+          "min": 401.48828125,
+          "max": 401.6171875
+        },
+        "peak_rss_mib": {
+          "n": 3,
+          "median": 401.22265625,
+          "mad": 0.06640625,
+          "min": 401.015625,
+          "max": 401.2890625
+        },
+        "first_atom_frame_ms": {
+          "n": 3,
+          "median": 1.383177936077118,
+          "mad": 0.08393987081944942,
+          "min": 1.2992380652576685,
+          "max": 1.7762179486453533
+        },
+        "add_two_sets_ms": {
+          "n": 3,
+          "median": 56.69593601487577,
+          "mad": 0.9913209360092878,
+          "min": 55.70461507886648,
+          "max": 60.260745929554105
+        },
+        "two_set_projection_ms": {
+          "n": 3,
+          "median": 9.793311823159456,
+          "mad": 0.8907937444746494,
+          "min": 8.902518078684807,
+          "max": 11.589488945901394
+        },
+        "geometry_bytes": {
+          "n": 3,
+          "median": 4455.0,
+          "mad": 0.0,
+          "min": 4455.0,
+          "max": 4455.0
+        },
+        "inspection_bytes": {
+          "n": 3,
+          "median": 2136.0,
+          "mad": 0.0,
+          "min": 2136.0,
+          "max": 2136.0
+        },
+        "storage.h5msm_bytes": {
+          "n": 3,
+          "median": 87026.0,
+          "mad": 0.0,
+          "min": 87026.0,
+          "max": 87026.0
+        },
+        "storage.write_ms": {
+          "n": 3,
+          "median": 18.745060078799725,
+          "mad": 0.3802790306508541,
+          "min": 18.36478104814887,
+          "max": 21.70372987166047
+        },
+        "storage.warm_read_ms": {
+          "n": 3,
+          "median": 11.9332040194422,
+          "mad": 0.8299609180539846,
+          "min": 10.89869299903512,
+          "max": 12.763164937496185
+        }
+      },
+      "original_measurements_sha256": "d181001adf50f8a50a600148dbddca33b6694124ad9fd3b8560b31981f3ba965",
+      "occurrences": 22495,
+      "relations": 6,
+      "layout": "rings",
+      "pattern": "reuse",
+      "query_internal_repeats": 3,
+      "queries": {
+        "across_selection_boundary_frame": {
+          "matches": 5,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.89879403822124,
+            "mad": 0.005792127922177315,
+            "min": 0.8930019102990627,
+            "max": 0.9896000847220421
+          }
+        },
+        "across_selection_boundary_nonconsecutive": {
+          "matches": 15,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.9596219751983881,
+            "mad": 0.008022179827094078,
+            "min": 0.9223730303347111,
+            "max": 0.9676441550254822
+          }
+        },
+        "across_selection_boundary_trajectory": {
+          "matches": 22495,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 5.324292927980423,
+            "mad": 0.05635502748191357,
+            "min": 5.267937900498509,
+            "max": 5.482282023876905
+          }
+        },
+        "atom_frame": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.9997300803661346,
+            "mad": 0.025319866836071014,
+            "min": 0.855832826346159,
+            "max": 1.0250499472022057
+          }
+        },
+        "atom_nonconsecutive": {
+          "matches": 3,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.0409189853817225,
+            "mad": 0.0011050142347812653,
+            "min": 0.9730749297887087,
+            "max": 1.0420239996165037
+          }
+        },
+        "atom_trajectory": {
+          "matches": 3750,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.3270049821585417,
+            "mad": 0.04915893077850342,
+            "min": 1.2778460513800383,
+            "max": 1.4027201104909182
+          }
+        },
+        "between_selections_frame": {
+          "matches": 5,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.3240841217339039,
+            "mad": 0.08412590250372887,
+            "min": 1.107261050492525,
+            "max": 1.4082100242376328
+          }
+        },
+        "between_selections_nonconsecutive": {
+          "matches": 15,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.2950780801475048,
+            "mad": 0.03630993887782097,
+            "min": 1.2545911595225334,
+            "max": 1.3313880190253258
+          }
+        },
+        "between_selections_trajectory": {
+          "matches": 22495,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 6.29450986161828,
+            "mad": 0.20073773339390755,
+            "min": 6.093772128224373,
+            "max": 6.577030988410115
+          }
+        },
+        "empty_frame": {
+          "matches": 0,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.5292859859764576,
+            "mad": 0.00033318065106868744,
+            "min": 0.4391069523990154,
+            "max": 0.5296191666275263
+          }
+        },
+        "exclusive_frame": {
+          "matches": 5,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.5855010133236647,
+            "mad": 0.04269997589290142,
+            "min": 1.513271126896143,
+            "max": 1.628200989216566
+          }
+        },
+        "exclusive_nonconsecutive": {
+          "matches": 15,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.8160578329116106,
+            "mad": 0.09564822539687157,
+            "min": 1.649087993428111,
+            "max": 1.9117060583084822
+          }
+        },
+        "exclusive_trajectory": {
+          "matches": 22495,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 6.924116984009743,
+            "mad": 0.08680694736540318,
+            "min": 6.83731003664434,
+            "max": 7.0774550549685955
+          }
+        },
+        "involving_selection_frame": {
+          "matches": 5,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.011508982628584,
+            "mad": 0.07126713171601295,
+            "min": 0.9223970118910074,
+            "max": 1.0827761143445969
+          }
+        },
+        "involving_selection_nonconsecutive": {
+          "matches": 15,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.0421490296721458,
+            "mad": 0.004811910912394524,
+            "min": 0.9112691041082144,
+            "max": 1.0469609405845404
+          }
+        },
+        "involving_selection_trajectory": {
+          "matches": 22495,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 5.127320997416973,
+            "mad": 0.09695207700133324,
+            "min": 5.03036892041564,
+            "max": 5.260285921394825
+          }
+        },
+        "structures_frame": {
+          "matches": 5,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.4720098804682493,
+            "mad": 0.010661082342267036,
+            "min": 0.4613487981259823,
+            "max": 0.5784500390291214
+          }
+        },
+        "structures_nonconsecutive": {
+          "matches": 15,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.5342129152268171,
+            "mad": 0.052687013521790504,
+            "min": 0.46007498167455196,
+            "max": 0.5868999287486076
+          }
+        },
+        "structures_trajectory": {
+          "matches": 22495,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.27028494514524937,
+            "mad": 0.06397604010999203,
+            "min": 0.20630890503525734,
+            "max": 0.33440906554460526
+          }
+        },
+        "unevaluated_frame": {
+          "matches": 0,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.4045849200338125,
+            "mad": 0.006943941116333008,
+            "min": 0.3947080112993717,
+            "max": 0.41152886115014553
+          }
+        },
+        "wide_internal_frame": {
+          "matches": 5,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.0502999648451805,
+            "mad": 0.0027010682970285416,
+            "min": 0.9018341079354286,
+            "max": 1.053001033142209
+          }
+        },
+        "wide_internal_nonconsecutive": {
+          "matches": 15,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.065651187673211,
+            "mad": 0.12832810170948505,
+            "min": 0.937323085963726,
+            "max": 1.2183568906039
+          }
+        },
+        "wide_internal_trajectory": {
+          "matches": 22495,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 5.342837888747454,
+            "mad": 0.03890623338520527,
+            "min": 5.290737841278315,
+            "max": 5.381744122132659
+          }
+        },
+        "within_selection_frame": {
+          "matches": 5,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.0191029869019985,
+            "mad": 0.07833004929125309,
+            "min": 0.8871480822563171,
+            "max": 1.0974330361932516
+          }
+        },
+        "within_selection_nonconsecutive": {
+          "matches": 15,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.0056558530777693,
+            "mad": 0.0381919089704752,
+            "min": 0.9674639441072941,
+            "max": 1.1073439382016659
+          }
+        },
+        "within_selection_trajectory": {
+          "matches": 22495,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 5.222946871072054,
+            "mad": 0.055070966482162476,
+            "min": 4.9981779884546995,
+            "max": 5.278017837554216
+          }
+        }
+      }
+    },
+    "small-churn": {
+      "fresh_processes": 3,
+      "atoms": 62,
+      "structures": 5000,
+      "metrics": {
+        "coordinate_mib": {
+          "n": 3,
+          "median": 7.0953369140625,
+          "mad": 0.0,
+          "min": 7.0953369140625,
+          "max": 7.0953369140625
+        },
+        "analysis_numeric_mib": {
+          "n": 3,
+          "median": 5.864780426025391,
+          "mad": 0.0,
+          "min": 5.864780426025391,
+          "max": 5.864780426025391
+        },
+        "fixture_ms": {
+          "n": 3,
+          "median": 886.8960679974407,
+          "mad": 3.7918388843536377,
+          "min": 883.1042291130871,
+          "max": 890.8116579987109
+        },
+        "construction_ms": {
+          "n": 3,
+          "median": 175.67117814905941,
+          "mad": 1.5094471164047718,
+          "min": 174.16173103265464,
+          "max": 178.73706785030663
+        },
+        "view_ms": {
+          "n": 3,
+          "median": 1396.4963681064546,
+          "mad": 0.3143961075693369,
+          "min": 1396.1819719988853,
+          "max": 1427.4745099246502
+        },
+        "attach_ms": {
+          "n": 3,
+          "median": 0.6420938298106194,
+          "mad": 0.0545429065823555,
+          "min": 0.5875509232282639,
+          "max": 0.7294670213013887
+        },
+        "rss_loaded_mib": {
+          "n": 3,
+          "median": 421.5,
+          "mad": 0.06640625,
+          "min": 421.43359375,
+          "max": 422.35546875
+        },
+        "peak_rss_mib": {
+          "n": 3,
+          "median": 427.1484375,
+          "mad": 0.05859375,
+          "min": 427.08984375,
+          "max": 428.8359375
+        },
+        "first_atom_frame_ms": {
+          "n": 3,
+          "median": 1.4034169726073742,
+          "mad": 0.10105292312800884,
+          "min": 1.2614501174539328,
+          "max": 1.504469895735383
+        },
+        "add_two_sets_ms": {
+          "n": 3,
+          "median": 71.31830207072198,
+          "mad": 0.18513808026909828,
+          "min": 69.95880394242704,
+          "max": 71.50344015099108
+        },
+        "two_set_projection_ms": {
+          "n": 3,
+          "median": 6.650297902524471,
+          "mad": 0.2702700439840555,
+          "min": 6.066406844183803,
+          "max": 6.920567946508527
+        },
+        "geometry_bytes": {
+          "n": 3,
+          "median": 3999.0,
+          "mad": 0.0,
+          "min": 3999.0,
+          "max": 3999.0
+        },
+        "inspection_bytes": {
+          "n": 3,
+          "median": 2136.0,
+          "mad": 0.0,
+          "min": 2136.0,
+          "max": 2136.0
+        },
+        "storage.h5msm_bytes": {
+          "n": 3,
+          "median": 290950.0,
+          "mad": 0.0,
+          "min": 290950.0,
+          "max": 290950.0
+        },
+        "storage.write_ms": {
+          "n": 3,
+          "median": 59.80272707529366,
+          "mad": 0.4228560719639063,
+          "min": 52.54767113365233,
+          "max": 60.22558314725757
+        },
+        "storage.warm_read_ms": {
+          "n": 3,
+          "median": 186.70117505826056,
+          "mad": 3.403652925044298,
+          "min": 183.29752213321626,
+          "max": 203.37656186893582
+        }
+      },
+      "original_measurements_sha256": "d181001adf50f8a50a600148dbddca33b6694124ad9fd3b8560b31981f3ba965",
+      "occurrences": 22495,
+      "relations": 22495,
+      "layout": "rings",
+      "pattern": "churn",
+      "query_internal_repeats": 3,
+      "queries": {
+        "across_selection_boundary_frame": {
+          "matches": 5,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.9200249332934618,
+            "mad": 0.07999595254659653,
+            "min": 0.8400289807468653,
+            "max": 1.3461851049214602
+          }
+        },
+        "across_selection_boundary_nonconsecutive": {
+          "matches": 5,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.3705319724977016,
+            "mad": 0.24629314430058002,
+            "min": 1.1242388281971216,
+            "max": 1.6980399377644062
+          }
+        },
+        "across_selection_boundary_trajectory": {
+          "matches": 11248,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 413.5225110221654,
+            "mad": 2.5701678823679686,
+            "min": 410.95234313979745,
+            "max": 421.809891005978
+          }
+        },
+        "atom_frame": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.8273180574178696,
+            "mad": 0.0007310882210731506,
+            "min": 0.8265869691967964,
+            "max": 0.9041510056704283
+          }
+        },
+        "atom_nonconsecutive": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.1114960070699453,
+            "mad": 0.008668052032589912,
+            "min": 1.1028279550373554,
+            "max": 1.246507978066802
+          }
+        },
+        "atom_trajectory": {
+          "matches": 703,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.5092550311237574,
+            "mad": 0.1731589436531067,
+            "min": 1.279753167182207,
+            "max": 1.682413974776864
+          }
+        },
+        "between_selections_frame": {
+          "matches": 5,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.3968241401016712,
+            "mad": 0.08887099102139473,
+            "min": 1.2461189180612564,
+            "max": 1.485695131123066
+          }
+        },
+        "between_selections_nonconsecutive": {
+          "matches": 5,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.6204409766942263,
+            "mad": 0.04151300527155399,
+            "min": 1.500783022493124,
+            "max": 1.6619539819657803
+          }
+        },
+        "between_selections_trajectory": {
+          "matches": 4218,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 77.09985482506454,
+            "mad": 2.936658216640353,
+            "min": 71.40121306292713,
+            "max": 80.0365130417049
+          }
+        },
+        "empty_frame": {
+          "matches": 0,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.4813240375369787,
+            "mad": 0.06864406168460846,
+            "min": 0.41267997585237026,
+            "max": 0.5697880405932665
+          }
+        },
+        "exclusive_frame": {
+          "matches": 5,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.7206422053277493,
+            "mad": 0.16199960373342037,
+            "min": 1.4958041720092297,
+            "max": 1.8826418090611696
+          }
+        },
+        "exclusive_nonconsecutive": {
+          "matches": 5,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 2.064503962174058,
+            "mad": 0.033678021281957626,
+            "min": 2.0308259408921003,
+            "max": 2.2072428837418556
+          }
+        },
+        "exclusive_trajectory": {
+          "matches": 11248,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 960.9494600445032,
+            "mad": 8.16894811578095,
+            "min": 952.7805119287223,
+            "max": 972.8996509220451
+          }
+        },
+        "involving_selection_frame": {
+          "matches": 5,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.9603160433471203,
+            "mad": 0.03743893466889858,
+            "min": 0.9228771086782217,
+            "max": 1.1471370235085487
+          }
+        },
+        "involving_selection_nonconsecutive": {
+          "matches": 13,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.3059251941740513,
+            "mad": 0.04962715320289135,
+            "min": 1.25629804097116,
+            "max": 1.4939021784812212
+          }
+        },
+        "involving_selection_trajectory": {
+          "matches": 18981,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 24.28156603127718,
+            "mad": 1.434684032574296,
+            "min": 22.846881998702884,
+            "max": 25.772684952244163
+          }
+        },
+        "structures_frame": {
+          "matches": 5,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.5201299209147692,
+            "mad": 0.030284980311989784,
+            "min": 0.4898449406027794,
+            "max": 0.5543259903788567
+          }
+        },
+        "structures_nonconsecutive": {
+          "matches": 15,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.5064960569143295,
+            "mad": 0.015876954421401024,
+            "min": 0.48599601723253727,
+            "max": 0.5223730113357306
+          }
+        },
+        "structures_trajectory": {
+          "matches": 22495,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.2477751113474369,
+            "mad": 0.02811313606798649,
+            "min": 0.21966197527945042,
+            "max": 0.2913998905569315
+          }
+        },
+        "unevaluated_frame": {
+          "matches": 0,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.4439509939402342,
+            "mad": 0.0571871642023325,
+            "min": 0.3867638297379017,
+            "max": 0.5154609680175781
+          }
+        },
+        "wide_internal_frame": {
+          "matches": 5,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.0704051237553358,
+            "mad": 0.10564504191279411,
+            "min": 0.9647600818425417,
+            "max": 1.1882451362907887
+          }
+        },
+        "wide_internal_nonconsecutive": {
+          "matches": 15,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.3751601800322533,
+            "mad": 0.07337122224271297,
+            "min": 1.3017889577895403,
+            "max": 1.5172010753303766
+          }
+        },
+        "wide_internal_trajectory": {
+          "matches": 22495,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 842.3687219619751,
+            "mad": 12.639587977901101,
+            "min": 829.729133984074,
+            "max": 859.5225070603192
+          }
+        },
+        "within_selection_frame": {
+          "matches": 5,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.9296988137066364,
+            "mad": 0.0068086665123701096,
+            "min": 0.9228901471942663,
+            "max": 1.1191829107701778
+          }
+        },
+        "within_selection_nonconsecutive": {
+          "matches": 15,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.3198340311646461,
+            "mad": 0.0131980050355196,
+            "min": 1.3066360261291265,
+            "max": 1.5139849856495857
+          }
+        },
+        "within_selection_trajectory": {
+          "matches": 22495,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 840.9316749311984,
+            "mad": 2.2081059869378805,
+            "min": 838.7235689442605,
+            "max": 858.740006107837
+          }
+        }
+      }
+    },
+    "medium-reuse": {
+      "fresh_processes": 3,
+      "atoms": 10044,
+      "structures": 1000,
+      "metrics": {
+        "coordinate_mib": {
+          "n": 3,
+          "median": 229.888916015625,
+          "mad": 0.0,
+          "min": 229.888916015625,
+          "max": 229.888916015625
+        },
+        "analysis_numeric_mib": {
+          "n": 3,
+          "median": 4.162994384765625,
+          "mad": 0.0,
+          "min": 4.162994384765625,
+          "max": 4.162994384765625
+        },
+        "fixture_ms": {
+          "n": 3,
+          "median": 11800.874921027571,
+          "mad": 125.4424147773534,
+          "min": 11655.548124108464,
+          "max": 11926.317335804924
+        },
+        "construction_ms": {
+          "n": 3,
+          "median": 20.290270913392305,
+          "mad": 1.7413638997823,
+          "min": 18.548907013610005,
+          "max": 24.271467933431268
+        },
+        "view_ms": {
+          "n": 3,
+          "median": 1867.2255841083825,
+          "mad": 36.180920200422406,
+          "min": 1831.04466390796,
+          "max": 1945.9513241890818
+        },
+        "attach_ms": {
+          "n": 3,
+          "median": 0.4764408804476261,
+          "mad": 0.020748702809214592,
+          "min": 0.4556921776384115,
+          "max": 0.5510009359568357
+        },
+        "rss_loaded_mib": {
+          "n": 3,
+          "median": 875.74609375,
+          "mad": 0.171875,
+          "min": 875.5,
+          "max": 875.91796875
+        },
+        "peak_rss_mib": {
+          "n": 3,
+          "median": 1104.765625,
+          "mad": 0.26171875,
+          "min": 1104.50390625,
+          "max": 1105.1171875
+        },
+        "first_atom_frame_ms": {
+          "n": 3,
+          "median": 4.696812946349382,
+          "mad": 0.30913902446627617,
+          "min": 4.052768927067518,
+          "max": 5.005951970815659
+        },
+        "add_two_sets_ms": {
+          "n": 3,
+          "median": 1108.8448718655854,
+          "mad": 19.357274053618312,
+          "min": 1089.4875978119671,
+          "max": 1191.5214229375124
+        },
+        "two_set_projection_ms": {
+          "n": 3,
+          "median": 41.74428409896791,
+          "mad": 0.6394600495696068,
+          "min": 41.1048240493983,
+          "max": 43.91881404444575
+        },
+        "geometry_bytes": {
+          "n": 3,
+          "median": 52711.0,
+          "mad": 0.0,
+          "min": 52711.0,
+          "max": 52711.0
+        },
+        "inspection_bytes": {
+          "n": 3,
+          "median": 16724.0,
+          "mad": 0.0,
+          "min": 16724.0,
+          "max": 16724.0
+        },
+        "storage.h5msm_bytes": {
+          "n": 3,
+          "median": 193316.0,
+          "mad": 0.0,
+          "min": 193316.0,
+          "max": 193316.0
+        },
+        "storage.write_ms": {
+          "n": 3,
+          "median": 33.0103081651032,
+          "mad": 0.34384033642709255,
+          "min": 32.666467828676105,
+          "max": 36.573203979060054
+        },
+        "storage.warm_read_ms": {
+          "n": 3,
+          "median": 26.27884899266064,
+          "mad": 1.9445070065557957,
+          "min": 23.45529291778803,
+          "max": 28.223355999216437
+        }
+      },
+      "original_measurements_sha256": "d181001adf50f8a50a600148dbddca33b6694124ad9fd3b8560b31981f3ba965",
+      "occurrences": 89900,
+      "relations": 1004,
+      "layout": "rings",
+      "pattern": "reuse",
+      "query_internal_repeats": 3,
+      "queries": {
+        "across_selection_boundary_frame": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 3.955292981117964,
+            "mad": 0.38795405998826027,
+            "min": 3.5673389211297035,
+            "max": 4.922595107927918
+          }
+        },
+        "across_selection_boundary_nonconsecutive": {
+          "matches": 2,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 9.818957885727286,
+            "mad": 0.6297479849308729,
+            "min": 9.189209900796413,
+            "max": 12.539601884782314
+          }
+        },
+        "across_selection_boundary_trajectory": {
+          "matches": 627,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.9563521016389132,
+            "mad": 0.04850002005696297,
+            "min": 0.8767389226704836,
+            "max": 1.0048521216958761
+          }
+        },
+        "atom_frame": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 4.106193082407117,
+            "mad": 0.5277511663734913,
+            "min": 3.5784419160336256,
+            "max": 4.936529090628028
+          }
+        },
+        "atom_nonconsecutive": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 10.672076838091016,
+            "mad": 1.767659792676568,
+            "min": 8.904417045414448,
+            "max": 14.470827067270875
+          }
+        },
+        "atom_trajectory": {
+          "matches": 90,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.45537203550338745,
+            "mad": 0.05795317701995373,
+            "min": 0.3974188584834337,
+            "max": 0.5402318201959133
+          }
+        },
+        "between_selections_frame": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 4.064413020387292,
+            "mad": 0.17609912902116776,
+            "min": 3.888313891366124,
+            "max": 4.63167205452919
+          }
+        },
+        "between_selections_nonconsecutive": {
+          "matches": 2,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 10.132551891729236,
+            "mad": 0.6714346818625927,
+            "min": 9.461117209866643,
+            "max": 12.40305695682764
+          }
+        },
+        "between_selections_trajectory": {
+          "matches": 538,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.9503099136054516,
+            "mad": 0.018517253920435905,
+            "min": 0.8983109146356583,
+            "max": 0.9688271675258875
+          }
+        },
+        "empty_frame": {
+          "matches": 0,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.4895799793303013,
+            "mad": 0.011192867532372475,
+            "min": 0.4783871117979288,
+            "max": 0.5106020253151655
+          }
+        },
+        "exclusive_frame": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 4.233475076034665,
+            "mad": 0.3776000812649727,
+            "min": 3.8558749947696924,
+            "max": 5.128528922796249
+          }
+        },
+        "exclusive_nonconsecutive": {
+          "matches": 2,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 10.545143159106374,
+            "mad": 0.36098016425967216,
+            "min": 10.184162994846702,
+            "max": 13.131377985700965
+          }
+        },
+        "exclusive_trajectory": {
+          "matches": 627,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.5386298764497042,
+            "mad": 0.08541718125343323,
+            "min": 1.3802489265799522,
+            "max": 1.6240470577031374
+          }
+        },
+        "involving_selection_frame": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 3.82172386161983,
+            "mad": 0.4331988748162985,
+            "min": 3.3885249868035316,
+            "max": 4.690203117206693
+          }
+        },
+        "involving_selection_nonconsecutive": {
+          "matches": 2,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 9.965528966858983,
+            "mad": 0.8469519671052694,
+            "min": 9.118576999753714,
+            "max": 11.900950223207474
+          }
+        },
+        "involving_selection_trajectory": {
+          "matches": 627,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.5576158873736858,
+            "mad": 0.04043104127049446,
+            "min": 0.4893920850008726,
+            "max": 0.5980469286441803
+          }
+        },
+        "structures_frame": {
+          "matches": 100,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.5009619053453207,
+            "mad": 0.017946818843483925,
+            "min": 0.4830150865018368,
+            "max": 0.5559080746024847
+          }
+        },
+        "structures_nonconsecutive": {
+          "matches": 300,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.504158204421401,
+            "mad": 0.023736851289868355,
+            "min": 0.46320585533976555,
+            "max": 0.5278950557112694
+          }
+        },
+        "structures_trajectory": {
+          "matches": 89900,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.24056388065218925,
+            "mad": 0.026733847334980965,
+            "min": 0.2138300333172083,
+            "max": 0.2886760048568249
+          }
+        },
+        "unevaluated_frame": {
+          "matches": 0,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.46279397793114185,
+            "mad": 0.030074967071413994,
+            "min": 0.40154694579541683,
+            "max": 0.49286894500255585
+          }
+        },
+        "wide_internal_frame": {
+          "matches": 17,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 5.052376072853804,
+            "mad": 0.10849302634596825,
+            "min": 4.943883046507835,
+            "max": 6.211444037035108
+          }
+        },
+        "wide_internal_nonconsecutive": {
+          "matches": 37,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 13.326957123354077,
+            "mad": 1.0408398229628801,
+            "min": 11.794219026342034,
+            "max": 14.367796946316957
+          }
+        },
+        "wide_internal_trajectory": {
+          "matches": 10659,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 10.40747482329607,
+            "mad": 0.8384890388697386,
+            "min": 8.659583050757647,
+            "max": 11.245963862165809
+          }
+        },
+        "within_selection_frame": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 3.875425085425377,
+            "mad": 0.18141604959964752,
+            "min": 3.6940090358257294,
+            "max": 4.578253952786326
+          }
+        },
+        "within_selection_nonconsecutive": {
+          "matches": 2,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 10.378950973972678,
+            "mad": 0.5682830233126879,
+            "min": 9.81066795065999,
+            "max": 12.559856055304408
+          }
+        },
+        "within_selection_trajectory": {
+          "matches": 627,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.0023810900747776,
+            "mad": 0.07116002961993217,
+            "min": 0.9312210604548454,
+            "max": 1.1181030422449112
+          }
+        }
+      }
+    },
+    "medium-churn": {
+      "fresh_processes": 3,
+      "atoms": 10044,
+      "structures": 1000,
+      "metrics": {
+        "coordinate_mib": {
+          "n": 3,
+          "median": 229.888916015625,
+          "mad": 0.0,
+          "min": 229.888916015625,
+          "max": 229.888916015625
+        },
+        "analysis_numeric_mib": {
+          "n": 3,
+          "median": 23.153228759765625,
+          "mad": 0.0,
+          "min": 23.153228759765625,
+          "max": 23.153228759765625
+        },
+        "fixture_ms": {
+          "n": 3,
+          "median": 11591.616499004886,
+          "mad": 63.03478986956179,
+          "min": 11528.581709135324,
+          "max": 11797.149532940239
+        },
+        "construction_ms": {
+          "n": 3,
+          "median": 761.1905480735004,
+          "mad": 47.28804784826934,
+          "min": 673.9969688933343,
+          "max": 808.4785959217697
+        },
+        "view_ms": {
+          "n": 3,
+          "median": 1849.1842709481716,
+          "mad": 11.511285090819001,
+          "min": 1824.0885229315609,
+          "max": 1860.6955560389906
+        },
+        "attach_ms": {
+          "n": 3,
+          "median": 1.0502520017325878,
+          "mad": 0.004024012014269829,
+          "min": 1.046227989718318,
+          "max": 1.2657670304179192
+        },
+        "rss_loaded_mib": {
+          "n": 3,
+          "median": 952.44140625,
+          "mad": 3.69140625,
+          "min": 948.75,
+          "max": 960.12109375
+        },
+        "peak_rss_mib": {
+          "n": 3,
+          "median": 1140.1484375,
+          "mad": 0.37109375,
+          "min": 1139.77734375,
+          "max": 1143.7109375
+        },
+        "first_atom_frame_ms": {
+          "n": 3,
+          "median": 4.043177934363484,
+          "mad": 0.08234893903136253,
+          "min": 3.960828995332122,
+          "max": 4.730916116386652
+        },
+        "add_two_sets_ms": {
+          "n": 3,
+          "median": 1167.1447339467704,
+          "mad": 0.3138307947665453,
+          "min": 1166.8309031520039,
+          "max": 1208.8292560074478
+        },
+        "two_set_projection_ms": {
+          "n": 3,
+          "median": 41.3403520360589,
+          "mad": 0.6981310434639454,
+          "min": 40.64222099259496,
+          "max": 43.1405920535326
+        },
+        "geometry_bytes": {
+          "n": 3,
+          "median": 52541.0,
+          "mad": 0.0,
+          "min": 52541.0,
+          "max": 52541.0
+        },
+        "inspection_bytes": {
+          "n": 3,
+          "median": 16724.0,
+          "mad": 0.0,
+          "min": 16724.0,
+          "max": 16724.0
+        },
+        "storage.h5msm_bytes": {
+          "n": 3,
+          "median": 1856066.0,
+          "mad": 0.0,
+          "min": 1856066.0,
+          "max": 1856066.0
+        },
+        "storage.write_ms": {
+          "n": 3,
+          "median": 203.18137505091727,
+          "mad": 1.1887217406183481,
+          "min": 200.76873200014234,
+          "max": 204.37009679153562
+        },
+        "storage.warm_read_ms": {
+          "n": 3,
+          "median": 807.9383219592273,
+          "mad": 35.47304100356996,
+          "min": 772.4652809556574,
+          "max": 849.9209221918136
+        }
+      },
+      "original_measurements_sha256": "d181001adf50f8a50a600148dbddca33b6694124ad9fd3b8560b31981f3ba965",
+      "occurrences": 89900,
+      "relations": 89900,
+      "layout": "rings",
+      "pattern": "churn",
+      "query_internal_repeats": 3,
+      "queries": {
+        "across_selection_boundary_frame": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 3.799449885264039,
+            "mad": 0.17291377298533916,
+            "min": 3.6265361122787,
+            "max": 4.09360695630312
+          }
+        },
+        "across_selection_boundary_nonconsecutive": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 9.717578068375587,
+            "mad": 0.2536540850996971,
+            "min": 9.46392398327589,
+            "max": 10.340116918087006
+          }
+        },
+        "across_selection_boundary_trajectory": {
+          "matches": 283,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 12.295405846089125,
+            "mad": 0.09057903662323952,
+            "min": 11.313342954963446,
+            "max": 12.385984882712364
+          }
+        },
+        "atom_frame": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 3.7730620242655277,
+            "mad": 0.05178595893085003,
+            "min": 3.7212760653346777,
+            "max": 4.206533078104258
+          }
+        },
+        "atom_nonconsecutive": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 10.013812920078635,
+            "mad": 0.2599859144538641,
+            "min": 9.753827005624771,
+            "max": 12.0115599129349
+          }
+        },
+        "atom_trajectory": {
+          "matches": 18,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.5560081917792559,
+            "mad": 0.02535805106163025,
+            "min": 0.5306501407176256,
+            "max": 0.6529269739985466
+          }
+        },
+        "between_selections_frame": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 4.3929340317845345,
+            "mad": 0.24937791749835014,
+            "min": 4.143556114286184,
+            "max": 5.235416116192937
+          }
+        },
+        "between_selections_nonconsecutive": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 11.113611049950123,
+            "mad": 0.7846790831536055,
+            "min": 10.328931966796517,
+            "max": 13.189204968512058
+          }
+        },
+        "between_selections_trajectory": {
+          "matches": 108,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 2.8905088547617197,
+            "mad": 0.12008892372250557,
+            "min": 2.770419931039214,
+            "max": 3.4980701748281717
+          }
+        },
+        "empty_frame": {
+          "matches": 0,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.504842959344387,
+            "mad": 0.02196407876908779,
+            "min": 0.39662886410951614,
+            "max": 0.5268070381134748
+          }
+        },
+        "exclusive_frame": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 4.960396094247699,
+            "mad": 0.4299730062484741,
+            "min": 4.530423087999225,
+            "max": 5.6729840580374
+          }
+        },
+        "exclusive_nonconsecutive": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 10.738719021901488,
+            "mad": 1.2714420445263386,
+            "min": 9.46727697737515,
+            "max": 13.933053007349372
+          }
+        },
+        "exclusive_trajectory": {
+          "matches": 283,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 26.859026169404387,
+            "mad": 2.3894140031188726,
+            "min": 24.469612166285515,
+            "max": 34.95705104433
+          }
+        },
+        "involving_selection_frame": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 3.8633709773421288,
+            "mad": 0.4503119271248579,
+            "min": 3.413059050217271,
+            "max": 4.844269948080182
+          }
+        },
+        "involving_selection_nonconsecutive": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 9.639957919716835,
+            "mad": 0.154946930706501,
+            "min": 9.485010989010334,
+            "max": 10.610062861815095
+          }
+        },
+        "involving_selection_trajectory": {
+          "matches": 470,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 1.0087757837027311,
+            "mad": 0.00482494942843914,
+            "min": 1.003950834274292,
+            "max": 1.1032961774617434
+          }
+        },
+        "structures_frame": {
+          "matches": 100,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.5227490328252316,
+            "mad": 0.11216197162866592,
+            "min": 0.40623918175697327,
+            "max": 0.6349110044538975
+          }
+        },
+        "structures_nonconsecutive": {
+          "matches": 300,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.4500681534409523,
+            "mad": 0.013996148481965065,
+            "min": 0.43607200495898724,
+            "max": 0.5747359246015549
+          }
+        },
+        "structures_trajectory": {
+          "matches": 89900,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.23050187155604362,
+            "mad": 0.02413778565824032,
+            "min": 0.2063640858978033,
+            "max": 0.25629810988903046
+          }
+        },
+        "unevaluated_frame": {
+          "matches": 0,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 0.48871198669075966,
+            "mad": 0.04244409501552582,
+            "min": 0.36721397191286087,
+            "max": 0.5311560817062855
+          }
+        },
+        "wide_internal_frame": {
+          "matches": 17,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 5.178018938750029,
+            "mad": 0.6455488037317991,
+            "min": 4.5324701350182295,
+            "max": 6.966506829485297
+          }
+        },
+        "wide_internal_nonconsecutive": {
+          "matches": 33,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 11.559541104361415,
+            "mad": 0.35820016637444496,
+            "min": 11.20134093798697,
+            "max": 13.629383873194456
+          }
+        },
+        "wide_internal_trajectory": {
+          "matches": 9078,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 433.0284500028938,
+            "mad": 21.55605610460043,
+            "min": 401.7672489862889,
+            "max": 454.58450610749424
+          }
+        },
+        "within_selection_frame": {
+          "matches": 1,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 3.734190948307514,
+            "mad": 0.0004721805453300476,
+            "min": 3.649229882284999,
+            "max": 3.7346631288528442
+          }
+        },
+        "within_selection_nonconsecutive": {
+          "matches": 2,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 10.001226793974638,
+            "mad": 0.4870507400482893,
+            "min": 9.514176053926349,
+            "max": 10.836696019396186
+          }
+        },
+        "within_selection_trajectory": {
+          "matches": 555,
+          "warm_median_ms_across_processes": {
+            "n": 3,
+            "median": 23.809157079085708,
+            "mad": 0.0067900400608778,
+            "min": 20.78894292935729,
+            "max": 23.815947119146585
+          }
+        }
+      }
+    },
+    "real-buch-5000": {
+      "fresh_processes": 3,
+      "atoms": 62,
+      "structures": 5000,
+      "metrics": {
+        "load_ms": {
+          "n": 3,
+          "median": 1634.497232036665,
+          "mad": 6.644192151725292,
+          "min": 1614.970481954515,
+          "max": 1641.1414241883904
+        },
+        "detector_ms": {
+          "n": 3,
+          "median": 4478.189216926694,
+          "mad": 73.82189715281129,
+          "min": 4375.069995876402,
+          "max": 4552.011114079505
+        },
+        "first_atom_frame_query_ms": {
+          "n": 3,
+          "median": 0.9522221516817808,
+          "mad": 0.03993627615272999,
+          "min": 0.9122858755290508,
+          "max": 1.029263949021697
+        },
+        "warm_atom_frame_median_ms": {
+          "n": 3,
+          "median": 0.7965031545609236,
+          "mad": 0.028866343200206757,
+          "min": 0.7676368113607168,
+          "max": 0.8365970570594072
+        },
+        "atom_trajectory_query_ms": {
+          "n": 3,
+          "median": 1.0018609464168549,
+          "mad": 0.012434087693691254,
+          "min": 0.9894268587231636,
+          "max": 1.0186471045017242
+        },
+        "analysis_numeric_mib": {
+          "n": 3,
+          "median": 0.30721282958984375,
+          "mad": 0.0,
+          "min": 0.30721282958984375,
+          "max": 0.30721282958984375
+        },
+        "peak_process_rss_mib": {
+          "n": 3,
+          "median": 425.453125,
+          "mad": 0.33203125,
+          "min": 425.12109375,
+          "max": 425.79296875
+        }
+      },
+      "original_measurements_sha256": "d181001adf50f8a50a600148dbddca33b6694124ad9fd3b8560b31981f3ba965",
+      "observations": 2248,
+      "queries_per_process": 20,
+      "query_frames": [
+        4999,
+        2,
+        73
+      ]
+    }
+  },
+  "browser_anchors": {
+    "small-1": {
+      "fresh_browsers": 3,
+      "atoms": 2882,
+      "structures": 1,
+      "timings_ms": {
+        "fetch": {
+          "n": 3,
+          "median": 211.70000004768372,
+          "mad": 3.1000001430511475,
+          "min": 208.59999990463257,
+          "max": 225.40000009536743
+        },
+        "decode": {
+          "n": 3,
+          "median": 0.40000009536743164,
+          "mad": 2.384185791015625e-07,
+          "min": 0.39999985694885254,
+          "max": 0.7000000476837158
+        },
+        "firstVisible": {
+          "n": 3,
+          "median": 4932.899999856949,
+          "mad": 45.10000014305115,
+          "min": 4687.400000095367,
+          "max": 4978.0
+        },
+        "molstarLoadCommit": {
+          "n": 3,
+          "median": 1948.5,
+          "mad": 169.70000004768372,
+          "min": 1465.3999998569489,
+          "max": 2118.2000000476837
+        },
+        "representationReplacementCommit": {
+          "n": 3,
+          "median": 59.09999990463257,
+          "mad": 8.399999856948853,
+          "min": 50.700000047683716,
+          "max": 80.29999995231628
+        },
+        "representationReplacementVisible": {
+          "n": 3,
+          "median": 2644.0999999046326,
+          "mad": 10.599999904632568,
+          "min": 2633.5,
+          "max": 3222.0
+        },
+        "unvisitedFrameMedian": {
+          "n": 0,
+          "status": "unavailable; no observation, not zero"
+        },
+        "revisitedFrameMedian": {
+          "n": 0,
+          "status": "unavailable; no observation, not zero"
+        },
+        "unvisitedFrameCommitMedian": {
+          "n": 0,
+          "status": "unavailable; no observation, not zero"
+        },
+        "revisitedFrameCommitMedian": {
+          "n": 0,
+          "status": "unavailable; no observation, not zero"
+        }
+      },
+      "renderer": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "devicePixelRatio": 1,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)",
+        "webglVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "shadingLanguageVersion": "WebGL GLSL ES 3.00 (OpenGL ES GLSL ES 3.0 Chromium)",
+        "identification": "unmasked"
+      },
+      "rss_mib": {
+        "before.totalMb": {
+          "n": 3,
+          "median": 809.52734375,
+          "mad": 0.21484375,
+          "min": 802.375,
+          "max": 809.7421875
+        },
+        "peak.totalMb": {
+          "n": 3,
+          "median": 1320.8359375,
+          "mad": 1.2890625,
+          "min": 1319.546875,
+          "max": 1322.3515625
+        },
+        "peak.gpuMb": {
+          "n": 3,
+          "median": 366.359375,
+          "mad": 0.25390625,
+          "min": 366.10546875,
+          "max": 366.9921875
+        },
+        "peak.rendererMb": {
+          "n": 3,
+          "median": 530.453125,
+          "mad": 0.33984375,
+          "min": 527.8515625,
+          "max": 530.79296875
+        },
+        "afterPageClose.totalMb": {
+          "n": 3,
+          "median": 823.91015625,
+          "mad": 0.1171875,
+          "min": 733.8515625,
+          "max": 824.02734375
+        }
+      },
+      "original_measurements_sha256": "2434783e16f8245f21b2929fcee927f1dc0cb524bc469239f95483c59f4472b5",
+      "source_coordinate_witnesses": [
+        [
+          {
+            "phase": "load",
+            "structureIndex": 0,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "representation",
+            "structureIndex": 0,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "phase": "load",
+            "structureIndex": 0,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "representation",
+            "structureIndex": 0,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "phase": "load",
+            "structureIndex": 0,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "representation",
+            "structureIndex": 0,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          }
+        ]
+      ],
+      "fixture_files": [
+        [
+          {
+            "name": "metadata.json",
+            "bytes": 297549,
+            "sha256": "f7a82eb2a2a184c1df1fb262fbb1e74a104375cafb0afcf9613b2c78d865ff76"
+          },
+          {
+            "name": "array-0.bin",
+            "bytes": 34584,
+            "sha256": "5254d70dbdad098193e98702bddae0f6518e4c0f055563e3c5c11ba9ba07dee4"
+          },
+          {
+            "name": "array-1.bin",
+            "bytes": 36,
+            "sha256": "3dced03e12216f287db2414ae23f9d62e8d4382f6cd602f9be3873afc6cf8250"
+          }
+        ],
+        [
+          {
+            "name": "metadata.json",
+            "bytes": 297549,
+            "sha256": "f7a82eb2a2a184c1df1fb262fbb1e74a104375cafb0afcf9613b2c78d865ff76"
+          },
+          {
+            "name": "array-0.bin",
+            "bytes": 34584,
+            "sha256": "5254d70dbdad098193e98702bddae0f6518e4c0f055563e3c5c11ba9ba07dee4"
+          },
+          {
+            "name": "array-1.bin",
+            "bytes": 36,
+            "sha256": "3dced03e12216f287db2414ae23f9d62e8d4382f6cd602f9be3873afc6cf8250"
+          }
+        ],
+        [
+          {
+            "name": "metadata.json",
+            "bytes": 297549,
+            "sha256": "f7a82eb2a2a184c1df1fb262fbb1e74a104375cafb0afcf9613b2c78d865ff76"
+          },
+          {
+            "name": "array-0.bin",
+            "bytes": 34584,
+            "sha256": "5254d70dbdad098193e98702bddae0f6518e4c0f055563e3c5c11ba9ba07dee4"
+          },
+          {
+            "name": "array-1.bin",
+            "bytes": 36,
+            "sha256": "3dced03e12216f287db2414ae23f9d62e8d4382f6cd602f9be3873afc6cf8250"
+          }
+        ]
+      ],
+      "fixture_bytes_identical_across_samples": true,
+      "raw_navigation_samples": [
+        {
+          "frameIndices": [],
+          "frameFirstVisits": [],
+          "frameChanges": [],
+          "frameChangeCommits": [],
+          "unvisitedFrameMedian": null,
+          "unvisitedFrameCommitMedian": null,
+          "revisitedFrameMedian": null,
+          "revisitedFrameCommitMedian": null
+        },
+        {
+          "frameIndices": [],
+          "frameFirstVisits": [],
+          "frameChanges": [],
+          "frameChangeCommits": [],
+          "unvisitedFrameMedian": null,
+          "unvisitedFrameCommitMedian": null,
+          "revisitedFrameMedian": null,
+          "revisitedFrameCommitMedian": null
+        },
+        {
+          "frameIndices": [],
+          "frameFirstVisits": [],
+          "frameChanges": [],
+          "frameChangeCommits": [],
+          "unvisitedFrameMedian": null,
+          "unvisitedFrameCommitMedian": null,
+          "revisitedFrameMedian": null,
+          "revisitedFrameCommitMedian": null
+        }
+      ]
+    },
+    "small-10": {
+      "fresh_browsers": 3,
+      "atoms": 2882,
+      "structures": 10,
+      "timings_ms": {
+        "fetch": {
+          "n": 3,
+          "median": 168.59999990463257,
+          "mad": 1.0,
+          "min": 167.59999990463257,
+          "max": 219.70000004768372
+        },
+        "decode": {
+          "n": 3,
+          "median": 0.40000009536743164,
+          "mad": 0.0,
+          "min": 0.40000009536743164,
+          "max": 0.5
+        },
+        "firstVisible": {
+          "n": 3,
+          "median": 4966.899999856949,
+          "mad": 96.29999995231628,
+          "min": 4870.599999904633,
+          "max": 6170.099999904633
+        },
+        "molstarLoadCommit": {
+          "n": 3,
+          "median": 1675.5,
+          "mad": 176.89999985694885,
+          "min": 1125.0,
+          "max": 1852.3999998569489
+        },
+        "representationReplacementCommit": {
+          "n": 3,
+          "median": 47.299999952316284,
+          "mad": 0.5000002384185791,
+          "min": 37.59999990463257,
+          "max": 47.80000019073486
+        },
+        "representationReplacementVisible": {
+          "n": 3,
+          "median": 2024.2000000476837,
+          "mad": 177.29999995231628,
+          "min": 1846.9000000953674,
+          "max": 2256.899999856949
+        },
+        "unvisitedFrameMedian": {
+          "n": 3,
+          "median": 1766.8999998569489,
+          "mad": 20.799999713897705,
+          "min": 1746.1000001430511,
+          "max": 2158.5999999046326
+        },
+        "revisitedFrameMedian": {
+          "n": 3,
+          "median": 1785.5500000715256,
+          "mad": 31.75000011920929,
+          "min": 1753.7999999523163,
+          "max": 2106.399999976158
+        },
+        "unvisitedFrameCommitMedian": {
+          "n": 3,
+          "median": 81.20000004768372,
+          "mad": 2.200000047683716,
+          "min": 56.799999952316284,
+          "max": 83.40000009536743
+        },
+        "revisitedFrameCommitMedian": {
+          "n": 3,
+          "median": 54.699999928474426,
+          "mad": 1.0,
+          "min": 53.699999928474426,
+          "max": 68.30000007152557
+        }
+      },
+      "renderer": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "devicePixelRatio": 1,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)",
+        "webglVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "shadingLanguageVersion": "WebGL GLSL ES 3.00 (OpenGL ES GLSL ES 3.0 Chromium)",
+        "identification": "unmasked"
+      },
+      "rss_mib": {
+        "before.totalMb": {
+          "n": 3,
+          "median": 807.43359375,
+          "mad": 2.62109375,
+          "min": 784.35546875,
+          "max": 810.0546875
+        },
+        "peak.totalMb": {
+          "n": 3,
+          "median": 1330.53125,
+          "mad": 0.578125,
+          "min": 1329.1953125,
+          "max": 1331.109375
+        },
+        "peak.gpuMb": {
+          "n": 3,
+          "median": 370.234375,
+          "mad": 0.66015625,
+          "min": 368.4375,
+          "max": 370.89453125
+        },
+        "peak.rendererMb": {
+          "n": 3,
+          "median": 535.29296875,
+          "mad": 0.03125,
+          "min": 535.26171875,
+          "max": 536.26171875
+        },
+        "afterPageClose.totalMb": {
+          "n": 3,
+          "median": 818.25,
+          "mad": 2.98828125,
+          "min": 605.8671875,
+          "max": 821.23828125
+        }
+      },
+      "original_measurements_sha256": "2434783e16f8245f21b2929fcee927f1dc0cb524bc469239f95483c59f4472b5",
+      "source_coordinate_witnesses": [
+        [
+          {
+            "phase": "load",
+            "structureIndex": 0,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 9,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 5,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.2597770690918,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.2597770690918,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.15977478027344,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.15977478027344,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.19178009033203,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.19178009033203,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 0,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 1,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.03755569458008,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.03755569458008,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.93755340576172,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.93755340576172,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.96955871582031,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.96955871582031,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 9,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "representation",
+            "structureIndex": 9,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "phase": "load",
+            "structureIndex": 0,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 9,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 5,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.2597770690918,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.2597770690918,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.15977478027344,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.15977478027344,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.19178009033203,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.19178009033203,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 0,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 1,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.03755569458008,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.03755569458008,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.93755340576172,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.93755340576172,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.96955871582031,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.96955871582031,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 9,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "representation",
+            "structureIndex": 9,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "phase": "load",
+            "structureIndex": 0,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 9,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 5,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.2597770690918,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.2597770690918,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.15977478027344,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.15977478027344,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.19178009033203,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.19178009033203,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 0,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 1,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.03755569458008,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.03755569458008,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.93755340576172,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.93755340576172,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.96955871582031,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.96955871582031,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 9,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "representation",
+            "structureIndex": 9,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          }
+        ]
+      ],
+      "fixture_files": [
+        [
+          {
+            "name": "metadata.json",
+            "bytes": 297554,
+            "sha256": "a1c18b46fde4dbb3a994a00d38b9cbb4b385be88325f752921db5298324471ab"
+          },
+          {
+            "name": "array-0.bin",
+            "bytes": 345840,
+            "sha256": "5a1c3115ff706209438d86aaaf166c1c1b81ea883c24548b62e3be6122f61b3b"
+          },
+          {
+            "name": "array-1.bin",
+            "bytes": 360,
+            "sha256": "3a09ea0e7b019505413acac27644771e640b2f99d9f5803a9fa4fb88b7f9264d"
+          }
+        ],
+        [
+          {
+            "name": "metadata.json",
+            "bytes": 297554,
+            "sha256": "a1c18b46fde4dbb3a994a00d38b9cbb4b385be88325f752921db5298324471ab"
+          },
+          {
+            "name": "array-0.bin",
+            "bytes": 345840,
+            "sha256": "5a1c3115ff706209438d86aaaf166c1c1b81ea883c24548b62e3be6122f61b3b"
+          },
+          {
+            "name": "array-1.bin",
+            "bytes": 360,
+            "sha256": "3a09ea0e7b019505413acac27644771e640b2f99d9f5803a9fa4fb88b7f9264d"
+          }
+        ],
+        [
+          {
+            "name": "metadata.json",
+            "bytes": 297554,
+            "sha256": "a1c18b46fde4dbb3a994a00d38b9cbb4b385be88325f752921db5298324471ab"
+          },
+          {
+            "name": "array-0.bin",
+            "bytes": 345840,
+            "sha256": "5a1c3115ff706209438d86aaaf166c1c1b81ea883c24548b62e3be6122f61b3b"
+          },
+          {
+            "name": "array-1.bin",
+            "bytes": 360,
+            "sha256": "3a09ea0e7b019505413acac27644771e640b2f99d9f5803a9fa4fb88b7f9264d"
+          }
+        ]
+      ],
+      "fixture_bytes_identical_across_samples": true,
+      "raw_navigation_samples": [
+        {
+          "frameIndices": [
+            9,
+            5,
+            0,
+            1,
+            9
+          ],
+          "frameFirstVisits": [
+            true,
+            true,
+            false,
+            true,
+            false
+          ],
+          "frameChanges": [
+            3171.5999999046326,
+            1746.1000001430511,
+            1693.1000001430511,
+            1716.3999998569489,
+            1878
+          ],
+          "frameChangeCommits": [
+            202,
+            81.20000004768372,
+            69.10000014305115,
+            48,
+            67.5
+          ],
+          "unvisitedFrameMedian": 1746.1000001430511,
+          "unvisitedFrameCommitMedian": 81.20000004768372,
+          "revisitedFrameMedian": 1785.5500000715256,
+          "revisitedFrameCommitMedian": 68.30000007152557
+        },
+        {
+          "frameIndices": [
+            9,
+            5,
+            0,
+            1,
+            9
+          ],
+          "frameFirstVisits": [
+            true,
+            true,
+            false,
+            true,
+            false
+          ],
+          "frameChanges": [
+            3012.2999999523163,
+            2158.5999999046326,
+            2161.7000000476837,
+            2048.5999999046326,
+            2051.0999999046326
+          ],
+          "frameChangeCommits": [
+            133.70000004768372,
+            83.40000009536743,
+            51.299999952316284,
+            66.39999985694885,
+            56.09999990463257
+          ],
+          "unvisitedFrameMedian": 2158.5999999046326,
+          "unvisitedFrameCommitMedian": 83.40000009536743,
+          "revisitedFrameMedian": 2106.399999976158,
+          "revisitedFrameCommitMedian": 53.699999928474426
+        },
+        {
+          "frameIndices": [
+            9,
+            5,
+            0,
+            1,
+            9
+          ],
+          "frameFirstVisits": [
+            true,
+            true,
+            false,
+            true,
+            false
+          ],
+          "frameChanges": [
+            2258.2999999523163,
+            1766.8999998569489,
+            1757.0999999046326,
+            1724.4000000953674,
+            1750.5
+          ],
+          "frameChangeCommits": [
+            163.29999995231628,
+            48.59999990463257,
+            67.39999985694885,
+            56.799999952316284,
+            42
+          ],
+          "unvisitedFrameMedian": 1766.8999998569489,
+          "unvisitedFrameCommitMedian": 56.799999952316284,
+          "revisitedFrameMedian": 1753.7999999523163,
+          "revisitedFrameCommitMedian": 54.699999928474426
+        }
+      ]
+    },
+    "small-100": {
+      "fresh_browsers": 3,
+      "atoms": 2882,
+      "structures": 100,
+      "timings_ms": {
+        "fetch": {
+          "n": 3,
+          "median": 196.70000004768372,
+          "mad": 7.900000095367432,
+          "min": 188.79999995231628,
+          "max": 209.70000004768372
+        },
+        "decode": {
+          "n": 3,
+          "median": 0.40000009536743164,
+          "mad": 2.384185791015625e-07,
+          "min": 0.39999985694885254,
+          "max": 1.2999999523162842
+        },
+        "firstVisible": {
+          "n": 3,
+          "median": 4065.2000000476837,
+          "mad": 18.90000009536743,
+          "min": 4046.2999999523163,
+          "max": 6081.599999904633
+        },
+        "molstarLoadCommit": {
+          "n": 3,
+          "median": 1547.9000000953674,
+          "mad": 34.799999952316284,
+          "min": 1513.1000001430511,
+          "max": 1656.3999998569489
+        },
+        "representationReplacementCommit": {
+          "n": 3,
+          "median": 49.0,
+          "mad": 1.2999999523162842,
+          "min": 41.299999952316284,
+          "max": 50.299999952316284
+        },
+        "representationReplacementVisible": {
+          "n": 3,
+          "median": 1748.9000000953674,
+          "mad": 15.0,
+          "min": 1733.9000000953674,
+          "max": 1820.7999999523163
+        },
+        "unvisitedFrameMedian": {
+          "n": 3,
+          "median": 1714.6000001430511,
+          "mad": 8.999999761581421,
+          "min": 1702.1000001430511,
+          "max": 1723.5999999046326
+        },
+        "revisitedFrameMedian": {
+          "n": 3,
+          "median": 1709.2499998807907,
+          "mad": 16.00000011920929,
+          "min": 1685.1499998569489,
+          "max": 1725.25
+        },
+        "unvisitedFrameCommitMedian": {
+          "n": 3,
+          "median": 62.30000019073486,
+          "mad": 7.199999809265137,
+          "min": 54.700000047683716,
+          "max": 69.5
+        },
+        "revisitedFrameCommitMedian": {
+          "n": 3,
+          "median": 54.549999952316284,
+          "mad": 1.4500000476837158,
+          "min": 43.99999988079071,
+          "max": 56.0
+        }
+      },
+      "renderer": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "devicePixelRatio": 1,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)",
+        "webglVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "shadingLanguageVersion": "WebGL GLSL ES 3.00 (OpenGL ES GLSL ES 3.0 Chromium)",
+        "identification": "unmasked"
+      },
+      "rss_mib": {
+        "before.totalMb": {
+          "n": 3,
+          "median": 783.98046875,
+          "mad": 0.19140625,
+          "min": 780.41015625,
+          "max": 784.171875
+        },
+        "peak.totalMb": {
+          "n": 3,
+          "median": 1338.6171875,
+          "mad": 0.1328125,
+          "min": 1338.484375,
+          "max": 1343.47265625
+        },
+        "peak.gpuMb": {
+          "n": 3,
+          "median": 371.453125,
+          "mad": 0.78515625,
+          "min": 370.66796875,
+          "max": 375.93359375
+        },
+        "peak.rendererMb": {
+          "n": 3,
+          "median": 543.16796875,
+          "mad": 0.09765625,
+          "min": 543.0703125,
+          "max": 543.37109375
+        },
+        "afterPageClose.totalMb": {
+          "n": 3,
+          "median": 819.5078125,
+          "mad": 0.35546875,
+          "min": 819.15234375,
+          "max": 821.15234375
+        }
+      },
+      "original_measurements_sha256": "2434783e16f8245f21b2929fcee927f1dc0cb524bc469239f95483c59f4472b5",
+      "source_coordinate_witnesses": [
+        [
+          {
+            "phase": "load",
+            "structureIndex": 0,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 99,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 50,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.23452377319336,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.23452377319336,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.134521484375,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.134521484375,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.1665267944336,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.1665267944336,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 0,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 1,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.9870491027832,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.9870491027832,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88704681396484,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88704681396484,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91905212402344,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91905212402344,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 99,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "representation",
+            "structureIndex": 99,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "phase": "load",
+            "structureIndex": 0,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 99,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 50,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.23452377319336,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.23452377319336,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.134521484375,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.134521484375,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.1665267944336,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.1665267944336,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 0,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 1,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.9870491027832,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.9870491027832,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88704681396484,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88704681396484,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91905212402344,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91905212402344,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 99,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "representation",
+            "structureIndex": 99,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "phase": "load",
+            "structureIndex": 0,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 99,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 50,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.23452377319336,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.23452377319336,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.134521484375,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.134521484375,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.1665267944336,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.1665267944336,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 0,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.981998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 1,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  43.9870491027832,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  43.9870491027832,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  104.88704681396484,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  104.88704681396484,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  99.91905212402344,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  99.91905212402344,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "navigation",
+            "structureIndex": 99,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "representation",
+            "structureIndex": 99,
+            "atoms": 2882,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  44.481998443603516,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 1441,
+                "expected": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ],
+                "observed": [
+                  105.38200378417969,
+                  -3.257999897003174,
+                  9.163000106811523
+                ]
+              },
+              {
+                "atomIndex": 2881,
+                "expected": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ],
+                "observed": [
+                  100.41400146484375,
+                  32.0260009765625,
+                  14.864999771118164
+                ]
+              }
+            ]
+          }
+        ]
+      ],
+      "fixture_files": [
+        [
+          {
+            "name": "metadata.json",
+            "bytes": 297559,
+            "sha256": "3d10eb083ccc7954850e37f01850b2245673399e82382702386b7d5dbd3e0ae4"
+          },
+          {
+            "name": "array-0.bin",
+            "bytes": 3458400,
+            "sha256": "35c2a1eea8e979fecff4a6f21f1b781f4393b4623f19b9e8a4314a3e9f35e1cd"
+          },
+          {
+            "name": "array-1.bin",
+            "bytes": 3600,
+            "sha256": "65b9f272f6c60372ee8d070f73217468f18455689247d36aac034f5a390b7c9f"
+          }
+        ],
+        [
+          {
+            "name": "metadata.json",
+            "bytes": 297559,
+            "sha256": "3d10eb083ccc7954850e37f01850b2245673399e82382702386b7d5dbd3e0ae4"
+          },
+          {
+            "name": "array-0.bin",
+            "bytes": 3458400,
+            "sha256": "35c2a1eea8e979fecff4a6f21f1b781f4393b4623f19b9e8a4314a3e9f35e1cd"
+          },
+          {
+            "name": "array-1.bin",
+            "bytes": 3600,
+            "sha256": "65b9f272f6c60372ee8d070f73217468f18455689247d36aac034f5a390b7c9f"
+          }
+        ],
+        [
+          {
+            "name": "metadata.json",
+            "bytes": 297559,
+            "sha256": "3d10eb083ccc7954850e37f01850b2245673399e82382702386b7d5dbd3e0ae4"
+          },
+          {
+            "name": "array-0.bin",
+            "bytes": 3458400,
+            "sha256": "35c2a1eea8e979fecff4a6f21f1b781f4393b4623f19b9e8a4314a3e9f35e1cd"
+          },
+          {
+            "name": "array-1.bin",
+            "bytes": 3600,
+            "sha256": "65b9f272f6c60372ee8d070f73217468f18455689247d36aac034f5a390b7c9f"
+          }
+        ]
+      ],
+      "fixture_bytes_identical_across_samples": true,
+      "raw_navigation_samples": [
+        {
+          "frameIndices": [
+            99,
+            50,
+            0,
+            1,
+            99
+          ],
+          "frameFirstVisits": [
+            true,
+            true,
+            false,
+            true,
+            false
+          ],
+          "frameChanges": [
+            2449.300000190735,
+            1702.1000001430511,
+            1686.1999998092651,
+            1682.9000000953674,
+            1684.0999999046326
+          ],
+          "frameChangeCommits": [
+            150.70000004768372,
+            62.30000019073486,
+            61,
+            51.60000014305115,
+            51
+          ],
+          "unvisitedFrameMedian": 1702.1000001430511,
+          "unvisitedFrameCommitMedian": 62.30000019073486,
+          "revisitedFrameMedian": 1685.1499998569489,
+          "revisitedFrameCommitMedian": 56.0
+        },
+        {
+          "frameIndices": [
+            99,
+            50,
+            0,
+            1,
+            99
+          ],
+          "frameFirstVisits": [
+            true,
+            true,
+            false,
+            true,
+            false
+          ],
+          "frameChanges": [
+            2540.7999999523163,
+            1723.5999999046326,
+            1682.2000000476837,
+            1667.5,
+            1768.2999999523163
+          ],
+          "frameChangeCommits": [
+            147.59999990463257,
+            47.299999952316284,
+            59.59999990463257,
+            54.700000047683716,
+            49.5
+          ],
+          "unvisitedFrameMedian": 1723.5999999046326,
+          "unvisitedFrameCommitMedian": 54.700000047683716,
+          "revisitedFrameMedian": 1725.25,
+          "revisitedFrameCommitMedian": 54.549999952316284
+        },
+        {
+          "frameIndices": [
+            99,
+            50,
+            0,
+            1,
+            99
+          ],
+          "frameFirstVisits": [
+            true,
+            true,
+            false,
+            true,
+            false
+          ],
+          "frameChanges": [
+            2149.2999999523163,
+            1681.7999999523163,
+            1655.8999998569489,
+            1714.6000001430511,
+            1762.5999999046326
+          ],
+          "frameChangeCommits": [
+            167.09999990463257,
+            69.5,
+            47.19999980926514,
+            65.60000014305115,
+            40.799999952316284
+          ],
+          "unvisitedFrameMedian": 1714.6000001430511,
+          "unvisitedFrameCommitMedian": 69.5,
+          "revisitedFrameMedian": 1709.2499998807907,
+          "revisitedFrameCommitMedian": 43.99999988079071
+        }
+      ]
+    },
+    "medium-1": {
+      "fresh_browsers": 3,
+      "atoms": 26214,
+      "structures": 1,
+      "timings_ms": {
+        "fetch": {
+          "n": 3,
+          "median": 222.0,
+          "mad": 3.8999998569488525,
+          "min": 199.19999980926514,
+          "max": 225.89999985694885
+        },
+        "decode": {
+          "n": 3,
+          "median": 0.2999999523162842,
+          "mad": 0.0,
+          "min": 0.2999999523162842,
+          "max": 0.5
+        },
+        "firstVisible": {
+          "n": 3,
+          "median": 9770.599999904633,
+          "mad": 8.600000143051147,
+          "min": 9665.599999904633,
+          "max": 9779.200000047684
+        },
+        "molstarLoadCommit": {
+          "n": 3,
+          "median": 6652.200000047684,
+          "mad": 89.79999995231628,
+          "min": 6557.399999856949,
+          "max": 6742.0
+        },
+        "representationReplacementCommit": {
+          "n": 3,
+          "median": 143.39999985694885,
+          "mad": 12.299999952316284,
+          "min": 131.09999990463257,
+          "max": 179.5
+        },
+        "representationReplacementVisible": {
+          "n": 3,
+          "median": 2223.2999999523163,
+          "mad": 0.40000009536743164,
+          "min": 2222.899999856949,
+          "max": 2226.5999999046326
+        },
+        "unvisitedFrameMedian": {
+          "n": 0,
+          "status": "unavailable; no observation, not zero"
+        },
+        "revisitedFrameMedian": {
+          "n": 0,
+          "status": "unavailable; no observation, not zero"
+        },
+        "unvisitedFrameCommitMedian": {
+          "n": 0,
+          "status": "unavailable; no observation, not zero"
+        },
+        "revisitedFrameCommitMedian": {
+          "n": 0,
+          "status": "unavailable; no observation, not zero"
+        }
+      },
+      "renderer": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "devicePixelRatio": 1,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)",
+        "webglVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "shadingLanguageVersion": "WebGL GLSL ES 3.00 (OpenGL ES GLSL ES 3.0 Chromium)",
+        "identification": "unmasked"
+      },
+      "rss_mib": {
+        "before.totalMb": {
+          "n": 3,
+          "median": 799.98828125,
+          "mad": 8.40625,
+          "min": 784.3046875,
+          "max": 808.39453125
+        },
+        "peak.totalMb": {
+          "n": 3,
+          "median": 1723.3515625,
+          "mad": 1.40234375,
+          "min": 1721.94921875,
+          "max": 1727.4140625
+        },
+        "peak.gpuMb": {
+          "n": 3,
+          "median": 375.22265625,
+          "mad": 0.16796875,
+          "min": 375.0546875,
+          "max": 377.453125
+        },
+        "peak.rendererMb": {
+          "n": 3,
+          "median": 923.484375,
+          "mad": 1.15625,
+          "min": 922.328125,
+          "max": 926.265625
+        },
+        "afterPageClose.totalMb": {
+          "n": 3,
+          "median": 816.3203125,
+          "mad": 2.90234375,
+          "min": 599.859375,
+          "max": 819.22265625
+        }
+      },
+      "original_measurements_sha256": "2434783e16f8245f21b2929fcee927f1dc0cb524bc469239f95483c59f4472b5",
+      "source_coordinate_witnesses": [
+        [
+          {
+            "phase": "load",
+            "structureIndex": 0,
+            "atoms": 26214,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ],
+                "observed": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ]
+              },
+              {
+                "atomIndex": 13107,
+                "expected": [
+                  17.40446662902832,
+                  31.250425338745117,
+                  -2.4220335483551025
+                ],
+                "observed": [
+                  17.40446662902832,
+                  31.250425338745117,
+                  -2.4220335483551025
+                ]
+              },
+              {
+                "atomIndex": 26213,
+                "expected": [
+                  84.24227142333984,
+                  29.130935668945312,
+                  -11.981605529785156
+                ],
+                "observed": [
+                  84.24227142333984,
+                  29.130935668945312,
+                  -11.981605529785156
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "representation",
+            "structureIndex": 0,
+            "atoms": 26214,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ],
+                "observed": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ]
+              },
+              {
+                "atomIndex": 13107,
+                "expected": [
+                  17.40446662902832,
+                  31.250425338745117,
+                  -2.4220335483551025
+                ],
+                "observed": [
+                  17.40446662902832,
+                  31.250425338745117,
+                  -2.4220335483551025
+                ]
+              },
+              {
+                "atomIndex": 26213,
+                "expected": [
+                  84.24227142333984,
+                  29.130935668945312,
+                  -11.981605529785156
+                ],
+                "observed": [
+                  84.24227142333984,
+                  29.130935668945312,
+                  -11.981605529785156
+                ]
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "phase": "load",
+            "structureIndex": 0,
+            "atoms": 26214,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ],
+                "observed": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ]
+              },
+              {
+                "atomIndex": 13107,
+                "expected": [
+                  17.40446662902832,
+                  31.250425338745117,
+                  -2.4220335483551025
+                ],
+                "observed": [
+                  17.40446662902832,
+                  31.250425338745117,
+                  -2.4220335483551025
+                ]
+              },
+              {
+                "atomIndex": 26213,
+                "expected": [
+                  84.24227142333984,
+                  29.130935668945312,
+                  -11.981605529785156
+                ],
+                "observed": [
+                  84.24227142333984,
+                  29.130935668945312,
+                  -11.981605529785156
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "representation",
+            "structureIndex": 0,
+            "atoms": 26214,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ],
+                "observed": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ]
+              },
+              {
+                "atomIndex": 13107,
+                "expected": [
+                  17.40446662902832,
+                  31.250425338745117,
+                  -2.4220335483551025
+                ],
+                "observed": [
+                  17.40446662902832,
+                  31.250425338745117,
+                  -2.4220335483551025
+                ]
+              },
+              {
+                "atomIndex": 26213,
+                "expected": [
+                  84.24227142333984,
+                  29.130935668945312,
+                  -11.981605529785156
+                ],
+                "observed": [
+                  84.24227142333984,
+                  29.130935668945312,
+                  -11.981605529785156
+                ]
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "phase": "load",
+            "structureIndex": 0,
+            "atoms": 26214,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ],
+                "observed": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ]
+              },
+              {
+                "atomIndex": 13107,
+                "expected": [
+                  17.40446662902832,
+                  31.250425338745117,
+                  -2.4220335483551025
+                ],
+                "observed": [
+                  17.40446662902832,
+                  31.250425338745117,
+                  -2.4220335483551025
+                ]
+              },
+              {
+                "atomIndex": 26213,
+                "expected": [
+                  84.24227142333984,
+                  29.130935668945312,
+                  -11.981605529785156
+                ],
+                "observed": [
+                  84.24227142333984,
+                  29.130935668945312,
+                  -11.981605529785156
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "representation",
+            "structureIndex": 0,
+            "atoms": 26214,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ],
+                "observed": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ]
+              },
+              {
+                "atomIndex": 13107,
+                "expected": [
+                  17.40446662902832,
+                  31.250425338745117,
+                  -2.4220335483551025
+                ],
+                "observed": [
+                  17.40446662902832,
+                  31.250425338745117,
+                  -2.4220335483551025
+                ]
+              },
+              {
+                "atomIndex": 26213,
+                "expected": [
+                  84.24227142333984,
+                  29.130935668945312,
+                  -11.981605529785156
+                ],
+                "observed": [
+                  84.24227142333984,
+                  29.130935668945312,
+                  -11.981605529785156
+                ]
+              }
+            ]
+          }
+        ]
+      ],
+      "fixture_files": [
+        [
+          {
+            "name": "metadata.json",
+            "bytes": 2254929,
+            "sha256": "30cdce1d1255eba8469c17ae2cc9ef2c5546d828474a890b60006cc132ddfc26"
+          },
+          {
+            "name": "array-0.bin",
+            "bytes": 314568,
+            "sha256": "7b76c544513ac69c19f5435a80db1fd92d6dadb46c3ce234725b8baa452638ad"
+          },
+          {
+            "name": "array-1.bin",
+            "bytes": 36,
+            "sha256": "cc283363d0aa32f5eee088a36ec505132fab3d9b69e341512d8948ee2bd64294"
+          }
+        ],
+        [
+          {
+            "name": "metadata.json",
+            "bytes": 2254929,
+            "sha256": "30cdce1d1255eba8469c17ae2cc9ef2c5546d828474a890b60006cc132ddfc26"
+          },
+          {
+            "name": "array-0.bin",
+            "bytes": 314568,
+            "sha256": "7b76c544513ac69c19f5435a80db1fd92d6dadb46c3ce234725b8baa452638ad"
+          },
+          {
+            "name": "array-1.bin",
+            "bytes": 36,
+            "sha256": "cc283363d0aa32f5eee088a36ec505132fab3d9b69e341512d8948ee2bd64294"
+          }
+        ],
+        [
+          {
+            "name": "metadata.json",
+            "bytes": 2254929,
+            "sha256": "30cdce1d1255eba8469c17ae2cc9ef2c5546d828474a890b60006cc132ddfc26"
+          },
+          {
+            "name": "array-0.bin",
+            "bytes": 314568,
+            "sha256": "7b76c544513ac69c19f5435a80db1fd92d6dadb46c3ce234725b8baa452638ad"
+          },
+          {
+            "name": "array-1.bin",
+            "bytes": 36,
+            "sha256": "cc283363d0aa32f5eee088a36ec505132fab3d9b69e341512d8948ee2bd64294"
+          }
+        ]
+      ],
+      "fixture_bytes_identical_across_samples": true,
+      "raw_navigation_samples": [
+        {
+          "frameIndices": [],
+          "frameFirstVisits": [],
+          "frameChanges": [],
+          "frameChangeCommits": [],
+          "unvisitedFrameMedian": null,
+          "unvisitedFrameCommitMedian": null,
+          "revisitedFrameMedian": null,
+          "revisitedFrameCommitMedian": null
+        },
+        {
+          "frameIndices": [],
+          "frameFirstVisits": [],
+          "frameChanges": [],
+          "frameChangeCommits": [],
+          "unvisitedFrameMedian": null,
+          "unvisitedFrameCommitMedian": null,
+          "revisitedFrameMedian": null,
+          "revisitedFrameCommitMedian": null
+        },
+        {
+          "frameIndices": [],
+          "frameFirstVisits": [],
+          "frameChanges": [],
+          "frameChangeCommits": [],
+          "unvisitedFrameMedian": null,
+          "unvisitedFrameCommitMedian": null,
+          "revisitedFrameMedian": null,
+          "revisitedFrameCommitMedian": null
+        }
+      ]
+    },
+    "large-1": {
+      "fresh_browsers": 3,
+      "atoms": 104856,
+      "structures": 1,
+      "timings_ms": {
+        "fetch": {
+          "n": 3,
+          "median": 430.69999980926514,
+          "mad": 1.3000001907348633,
+          "min": 417.7000000476837,
+          "max": 432.0
+        },
+        "decode": {
+          "n": 3,
+          "median": 0.6000001430511475,
+          "mad": 0.0,
+          "min": 0.6000001430511475,
+          "max": 0.7000000476837158
+        },
+        "firstVisible": {
+          "n": 3,
+          "median": 31716.5,
+          "mad": 84.89999985694885,
+          "min": 28540.700000047684,
+          "max": 31801.39999985695
+        },
+        "molstarLoadCommit": {
+          "n": 3,
+          "median": 26206.200000047684,
+          "mad": 469.4999997615814,
+          "min": 23420.5,
+          "max": 26675.699999809265
+        },
+        "representationReplacementCommit": {
+          "n": 3,
+          "median": 461.2999999523163,
+          "mad": 51.700000047683716,
+          "min": 409.59999990463257,
+          "max": 528.5
+        },
+        "representationReplacementVisible": {
+          "n": 3,
+          "median": 3239.600000143051,
+          "mad": 148.2000002861023,
+          "min": 3091.399999856949,
+          "max": 3676.899999856949
+        },
+        "unvisitedFrameMedian": {
+          "n": 0,
+          "status": "unavailable; no observation, not zero"
+        },
+        "revisitedFrameMedian": {
+          "n": 0,
+          "status": "unavailable; no observation, not zero"
+        },
+        "unvisitedFrameCommitMedian": {
+          "n": 0,
+          "status": "unavailable; no observation, not zero"
+        },
+        "revisitedFrameCommitMedian": {
+          "n": 0,
+          "status": "unavailable; no observation, not zero"
+        }
+      },
+      "renderer": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+        "devicePixelRatio": 1,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "vendor": "Google Inc. (Google)",
+        "webglVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "shadingLanguageVersion": "WebGL GLSL ES 3.00 (OpenGL ES GLSL ES 3.0 Chromium)",
+        "identification": "unmasked"
+      },
+      "rss_mib": {
+        "before.totalMb": {
+          "n": 3,
+          "median": 796.79296875,
+          "mad": 2.06640625,
+          "min": 794.7265625,
+          "max": 807.55078125
+        },
+        "peak.totalMb": {
+          "n": 3,
+          "median": 3093.2890625,
+          "mad": 6.38671875,
+          "min": 3086.90234375,
+          "max": 3111.14453125
+        },
+        "peak.gpuMb": {
+          "n": 3,
+          "median": 394.7734375,
+          "mad": 1.74609375,
+          "min": 392.48046875,
+          "max": 396.51953125
+        },
+        "peak.rendererMb": {
+          "n": 3,
+          "median": 2271.90234375,
+          "mad": 0.640625,
+          "min": 2271.26171875,
+          "max": 2290.53125
+        },
+        "afterPageClose.totalMb": {
+          "n": 3,
+          "median": 615.2734375,
+          "mad": 14.734375,
+          "min": 600.5390625,
+          "max": 817.6171875
+        }
+      },
+      "original_measurements_sha256": "2434783e16f8245f21b2929fcee927f1dc0cb524bc469239f95483c59f4472b5",
+      "source_coordinate_witnesses": [
+        [
+          {
+            "phase": "load",
+            "structureIndex": 0,
+            "atoms": 104856,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ],
+                "observed": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ]
+              },
+              {
+                "atomIndex": 52428,
+                "expected": [
+                  -9.219672203063965,
+                  12.424317359924316,
+                  30.185741424560547
+                ],
+                "observed": [
+                  -9.219672203063965,
+                  12.424317359924316,
+                  30.185741424560547
+                ]
+              },
+              {
+                "atomIndex": 104855,
+                "expected": [
+                  124.17847442626953,
+                  85.60926055908203,
+                  20.626169204711914
+                ],
+                "observed": [
+                  124.17847442626953,
+                  85.60926055908203,
+                  20.626169204711914
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "representation",
+            "structureIndex": 0,
+            "atoms": 104856,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ],
+                "observed": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ]
+              },
+              {
+                "atomIndex": 52428,
+                "expected": [
+                  -9.219672203063965,
+                  12.424317359924316,
+                  30.185741424560547
+                ],
+                "observed": [
+                  -9.219672203063965,
+                  12.424317359924316,
+                  30.185741424560547
+                ]
+              },
+              {
+                "atomIndex": 104855,
+                "expected": [
+                  124.17847442626953,
+                  85.60926055908203,
+                  20.626169204711914
+                ],
+                "observed": [
+                  124.17847442626953,
+                  85.60926055908203,
+                  20.626169204711914
+                ]
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "phase": "load",
+            "structureIndex": 0,
+            "atoms": 104856,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ],
+                "observed": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ]
+              },
+              {
+                "atomIndex": 52428,
+                "expected": [
+                  -9.219672203063965,
+                  12.424317359924316,
+                  30.185741424560547
+                ],
+                "observed": [
+                  -9.219672203063965,
+                  12.424317359924316,
+                  30.185741424560547
+                ]
+              },
+              {
+                "atomIndex": 104855,
+                "expected": [
+                  124.17847442626953,
+                  85.60926055908203,
+                  20.626169204711914
+                ],
+                "observed": [
+                  124.17847442626953,
+                  85.60926055908203,
+                  20.626169204711914
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "representation",
+            "structureIndex": 0,
+            "atoms": 104856,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ],
+                "observed": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ]
+              },
+              {
+                "atomIndex": 52428,
+                "expected": [
+                  -9.219672203063965,
+                  12.424317359924316,
+                  30.185741424560547
+                ],
+                "observed": [
+                  -9.219672203063965,
+                  12.424317359924316,
+                  30.185741424560547
+                ]
+              },
+              {
+                "atomIndex": 104855,
+                "expected": [
+                  124.17847442626953,
+                  85.60926055908203,
+                  20.626169204711914
+                ],
+                "observed": [
+                  124.17847442626953,
+                  85.60926055908203,
+                  20.626169204711914
+                ]
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "phase": "load",
+            "structureIndex": 0,
+            "atoms": 104856,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ],
+                "observed": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ]
+              },
+              {
+                "atomIndex": 52428,
+                "expected": [
+                  -9.219672203063965,
+                  12.424317359924316,
+                  30.185741424560547
+                ],
+                "observed": [
+                  -9.219672203063965,
+                  12.424317359924316,
+                  30.185741424560547
+                ]
+              },
+              {
+                "atomIndex": 104855,
+                "expected": [
+                  124.17847442626953,
+                  85.60926055908203,
+                  20.626169204711914
+                ],
+                "observed": [
+                  124.17847442626953,
+                  85.60926055908203,
+                  20.626169204711914
+                ]
+              }
+            ]
+          },
+          {
+            "phase": "representation",
+            "structureIndex": 0,
+            "atoms": 104856,
+            "probes": [
+              {
+                "atomIndex": 0,
+                "expected": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ],
+                "observed": [
+                  4.092397212982178,
+                  -6.401791095733643,
+                  -2.4220335483551025
+                ]
+              },
+              {
+                "atomIndex": 52428,
+                "expected": [
+                  -9.219672203063965,
+                  12.424317359924316,
+                  30.185741424560547
+                ],
+                "observed": [
+                  -9.219672203063965,
+                  12.424317359924316,
+                  30.185741424560547
+                ]
+              },
+              {
+                "atomIndex": 104855,
+                "expected": [
+                  124.17847442626953,
+                  85.60926055908203,
+                  20.626169204711914
+                ],
+                "observed": [
+                  124.17847442626953,
+                  85.60926055908203,
+                  20.626169204711914
+                ]
+              }
+            ]
+          }
+        ]
+      ],
+      "fixture_files": [
+        [
+          {
+            "name": "metadata.json",
+            "bytes": 9606375,
+            "sha256": "7987985c8fecc85b283e455b6ec87b1db6d07a9f43f27e8dd1bb60c58d190d5b"
+          },
+          {
+            "name": "array-0.bin",
+            "bytes": 1258272,
+            "sha256": "e066387f4642b8473d52a0810bc657fd46624fa5d5f1a4079ca2b8d44a4a02f0"
+          },
+          {
+            "name": "array-1.bin",
+            "bytes": 36,
+            "sha256": "5db95300f8ae47bba6cffb9cf52f96628dea215820033f5e05140b04ecca947d"
+          }
+        ],
+        [
+          {
+            "name": "metadata.json",
+            "bytes": 9606375,
+            "sha256": "7987985c8fecc85b283e455b6ec87b1db6d07a9f43f27e8dd1bb60c58d190d5b"
+          },
+          {
+            "name": "array-0.bin",
+            "bytes": 1258272,
+            "sha256": "e066387f4642b8473d52a0810bc657fd46624fa5d5f1a4079ca2b8d44a4a02f0"
+          },
+          {
+            "name": "array-1.bin",
+            "bytes": 36,
+            "sha256": "5db95300f8ae47bba6cffb9cf52f96628dea215820033f5e05140b04ecca947d"
+          }
+        ],
+        [
+          {
+            "name": "metadata.json",
+            "bytes": 9606375,
+            "sha256": "7987985c8fecc85b283e455b6ec87b1db6d07a9f43f27e8dd1bb60c58d190d5b"
+          },
+          {
+            "name": "array-0.bin",
+            "bytes": 1258272,
+            "sha256": "e066387f4642b8473d52a0810bc657fd46624fa5d5f1a4079ca2b8d44a4a02f0"
+          },
+          {
+            "name": "array-1.bin",
+            "bytes": 36,
+            "sha256": "5db95300f8ae47bba6cffb9cf52f96628dea215820033f5e05140b04ecca947d"
+          }
+        ]
+      ],
+      "fixture_bytes_identical_across_samples": true,
+      "raw_navigation_samples": [
+        {
+          "frameIndices": [],
+          "frameFirstVisits": [],
+          "frameChanges": [],
+          "frameChangeCommits": [],
+          "unvisitedFrameMedian": null,
+          "unvisitedFrameCommitMedian": null,
+          "revisitedFrameMedian": null,
+          "revisitedFrameCommitMedian": null
+        },
+        {
+          "frameIndices": [],
+          "frameFirstVisits": [],
+          "frameChanges": [],
+          "frameChangeCommits": [],
+          "unvisitedFrameMedian": null,
+          "unvisitedFrameCommitMedian": null,
+          "revisitedFrameMedian": null,
+          "revisitedFrameCommitMedian": null
+        },
+        {
+          "frameIndices": [],
+          "frameFirstVisits": [],
+          "frameChanges": [],
+          "frameChangeCommits": [],
+          "unvisitedFrameMedian": null,
+          "unvisitedFrameCommitMedian": null,
+          "revisitedFrameMedian": null,
+          "revisitedFrameCommitMedian": null
+        }
+      ]
+    }
+  },
+  "browser_measured_source_sha256": {
+    "molsysviewer/js/tests/e2e/harness.ts": "7b4df60050a3173fdc4e25e8c844260c0b13a1ef91d189dea9d0d0d7b29fd04f",
+    "molsysviewer/js/tests/perf/representative-scale.perf.ts": "0bb4e1f493583629ba0d6fcf2dab15b033659d5ea9d6b4ecbab6ba083f9666b7"
+  },
+  "postprocessing": {
+    "issue": "uibcdf/molsysviewer#353",
+    "method": "Conventional sample medians recomputed offline from immutable raw navigation arrays; median/MAD/min/max across three fresh processes. No molecular or browser workload repeated for arithmetic repair.",
+    "original_files_rewritten": false,
+    "historical_upper_medians_relabelled_as_pass": false,
+    "guard": "tests/test_representative_scale_benchmark.py::test_browser_benchmark_medians_match_independent_reference"
   }
 }

@@ -1,3 +1,4 @@
+import { median } from "./summary-statistics.js";
 import assert from "node:assert";
 import { chromium } from "playwright";
 import { fileURLToPath } from "node:url";
@@ -53,8 +54,7 @@ async function medianMs(page: import("playwright").Page, expression: string, ite
             return performance.now() - started;
         }, expression));
     }
-    samples.sort((left, right) => left - right);
-    return samples[Math.floor(samples.length / 2)];
+    return median(samples);
 }
 
 async function run(): Promise<void> {
