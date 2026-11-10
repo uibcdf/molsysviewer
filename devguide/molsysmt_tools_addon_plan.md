@@ -118,7 +118,7 @@ Scientific wrapper returns and `view.extract` remain distinct. The owner PR
 adds System tasks for Extract subset and Copy system, with bounded candidate
 ownership and explicit structure order. Presentation retry reuses the result.
 Evidence and remaining gates are kept in
-[the active host report](pending_proposals/independent_result_view_presentation.md).
+[the resolved host report](archive/independent_result_view_presentation.md).
 Human visual review and publication remain postponed. Earlier dated receipts
 below retain their original narrower scope.
 

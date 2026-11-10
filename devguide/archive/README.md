@@ -515,3 +515,9 @@ Completed work, kept for the reasoning:
 - [`figure_observation_provenance_pre_1_0.md`](figure_observation_provenance_pre_1_0.md) — Delivers B4 historical figure context in core and producer PR #702 with guarded persistence, units and real-host receiving.
 
 - [`browser_benchmark_even_medians.md`](browser_benchmark_even_medians.md) — Corrects four benchmark median helpers and guards them against independent exact-rational references; original timings stay preserved.
+
+- [Movie recipe value isolation](movie_recipe_value_isolation.md) — #355 detaches camera and visibility data at the v1 Movie inspection/import boundaries, without changing signatures or schema.
+
+- [Independent result presentation](independent_result_view_presentation.md) — #301 receives independent notebook and native result windows, ownership and retry.
+- [Declared pending readers](read_only_addon_panel_actions.md) — #304 receives declared mounted readers while the old scene stays inert.
+- [Conditional result replacement](conditional_result_replacement.md) — #306 receives atomic source identity and revision checks without overwriting intervening work.

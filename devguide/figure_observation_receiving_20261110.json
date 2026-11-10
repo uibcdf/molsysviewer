@@ -4,7 +4,7 @@
   "issue": "uibcdf/molsysviewer#349",
   "parent_issue": "uibcdf/molsysviewer#315",
   "cross_component_review": "uibcdf/molsyssuite#179",
-  "status": "Core source delivered; producer source received and submitted for owner review",
+  "status": "Core and native producer source delivered; producer PR #702 owner-integrated; covering hosted, clean installed and postponed human acceptance remain separate",
   "viewer_source_base": "7f106c8c",
   "owner_parent": "5f241cfa77f0091dc7a54c0be1bdd2951efdefed",
   "owner_branch": "review/viewer-figure-context-20261110",
@@ -536,8 +536,14 @@
   "owner_contribution": {
     "pr": "https://github.com/uibcdf/molsysmt/pull/702",
     "source": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
-    "state": "draft_for_owner_review",
-    "integrated": false
+    "state": "owner_merged",
+    "integrated": true,
+    "submitted_state": "draft_for_owner_review",
+    "merge_commit": "d36d25929b4bdd115be26585a36c0df7cd48a571",
+    "merged_at": "2026-11-10T20:31:33Z",
+    "observed_owner_main": "af32a559cc6bac6d0e33ee249b3692319028add3",
+    "source_is_ancestor_of_observed_owner_main": true,
+    "verification": "Official PR metadata and local git merge-base --is-ancestor after fetching origin/main; no source switch/merge or new runtime gate inferred."
   },
   "additional_adopted_source_delivered": [
     "B4",

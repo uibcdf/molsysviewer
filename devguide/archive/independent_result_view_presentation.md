@@ -1,9 +1,9 @@
 ---
 summary: Present independent addon result Views in Jupyter and Qt.
 issue: uibcdf/molsysviewer#301
-status: partial
+status: resolved
 opened: 2026-11-05
-closed:
+closed: 2026-11-10
 verification: reproduced
 area: [addons, jupyter, standalone]
 guard: tests/test_view_presentations.py
@@ -12,7 +12,9 @@ blocked_by: []
 supersedes: []
 ---
 
-# Independent result View presentation
+# Independent result View presentation — resolved
+
+Eight current host ownership cases, actual Jupyter destination/retry and source-close receiving, and the unchanged #351 native Qt disposal owner receive the source contract. Historical Linux/macOS CI is independently complete. See the [host integration receipt](../host_integration_closeout_20261110.json). Covering hosted/installed and postponed human acceptance remain separate under #264/#315. The sections below retain their original checkpoint scopes.
 
 ## What
 

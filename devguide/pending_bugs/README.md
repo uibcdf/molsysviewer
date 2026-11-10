@@ -19,8 +19,10 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (1)
+### Being worked on (3)
 
+- [`recovered_canvas_initial_structure_observation.md`](recovered_canvas_initial_structure_observation.md) — [#354](https://github.com/uibcdf/molsysviewer/issues/354) — Diagnose a recovered Jupyter canvas staying at structure zero after eight successful cycles. *(medium, measured)*
+- [`retired_notebook_molecular_data.md`](retired_notebook_molecular_data.md) — [#356](https://github.com/uibcdf/molsysviewer/issues/356) — Identify why closed notebook controllers retain molecular data during repeated real work. *(medium, measured)*
 - [`updated_annotation_pick_receiving_timeout.md`](updated_annotation_pick_receiving_timeout.md) — [#325](https://github.com/uibcdf/molsysviewer/issues/325) — Updated annotation GPU pick times out in hosted canvas-popup receiving. *(medium, measured)*
 
 ### Partially done (9)

@@ -225,7 +225,9 @@ The user-facing translation table is in
     declaration rather than a new calculation
   - does not define molecular edit semantics; those belong to MolSysMT or an
     add-on
-- `convert(...)`
+- `view.whole.convert(...)` and `view.regions[name].convert(...)`
+  - convert the whole system or a saved region to a molecular form without
+    changing the scene
 - `addons.manager.system_edits`
   - generic provider integration service: `read(callback)`,
     `execute(callback, name=..., update_view=True, rejection_check=None, axis_growth=None)`, `get_status()`,
@@ -534,11 +536,6 @@ the same tag; APIs resolve identity as `(domain, tag)`.
   - lower-level structural merge into `_molsys`
   - updates additive-load block bookkeeping
   - does **not** create automatic load-regions
-- `convert(...)`
-  - current first slice delegates to the molecular system currently stored in
-    the viewer
-  - this is intentionally compatible with richer future conversions once
-    MolSysMT supports direct `MolSysView` target-form conversions
 
 ### Notebook rendering
 

@@ -5,6 +5,7 @@ import io
 import json
 import math
 import time
+from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
@@ -69,8 +70,8 @@ class MovieManager:
             Timestamp in milliseconds. Must be strictly greater than the
             last existing keyframe.
         camera
-            Camera snapshot dict with ``position``, ``target``, ``up`` keys
-            (all in Å). Use ``view.camera.get_snapshot()`` to capture the
+            Camera snapshot dict with ``position`` and ``target`` in Å and
+            dimensionless ``up``. Use ``view.camera.get_snapshot()`` to capture the
             current camera. ``None`` means no camera change at this point.
         structure_index
             Structure (trajectory frame) index to show at this time.
@@ -327,8 +328,8 @@ class MovieManager:
 
     @property
     def keyframes(self) -> list[dict]:
-        """Read-only snapshot of the keyframe list."""
-        return list(self._keyframes)
+        """Return detached keyframe data for inspection."""
+        return deepcopy(self._keyframes)
 
     # ── Inspection ────────────────────────────────────────────────────────
 
@@ -358,12 +359,12 @@ class MovieManager:
     def to_dict(self, *, skip_digestion: bool = False) -> dict:
         """Serialise the timeline to a JSON-compatible plain dict.
 
-        The dict can be passed to :meth:`from_dict` on any view to
-        restore the timeline.
+        The dict can be edited independently or passed to :meth:`from_dict`
+        on another view to restore the timeline.
         """
         return {
             "molsysmovie_version": _MOLSYSMOVIE_VERSION,
-            "keyframes": [dict(kf) for kf in self._keyframes],
+            "keyframes": self.keyframes,
         }
 
     @signal()
@@ -374,7 +375,7 @@ class MovieManager:
         Parameters
         ----------
         data
-            A dict as returned by :meth:`to_dict`.
+            A dict as returned by :meth:`to_dict`. Its nested values are copied.
         """
         version = data.get("molsysmovie_version")
         if version != _MOLSYSMOVIE_VERSION:
@@ -388,7 +389,7 @@ class MovieManager:
                     f"Keyframe {i} time_ms={kf['time_ms']} is not strictly "
                     f"greater than keyframe {i - 1} time_ms={keyframes[i - 1]['time_ms']}."
                 )
-        self._keyframes = [dict(kf) for kf in keyframes]
+        self._keyframes = [deepcopy(dict(kf)) for kf in keyframes]
 
     @signal()
     @digest()

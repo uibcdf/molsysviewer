@@ -106,9 +106,11 @@ qualification passed.
   that molecular coordinates remain exactly unchanged; it writes no state,
   session, recipe or media output.
 
-These observations belong to #320. They are retained as a private probe until
-M1 defines the replacement/migration contract; they are not added as red
-production expectations that encode a design still awaiting review.
+The [v1 value isolation correction](../archive/movie_recipe_value_isolation.md)
+resolves the first two observations through #355 without changing the format
+or signatures. The remaining validation and state gaps belong to #320; M1
+defines the replacement/migration contract before new public behavior is
+claimed. The original private probe remains preserved.
 
 ### Inspected evaluation, export and availability gaps
 
@@ -180,7 +182,11 @@ playback. The first slice should include:
    web and agent consumers must use this same model and one execution owner.
 
 Public names, exact signatures, graphical layout and channel representation
-remain to be agreed. M1 does not reduce the approved M2–M6 scope, introduce an
+remain to be agreed. The [M1 model proposal](../movie_timeline_design.md)
+now spells out independent property tracks, baseline/target validation,
+unit-aware time and camera data, constant-rate endpoint sampling, migration,
+one execution owner and bounded exports. It is a design to review, not delivered
+runtime/API support. M1 does not reduce the approved M2–M6 scope, introduce an
 LLM dependency, or promise runtime support for channels before receiving it.
 
 ## Execution route

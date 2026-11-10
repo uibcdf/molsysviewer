@@ -1,0 +1,222 @@
+{
+  "schema": "molsysviewer.host_integration_closeout@1",
+  "date": "2026-11-10",
+  "issues": [
+    "uibcdf/molsysviewer#301",
+    "uibcdf/molsysviewer#304",
+    "uibcdf/molsysviewer#306"
+  ],
+  "status": "C3 source-delivered; all three bounded host contracts received. Earlier hosted results retain exact source identity; final covering hosted, installed and postponed human scopes remain separate.",
+  "current_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+  "historical_hosted": [
+    {
+      "run": 42176308961,
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/42176308961",
+      "head_sha": "49dba88ae992088259a6f0891b59dfc8730f5183",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "Test on ubuntu-latest, Python 3.13",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on macos-15, Python 3.14",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.12",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on macos-15, Python 3.11",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on macos-15, Python 3.12",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on macos-15, Python 3.13",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.11",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.14",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check skipped-commit backlog",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "PR full suite",
+          "conclusion": "skipped"
+        }
+      ],
+      "capture_manifest_sha256": "9e1bd840929d4858f82d1e5a8af038697d44502c3983640a613d8df2a4d7d5a2"
+    },
+    {
+      "run": 42221924099,
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/42221924099",
+      "head_sha": "177e19a8fa06e37484a801da1711cc99acbc8f2d",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "Test on ubuntu-latest, Python 3.14",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on macos-15, Python 3.14",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.11",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on macos-15, Python 3.11",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.12",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on macos-15, Python 3.12",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on macos-15, Python 3.13",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test on ubuntu-latest, Python 3.13",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check skipped-commit backlog",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "PR full suite",
+          "conclusion": "skipped"
+        }
+      ],
+      "capture_manifest_sha256": "8e37969bd901f618de4f852d4739efdfe882d99d4da6541751b1d663f8f381f7"
+    },
+    {
+      "run": 42221924107,
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/42221924107",
+      "head_sha": "177e19a8fa06e37484a801da1711cc99acbc8f2d",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "Core E2E",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check skipped-commit backlog",
+          "conclusion": "skipped"
+        }
+      ],
+      "capture_manifest_sha256": "e570f2025d47b0c3bc946c21e3c5e214e0f7d5abd6d7b9c9c748e52f9b89033c"
+    }
+  ],
+  "source_comparison": {
+    "molsysviewer/system_edits.py": {
+      "current_sha256": "e87d38d870574add18d768ceb4a6bc338eb606df32727f973518c1bfc5c0a97f",
+      "historical_sha256": "3f9d7178a9ef041e5ef8d7365dc6f4d73694d7cd9b6a4bebffa9e4c966735605",
+      "byte_unchanged": false
+    },
+    "molsysviewer/presentations.py": {
+      "current_sha256": "84c7ade8b3c7d9907ba52bebd9be992d67b4427ad61eb5d4e047e42a2b17cc25",
+      "historical_sha256": "2bf9de358659a81fb3f8012d69b09a9f53d86f655661dee062e6436bc26ae909",
+      "byte_unchanged": false
+    },
+    "molsysviewer/js/src/ui/system-sync-overlay.ts": {
+      "current_sha256": "206589dd97690c4a214ab77b37aed0956f8792417ed80c6f5255ac5245e2864c",
+      "historical_sha256": "206589dd97690c4a214ab77b37aed0956f8792417ed80c6f5255ac5245e2864c",
+      "byte_unchanged": true
+    },
+    "molsysviewer/js/src/ui/presentation-surface.ts": {
+      "current_sha256": "faccc487422865e311a56677c8676b74857ed492f18d8915de57a0822a33749d",
+      "historical_sha256": "faccc487422865e311a56677c8676b74857ed492f18d8915de57a0822a33749d",
+      "byte_unchanged": true
+    },
+    "tests/test_view_presentations.py": {
+      "current_sha256": "96b3d63bfdc999b2ba9511128805bc827b25275cde461d4e1470e05404a76251",
+      "historical_sha256": "96b3d63bfdc999b2ba9511128805bc827b25275cde461d4e1470e05404a76251",
+      "byte_unchanged": true
+    },
+    "tests/test_conditional_system_replacement.py": {
+      "current_sha256": "cb298179d0ba35f9d3bf4882312f05fda239fc0e7cf8bb6530edb78d5a33c3b8",
+      "historical_sha256": "cb298179d0ba35f9d3bf4882312f05fda239fc0e7cf8bb6530edb78d5a33c3b8",
+      "byte_unchanged": true
+    }
+  },
+  "changed_boundaries": "SystemEditsManager gains coherent-capture lock continuations; Qt presentation disposal uses the already corrected #351 native window owner. Current focused guards are required; historical green matrices do not qualify those changes.",
+  "owner_integration": "The selected owner base contains the source-pair contributions including #668; #702 is independently verified owner-merged. No owner main integration is performed from this session.",
+  "current_receiving": [
+    {
+      "source_base": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "provider_source": "66273e4d3ad722726336055b4bf38dc76761e35e",
+      "native_exit": 1,
+      "seconds": 19.312137353932485,
+      "inputs_unchanged": true,
+      "selected_inputs": 10891,
+      "peak_owned_rss_mib": 507.4,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_profile": "probe-266-host-and-movie-before",
+      "invocation_sha256": "7ee8d61b05ea8ca8001247c7b50eaedb484eb3c4a5b24cb5c741624a8510890e",
+      "passing_host_cases": {
+        "301": 8,
+        "304": 22,
+        "306": 33
+      },
+      "separate_expected_unfixed_movie_failures": 3
+    },
+    {
+      "source_base": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "provider_source": "66273e4d3ad722726336055b4bf38dc76761e35e",
+      "native_exit": 0,
+      "seconds": 119.10907952301204,
+      "inputs_unchanged": true,
+      "selected_inputs": 10890,
+      "peak_owned_rss_mib": 2938.6,
+      "cleanup": {
+        "tracked": 29,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_profile": "build-268-c3-coordinate",
+      "invocation_sha256": "a1be8e3535a63130d2054c450bf191a139386299aeb1e9755fa5097450f0de27",
+      "scope": "Only the registered coordinate-edits browser entry: actual native reader/old inert scene/exact DOM restoration, coordinates/box, centroid and live session/popup geometry.",
+      "production_bundle_sha256": "11bf63f596cb9e2454c6ba4886387339b6c5f8a918adf0ae78e0733401e95735"
+    }
+  ],
+  "limits": {
+    "new_remote_ci_dispatched": false,
+    "current_hosted_green_claimed": false,
+    "clean_installed_claimed": false,
+    "postponed_human_accepted": false,
+    "publication_authorized": false
+  },
+  "original_progress_unchanged": false,
+  "native_qt_disposal_record": "devguide/qt_independent_disposal_receiving_20261110.json",
+  "presentation_scope": "The previously received native Qt disposal owners/tests are unchanged from b010ab76. Retain that actual rendered/ownership evidence and the historical actual Jupyter receipt; current native host and browser checks cover the changed lock/scene scope.",
+  "delivered_original_outcome": "C3",
+  "original_progress": {
+    "source_delivered": 38,
+    "denominator": 46,
+    "final_applicable_acceptance": 1
+  }
+}

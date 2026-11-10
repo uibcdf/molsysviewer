@@ -1,6 +1,6 @@
 # Robustness scale receiving — 2026-11-10
 
-**Partial: the adopted scale anchors pass; thirty active cycles in one kernel remain pending.** E2 under [the active plan](../pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md) is not closed. Original progress remains 37/46; F1/B4 are additional source deliveries. The [machine-readable receipt](../robustness_scale_receiving_20261110.json) retains identities, sample counts, median/MAD/range, input hashes and scoped limits.
+**Partial: the adopted scale anchors pass; thirty active cycles in one kernel remain pending.** E2 under [the active plan](../pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md) is not closed. Original progress is 38/46 after C3 receiving; F1/B4 are additional source deliveries. The [machine-readable scale receipt](../robustness_scale_receiving_20261110.json) retains identities, sample counts, median/MAD/range, input hashes and scoped limits. The [prolonged-session receipt](../prolonged_scientific_session_receiving_20261110.json) preserves eight successful cycles and the ninth recovered-frame observation #354, then fifteen correct cycles in a separate kernel before the shared-pressure stop. No cycles are added across kernels.
 
 ## Measured axes
 
@@ -30,3 +30,26 @@ The ordinary and 104,856-atom literal-overlay history cases each retain twenty-f
 The receiver uses sequential 2-CPU/4-GiB child scopes, zero swap, owned-process cleanup and shared-pressure stops with at least 2 GiB globally available. The identity probe independently reads actual cgroup limits and hashes all three bundled input files. Supervisor overhead is separate from the child limits; available resources are not reserved. No processes belonging to other work are touched. A first Chrome launch failed because its temporary Unix-socket path was too long; the established short private scratch root fixes that provisioning failure. The original failure remains in the receipt.
 
 Source, full hosted/platform, clean installed and postponed human observations remain separate. Hardware VRAM needs a qualified hardware-GPU profile. This checkpoint produces no candidate, tag, package, promotion or Release.
+
+## Same-kernel receiver
+
+The owner contribution [MolSysMT #706](https://github.com/uibcdf/molsysmt/pull/706)
+adds an opt-in Linux `system_panel_jupyter.py --scenario prolonged-session`
+profile with bounded `--cycles`, `--active-seconds` and
+`--server-ready-timeout`. The tested scale profile uses 4 CPU/4 GiB, zero swap,
+30 cycles and ten seconds of newly drawn playback per cycle; server preparation
+gets an explicit 90 seconds. Scientific/draw deadlines are unchanged. Each cycle
+uses all 5,000 structures of real pentalanine, a managed coordinate edit,
+independent distances, native Buch hbonds, exact session recovery, both popups,
+a separate 1TCD witness and live ownership/resource observations.
+
+The receiver explicitly shows and identifies the target widget before reading
+its initial frame. Activity requires completed native draws after the active
+interval and distinct structures, excluding replayed `didDraw` notifications;
+it sets no universal FPS admission threshold. Initial frame commands/results
+are recorded without replacing their return values or submitting a repair seek.
+The original offscreen discrepancy remains under #354. The revised receiver
+observes fifteen correct cycles (12.55 minutes of cycle work) before the
+shared-pressure stop; #356 tracks thirty disposed controllers still exposing
+logical molecular data. A small retainer diagnosis precedes another complete
+run. These observations establish neither a leak cause nor 30-cycle acceptance.

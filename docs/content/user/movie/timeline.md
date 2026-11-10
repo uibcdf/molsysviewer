@@ -12,7 +12,7 @@ All other fields are optional — missing fields mean "keep the current value".
 | Field | Type | Effect |
 |---|---|---|
 | `time_ms` | `float` | Timestamp in milliseconds (**required**). |
-| `camera` | `dict` | `{position, target, up}` in Å. |
+| `camera` | `dict` | `position` and `target` in Å; `up` is dimensionless. |
 | `structure_index` | `int` | Trajectory frame to show. |
 | `layer_visibility` | `dict[str, bool]` | Step-change visibility per tag. |
 | `easing` | `str` | Transition curve to the *next* keyframe. |
@@ -136,7 +136,7 @@ info = view.movie.info()
 # }
 
 view.movie.duration_ms  # 10000.0
-view.movie.keyframes    # list of dicts (read-only snapshot)
+view.movie.keyframes    # list of detached dictionaries
 ```
 
 ## Serialization
@@ -151,6 +151,9 @@ view.movie.save("recipes/orbit_360.json")
 view2.movie.load("recipes/orbit_360.json")
 view2.movie.play()
 ```
+
+You can edit a recipe independently. `keyframes` and `to_dict()` return detached
+values, and `from_dict()` copies the values you supply.
 
 `to_dict()` / `from_dict()` work with plain Python dicts:
 

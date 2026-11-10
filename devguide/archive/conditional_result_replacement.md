@@ -1,9 +1,9 @@
 ---
 summary: Condition replacement on the reviewed molecular target and revision.
 issue: uibcdf/molsysviewer#306
-status: partial
+status: resolved
 opened: 2026-11-06
-closed:
+closed: 2026-11-10
 verification: inspected
 area: [addons, editing, api]
 guard: tests/test_conditional_system_replacement.py
@@ -12,7 +12,9 @@ blocked_by: []
 supersedes: []
 ---
 
-# Conditional independent-result adoption
+# Conditional independent-result adoption — resolved
+
+Thirty-three current native controls receive atomic identity/revision checks and rejection without mutation through the changed lock path. The real consumer and exact historical eight-cell/core-browser scopes are received. See the [host integration receipt](../host_integration_closeout_20261110.json). Covering hosted/installed and postponed human acceptance remain separate under #264/#315. The sections below retain their original checkpoint scopes.
 
 ## What
 

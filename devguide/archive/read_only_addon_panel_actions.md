@@ -1,9 +1,9 @@
 ---
 summary: Admit declared read-only actions from mounted addon panels during pending scene synchronization.
 issue: uibcdf/molsysviewer#304
-status: partial
+status: resolved
 opened: 2026-11-06
-closed:
+closed: 2026-11-10
 verification: reproduced
 area: [addons, synchronization, api]
 guard: molsysviewer/js/tests/e2e/coordinate-edits.e2e.ts
@@ -12,7 +12,9 @@ blocked_by: []
 supersedes: []
 ---
 
-# Declared read-only addon panel requests
+# Declared read-only addon panel requests — resolved
+
+Twenty-two current Python controls and the actual coordinate-edits browser guard receive mounted native reads, old-scene inertness and exact DOM restoration. Prior actual Jupyter/popup and hosted 177e19a8 scopes are retained. See the [host integration receipt](../host_integration_closeout_20261110.json). Covering hosted/installed and postponed human acceptance remain separate under #264/#315. The sections below retain their original checkpoint scopes.
 
 ## What
 

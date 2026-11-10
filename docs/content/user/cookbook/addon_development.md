@@ -187,8 +187,19 @@ import molsysviewer
 molsysviewer.addons.discover()
 ```
 
-Today this only checks a maintained list of known module names.
-It is intentionally conservative.
+Installed add-ons can advertise an entry point in `molsysviewer.addons`:
+
+```toml
+[project.entry-points."molsysviewer.addons"]
+myaddon = "molsysviewer_myaddon"
+```
+
+The target can also name an add-on object or factory with `module:attribute`.
+The host discovers installed entry points on first use of the registry or when
+creating a view. Registration and activation are separate; see the
+[Developer Add-ons Guide](../../developer/addons.md) for the activation policy.
+For development without installed metadata, use `register_module(...)` or pass
+the module names explicitly to `discover(modules=[...])`.
 
 ## 6. Optional minimal lifecycle
 
@@ -259,7 +270,6 @@ override it locally for debugging.
 
 Do not assume that `1.0` already standardizes:
 
-- entry-point metadata discovery
 - persisted add-on preferences
 - frontend runtime lifecycle hooks
 - complex automatic loading of arbitrary packages
@@ -274,7 +284,7 @@ The current goal is a small, explicit, stable extension contract.
 4. if it is a large add-on, it defines a workspace
 5. it can be registered both:
    - manually via `molsysviewer.addons.register_module(...)`
-   - and through discovery once its module name is added to the maintained list
+   - and through discovery using its installed `molsysviewer.addons` entry point
 
 For the more normative version of this contract, also see:
 

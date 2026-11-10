@@ -1,0 +1,1145 @@
+{
+  "schema": "molsysviewer.prolonged_scientific_session_receiving@1",
+  "date": "2026-11-10",
+  "issue": "uibcdf/molsysviewer#315",
+  "related_issues": [
+    "uibcdf/molsysviewer#354",
+    "uibcdf/molsysmt#705",
+    "uibcdf/molsysviewer#356"
+  ],
+  "status": "Partial: fifteen complete cycles in one kernel; shared-pressure stop during cycle 16. Recovered-frame observation #354 and retained molecular data #356 remain active; thirty-cycle acceptance is pending.",
+  "owner_contribution": {
+    "url": "https://github.com/uibcdf/molsysmt/pull/706",
+    "source": "66273e4d3ad722726336055b4bf38dc76761e35e",
+    "files_sha256": {
+      "system_panel_jupyter.py": "3d791305acf74bc444473b549e2d1f018552e9f70469bef99cc13580f78aebc1",
+      "prolonged_session_fixture.py": "eed4e644e216499cd75d495e5ac252d68e54384af685e32ce7a5f86516081a4f",
+      "prolonged_session_jupyter.mjs": "54f829ca95dd5db674fc637f6f920fc1f2aefc8572296125494e88ebd5b50ee3",
+      "test_jupyter_runtime_files.py": "134a10928481cff909431dadac9a0e47e8f6fd75a8439bfc73ab5b8ac1f7f031"
+    },
+    "owner_integration_claimed": false
+  },
+  "scope": {
+    "system": "Real bundled 62-atom pentalanine, 5000 structures, modified atom 0 in local structure 4999; independent bundled 3983-atom 1TCD witness.",
+    "checks": [
+      "Native managed coordinate translation and independent NumPy distance oracle",
+      "Nonempty native Buch hbonds over all 5000 structures, exact sparse arrays/measures/units after recovery",
+      "Stale-edit refusal preserves prior system and scene",
+      "Canvas-popup UI navigation and detached Studio lifecycle",
+      "Coherent session save and exact molecular/scene/figure-context recovery",
+      "Active playback observed in actual native draws and changing structures",
+      "One unchanged kernel, native ownership counts, controller disposal and resource observations"
+    ],
+    "resource_profile": {
+      "logical_cpus": 4,
+      "ram_gib": 4,
+      "swap_gib": 0,
+      "minimum_globally_available_gib": 2,
+      "bounded_outer_seconds": 2400,
+      "supervisor_overhead": "Separate from child cgroup limits; total observed scope remains within the maintainer ceiling."
+    },
+    "duration_target_minutes": [
+      20,
+      30
+    ],
+    "required_cycles": 30,
+    "activity_seconds_per_cycle": 10,
+    "kernel_restarts_count_as_prolonged_use": false
+  },
+  "source_receiving": [
+    {
+      "private_profile": "probe-248-e2-prolonged-pilot",
+      "invocation_sha256": "08a865bbb5872f068c088e7b10b71ed85fe493f37687cfa14c459b7479e106e8",
+      "recorded_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "recorded_owner_head": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 2
+      },
+      "native_exit": 1,
+      "seconds": 28.301732999039814,
+      "inputs_unchanged": true,
+      "selected_inputs": 10887,
+      "peak_owned_rss_mib": 215.0,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "inputs-before_json_sha256": "e075d6dad87341f3fc1c4992f325b1cf658ae9d35643d1ce8cf046b59ae1a5d7",
+      "inputs-after_json_sha256": "e075d6dad87341f3fc1c4992f325b1cf658ae9d35643d1ce8cf046b59ae1a5d7",
+      "stdout_log_sha256": "c097a4a83e3eca52a970a09fdea12ca60a195240f7269b01eac89bfaf5ffb711",
+      "accepted_as_30_cycle_receiving": false
+    },
+    {
+      "private_profile": "probe-249-jupyter-server-budget",
+      "invocation_sha256": "8febb614ac06ca647ca1bc5c73195ba0fcca1948ce74d92c3eb063742f1248a3",
+      "recorded_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "recorded_owner_head": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 2
+      },
+      "native_exit": 0,
+      "seconds": 5.514503180980682,
+      "inputs_unchanged": true,
+      "selected_inputs": 10887,
+      "peak_owned_rss_mib": 176.9,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "inputs-before_json_sha256": "aebb84b50909b51b5eefef56c6eab16ee43dc01de16ccc73c6042917a357c41b",
+      "inputs-after_json_sha256": "aebb84b50909b51b5eefef56c6eab16ee43dc01de16ccc73c6042917a357c41b",
+      "stdout_log_sha256": "aca4b9d15ff8abb1de57b06083b5081dc560a7f0baa7863d43fb6cf9076e0e4b",
+      "accepted_as_30_cycle_receiving": false
+    },
+    {
+      "private_profile": "probe-250-e2-prolonged-pilot",
+      "invocation_sha256": "ef3f90eecfae4c16d7987f009a42c0b7adbb06d58d4fcb2b682ed56e001cb9d4",
+      "recorded_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "recorded_owner_head": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 2
+      },
+      "native_exit": 1,
+      "seconds": 93.33370334189385,
+      "inputs_unchanged": true,
+      "selected_inputs": 10887,
+      "peak_owned_rss_mib": 2662.4,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "inputs-before_json_sha256": "aebb84b50909b51b5eefef56c6eab16ee43dc01de16ccc73c6042917a357c41b",
+      "inputs-after_json_sha256": "aebb84b50909b51b5eefef56c6eab16ee43dc01de16ccc73c6042917a357c41b",
+      "stdout_log_sha256": "f913b066895ae1b2bde5fea568bc7edea933807466424df15347a2ea0fd21882",
+      "failure_stage": "cycle 1 load/edit/calculate",
+      "failure_type": "TimeoutError",
+      "completed_cycles": 0,
+      "failure_sha256": "e81770a3c84f99f602cb407c165343eaf4151cf092f898ff73e636338b7ca277",
+      "accepted_as_30_cycle_receiving": false
+    },
+    {
+      "private_profile": "probe-251-e2-prolonged-pilot",
+      "invocation_sha256": "86a38f475ec2933a3846430f079a6999b3fbfdfad9e0788c5305a27d2371073c",
+      "recorded_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "recorded_owner_head": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 2
+      },
+      "native_exit": 1,
+      "seconds": 117.812539372826,
+      "inputs_unchanged": true,
+      "selected_inputs": 10887,
+      "peak_owned_rss_mib": 2824.9,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 26,
+        "survivors": [],
+        "errors": []
+      },
+      "inputs-before_json_sha256": "4663e8c572ec31c9af255169163172283f3951f7b927754c04482f903840db21",
+      "inputs-after_json_sha256": "4663e8c572ec31c9af255169163172283f3951f7b927754c04482f903840db21",
+      "stdout_log_sha256": "c85fdc24649fed193a4c7905aa8036af5eae4c1cf8d2abeb0f26f4aef1d64d6d",
+      "failure_stage": "cycle 1 stale rejection and windows",
+      "failure_type": "TimeoutError",
+      "completed_cycles": 0,
+      "failure_sha256": "a2dc8400ccd527a50d4606ad678425856157d52d08641d58c3f13fa448636c98",
+      "accepted_as_30_cycle_receiving": false
+    },
+    {
+      "private_profile": "probe-252-e2-prolonged-pilot",
+      "invocation_sha256": "b7c0cf3d7675626a33eaaf86d901dc673362620d108d98189ca5670677253ab5",
+      "recorded_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "recorded_owner_head": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 2
+      },
+      "native_exit": 1,
+      "seconds": 128.67749727191404,
+      "inputs_unchanged": true,
+      "selected_inputs": 10887,
+      "peak_owned_rss_mib": 2911.2,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "inputs-before_json_sha256": "648058b960719e4f3d8df592180ef2389d9d738dba1f5f136c5f9de0d708bdc3",
+      "inputs-after_json_sha256": "648058b960719e4f3d8df592180ef2389d9d738dba1f5f136c5f9de0d708bdc3",
+      "stdout_log_sha256": "0b2662338030e7d079bd76a37f2198ca5251a238892a14a7e734ae1c0f3466a3",
+      "failure_stage": "cycle 1 active playback",
+      "failure_type": "Error",
+      "completed_cycles": 0,
+      "failure_sha256": "1053a0f10c7932bd38cdf6f44243822e37aa53f74aff67497d1109c3eb897e08",
+      "accepted_as_30_cycle_receiving": false
+    },
+    {
+      "private_profile": "probe-253-e2-prolonged-pilot",
+      "invocation_sha256": "f97236f0c6de1c4f7859f0f240ad2b838c541d487885125c4105347e6587dea9",
+      "recorded_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "recorded_owner_head": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 2
+      },
+      "native_exit": 0,
+      "seconds": 90.93336772895418,
+      "inputs_unchanged": true,
+      "selected_inputs": 10887,
+      "peak_owned_rss_mib": 2858.2,
+      "resource_stop": "Shared resource margin requires releasing this execution",
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "inputs-before_json_sha256": "19d6af4f5f538b0faee35d51fc26696f5c4527520e7545b74fa4c662f3fb0ab9",
+      "inputs-after_json_sha256": "19d6af4f5f538b0faee35d51fc26696f5c4527520e7545b74fa4c662f3fb0ab9",
+      "stdout_log_sha256": "baf8d917a437c1196f0101061e495b464acaec6cbbcfd3775d40ce0d6efe09e9",
+      "failure_stage": "cycle 1 coherent save/recovery",
+      "failure_type": "Error",
+      "completed_cycles": 0,
+      "failure_sha256": "089fae35275091be75e39f1b32b867d903297c2c8dab422093461eb8b2cf3438",
+      "accepted_as_30_cycle_receiving": false
+    },
+    {
+      "private_profile": "probe-254-e2-prolonged-pilot",
+      "invocation_sha256": "2d2bdfd7e616099ac1075727bacc64e76f9ff1db01ada19a30eba7f3b8cd2de6",
+      "recorded_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "recorded_owner_head": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 2
+      },
+      "native_exit": 0,
+      "seconds": 192.66882670205086,
+      "inputs_unchanged": true,
+      "selected_inputs": 10887,
+      "peak_owned_rss_mib": 2955.3,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 26,
+        "survivors": [],
+        "errors": []
+      },
+      "inputs-before_json_sha256": "19d6af4f5f538b0faee35d51fc26696f5c4527520e7545b74fa4c662f3fb0ab9",
+      "inputs-after_json_sha256": "19d6af4f5f538b0faee35d51fc26696f5c4527520e7545b74fa4c662f3fb0ab9",
+      "stdout_log_sha256": "648f31fe10a903dd8b28183b376a22a313f36ff1fcf034832bc509e5a87472a3",
+      "completed_cycles": 2,
+      "browser_seconds": 175.554,
+      "activity_seconds_per_cycle": 1,
+      "blocks": [
+        {
+          "first_cycle": 1,
+          "last_cycle": 2,
+          "seconds": 145.074
+        }
+      ],
+      "per_cycle": [
+        {
+          "cycle": 1,
+          "seconds": 72.774,
+          "activity": {
+            "seconds": 4.402299999952317,
+            "draws": 5,
+            "distinct_frames": 2
+          },
+          "js_heap_bytes": 168903916,
+          "observed_controllers": 3,
+          "connected_controllers": 1
+        },
+        {
+          "cycle": 2,
+          "seconds": 72.3,
+          "activity": {
+            "seconds": 6.002599999904633,
+            "draws": 5,
+            "distinct_frames": 2
+          },
+          "js_heap_bytes": 213873740,
+          "observed_controllers": 5,
+          "connected_controllers": 1
+        }
+      ],
+      "single_kernel_identity_observed": true,
+      "native_rss_mib": [
+        497.19140625,
+        511.53515625
+      ],
+      "result_sha256": "c415e210f3215c1b26ebae488ed66588a025c9222ddeedc016748097c84b236b",
+      "accepted_as_30_cycle_receiving": false
+    },
+    {
+      "private_profile": "probe-255-e2-prolonged-calibration",
+      "invocation_sha256": "864aac8a3f17b27b4642ff1eb01b0d749ac4d80059b49a3e5e98d8d4e3d6c5cc",
+      "recorded_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "recorded_owner_head": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 2
+      },
+      "native_exit": 0,
+      "seconds": 141.35123018408194,
+      "inputs_unchanged": true,
+      "selected_inputs": 10887,
+      "peak_owned_rss_mib": 2967.1,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 24,
+        "survivors": [],
+        "errors": []
+      },
+      "inputs-before_json_sha256": "262dd4db822f8f9c3a859f3a42155ed0ae7b0b2bbaf9a9a0f31cc215839fa74c",
+      "inputs-after_json_sha256": "262dd4db822f8f9c3a859f3a42155ed0ae7b0b2bbaf9a9a0f31cc215839fa74c",
+      "stdout_log_sha256": "fd3dbfd47c8a084085b91489c59febd2ed62bc5f3364666d4ab1340c0cd3be88",
+      "completed_cycles": 2,
+      "browser_seconds": 116.529,
+      "activity_seconds_per_cycle": 1,
+      "blocks": [
+        {
+          "first_cycle": 1,
+          "last_cycle": 2,
+          "seconds": 88.042
+        }
+      ],
+      "per_cycle": [
+        {
+          "cycle": 1,
+          "seconds": 46.368,
+          "activity": {
+            "seconds": 3.8984000000953674,
+            "draws": 4,
+            "distinct_frames": 2
+          },
+          "js_heap_bytes": 180479340,
+          "observed_controllers": 3,
+          "connected_controllers": 1
+        },
+        {
+          "cycle": 2,
+          "seconds": 41.674,
+          "activity": {
+            "seconds": 3.1470999999046327,
+            "draws": 4,
+            "distinct_frames": 2
+          },
+          "js_heap_bytes": 255472793,
+          "observed_controllers": 5,
+          "connected_controllers": 1
+        }
+      ],
+      "single_kernel_identity_observed": true,
+      "native_rss_mib": [
+        493.00390625,
+        506.59375
+      ],
+      "result_sha256": "04cf45022961c9c86d54209159cafa2eecedb71a42aa5374e497079474c5e545",
+      "accepted_as_30_cycle_receiving": false
+    },
+    {
+      "private_profile": "probe-256-prolonged-cli",
+      "invocation_sha256": "42d82490544d578775f748788af20769cc12e129859cdb78ec5a4799bdc621d6",
+      "recorded_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "recorded_owner_head": "9dff314f896238d8d9968c3c86b9b901adf6e81a",
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 2
+      },
+      "native_exit": 0,
+      "seconds": 4.908442518208176,
+      "inputs_unchanged": true,
+      "selected_inputs": 10889,
+      "peak_owned_rss_mib": 176.8,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "inputs-before_json_sha256": "a465682bc102089f09d26e1bf8f3b14fe58cb002cdec5abd397fc8602720390f",
+      "inputs-after_json_sha256": "a465682bc102089f09d26e1bf8f3b14fe58cb002cdec5abd397fc8602720390f",
+      "stdout_log_sha256": "383b24580d07d17fbe8f4e77bce6333f17ec322716974a512d110a539a5dd9f9",
+      "accepted_as_30_cycle_receiving": false
+    },
+    {
+      "private_profile": "prolonged-257-e2-kernel30",
+      "invocation_sha256": "c0758b753145c8b710d85a152fae7f2d57192f3cf9ba5128bf27ef33036413c6",
+      "recorded_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "recorded_owner_head": "c2ee877c55ead71a3c2c03a7346a010c7c8f6615",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 2
+      },
+      "native_exit": 1,
+      "seconds": 105.59801179193892,
+      "inputs_unchanged": true,
+      "selected_inputs": 10890,
+      "peak_owned_rss_mib": 3233.0,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 27,
+        "survivors": [],
+        "errors": []
+      },
+      "inputs-before_json_sha256": "e16b16769647d9159c0405ed651f04b2f1150fc6d80971d1b5f3f94d03b62896",
+      "inputs-after_json_sha256": "e16b16769647d9159c0405ed651f04b2f1150fc6d80971d1b5f3f94d03b62896",
+      "stdout_log_sha256": "1eb26bff4f96f2d5191011371993ef91fff85f9826ce73271d7fff2addd4fabe",
+      "failure_stage": "cycle 1 active playback",
+      "failure_type": "TimeoutError",
+      "completed_cycles": 0,
+      "failure_sha256": "b4b1c74799b041a4b3bd57bac1690c673d34d0bf484af2d7d054fa9c05bb8058",
+      "accepted_as_30_cycle_receiving": false
+    },
+    {
+      "private_profile": "probe-258-e2-visible-playback",
+      "invocation_sha256": "6b82d2e40edd915bf4fa82da55655316371e92caec8d7b2bb5cd810d813a4cbf",
+      "recorded_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "recorded_owner_head": "c2ee877c55ead71a3c2c03a7346a010c7c8f6615",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 2
+      },
+      "native_exit": 0,
+      "seconds": 127.94831166998483,
+      "inputs_unchanged": true,
+      "selected_inputs": 10890,
+      "peak_owned_rss_mib": 3075.4,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 26,
+        "survivors": [],
+        "errors": []
+      },
+      "inputs-before_json_sha256": "9676def14700c7332e983ac976b88b170eb8be3c7ea91bc64e4441173782ae16",
+      "inputs-after_json_sha256": "9676def14700c7332e983ac976b88b170eb8be3c7ea91bc64e4441173782ae16",
+      "stdout_log_sha256": "316723adb2b1a46e05033785aeb2e2e36ea4942ea48311148beada2cfcfb0c8c",
+      "completed_cycles": 2,
+      "browser_seconds": 120.066,
+      "activity_seconds_per_cycle": 10,
+      "blocks": [
+        {
+          "first_cycle": 1,
+          "last_cycle": 2,
+          "seconds": 100.55799999999999
+        }
+      ],
+      "per_cycle": [
+        {
+          "cycle": 1,
+          "seconds": 49.771,
+          "activity": {
+            "seconds": 10.615299999952317,
+            "draws": 6,
+            "distinct_frames": 6
+          },
+          "js_heap_bytes": 177671060,
+          "observed_controllers": 3,
+          "connected_controllers": 1
+        },
+        {
+          "cycle": 2,
+          "seconds": 50.787,
+          "activity": {
+            "seconds": 11.74060000014305,
+            "draws": 8,
+            "distinct_frames": 8
+          },
+          "js_heap_bytes": 227351701,
+          "observed_controllers": 5,
+          "connected_controllers": 1
+        }
+      ],
+      "single_kernel_identity_observed": true,
+      "native_rss_mib": [
+        489.94921875,
+        506.6796875
+      ],
+      "result_sha256": "8b6f2f4e19d9408efd039cd6e7e20f1f51154b3d3e73664c47d5302cee30d31c",
+      "accepted_as_30_cycle_receiving": false
+    },
+    {
+      "private_profile": "prolonged-259-e2-kernel30",
+      "invocation_sha256": "a7243cbec1dccde83ec4892ca89d842a157d66c6e448a28f66ace9dd938d470a",
+      "recorded_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "recorded_owner_head": "74aeffede0b7ff35c3cc4b7513b73b3b670b5a57",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 2
+      },
+      "native_exit": 1,
+      "seconds": 462.5469432750251,
+      "inputs_unchanged": true,
+      "selected_inputs": 10890,
+      "peak_owned_rss_mib": 3519.5,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 26,
+        "survivors": [],
+        "errors": []
+      },
+      "inputs-before_json_sha256": "fa93270c17e71997f9a18c8da39f7dee3ccdd46810891a365a69553e464bf3c6",
+      "inputs-after_json_sha256": "fa93270c17e71997f9a18c8da39f7dee3ccdd46810891a365a69553e464bf3c6",
+      "stdout_log_sha256": "f9867de8f629b0a02841c524777ec9aee36729cad77f0a2f7c5fbff4c112a423",
+      "failure_stage": "cycle 9 coherent save/recovery",
+      "failure_type": "TimeoutError",
+      "completed_cycles": 8,
+      "failure_sha256": "a618285066b0a031ca843281cd718b184cf7df527af008ee45d74789ec939f83",
+      "native_failure_observation": {
+        "trajectory": {
+          "frameCount": 5000,
+          "currentFrame": 0,
+          "isPlaying": false,
+          "hasTrajectory": true,
+          "expectedFrameCount": 5000,
+          "fps": 30,
+          "step": 1
+        },
+        "disposed": false,
+        "connected": true,
+        "rect": {
+          "x": 378,
+          "y": -550.25,
+          "width": 1068,
+          "height": 480
+        },
+        "viewport": {
+          "width": 1500,
+          "height": 1200
+        },
+        "playback": null
+      },
+      "accepted_as_30_cycle_receiving": false
+    },
+    {
+      "private_profile": "probe-260-recovered-identity",
+      "invocation_sha256": "439cb8a0422b9c4125d8b3a325e743eb45bc0cc55bca947f3dd6a130cd807bf1",
+      "recorded_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "recorded_owner_head": "74aeffede0b7ff35c3cc4b7513b73b3b670b5a57",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 2
+      },
+      "native_exit": 0,
+      "seconds": 82.66996202291921,
+      "inputs_unchanged": true,
+      "selected_inputs": 10890,
+      "peak_owned_rss_mib": 3014.3,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "inputs-before_json_sha256": "51f6a3d34a9382cae12c0328f996213fa012562c924bec12682ca643ab73af4a",
+      "inputs-after_json_sha256": "51f6a3d34a9382cae12c0328f996213fa012562c924bec12682ca643ab73af4a",
+      "stdout_log_sha256": "8660b5c41a712ff921f6f591ef3cfcda5abf0ad90f91b827288b7812a1e0b4aa",
+      "completed_cycles": 1,
+      "browser_seconds": 74.547,
+      "activity_seconds_per_cycle": 10,
+      "blocks": [
+        {
+          "first_cycle": 1,
+          "last_cycle": 1,
+          "seconds": 53.827
+        }
+      ],
+      "per_cycle": [
+        {
+          "cycle": 1,
+          "seconds": 53.827,
+          "activity": {
+            "seconds": 10.154900000095367,
+            "draws": 5,
+            "distinct_frames": 5
+          },
+          "js_heap_bytes": 177779814,
+          "observed_controllers": 3,
+          "connected_controllers": 1
+        }
+      ],
+      "single_kernel_identity_observed": true,
+      "native_rss_mib": [
+        492.3359375
+      ],
+      "result_sha256": "41ee36848ae1f8d081799873f864a6e013ea6831e6d309c7eae3903a08694a17",
+      "accepted_as_30_cycle_receiving": false
+    },
+    {
+      "private_profile": "probe-261-docs-reconciliation",
+      "invocation_sha256": "7d0eb1512407cd6e3fba5a0a58a93ec67fd659b707402e7f6697eaf11adc0a45",
+      "recorded_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "recorded_owner_head": "e97d322905de502bce73866d71bdab7ec48033a4",
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 2
+      },
+      "native_exit": 1,
+      "seconds": 3.458663378143683,
+      "inputs_unchanged": true,
+      "selected_inputs": 10890,
+      "peak_owned_rss_mib": 31.2,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "inputs-before_json_sha256": "51f6a3d34a9382cae12c0328f996213fa012562c924bec12682ca643ab73af4a",
+      "inputs-after_json_sha256": "51f6a3d34a9382cae12c0328f996213fa012562c924bec12682ca643ab73af4a",
+      "stdout_log_sha256": "abc23c09588741102da8ee8fe684be4ae9c00aaa29f82a142b054e2af0b93c90",
+      "accepted_as_30_cycle_receiving": false
+    },
+    {
+      "private_profile": "probe-262-docs-reconciliation",
+      "invocation_sha256": "bfbf7640e573bbf0aa9181ed8299c20aa893a0ee8c648f7dd053243c8ecf0029",
+      "recorded_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "recorded_owner_head": "e97d322905de502bce73866d71bdab7ec48033a4",
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 2
+      },
+      "native_exit": 1,
+      "seconds": 14.87756046000868,
+      "inputs_unchanged": true,
+      "selected_inputs": 10890,
+      "peak_owned_rss_mib": 409.5,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "inputs-before_json_sha256": "51f6a3d34a9382cae12c0328f996213fa012562c924bec12682ca643ab73af4a",
+      "inputs-after_json_sha256": "51f6a3d34a9382cae12c0328f996213fa012562c924bec12682ca643ab73af4a",
+      "stdout_log_sha256": "9f4165f198c4a315d4bd36dab500cace6b534b166bd1c65c9073950f912b33d8",
+      "accepted_as_30_cycle_receiving": false
+    },
+    {
+      "private_profile": "probe-263-clean-doc-links",
+      "invocation_sha256": "2e45d6ed3862cb0901bd3c7fba73f346256128ede1e4787ecb62522af1144e97",
+      "recorded_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "recorded_owner_head": "e97d322905de502bce73866d71bdab7ec48033a4",
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 2
+      },
+      "native_exit": 4,
+      "seconds": 4.10767283802852,
+      "inputs_unchanged": true,
+      "selected_inputs": 10890,
+      "peak_owned_rss_mib": 173.9,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "inputs-before_json_sha256": "51f6a3d34a9382cae12c0328f996213fa012562c924bec12682ca643ab73af4a",
+      "inputs-after_json_sha256": "51f6a3d34a9382cae12c0328f996213fa012562c924bec12682ca643ab73af4a",
+      "stdout_log_sha256": "abbd7408e26c5d56e84969a52dc191cef52ee8828e29c4e75e2c6c53ce3c3578",
+      "accepted_as_30_cycle_receiving": false
+    },
+    {
+      "private_profile": "probe-264-clean-doc-links",
+      "invocation_sha256": "8e0684a180098fe32915a4ecb3b2572e8481c759497d71a1eb6d9d84f7662a05",
+      "recorded_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "recorded_owner_head": "e97d322905de502bce73866d71bdab7ec48033a4",
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 2
+      },
+      "native_exit": 0,
+      "seconds": 4.724123086081818,
+      "inputs_unchanged": true,
+      "selected_inputs": 10890,
+      "peak_owned_rss_mib": 164.3,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "inputs-before_json_sha256": "51f6a3d34a9382cae12c0328f996213fa012562c924bec12682ca643ab73af4a",
+      "inputs-after_json_sha256": "51f6a3d34a9382cae12c0328f996213fa012562c924bec12682ca643ab73af4a",
+      "stdout_log_sha256": "ab0b64cab642f6070dfa226f02a18a2b3d9d7abb5e78e513c093152d9b5dd573",
+      "accepted_as_30_cycle_receiving": false
+    },
+    {
+      "private_profile": "prolonged-265-e2-kernel30",
+      "invocation_sha256": "c0049339e6a89549237a41125c8a9da01467cfd3b44435446a8c22e6da48ea05",
+      "recorded_viewer_head": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+      "recorded_owner_head": "66273e4d3ad722726336055b4bf38dc76761e35e",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 2
+      },
+      "native_exit": 0,
+      "seconds": 841.6454143340234,
+      "inputs_unchanged": true,
+      "selected_inputs": 10890,
+      "peak_owned_rss_mib": 4150.4,
+      "resource_stop": "Shared resource margin requires releasing this execution",
+      "cleanup": {
+        "tracked": 26,
+        "survivors": [],
+        "errors": []
+      },
+      "inputs-before_json_sha256": "266acc89a49ae36ba1255ac1ca8d630976220315fcdef6d1847e6e1d63247cd7",
+      "inputs-after_json_sha256": "266acc89a49ae36ba1255ac1ca8d630976220315fcdef6d1847e6e1d63247cd7",
+      "stdout_log_sha256": "fbf0147e901034937183619b2130cadcc670f5ddb020a8bc836caafde1a3189e",
+      "failure_stage": "cycle 16 active playback",
+      "failure_type": "Error",
+      "completed_cycles": 15,
+      "failure_sha256": "441504359739657f2c3bcb257aca7b886f429044dcb69f7a0a12065507d8c6a0",
+      "observed_cycle_minutes": 12.553716666666666,
+      "browser_ledger_sha256": "040269031d527737eacaa2494adc67ee87a2c8e03b535c60c81ae5cf7800051b",
+      "native_ledger_sha256": "92660401949b29c7f7bedf7482362f79c08e0dd5b1c8404ffd25d339d6244485",
+      "single_kernel_identity_observed": true,
+      "per_cycle": [
+        {
+          "cycle": 1,
+          "seconds": 52.268,
+          "activity": {
+            "seconds": 10.404100000143051,
+            "draws": 7,
+            "distinct_frames": 7
+          },
+          "gc_exposed": true,
+          "js_heap_bytes": 196247039,
+          "observed_controllers": 3,
+          "connected_controllers": 1,
+          "cgroup_current_bytes": 2122276864,
+          "cgroup_peak_bytes": 2213732352,
+          "cgroup_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "native_rss_mib": 494.5859375
+        },
+        {
+          "cycle": 2,
+          "seconds": 49.149,
+          "activity": {
+            "seconds": 10.0585,
+            "draws": 5,
+            "distinct_frames": 5
+          },
+          "gc_exposed": true,
+          "js_heap_bytes": 226611288,
+          "observed_controllers": 5,
+          "connected_controllers": 1,
+          "cgroup_current_bytes": 2113986560,
+          "cgroup_peak_bytes": 2324742144,
+          "cgroup_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "native_rss_mib": 510.65234375
+        },
+        {
+          "cycle": 3,
+          "seconds": 55.344,
+          "activity": {
+            "seconds": 11.886799999952316,
+            "draws": 6,
+            "distinct_frames": 6
+          },
+          "gc_exposed": true,
+          "js_heap_bytes": 266890706,
+          "observed_controllers": 7,
+          "connected_controllers": 1,
+          "cgroup_current_bytes": 2181681152,
+          "cgroup_peak_bytes": 2339934208,
+          "cgroup_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "native_rss_mib": 516.73828125
+        },
+        {
+          "cycle": 4,
+          "seconds": 50.69,
+          "activity": {
+            "seconds": 11.502099999904633,
+            "draws": 6,
+            "distinct_frames": 6
+          },
+          "gc_exposed": true,
+          "js_heap_bytes": 312923335,
+          "observed_controllers": 9,
+          "connected_controllers": 1,
+          "cgroup_current_bytes": 2300018688,
+          "cgroup_peak_bytes": 2415902720,
+          "cgroup_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "native_rss_mib": 566.22265625
+        },
+        {
+          "cycle": 5,
+          "seconds": 47.682,
+          "activity": {
+            "seconds": 10.105199999809265,
+            "draws": 5,
+            "distinct_frames": 5
+          },
+          "gc_exposed": true,
+          "js_heap_bytes": 362979149,
+          "observed_controllers": 11,
+          "connected_controllers": 1,
+          "cgroup_current_bytes": 2379124736,
+          "cgroup_peak_bytes": 2544308224,
+          "cgroup_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "native_rss_mib": 516.76171875
+        },
+        {
+          "cycle": 6,
+          "seconds": 50.772,
+          "activity": {
+            "seconds": 12.046099999904632,
+            "draws": 7,
+            "distinct_frames": 7
+          },
+          "gc_exposed": true,
+          "js_heap_bytes": 420522295,
+          "observed_controllers": 13,
+          "connected_controllers": 1,
+          "cgroup_current_bytes": 2711003136,
+          "cgroup_peak_bytes": 2807816192,
+          "cgroup_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "native_rss_mib": 511.16015625
+        },
+        {
+          "cycle": 7,
+          "seconds": 48.885,
+          "activity": {
+            "seconds": 10.42089999985695,
+            "draws": 5,
+            "distinct_frames": 5
+          },
+          "gc_exposed": true,
+          "js_heap_bytes": 464347800,
+          "observed_controllers": 15,
+          "connected_controllers": 1,
+          "cgroup_current_bytes": 2823151616,
+          "cgroup_peak_bytes": 2880180224,
+          "cgroup_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "native_rss_mib": 566.3828125
+        },
+        {
+          "cycle": 8,
+          "seconds": 50.982,
+          "activity": {
+            "seconds": 11.839700000047683,
+            "draws": 6,
+            "distinct_frames": 6
+          },
+          "gc_exposed": true,
+          "js_heap_bytes": 509026145,
+          "observed_controllers": 17,
+          "connected_controllers": 1,
+          "cgroup_current_bytes": 2876043264,
+          "cgroup_peak_bytes": 2973368320,
+          "cgroup_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "native_rss_mib": 511.20703125
+        },
+        {
+          "cycle": 9,
+          "seconds": 52.099,
+          "activity": {
+            "seconds": 10.304599999904633,
+            "draws": 5,
+            "distinct_frames": 5
+          },
+          "gc_exposed": true,
+          "js_heap_bytes": 529773686,
+          "observed_controllers": 19,
+          "connected_controllers": 1,
+          "cgroup_current_bytes": 2699198464,
+          "cgroup_peak_bytes": 2973368320,
+          "cgroup_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "native_rss_mib": 512.265625
+        },
+        {
+          "cycle": 10,
+          "seconds": 50.467,
+          "activity": {
+            "seconds": 10.537900000095368,
+            "draws": 6,
+            "distinct_frames": 6
+          },
+          "gc_exposed": true,
+          "js_heap_bytes": 581678590,
+          "observed_controllers": 21,
+          "connected_controllers": 1,
+          "cgroup_current_bytes": 2789146624,
+          "cgroup_peak_bytes": 3005706240,
+          "cgroup_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "native_rss_mib": 515.9140625
+        },
+        {
+          "cycle": 11,
+          "seconds": 48.819,
+          "activity": {
+            "seconds": 10.465700000047685,
+            "draws": 5,
+            "distinct_frames": 5
+          },
+          "gc_exposed": true,
+          "js_heap_bytes": 616416875,
+          "observed_controllers": 23,
+          "connected_controllers": 1,
+          "cgroup_current_bytes": 2865909760,
+          "cgroup_peak_bytes": 3120660480,
+          "cgroup_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "native_rss_mib": 512.37890625
+        },
+        {
+          "cycle": 12,
+          "seconds": 48.687,
+          "activity": {
+            "seconds": 11.298400000095368,
+            "draws": 6,
+            "distinct_frames": 6
+          },
+          "gc_exposed": true,
+          "js_heap_bytes": 639240963,
+          "observed_controllers": 25,
+          "connected_controllers": 1,
+          "cgroup_current_bytes": 2856325120,
+          "cgroup_peak_bytes": 3120660480,
+          "cgroup_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "native_rss_mib": 511.4296875
+        },
+        {
+          "cycle": 13,
+          "seconds": 47.217,
+          "activity": {
+            "seconds": 10.735200000047683,
+            "draws": 6,
+            "distinct_frames": 6
+          },
+          "gc_exposed": true,
+          "js_heap_bytes": 705892369,
+          "observed_controllers": 27,
+          "connected_controllers": 1,
+          "cgroup_current_bytes": 3241435136,
+          "cgroup_peak_bytes": 3309076480,
+          "cgroup_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "native_rss_mib": 566.6953125
+        },
+        {
+          "cycle": 14,
+          "seconds": 50.388,
+          "activity": {
+            "seconds": 11.175399999856948,
+            "draws": 5,
+            "distinct_frames": 5
+          },
+          "gc_exposed": true,
+          "js_heap_bytes": 750539837,
+          "observed_controllers": 29,
+          "connected_controllers": 1,
+          "cgroup_current_bytes": 3302395904,
+          "cgroup_peak_bytes": 3425820672,
+          "cgroup_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "native_rss_mib": 511.55078125
+        },
+        {
+          "cycle": 15,
+          "seconds": 49.774,
+          "activity": {
+            "seconds": 11.918,
+            "draws": 6,
+            "distinct_frames": 6
+          },
+          "gc_exposed": true,
+          "js_heap_bytes": 788733673,
+          "observed_controllers": 31,
+          "connected_controllers": 1,
+          "cgroup_current_bytes": 3320520704,
+          "cgroup_peak_bytes": 3425820672,
+          "cgroup_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "native_rss_mib": 567.6015625
+        }
+      ],
+      "terminal_global_pressure_sample": {
+        "seconds": 838.82,
+        "available_gib": 11.9,
+        "memory_pressure_avg10": 2.54,
+        "swap_activity_bytes": 0
+      },
+      "disposed_with_molecular_structure_count": 30,
+      "accepted_as_30_cycle_receiving": false
+    }
+  ],
+  "preserved_dispositions": {
+    "248": "Server preparation timed out before any browser/molecular cell. Explicit bounded CLI budget proposed under owner #705; default remains 20 s.",
+    "250": "Prototype fixture incorrectly attempted deepcopy of immutable measurement mappings; arrays and unit mappings are now copied through their actual contracts.",
+    "251": "Prototype selected a label absent from shared canvas controls; the actual next-structure control identifier replaces that assumption.",
+    "252": "Witness reference was captured before initial framing; actual default-versus-framed snapshots explain that false comparison.",
+    "253": "Global shared memory-pressure stop. Native exit zero does not make the interrupted campaign pass.",
+    "257": "Playback control advanced, but the receiver did not enforce canvas visibility and imposed an unagreed distinct-frame count; no viewport diagnostic was captured in that attempt, so an offscreen cause is not independently established. The revised receiver observes actual new draws through the whole active interval, without asserting a universal FPS floor.",
+    "259": "Eight cycles pass; cycle 9 Python recovery is exact but the offscreen frontend stays at zero. #354 preserves the observation without assigning an unproved cause.",
+    "260": "One cycle passes with explicit visibility and unique runtime-viewer matching; this does not resolve the original ninth-cycle observation.",
+    "261": "Index became stale after a verification field changed; regenerated before continuing.",
+    "262": "416 scoped cases pass; one clean-checkout link assertion failed because two new documents were not yet in the Git index.",
+    "263": "Relative Viewer test path was selected from the owner working directory: usage error, zero executed tests.",
+    "264": "The sole failed link assertion passes with the absolute Viewer selector after staging the new documents.",
+    "265": "Fifteen complete cycles in one kernel, with matching recovered widget identities and frames. The shared memory-pressure stop interrupts cycle 16 and retires every owned process. No original scientific assertion fails in the fifteen completed cycles. Retained logical molecular data in thirty disposed controllers is tracked as #356 without assuming a cause of shared pressure."
+  },
+  "acceptance": {
+    "thirty_cycles_received": false,
+    "e2_closed": false,
+    "human": false,
+    "clean_installed": false,
+    "hosted": false,
+    "qt_or_hardware_vram": false,
+    "publication_authorized": false
+  },
+  "private_custody_checkpoint_before_265": {
+    "number": 14,
+    "files_verified": 354,
+    "bytes_verified": 141742180,
+    "manifest_sha256": "bda29fef99cc888abfbbf4040c467fd2eb2368498e832f755848b44eb456ed00",
+    "original_diagnostics_retained": true,
+    "unused_owned_credentials_hash_retired": true,
+    "off_host_backup_claimed": false
+  },
+  "original_progress": "38/46 source-delivered after C3 receiving and 1/46 final acceptance. B4/F1 are additional adopted deliveries outside that denominator. No credit is added for this partial E2 campaign.",
+  "retention_diagnostics": {
+    "270": {
+      "native_exit": -15,
+      "seconds": 85.02496786811389,
+      "selected_inputs": 10894,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 5188.0,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_profile": "probe-270-retired-controller-root",
+      "observation": "One actual cycle passed before a full V8 heap capture lost the browser target. No usable heap snapshot or retaining path.",
+      "accepted_as_30_cycle_receiving": false
+    },
+    "271": {
+      "native_exit": 0,
+      "seconds": 84.99535492411815,
+      "selected_inputs": 10896,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2947.4,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_profile": "probe-271-binding-handle-differential",
+      "observation": "One actual cycle passed; two retired controllers remain after disposal of four observer DOM handles and two subsequent collection samples.",
+      "accepted_as_30_cycle_receiving": false,
+      "diagnostic_sha256": "b499bc5b23f32a4aec82f269879a34c316f0ef39ecc9e3a3e762a3e70db6903f",
+      "diagnostic": {
+        "before": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 3983
+          },
+          {
+            "disposed": true,
+            "connected": false,
+            "atoms": 62
+          },
+          {
+            "disposed": true,
+            "connected": false,
+            "atoms": 62
+          }
+        ],
+        "after": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 3983
+          },
+          {
+            "disposed": true,
+            "connected": false,
+            "atoms": 62
+          },
+          {
+            "disposed": true,
+            "connected": false,
+            "atoms": 62
+          }
+        ],
+        "after2": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 3983
+          },
+          {
+            "disposed": true,
+            "connected": false,
+            "atoms": 62
+          },
+          {
+            "disposed": true,
+            "connected": false,
+            "atoms": 62
+          }
+        ],
+        "handles": 4,
+        "scope": "Same actual browser workload, dispose only notebook DOM handles, no full heap snapshot."
+      }
+    }
+  },
+  "private_custody_checkpoint_after_diagnostics": {
+    "number": 15,
+    "files_verified": 172,
+    "bytes_verified": 109985487,
+    "manifest_sha256": "3151d7d019cdfa3c5f9ef6727b782888230b96f9d3ebd8577773499c9a7a6fde",
+    "original_diagnostics_retained": true,
+    "unused_owned_credentials_hash_retired": true,
+    "off_host_backup_claimed": false
+  }
+}

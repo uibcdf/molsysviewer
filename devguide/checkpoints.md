@@ -910,14 +910,23 @@ previous qualification records retain their original candidate and environment.
 The [physical-model receipt](molsysmt_physical_recipe_receiving_20261110.json)
 and [construction receipt](molsysmt_construction_receiving_20261110.json)
 record D5.2 / D6.5 in owner-integrated contributions #696 / #699. Viewer
-`b010ab76` receives native result-window disposal (#351) and the additional
-reviewed public API snapshot F1 (#350). The active #315 dashboard owns the
+`cb326235` retains native result-window disposal (#351), the additional
+reviewed public API snapshot F1 (#350), B4's figure context and corrected
+benchmark statistics (#353). The active #315 dashboard owns the
 current original-outcome counter and separates source delivery from final
-acceptance. Owner `6bd879bda` contains #687/#691 and the received #690 backend;
+acceptance. The received owner base `5f241cfa` contains #687/#691/#696/#699 and
+the unchanged qualified #690 backend;
 #688 is closed. Native #695/#697 are owner-closed; #666 exact-cutoff semantics
-remain owner work. B4 figure context is delivered in core
-`46f7d11a` and producer PR #702. E2's agreed scale campaign has started;
-30 active cycles remain pending.
+remain owner work. B4's [exact-source receipt](figure_observation_receiving_20261110.json)
+separates its core/producer and live-host scopes, with producer PR #702 owner-integrated. E2's
+[scale anchors pass](performance/robustness_scale_receiving_20261110.md);
+Fifteen active cycles pass before a shared-pressure stop; the thirty-cycle
+gate remains open. Diagnose [retained logical data #356](pending_bugs/retired_notebook_molecular_data.md)
+with a small controlled probe. Retain the separate recovered-frame observation
+[#354](pending_bugs/recovered_canvas_initial_structure_observation.md),
+receiver PR #706 and the explicit Jupyter server-preparation limit under
+MolSysMT #705. This does not resolve
+#615's different molecular-cell initialization observation.
 Continue these, the remaining integration/diagnostic exits, documentation and
 mandatory Movie #320. Human checks and candidate/publication actions stay paused.
 
@@ -1212,7 +1221,7 @@ Native MolSysMT #616 still rejects appending the matching original source to the
 recovered system; the fresh-native control succeeds. No downstream repair is
 introduced, and that continuation requirement remains open.
 
-[Conditional replacement #306](pending_proposals/conditional_result_replacement.md)
+[Conditional replacement #306](archive/conditional_result_replacement.md)
 coordinates explicit preparation-result adoption using source identity/revision
 and an independent candidate. Back, stale reviews and unpresented result/token
 lifetimes have source and actual-Jupyter guards. External raw-array writes remain
@@ -2865,21 +2874,23 @@ chronological status narrative here.
 
 **Current order — 2026-11-10:**
 
-1. **C:** retain owner-integrated C1/C2 and receive owner review of new
-   producer PR #702 and its changed combined source. Complete the
-   remaining #264/#301/#304/#306 exits and the evidenced disposition of #305.
+1. **C:** retain owner-integrated C1/C2 and producer PR #702; receive owner review
+   of the new prolonged-session receiver PR #706 and changed combined sources. Retain delivered
+   C3 host services (#301/#304/#306); #264's broader acceptance and #305's
+   evidenced disposition remain separate.
 2. **A:** retain delivered integrity, coherent live capture and actual
    Jupyter/native Qt lifecycle corrections through applicable combined gates.
-3. **B/F:** retain delivered B4 provenance and receive producer PR #702; retain F1's reviewed signatures and
+3. **B/F:** retain delivered B4 provenance and owner-integrated producer PR #702; retain F1's reviewed signatures and
    review each intended new API. B3.6 alone remains a separate visual-design
    recommendation. Broad documentation follows settled functionality.
 4. **D:** retain received D5.2 and D6.4–D6.6/D6.8–D6.10. Resolve D5.4/#615's
    uncertain initialization observation and D6.7's contact-unit
    boundary (#666 / PyUnitWizard #143), without consumer scientific workarounds.
-5. **E:** execute the adopted representative scale and same-kernel prolonged-use
-   protocol after its required operations are ready. E1's continuous workflow
+5. **E:** retain the received scale anchors and complete the adopted same-kernel
+   prolonged-use protocol. E1's continuous workflow
    remains received; human E4 stays postponed.
-6. **Movie:** complete the separately mandatory #320 design/export stream.
+6. **Movie:** review the [M1 model proposal](movie_timeline_design.md), then
+   complete the separately mandatory #320 authoring/evaluation/export stream.
 7. **G:** prepare #294's covering artifact and exact installed/downstream
    qualification when separately authorized. Candidate/tag/package actions and
    both 1.0 publications remain paused.
