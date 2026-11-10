@@ -95,5 +95,14 @@
       "scope": "Unchanged clean-checkout link guard after staging all referenced authored files."
     },
     "original_failure_retained": true
+  },
+  "private_custody": {
+    "number": 9,
+    "files_verified": 488,
+    "bytes_verified": 352508968,
+    "manifest_sha256": "3811f5e1f372cc35c480f470030ec8ca5a8ff58f8ea33c8d1eb56d63e787bef2",
+    "original_diagnostics_retained": true,
+    "unused_owned_credentials_hash_retired": true,
+    "off_host_backup_claimed": false
   }
 }

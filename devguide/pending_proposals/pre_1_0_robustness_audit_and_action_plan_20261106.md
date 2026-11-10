@@ -14,20 +14,33 @@ supersedes: []
 
 # Pre-1.0 robustness audit and action plan — 2026-11-06
 
+**Current source delivery — 2026-11-10, independent construction:**
+[The construction receipt](../molsysmt_construction_receiving_20261110.json)
+records **37/46 (80.4%) source-delivered**, adding original D6.5 through
+[MolSysMT draft PR #699](https://github.com/uibcdf/molsysmt/pull/699),
+`400d484f8`, stacked on #696. Five private Chemistry tasks use native
+construction, with 19 focused / 124 affected and 116 caller guards, six actual
+Jupyter workflows including both popups, and six native Qt checks with complete
+retirement. Viewer #351 is corrected in `b010ab76`; F1 is also source-received
+as additional adopted work. Failures remain preserved. Owner review, changed
+combined-head/hosted/installed and postponed human acceptance are separate.
+Final applicable acceptance stays **1/46**. B4, E2 and Movie #320 remain work;
+publication and E4 human observations remain paused.
+
+
 **Additional adopted contract received — 2026-11-10:** F1 now guards 954 public
 callables, properties and constructors with explicit signatures and stability;
 [its receipt](../public_api_contract_receiving_20261110.json) preserves the
 mutation controls and 101 affected headless passes. This additional result is
-outside the original denominator, which stays **36/46 source-delivered**.
+outside the original 46-outcome denominator; the current counter is above.
 The [native Qt disposal correction](../qt_independent_disposal_receiving_20261110.json)
 also receives complete independent-window retirement, including failed
-initialization. D6.5 has successful source checks and actual Jupyter/native Qt
-receiving but is not credited until its contribution is published for owner
-review. B4 and the adopted E2 campaign remain pending. Human acceptance and
+initialization. D6.5 now has successful source checks, actual Jupyter/native Qt
+receiving and a published contribution for owner review. B4 and the adopted E2 campaign remain pending. Human acceptance and
 publication actions remain paused; no final acceptance is inferred.
 
 
-**Current source delivery — 2026-11-10, physical-model inspection:**
+**Previous source checkpoint — 2026-11-10, physical-model inspection:**
 [The physical-recipe receipt](../molsysmt_physical_recipe_receiving_20261110.json)
 records **36/46 (78.3%) source-delivered**, adding original D5.2 through
 MolSysMT draft PR #696 at `30b2c8b50`. The public native physical recipe now
@@ -537,12 +550,12 @@ C2/task and hosted acceptance remain pending; C1 below holds the exact evidence.
 
 ### Current next actions
 
-1. Complete accepted D6.5 construction/assembly/solvent/ion tasks and receive
+1. Receive owner review/integration of D6.5 construction/assembly/solvent/ion tasks and receive
    the owner resolutions for #695 box alignment and #666 / PyUnitWizard #143
    exact-cutoff semantics before their broader acceptance. #690 is source-closed
    and its canonical corrected backend is received; do not repeat its dangerous
    original allocation outside the preserved protected control.
-2. Implement adopted B4 figure provenance and F1 public-contract snapshots.
+2. Implement adopted B4 figure provenance; retain F1’s received public-contract snapshot and review new APIs against it.
    Continue C3's remaining integration exits, D5.4/#615 initialization and
    C4/Viewer #305 with causal or bounded evidenced dispositions, retaining
    original failed runs and unchanged deadlines.
@@ -632,8 +645,8 @@ history:
 
 | Stage | Completed / original 46 | IDs and evidence meaning |
 | --- | --- | --- |
-| Consumer result complete and locally verified | **36/46 — 78.3%** | Earlier twenty-five plus owner-integrated source/pin receiving C1/C2, coordinate refinement D6.6, chemical repair/assignments D6.4, coherent capture A5, property/report tasks D6.8, qualified visual adoption D6.10, interactions/mechanics D6.9, continuous session E1, physical-model inspection D5.2 and consolidated handoff F3. See the new receipt for each original outcome and its unaccepted exits. |
-| Consumer result delivered | **36/46 — 78.3%** | E0, A1–A6, B1/B2/B3.1–B3.5, C1/C2/C5, D1–D4, D5.1–D5.3/D5.5/D5.6, D6.1–D6.4/D6.6/D6.8–D6.10, E1 and F3. PR #668 and #678/#681/#682/#683 are owner-merged; the owner has integrated #687/#691; draft #696 delivers D5.2 without claiming its owner acceptance. |
+| Consumer result complete and locally verified | **37/46 — 80.4%** | Earlier twenty-five plus owner-integrated source/pin receiving C1/C2, coordinate refinement D6.6, chemical repair/assignments D6.4, coherent capture A5, property/report tasks D6.8, qualified visual adoption D6.10, interactions/mechanics D6.9, continuous session E1, physical-model inspection D5.2, independent construction D6.5 and consolidated handoff F3. See the new receipt for each original outcome and its unaccepted exits. |
+| Consumer result delivered | **37/46 — 80.4%** | E0, A1–A6, B1/B2/B3.1–B3.5, C1/C2/C5, D1–D4, D5.1–D5.3/D5.5/D5.6, D6.1–D6.6/D6.8–D6.10, E1 and F3. PR #668 and #678/#681/#682/#683 are owner-merged; the owner has integrated #687/#691; draft #696 delivers D5.2 and stacked #699 delivers D6.5 without claiming owner acceptance. |
 | Final applicable acceptance recorded | **1/46 — 2.2%** | E0 only. Preserve the remaining acceptance obligations rather than silently promoting source delivery. |
 
 These stages are not additive, equally weighted effort estimates, time
@@ -978,7 +991,7 @@ do not silently omit an existing accepted family.
 | **D6.2 — orientation and references, source received** | Native principal-axis/matching/degeneracy/effect controls plus actual Jupyter principal axes, superposition, external reference and nm/pm sequence alignment pass; representative native Qt receives axes/fitting and independent windows; final acceptance remains |
 | **D6.3 — periodic coordinates and cells, source received** | D2 science, complete selected edit/cell-effect controls, five real-Jupyter scenarios and native Qt wrapping/cell/result-window receiving pass for the declared profile; final acceptance and bounded temporal/conditioning limits remain |
 | **D6.4 — chemical repair and assignments, source received** | Independent explicit inference/bond repair, terminal completion/caps, reference H removal, AutoDock typing and named charges are delivered through owner-merged PR #681; native/unit/source/effect, actual Jupyter/popup and Qt/result-window receiving pass. The owner has delivered #679/#686 terminal-context repairs, received in their directed native cohorts; older GUI receipts retain their exact source scope and final acceptance remains separate |
-| **D6.5 — construction and solvent** | Pending accepted construction/assembly, solvent and ion tasks; explicit native inputs/model/seed/charge/cell requirements and result adoption |
+| **D6.5 — construction and solvent, source received** | Draft PR #699 supplies five native tasks with explicit sequence/cell/model/charge/seed/structure inputs, independent results and reviewed adoption. Native/unit/axis/source/refusal, actual Jupyter/both-popup and native Qt receiving pass. Owner integration and covering installed/hosted/human acceptance remain separate |
 | **D6.6 — coordinate refinement** | Source-delivered in PR #678: explicit reviewed model, native CPU/Reference single-structure minimization, current or independent effect; native/analytical, Jupyter and Qt receiving pass. Graphical adoption of native #582’s compiled recipe and final acceptance retain their own scope |
 | **D6.7 — structural observables** | Distances, neighborhoods, conformations, angles/torsions and PCA have bounded numerical/axis/ownership receiving. Contacts #666 / PyUnitWizard #143 and full-family acceptance remain; PCA alone does not complete this outcome |
 | **D6.8 — properties and molecular reports, source received** | Nine native property/sequence/connectivity tasks in owner-merged PR #682; source maps, definitions, explicit units/scope, missing-chemistry refusal and complete participant actions pass native, actual Jupyter/both-popup and representative Qt receiving. Changed combined-head and final acceptance remain separate |
