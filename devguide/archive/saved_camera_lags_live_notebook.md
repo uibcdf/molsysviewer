@@ -1,9 +1,9 @@
 ---
 summary: Immediate notebook and popup saves can preserve an older cached camera.
 issue: uibcdf/molsysviewer#319
-status: partial
+status: resolved
 opened: 2026-11-06
-closed:
+closed: 2026-11-09
 severity: medium
 verification: reproduced
 area: [camera, persistence, notebook]
@@ -14,6 +14,40 @@ supersedes: []
 ---
 
 # Camera capture when saving notebook work
+
+## Resolution — coherent live source capture
+
+The runtime now advertises capture protocols 1 and 2 after an actual initial
+draw. Python negotiates v2 when available, with the compatible stopped-frame v1
+path retained for older renderers. Public async saving and Studio preserve one
+completed camera/structure/playback/geometry observation while playback can
+continue. Synchronous/headless saving retains its best-effort cached-camera
+contract; the user guide now distinguishes it from acknowledged live capture.
+
+The [final source receipt](../live_capture_v2_source_closeout_20261109.json)
+records strict TypeScript/build and 428 Node passes, 156 Python capture/Studio
+controls, real Jupyter stopped/moving/popup/background receiving, native Qt
+stopped/moving/hidden receiving and four combined real-browser suites. Actual
+handshakes replace fixture-injected capabilities. The public MolSysMT 0.23.0
+floor separately passes 156 Python controls and actual hidden/visible Jupyter
+state/session restoration, with all 3,241 cached payload files matching the
+verified original package and remaining unchanged. This is not a clean solver
+installation or a qualification of the new MolSysMT tools addon on that floor.
+
+The causal guard remains `tests/test_live_state_capture.py`, complemented by
+`tests/test_jupyter_live_capture.py` and `tests/test_qt_live_capture.py` and the
+registered moving/lifetime/Studio browser entries. Refusal/cancellation preserves
+existing work, drains requests and cannot revive a late write. Native Wayland
+receiving observes actual exposure and document visibility after minimizing or
+hiding and labels explicit hide/show remapping; it claims no unavailable
+protocol minimized-state query or human restore-button observation.
+
+This closes A5/#319's source result. Covering hosted, eventual installed-artifact,
+other-platform and postponed human acceptance retain their own gates. No
+candidate freeze, package, tag, Release, promotion or either 1.0 publication is
+authorized or implied. Entries below retain dated investigation history;
+"remaining" and "unadvertised" describe those earlier checkpoints.
+
 
 **Background-host source receiving — 2026-11-09:** the durable
 Jupyter guard now uses native Chromium DevTools sessions without focus emulation
@@ -881,7 +915,7 @@ pre-restore structure-index change remains useful acceptance for the combined
 camera/frame boundary. No broader camera-projection, native Qt or continuous
 playback claim follows from these results.
 
-## Remaining implementation and acceptance
+## Historical implementation and acceptance checkpoint
 
 | Boundary | Current source receiving | Remaining acceptance |
 | --- | --- | --- |
@@ -923,7 +957,7 @@ guards, not acceptance of the new browser or native Qt control route. That
 receiving was pending at this checkpoint; the later native results above and
 their own recorded inputs retain their separate scope.
 
-### Remaining moving-structure and hidden-endpoint receiving
+### Historical moving-structure and hidden-endpoint requirements
 
 For playback, frame/camera and all frame-dependent projections must describe
 the same completed draw. Rewriting only a saved structure index is insufficient:
@@ -940,7 +974,7 @@ captured frame without introducing a second playback clock or silently
 stopping the user's work. This remains part of the accepted A5 implementation,
 not a newly declared post-1.0 deferral.
 
-## Required receiving
+## Historical receiving requirements
 
 Receive both actual save formats and their restored vantage points through
 notebook and canvas-popup input, plus Studio save intents. Correlate replies;
@@ -952,4 +986,4 @@ of the same camera helper without inferring failures not observed there.
 The direction is approved; remaining implementation and receiving are open. Commits carry
 `[skip ci]`; consolidated hosted and installed qualification stay separate.
 Human/visible-host receiving, tags, packages and both 1.0 publications remain
-paused. A5 is not a received progress item.
+paused. At that earlier checkpoint, A5 was not a received progress item.

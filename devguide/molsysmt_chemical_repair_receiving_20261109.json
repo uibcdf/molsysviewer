@@ -1,0 +1,224 @@
+{
+  "schema": "molsysviewer.working_receiving@1",
+  "date": "2026-11-09",
+  "parent_issue": "uibcdf/molsysviewer#315",
+  "consumer_issue": "uibcdf/molsysviewer#264",
+  "status": "D6.4 source implementation/receiving delivered; owner review, hosted/installed/human acceptance remains separate.",
+  "viewer_source": "e743a68a",
+  "owner_source": "d320a0c5de831ebf2b1a41020d355393e0c61d6c",
+  "owner_pr": "https://github.com/uibcdf/molsysmt/pull/681",
+  "owner_pr_draft": true,
+  "depends_on_pr": "https://github.com/uibcdf/molsysmt/pull/678",
+  "native_public_base": "ca76d93b420435243f68167521ccb503ec8b2728",
+  "native_rebuilt": false,
+  "native_backend_sha256": "2f1f69f6e0539bd31ee419ec3b7a4deaab20f09045ce3e6504369c9130438525",
+  "support_route": "Recorded byte-verified cached public support overlay: SMonitor 0.21.0, ArgDigest 0.15.0, DepDigest 0.15.1, PyUnitWizard 0.28.1, pytest-receptor 1.2.1, Ackredit 0.9.0; qualified Python 3.14.7 source environment. Exact source/input/binary hashes, not ambient development-version labels, identify receiving. Not a clean solver installation.",
+  "progress": {
+    "denominator": 46,
+    "previous_source_delivered": 29,
+    "new_source_delivery_ids": [
+      "D6.4"
+    ],
+    "locally_verified": 30,
+    "source_delivered": 30,
+    "source_delivered_ids": [
+      "E0",
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A6",
+      "B1",
+      "B2",
+      "B3.1",
+      "B3.2",
+      "B3.3",
+      "B3.4",
+      "B3.5",
+      "C5",
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "D5.1",
+      "D5.3",
+      "D5.5",
+      "D5.6",
+      "D6.1",
+      "D6.2",
+      "D6.3",
+      "C1",
+      "C2",
+      "D6.6",
+      "F3",
+      "D6.4"
+    ],
+    "final_accepted": 1,
+    "final_accepted_ids": [
+      "E0"
+    ],
+    "movie_320_separately_required": true
+  },
+  "tasks": [
+    "bounded covalent inference with exact/alias H names",
+    "legacy cutoff bond addition",
+    "terminal completion and explicitly named caps",
+    "reference-rule hydrogen removal",
+    "AutoDock4 chemical-environment assignment",
+    "Gasteiger\u2013Marsili or explicit force-field partial-charge assignment"
+  ],
+  "native_scientific_ownership": "Every task delegates the existing native/expert function. Independent whole-system output; explicit source atom/group/component scope; no guessed identity, implicit preparation, new scientific algorithm or public precooked API.",
+  "effects": "Source/data/scene preservation, native validation errors, explicit Back, conditional source/result revision checks and reviewed scene-reset adoption. Presented independent views survive other result changes and closure.",
+  "receiving": {
+    "chemistry-repair-fixed-38": {
+      "native_exit": 0,
+      "seconds": 42.50094577111304,
+      "selected_inputs": 10703,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 584.4,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "58e04df499abd55bb4fb697f9e00cd596035f37c34ee089ef0976ebef8c2a4a0"
+    },
+    "native-capping-selection-40": {
+      "native_exit": 0,
+      "seconds": 5.1621262058615685,
+      "selected_inputs": 10706,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 255.7,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "82c499c09116060299fda2b08c22bb8bc4d96ba97ba31a9257c081c7a0f16212"
+    },
+    "chemistry-repair-jupyter-41": {
+      "native_exit": 0,
+      "seconds": 51.54009551904164,
+      "selected_inputs": 10706,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3117.3,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "151026cc29180311dd77313b1055aa8635b8f3fc1ebca52f9596f708bbed2ded"
+    },
+    "chemistry-covering-42": {
+      "native_exit": 0,
+      "seconds": 113.87187133915722,
+      "selected_inputs": 10707,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1293.8,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "48b85836406c803fd225906f8e7be8b866b7ce958678479dfe175f80b6fba5d1"
+    },
+    "chemistry-final-boundary-43": {
+      "native_exit": 0,
+      "seconds": 31.702129380078986,
+      "selected_inputs": 10707,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 569.8,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "3b8aca286770a918ffc927647f93b02d84b9ece1cf66fa4b49018ef163c7d45f"
+    },
+    "chemistry-owner-quality-44": {
+      "native_exit": 0,
+      "seconds": 4.9478184140753,
+      "selected_inputs": 10707,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 37.4,
+      "cleanup": {
+        "tracked": 7,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "e96270f1994e0edbd250f7ad2d85ce933d2aabf145f3a2dac2ee14c95e0db65e"
+    },
+    "chemistry-refinement-native-46": {
+      "native_exit": 0,
+      "seconds": 34.97470200411044,
+      "selected_inputs": 10709,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2043.6,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "90f90b9cd058b15e6c41a993e524e40ac25329f9c68488bdeac9d0075e49dc51"
+    },
+    "chemistry-delivery-quality-47": {
+      "native_exit": 0,
+      "seconds": 4.603389927884564,
+      "selected_inputs": 10710,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 37.4,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "678ec8ef18409d37dea2e8c0db18ca131dd4aadbc92c56ed46920130735205b7"
+    }
+  },
+  "scopes": {
+    "covering_cases": 380,
+    "final_changed_parameter_boundary_cases": 63,
+    "jupyter_steps": 6,
+    "native_qt_chemistry_steps": 6,
+    "refinement_steps_after_shared_test_helper_extraction": 6,
+    "overlapping_scopes_not_summed": true,
+    "unit_policies": [
+      "nm",
+      "pm"
+    ],
+    "independent_charge_reference": "Published ff14SB internal ALA template and explicit Gasteiger methanol controls."
+  },
+  "native_report": {
+    "issue": "uibcdf/molsysmt#679",
+    "complete_paginated_board_pages": 7,
+    "board_rows_at_acquisition": 674,
+    "independent_reproduction": true,
+    "axis_limit": "Numeric selection changes meaning across composed native group/atom calls. Consumer uses an explicit public group expression; expert wrapper remains native.",
+    "source_preserved": true,
+    "native_fix_claimed": false
+  },
+  "failures_preserved": {
+    "37": "Initial diagnostics: native selection-axis errors plus incorrect object-array test comparison; not final qualification and the new test was not yet tracked in the early input inventory.",
+    "39": "Two actual notebook widgets made a global test navigation selector ambiguous; scope the already-open source panel.",
+    "45": "Chemistry Qt passed; shared refinement fixture addressed retiring System before Geometry mounted. Wait for the actual panel/heading; numerical and ownership assertions unchanged.",
+    "no_assertion_or_native_deadline_weakened": true
+  },
+  "private_preservation": {
+    "custodian": "Diego Prada Gracia",
+    "delta_files_verified": 175,
+    "previous_manifest_sha256": "d99191fb6eb7bcabc450ebfa279bd3bc2129df859d2060823a6b436293214b8b",
+    "manifest_sha256": "b6b686626817fda537e0464584b91cb193e683fbe4e3a9d104fa3725f55106dd",
+    "originals_retained": true,
+    "off_host_backup_claimed": false
+  },
+  "ci": "Maintainer requests incremental skip-ci commits and batched qualification. The stacked draft retains [skip ci]; no duplicate full matrix is dispatched while parent #678 is active. Local source checks do not replace required combined-head owner gates.",
+  "remaining": "Owner review/integration, relevant covering hosted qualification, exact installed artifacts and postponed human checks. Other D6 families, A5 final source receiving and mandatory Movie #320 remain. No tag, package, candidate freeze, Release, promotion or either 1.0 publication."
+}

@@ -45,8 +45,8 @@ def configure(view, output, root):
             beats["handle"] = loop.call_later(0.01, beat)
 
     beat()
-    # Fixture-only negotiation. Production still advertises v1.
-    view._frontend_capabilities["visual_state_capture"] = [1, 2]
+    # Receive the actual production handshake; never fabricate negotiation.
+    assert 2 in view._frontend_capabilities.get("visual_state_capture", [])
 
     def start():
         view.player.play(fps=2, mode="ping-pong")

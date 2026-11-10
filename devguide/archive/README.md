@@ -500,3 +500,5 @@ Completed work, kept for the reasoning:
 - [Measurement reference lifecycle](measurement_reference_lifecycle.md) — #313 removes physical nodes before losing their deletion refs; native and centroid hide/show/delete/history guards pass.
 
 - [DataCard lifecycle and keyboard access](datacard_lifecycle_bounds_and_keyboard.md) — #345 receives popup recovery, literal titles, host bounds, native structure navigation and owned-resource disposal.
+
+- [saved_camera_lags_live_notebook.md](saved_camera_lags_live_notebook.md) — #319 delivers negotiated coherent live scene capture, guarded moving/background refusal/recovery and compatible synchronous saving; final installed/human gates remain separate.

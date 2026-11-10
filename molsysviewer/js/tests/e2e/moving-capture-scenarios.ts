@@ -10,7 +10,7 @@ import { observeMovingCaptureCanvas, observeMovingPopupBootstrap, releaseMovingC
 import { armMovingDependencyHold, movingEndpointIdentity, openMovingWorkFile } from "./moving-work-file-ui";
 import { checkCaptureLifetimes, checkDynamicFreeze } from "./moving-capture-lifecycle-scenarios";
 
-/** Exercise the unadvertised v2 receiver against a genuinely moving authority. */
+/** Receive the negotiated production v2 receiver against a genuinely moving authority. */
 export async function checkMovingCapture(page: Page, dir: string,
     phase: "all" | "empty" | "presentation" | "state" | "popup" | "endpoints" | "bootstrap" | "lifetimes" | "freeze" = "all") {
     await withFixtureWorkspace("moving-capture", async workspace => {
@@ -194,7 +194,7 @@ export async function checkMovingCapture(page: Page, dir: string,
                 assert.deepEqual(endpointErrors, []);
                 await writeFile(resolve(process.env.E2E_MOVING_CAPTURE_ARTIFACT_DIR ?? workspace, "bootstrap-recovery.json"),
                     JSON.stringify({ recovered, same_molsys: source.same_molsys, coordinates_unchanged: source.coordinates_unchanged }, null, 2));
-                console.log("[E2E popup bootstrap] real lost/late reply, visible retry and native frame-1 geometry recovered; v1 production capabilities retained");
+                console.log("[E2E popup bootstrap] real lost/late reply, visible retry and native frame-1 geometry recovered; negotiated production capabilities retained");
                 return;
             }
             const endpointSamples = ["popup-state", "popup-session", "detached-state", "detached-session"];

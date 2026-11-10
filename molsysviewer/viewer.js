@@ -177312,7 +177312,7 @@ async function bootDocsView(opts) {
     const canvas = controller.plugin.canvas3d;
     if (!canvas) throw new Error("Exported scene has no WebGL canvas.");
     await waitForCanvasDraw(canvas);
-    notifyHost({ event: "ready", capabilities: { array_native_molsys_ref: [1], visual_state_capture: [1] } });
+    notifyHost({ event: "ready", capabilities: { array_native_molsys_ref: [1], visual_state_capture: [1, 2] } });
   } catch (err) {
     console.error("[MolSysViewer docs] Init error:", err);
     const message = err instanceof Error ? err.message : String(err);
@@ -178023,7 +178023,7 @@ function render({ model, el, runtimeSource }) {
           binary_structure_data: binaryStructureData,
           max_buffer_bytes: 16 * 1024 * 1024,
           transferable_array_buffer: false,
-          visual_state_capture: [1]
+          visual_state_capture: [1, 2]
         }
       });
     } catch (err) {

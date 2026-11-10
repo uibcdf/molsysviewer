@@ -134,8 +134,8 @@ def main():
                 pending_saves=sum(not job["done"] for job in jobs.values()) + len(owner._work_file_saves._pending),
             )
         if command == "enable":
-            # Exercise the new receiver without advertising a shipped capability.
-            owner._frontend_capabilities["visual_state_capture"] = [1, 2]
+            # Require the actual widget handshake, not fixture-only opt-in.
+            assert 2 in owner._frontend_capabilities.get("visual_state_capture", [])
         elif command == "play":
             owner.player.play(fps=2, mode="ping-pong")
             owner.scene.spin(True, speed=0.05)

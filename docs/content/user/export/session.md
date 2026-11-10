@@ -12,6 +12,21 @@ view.regions.add(selection='molecule_type=="protein"', tag="prot", representatio
 view.save_session("work.msv")
 ```
 
+For an acknowledged live camera and structure, display `view` and use a later
+notebook cell:
+
+```python
+await view.save_session_async("work.msv")
+```
+
+Studio Save uses the same capture service. It supports coherent moving scenes
+with the current runtime and preserves existing files on capture refusal or
+cancellation before writing. A hidden or unavailable canvas can time out;
+return it to the foreground and retry. The five-second capture deadline does
+not bound disk serialization. Synchronous `save_session` remains available to
+scripts/headless callers and uses the scene's cached vantage point. See
+{doc}`state` for live-capture and atomic-write semantics.
+
 Later, elsewhere, in a fresh kernel:
 
 ```python
@@ -43,7 +58,7 @@ A `.msv` is a zip with three members:
 
 ```
 manifest.json      what this file is, and what is inside it
-state.json         the same document `export_state()` produces, unchanged
+state.json         scene document, with the captured vantage point when requested
 structure.h5msm    the molecular system, in MolSysMT's own format
 ```
 

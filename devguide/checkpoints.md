@@ -1029,7 +1029,7 @@ records negotiated protocol 2, 395 broader Python passes, the overlapping final
 seconds. **The frontend still advertises protocol 1 only.** Actual-host
 continuous capture and consolidated acceptance remain required; the earlier
 actual-Jupyter failure retains its distinct historical scope in the
-[A5 report](pending_bugs/saved_camera_lags_live_notebook.md). Follow the ledger
+[A5 report](archive/saved_camera_lags_live_notebook.md). Follow the ledger
 for current owner-PR/C1 inputs; dated receipts below retain their original
 scope rather than superseding this handoff.
 

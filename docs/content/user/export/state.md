@@ -29,6 +29,32 @@ view.save_state("scene.json")
 The write is atomic: the file appears complete or not at all, so an interrupted save
 cannot leave you with half a scene.
 
+## Capturing the live canvas
+
+For the camera you see now, display `view` first. In a later Jupyter cell, use:
+
+```python
+await view.save_state_async("scene.json")
+```
+
+This waits for an acknowledged draw before writing. The current runtime captures
+the camera, structure, playback settings and frame-dependent scene together,
+including during trajectory playback; it does not pause or navigate your view.
+Studio's Save action uses this same service. In Qt, Studio runs it on the
+application's event loop.
+
+The default five-second deadline covers renderer capture and waits for scene
+ownership, not filesystem I/O. An unavailable or hidden canvas may refuse or
+time out; return it to the foreground and retry. Capture failure or cancellation
+before writing preserves an existing destination. Resuming an expired renderer
+request cannot write the file later. The final atomic write runs on the owning
+thread; these methods do not promise a RAM limit or background disk cancellation.
+
+Keep `save_state(...)` for synchronous scripts and headless use. It writes the
+current scene with a best-effort camera refresh; a busy notebook may only supply
+the cached camera. `export_state()` also uses the cache. The asynchronous method
+requires a connected capture-capable renderer and keeps the same state format.
+
 ## Restoring
 
 ```python
@@ -50,11 +76,11 @@ other.measurements.tags()
 | the whole's representation and colour | |
 | **the vantage point**: camera, current structure index, playback settings | |
 
-The vantage point travels under a `view` key. A scene restored to the right atoms but a
-different camera and a different frame is not the scene that was saved, so `save_state`
-asks the frontend for a **fresh** camera before writing. `export_state()` cannot do that —
-it has no round trip to wait for — so it records the last camera the frontend pushed. On a
-viewer that has never rendered there is no camera at all, and the key is simply absent.
+The vantage point travels under a `view` key. Use `save_state_async` or Studio
+Save when you need an acknowledged live vantage point. `save_state` can request
+a best-effort camera refresh but cannot wait for a busy notebook to reply;
+`export_state()` records the last camera received. A viewer that has never
+rendered has no camera, so that key is absent.
 
 A region is stored as **the rule that produced it** *and* as the atoms that rule resolved
 to. Onto the same structure the atoms are used. Onto a different one the rule is

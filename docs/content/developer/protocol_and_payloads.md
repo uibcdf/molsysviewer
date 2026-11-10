@@ -197,3 +197,25 @@ reply once. It is excluded from popup scene replay and bypasses structure
 streaming. Remote sessions retain their existing download URL delivery; Python
 `view.export.html(path)` retains file output. This reply is a browser effect,
 not persisted scene state.
+
+## Negotiating live scene capture
+
+Both widget and exported/native-host bootstraps advertise
+`visual_state_capture: [1, 2]` after their initial completed draw. Python selects
+version 2 when offered; older version-1 renderers retain the strict stopped-frame
+path. This internal wire version does not change the scene/session file versions.
+
+Version 2 captures the owning canvas's completed camera, structure, playback
+and frame-dependent geometry under a correlated deadline. It permits playback
+while freezing a detached recipe; scene/system/analysis revision changes still
+reject. It introduces no second playback clock or scientific coordinate copy.
+The primary/canvas-popup/detached-Studio requester and result owner remain
+authenticated separately. Hidden/unavailable/disposed endpoints must provide a
+real new draw or refuse; an expired/cancelled request cannot revive a file write.
+
+The durable Jupyter/background and native Qt guards observe actual host
+visibility and independent file restoration without injecting capabilities.
+Wayland's minimized-state query is not a reliable oracle: native receiving uses
+actual exposure/document visibility and explicitly labels hide/show remapping.
+These are source guards; other platforms, clean installed artifacts and human
+observations retain separate acceptance. See #319's owning receiving record.

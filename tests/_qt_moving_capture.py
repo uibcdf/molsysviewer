@@ -77,8 +77,8 @@ async def exercise_qt_moving_capture(
     bridge.event_sink, bridge.send = receive, send
     cases = report["moving_cases"] = []
     try:
-        # This is a fixture opt-in, not a production capability advertisement.
-        view._frontend_capabilities["visual_state_capture"] = [1, 2]
+        # Receive the actual production handshake; never fabricate negotiation.
+        assert 2 in view._frontend_capabilities.get("visual_state_capture", [])
         view.player.play(fps=2, mode="ping-pong")
         view.scene.spin(True, speed=0.05)
         await wait_js("window.__nativeMoving.frames.length>=3", "native-continuous-playback")

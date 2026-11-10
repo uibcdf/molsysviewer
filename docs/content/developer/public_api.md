@@ -461,11 +461,15 @@ the same tag; APIs resolve identity as `(domain, tag)`.
   - explicit live capture from the primary canvas, followed by the same atomic writers
   - camera and frame are acknowledged after preceding scene work and a completed draw;
     another camera push cannot replace the captured payload
-  - a changed scene/frame, missing renderer, capture timeout or cancellation before
+  - the current runtime negotiates coherent moving-frame capture; older v1 renderers
+    retain stopped-frame validation. Camera/structure/playback and frame-dependent
+    geometry describe one completed draw without pausing the live view
+  - a changed molecular/scene/analysis revision, missing renderer, capture timeout or cancellation before
     writing preserves the destination; there is no silent cached-camera fallback
   - timeout is in seconds for capture only; serialization then runs on the owning thread
-  - these source APIs are not evidence of installed-package or native Qt qualification;
-    Studio's automatic and addressed-popup integration remains tracked in #319
+  - #319 receives source Jupyter/Qt, Studio, addressed popups and hidden-host
+    refusal/recovery. Those recorded host scopes do not qualify clean installed
+    packages, other platforms or human acceptance
 - `view.camera.get_snapshot(*, pretty=False)` / `view.camera.set_snapshot(snapshot, *, duration="0 ms")`
   - the camera as a plain dict, mirrored back from the frontend; `None` on a viewer that
     has never rendered. `pretty=True` returns it as formatted JSON

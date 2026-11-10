@@ -1,0 +1,634 @@
+{
+  "schema": "molsysviewer.working_receiving@1",
+  "date": "2026-11-09",
+  "parent_issue": "uibcdf/molsysviewer#315",
+  "issue": "uibcdf/molsysviewer#319",
+  "status": "A5 coherent live capture is source-complete and negotiated by production bootstrap; final applicable acceptance remains separate.",
+  "source_patch_base": "e743a68a",
+  "source_sha256": {
+    "molsysviewer/js/src/index.ts": "4631212db1d3634273f855eac1905e4c65e78d362166b6db32b7629a42c31036",
+    "molsysviewer/js/tests/e2e/moving-capture-bridge.py": "82f32b6088836d149eefed1e7d4e7070c176a2faf323010e8f925360fe5a23fb",
+    "molsysviewer/js/tests/e2e/moving-capture-scenarios.ts": "577b4d47d6b4aea757e0954febe6363428b8ef25040a3147bde3f7444c718b33",
+    "tests/_jupyter_background_capture.mjs": "ae20cdfbcb28409e8d06b311d0703a15d98223c1155acdc0a8deab334293f19e",
+    "tests/_jupyter_moving_capture.py": "8e9f4e853fe8dd893a1e1778844a7bd01c9abc4bd99dc061a08780181bea45bc",
+    "tests/_qt_moving_capture.py": "1ef9892d7988d6609de00dafd88e7dc95925fcd7e4ab45aaf042470e49601f7d"
+  },
+  "runtime_bundle_sha256": "a8c5a53ffc8b8040244fe5ca93b123283dcaac1fd4bf831849686d51316c534b",
+  "runtime_generated_by": "npm run build:runtime",
+  "package_version_metadata_changed": false,
+  "capture_protocols_advertised": [
+    1,
+    2
+  ],
+  "protocol_v1_compatibility_retained": true,
+  "state_and_session_format_versions_unchanged": true,
+  "progress": {
+    "denominator": 46,
+    "previous_source_delivered": 30,
+    "new_source_delivery_ids": [
+      "A5"
+    ],
+    "locally_verified": 31,
+    "source_delivered": 31,
+    "source_delivered_ids": [
+      "E0",
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A6",
+      "B1",
+      "B2",
+      "B3.1",
+      "B3.2",
+      "B3.3",
+      "B3.4",
+      "B3.5",
+      "C5",
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "D5.1",
+      "D5.3",
+      "D5.5",
+      "D5.6",
+      "D6.1",
+      "D6.2",
+      "D6.3",
+      "C1",
+      "C2",
+      "D6.6",
+      "F3",
+      "D6.4",
+      "A5"
+    ],
+    "final_accepted": 1,
+    "final_accepted_ids": [
+      "E0"
+    ],
+    "movie_320_separately_required": true
+  },
+  "scope": "Real completed camera/structure/playback and frame-dependent geometry captured as a detached recipe while playback continues. Normal bootstrap negotiation replaces fixture-injected capabilities. Synchronous/headless best-effort saving and cached export remain available; async acknowledged capture and Studio refuse safely without reviving expired writes.",
+  "receiving": {
+    "build-capture-negotiation-48": {
+      "native_exit": 0,
+      "seconds": 34.30830685514957,
+      "selected_inputs": 10709,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 685.5,
+      "cleanup": {
+        "tracked": 29,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "13bafd21a12193bdb87cef58dd94506a33f6e8a19e020228b0a4ec908185eb3b"
+    },
+    "capture-python-current-49": {
+      "native_exit": 0,
+      "seconds": 68.28644814994186,
+      "selected_inputs": 10711,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1113.7,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "1a37606e1937660b3cc0e92cc94e66c2df1a4b73b531b59ce85c94acdf00bf26"
+    },
+    "capture-default-jupyter-50": {
+      "native_exit": 0,
+      "seconds": 168.35048099700361,
+      "selected_inputs": 10711,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3422.9,
+      "cleanup": {
+        "tracked": 47,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "046eea872a7bb9e89ca083a32080bb2a546f176f06a3fb494c9b1c2d0de1831e"
+    },
+    "capture-default-native-51": {
+      "native_exit": 0,
+      "seconds": 72.43206768902019,
+      "selected_inputs": 10711,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1865.3,
+      "cleanup": {
+        "tracked": 7,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "0b97eadb4ece0b5a762a26021bd978e2454f5d960c0b7fcbc07bd1cb00062f3b"
+    },
+    "capture-core-default-52": {
+      "native_exit": 0,
+      "seconds": 401.1375057490077,
+      "selected_inputs": 10711,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3600.8,
+      "cleanup": {
+        "tracked": 37,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "13ba9d02dd11e1a07e3991253912233750d58331063db4431c1eb9a5bc901391"
+    },
+    "capture-public-minimum-54": {
+      "native_exit": 0,
+      "seconds": 153.00452827312984,
+      "selected_inputs": 10712,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3192.8,
+      "cleanup": {
+        "tracked": 42,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "6789140bfa78594720806bc04178d244ef89b910c7a68f6a065a20b9737a9ebb"
+    },
+    "ci678-original-artifacts-55": {
+      "native_exit": 0,
+      "seconds": 23.212235752027482,
+      "selected_inputs": 10713,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 92.4,
+      "cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "c4f33f68788e29af67fdb336cca653b8ae6aca452cf3a342a248fff4e487626f"
+    },
+    "capture-closeout-quality-56": {
+      "native_exit": 0,
+      "seconds": 6.401704475982115,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 189.4,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "2d545ec95a7df5502ff7e1f5581f4d23a4249b347d7d91ca43cfcab08d8f5651"
+    },
+    "capture-final-docs-quality-57": {
+      "native_exit": 0,
+      "seconds": 9.623334190808237,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 408.5,
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "original_invocation_sha256": "073c6976dc3df3bb06cfba29a3767c787f5ff7d406a18558142f46fcab9a01bc"
+    }
+  },
+  "cases": {
+    "node_unit": 428,
+    "python_capture_current_provider": 156,
+    "jupyter_stopped_and_moving_saves": 12,
+    "jupyter_background_format_phase_controls": 4,
+    "native_qt_stopped_and_moving_saves": 8,
+    "native_qt_background_format_mode_controls": 4,
+    "core_browser_suites": [
+      "studio-usability",
+      "moving-state-capture",
+      "moving-capture-lifecycle",
+      "popup-scene-bootstrap"
+    ],
+    "core_browser_passed": 4,
+    "no_skips_in_selected_receiving": true,
+    "overlapping_scopes_not_summed": true
+  },
+  "minimum_public_runtime": {
+    "package": "molsysmt 0.23.0 ABI3 build 0 linux-64",
+    "archive_sha256": "7ff102db1ceb3a6098b5c020193a2bef1c5eaa4dbcbc5a0b472ee2fa44a1971b",
+    "payload_paths_verified": 3241,
+    "payload_unchanged": true,
+    "actual_parent_and_live_kernel_origin_verified": true,
+    "python_capture_cases": 156,
+    "actual_jupyter_background_cases": 4,
+    "clean_solver_installation": false,
+    "new_molsysmt_tools_addon_qualified_on_floor": false
+  },
+  "host_limits": {
+    "native_qt": "Actual Wayland/PySide6/NVIDIA WebGL2; no offscreen/xvfb/mesa substitution. Minimize requested, actual exposure/document visibility observed; recovery explicitly uses hide/show remapping, not a claimed Wayland unminimize protocol or human restore action.",
+    "jupyter": "Real JupyterLab/IPython/AnyWidget and native Chromium DevTools hidden-tab control without focus emulation.",
+    "capture_deadline_seconds": 5,
+    "deadline_scope": "Capture and scene ownership, excluding synchronous final file I/O.",
+    "source_or_destination_mutation_on_refusal": false,
+    "pending_registries_cleared": true,
+    "late_write_after_resume": false
+  },
+  "source_compatibility": "Owner d320a0c5de831ebf2b1a41020d355393e0c61d6c/current public support overlay and independently verified minimum public MolSysMT route retain their actual sources. No new native binary or installed artifact is produced.",
+  "owner_parent_ci": {
+    "run": 42736085897,
+    "url": "https://github.com/uibcdf/molsysmt/actions/runs/42736085897",
+    "official_conclusion": "success",
+    "matrix_cells": 8,
+    "original_zip_artifacts_verified": 16,
+    "artifacts_sha256_match_github": true,
+    "source_execution": {
+      "run": 42736085897,
+      "run_head": "08f0afdb87f787eb1f0b6626f6763c2d9703e0d8",
+      "executed_commit": "27c762983936e2a9a4037d0604b8d86038bc5739",
+      "executed_parents": [
+        "ca76d93b420435243f68167521ccb503ec8b2728",
+        "08f0afdb87f787eb1f0b6626f6763c2d9703e0d8"
+      ],
+      "executed_tree": "0ecb3b968efc4e8c639f1d6b0b0e7361dd5d2ed0",
+      "head_tree": "0ecb3b968efc4e8c639f1d6b0b0e7361dd5d2ed0",
+      "trees_equal": true,
+      "controlled_viewer": "346c331901c418fddb6b45a31da4690eee794129",
+      "scope": "Source-matrix synthetic merge with the exact head tree; does not qualify later chemical/v2 changes."
+    },
+    "scientific_each": {
+      "collected": 107,
+      "passed": 107,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "registered_nodes": 68,
+      "clean": true,
+      "source_correspondence": true
+    },
+    "junit_each": {
+      "tests": 32960,
+      "failures": 0,
+      "errors": 0,
+      "linux_skipped": 169,
+      "macos_skipped": 170
+    },
+    "artifact_receipts": [
+      {
+        "name": "full-suite-results-macos-15-py3.11",
+        "id": 13730920558,
+        "bytes": 2971763,
+        "sha256": "1cbf0565c399c6c16488fe3018d207e79dbf754a55eb3b672a55dfdabb58102a",
+        "members": [
+          "junit.xml",
+          ".pytest-receptor/events.jsonl"
+        ],
+        "junit": {
+          "tests": 32960,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 170
+        }
+      },
+      {
+        "name": "full-suite-results-macos-15-py3.12",
+        "id": 13730755607,
+        "bytes": 2976087,
+        "sha256": "a4271f6ce5e4bdacf5c5a8b286dab94d3ece0b3fbdaee873226cecf8aff4f8c1",
+        "members": [
+          ".pytest-receptor/events.jsonl",
+          "junit.xml"
+        ],
+        "junit": {
+          "tests": 32960,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 170
+        }
+      },
+      {
+        "name": "full-suite-results-ubuntu-latest-py3.11",
+        "id": 13730605027,
+        "bytes": 2981624,
+        "sha256": "826a37e049af3f87e5103b8a07b35a50236bb5f2adc7f9cd86f3aa390169029d",
+        "members": [
+          "junit.xml",
+          ".pytest-receptor/events.jsonl"
+        ],
+        "junit": {
+          "tests": 32960,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 169
+        }
+      },
+      {
+        "name": "full-suite-results-ubuntu-latest-py3.14",
+        "id": 13730451732,
+        "bytes": 2984907,
+        "sha256": "9e75bdaca8f3c70a1f9a2838dd0c75b0082a8718e8e7ed47185ec2c5d316a038",
+        "members": [
+          "junit.xml",
+          ".pytest-receptor/events.jsonl"
+        ],
+        "junit": {
+          "tests": 32960,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 169
+        }
+      },
+      {
+        "name": "full-suite-results-ubuntu-latest-py3.12",
+        "id": 13729974718,
+        "bytes": 2992874,
+        "sha256": "0ebd12ddfe2595869c7cb7fe99fba8f487f7b1c60152e0de6801d166645eca7d",
+        "members": [
+          "junit.xml",
+          ".pytest-receptor/events.jsonl"
+        ],
+        "junit": {
+          "tests": 32960,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 169
+        }
+      },
+      {
+        "name": "full-suite-results-macos-15-py3.14",
+        "id": 13729898830,
+        "bytes": 2978400,
+        "sha256": "048903a1772ffd0f567b560930e432eb7fc69a94145be095ff02fddaa1988bb3",
+        "members": [
+          "junit.xml",
+          ".pytest-receptor/events.jsonl"
+        ],
+        "junit": {
+          "tests": 32960,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 170
+        }
+      },
+      {
+        "name": "full-suite-results-macos-15-py3.13",
+        "id": 13728804421,
+        "bytes": 2973817,
+        "sha256": "6ba9d90a1e1984b2b39bee29f1f821a0dcda2a2d9bf730467b68ddc8b9cbbead",
+        "members": [
+          "junit.xml",
+          ".pytest-receptor/events.jsonl"
+        ],
+        "junit": {
+          "tests": 32960,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 170
+        }
+      },
+      {
+        "name": "full-suite-results-ubuntu-latest-py3.13",
+        "id": 13728319820,
+        "bytes": 2978698,
+        "sha256": "3c94659095675a4298903582f004d0e40611b9af3724591b7ff173228146fca0",
+        "members": [
+          "junit.xml",
+          ".pytest-receptor/events.jsonl"
+        ],
+        "junit": {
+          "tests": 32960,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 169
+        }
+      },
+      {
+        "name": "scientific-evidence-macos-15-py3.14",
+        "id": 13728160514,
+        "bytes": 2240,
+        "sha256": "50cfcb2b401591161935cbb25a9d497cfdb7bef50761118a7f50aa1d4831f154",
+        "members": [
+          "scientific-evidence-certificate.json"
+        ],
+        "certificate": {
+          "commit": "27c762983936e2a9a4037d0604b8d86038bc5739",
+          "tracked_source_dirty": false,
+          "source_correspondence": true,
+          "release_eligible": true,
+          "python": "3.14.10",
+          "platform": "macOS-15.8.2-arm64-arm-64bit-Mach-O",
+          "registered_nodes": 68,
+          "collected_cases": 107,
+          "passed": 107,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "pytest_exit_code": 0
+        }
+      },
+      {
+        "name": "scientific-evidence-macos-15-py3.13",
+        "id": 13727745899,
+        "bytes": 2241,
+        "sha256": "9967594cd04d855779184cfb337c58a7d982e5f226a4341ebdf50649061dce95",
+        "members": [
+          "scientific-evidence-certificate.json"
+        ],
+        "certificate": {
+          "commit": "27c762983936e2a9a4037d0604b8d86038bc5739",
+          "tracked_source_dirty": false,
+          "source_correspondence": true,
+          "release_eligible": true,
+          "python": "3.13.18",
+          "platform": "macOS-15.8.2-arm64-arm-64bit-Mach-O",
+          "registered_nodes": 68,
+          "collected_cases": 107,
+          "passed": 107,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "pytest_exit_code": 0
+        }
+      },
+      {
+        "name": "scientific-evidence-macos-15-py3.12",
+        "id": 13727571454,
+        "bytes": 2234,
+        "sha256": "2e168e73b8dd7a361a7753e0320ad1fa6bce0cd47f32c6cd0c6b6ca4a9b1c8aa",
+        "members": [
+          "scientific-evidence-certificate.json"
+        ],
+        "certificate": {
+          "commit": "27c762983936e2a9a4037d0604b8d86038bc5739",
+          "tracked_source_dirty": false,
+          "source_correspondence": true,
+          "release_eligible": true,
+          "python": "3.12.16",
+          "platform": "macOS-15.8.2-arm64-arm-64bit",
+          "registered_nodes": 68,
+          "collected_cases": 107,
+          "passed": 107,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "pytest_exit_code": 0
+        }
+      },
+      {
+        "name": "scientific-evidence-ubuntu-latest-py3.13",
+        "id": 13727511037,
+        "bytes": 2247,
+        "sha256": "571e0c00a530d8014a8ec36fe9a0861b187299dbef1fb70ee96dfd54c64b5f10",
+        "members": [
+          "scientific-evidence-certificate.json"
+        ],
+        "certificate": {
+          "commit": "27c762983936e2a9a4037d0604b8d86038bc5739",
+          "tracked_source_dirty": false,
+          "source_correspondence": true,
+          "release_eligible": true,
+          "python": "3.13.18",
+          "platform": "Linux-7.0.0-1019-azure-x86_64-with-glibc2.43",
+          "registered_nodes": 68,
+          "collected_cases": 107,
+          "passed": 107,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "pytest_exit_code": 0
+        }
+      },
+      {
+        "name": "scientific-evidence-ubuntu-latest-py3.11",
+        "id": 13727326288,
+        "bytes": 2246,
+        "sha256": "2b35db7eb9380826395cee5406523251eda294207737453f071c68f73527758a",
+        "members": [
+          "scientific-evidence-certificate.json"
+        ],
+        "certificate": {
+          "commit": "27c762983936e2a9a4037d0604b8d86038bc5739",
+          "tracked_source_dirty": false,
+          "source_correspondence": true,
+          "release_eligible": true,
+          "python": "3.11.18",
+          "platform": "Linux-7.0.0-1019-azure-x86_64-with-glibc2.43",
+          "registered_nodes": 68,
+          "collected_cases": 107,
+          "passed": 107,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "pytest_exit_code": 0
+        }
+      },
+      {
+        "name": "scientific-evidence-ubuntu-latest-py3.12",
+        "id": 13726852632,
+        "bytes": 2246,
+        "sha256": "bc654603b43339b9934b64a388c14a4409874e5b60d7f90b378252cc63bcf13d",
+        "members": [
+          "scientific-evidence-certificate.json"
+        ],
+        "certificate": {
+          "commit": "27c762983936e2a9a4037d0604b8d86038bc5739",
+          "tracked_source_dirty": false,
+          "source_correspondence": true,
+          "release_eligible": true,
+          "python": "3.12.16",
+          "platform": "Linux-7.0.0-1019-azure-x86_64-with-glibc2.43",
+          "registered_nodes": 68,
+          "collected_cases": 107,
+          "passed": 107,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "pytest_exit_code": 0
+        }
+      },
+      {
+        "name": "scientific-evidence-macos-15-py3.11",
+        "id": 13726659184,
+        "bytes": 2234,
+        "sha256": "159b1d2165804d3688240f2316e4cf793e1cdc4fe861bf48310a1baaaa01033f",
+        "members": [
+          "scientific-evidence-certificate.json"
+        ],
+        "certificate": {
+          "commit": "27c762983936e2a9a4037d0604b8d86038bc5739",
+          "tracked_source_dirty": false,
+          "source_correspondence": true,
+          "release_eligible": true,
+          "python": "3.11.18",
+          "platform": "macOS-15.8.2-arm64-arm-64bit",
+          "registered_nodes": 68,
+          "collected_cases": 107,
+          "passed": 107,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "pytest_exit_code": 0
+        }
+      },
+      {
+        "name": "scientific-evidence-ubuntu-latest-py3.14",
+        "id": 13726638454,
+        "bytes": 2245,
+        "sha256": "8d3dbedffcd9c0294c1b35e0c5cdd00aaad8b5d2be60b9e2c2c714cbf8f81b01",
+        "members": [
+          "scientific-evidence-certificate.json"
+        ],
+        "certificate": {
+          "commit": "27c762983936e2a9a4037d0604b8d86038bc5739",
+          "tracked_source_dirty": false,
+          "source_correspondence": true,
+          "release_eligible": true,
+          "python": "3.14.10",
+          "platform": "Linux-7.0.0-1019-azure-x86_64-with-glibc2.43",
+          "registered_nodes": 68,
+          "collected_cases": 107,
+          "passed": 107,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "pytest_exit_code": 0
+        }
+      }
+    ],
+    "not_qualification_of_later_sources": [
+      "molsysmt d320a0c5d chemical tasks",
+      "current Viewer v2 bootstrap patch"
+    ],
+    "scientific_release_eligible_field_is_not_publication_authorization": true
+  },
+  "failures_preserved": {
+    "minimum_attempt_53": "Import preflight inherited the review checkout as current directory, preceding PYTHONPATH through the empty path. No core tests ran. Fixing that controlled cwd resolves namespace selection, with actual module/version and all payload hashes verified; no product/environment/package change.",
+    "prior_background_probes": "Original Playwright visibility controls and Wayland minimized-state oracle failures remain at their recorded sources.",
+    "earlier_owner_ci": "42689572908 remains failed on its original head. New 8/8 evidence is a distinct source tree; original #670 fixture and #671 provisioning records are not erased."
+  },
+  "private_preservation": {
+    "custodian": "Diego Prada Gracia",
+    "latest_delta_files_verified": 178,
+    "manifest_sha256": "decb99a6e31b95445677e2cefb4e7f445f08b62f622eb9185ce8214402ea416e",
+    "previous_manifests": [
+      "d99191fb6eb7bcabc450ebfa279bd3bc2129df859d2060823a6b436293214b8b",
+      "b6b686626817fda537e0464584b91cb193e683fbe4e3a9d104fa3725f55106dd"
+    ],
+    "originals_retained": true,
+    "off_host_backup_claimed": false,
+    "final_checks_manifest_sha256": "95b8d25dbbde21f221ab1c202c9ac7f35d1263b3beef062e8bd9bce414fb98e9",
+    "final_checks_files_verified": 17,
+    "human_files_preserved": {
+      "viewer": 7,
+      "owner_primary_checkout": 4
+    }
+  },
+  "remaining": "Applicable covering hosted, exact installed-artifact, other-platform and postponed human acceptance; approved D6.5/D6.7-D6.10 and E/F/G work plus mandatory Movie #320. No candidate freeze, tag, package, Release, promotion or either 1.0 publication.",
+  "closeout_validation": {
+    "python_reporting_links_architecture_and_public_api_docs": 406,
+    "native_exit": 0,
+    "ruff_check": "pass",
+    "ruff_format_check": "990 files formatted",
+    "generated_index_check": "pass",
+    "diff_check": "pass"
+  }
+}
