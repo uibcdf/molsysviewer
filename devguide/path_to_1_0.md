@@ -8,11 +8,12 @@ Use its dashboard and stable IDs for progress. The dated checkpoints below
 retain their original scopes; none supersedes that current work order or
 authorizes a candidate or either 1.0 publication.
 
-The [continuous scientific session](continuous_scientific_session_receiving_20261110.json)
-receives the current original E1 source outcome, including save–close–recover–
-continue. Critical native uibcdf/molsysmt#690 allocation safety and the consumer's
-adoption of the experimental physical recipe from owner #582 remain explicit
-pre-1.0 work. These sources do not authorize a candidate or publication.
+The [physical-model receipt](molsysmt_physical_recipe_receiving_20261110.json)
+receives original D5.2 and the owner's earlier session/interaction integration.
+Native #690 is source-closed and its corrected backend is received. Native #695
+box alignment and #666 unit/cutoff semantics, accepted construction, adopted
+figure-provenance/API contracts and the E2 matrix remain explicit work.
+These sources do not authorize a candidate or publication.
 
 The [2026-11-09 integration/refinement checkpoint](molsysmt_pca_refinement_receiving_20261109.json)
 retains its exact source and outcome scope. Current progress and remaining

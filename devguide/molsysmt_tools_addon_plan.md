@@ -1,6 +1,15 @@
 # MolSysMT tools add-on — implementation plan
 
-**Current continuation — 2026-11-09:** the
+**Current work order — 2026-11-10:** follow the
+[robustness dashboard](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-dashboard)
+and [physical-model receipt](molsysmt_physical_recipe_receiving_20261110.json).
+The owner has integrated #687/#691 and the received native allocation repair;
+#696 delivers graphical physical-model inspection. Accepted construction and
+remaining contracts/qualification continue. E2 scale/prolonged-use, B4 figure
+provenance and F1 public-contract hardening are adopted; human/publication
+boundaries remain explicit. The dated counts below retain their earlier scope.
+
+**Earlier continuation — 2026-11-09:** the
 [scientific receiving record](molsysmt_scientific_receiving_20261109.json)
 receives public owner runtime `9be08134`, contribution `89a649c1d` in
 [PR #668](https://github.com/uibcdf/molsysmt/pull/668), and Viewer `346c3319`.

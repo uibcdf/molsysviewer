@@ -1,0 +1,264 @@
+{
+  "schema": "molsysviewer.physical_recipe_receiving@1",
+  "date": "2026-11-10",
+  "consumer_issue": "uibcdf/molsysviewer#315",
+  "owner_issue": "uibcdf/molsysmt#421",
+  "owner_native_query_issue": "uibcdf/molsysmt#582",
+  "status": "D5.2 source delivered; owner/covering hosted/installed/human acceptance separate",
+  "viewer_source": "43bf472287cc347269996040f605d5ffa9fea5d3",
+  "viewer_runtime_source": "b9f3be0127b1fd48220cf400471044bd0b65dbe3",
+  "owner_base": "6bd879bda202feee372b25a61734ee13ee7928ac",
+  "owner_source": "30b2c8b50012d3a29ff97faeea36f20bd9649bce",
+  "owner_pr": "https://github.com/uibcdf/molsysmt/pull/696",
+  "source_sha256": {
+    ".github/workflows/ci-smoke.yaml": "d9d0c327e6d89b5c213beabbe9129c87e1836b84929441a9fe773c6b67b10efa",
+    "devguide/molsysviewer_addon.md": "ba0656a8b1dee318a28583a0d1ac39fc6149b3f6143997cf389216de7b7c36ed",
+    "devtools/data/native_box_axis_receiving_695_20261110.json": "98a8ceb0a9c19d063bac5f9adfb9f57fadf40e51c66df60f1cd71fa85ab4a2d6",
+    "devtools/scripts/viewer_tools_contract.py": "caad6ab161e9a104be091cebf7b141e96a1bc47058c89f6d096ea503a8c3187d",
+    "docs/content/user/tools/molsysviewer_tools.md": "9bac35fdcb8ff58a6b63736cc924209be83e94f1d9627e71f9cc4ec64ce9f6d4",
+    "docs/content/user/tools/molsysviewer_tools.md.AGENTS.md": "2603b95b8c55b3a6be5bddefb46a0e0b4d5f020509b06546e86be42a29551fcf",
+    "molsysviewer_molsysmt/_analysis_mechanics.py": "f7d7a88a530c92d21152fa0ca68f4c7e6d0084b0fae471f2c8d438446fd365ca",
+    "molsysviewer_molsysmt/_analysis_panel_frontend.py": "867ec9e95bc07a65955e9660e48e8dbbdc080f4fd65a2acc7c66a6b8c321f17a",
+    "molsysviewer_molsysmt/_physical_model.py": "505be84d71b01f2c777b5a422485052cbd16941fcd0991ef28331d0bbc0fb308",
+    "tests/molsysviewer_molsysmt/interaction_mechanics_jupyter.mjs": "d71fb834a32c7ce5d7ac9204c8581f130ae2537e25bb959b73afa5244dcdf5ac",
+    "tests/molsysviewer_molsysmt/interaction_mechanics_qt.py": "ae811b0b84e54ed83227b233817eea6bede52043e20ceb7e22e6ae2de983a063",
+    "tests/molsysviewer_molsysmt/jupyter_receiving_guard.py": "b5ed561a4c891b8036ebafa827ec2d769718a81f958ba4328b3c80e7aca87165",
+    "tests/molsysviewer_molsysmt/qt_receiving_guard.py": "a2ca8b4bb42b587700709e1c44e795decb2fde974c6b21065b5e86138bc3ed18",
+    "tests/molsysviewer_molsysmt/test_physical_model_panel.py": "560be1f8aa9cb4e0c8c6c3e4e651db97fd582812c276d8a3a0c8f697c1637294"
+  },
+  "canonical_native_receiving": {
+    "selected_owner_source": "6bd879bda202feee372b25a61734ee13ee7928ac",
+    "native_source_receipt": "573476e70a4607bd42d21e9c7a866388fc3c1e6c",
+    "canonical_native_sha256": "58653b1d477be36017d2bc721dafe6e85a508e2325fa3226ccf26c61d449d6e5",
+    "previous_native_sha256": "2f1f69f6e0539bd31ee419ec3b7a4deaab20f09045ce3e6504369c9130438525",
+    "tracked_rust_inputs_match": 24,
+    "acquisition": "Copy of the owner-qualified canonical development build; all receipt-tracked Rust inputs and copied bytes independently verified. No local rebuild or new package.",
+    "previous_binary_preserved": true
+  },
+  "native_rebuilt_by_consumer": false,
+  "native_algorithms_authored_here": false,
+  "receiving": {
+    "150-native-allocation-receiving": {
+      "source_base": "43bf472287cc347269996040f605d5ffa9fea5d3",
+      "provider_source": "6bd879bda202feee372b25a61734ee13ee7928ac",
+      "provider_public_runtime_base": "6bd879bda202feee372b25a61734ee13ee7928ac",
+      "native_exit": 0,
+      "seconds": 69.08751056808978,
+      "selected_inputs": 10812,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 779.4,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      }
+    },
+    "152-physical-model-fixtures": {
+      "source_base": "43bf472287cc347269996040f605d5ffa9fea5d3",
+      "provider_source": "6bd879bda202feee372b25a61734ee13ee7928ac",
+      "provider_public_runtime_base": "6bd879bda202feee372b25a61734ee13ee7928ac",
+      "native_exit": 0,
+      "seconds": 12.620898781809956,
+      "selected_inputs": 10814,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 588.8,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      }
+    },
+    "155-physical-model-live": {
+      "source_base": "43bf472287cc347269996040f605d5ffa9fea5d3",
+      "provider_source": "6bd879bda202feee372b25a61734ee13ee7928ac",
+      "provider_public_runtime_base": "6bd879bda202feee372b25a61734ee13ee7928ac",
+      "native_exit": 0,
+      "seconds": 138.08298373804428,
+      "selected_inputs": 10816,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3450.4,
+      "cleanup": {
+        "tracked": 28,
+        "survivors": [],
+        "errors": []
+      }
+    },
+    "156-physical-model-quality": {
+      "source_base": "43bf472287cc347269996040f605d5ffa9fea5d3",
+      "provider_source": "6bd879bda202feee372b25a61734ee13ee7928ac",
+      "provider_public_runtime_base": "6bd879bda202feee372b25a61734ee13ee7928ac",
+      "native_exit": 0,
+      "seconds": 46.118019545217976,
+      "selected_inputs": 10817,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 670.9,
+      "cleanup": {
+        "tracked": 12,
+        "survivors": [],
+        "errors": []
+      }
+    },
+    "157-physical-model-final-copy": {
+      "source_base": "43bf472287cc347269996040f605d5ffa9fea5d3",
+      "provider_source": "6bd879bda202feee372b25a61734ee13ee7928ac",
+      "provider_public_runtime_base": "6bd879bda202feee372b25a61734ee13ee7928ac",
+      "native_exit": 0,
+      "seconds": 5.790055567864329,
+      "selected_inputs": 10817,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 235.5,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      }
+    }
+  },
+  "native_and_functional_cases": {
+    "native_backend_expert": 184,
+    "physical_focused": 9,
+    "covering_analysis_minimization_package": 87,
+    "final_copy_esm": 1,
+    "scopes_overlap_do_not_sum": true
+  },
+  "live_cases": {
+    "pytest_guards": 2,
+    "actual_jupyter_workflows": 7,
+    "native_qt_checks": 5,
+    "includes_both_popups": true,
+    "not_human_or_installed": true
+  },
+  "owner_integration_received": {
+    "public_source": "6bd879bda202feee372b25a61734ee13ee7928ac",
+    "pr_687_head_ancestor": "f35112090b37975a1d417602c3c1a6beed16d5f6",
+    "pr_691_head_ancestor": "0fb92602ab3f9122372ce3f9900fbaf55437c507",
+    "pr_691_direct_integration_not_github_merge_flag": true,
+    "owner_688_closed": true,
+    "owner_690_closed_and_locally_received": true
+  },
+  "capabilities": [
+    "Explicit single-structure native physical-model GUI task without preparing or mutating molecular data.",
+    "Cheap requested/default review remains separate from explicit native parameterization on Calculate.",
+    "Requested/native-default/inapplicable-default origins and compiled particle/constraint/nonbonded/resource/typed periodic-box observations remain owned by get_model_recipe.",
+    "Other mechanical reports retain a separate native inspection for the first requested construction structure, labelled independently of actual execution Context identity.",
+    "Native degree counting consumes the native resolved requested model, including an inapplicable explicit-water default for a stored implicit model.",
+    "Bounded unit-bearing display, native raw Python recipe, native unknown/custom-force limits, source/revision lifetime and explicit prerequisite refusals."
+  ],
+  "failures_preserved": [
+    "151: new test reference incorrectly exported multiple structural boxes to a single-frame OpenMM Topology; corrected to the explicitly inspected frame.",
+    "151: one-box/three-frame native set success left invalid axes; independently reproduced without Viewer and reported as MolSysMT #695. Positive fixture now supplies one box per frame, without a production workaround.",
+    "154: new task omitted from visible HTML options; actual Jupyter/Qt guards fail, the option is added and the unchanged real guards pass in 155.",
+    "157: final display-copy clarification has a scoped ESM pass; it changes no calculation or event logic received in 155/156."
+  ],
+  "limits": [
+    "Native physical recipes and interactions remain experimental. A separate inspection is not a captured execution Context or arbitrary custom-force reconstruction.",
+    "Construction can allocate native engine memory; bounded display is not a universal process-memory or cancellation guarantee.",
+    "No persistent generic analysis store, source mutation, parameter assignment, hidden trajectory loop or published dependency-floor claim is introduced.",
+    "Native #695 setter alignment and #666/PyUnitWizard #143 exact cutoff/unit review remain separate pre-1.0 owner findings.",
+    "The owner has integrated #687/#691 and closed #688/#690; prior failed receives and #615/Viewer #305 uncertainties remain preserved.",
+    "Human/installed/covering-platform acceptance and paused candidate/publication actions are unchanged."
+  ],
+  "resources": {
+    "logical_cpus": 8,
+    "ram_gib": 6,
+    "swap_gib": 0,
+    "minimum_globally_available_gib": 2,
+    "own_intensive_jobs": 1,
+    "native_probe_ram_gib": 4
+  },
+  "human_files_preserved": 11,
+  "progress": {
+    "denominator": 46,
+    "previous_source_delivered": 35,
+    "new_source_delivery_ids": [
+      "D5.2"
+    ],
+    "locally_verified": 36,
+    "source_delivered": 36,
+    "source_delivered_ids": [
+      "E0",
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A6",
+      "B1",
+      "B2",
+      "B3.1",
+      "B3.2",
+      "B3.3",
+      "B3.4",
+      "B3.5",
+      "C5",
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "D5.1",
+      "D5.3",
+      "D5.5",
+      "D5.6",
+      "D6.1",
+      "D6.2",
+      "D6.3",
+      "C1",
+      "C2",
+      "D6.6",
+      "F3",
+      "D6.4",
+      "A5",
+      "D6.8",
+      "D6.10",
+      "D6.9",
+      "E1",
+      "D5.2"
+    ],
+    "final_accepted": 1,
+    "final_accepted_ids": [
+      "E0"
+    ],
+    "movie_320_separately_required": true
+  },
+  "adopted_additional_work": {
+    "B4": "adopted 2026-11-10, not implemented or credited",
+    "F1": "adopted 2026-11-10, not implemented or credited"
+  },
+  "remaining_source_ids": [
+    "C3",
+    "C4",
+    "D5.4",
+    "D6.5",
+    "D6.7",
+    "E2",
+    "E4",
+    "F2",
+    "G1",
+    "G2"
+  ],
+  "publication_authorized": false,
+  "adopted_original_protocols": {
+    "E2": "documented scale matrix and thirty active cycles adopted 2026-11-10, not executed or credited"
+  },
+  "private_custody": {
+    "number": 8,
+    "files_verified": 123,
+    "bytes_verified": 40620584,
+    "manifest_sha256": "a4cfcc14edb40fa6a033ef7cc656d7c3f4c8fa75c4eb92d8470185f0687e661e",
+    "original_diagnostics_retained": true,
+    "unused_owned_credentials_hash_retired": true,
+    "off_host_backup_claimed": false
+  },
+  "governance_receiving": {
+    "native_exit": 0,
+    "seconds": 16.141581303207204,
+    "selected_inputs": 10817,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 409.0,
+    "cleanup": {
+      "tracked": 5,
+      "survivors": [],
+      "errors": []
+    },
+    "cases": 408
+  }
+}
