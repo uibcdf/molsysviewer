@@ -14,7 +14,17 @@ supersedes: []
 
 # Pre-1.0 robustness audit and action plan — 2026-11-06
 
-**Current source closeout — 2026-11-09, coherent capture:**
+**Current source delivery — 2026-11-09, properties and molecular reports:**
+[The property/report receipt](../molsysmt_property_reports_receiving_20261109.json)
+records **32/46 (69.6%) source-delivered**, adding D6.8 through stacked draft
+MolSysMT PR #682 at `7a83c482c`. Native/source/unit/axis guards, all affected
+Analysis/preflight checks, six actual Jupyter/popup and six native Qt scenarios
+pass. Definitions, source group maps, static versus structural scope, native
+prerequisite refusal and report/scene ownership remain explicit. Owner review,
+combined hosted and installed/human acceptance remain separate; final acceptance
+stays **1/46 (2.2%)**. No scientific algorithm or release is introduced.
+
+**Earlier source closeout — 2026-11-09, coherent capture:**
 [The A5 closeout receipt](../live_capture_v2_source_closeout_20261109.json)
 records **31/46 (67.4%) source-delivered**, adding A5/#319 after production v2
 negotiation, real Jupyter/Qt moving/background and four combined browser guards.
@@ -302,16 +312,16 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 ## Current dashboard
 
 **Latest source delivery, 2026-11-09:** the
-[coherent capture receipt](../live_capture_v2_source_closeout_20261109.json)
-receives A5/#319 and records **31/46 (67.4%) delivered/local**, with final
+[property/report receipt](../molsysmt_property_reports_receiving_20261109.json)
+receives D6.8 and records **32/46 (69.6%) delivered/local**, with final
 applicable acceptance still **1/46 (2.2%)**. The
-[chemical repair receipt](../molsysmt_chemical_repair_receiving_20261109.json)
-retains D6.4 in stacked draft PR #681; the earlier integration/refinement record
-retains its exact scopes. PR #678 full CI is now verified 8/8 with sixteen
-original evidence ZIPs and an execution tree equal to its reviewed head.
-C3/C4, D5.2/D5.4, D6.5/D6.7–D6.10, remaining E, F2, G and mandatory Movie
-#320 remain. B3.6/B4/F1 need scope decisions. Source delivery, hosted trees,
-installed packages and human observations remain separate.
+[coherent capture receipt](../live_capture_v2_source_closeout_20261109.json)
+retains A5/#319, and the chemical receipt retains D6.4 in stacked draft PR #681.
+PR #682 delivers the additional native reports. PR #678 full CI is verified
+8/8 with sixteen original ZIPs and an execution tree equal to its reviewed head.
+C3/C4, D5.2/D5.4, D6.5/D6.7/D6.9/D6.10, remaining E, F2, G and mandatory
+Movie #320 remain. B3.6/B4/F1 need scope decisions. Source delivery, hosted
+trees, installed packages and human observations remain separate.
 
 ### Dated receiving history
 
@@ -450,12 +460,12 @@ C2/task and hosted acceptance remain pending; C1 below holds the exact evidence.
 
 ### Current next actions
 
-1. Leave owner review/integration of PR #678 and stacked draft #681 to MolSysMT.
+1. Leave owner review/integration of PR #678 and stacked drafts #681/#682 to MolSysMT.
    The parent matrix is received 8/8; the changed combined head still needs its
    agreed batch gates, without launching CI for every incremental commit.
    Do not count the accepted structural-observable family while contacts #666
    and its PyUnitWizard #143 contract remain unresolved.
-2. Continue accepted construction, property/report,
+2. Continue accepted construction,
    interaction/mechanical and qualified visual-adoption families. Keep #582's
    effective-model and #615's unexplained initialization work distinct.
 3. Retain A5’s completed source/host evidence and its separate final gates.
@@ -474,7 +484,7 @@ their own inputs and do not supersede this order.
 | --- | --- | --- | --- |
 | A — integrity, restoration and cleanup | A1–A6 source-delivered; #319 closes coherent live capture with negotiated v2, v1 compatibility, actual Jupyter/Qt moving/background and combined browser receiving; final platform/installed/human acceptance remains separate | Viewer; #316/#317/#318/#319 and private handling under #315 | Rejection preserves work; ownership/deadline cleanup and real API/render/file regressions |
 | B — plots and DataCards | B1/#314, B2/#321 with #322 and B3.1–B3.5/#345 are source-delivered; numerical/state/popup and DataCard receiving pass. Retain the unexplained earlier zero-reference-bounds guard failure; consolidated acceptance remains. B3.6/B4 need scope decisions | Viewer and scientific producer; #314, #321, #322, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
-| C — contribution and host integration | C1/C2 source-delivered: owner-merged PR #668 and adopted controlled Viewer pin, received on the reconciled source pair. PR #678’s full matrix is received 8/8 at its exact execution/head tree; stacked draft #681 delivers Chemistry. Owner integration and changed combined-head gates remain separate. Preserve #668's seven original test failures and #671 provisioning failure; #670 is owner-resolved. C3/C4 remain partial/open | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421 and PR #678 | Exact source delivery/adoption is received; covering hosted/installed and remaining host exits are separate |
+| C — contribution and host integration | C1/C2 source-delivered: owner-merged PR #668 and adopted controlled Viewer pin, received on the reconciled source pair. PR #678’s full matrix is received 8/8 at its exact execution/head tree; stacked drafts #681/#682 deliver Chemistry and property reports. Owner integration and changed combined-head gates remain separate. Preserve #668's seven original test failures and #671 provisioning failure; #670 is owner-resolved. C3/C4 remain partial/open | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421 and PR #678 | Exact source delivery/adoption is received; covering hosted/installed and remaining host exits are separate |
 | D — scientific prerequisites and approved GUI families | Partial implementation; provider corrections and several task families remain | MolSysMT owns science; addon owns tasks; #264/#315 and uibcdf/molsysmt#421 | Received native fixes plus every required family/effect, without hidden preparation or copied algorithms |
 | E — integrated use, scale and human acceptance | E0 custody received; partial headless/Jupyter receiving; complete workflow/prolonged use pending; human review postponed | Viewer/addon; maintainer owns human observations | TcTIM/ensemble save–recover–continue, independent lifetimes and representative measured limits |
 | F — public contract and documentation | F3 current handoff source-delivered; F2 broad documentation remains pending and F1 compatibility snapshot needs a scope decision | Viewer; #315 | Named stable/experimental contracts, verified references and one usable current handoff |
@@ -540,8 +550,8 @@ history:
 
 | Stage | Completed / original 46 | IDs and evidence meaning |
 | --- | --- | --- |
-| Consumer result complete and locally verified | **31/46 — 67.4%** | Earlier twenty-five plus owner-integrated source/pin receiving C1/C2, coordinate refinement D6.6, chemical repair/assignments D6.4, coherent capture A5 and consolidated handoff F3. See the new receipt for each original outcome and its unaccepted exits. |
-| Consumer result delivered | **31/46 — 67.4%** | E0, A1–A6, B1/B2/B3.1–B3.5, C1/C2/C5, D1–D4, D5.1/D5.3/D5.5/D5.6, D6.1–D6.4/D6.6 and F3. PR #668 is owner-merged; #678 delivers refinement/PCA and stacked #681 chemical repairs, without claiming owner acceptance. |
+| Consumer result complete and locally verified | **32/46 — 69.6%** | Earlier twenty-five plus owner-integrated source/pin receiving C1/C2, coordinate refinement D6.6, chemical repair/assignments D6.4, coherent capture A5, property/report tasks D6.8 and consolidated handoff F3. See the new receipt for each original outcome and its unaccepted exits. |
+| Consumer result delivered | **32/46 — 69.6%** | E0, A1–A6, B1/B2/B3.1–B3.5, C1/C2/C5, D1–D4, D5.1/D5.3/D5.5/D5.6, D6.1–D6.4/D6.6/D6.8 and F3. PR #668 is owner-merged; #678 delivers refinement/PCA and stacked #681 chemical repairs / #682 property reports, without claiming owner acceptance. |
 | Final applicable acceptance recorded | **1/46 — 2.2%** | E0 only. Preserve the remaining acceptance obligations rather than silently promoting source delivery. |
 
 These stages are not additive, equally weighted effort estimates, time
@@ -550,7 +560,7 @@ this audit; #320's mandatory movie stream remains separately visible. A5 is now 
 not to final acceptance. Source
 support and upstream issue closure do not by themselves complete a consumer
 result. D2/D3/D4 and D6.6 now have current consumer source receiving; D5.2/D5.4,
-D6.5 and D6.7–D6.10 retain their distinct remaining contracts and evidence. No original leaf is
+D6.5/D6.7/D6.9/D6.10 retain their distinct remaining contracts and evidence. No original leaf is
 removed or split to obtain the new counter.
 
 A5's bounded child [#329](../archive/box_display_lags_native_trajectory.md)
@@ -591,8 +601,8 @@ nor that historical prefix qualifies packages or human review; mandatory Movie
 
 **Next execution checkpoint:** continue the current queue above. PR #678's
 matrix is verified 8/8, with original scientific/JUnit archives; review and
-integration of it and stacked draft #681 remain with MolSysMT. Continue C3/C4,
-D5.2/D5.4 and D6.5/D6.7–D6.10, then the continuous session, documentation,
+integration of it and stacked drafts #681/#682 remain with MolSysMT. Continue C3/C4,
+D5.2/D5.4 and D6.5/D6.7/D6.9/D6.10, then the continuous session, documentation,
 applicable artifact/platform/human gates and Movie. Batch CI rather than
 repeating it per incremental commit. Source receipt, owner integration and
 final acceptance remain distinct; a test count alone is not an outcome.
@@ -887,7 +897,7 @@ do not silently omit an existing accepted family.
 | **D6.5 — construction and solvent** | Pending accepted construction/assembly, solvent and ion tasks; explicit native inputs/model/seed/charge/cell requirements and result adoption |
 | **D6.6 — coordinate refinement** | Source-delivered in PR #678: explicit reviewed model, native CPU/Reference single-structure minimization, current or independent effect; native/analytical, Jupyter and Qt receiving pass. Broader effective-model #582 and final acceptance retain their own scope |
 | **D6.7 — structural observables** | Distances, neighborhoods, conformations, angles/torsions and PCA have bounded numerical/axis/ownership receiving. Contacts #666 / PyUnitWizard #143 and full-family acceptance remain; PCA alone does not complete this outcome |
-| **D6.8 — properties and molecular reports** | Pending accepted property, sequence and connectivity tasks; source maps, scientific definitions, evaluated scope and D5's relevant dispositions |
+| **D6.8 — properties and molecular reports, source received** | Nine native property/sequence/connectivity tasks in stacked draft PR #682; source maps, definitions, explicit units/scope, missing-chemistry refusal and complete participant actions pass native, actual Jupyter/both-popup and representative Qt receiving. Owner, combined-head and final acceptance remain separate |
 | **D6.9 — interactions and mechanics** | Expert routes exist; complete the accepted additional task/result integration with native prerequisites, units and separate scientific/visual ownership |
 | **D6.10 — qualified visual adoption** | Current Measures/plots are slices; complete compatible accepted scene/color/plot mappings. New renderer or metadata contracts, including B4, require their recorded decisions first |
 
