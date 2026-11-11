@@ -19701,6 +19701,39 @@
       "reason": "Explicitly growing object API; public_api.md",
       "stability": "growing"
     },
+    "view.movie.capture_baseline_async": {
+      "async": true,
+      "kind": "callable",
+      "parameters": [
+        {
+          "default": {
+            "kind": "required"
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "duration_ms"
+        },
+        {
+          "default": {
+            "binary64": "0x1.4000000000000p+2",
+            "kind": "float",
+            "value": 5.0
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "timeout"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "skip_digestion"
+        }
+      ],
+      "reason": "Experimental acknowledged Movie baseline capture; movie_timeline_design.md and #320",
+      "stability": "experimental"
+    },
     "view.movie.clear": {
       "async": false,
       "kind": "callable",
@@ -20113,6 +20146,32 @@
         }
       ],
       "reason": "Experimental headless Movie tracks; public_api.md",
+      "stability": "experimental"
+    },
+    "view.movie.reset_async": {
+      "async": true,
+      "kind": "callable",
+      "parameters": [
+        {
+          "default": {
+            "binary64": "0x1.4000000000000p+2",
+            "kind": "float",
+            "value": 5.0
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "timeout"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "skip_digestion"
+        }
+      ],
+      "reason": "Experimental acknowledged recorded-scene Movie reset; movie_timeline_design.md and #320",
       "stability": "experimental"
     },
     "view.movie.save": {

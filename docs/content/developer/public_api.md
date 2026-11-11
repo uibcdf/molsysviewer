@@ -457,6 +457,13 @@ the same tag; APIs resolve identity as `(domain, tag)`.
     `await play_async(loop=False, start_time_ms=0.0, *, timeout=5.0)` and
     `await pause_async()`. Evaluation, preview and session persistence are
     described in [Timeline and keyframes](../user/movie/timeline.md#independent-tracks-experimental).
+    `await capture_baseline_async(duration_ms, *, timeout=5.0)` starts an empty
+    track recipe from an acknowledged primary-canvas camera/structure.
+    `await reset_async(*, timeout=5.0)` restores the recorded scene before
+    time-zero keys and returns its acknowledged state. These are experimental;
+    [capture/reset semantics](../user/movie/timeline.md#capturing-and-restoring-the-baseline)
+    distinguish recipe replacement, object Undo, cancellation and state-import
+    scope from scientific editing and full static-scene/rebase enforcement.
     The [appearance catalogue](../user/movie/timeline.md#animating-appearance)
     adds uniform colours/alpha, simple representations, text and declared
     background/lighting without new authoring method signatures.

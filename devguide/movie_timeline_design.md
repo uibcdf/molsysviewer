@@ -18,7 +18,9 @@ correlated images to MP4/H.264, WebM/VP9 or a PNG/manifest ZIP. The
 [receiving record](movie_export_receiving_20261110.json) separates source
 encoder, browser and API scopes. Uniform colours/alpha, simple molecular
 representations, annotation text, RGB background and ambient/diffuse lighting
-have their first implementation. Complete baseline/rebase/reset, richer style
+have their first implementation. Acknowledged baseline capture and explicit
+recorded-scene reset are implemented; complete static-baseline enforcement,
+reviewable rebasing, richer style
 recipes, Studio authoring and a portable interactive web player remain open.
 The [appearance receipt](movie_appearance_receiving_20261110.json) retains its
 separate numerical, native-node, popup, session and media evidence.
@@ -207,13 +209,37 @@ view.movie.to_dict()
 view.movie.from_dict(recipe)
 ```
 
-Live application and coordinated preview have draw acknowledgments. The
-remaining application surface includes captured baselines, explicit target
-mapping and reviewed reset/rebase behavior. Proposed calls:
+Live application, baseline capture and recorded-scene reset have draw
+acknowledgments:
 
 ```python
-await view.movie.capture_baseline_async(...)
-await view.movie.reset_async(...)           # restore baseline and time zero
+await view.movie.capture_baseline_async(2000, timeout=5.0)
+await view.movie.reset_async(timeout=5.0)     # restore baseline before zero keys
+```
+
+Capture starts a new empty plan from the primary renderer's observed camera
+and structure. It does not pause trajectory motion. The existing version-2
+capture barrier owns static-scene/scientific consistency; pending Movie jobs
+are refused. Candidate preparation can wait for scene ownership, but final
+recipe installation runs on the resumed caller with no subsequent yield.
+Cancellation after a preparation grant therefore cannot install a baseline.
+Environment capture still records declared intent; making supported resolved
+renderer defaults explicit remains part of the complete-baseline work.
+
+Reset retains the recipe and molecular system. It preflights the recorded
+state using the existing isolated restore owner, then restores its scene
+objects once as one object-Undo operation. Recorded camera/frame and stopped
+motion are confirmed by the same coherent draw barrier as seeking. Time-zero
+keys do not override this baseline; ordinary `seek_async(0)` still applies
+them. Reset uses state-import environment/export-preference semantics and
+hides an absent baseline box. It may recreate object handles and does not
+promise rollback of accepted scene commands after a timeout. It is a restore
+of the recorded state catalogue, not a snapshot of arbitrary Mol* settings.
+
+Complete static-baseline enforcement, reviewed rebase reports and explicit
+target mapping remain pending. Proposed import extension:
+
+```python
 view.movie.from_dict(recipe, target_map=...)
 ```
 

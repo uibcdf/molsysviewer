@@ -2,6 +2,7 @@
 
 import math
 import time
+from copy import deepcopy
 from numbers import Real
 from uuid import uuid4
 
@@ -94,7 +95,7 @@ def _confirm_sample(sample, *, camera, structure_index, playing):
         raise FrontendRequestError(reason="movie_camera_not_applied")
 
 
-async def seek_movie(movie, time_ms, *, timeout, export_job=None, movie_frame=None):
+async def seek_movie(movie, time_ms, *, timeout, export_job=None, movie_frame=None, reset_baseline=False):
     if isinstance(timeout, bool) or not isinstance(timeout, Real) or not math.isfinite(timeout) or timeout <= 0:
         raise ValueError("Movie seek timeout must be finite and positive.")
     view = movie._view
@@ -120,11 +121,25 @@ async def seek_movie(movie, time_ms, *, timeout, export_job=None, movie_frame=No
             raise FrontendRequestError(reason="movie_appearance_not_supported")
         if export_job is not None:
             export_job.validate(movie)
-        scene = view.export_state(skip_digestion=True)
-        timeline.check_binding(view._source_state_binding(), scene)
-        sample = timeline.evaluate(time_ms, tracked_visibility=True)
-        owners = _visibility_owners(view, timeline.visibility_targets())
-        commands = _visibility_commands(owners, sample["visibility"])
+        if reset_baseline:
+            baseline = timeline.to_dict()["baseline"]
+            state = baseline["scene"]
+            state["view"]["camera"] = {**state["view"].get("camera", {}), **baseline["camera"]}
+            state["view"].setdefault("playback", {})["playing"] = False
+            overlaps = view._preflight_state_import(state, clear_first=True, on_conflict="raise")
+            sample = {
+                "time_ms": 0.0,
+                "camera": baseline["camera"],
+                "structure_index": state["view"]["structure_index"],
+                "visibility": [],
+            }
+            commands = []
+        else:
+            scene = view.export_state(skip_digestion=True)
+            timeline.check_binding(view._source_state_binding(), scene)
+            sample = timeline.evaluate(time_ms, tracked_visibility=True)
+            owners = _visibility_owners(view, timeline.visibility_targets())
+            commands = _visibility_commands(owners, sample["visibility"])
 
         remaining = deadline - time.monotonic()
         if remaining <= 0:
@@ -133,7 +148,15 @@ async def seek_movie(movie, time_ms, *, timeout, export_job=None, movie_frame=No
             endpoint_id="primary", reply_event="visual_state_snapshot", revision=uuid4().hex, timeout=remaining
         )
         movie._seek_request = request
-        _apply_sample(movie, timeline, sample, commands)
+        if reset_baseline:
+            with view.history._atomic_operation(("movie", "", "reset")):
+                with view.history.suspended():
+                    view._import_prevalidated_state(state, clear_first=True, on_conflict="raise", overlaps=overlaps)
+                    if "box_display" not in state:
+                        view.hide_box(skip_digestion=True)
+                _apply_sample(movie, timeline, sample, commands)
+        else:
+            _apply_sample(movie, timeline, sample, commands)
         captured = freeze_live_capture(view, version=version)
         revisions = (view._camera_projection_revision, view.player._intent_revision)
         send_live_capture(view, request, protocol_version=version, movie_frame=movie_frame)
@@ -149,7 +172,8 @@ async def seek_movie(movie, time_ms, *, timeout, export_job=None, movie_frame=No
                 view.player._intent_revision,
             ):
                 raise FrontendRequestError(reason="movie_seek_superseded")
-            drawn = finish_live_capture(view, captured, reply).state["view"]
+            drawn_state = finish_live_capture(view, captured, reply).state
+            drawn = drawn_state["view"]
             _confirm_sample(
                 sample,
                 camera=drawn["camera"],
@@ -167,7 +191,7 @@ async def seek_movie(movie, time_ms, *, timeout, export_job=None, movie_frame=No
 
                 export_job.revisions = _revisions(view)
                 return sample, frame
-            return sample
+            return deepcopy(drawn_state) if reset_baseline else sample
 
         return await _capture_owned_call(view, confirm, deadline=deadline)
     finally:

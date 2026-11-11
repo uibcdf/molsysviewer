@@ -46,6 +46,41 @@ def main():
                     means = [float(image.mean()) for image in images]
                     assert means[-1] > means[0] + 30
                     result = {"ok": True, "export": answer, "decoded_mean_brightness": means}
+                elif event.get("baseline_reset"):
+                    from molsysviewer.interactions import _analysis_signature
+
+                    view.movie.update_track("background", keys=[{"time_ms": 0, "value": 0xFFFFFF}])
+                    recipe = view.movie.to_dict()
+                    molecular_system = view.molsys
+                    scientific = _analysis_signature(view.interactions.get_analysis("story-hbonds"))
+                    view.shapes["site"].delete()
+                    view.annotations["note"].delete()
+                    view.annotations.add("Later", atom_indices=[1], tag="later")
+                    state = await view.movie.reset_async(timeout=20)
+                    assert view.movie.to_dict() == recipe and view.molsys is molecular_system
+                    assert _analysis_signature(view.interactions.get_analysis("story-hbonds")) == scientific
+                    assert view.annotations.get("later") is None
+                    assert state["environment"]["background"] == {"color": 0}
+                    assert (
+                        next(row for row in view.movie.evaluate(0)["appearance"] if row["property"] == "background")[
+                            "value"
+                        ]
+                        == 0xFFFFFF
+                    )
+                    result = {"ok": True, "state": state, "scientific_unchanged": True}
+                elif "baseline_capture" in event:
+                    recipe = await view.movie.capture_baseline_async(2500, timeout=20)
+                    await view.save_session_async(event["baseline_capture"], timeout=20)
+                    with msv.load_session(event["baseline_capture"]) as restored:
+                        assert restored.movie.to_dict() == recipe
+                        assert restored.player.index == recipe["baseline"]["scene"]["view"]["structure_index"]
+                    result = {
+                        "ok": True,
+                        "camera": recipe["baseline"]["camera"],
+                        "frame": recipe["baseline"]["scene"]["view"]["structure_index"],
+                        "tracks": len(recipe["tracks"]),
+                        "session_reopened": True,
+                    }
             except Exception as error:
                 import traceback
 

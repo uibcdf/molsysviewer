@@ -299,8 +299,18 @@ colour interpolation rule; Python/TypeScript numerical receiving and actual mole
 session and 720p video receiving have distinct scopes. Declared viewport
 environment now travels in state/session files without making object Undo
 restore earlier camera/environment settings. Complete static baseline,
-rebase/reset, broader recipes, Studio, web and integrated M5 acceptance remain
+reviewed rebasing, broader recipes, Studio, web and integrated M5 acceptance remain
 open; this does not complete #320.
+
+The [baseline tranche](../movie_baseline_receiving_20261111.json) adds
+acknowledged live capture of a new empty plan and explicit recorded-scene reset
+before time-zero keys. It preserves the scientific system/analyses and groups
+restored object changes into one Undo step. Reset restores the state catalogue,
+not arbitrary Mol* settings; unrecorded viewport/export preferences retain
+state-import semantics. Its native receiving exposed #358's pre-existing
+region-priority replay mismatch; restoration now declares saved priority
+before creation/style, without a transient promotion. Complete static-scene
+conflict checks, reviewed rebase/target mapping and M2/M4/M5 work stay open.
 
 Post-1.0 agent planning translates instructions into this same inspectable,
 validated and editable plan, with preview and export through the same owner.

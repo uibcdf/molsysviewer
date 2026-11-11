@@ -163,6 +163,18 @@
       "priority": 100,
       "stability": "experimental",
       "reason": "Experimental bounded version-2 Movie export; movie_timeline_design.md and #320"
+    },
+    {
+      "route": "view.movie.capture_baseline_async",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental acknowledged Movie baseline capture; movie_timeline_design.md and #320"
+    },
+    {
+      "route": "view.movie.reset_async",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental acknowledged recorded-scene Movie reset; movie_timeline_design.md and #320"
     }
   ]
 }

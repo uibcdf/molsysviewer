@@ -201,7 +201,8 @@ visibility track with property `visible` take effect at their key times and hold
 until the next key. Visibility targets are `whole` or a tagged `region`, `layer`,
 `shape`, `annotation`, `measurement` or `interaction`. `update_track()` replaces
 a track's keys. `remove_track()` removes its scheduled channel. The baseline
-remains in the recipe; complete live reset/rebase is still in progress.
+remains in the recipe; `reset_async()` restores its recorded scene. Reviewed
+rebasing is still in progress.
 
 `evaluate()` returns detached values without changing the live scene.
 `validate()` checks the recipe against the current system and its referenced
@@ -254,7 +255,43 @@ view.movie.add_track({
 Seeking, preview and export apply them through the existing scene owners.
 They preserve region order and supplied interaction analyses. Editing an
 untracked material parameter on an animated structural target requires a
-reviewed new baseline. Complete scene rebasing and reset are still in progress.
+reviewed new baseline. Complete static-scene conflict checks and reviewed
+rebasing are still in progress.
+
+### Capturing and restoring the baseline
+
+When you have composed a scene interactively, capture its actual camera and
+structure rather than relying on a cached Python camera:
+
+```python
+recipe = await view.movie.capture_baseline_async(2000, timeout=5)
+```
+
+This starts a new version-2 recipe with no tracks. The duration is in
+milliseconds and the timeout in seconds. It leaves the visible scene and
+trajectory motion alone. Finish or pause an active Movie operation first.
+Timeout, cancellation and intervening edits preserve the previous recipe.
+You can still use `set_baseline()` with an explicit camera when working
+without a renderer.
+
+To restore the recorded scene after previewing or editing it, use:
+
+```python
+state = await view.movie.reset_async(timeout=5)
+```
+
+Reset pauses motion and restores the recorded objects, camera and structure,
+then waits for an acknowledged primary-canvas draw. It leaves the recipe and
+scientific data unchanged. Later scene objects are removed; object changes
+form one Undo step. Missing or changed named scientific analyses are rejected
+before replacing objects. As with importing a state file, only recorded
+environment settings are restored; unrecorded viewport/export preferences
+remain unchanged. A box display absent from the baseline is hidden.
+
+Reset returns the acknowledged state before any time-zero keys. In contrast,
+`seek_async(0)` applies those keys. Cancelling or timing out a reset can leave
+already accepted scene changes visible. Reset may recreate scene objects;
+retrieve them again through their managers if you kept Python handles.
 
 ### Preview an instant
 

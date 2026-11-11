@@ -374,6 +374,42 @@ class MovieManager:
             timeline.check_binding(binding, current)
         self._install_timeline(timeline)
 
+    @signal(tags=["movie", "capture"])
+    @digest()
+    async def capture_baseline_async(
+        self, duration_ms: float, *, timeout: float = 5.0, skip_digestion: bool = False
+    ) -> dict:
+        """Start a new track recipe from an acknowledged live scene.
+
+        Capture the primary canvas's actual camera and structure, including
+        during trajectory playback. The duration is in milliseconds and the
+        timeout in seconds. Success replaces the previous recipe with an empty
+        set of tracks and returns its detached dictionary. Failure/cancellation
+        preserves the recipe. An active Movie operation must finish first.
+        """
+        from ._movie_baseline import capture_baseline
+
+        return await capture_baseline(self, duration_ms, timeout=timeout)
+
+    @signal(tags=["movie", "capture"])
+    @digest()
+    async def reset_async(self, *, timeout: float = 5.0, skip_digestion: bool = False) -> dict:
+        """Restore the recorded scene before time-zero keys and await a draw.
+
+        Pause Movie and competing motion, restore the baseline's objects,
+        camera, structure and recorded environment, and return the acknowledged
+        state. The recipe and scientific system stay unchanged. Later scene
+        objects are removed; object changes form one Undo step. Unrecorded
+        viewport/export preferences retain ordinary state-import semantics.
+        A timeout/cancellation can leave accepted scene changes visible.
+        """
+        from ._movie_seek import seek_movie
+
+        if self._playback is not None:
+            self._require_timeline()
+            await self.pause_async(skip_digestion=True)
+        return await seek_movie(self, 0, timeout=timeout, reset_baseline=True)
+
     @signal()
     @digest()
     def set_duration(self, duration_ms: float, *, skip_digestion: bool = False) -> None:

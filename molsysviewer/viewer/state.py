@@ -468,6 +468,10 @@ class StateMixin:
         of the state.
         """
         overlaps = self._preflight_state_import(state, clear_first=clear_first, on_conflict=on_conflict)
+        self._import_prevalidated_state(state, clear_first=clear_first, on_conflict=on_conflict, overlaps=overlaps)
+
+    def _import_prevalidated_state(self, state, *, clear_first, on_conflict, overlaps):
+        """Apply an already checked state while retaining its restore diagnostics."""
         previous_phase = getattr(self, "_state_import_phase", None)
         previous_overlaps = getattr(self, "_state_import_warned_overlaps", None)
         self._state_import_phase = "apply"
@@ -1603,6 +1607,11 @@ class StateMixin:
             )
         dict.__setitem__(self._regions, tag, region)
         region._enabled = record.get("enabled", True)  # noqa: SLF001
+        saved_order = record.get("order")
+        if saved_order is not None:
+            # Creation and styling must carry the saved priority on the wire.
+            # Assigning it only after those commands leaves native order stale.
+            region.order = int(saved_order)
 
         representation = record.get("representation")
         preset = record.get("preset")
@@ -1610,12 +1619,13 @@ class StateMixin:
         has_visual = representation is not None or preset is not None or bool(params)
         if has_visual:
             region._send_create(include_visual=False)  # noqa: SLF001
-            region.set_representation(
-                representation,
-                preset=preset,
-                skip_digestion=True,
-                **params,
-            )
+            with self._retain_region_order(region) if saved_order is not None else nullcontext():
+                region.set_representation(
+                    representation,
+                    preset=preset,
+                    skip_digestion=True,
+                    **params,
+                )
         else:
             region._send_create()  # noqa: SLF001
 
@@ -1630,9 +1640,6 @@ class StateMixin:
 
         if record.get("hidden"):
             region.hide(skip_digestion=True)
-
-        if record.get("order") is not None:
-            region.order = int(record["order"])
 
         layer = record.get("layer")
         if isinstance(layer, str) and layer:

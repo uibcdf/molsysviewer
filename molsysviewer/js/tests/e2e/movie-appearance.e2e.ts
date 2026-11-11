@@ -153,15 +153,51 @@ async function run() {
             });
             assert.ok(drawOrders.length > 4);
             assert.deepEqual([...new Set(drawOrders)], [original.regionOrder]);
+
+            await page.mouse.move(25, 25);
+            const reopening = page.waitForEvent("popup");
+            await page.getByTitle("Open popup", { exact: true }).click();
+            const restoredPopup = await reopening;
+            restoredPopup.on("pageerror", error => errors.push(String(error)));
+            await restoredPopup.waitForFunction(() => !!(window as any).__mirrorController);
+            const reset = await operation(page, { baseline_reset: true });
+            const baseline = await native(page);
+            for (const key of ["frame", "representation", "alpha", "regionOrder", "regionHidden", "sphereColor",
+                "sphereAlpha", "caption", "background", "ambient", "diffuse"] as const) {
+                assert.deepEqual(baseline[key], original[key], `Reset did not restore ${key}`);
+            }
+            assert.ok(baseline.boundary && baseline.boundary.expected > 0);
+            assert.equal(baseline.boundary.drawn, baseline.boundary.expected);
+            await restoredPopup.waitForFunction(() => {
+                const c = (window as any).__mirrorController, region = c?.state.regionIndex.get("site");
+                const values = region && c.plugin.state.data.cells.get(region.representations[0])?.params?.values;
+                return c?.trajectory.getTrajectoryState().currentFrame === 0 && values?.type.name === "ball-and-stick"
+                    && c.plugin.canvas3d.props.renderer.backgroundColor === 0;
+            });
+            const observed = { position: [3, 4, 50], target: [3, 4, 5], up: [0, 1, 0] };
+            await page.evaluate(async camera => {
+                const c = (window as any).__mirrorController;
+                await c.handleMessage({ op: "set_trajectory_frame", index: 2 });
+                c.plugin.canvas3d.camera.setState(camera, 0);
+                c.plugin.canvas3d.requestDraw();
+            }, observed);
+            const captured = await operation(page, { baseline_capture: resolve(workspace, "baseline.msv") });
+            assert.deepEqual(captured.camera, observed);
+            assert.equal(captured.frame, 2);
+            assert.equal(captured.tracks, 0);
+            assert.equal(captured.session_reopened, true);
+            await restoredPopup.close();
             assert.deepEqual(errors, []);
             if (process.env.MOLSYSVIEWER_MOVIE_EVIDENCE_DIR) {
                 const out = process.env.MOLSYSVIEWER_MOVIE_EVIDENCE_DIR;
                 await mkdir(out, { recursive: true });
                 await copyFile(resolve(workspace, "appearance.mp4"), resolve(out, "appearance.mp4"));
                 await copyFile(resolve(workspace, "appearance.msv"), resolve(out, "appearance.msv"));
-                await writeFile(resolve(out, "verified.json"), JSON.stringify({ snapshots, exported, drawOrders }, null, 2));
+                await copyFile(resolve(workspace, "baseline.msv"), resolve(out, "baseline.msv"));
+                await writeFile(resolve(out, "verified.json"), JSON.stringify({ snapshots, exported, drawOrders,
+                    baseline: { resetState: reset.state, native: baseline, captured } }, null, 2));
             }
-            console.log("[Movie appearance] Native materials, stable region nodes/order, popup, preview, session and 720p MP4 agree.");
+            console.log("[Movie appearance] Native materials, boundary bonds, popup, preview, 720p MP4, baseline reset/capture and session agree.");
         } finally {
             await release?.();
             await Promise.all([browser.close(), bridge?.close()]);
