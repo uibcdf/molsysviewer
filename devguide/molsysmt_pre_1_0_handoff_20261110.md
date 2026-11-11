@@ -86,14 +86,38 @@ format's interactions-only input attaches to the existing system and preserves
 its coordinates. This fixture carries no mechanics layer. The probe exits
 zero in 7.74 s at 1 CPU, with 10,905 unchanged selected inputs.
 
-For #256 we support a first stable H5MSM 1.0 boundary. Repeat those two routes
-with the actual stable reader and writer, verify the embedded version, retain
-old-session read coverage and add a scoped edit to verify selective analysis
-invalidation. Verify declared correspondence, domain absence, units and
-producer identity after reopening. If stable 1.0 also carries mechanics, check
-that save/reopen preserves those stored data even where MolSysViewer does not draw
-them. Keep the prior formats and experimental scientific profiles within
-their established scopes.
+For #256, explicit H5MSM 1.0 is received on MolSysMT
+`8d05bc33e75327a2c4f55a8c06ed3a132627fb5b` and MolSysViewer runtime
+`a6a3a309b31de2031e2517be6d913a9afd0c087b`, with published PyUnitWizard
+0.29.2 in the isolated support route. The
+[independent receiving record](molsysmt_h5msm10_receiving_20261110.json)
+retains the exact source identities, native binary, regression guard and
+archive hashes. A 0.5 session generated with the earlier frozen MolSysMT
+writer `af1e735232e21f4324234ff9ef11daf9a920a8ff` opens with the new reader;
+its equivalent session with only the embedded molecular member publicly
+migrated to 1.0 also opens. This is a fixture produced today with earlier
+source, not a retained historical user session.
+
+The six-structure, 62-atom real trajectory and two explicitly synthetic named
+analyses retain coordinates, box, reference ChemicalStates bonds/components,
+scene, camera, occurrence indices, parallel evidence, compound participants,
+units, periodic images and declared atom/structure maps. Nonconsecutive
+queries `[4, 1, 0, 4, 3]` and View extraction preserve their declared semantics.
+Interaction-only files in either schema attach without replacing the system.
+Coordinate setters on `[4]` or `[4, 0]` invalidate only those evaluated frames;
+the other analysis and untouched coverage remain valid. Explicit
+`apply_system_edit(..., interactions_policy="preserve")` then synchronizes
+the already invalidated science before save/reopen. Edits may assign new
+occurrence indices; detached original analyses remain unchanged.
+
+There is one explicit persistence limit: a 1.0 session with stored mechanics
+opens and retains its force-field request, charges and cutoff quantity, but
+the default 0.5 writer rejects saving it. The existing destination survives.
+No mechanics are silently discarded. MolSysViewer currently offers no
+session-level format override; a future provider-default transition must
+receive this path before claiming complete mechanics save/reopen. This source
+receiving supports explicit 1.0 consumption; it neither changes the default
+writer nor qualifies installed artifacts or a public 1.0 release.
 
 ## Versions for installed qualification
 

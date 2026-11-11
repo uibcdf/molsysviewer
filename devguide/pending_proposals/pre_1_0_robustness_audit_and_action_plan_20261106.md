@@ -558,6 +558,11 @@ C2/task and hosted acceptance remain pending; C1 below holds the exact evidence.
 
 ### Current next actions
 
+Explicit H5MSM 1.0 consumption is [received](../molsysmt_h5msm10_receiving_20261110.json)
+on MolSysMT `8d05bc33` with 47 session/projection passes; retain the default-0.5
+mechanics save refusal and the separate installed/default-transition gates.
+This adds integration evidence without changing the original-outcome counter.
+
 The [MolSysMT coordination response](../molsysmt_pre_1_0_handoff_20261110.md)
 records MolSysViewer acceptance of #250/#254 within the received source scope,
 the coordinated MolSysMT 1.0.0 and MolSysViewer 1.0.0 release and installed

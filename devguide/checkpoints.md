@@ -907,6 +907,15 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+The [H5MSM 1.0 receipt](molsysmt_h5msm10_receiving_20261110.json) receives
+MolSysMT `8d05bc33` against MolSysViewer runtime `a6a3a309`: prior-writer 0.5
+sessions and equivalent 1.0 sessions preserve scene/science; selective native
+coordinate invalidation survives explicit View synchronization and resaving.
+All 47 applicable session/projection cases pass. Default writing remains 0.5;
+stored mechanics can be read from 1.0, while default session save safely
+refuses those data. Installed, browser and default-transition qualification
+remain separate, as detailed in the [handoff](molsysmt_pre_1_0_handoff_20261110.md).
+
 The [physical-model receipt](molsysmt_physical_recipe_receiving_20261110.json)
 and [construction receipt](molsysmt_construction_receiving_20261110.json)
 record D5.2 / D6.5 in owner-integrated contributions #696 / #699. Viewer

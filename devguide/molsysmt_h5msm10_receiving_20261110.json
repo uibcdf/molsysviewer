@@ -1,0 +1,246 @@
+{
+  "schema": "molsysviewer.h5msm_session_receiving@1",
+  "date": "2026-11-10",
+  "owner_issues": [
+    "uibcdf/molsysviewer#315",
+    "uibcdf/molsysmt#250",
+    "uibcdf/molsysmt#254",
+    "uibcdf/molsysmt#256",
+    "uibcdf/molsysmt#524"
+  ],
+  "scope": "Independent sequential source receiving, headless Python session restoration and scene projection. No installed solver, browser redraw, Qt, hosted matrix, publication or provider-default-transition qualification.",
+  "sources": {
+    "molsysviewer_runtime": "a6a3a309b31de2031e2517be6d913a9afd0c087b",
+    "molsysmt_reader": "8d05bc33e75327a2c4f55a8c06ed3a132627fb5b",
+    "legacy_molsysmt_writer": "af1e735232e21f4324234ff9ef11daf9a920a8ff",
+    "source_isolation": "Exact git archive of the requested molecular package, with receipt-matched native binary; runtime/test source hashes retained before and after. Human changes in both working clones preserved.",
+    "native_binary_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "native_source_unchanged_between_legacy_and_reader": true,
+    "native_source_paths_checked": [
+      "rust"
+    ],
+    "guard": "tests/test_session_h5msm_migration.py",
+    "guard_sha256": "5137a66321180c4b4e3ab4d8c8210db9bdf3c172af942ad73867f1f4b119fdcc"
+  },
+  "environment": {
+    "python": "3.14.7",
+    "implementation": "CPython",
+    "interpreter_environment": "molsyssuite@uibcdf_3.14",
+    "imported_runtime_versions": {
+      "molsysmt": "0+unknown",
+      "molsysviewer": "0.24.0+97.gdf4bf477.dirty",
+      "pyunitwizard": "0.29.2",
+      "smonitor": "0.21.0",
+      "argdigest": "0.15.0",
+      "depdigest": "0.15.1",
+      "ackredit": "0.9.0",
+      "pytest_receptor": "1.2.1",
+      "h5py": "3.16.0",
+      "numpy": "2.4.6",
+      "pandas": "2.3.3"
+    },
+    "identity_notice": "Archived MolSysMT source reports 0+unknown. Existing editable distribution metadata reports an older development build; neither identifies or qualifies an installed 1.0 package. Source identity is the exact commit plus retained file hashes.",
+    "pyunitwizard_file": "pyunitwizard-0.29.2-py_0.tar.bz2",
+    "pyunitwizard_sha256": "bb28b9420760b557025163e11c934e096c7b98200cac720100a2db924e9ee617",
+    "pyunitwizard_source_url": "https://conda.anaconda.org/uibcdf/noarch/pyunitwizard-0.29.2-py_0.tar.bz2",
+    "support_route": "Isolated public support copies; new published PyUnitWizard extracted ahead of older copies without modifying the routine environment."
+  },
+  "fixture": {
+    "molecular_system": "Real bundled pentalanine trajectory, 62 atoms, selected structures [4999, 0, 73, 12, 4, 1]",
+    "scientific_observations": "Explicitly synthetic persistence-only fixtures, not detector or physical-geometry validation.",
+    "named_analyses": {
+      "parallel": {
+        "occurrences": 5,
+        "evaluated_structure_indices": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "parallel_structure": 4,
+        "parallel_evidence": [
+          "synthetic-parallel",
+          "synthetic-periodic"
+        ],
+        "evaluated_empty_structure": 1,
+        "unevaluated_structure": 3
+      },
+      "empty-control": {
+        "occurrences": 0,
+        "evaluated_structure_indices": [
+          1,
+          5
+        ]
+      }
+    },
+    "atom_source_indices": "[68, 67, ..., 7]",
+    "source_n_atoms": 69,
+    "structure_source_indices": [
+      4999,
+      0,
+      73,
+      12,
+      4,
+      1
+    ],
+    "source_n_structures": 5000,
+    "scene": [
+      "numeric region",
+      "anchored annotation",
+      "absolute sphere",
+      "two interaction sets",
+      "current structure 4",
+      "explicit camera snapshot"
+    ],
+    "legacy_fixture_note": "Generated today with the earlier frozen writer, not a previously retained user archive.",
+    "legacy_archives": {
+      "existing-05.msv": {
+        "bytes": 18991,
+        "sha256": "3d28dbd26f1d17262245e0b1f3bdda2b5f407f9723905fe3158cc20caee7c3a7"
+      },
+      "legacy-05.h5msm": {
+        "bytes": 261917,
+        "sha256": "d3a198190e7187e8030b07ca66f13d2bf847f03656f21086b0b2a091dc18117d"
+      },
+      "legacy-10.h5msm": {
+        "bytes": 262189,
+        "sha256": "80ff886e990c3784e671f0df020e7008fc01b77b0b19c6e38b9770679103db1c"
+      },
+      "legacy-migrated-10.msv": {
+        "bytes": 268887,
+        "sha256": "8f147fa3d359c6a04b14a5d29697449cc5caa24952dd8e784309828898c679e3"
+      }
+    }
+  },
+  "outcomes": {
+    "requested_1_existing_05": "Pass: session produced with the earlier frozen 0.5 writer opens with the requested new reader. The original archive remains byte-identical.",
+    "requested_2_equivalent_10": "Pass: public msm.convert migrates only the embedded molecular file to 1.0. Other ZIP members are identical; load_session preserves exact coordinates/box, reference ChemicalStates bonds/components, scene, camera and both named analyses. Direct full-file 1.0 load also passes.",
+    "requested_3_sparse_queries_and_maps": "Pass: occurrence_indices, compound roles/participants, parallel evidence, measures/units, method/parameters, periodic images, source_id and declared maps survive. Request [4,1,0,4,3] yields frames [4,4,0,0], occurrence indices [3,4,0,1], evaluated [4,1,0]. All four selection modes and extraction [4,1,0] with atoms [0,1,2] pass.",
+    "requested_4_selective_coordinate_invalidation": "Pass in both schemas: public msm.set on atom 0 at [4] or [4,0] invalidates those frames only. Untouched observations/coverage and the empty-control analysis survive. Detached pre-edit results remain intact. Editing creates a new analysis version and may reassign occurrence_indices.",
+    "independent_interactions_files": "Pass for 0.5 and 1.0: both named analyses attach with assume_aligned=True; target MolSys identity and coordinates remain unchanged. Source maps declare correspondence, not authenticated origin.",
+    "post_edit_save_reopen": "Pass after explicit apply_system_edit(molsys, interactions_policy=\"preserve\") synchronizes source binding and scene with the already selectively invalidated scientific results. Native external edits alone are not automatically observed by the View.",
+    "mechanics": "Pass for 1.0 reading: stored unresolved force-field request, 62 partial charges and 12 angstrom cutoff are preserved. Default 0.5 session save refuses the mechanics domain and leaves an existing destination byte-identical."
+  },
+  "qualification": {
+    "new_guard_cases_passed": 9,
+    "applicable_regression_cases_passed": 47,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "legacy_demo_warning_count": 43,
+    "legacy_demo_warning": "Expected bundled H5MSM 0.4 deprecation warnings while loading the real trajectory.",
+    "junit_sha256": "70953a697f2ba59335013424432472f4accca7cd5cb3d5622f6da0bd5011816f",
+    "current_source_gate": {
+      "native_exit": 0,
+      "seconds": 33.76966859889217,
+      "peak_owned_rss_mib": 509.5,
+      "selected_inputs": 5714,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "probe-319-h5msm10-regression",
+      "log_sha256": "30354c4d7b5949f853a15c1d0c92811d7f1bcb204193b22a132d5b266f43455c",
+      "invocation_sha256": "338ef1ebe4b75ae1db139d3bc81436e122976241f50ce3255cedcfbad0791391"
+    },
+    "earlier_writer_generation": {
+      "native_exit": 0,
+      "seconds": 7.03139174496755,
+      "peak_owned_rss_mib": 389.2,
+      "selected_inputs": 11337,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "probe-316-legacy05-writer",
+      "log_sha256": "d3975202eeb8c78fbc481058c4e38ed6c358e429be614757f6fae74a6fc2195c",
+      "invocation_sha256": "e0b1b036b8ca0d04d95a6c7806e38e1f48aac1dbb976fe317eb3dbce982d7150"
+    },
+    "earlier_writer_new_reader": {
+      "native_exit": 0,
+      "seconds": 6.058557527838275,
+      "peak_owned_rss_mib": 394.1,
+      "selected_inputs": 5714,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "probe-317-legacy05-to10-reader",
+      "log_sha256": "fadb7e0be8229a4d3ae66ace2c91f9eee0bc5c2dc8dc12cf5f2d3706f8ce9eed",
+      "invocation_sha256": "ac8686bdc5ea8af7921836f3e01c3a8b127056a7c8f4a60ac260ff34278c781e"
+    },
+    "old_provider_capability_control": {
+      "native_exit": 0,
+      "seconds": 8.698531341040507,
+      "peak_owned_rss_mib": 402.4,
+      "selected_inputs": 11338,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "probe-318-legacy-capability",
+      "log_sha256": "96f53929387258d180e08be5d712d8eddf29b8a76cc377b7c619b73aa8b2d937",
+      "invocation_sha256": "6d46a292f479b6e533ba8768f86eccf6d0fa39b9961e62a85d5822f0e90b7098",
+      "passed": 1,
+      "skipped": 1,
+      "deselected": 7,
+      "skip_reason": "Earlier provider explicitly supports only 0.5/0.6. This skip does not qualify 1.0."
+    }
+  },
+  "resource_controls": {
+    "scheduler": "No Slurm detected; transient systemd user scope on shared host",
+    "logical_cpus": 1,
+    "memory_max_gib": 4,
+    "swap_max_gib": 0,
+    "minimum_global_available_gib": 2,
+    "monitored_peak_owned_rss_mib": 509.5,
+    "resource_stops": 0,
+    "blas_openmm_rayon_threads": 1
+  },
+  "diagnostic_history": {
+    "probe_311": "Fixture expected submission order for parallel evidence instead of native canonical order; corrected expected identities without changing provider science.",
+    "probe_312": "Test used nonexistent inspect page key n_observations; corrected to the actual total/observations fields.",
+    "probe_313": "Attempted save after unsynchronized external edits, and passed the native registry where write_layers requires a plain dictionary. Corrected public usage; explicit synchronization and dict(registry) pass.",
+    "probe_315": "Relative fixture-script path was resolved from the isolated provider working directory; failed before imports. Corrected to the absolute script path.",
+    "original_failed_diagnostics_retained": true
+  },
+  "limitations": [
+    "No migration defect in the four requested source paths.",
+    "Default writing remains 0.5; schema 1.0 does not alter the session manifest version.",
+    "MolSysViewer currently has no session-level format_version override. A mechanics-bearing 1.0 session cannot be saved by its current default-0.5 writer; refusal prevents loss. Receive an explicit writer option or the coordinated provider-default transition before claiming complete mechanics roundtrip.",
+    "Static reference ChemicalStates graph is covered; this fixture does not qualify rendering a changing chemical graph.",
+    "Session equality and scientific projection are checked headlessly; fresh browser drawing and human acceptance are separate.",
+    "No installed candidate pair, package version floor change, tag, Release, promotion, Zenodo or 1.0 default/publication authorization."
+  ],
+  "evidence_custody": {
+    "files_verified": 138,
+    "bytes_verified": 39078045,
+    "manifest_sha256": "65ff5b11d65643746f43c666b80a0a6ddea16095daa9e2d7e539322db311d2d9",
+    "originals_retained": true,
+    "directory_mode": "0700",
+    "file_mode": "0600",
+    "custodian": "Diego Prada-Gracia",
+    "off_host_backup_claimed": false
+  },
+  "record_validation": {
+    "test": "tests/test_reporting_protocol.py",
+    "passed": 405,
+    "skipped": 0,
+    "native_exit": 0,
+    "log_sha256": "1cef4fd7e573d3365d0bdf6b8376e46e30c1073d7d88dde1ed24754fb2ab84a7",
+    "index_check": "devtools/devguide_index.py --check passed",
+    "guard_lint": "ruff check and format passed"
+  }
+}
