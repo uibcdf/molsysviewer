@@ -97,6 +97,48 @@
       "priority": 100,
       "stability": "experimental",
       "reason": "Experimental session container; public_api.md"
+    },
+    {
+      "route": "view.movie.add_track",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental headless Movie tracks; public_api.md"
+    },
+    {
+      "route": "view.movie.evaluate",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental headless Movie tracks; public_api.md"
+    },
+    {
+      "route": "view.movie.remove_track",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental headless Movie tracks; public_api.md"
+    },
+    {
+      "route": "view.movie.set_baseline",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental headless Movie tracks; public_api.md"
+    },
+    {
+      "route": "view.movie.set_duration",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental headless Movie tracks; public_api.md"
+    },
+    {
+      "route": "view.movie.update_track",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental headless Movie tracks; public_api.md"
+    },
+    {
+      "route": "view.movie.validate",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental headless Movie tracks; public_api.md"
     }
   ]
 }

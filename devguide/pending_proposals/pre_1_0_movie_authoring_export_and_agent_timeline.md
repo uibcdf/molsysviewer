@@ -181,13 +181,10 @@ playback. The first slice should include:
    approved story using supplied scientific data. Later preview, seek, video,
    web and agent consumers must use this same model and one execution owner.
 
-Public names, exact signatures, graphical layout and channel representation
-remain to be agreed. The [M1 model proposal](../movie_timeline_design.md)
-now spells out independent property tracks, baseline/target validation,
-unit-aware time and camera data, constant-rate endpoint sampling, migration,
-one execution owner and bounded exports. It is a design to review, not delivered
-runtime/API support. M1 does not reduce the approved M2–M6 scope, introduce an
-LLM dependency, or promise runtime support for channels before receiving it.
+The [M1 model](../movie_timeline_design.md) has its first experimental Python
+implementation for camera, structure and visibility. The design also covers
+constant-rate endpoint sampling, migration, one execution owner and bounded
+exports. Those parts and the remaining channels still require implementation.
 
 ## Execution route
 
@@ -208,6 +205,17 @@ implemented API. Existing #319 work is relevant reusable capture infrastructure;
 it does not itself qualify movie export or solve all animation scheduling.
 
 ## Scope and progress
+
+The first M1 tranche is source-delivered. `tests/test_movie_timeline.py` exercises
+arbitrary seeks and independent channels on a bundled trajectory, detached
+inspection, rejection of incompatible inputs and exact session recovery.
+The scoped local gate `297` passes 763 tests across Movie, session integrity,
+public API and devguide reporting. Its one skip is the missing-`imageio` error
+branch because `imageio` is installed. All 10,949 selected inputs stay unchanged
+under 2 CPUs / 4 GiB with no resource stop. F1 records seven new experimental
+methods and preserves all existing signatures.
+Appearance and lighting tracks, remapping/migration, the shared browser evaluator
+and live playback/authoring/export remain open.
 
 The pre-1.0 result must let a user approach a known pocket, reveal a loaded
 ligand with an explicit representation, show calculated interactions and labels

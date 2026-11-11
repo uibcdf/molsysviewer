@@ -54,12 +54,13 @@ pick it up later, or to hand the whole thing to somebody else.
 
 ## What is in the file
 
-A `.msv` is a zip with three members:
+A `.msv` is a zip containing:
 
 ```
 manifest.json      what this file is, and what is inside it
 state.json         scene document, with the captured vantage point when requested
 structure.h5msm    the molecular system, in MolSysMT's own format
+movie.json         the version-2 Movie recipe, if one is configured
 ```
 
 It is an ordinary zip, so you can look inside one with any tool you already have.
@@ -69,6 +70,11 @@ and misassigns waters, and holds one structure where a trajectory has thousands.
 is MolSysMT's own format, and it preserves the structure's topological fingerprint — which
 is what lets a reloaded session recognise its own system as the one its own state was
 written for.
+
+A session restores an [experimental Movie recipe](../movie/timeline.md#independent-tracks-experimental)
+alongside the saved scene. You can evaluate the recipe after reopening the
+session. The saved scene remains at the camera and structure captured by
+`save_session` or `save_session_async`.
 
 ## No size budget
 

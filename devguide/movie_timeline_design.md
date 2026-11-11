@@ -1,11 +1,15 @@
-# Movie timeline model — proposed M1 contract
+# Movie timeline model — first M1 implementation and design
 
-**Design proposal, not implemented API.** This refines the accepted pre-1.0
+This refines the accepted pre-1.0
 [Movie requirement and M0 findings](pending_proposals/pre_1_0_movie_authoring_export_and_agent_timeline.md)
-under [#320](https://github.com/uibcdf/molsysviewer/issues/320). Existing Movie
-calls remain the current implementation; examples below are proposed signatures.
-The remaining M2–M6 work is required separately. This document authorizes no
-candidate or publication and does not claim installed or human acceptance.
+under [#320](https://github.com/uibcdf/molsysviewer/issues/320).
+
+The experimental Python implementation supports three independent channels:
+camera pose, structure index and visibility. The
+[implemented API and recipe example](../docs/content/user/movie/timeline.md#independent-tracks-experimental)
+cover a detached baseline, edits, validation, arbitrary-time evaluation and
+JSON/session persistence. Existing version-1 playback uses its original recipe.
+The sections below describe the broader M1–M6 design and its remaining work.
 
 ## One model, several consumers
 
@@ -83,7 +87,7 @@ rejected transactionally. Explicit key replacement is an edit operation.
 | Labels, measurements and overlays | Text/content/anchor recipes step; visibility and supported opacity have their own tracks. Reuse existing atom/coordinate anchor and quantity contracts. |
 | Lighting/background | Explicit supported renderer fields, with validated finite ranges. Discrete presets are expanded to recorded settings; unsupported controls fail validation. |
 
-The first implementation must publish the exact supported property catalogue;
+The supported property catalogue starts with the three channels above;
 this table does not promise arbitrary Mol* settings. For continuous keys,
 interpolation uses the outgoing key's named easing. A baseline value is the
 implicit key at zero when no explicit zero key exists. Before the first explicit
@@ -124,30 +128,36 @@ cross-language numerical oracles, including boundaries and reversed seeks.
 Finite JSON and safe integer bounds apply at the transport boundary. No field
 silently changes under a different application unit policy.
 
-## Python surface to review
+## Python authoring and planned application
 
-Retain existing `view.movie` construction helpers and introduce generic typed
-tracks rather than a wrapper for every conceivable story. Proposed operations:
+The implemented methods author and evaluate generic typed tracks:
 
 ```python
-view.movie.capture_baseline_async(...)       # explicit coherent live capture
-view.movie.set_baseline(scene, camera=...)   # detached/headless alternative
-view.movie.set_duration(duration_ms=...)     # reject keys outside new duration
-view.movie.add_track(target=..., property=..., keys=...)
-view.movie.update_track(track_id, keys=...)  # transactional replacement
-view.movie.remove_track(track_id)
-view.movie.validate()                       # diagnostic report, no scene writes
-view.movie.evaluate(time_ms=...)            # detached desired state, no draw
+view.movie.set_baseline(duration_ms, camera=camera, state=scene)
+view.movie.set_duration(duration_ms)
+view.movie.add_track(track)                 # one tagged target/property and its keys
+view.movie.update_track(tag, keys=keys)
+view.movie.remove_track(tag)
+view.movie.validate()                      # raises if binding or targets are invalid
+view.movie.evaluate(time_ms)               # detached desired state
+view.movie.to_dict()
+view.movie.from_dict(recipe)
+```
+
+The planned application surface adds coherent live capture, coordinated
+playback, explicit target mapping and rendering acknowledgments. Proposed calls:
+
+```python
+await view.movie.capture_baseline_async(...)
 await view.movie.seek_async(time_ms=...)    # apply and receive final draw
 view.movie.play(...)
 await view.movie.stop_async(...)            # drain pending writes, freeze pose
 await view.movie.reset_async(...)           # restore baseline and time zero
-view.movie.to_dict()
 view.movie.from_dict(recipe, target_map=...)
 ```
 
-Exact names, signatures, return types and stability labels require API review
-before implementation. Add a correlated export job with progress/cancel/result
+Review the application signatures before implementation. Add a correlated
+export job with progress/cancel/result
 rather than exposing an uncorrelated View-wide frame list. Synchronous existing
 calls need a declared compatibility route; a notebook cannot block its own
 comm event loop while waiting for frames. Preserve user-facing semantics or

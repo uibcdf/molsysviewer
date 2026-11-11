@@ -22,6 +22,8 @@ _PLAIN_MILLISECOND_CALLERS = frozenset(
         "molsysviewer.viewer.movie.add_camera_orbit",
         "molsysviewer.viewer.movie.add_structure_sweep",
         "molsysviewer.viewer.movie.export",
+        "molsysviewer.viewer.movie.set_baseline",
+        "molsysviewer.viewer.movie.set_duration",
     }
 )
 

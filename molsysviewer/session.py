@@ -6,11 +6,12 @@ they load the right structure first, and know which one it was. That gap is what
 promise the same document states plainly: save, close, reload elsewhere, continue as if
 you had never left. A state document cannot keep that promise on its own.
 
-A session file closes it. It is a zip holding three members:
+A session file closes it. It is a zip holding the following members:
 
     manifest.json      what this file is, and what is inside it
     state.json         the `export_state` document, unchanged
     structure.h5msm    the molecular system, in MolSysMT's own format
+    movie.json         an optional detached version-2 Movie recipe
 
 The structure format is the part worth explaining. MolSysMT writes `.pdb` and `.h5msm`
 from a `MolSys` and not `.bcif`, so the usual preference for binary CIF over PDB does not
@@ -46,6 +47,7 @@ SESSION_VERSION = 1
 _MANIFEST_MEMBER = "manifest.json"
 _STATE_MEMBER = "state.json"
 _STRUCTURE_MEMBER = "structure.h5msm"
+_MOVIE_MEMBER = "movie.json"
 
 
 class SessionFormatError(ValueError):
@@ -147,6 +149,7 @@ def _write_session(view: Any, path: str | os.PathLike[str], *, state: dict) -> N
             "save_state(path) to write the scene on its own."
         )
 
+    movie = view.movie._session_recipe(state)
     destination = Path(path)
     temporary_path: Path | None = None
     with tempfile.TemporaryDirectory() as workspace:
@@ -169,6 +172,7 @@ def _write_session(view: Any, path: str | os.PathLike[str], *, state: dict) -> N
             "version": SESSION_VERSION,
             "molsysviewer": __version__,
             **({"interaction_analyses": {"version": 1, "signatures": signatures}} if signatures else {}),
+            **({"movie": _MOVIE_MEMBER} if movie is not None else {}),
             "structure": {
                 "member": _STRUCTURE_MEMBER,
                 "form": "molsysmt.h5msm",
@@ -190,6 +194,8 @@ def _write_session(view: Any, path: str | os.PathLike[str], *, state: dict) -> N
                 archive.writestr(_MANIFEST_MEMBER, json.dumps(manifest, indent=2, sort_keys=True))
                 archive.writestr(_STATE_MEMBER, json.dumps(state, indent=2, sort_keys=True))
                 archive.write(structure_path, _STRUCTURE_MEMBER)
+                if movie is not None:
+                    archive.writestr(_MOVIE_MEMBER, json.dumps(movie, indent=2, allow_nan=False))
             os.replace(temporary_path, destination)
         except Exception:
             if temporary_path is not None:
@@ -216,10 +222,19 @@ def load_session(
     import molsysmt as msm
 
     from .new_view import new_view
+    from .viewer._movie_timeline import _MovieTimeline
 
     source = Path(path)
     with zipfile.ZipFile(source) as archive:
         manifest = _read_manifest(archive)
+        timeline = None
+        if "movie" in manifest:
+            if manifest["movie"] != _MOVIE_MEMBER:
+                raise SessionFormatError("Invalid Movie member in session manifest.")
+            try:
+                timeline = _MovieTimeline(json.loads(archive.read(_unique_session_member(archive, _MOVIE_MEMBER))))
+            except (KeyError, TypeError, ValueError) as error:
+                raise SessionFormatError("Invalid Movie recipe in session.") from error
         try:
             state = json.loads(archive.read(_unique_session_member(archive, _STATE_MEMBER)).decode("utf-8"))
         except KeyError as error:
@@ -263,6 +278,15 @@ def load_session(
             if not isinstance(signature, str) or _analysis_signature(analyses[name]) != signature:
                 raise InteractionAnalysisError(reason="session_mismatch", extra={"name": name})
 
+    if timeline is not None:
+        from .loaders._source_records import _source_binding
+        from .viewer.state import _structure_identity
+
+        try:
+            timeline.check_binding(_source_binding(molsys, _structure_identity(molsys)), state)
+        except ValueError as error:
+            raise SessionFormatError(f"Movie recipe does not match the session: {error}") from error
+
     if view is not None:
         _validate_session_scene(molsys, state)
 
@@ -272,6 +296,10 @@ def load_session(
         if state.get("sources") is not None and restored._prepare_source_import(state["sources"]) is None:
             raise SessionFormatError("Session source maps refer to a different ordered molecular system.")
         restored.import_state(state)
+        if timeline is not None:
+            restored.movie._install_timeline(timeline)
+        else:
+            restored.movie._timeline = None
     except Exception:
         if view is None:
             restored.close()

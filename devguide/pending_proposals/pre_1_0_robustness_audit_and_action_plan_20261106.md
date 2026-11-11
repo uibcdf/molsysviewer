@@ -1116,7 +1116,10 @@ eight passing cycles and a ninth recovered-frame discrepancy under
 then passes fifteen consecutive cycles before a shared-pressure stop during
 cycle 16; [#356](https://github.com/uibcdf/molsysviewer/issues/356) tracks
 measured retained logical data. The [receipt](../prolonged_scientific_session_receiving_20261110.json)
-keeps both kernels and their scopes separate. The workload definitions below
+keeps both kernels and their scopes separate. The [matched array-native and
+widget cleanup controls](../pending_bugs/retired_notebook_molecular_data.md)
+narrow the diagnosis to the actual Jupyter/widget lifetime. The retaining path
+and the 30-cycle gate remain open. The workload definitions below
 remain the reproduction route, not a compatibility claim for future sources.
 
 | Measurement | Defined starting workload and existing entrypoint |

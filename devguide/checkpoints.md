@@ -923,8 +923,10 @@ separates its core/producer and live-host scopes, with producer PR #702 owner-in
 [scale anchors pass](performance/robustness_scale_receiving_20261110.md);
 Fifteen active cycles pass before a shared-pressure stop; the thirty-cycle
 gate remains open. Diagnose [retained logical data #356](pending_bugs/retired_notebook_molecular_data.md)
-with the reduced single-structure reproducer and ownership controls; no
-retaining path is yet established. Retain the separate recovered-frame observation
+with the reduced single-structure reproducer. The matched array-native and
+widget cleanup controls preserve the Jupyter-only observation in those cases.
+Trace the actual notebook/widget ownership before repeating the full gate.
+Retain the separate recovered-frame observation
 [#354](pending_bugs/recovered_canvas_initial_structure_observation.md),
 receiver PR #706 and the explicit Jupyter server-preparation limit under
 MolSysMT #705. This does not resolve
@@ -2896,8 +2898,9 @@ chronological status narrative here.
 5. **E:** retain the received scale anchors and complete the adopted same-kernel
    prolonged-use protocol. E1's continuous workflow
    remains received; human E4 stays postponed.
-6. **Movie:** review the [M1 model proposal](movie_timeline_design.md), then
-   complete the separately mandatory #320 authoring/evaluation/export stream.
+6. **Movie:** retain the [first M1 Python implementation](movie_timeline_design.md)
+   for camera, structure and visibility tracks. Complete the remaining model
+   channels and the mandatory #320 authoring, playback and export stream.
 7. **G:** prepare #294's covering artifact and exact installed/downstream
    qualification when separately authorized. Candidate/tag/package actions and
    both 1.0 publications remain paused.

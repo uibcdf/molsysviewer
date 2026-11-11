@@ -1,7 +1,7 @@
 (User_Movie_Timeline)=
 # Timeline and keyframes
 
-The timeline is an ordered list of keyframes.  Each keyframe says
+The playback timeline (version 1) is an ordered list of keyframes. Each keyframe says
 *what the scene should look like* at a given time.
 
 ## Keyframe fields
@@ -14,7 +14,7 @@ All other fields are optional — missing fields mean "keep the current value".
 | `time_ms` | `float` | Timestamp in milliseconds (**required**). |
 | `camera` | `dict` | `position` and `target` in Å; `up` is dimensionless. |
 | `structure_index` | `int` | Trajectory frame to show. |
-| `layer_visibility` | `dict[str, bool]` | Step-change visibility per tag. |
+| `layer_visibility` | `dict[str, bool]` | Step-change visibility of tagged shapes. |
 | `easing` | `str` | Transition curve to the *next* keyframe. |
 
 Easing values: `"linear"` (default), `"ease-in"`, `"ease-out"`, `"ease-in-out"`.
@@ -93,7 +93,7 @@ Key parameters:
 
 ## Visibility transitions
 
-`add_visibility_transition` inserts a step-change in layer visibility.
+`add_visibility_transition` inserts a step-change in the visibility of a tagged shape.
 
 ```python
 view.movie.add_keyframe(0)
@@ -141,7 +141,8 @@ view.movie.keyframes    # list of detached dictionaries
 
 ## Serialization
 
-The timeline is pure data and can be saved to JSON and replayed on any view.
+The version-1 timeline can be saved to JSON and replayed on a view with the
+referenced structures and scene objects.
 
 ```python
 # Save
@@ -170,3 +171,40 @@ view2.movie.from_dict(data)
 view.movie.clear()
 view.movie.duration_ms  # 0.0
 ```
+
+## Independent tracks (experimental)
+
+Use `set_baseline()` to start a version-2 recipe with the current scene and an
+explicit camera pose. Each track controls a single property on its own schedule.
+Evaluate at any time from Python, including before displaying the view.
+
+```python
+view.movie.set_baseline(
+    2000, camera={"position": [0, 0, 15], "target": [0, 0, 0], "up": [0, 1, 0]}
+)
+view.movie.add_track({
+    "tag": "orbit-segment",
+    "target": {"domain": "camera"},
+    "property": "pose",
+    "keys": [{"time_ms": 1500, "value": {
+        "position": [15, 0, 0], "target": [0, 0, 0], "up": [0, 1, 0]
+    }}],
+})
+pose = view.movie.evaluate(750)["camera"]
+view.movie.save("recipe.json")
+view.save_session("work.msv")
+```
+
+Time is in milliseconds and camera coordinates are in ångströms. Camera poses
+interpolate between keys. A `structure` track with property `index` and a
+visibility track with property `visible` take effect at their key times and hold
+until the next key. Visibility targets are `whole` or a tagged `region`, `layer`,
+`shape`, `annotation`, `measurement` or `interaction`. `update_track()` replaces
+a track's keys. `remove_track()` restores that property's baseline on evaluation.
+
+`evaluate()` returns detached values without changing the live scene.
+`validate()` checks the recipe against the current system and its referenced
+scene objects. A JSON recipe can be loaded onto a matching system and scene.
+A session keeps the recipe with its molecular data and scene. Version-2 tracks
+currently support Python evaluation. Browser playback and media export use the
+version-1 keyframes described above.

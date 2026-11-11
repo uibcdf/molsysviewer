@@ -16,6 +16,8 @@ from molsysviewer._private.exceptions import ArgumentError
 
 
 def digest_state(state, caller=None):
+    if state is None and caller == "molsysviewer.viewer.movie.set_baseline":
+        return None
     if isinstance(state, Mapping):
         return state
     raise ArgumentError(

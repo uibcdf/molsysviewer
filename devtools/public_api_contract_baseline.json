@@ -19639,6 +19639,30 @@
       "reason": "Explicitly growing object API; public_api.md",
       "stability": "growing"
     },
+    "view.movie.add_track": {
+      "async": false,
+      "kind": "callable",
+      "parameters": [
+        {
+          "default": {
+            "kind": "required"
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "track"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "skip_digestion"
+        }
+      ],
+      "reason": "Experimental headless Movie tracks; public_api.md",
+      "stability": "experimental"
+    },
     "view.movie.add_visibility_transition": {
       "async": false,
       "kind": "callable",
@@ -19700,6 +19724,30 @@
       "reason": "Explicitly growing object API; public_api.md",
       "stability": "growing",
       "writable": false
+    },
+    "view.movie.evaluate": {
+      "async": false,
+      "kind": "callable",
+      "parameters": [
+        {
+          "default": {
+            "kind": "required"
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "time_ms"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "skip_digestion"
+        }
+      ],
+      "reason": "Experimental headless Movie tracks; public_api.md",
+      "stability": "experimental"
     },
     "view.movie.export": {
       "async": false,
@@ -19877,6 +19925,30 @@
       "reason": "Explicitly growing object API; public_api.md",
       "stability": "growing"
     },
+    "view.movie.remove_track": {
+      "async": false,
+      "kind": "callable",
+      "parameters": [
+        {
+          "default": {
+            "kind": "required"
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "tag"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "skip_digestion"
+        }
+      ],
+      "reason": "Experimental headless Movie tracks; public_api.md",
+      "stability": "experimental"
+    },
     "view.movie.save": {
       "async": false,
       "kind": "callable",
@@ -19900,6 +19972,70 @@
       ],
       "reason": "Explicitly growing object API; public_api.md",
       "stability": "growing"
+    },
+    "view.movie.set_baseline": {
+      "async": false,
+      "kind": "callable",
+      "parameters": [
+        {
+          "default": {
+            "kind": "required"
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "duration_ms"
+        },
+        {
+          "default": {
+            "kind": "required"
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "camera"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "NoneType",
+            "value": null
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "state"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "skip_digestion"
+        }
+      ],
+      "reason": "Experimental headless Movie tracks; public_api.md",
+      "stability": "experimental"
+    },
+    "view.movie.set_duration": {
+      "async": false,
+      "kind": "callable",
+      "parameters": [
+        {
+          "default": {
+            "kind": "required"
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "duration_ms"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "skip_digestion"
+        }
+      ],
+      "reason": "Experimental headless Movie tracks; public_api.md",
+      "stability": "experimental"
     },
     "view.movie.stop": {
       "async": false,
@@ -19934,6 +20070,54 @@
       ],
       "reason": "Explicitly growing object API; public_api.md",
       "stability": "growing"
+    },
+    "view.movie.update_track": {
+      "async": false,
+      "kind": "callable",
+      "parameters": [
+        {
+          "default": {
+            "kind": "required"
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "tag"
+        },
+        {
+          "default": {
+            "kind": "required"
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "keys"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "skip_digestion"
+        }
+      ],
+      "reason": "Experimental headless Movie tracks; public_api.md",
+      "stability": "experimental"
+    },
+    "view.movie.validate": {
+      "async": false,
+      "kind": "callable",
+      "parameters": [
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "skip_digestion"
+        }
+      ],
+      "reason": "Experimental headless Movie tracks; public_api.md",
+      "stability": "experimental"
     },
     "view.new_region_from_active_selection": {
       "async": false,

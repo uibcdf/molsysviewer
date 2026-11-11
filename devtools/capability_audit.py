@@ -235,13 +235,13 @@ CAPABILITIES: tuple[Capability, ...] = (
         anchor="molsysviewer/viewer/movie.py",
         provenance=PYTHON,
         docs="docs/content/user/movie/export.md",
-        unit=("test_movie.py",),
+        unit=("test_movie.py", "test_movie_timeline.py"),
         e2e=("movie-playback",),
         status="experimental",
-        note="Playback observed drawing since 2026-09-05: the camera passes through "
+        note="Version-1 playback observed drawing since 2026-09-05: the camera passes through "
         "intermediate positions, lands on the last keyframe, and stops short when "
-        "interrupted. Export stays out -- it depends on an external encoder and is "
-        "not exercised in CI.",
+        "interrupted. Version-2 tracks have Python evaluation and session persistence "
+        "in source. Media export depends on an external encoder and remains outside CI.",
     ),
     Capability(
         name="Camera",

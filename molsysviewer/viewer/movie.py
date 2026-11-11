@@ -12,6 +12,7 @@ from typing import Any
 from smonitor import signal
 
 from .._private.argdigest import digest
+from ._movie_timeline import MOVIE_TIMELINE_VERSION, _MovieTimeline
 
 _EASING_VALUES = frozenset({"linear", "ease-in", "ease-out", "ease-in-out"})
 _MOLSYSMOVIE_VERSION = 1
@@ -47,6 +48,7 @@ class MovieManager:
     def __init__(self, view: Any) -> None:
         self._view = view
         self._keyframes: list[dict] = []
+        self._timeline: _MovieTimeline | None = None
 
     # ── Timeline construction ─────────────────────────────────────────────
 
@@ -84,6 +86,7 @@ class MovieManager:
             One of ``"linear"``, ``"ease-in"``, ``"ease-out"``,
             ``"ease-in-out"``.
         """
+        self._legacy_only()
         if easing not in _EASING_VALUES:
             raise ValueError(f"easing must be one of {sorted(_EASING_VALUES)!r}, got {easing!r}")
         time_ms = float(time_ms)
@@ -127,6 +130,7 @@ class MovieManager:
         at_time_ms
             Timestamp in milliseconds.
         """
+        self._legacy_only()
         at_time_ms = float(at_time_ms)
         for kf in self._keyframes:
             if kf["time_ms"] == at_time_ms:
@@ -178,6 +182,7 @@ class MovieManager:
         easing
             Easing applied to each inter-keyframe segment.
         """
+        self._legacy_only()
         if easing not in _EASING_VALUES:
             raise ValueError(f"easing must be one of {sorted(_EASING_VALUES)!r}, got {easing!r}")
         snap = self._view.camera.get_snapshot(skip_digestion=True)
@@ -266,6 +271,7 @@ class MovieManager:
             Absolute time of the last keyframe. Alternative to
             ``duration_ms``.
         """
+        self._legacy_only()
         if to_index is None:
             n = self._view.player.n_structures
             if not n:
@@ -316,20 +322,106 @@ class MovieManager:
     @signal()
     @digest()
     def clear(self, *, skip_digestion: bool = False) -> None:
-        """Remove all keyframes and reset the timeline."""
+        """Remove the current recipe without changing the visible scene."""
         self._keyframes = []
+        self._timeline = None
 
     # ── Properties ────────────────────────────────────────────────────────
 
     @property
     def duration_ms(self) -> float:
         """Total duration in milliseconds (0.0 if empty)."""
+        if self._timeline is not None:
+            return self._timeline.duration_ms
         return self._keyframes[-1]["time_ms"] if self._keyframes else 0.0
 
     @property
     def keyframes(self) -> list[dict]:
         """Return detached keyframe data for inspection."""
         return deepcopy(self._keyframes)
+
+    @signal()
+    @digest()
+    def set_baseline(
+        self, duration_ms: float, *, camera: dict, state: dict | None = None, skip_digestion: bool = False
+    ) -> None:
+        """Start a track recipe with a detached scene and an explicit camera pose.
+
+        The camera's position and target use angstroms. Its up vector is
+        dimensionless. The duration is in milliseconds. Omit `state` to
+        capture the current Python overlay state. This starts an empty set of
+        tracks, which is a valid static hold for the specified duration.
+        """
+        binding = self._view._source_state_binding()
+        if binding is None:
+            raise ValueError("Load a molecular system before setting a Movie baseline.")
+        current = self._view.export_state(skip_digestion=True)
+        timeline = _MovieTimeline(
+            {
+                "molsysmovie_version": MOVIE_TIMELINE_VERSION,
+                "duration_ms": duration_ms,
+                "units": {"time": "ms", "camera_length": "angstrom"},
+                "baseline": {"scene": current if state is None else state, "camera": camera, "binding": binding},
+                "tracks": [],
+            }
+        )
+        if state is not None:
+            timeline.check_binding(binding, current)
+        self._install_timeline(timeline)
+
+    @signal()
+    @digest()
+    def set_duration(self, duration_ms: float, *, skip_digestion: bool = False) -> None:
+        """Set the duration in milliseconds, preserving keys within the new interval."""
+        timeline = self._require_timeline()
+        self._install_timeline(timeline.edit(duration=duration_ms, tracks=timeline.track_records()))
+
+    @signal()
+    @digest()
+    def add_track(self, track: dict, *, skip_digestion: bool = False) -> str:
+        """Add a tagged track containing a target, property and ordered keys."""
+        timeline = self._require_timeline()
+        timeline = timeline.edit(duration=timeline.duration_ms, tracks=[*timeline.track_records(), track])
+        timeline.check_binding(self._view._source_state_binding(), self._view.export_state(skip_digestion=True))
+        self._install_timeline(timeline)
+        return track["tag"]
+
+    @signal()
+    @digest()
+    def update_track(self, tag: str, *, keys: list, skip_digestion: bool = False) -> None:
+        """Replace a track's ordered keys atomically, keeping its target and property."""
+        timeline = self._require_timeline()
+        tracks = timeline.track_records()
+        for track in tracks:
+            if track["tag"] == tag:
+                track["keys"] = keys
+                self._install_timeline(timeline.edit(duration=timeline.duration_ms, tracks=tracks))
+                return
+        raise KeyError(f"Unknown Movie track {tag!r}.")
+
+    @signal()
+    @digest()
+    def remove_track(self, tag: str, *, skip_digestion: bool = False) -> None:
+        """Remove one track, restoring its property to the baseline on evaluation."""
+        timeline = self._require_timeline()
+        tracks = [track for track in timeline.track_records() if track["tag"] != tag]
+        if len(tracks) == timeline.n_tracks:
+            raise KeyError(f"Unknown Movie track {tag!r}.")
+        self._install_timeline(timeline.edit(duration=timeline.duration_ms, tracks=tracks))
+
+    @signal()
+    @digest()
+    def validate(self, *, skip_digestion: bool = False) -> None:
+        """Check that the track recipe still addresses this system and its scene targets."""
+        self._require_timeline().check_binding(
+            self._view._source_state_binding(), self._view.export_state(skip_digestion=True)
+        )
+
+    @signal()
+    @digest()
+    def evaluate(self, time_ms: float, *, skip_digestion: bool = False) -> dict:
+        """Return the detached camera, structure and visibility at a time in milliseconds."""
+        return self._require_timeline().evaluate(time_ms)
 
     # ── Inspection ────────────────────────────────────────────────────────
 
@@ -344,6 +436,12 @@ class MovieManager:
             Keys: ``n_keyframes``, ``duration_ms``, ``has_camera``,
             ``has_structure_sweep``, ``has_visibility_transitions``.
         """
+        if self._timeline is not None:
+            return {
+                "version": MOVIE_TIMELINE_VERSION,
+                "duration_ms": self.duration_ms,
+                "n_tracks": self._timeline.n_tracks,
+            }
         return {
             "n_keyframes": len(self._keyframes),
             "duration_ms": self.duration_ms,
@@ -362,6 +460,8 @@ class MovieManager:
         The dict can be edited independently or passed to :meth:`from_dict`
         on another view to restore the timeline.
         """
+        if self._timeline is not None:
+            return self._timeline.to_dict()
         return {
             "molsysmovie_version": _MOLSYSMOVIE_VERSION,
             "keyframes": self.keyframes,
@@ -378,8 +478,13 @@ class MovieManager:
             A dict as returned by :meth:`to_dict`. Its nested values are copied.
         """
         version = data.get("molsysmovie_version")
+        if version == MOVIE_TIMELINE_VERSION:
+            timeline = _MovieTimeline(data)
+            timeline.check_binding(self._view._source_state_binding(), self._view.export_state(skip_digestion=True))
+            self._install_timeline(timeline)
+            return
         if version != _MOLSYSMOVIE_VERSION:
-            raise ValueError(f"Unsupported molsysmovie_version={version!r}. Expected {_MOLSYSMOVIE_VERSION}.")
+            raise ValueError(f"Unsupported molsysmovie_version={version!r}.")
         keyframes = data.get("keyframes", [])
         for i, kf in enumerate(keyframes):
             if "time_ms" not in kf:
@@ -390,6 +495,7 @@ class MovieManager:
                     f"greater than keyframe {i - 1} time_ms={keyframes[i - 1]['time_ms']}."
                 )
         self._keyframes = [deepcopy(dict(kf)) for kf in keyframes]
+        self._timeline = None
 
     @signal()
     @digest()
@@ -575,8 +681,30 @@ class MovieManager:
     # ── Internal ──────────────────────────────────────────────────────────
 
     def _validate_ready(self) -> None:
+        self._legacy_only()
         if len(self._keyframes) < 2:
             raise ValueError(f"Timeline needs at least 2 keyframes; has {len(self._keyframes)}.")
+
+    def _legacy_only(self) -> None:
+        if self._timeline is not None:
+            raise ValueError("This operation uses version-1 keyframes. Version-2 tracks support headless evaluation.")
+
+    def _require_timeline(self) -> _MovieTimeline:
+        if self._timeline is None:
+            raise ValueError("Set a Movie baseline before using tracks.")
+        self._timeline.check_binding(self._view._source_state_binding())
+        return self._timeline
+
+    def _install_timeline(self, timeline: _MovieTimeline) -> None:
+        self._keyframes = []
+        self._timeline = timeline
+
+    def _session_recipe(self, state):
+        if self._timeline is None:
+            return None
+        timeline = self._require_timeline()
+        timeline.check_binding(self._view._source_state_binding(), state)
+        return timeline.to_dict()
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

@@ -2,6 +2,8 @@ from molsysviewer._private.exceptions import ArgumentError
 
 
 def digest_keys(keys, caller=None):
+    if caller == "molsysviewer.viewer.movie.update_track" and isinstance(keys, (list, tuple)):
+        return keys
 
     if caller == "molsysmt.build.mutate.mutate":
         if isinstance(keys, str):

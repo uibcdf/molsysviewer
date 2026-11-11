@@ -1304,6 +1304,219 @@
           }
         ]
       }
+    },
+    "290": {
+      "native_exit": 0,
+      "seconds": 49.1842816688586,
+      "selected_inputs": 10942,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2353.2,
+      "cleanup": {
+        "tracked": 34,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "source_base": "7b21b3eeb1bc536eb3afd10fed156eb518fc660d",
+      "provider_source": "af1e735232e21f4324234ff9ef11daf9a920a8ff",
+      "private_profile": "probe-290-array-lifetime-comparison",
+      "observation": "The same single-structure array-native decoding releases the retired direct controller; the actual Jupyter controller remains observable after close and output replacement. The controller decoder alone is insufficient to explain retention.",
+      "accepted_as_30_cycle_receiving": false,
+      "diagnostic_sha256": {
+        "direct": "9bb732ba9ff6a082b97e1d6ba79a32a9049c61f9840782b77c678372ac664c7e",
+        "jupyter": "317bef2333569edcfac1fad60754ccdfc7cc9d608250900b652dc94641e3dcf2"
+      },
+      "diagnostic": {
+        "direct": {
+          "scope": "Direct MolSysViewer controllers, single-frame bundled dialanine and pentalanine, array-native coordinate decode and actual Mol* draws, no AnyWidget/Jupyter.",
+          "before": [
+            22,
+            62
+          ],
+          "retired": {
+            "disposed": true,
+            "connected": false
+          },
+          "after": [
+            {
+              "retired": null,
+              "witness": {
+                "connected": true,
+                "atoms": 22
+              }
+            },
+            {
+              "retired": null,
+              "witness": {
+                "connected": true,
+                "atoms": 22
+              }
+            }
+          ]
+        },
+        "jupyter": {
+          "array_loads": [
+            {
+              "atoms": 22,
+              "structures": 1
+            },
+            {
+              "atoms": 62,
+              "structures": 1
+            }
+          ],
+          "scope": "Two small bundled single-structure views in actual Jupyter; no popups, no playback, no retained DOM handle",
+          "before": [
+            {
+              "disposed": false,
+              "connected": true,
+              "atoms": 22
+            },
+            {
+              "disposed": false,
+              "connected": true,
+              "atoms": 62
+            }
+          ],
+          "closed": [
+            {
+              "disposed": false,
+              "connected": true,
+              "atoms": 22
+            },
+            {
+              "disposed": true,
+              "connected": false,
+              "atoms": 62
+            }
+          ],
+          "after": [
+            {
+              "disposed": false,
+              "connected": true,
+              "atoms": 22
+            },
+            {
+              "disposed": true,
+              "connected": false,
+              "atoms": 62
+            }
+          ]
+        }
+      }
+    },
+    "295": {
+      "native_exit": 0,
+      "seconds": 12.239546816097572,
+      "selected_inputs": 10947,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1788.5,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "source_base": "7b21b3eeb1bc536eb3afd10fed156eb518fc660d",
+      "provider_source": "af1e735232e21f4324234ff9ef11daf9a920a8ff",
+      "private_profile": "probe-295-adapted-widget",
+      "observation": "Production widget bootstrap and Python authority with the adapted model and comm. Retention while the adapted model is deliberately held disappears after dropping it.",
+      "accepted_as_30_cycle_receiving": false,
+      "diagnostic_sha256": "a376f8f42d0b2d1cb76f5c501bf9090645f69a8b484a94a4497809f5863d7fd3",
+      "diagnostic": {
+        "scope": "Production AnyWidget bootstrap, real Python authority, adapted comm and model, no notebook",
+        "loads": [
+          {
+            "atoms": 62,
+            "structures": 1
+          }
+        ],
+        "before": {
+          "disposed": false,
+          "connected": true,
+          "atoms": 62
+        },
+        "modelRetained": {
+          "disposed": true,
+          "connected": false,
+          "atoms": 62
+        },
+        "after": [
+          null,
+          null
+        ]
+      }
+    },
+    "296": {
+      "native_exit": 0,
+      "seconds": 35.504908688832074,
+      "selected_inputs": 10949,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2339.4,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "source_base": "7b21b3eeb1bc536eb3afd10fed156eb518fc660d",
+      "provider_source": "af1e735232e21f4324234ff9ef11daf9a920a8ff",
+      "private_profile": "probe-296-jupyter-cleanup-control",
+      "observation": "The retired controller stays observable in actual Jupyter after explicit release of 17 tracked widget model subscriptions, release of the original cleanup callback and output replacement.",
+      "accepted_as_30_cycle_receiving": false,
+      "diagnostic_sha256": "87fb5c80275df621cddf2af3d5e87e6770feb3f2634592a126ac4a5734ce2e13",
+      "diagnostic": {
+        "releaseChecks": [
+          17
+        ],
+        "array_loads": [
+          {
+            "atoms": 22,
+            "structures": 1
+          },
+          {
+            "atoms": 62,
+            "structures": 1
+          }
+        ],
+        "scope": "Two small bundled single-structure views in actual Jupyter; no popups, no playback, no retained DOM handle",
+        "before": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 22
+          },
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 62
+          }
+        ],
+        "closed": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 22
+          },
+          {
+            "disposed": true,
+            "connected": false,
+            "atoms": 62
+          }
+        ],
+        "after": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 22
+          },
+          {
+            "disposed": true,
+            "connected": false,
+            "atoms": 62
+          }
+        ]
+      }
     }
   },
   "private_custody_checkpoint_after_diagnostics": {
@@ -1354,6 +1567,15 @@
     "files_verified": 158,
     "bytes_verified": 49646834,
     "manifest_sha256": "720f2fca7eb87ee3779ed3577ae044e689443c3f87f92a41c92756f7db74af6a",
+    "original_diagnostics_retained": true,
+    "unused_owned_credentials_hash_retired": true,
+    "off_host_backup_claimed": false
+  },
+  "private_custody_checkpoint_array_and_widget_diagnostics": {
+    "number": 18,
+    "files_verified": 94,
+    "bytes_verified": 30474831,
+    "manifest_sha256": "abd73cb672cce26e5a556a17794f6773d66c6b37d4bdf3479408eb03e244717d",
     "original_diagnostics_retained": true,
     "unused_owned_credentials_hash_retired": true,
     "off_host_backup_claimed": false

@@ -14,7 +14,7 @@ Use `view.movie` when you need to:
 
 - record a camera orbit around a structure,
 - sweep through trajectory frames as a smooth animation,
-- tell a visual story by showing/hiding regions at specific moments,
+- show or hide tagged shapes at specific moments,
 - produce a reproducible `.mp4` or `.gif` for a paper or presentation.
 
 If you just want a static image, use `view.export.image()` instead. And if all you want
@@ -33,6 +33,10 @@ is to *step through a trajectory*, that is `view.player`, not a movie — see
 | Preview in browser | `view.movie.play()` / `view.movie.stop()` |
 | Export to file | `view.movie.export("out.mp4", fps=25)` |
 | Save/load recipe | `view.movie.save("orbit.json")` / `view.movie.load(...)` |
+
+The [experimental independent tracks](timeline.md#independent-tracks-experimental)
+support Python evaluation of camera, structure and typed scene visibility at
+arbitrary times. These recipes can travel with a saved session.
 
 ## Pages
 
