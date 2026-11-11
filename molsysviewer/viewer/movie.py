@@ -49,6 +49,7 @@ class MovieManager:
         self._view = view
         self._keyframes: list[dict] = []
         self._timeline: _MovieTimeline | None = None
+        self._seek_request = None
 
     # ── Timeline construction ─────────────────────────────────────────────
 
@@ -422,6 +423,20 @@ class MovieManager:
     def evaluate(self, time_ms: float, *, skip_digestion: bool = False) -> dict:
         """Return the detached camera, structure and visibility at a time in milliseconds."""
         return self._require_timeline().evaluate(time_ms)
+
+    @signal(tags=["movie", "capture"])
+    @digest()
+    async def seek_async(self, time_ms: float, *, timeout: float = 5.0, skip_digestion: bool = False) -> dict:
+        """Apply a version-2 sample and await the primary canvas's completed draw.
+
+        The sample sets the camera, structure and explicitly tracked visibility.
+        The method pauses competing motion and returns the evaluated sample once
+        the renderer confirms the camera and structure. ``timeout`` is in seconds.
+        Cancelling the wait does not undo scene commands already accepted.
+        """
+        from ._movie_seek import seek_movie
+
+        return await seek_movie(self, time_ms, timeout=timeout)
 
     # ── Inspection ────────────────────────────────────────────────────────
 

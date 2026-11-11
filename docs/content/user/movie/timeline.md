@@ -205,6 +205,19 @@ a track's keys. `remove_track()` restores that property's baseline on evaluation
 `evaluate()` returns detached values without changing the live scene.
 `validate()` checks the recipe against the current system and its referenced
 scene objects. A JSON recipe can be loaded onto a matching system and scene.
-A session keeps the recipe with its molecular data and scene. Version-2 tracks
-currently support Python evaluation. Browser playback and media export use the
+A session keeps the recipe with its molecular data and scene.
+
+### Preview an instant
+
+Display the view and run this from a later notebook cell:
+
+```python
+sample = await view.movie.seek_async(750, timeout=5)
+```
+
+The seek pauses running motion, applies the camera and structure, and changes
+visibility on targets with a visibility track. It returns the sample after the
+primary canvas confirms a completed draw with the requested camera and structure.
+The timeout is in seconds. If the wait is interrupted, scene commands already
+accepted can remain visible. Continuous playback and media export use the
 version-1 keyframes described above.

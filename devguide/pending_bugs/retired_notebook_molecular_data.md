@@ -95,13 +95,18 @@ Its private partial stream reaches the 128 MiB recording cap; it is not
 a valid heap snapshot and proves no retaining path. The supervisor retires all
 owned processes. Avoid further full heap snapshots on this shared host.
 
-Distinguish notebook output/model ownership from MolSysViewer-owned strong
-references. Use weak observation to trace the actual AnyWidget view, target
-and model lifetimes alongside the controller before changing the runtime. The
-next reduced probe records the lifetime of the model proxy, widget element,
-abort signal and returned cleanup in the same samples as the controller. It
-remains unexecuted after the resource review refused a new Chromium session
-with swap full and recent exchange activity. If
+The real-Jupyter ownership probe `302` observes the retired view's abort event.
+After output replacement, its abort signal and returned cleanup are unreachable
+in three samples. Its host element, model proxy and controller remain reachable.
+The connected witness and its ownership remain intact. `303` removes the resize
+handle from the retired host, then removes its remaining child. In both stages
+the retired controller still exposes the 62-atom structure after collection.
+The retained host's child nodes are therefore insufficient to explain the
+observation. The probes do not establish the direction of ownership between
+the surviving host element, model proxy and controller.
+
+Trace the model and renderer owner references that survive disposal with the
+reduced Jupyter probe. If
 MolSysViewer owns the lifetime, release the retained payload and verify
 the cause and actual release, including the still-open witness and popup
 independence. A disposed flag or an accessor that stops exposing data is not a

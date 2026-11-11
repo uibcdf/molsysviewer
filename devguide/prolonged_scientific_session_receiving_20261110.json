@@ -1517,6 +1517,338 @@
           }
         ]
       }
+    },
+    "302": {
+      "native_exit": 0,
+      "seconds": 48.00751476618461,
+      "selected_inputs": 10956,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2331.5,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "source_base": "b9df9af40b2980fcfcdac4b8bdf969ee8b549e6c",
+      "provider_source": "af1e735232e21f4324234ff9ef11daf9a920a8ff",
+      "private_profile": "probe-302-jupyter-ownership",
+      "observation": "In actual Jupyter, the retired widget aborts. The original cleanup and signal become unreachable, while its element, model proxy and 62-atom controller remain reachable in three independent collection samples.",
+      "accepted_as_30_cycle_receiving": false,
+      "diagnostic_sha256": "7f997f5d8a981bd506feec34d952c7a7f0eda2d390e4eb15a8db541ca4661989",
+      "diagnostic": {
+        "ownership": [
+          {
+            "aborted": [
+              1
+            ],
+            "targets": [
+              {
+                "element": true,
+                "modelProxy": true,
+                "signal": true,
+                "cleanup": true
+              },
+              {
+                "element": true,
+                "modelProxy": true,
+                "signal": false,
+                "cleanup": false
+              }
+            ],
+            "controllers": [
+              true,
+              true
+            ]
+          },
+          {
+            "aborted": [
+              1
+            ],
+            "targets": [
+              {
+                "element": true,
+                "modelProxy": true,
+                "signal": true,
+                "cleanup": true
+              },
+              {
+                "element": true,
+                "modelProxy": true,
+                "signal": false,
+                "cleanup": false
+              }
+            ],
+            "controllers": [
+              true,
+              true
+            ]
+          },
+          {
+            "aborted": [
+              1
+            ],
+            "targets": [
+              {
+                "element": true,
+                "modelProxy": true,
+                "signal": true,
+                "cleanup": true
+              },
+              {
+                "element": true,
+                "modelProxy": true,
+                "signal": false,
+                "cleanup": false
+              }
+            ],
+            "controllers": [
+              true,
+              true
+            ]
+          }
+        ],
+        "array_loads": [
+          {
+            "atoms": 22,
+            "structures": 1
+          },
+          {
+            "atoms": 62,
+            "structures": 1
+          }
+        ],
+        "scope": "Two small bundled single-structure views in actual Jupyter; no popups, no playback, no retained DOM handle",
+        "before": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 22
+          },
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 62
+          }
+        ],
+        "closed": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 22
+          },
+          {
+            "disposed": true,
+            "connected": false,
+            "atoms": 62
+          }
+        ],
+        "after": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 22
+          },
+          {
+            "disposed": true,
+            "connected": false,
+            "atoms": 62
+          }
+        ]
+      }
+    },
+    "303": {
+      "native_exit": 0,
+      "seconds": 40.77800504001789,
+      "selected_inputs": 10958,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2301.2,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "source_base": "b9df9af40b2980fcfcdac4b8bdf969ee8b549e6c",
+      "provider_source": "af1e735232e21f4324234ff9ef11daf9a920a8ff",
+      "private_profile": "probe-303-jupyter-owned-dom",
+      "observation": "Removing the closed widget resize handle and then its remaining child does not release its retired controller. The connected dialanine witness survives each intervention.",
+      "accepted_as_30_cycle_receiving": false,
+      "diagnostic_sha256": "3deeae05232cfe5364bedafd24478f857fb6a7d75ff231fdeba231cdcc49564f",
+      "diagnostic": {
+        "ownership": [
+          {
+            "aborted": [
+              1
+            ],
+            "targets": [
+              {
+                "element": true,
+                "modelProxy": true,
+                "signal": true,
+                "cleanup": true
+              },
+              {
+                "element": true,
+                "modelProxy": true,
+                "signal": false,
+                "cleanup": false
+              }
+            ],
+            "controllers": [
+              true,
+              true
+            ]
+          },
+          {
+            "aborted": [
+              1
+            ],
+            "targets": [
+              {
+                "element": true,
+                "modelProxy": true,
+                "signal": true,
+                "cleanup": true
+              },
+              {
+                "element": true,
+                "modelProxy": true,
+                "signal": false,
+                "cleanup": false
+              }
+            ],
+            "controllers": [
+              true,
+              true
+            ]
+          },
+          {
+            "aborted": [
+              1
+            ],
+            "targets": [
+              {
+                "element": true,
+                "modelProxy": true,
+                "signal": true,
+                "cleanup": true
+              },
+              {
+                "element": true,
+                "modelProxy": true,
+                "signal": false,
+                "cleanup": false
+              }
+            ],
+            "controllers": [
+              true,
+              true
+            ]
+          }
+        ],
+        "resizerRemoved": true,
+        "afterResizer": [
+          [
+            {
+              "disposed": false,
+              "connected": true,
+              "atoms": 22
+            },
+            {
+              "disposed": true,
+              "connected": false,
+              "atoms": 62
+            }
+          ],
+          [
+            {
+              "disposed": false,
+              "connected": true,
+              "atoms": 22
+            },
+            {
+              "disposed": true,
+              "connected": false,
+              "atoms": 62
+            }
+          ]
+        ],
+        "retiredNodes": 1,
+        "afterOwnedChildren": [
+          [
+            {
+              "disposed": false,
+              "connected": true,
+              "atoms": 22
+            },
+            {
+              "disposed": true,
+              "connected": false,
+              "atoms": 62
+            }
+          ],
+          [
+            {
+              "disposed": false,
+              "connected": true,
+              "atoms": 22
+            },
+            {
+              "disposed": true,
+              "connected": false,
+              "atoms": 62
+            }
+          ]
+        ],
+        "array_loads": [
+          {
+            "atoms": 22,
+            "structures": 1
+          },
+          {
+            "atoms": 62,
+            "structures": 1
+          }
+        ],
+        "scope": "Two small bundled single-structure views in actual Jupyter; no popups, no playback, no retained DOM handle",
+        "before": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 22
+          },
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 62
+          }
+        ],
+        "closed": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 22
+          },
+          {
+            "disposed": true,
+            "connected": false,
+            "atoms": 62
+          }
+        ],
+        "after": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 22
+          },
+          {
+            "disposed": true,
+            "connected": false,
+            "atoms": 62
+          }
+        ]
+      }
     }
   },
   "private_custody_checkpoint_after_diagnostics": {
@@ -1576,6 +1908,15 @@
     "files_verified": 94,
     "bytes_verified": 30474831,
     "manifest_sha256": "abd73cb672cce26e5a556a17794f6773d66c6b37d4bdf3479408eb03e244717d",
+    "original_diagnostics_retained": true,
+    "unused_owned_credentials_hash_retired": true,
+    "off_host_backup_claimed": false
+  },
+  "private_custody_checkpoint_ownership_diagnostics": {
+    "number": 19,
+    "files_verified": 70,
+    "bytes_verified": 22304514,
+    "manifest_sha256": "824f5bdedba135dc29d8f8b2fd0ea4f99b317c90010d5394af5e227ff5e4fd4c",
     "original_diagnostics_retained": true,
     "unused_owned_credentials_hash_retired": true,
     "off_host_backup_claimed": false

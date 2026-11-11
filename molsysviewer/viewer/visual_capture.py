@@ -126,34 +126,42 @@ class CapturedState:
             raise FrontendRequestError(reason="scene_changed")
 
 
+def live_capture_version(view, *, required=None):
+    if view.closed:
+        raise FrontendRequestError(reason="view_closed")
+    if view._system_edits._blocked():
+        raise FrontendRequestError(reason="system_edit_pending")
+    if not view._ready:
+        raise FrontendRequestError(reason="no_live_frontend")
+    versions = view._frontend_capabilities.get("visual_state_capture", [])
+    version = required if required is not None else (2 if 2 in versions else 1)
+    if version not in versions:
+        raise FrontendRequestError(reason="capture_not_supported")
+    return version
+
+
+def freeze_live_capture(view, *, version):
+    state = deepcopy(view.export_state())
+    return CapturedState(
+        state,
+        view.molsys,
+        view._molecular_projection_revision,
+        _scene_key(state, version=version),
+        version,
+        view._box_definition_revision,
+        view.history._edit_revision,
+        _analysis_keys(view) if version == 2 else (),
+    )
+
+
 def prepare_live_capture(view, *, timeout: float, endpoint_id=None):
     """Freeze the recipe and reserve a reply before sending the barrier."""
     with view._system_edits._locked():
-        if view.closed:
-            raise FrontendRequestError(reason="view_closed")
-        if view._system_edits._blocked():
-            raise FrontendRequestError(reason="system_edit_pending")
-        if not view._ready:
-            raise FrontendRequestError(reason="no_live_frontend")
-        versions = view._frontend_capabilities.get("visual_state_capture", [])
-        version = 2 if 2 in versions else 1
-        if version not in versions:
-            raise FrontendRequestError(reason="capture_not_supported")
+        version = live_capture_version(view)
         endpoint = capture_endpoint(view, endpoint_id)
-        state = deepcopy(view.export_state())
-        key = _scene_key(state, version=version)
-        captured = CapturedState(
-            state,
-            view.molsys,
-            view._molecular_projection_revision,
-            key,
-            version,
-            view._box_definition_revision,
-            view.history._edit_revision,
-            _analysis_keys(view) if version == 2 else (),
-        )
+        captured = freeze_live_capture(view, version=version)
         request = view._frontend_requests.begin(
-            endpoint_id=endpoint, reply_event="visual_state_snapshot", revision=key, timeout=timeout
+            endpoint_id=endpoint, reply_event="visual_state_snapshot", revision=captured.scene_key, timeout=timeout
         )
     return captured, request
 

@@ -337,6 +337,13 @@ class _MovieTimeline:
     def n_tracks(self):
         return len(self._data["tracks"])
 
+    def visibility_targets(self):
+        return {
+            (domain, tag)
+            for domain, tag, prop in map(_channel, self._data["tracks"])
+            if prop == "visible"
+        }
+
     def check_binding(self, binding, scene=None):
         if self._data["baseline"]["binding"] != binding:
             raise ValueError(

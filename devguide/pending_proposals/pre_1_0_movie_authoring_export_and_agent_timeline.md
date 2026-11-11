@@ -218,16 +218,29 @@ methods and preserves all existing signatures.
 The JavaScript runtime now compiles and evaluates the same version-2 recipe.
 The shared regression checks 16 samples against Python, including reversed
 seeks and a generic half turn. A separate 50-case half-turn differential had
-13 disagreements before the common tie rule and zero after it. The executable
-runtime still needs the application owner that binds an evaluated pose to the
-system and acknowledges the settled draw. Appearance and lighting tracks,
-remapping/migration, and live playback, Studio authoring and export remain open.
+13 disagreements before the common tie rule and zero after it. Appearance and
+lighting tracks and remapping/migration remain open.
 
 Scoped receiving passes four JavaScript cases, 62 Python tests (one expected
 missing-`imageio` branch skipped), strict checking of the new TypeScript module,
 and the rebuilt runtime's 15 shared timeline samples. The complete JS unit run
-stopped during bundling at the launch scope's thread cap. Its retry and the live
-Jupyter retention probe were deferred by resource review while swap was full.
+stopped during bundling at the launch scope's thread cap. Its retry was
+deferred by resource review while swap was full.
+
+The first application route, `await view.movie.seek_async(time_ms)`, uses the
+existing scene owners and a version-2 primary draw acknowledgment. The new
+`movie-seek` core browser case loads a real three-structure system, starts
+trajectory playback and spin, then seeks forward and backward. It inspects
+the applied camera and frame, verifies that both clocks stop, and observes
+the actual Mol* region and same-tag shape nodes. The case passes in profile
+`301` in 18.91 s with 2 CPUs / 4 GiB and all 13 owned processes retired.
+The scoped Movie, capture, session, public API and reporting gate `304`
+passes 844 Python cases, with the expected missing-`imageio` branch skipped.
+The browser case uses the widget runtime with an adapted transport. The same route
+still needs installed-host and popup receiving. Continuous playback, Studio
+authoring and media and web export of version-2 tracks remain open.
+The existing coherent-capture guard for browser-only visibility changes from
+version-1 playback also applies to seeks that reuse that capture service.
 
 The pre-1.0 result must let a user approach a known pocket, reveal a loaded
 ligand with an explicit representation, show calculated interactions and labels

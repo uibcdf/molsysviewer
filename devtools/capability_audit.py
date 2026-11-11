@@ -236,12 +236,12 @@ CAPABILITIES: tuple[Capability, ...] = (
         provenance=PYTHON,
         docs="docs/content/user/movie/export.md",
         unit=("test_movie.py", "test_movie_timeline.py"),
-        e2e=("movie-playback",),
+        e2e=("movie-playback", "movie-seek"),
         status="experimental",
         note="Version-1 playback observed drawing since 2026-09-05: the camera passes through "
         "intermediate positions, lands on the last keyframe, and stops short when "
-        "interrupted. Version-2 tracks have Python evaluation and session persistence "
-        "in source. Media export depends on an external encoder and remains outside CI.",
+        "interrupted. Version-2 tracks have Python and JavaScript evaluation, session persistence "
+        "and an acknowledged live Python seek. Media export depends on an external encoder and remains outside CI.",
     ),
     Capability(
         name="Camera",

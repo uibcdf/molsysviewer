@@ -1,13 +1,16 @@
 """Track evaluation and session persistence with bundled molecular systems."""
 
+import asyncio
 import json
 import zipfile
+from copy import deepcopy
 from pathlib import Path
 
 import molsysmt as msm
 import numpy as np
 import pytest
 from molsysviewer.session import SessionFormatError
+from molsysviewer.viewer.frontend_requests import FrontendRequestError
 
 import molsysviewer as msv
 
@@ -177,3 +180,131 @@ def test_shared_movie_oracle_matches_real_python_recipe(authored):
     authored.movie.set_baseline(recipe["duration_ms"], camera=half_turn["begin"])
     authored.movie.add_track(_track("half-turn", "camera", "pose", (1000, half_turn["end"])))
     check(half_turn["sample"])
+
+
+def _draw_reply(ticket, sample):
+    return {
+        "event": "visual_state_snapshot",
+        "request_id": ticket.request_id,
+        "capture_revision": ticket.revision,
+        "capture_version": 2,
+        "ok": True,
+        "snapshot": deepcopy(sample["camera"]),
+        "structure_index": sample["structure_index"],
+        "playback": {"fps": 12, "step_size": 1, "mode": "loop", "direction": "forward", "playing": False},
+    }
+
+
+def test_seek_preflights_live_support_before_changing_scene(authored):
+    authored.movie.add_track(_track("frame", "structure", "index", (300, 2)))
+    before = authored.export_state()
+    with pytest.raises(FrontendRequestError, match="no_live_frontend"):
+        asyncio.run(authored.movie.seek_async(500))
+    authored._ready = True
+    authored._frontend_capabilities = {"visual_state_capture": [1]}
+    with pytest.raises(FrontendRequestError, match="capture_not_supported"):
+        asyncio.run(authored.movie.seek_async(500))
+    assert authored.export_state() == before
+    assert not authored._frontend_requests._pending
+
+
+def test_seek_applies_typed_visibility_and_awaits_correlated_draw(authored, tmp_path):
+    movie = authored.movie
+    movie.add_track(_track("frame", "structure", "index", (300, 2)))
+    movie.add_track(_track("camera", "camera", "pose", (1000, END)))
+    movie.add_track(_track("region", "region", "visible", (200, False), target="site"))
+    movie.add_track(_track("shape", "shape", "visible", (700, False), target="site"))
+    authored.shapes.add_sphere(center="[1, 1, 1] angstrom", radius="1 angstrom", tag="other")
+    authored.shapes.hide("other")
+    authored._ready = True
+    authored._frontend_capabilities = {"visual_state_capture": [2]}
+    authored.player.play(fps=12)
+
+    async def seek(time):
+        desired = movie.evaluate(time)
+        task = asyncio.create_task(movie.seek_async(time))
+        await asyncio.sleep(0)
+        ticket = next(iter(authored._frontend_requests._pending.values()))
+        assert not task.done()
+        reply = _draw_reply(ticket, desired)
+        authored._handle_frontend_event({**reply, "capture_revision": "another-revision"})
+        assert not ticket.future.done()
+        authored._handle_frontend_event(reply)
+        result = await task
+        assert result["camera"] == desired["camera"]
+        assert result["structure_index"] == desired["structure_index"] == authored.player.index
+        assert not authored.player.is_playing
+        assert not authored._frontend_requests._pending and movie._seek_request is None
+        assert len(result["visibility"]) == 2
+        return result
+
+    first = asyncio.run(seek(800))
+    assert not authored.regions["site"].visible
+    assert next(row for row in first["visibility"] if row["domain"] == "shape")["visible"] is False
+    assert authored.shapes["site"]._hidden
+    asyncio.run(seek(100))
+    assert authored.regions["site"].visible and not authored.shapes["site"]._hidden
+    assert authored.shapes["other"]._hidden
+    path = tmp_path / "after-seek.msv"
+    authored.save_session(path)
+    with msv.load_session(path) as restored:
+        assert restored.movie.to_dict() == movie.to_dict()
+        assert restored.player.index == authored.player.index
+        assert restored.regions["site"].visible and not restored.shapes["site"]._hidden
+
+
+@pytest.mark.parametrize("failure", ["wrong-camera", "wrong-frame", "recipe-edited", "cancelled"])
+def test_seek_refuses_stale_draw_and_releases_its_request(authored, failure):
+    movie = authored.movie
+    movie.add_track(_track("frame", "structure", "index", (300, 2)))
+    authored._ready = True
+    authored._frontend_capabilities = {"visual_state_capture": [2]}
+
+    async def run():
+        sample = movie.evaluate(500)
+        task = asyncio.create_task(movie.seek_async(500))
+        await asyncio.sleep(0)
+        ticket = next(iter(authored._frontend_requests._pending.values()))
+        with pytest.raises(FrontendRequestError, match="movie_operation_pending"):
+            await movie.seek_async(0)
+        assert authored.player.index == 2
+        reply = _draw_reply(ticket, sample)
+        if failure == "cancelled":
+            task.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await task
+            authored._handle_frontend_event(reply)
+        else:
+            if failure == "wrong-camera":
+                reply["snapshot"]["position"][0] += 1
+                reason = "movie_camera_not_applied"
+            elif failure == "wrong-frame":
+                reply["structure_index"] = 1
+                reason = "movie_structure_not_applied"
+            else:
+                movie.set_duration(2000)
+                reason = "movie_seek_superseded"
+            authored._handle_frontend_event(reply)
+            with pytest.raises(FrontendRequestError, match=reason):
+                await task
+        assert not authored._frontend_requests._pending and movie._seek_request is None
+
+    asyncio.run(run())
+
+
+def test_reentrant_navigation_during_pause_retires_the_seek(authored):
+    authored.movie.add_track(_track("frame", "structure", "index", (300, 2)))
+    authored._ready = True
+    authored._frontend_capabilities = {"visual_state_capture": [2]}
+    authored.player.play(fps=12)
+
+    def navigate(event):
+        if not event["is_playing"] and event["frame"] == 0:
+            authored.player.go_to_structure(1)
+
+    authored.on_frame_change(navigate)
+    with pytest.raises(FrontendRequestError, match="movie_seek_superseded"):
+        asyncio.run(authored.movie.seek_async(500))
+    assert authored.player.index == 1
+    assert authored.camera.get_snapshot() is None
+    assert not authored._frontend_requests._pending and authored.movie._seek_request is None

@@ -139,6 +139,12 @@
       "priority": 100,
       "stability": "experimental",
       "reason": "Experimental headless Movie tracks; public_api.md"
+    },
+    {
+      "route": "view.movie.seek_async",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental acknowledged Movie seek; public_api.md"
     }
   ]
 }

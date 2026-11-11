@@ -9,10 +9,10 @@ camera pose, structure index and visibility. The
 [implemented API and recipe example](../docs/content/user/movie/timeline.md#independent-tracks-experimental)
 cover a detached baseline, edits, validation, arbitrary-time evaluation and
 JSON/session persistence. The JavaScript runtime exports
-`compileMovieTimeline(recipe)` for the same three channels. It compiles a
-detached evaluator with `duration_ms` and `evaluate(time_ms)` and leaves binding
-to the current molecular system and final draw to the application owner.
-Existing version-1 playback uses its original recipe.
+`compileMovieTimeline(recipe)` for the same three channels. Python's live
+`seek_async()` validates binding and applies a sample through existing scene
+owners, with a version-2 visual capture barrier on the primary canvas. Existing
+version-1 playback uses its original recipe.
 The sections below describe the broader M1–M6 design and its remaining work.
 
 ## One model, several consumers
@@ -146,6 +146,7 @@ view.movie.update_track(tag, keys=keys)
 view.movie.remove_track(tag)
 view.movie.validate()                      # raises if binding or targets are invalid
 view.movie.evaluate(time_ms)               # detached desired state
+await view.movie.seek_async(time_ms, timeout=5.0)
 view.movie.to_dict()
 view.movie.from_dict(recipe)
 ```
@@ -155,7 +156,6 @@ playback, explicit target mapping and rendering acknowledgments. Proposed calls:
 
 ```python
 await view.movie.capture_baseline_async(...)
-await view.movie.seek_async(time_ms=...)    # apply and receive final draw
 view.movie.play(...)
 await view.movie.stop_async(...)            # drain pending writes, freeze pose
 await view.movie.reset_async(...)           # restore baseline and time zero
@@ -170,6 +170,16 @@ comm event loop while waiting for frames. Preserve user-facing semantics or
 provide an explicit reviewed migration rather than silent signature drift.
 
 ## Application, playback and export ownership
+
+The first live route is a single Python seek. It validates the recipe and
+reserves the reply before applying commands, pauses trajectory and camera
+motion, and sets the evaluated camera and structure. It applies visibility
+only on tracked targets, using each domain's existing semantics. One scene
+history operation groups those visibility changes. The primary canvas samples
+the camera and structure after frame projections and draw are current. The
+reply must match the pose and stopped structure. Cancellation or timeout
+retires the request and can leave already accepted changes on screen. A changed
+recipe, scene or navigation intent invalidates the acknowledgment.
 
 One execution owner arbitrates Movie, trajectory playback and camera spin/rock.
 Starting Movie explicitly pauses competing motion. Each application has a
